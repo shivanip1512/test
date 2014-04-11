@@ -2,12 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
-    <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache">
-        <property name="yukonUserEnergyCompanyLookup" ref="yukonUserEnergyCompanyLookup"/>
-        <property name="pointDao" ref="pointDao" />
-        <property name="paoDao" ref="paoDao" />
-    </bean>
+    <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache"/>
 
     <bean id="yukonUserEnergyCompanyLookup" class="com.cannontech.yukon.server.cache.bypass.YukonUserEnergyCompanyLookup">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>

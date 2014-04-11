@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
@@ -14,11 +14,11 @@ import com.cannontech.database.data.lite.LiteLMConstraint;
 
 public class LMConstraintLoader implements Runnable {
     private String databaseAlias = null;
-    private ArrayList allLMConstraints = null;
+    private List<LiteLMConstraint> allLMConstraints = null;
 
-    public LMConstraintLoader(ArrayList constraints, String dbAlias) {
-        this.allLMConstraints = constraints;
-        this.databaseAlias = dbAlias;
+    public LMConstraintLoader(List<LiteLMConstraint> allLMConstraints, String databaseAlias) {
+        this.allLMConstraints = allLMConstraints;
+        this.databaseAlias = databaseAlias;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class LMConstraintLoader implements Runnable {
         Statement stmt = null;
         ResultSet rset = null;
         try {
-            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            conn = PoolManager.getInstance().getConnection(databaseAlias);
             stmt = conn.createStatement();
             rset = stmt.executeQuery(sqlString);
 

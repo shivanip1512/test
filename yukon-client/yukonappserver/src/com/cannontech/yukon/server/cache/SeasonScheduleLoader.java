@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
@@ -14,11 +14,11 @@ import com.cannontech.database.data.lite.LiteSeasonSchedule;
 
 public class SeasonScheduleLoader implements Runnable {
     private String databaseAlias = null;
-    private ArrayList allSeasons = null;
+    private List<LiteSeasonSchedule> allSeasons = null;
 
-    public SeasonScheduleLoader(ArrayList seasons, String dbAlias) {
-        this.allSeasons = seasons;
-        this.databaseAlias = dbAlias;
+    public SeasonScheduleLoader(List<LiteSeasonSchedule> allSeasons, String databaseAlias) {
+        this.allSeasons = allSeasons;
+        this.databaseAlias = databaseAlias;
     }
 
     @Override

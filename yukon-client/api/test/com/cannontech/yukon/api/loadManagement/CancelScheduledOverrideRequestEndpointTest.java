@@ -172,16 +172,14 @@ public class CancelScheduledOverrideRequestEndpointTest {
 
         @Override
         public CustomerAccount getByAccountNumber(String accountNumber, 
-                                                  List<? extends YukonEnergyCompany> energyCompany) {
-
+                                                  Iterable<? extends YukonEnergyCompany> energyCompany) {
             if (accountNumber.equals(UNKNOWN_ACCOUNT_NUMBER)) {
                 throw new NotFoundException("Unknown account");
-            } else {
-                CustomerAccount account = new CustomerAccount();
-                account.setAccountId(1);
-                account.setAccountNumber(accountNumber);
-                return account;
             }
+            CustomerAccount account = new CustomerAccount();
+            account.setAccountId(1);
+            account.setAccountNumber(accountNumber);
+            return account;
         }
 
     }
@@ -195,10 +193,9 @@ public class CancelScheduledOverrideRequestEndpointTest {
     }
     
     private class MockOptOutService extends OptOutServiceAdapter {
-        
         @Override
         public void cancelOptOut(List<Integer>eventIdList, LiteYukonUser user) {
-            
+            // Don't need to do anything but don't want to throw exception either.
         }
     }
     

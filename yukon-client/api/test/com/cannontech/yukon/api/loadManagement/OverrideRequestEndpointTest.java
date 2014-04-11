@@ -1,7 +1,5 @@
 package com.cannontech.yukon.api.loadManagement;
 
-import java.util.List;
-
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -225,19 +223,17 @@ public class OverrideRequestEndpointTest {
 
         @Override
         public CustomerAccount getByAccountNumber(String accountNumber, 
-                                                  List<? extends YukonEnergyCompany> energyCompany) {
-
+                                                  Iterable<? extends YukonEnergyCompany> energyCompany) {
             if (accountNumber.equals(UNKNOWN_ACCOUNT_NUMBER)) {
                 throw new NotFoundException("Unknown account");
-            } else {
-                MockCustomerAccount account = new MockCustomerAccount();
-                account.setAccountId(1);
-                account.setAccountNumber(accountNumber);
-                if (accountNumber.equals(KNOWN_ACCOUNT_NUMBER_NO_OPTOUTS_AVAILABLE)) {
-                    account.hasOptOutsLeft = false;
-                }
-                return account;
             }
+            MockCustomerAccount account = new MockCustomerAccount();
+            account.setAccountId(1);
+            account.setAccountNumber(accountNumber);
+            if (accountNumber.equals(KNOWN_ACCOUNT_NUMBER_NO_OPTOUTS_AVAILABLE)) {
+                account.hasOptOutsLeft = false;
+            }
+            return account;
         }
     }
     

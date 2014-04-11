@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
@@ -13,12 +13,12 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 
 public class DeviceMeterGroupLoader implements Runnable {
-    private ArrayList<LiteDeviceMeterNumber> devMetNumList = null;
+    private List<LiteDeviceMeterNumber> devMetNumList = null;
     private String databaseAlias = null;
 
-    public DeviceMeterGroupLoader(ArrayList<LiteDeviceMeterNumber> deviceList, String alias) {
-        this.devMetNumList = deviceList;
-        this.databaseAlias = alias;
+    public DeviceMeterGroupLoader(List<LiteDeviceMeterNumber> devMetNumList, String databaseAlias) {
+        this.devMetNumList = devMetNumList;
+        this.databaseAlias = databaseAlias;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class DeviceMeterGroupLoader implements Runnable {
         ResultSet rset = null;
 
         try {
-            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            conn = PoolManager.getInstance().getConnection(databaseAlias);
             stmt = conn.createStatement();
             rset = stmt.executeQuery(sqlString);
 

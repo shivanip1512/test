@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
@@ -14,11 +14,11 @@ import com.cannontech.database.data.lite.LiteTOUSchedule;
 
 public class TOUScheduleLoader implements Runnable {
     private String databaseAlias = null;
-    private ArrayList allTOUSchedules = null;
+    private List<LiteTOUSchedule> allTOUSchedules = null;
 
-    public TOUScheduleLoader(ArrayList touSchedules, String dbAlias) {
-        this.allTOUSchedules = touSchedules;
-        this.databaseAlias = dbAlias;
+    public TOUScheduleLoader(List<LiteTOUSchedule> allTOUSchedules, String databaseAlias) {
+        this.allTOUSchedules = allTOUSchedules;
+        this.databaseAlias = databaseAlias;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class TOUScheduleLoader implements Runnable {
         Statement stmt = null;
         ResultSet rset = null;
         try {
-            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            conn = PoolManager.getInstance().getConnection(databaseAlias);
             stmt = conn.createStatement();
             rset = stmt.executeQuery(sqlString);
 

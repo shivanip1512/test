@@ -7,115 +7,100 @@ import java.util.Map;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.SetMultimap;
 
 public interface CustomerAccountDao {
+    void add(CustomerAccount account);
 
-    public void add(CustomerAccount account);
-    
-    public boolean remove(CustomerAccount account);
-    
-    public void update(CustomerAccount account);
-    
-    public CustomerAccount getById(int accountId);
-    
+    boolean remove(CustomerAccount account);
+
+    void update(CustomerAccount account);
+
+    CustomerAccount getById(int accountId);
+
     /**
-     * Uses {@link com.cannontech.stars.database.cache.StarsDatabaseCache#getEnergyCompanyByUser(LiteYukonUser)}
-     * to get the Energy Company for the user, then calls {@link #getByAccountNumberForDescendentsOfEnergyCompany(String, YukonEnergyCompany)}.
-     * @param accountNumber
+     * Use {@link StarsDatabaseCache#getEnergyCompanyByUser(LiteYukonUser)} to get the Energy Company for the
+     * user, then calls {@link #getByAccountNumberForDescendentsOfEnergyCompany(String, YukonEnergyCompany)}.
      * @param user the user calling the method, only makes sense as an operator
-     * @return
-     * @deprecated call getByAccountNumberForDescendentsOfEnergyCompany directly, get EC from YukonEnergyCompanyService
+     * @deprecated call getByAccountNumberForDescendentsOfEnergyCompany directly, get EC from
+     *             YukonEnergyCompanyService
      */
     @Deprecated
-    public CustomerAccount getByAccountNumber(String accountNumber, LiteYukonUser user);
-    
-    /**
-     * Returns a list all customer accounts for user, 
-     *  including Primary and Additional contact relationships.
-     * @param user
-     * @return
-     */
-    public List<CustomerAccount> getByUser(LiteYukonUser user);
-    
-    public List<CustomerAccount> getAll();
-    
-    public CustomerAccount getAccountByInventoryId(int inventoryId);
-    
-    /**
-     * This method is a performance method.  This allows us to get a huge multimap of inventory ids to customer accounts.
-     * This method will cut down on the amount of dao hits, 
-     * but will force the user to use a map call to get the inventoryIds for each customer account. 
-     */
-    public Map<Integer, CustomerAccount> getInventoryIdsToAccountMap(Collection<Integer> inventoryIds);
+    CustomerAccount getByAccountNumber(String accountNumber, LiteYukonUser user);
 
     /**
-     * This method is a performance method.  This allows us to get a huge multimap of customer accounts to inventory ids.
-     * This method will cut down on the amount of dao hits, 
-     * but will force the user to use a map call to get the inventoryIds for each customer account. 
+     * Return a list all customer accounts for user, including Primary and Additional contact relationships.
      */
-    public SetMultimap<CustomerAccount, Integer> getAccountToInventoryIdsMap(Collection<Integer> inventoryIds);
-    
-    /**
-     * Returns a map of InventoryIds to AccountIds.
-     * @param inventoryIds
-     * @return
-     */
-    public Map<Integer, Integer> getAccountIdsByInventoryIds(Iterable<Integer> inventoryIds);
-    
-    /**
-     * Returns a map of AccountIds to AccountNumbers. 
-     * @param accountIds
-     * @return
-     */
-    public Map<Integer, String> getAccountNumbersByAccountIds(Iterable<Integer> accountIds);
+    List<CustomerAccount> getByUser(LiteYukonUser user);
 
-    public CustomerAccount getAccountByContactId(int contactId);
-    
-    public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(final int ecId, List<Integer> groupIds, Date startDate, Date stopDate);
-    
-    public CustomerAccountWithNames getAccountWithNamesByCustomerId(final int customerId,
-                                                                    final int ecId);
+    List<CustomerAccount> getAll();
 
-    public Map<Integer, CustomerAccountWithNames> getAccountsWithNamesByAccountId(
-            Iterable<Integer> accountIds);
+    CustomerAccount getAccountByInventoryId(int inventoryId);
 
     /**
-     * This method returns a customerAccountWithNames object that contains contact information
-     * for the account number and energy company id supplied
+     * This is a performance method. It allows us to get a huge multimap of inventory ids to customer
+     * accounts.  It will cut down on the number of DAO hits, but will force the user to use a map call
+     * to get the inventoryIds for each customer account.
      */
-    public CustomerAccountWithNames getAcountWithNamesByAccountNumber(String accountNumber, 
-                                                                       int ecId);
-
-
-    public CustomerAccount getByAccountNumber(String accountNumber, int energyCompanyId);
-    
-    public CustomerAccount getByAccountNumber(String accountNumber, List<? extends YukonEnergyCompany> energyCompanies);
-    
-    public CustomerAccount findByAccountNumber(String accountNumber, List<? extends YukonEnergyCompany> energyCompanies);
-    
-    /**
-     * Method to get a total count of the number of customer accounts in the system.  If the assignedProgramIds are supplied
-     * this method will limit the count to the accounts in those programs.
-     */
-    public int getTotalNumberOfAccounts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds);
+    Map<Integer, CustomerAccount> getInventoryIdsToAccountMap(Collection<Integer> inventoryIds);
 
     /**
-     * Returns the LiteYukonUser of the account.
-     * @param accountId
-     * @return LiteYukonUser user
+     * This is is a performance method. It allows us to get a huge multimap of customer accounts to
+     * inventory ids.  It will cut down on the amount of DAO hits, but will force the user to use a map
+     * call to get the inventoryIds for each customer account.
      */
-    public LiteYukonUser getYukonUserByAccountId(int accountId);
-    
+    SetMultimap<CustomerAccount, Integer> getAccountToInventoryIdsMap(Collection<Integer> inventoryIds);
+
     /**
-     * Helper method to return exactly one CustomerAccount for user.
-     *  A warning message is logged if more than one account is found for the user.
-     * @param user
-     * @return
+     * Return a map of InventoryIds to AccountIds.
+     */
+    Map<Integer, Integer> getAccountIdsByInventoryIds(Iterable<Integer> inventoryIds);
+
+    /**
+     * Return a map of AccountIds to AccountNumbers.
+     */
+    Map<Integer, String> getAccountNumbersByAccountIds(Iterable<Integer> accountIds);
+
+    CustomerAccount getAccountByContactId(int contactId);
+
+    List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(int ecId, List<Integer> groupIds, Date startDate,
+        Date stopDate);
+
+    CustomerAccountWithNames getAccountWithNamesByCustomerId(int customerId, int ecId);
+
+    Map<Integer, CustomerAccountWithNames> getAccountsWithNamesByAccountId(Iterable<Integer> accountIds);
+
+    /**
+     * Return a customerAccountWithNames object that contains contact information
+     * for the account number and energy company id supplied.
+     */
+    CustomerAccountWithNames getAcountWithNamesByAccountNumber(String accountNumber, int ecId);
+
+    CustomerAccount getByAccountNumber(String accountNumber, int energyCompanyId);
+
+    CustomerAccount getByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies);
+
+    CustomerAccount findByAccountNumber(String accountNumber, List<? extends YukonEnergyCompany> energyCompanies);
+
+    /**
+     * Get a total count of the number of customer accounts in the system. If the assignedProgramIds
+     * are supplied this method will limit the count to the accounts in those programs.
+     */
+    int getTotalNumberOfAccounts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds);
+
+    /**
+     * Return the LiteYukonUser of the account.
+     */
+    LiteYukonUser getYukonUserByAccountId(int accountId);
+
+    /**
+     * Helper to return exactly one CustomerAccount for user.
+     * A warning message is logged if more than one account is found for the user.
      * @throws NotAuthorizedException if user is not associated with any accounts.
      */
-    public CustomerAccount getCustomerAccount(LiteYukonUser user) throws NotAuthorizedException;
+    CustomerAccount getCustomerAccount(LiteYukonUser user) throws NotAuthorizedException;
 }

@@ -1,10 +1,9 @@
 package com.cannontech.amr.demandreset.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
@@ -19,11 +18,10 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.MutableDuration;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class DemandResetServiceImpl implements DemandResetService {
-    private static final Logger log = YukonLogManager.getLogger(DemandResetServiceImpl.class);
+    private final static Logger log = YukonLogManager.getLogger(DemandResetServiceImpl.class);
 
     private final static class Callback implements DemandResetCallback {
         DemandResetCallback callerCallback;
@@ -56,15 +54,11 @@ public class DemandResetServiceImpl implements DemandResetService {
     }
 
     @Autowired private List<DemandResetStrategy> strategies;
-    @Autowired private ConfigurationSource configurationSource;
+    private final Duration replyTimeout;
 
-    private static Duration replyTimeout;
-
-    @PostConstruct
-    public void init() {
-        replyTimeout =
-            configurationSource.getDuration("DEMAND_RESET_REPLY_TIMEOUT", Duration.standardMinutes(1));
-
+    @Autowired
+    public DemandResetServiceImpl(ConfigurationSource configurationSource) {
+        replyTimeout = configurationSource.getDuration("DEMAND_RESET_REPLY_TIMEOUT", Duration.standardMinutes(1));
     }
 
     @Override
@@ -77,9 +71,8 @@ public class DemandResetServiceImpl implements DemandResetService {
     }
 
     @Override
-    public void sendDemandReset(Set<? extends YukonPao> devices, DemandResetCallback callback,
-                                LiteYukonUser user) {
-        List<Callback> callbacks = Lists.newArrayList();
+    public void sendDemandReset(Set<? extends YukonPao> devices, DemandResetCallback callback, LiteYukonUser user) {
+        List<Callback> callbacks = new ArrayList<>();
 
         for (DemandResetStrategy strategy : strategies) {
             Set<? extends YukonPao> strategyDevices = strategy.filterDevices(devices);

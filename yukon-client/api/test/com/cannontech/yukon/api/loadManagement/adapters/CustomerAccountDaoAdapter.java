@@ -89,7 +89,7 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao{
     }
 
     @Override
-    public CustomerAccount getByAccountNumber(String accountNumber, List<? extends YukonEnergyCompany> energyCompanyIds) {
+    public CustomerAccount getByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanyIds) {
         throw new UnsupportedOperationException("not implemented");
     }
 

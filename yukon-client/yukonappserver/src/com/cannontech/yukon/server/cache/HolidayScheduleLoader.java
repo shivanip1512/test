@@ -1,7 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.SqlUtils;
@@ -9,11 +9,11 @@ import com.cannontech.database.data.lite.LiteHolidaySchedule;
 
 public class HolidayScheduleLoader implements Runnable {
     private String databaseAlias = null;
-    private ArrayList allHolidaySchedules = null;
+    private List<LiteHolidaySchedule> allHolidaySchedules = null;
 
-    public HolidayScheduleLoader(ArrayList holidaySchedules, String dbAlias) {
-        this.allHolidaySchedules = holidaySchedules;
-        this.databaseAlias = dbAlias;
+    public HolidayScheduleLoader(List<LiteHolidaySchedule> allHolidaySchedules, String databaseAlias) {
+        this.allHolidaySchedules = allHolidaySchedules;
+        this.databaseAlias = databaseAlias;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class HolidayScheduleLoader implements Runnable {
         java.sql.Statement stmt = null;
         java.sql.ResultSet rset = null;
         try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(this.databaseAlias);
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(databaseAlias);
             stmt = conn.createStatement();
             rset = stmt.executeQuery(sqlString);
 
@@ -51,7 +51,6 @@ public class HolidayScheduleLoader implements Runnable {
             timerStop = new Date();
             CTILogger.info((timerStop.getTime() - timerStart.getTime()) * .001
                 + " Secs for HolidayScheduleLoader (" + allHolidaySchedules.size() + " loaded)");
-
             // temp code
         }
     }

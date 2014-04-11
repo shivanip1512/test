@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
@@ -14,12 +14,12 @@ import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.db.command.DeviceTypeCommand;
 
 public class DeviceTypeCommandLoader implements Runnable {
-    private ArrayList allDeviceTypeCommands = null;
+    private List<LiteDeviceTypeCommand> allDeviceTypeCommands = null;
     private String databaseAlias = null;
 
-    public DeviceTypeCommandLoader(ArrayList devTypeCommandsArray_, String alias) {
-        this.allDeviceTypeCommands = devTypeCommandsArray_;
-        this.databaseAlias = alias;
+    public DeviceTypeCommandLoader(List<LiteDeviceTypeCommand> allDeviceTypeCommands, String databaseAlias) {
+        this.allDeviceTypeCommands = allDeviceTypeCommands;
+        this.databaseAlias = databaseAlias;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class DeviceTypeCommandLoader implements Runnable {
         Statement stmt = null;
         ResultSet rset = null;
         try {
-            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            conn = PoolManager.getInstance().getConnection(databaseAlias);
             stmt = conn.createStatement();
             rset = stmt.executeQuery(sqlString);
 

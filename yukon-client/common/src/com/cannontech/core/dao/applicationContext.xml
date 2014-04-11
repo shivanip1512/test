@@ -8,93 +8,89 @@
     This file defines beans that live under the com.cannontech.core.dao
     package.
   </description>
-  <bean id="alarmCatDao" class="com.cannontech.core.dao.impl.AlarmCatDaoImpl" >
+  <bean id="alarmCatDao" class="com.cannontech.core.dao.impl.AlarmCatDaoImpl">
   	<property name="databaseCache" ref="databaseCache"/>
   </bean>
-  <bean id="alarmDao" class="com.cannontech.core.dao.impl.AlarmDaoImpl" >
+  <bean id="alarmDao" class="com.cannontech.core.dao.impl.AlarmDaoImpl">
   	<property name="pointDao" ref="pointDao"/>
   	<property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>  
   <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl"/>
   <bean id="capControlDao" class="com.cannontech.core.dao.impl.CapControlDaoImpl"/>
-  <bean id="macScheduleDao" class="com.cannontech.core.dao.impl.MACScheduleDaoImpl" >
+  <bean id="macScheduleDao" class="com.cannontech.core.dao.impl.MACScheduleDaoImpl">
     <property name="jdbcOps" ref="jdbcTemplate"/> 
   </bean>
-  <bean id="commandDao" class="com.cannontech.core.dao.impl.CommandDaoImpl" >
-  	<property name="databaseCache" ref="databaseCache" />
-  	<property name="paoCommandAuthorizationService" ref="paoCommandAuthorizationService" />
+  <bean id="commandDao" class="com.cannontech.core.dao.impl.CommandDaoImpl">
+  	<property name="databaseCache" ref="databaseCache"/>
+  	<property name="paoCommandAuthorizationService" ref="paoCommandAuthorizationService"/>
   </bean>
-  <bean id="contactDao" class="com.cannontech.core.dao.impl.ContactDaoImpl" />
-  <bean id="contactNotificationDao" class="com.cannontech.core.dao.impl.ContactNotificationDaoImpl" />
-  <bean id="customerDao" class="com.cannontech.core.dao.impl.CustomerDaoImpl" />
+  <bean id="contactDao" class="com.cannontech.core.dao.impl.ContactDaoImpl"/>
+  <bean id="contactNotificationDao" class="com.cannontech.core.dao.impl.ContactNotificationDaoImpl"/>
+  <bean id="customerDao" class="com.cannontech.core.dao.impl.CustomerDaoImpl"/>
   <bean id="demandResponseDao" class="com.cannontech.core.dao.impl.DemandResponseDaoImpl"/>
-  <bean id="deviceCustomerListDao" class="com.cannontech.core.dao.impl.DeviceCustomerListDaoImpl" />
-  <bean id="graphCustomerListDao" class="com.cannontech.core.dao.impl.GraphCustomerListDaoImpl" />
+  <bean id="deviceCustomerListDao" class="com.cannontech.core.dao.impl.DeviceCustomerListDaoImpl"/>
+  <bean id="graphCustomerListDao" class="com.cannontech.core.dao.impl.GraphCustomerListDaoImpl"/>
   <bean id="dbDeletionDao" class="com.cannontech.core.dao.impl.DBDeletionDaoImpl">
     <property name="macScheduleDao" ref="macScheduleDao"/>
   </bean>
-  <bean id="dbPersistentDao" class="com.cannontech.core.dao.impl.DBPersistentDaoImpl" />	
-  <bean id="deviceDao" class="com.cannontech.core.dao.impl.DeviceDaoImpl" />
-  <bean id="dynamicBillingFileDao" class="com.cannontech.common.dynamicBilling.dao.impl.DynamicBillingFileDaoImpl" >
-   	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+  <bean id="dbPersistentDao" class="com.cannontech.core.dao.impl.DBPersistentDaoImpl"/>	
+  <bean id="deviceDao" class="com.cannontech.core.dao.impl.DeviceDaoImpl"/>
+  <bean id="dynamicBillingFileDao" class="com.cannontech.common.dynamicBilling.dao.impl.DynamicBillingFileDaoImpl">
+   	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
    	<property name="nextValueHelper" ref="nextValueHelper"/>
   </bean>
-  <bean id="energyCompanyDao" class="com.cannontech.stars.energyCompany.dao.impl.EnergyCompanyDaoImpl" />
+  <bean id="energyCompanyDao" class="com.cannontech.stars.energyCompany.dao.impl.EnergyCompanyDaoImpl"/>
   
   <bean id="graphDao" class="com.cannontech.core.dao.impl.GraphDaoImpl"/>
   
-  <bean id="lmDao" class="com.cannontech.core.dao.impl.LMDaoImpl" >
-    <property name="databaseCache" ref="databaseCache"/>    
-    <property name="paoDao" ref="paoDao"/>   
-    <property name="jdbcOps" ref="simpleJdbcTemplate"/>
-  </bean>
-  <bean id="lmDirectCustomerListDao" class="com.cannontech.core.dao.impl.LMDirectCustomerListDaoImpl" >
+  <bean id="lmDao" class="com.cannontech.core.dao.impl.LMDaoImpl"/>
+  <bean id="lmDirectCustomerListDao" class="com.cannontech.core.dao.impl.LMDirectCustomerListDaoImpl">
     <property name="jdbcOperations" ref="jdbcTemplate"/> 
     <property name="paoDao" ref="paoDao"/>    
     <property name="transactionTemplate" ref="transactionTemplate"/>    
   </bean>
   <bean id="notificationGroupDao" class="com.cannontech.core.dao.impl.NotificationGroupDaoImpl"/>
-  <bean id="paoDao" class="com.cannontech.core.dao.impl.PaoDaoImpl" >
+  <bean id="paoDao" class="com.cannontech.core.dao.impl.PaoDaoImpl">
     <property name="jdbcOps" ref="jdbcTemplate"/>
   </bean>
   <bean id="pointDao" class="com.cannontech.core.dao.impl.PointDaoImpl"/>
-  <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" />
+  <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl"/>
   <bean id="globalSettingDao" class="com.cannontech.system.dao.impl.GlobalSettingDaoImpl"/>
   <bean class="com.cannontech.system.dao.impl.GlobalSettingEditorDaoImpl"/>
   <bean class="com.cannontech.system.dao.impl.GlobalSettingUpdateDaoImpl"/>
   
   <bean class="com.cannontech.stars.energyCompany.dao.impl.EnergyCompanySettingDaoImpl"/>
 
-  <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >
+  <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl">
     <property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>
-  <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl" >
+  <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl">
     <property name="databaseCache" ref="databaseCache"/>      
   </bean>  
-  <bean id="tagDao" class="com.cannontech.core.dao.impl.TagDaoImpl" >
+  <bean id="tagDao" class="com.cannontech.core.dao.impl.TagDaoImpl">
     <property name="databaseCache" ref="databaseCache"/>      
   </bean>
-  <bean id="unitMeasureDao" class="com.cannontech.core.dao.impl.UnitMeasureDaoCache" >
+  <bean id="unitMeasureDao" class="com.cannontech.core.dao.impl.UnitMeasureDaoCache">
     <property name="delegate">
-      <bean class="com.cannontech.core.dao.impl.UnitMeasureDaoImpl" />
+      <bean class="com.cannontech.core.dao.impl.UnitMeasureDaoImpl"/>
     </property>
   </bean>
   <bean id="yukonImageDao" class="com.cannontech.core.image.dao.impl.YukonImageDaoImpl"/>
-  <bean id="yukonListDao" class="com.cannontech.core.dao.impl.YukonListDaoImpl" />
-  <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" />
+  <bean id="yukonListDao" class="com.cannontech.core.dao.impl.YukonListDaoImpl"/>
+  <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl"/>
 
-  <bean id="userGroupDao" class="com.cannontech.core.users.dao.impl.UserGroupDaoImpl" />
-  <bean class="com.cannontech.core.users.dao.impl.UserPreferenceDaoImpl" />
+  <bean id="userGroupDao" class="com.cannontech.core.users.dao.impl.UserGroupDaoImpl"/>
+  <bean class="com.cannontech.core.users.dao.impl.UserPreferenceDaoImpl"/>
 
-  <bean id="yukonGroupDao" class="com.cannontech.core.dao.impl.YukonGroupDaoImpl" />
+  <bean id="yukonGroupDao" class="com.cannontech.core.dao.impl.YukonGroupDaoImpl"/>
 
-  <bean id="yukonGroupService" class="com.cannontech.core.service.impl.YukonGroupServiceImpl" />
+  <bean id="yukonGroupService" class="com.cannontech.core.service.impl.YukonGroupServiceImpl"/>
 
-  <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl" />
-  <bean id="databaseManagementDao" class="com.cannontech.core.dao.impl.DatabaseManagementDaoImpl" />
+  <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl"/>
+  <bean id="databaseManagementDao" class="com.cannontech.core.dao.impl.DatabaseManagementDaoImpl"/>
   
   <bean id="addressDao" class="com.cannontech.core.dao.impl.AddressDaoImpl">
-      <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+      <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   
   <bean id="seasonScheduleDao" class="com.cannontech.core.dao.impl.SeasonScheduleDaoImpl">
@@ -141,7 +137,7 @@
 
   <bean id="substationToRouteMappingDao" class="com.cannontech.core.substation.dao.impl.SubstationToRouteMappingDaoImpl">
     <property name="simpleJdbcTemplate">
-      <ref bean="simpleJdbcTemplate" />
+      <ref bean="simpleJdbcTemplate"/>
     </property>
   </bean>
   

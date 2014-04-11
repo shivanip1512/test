@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
@@ -14,11 +14,11 @@ import com.cannontech.database.data.lite.LiteConfig;
 
 public class ConfigLoader implements Runnable {
     private String databaseAlias = null;
-    private ArrayList allConfigs = null;
+    private List<LiteConfig> allConfigs = null;
 
-    public ConfigLoader(ArrayList configs, String dbAlias) {
-        this.allConfigs = configs;
-        this.databaseAlias = dbAlias;
+    public ConfigLoader(List<LiteConfig> allConfigs, String databaseAlias) {
+        this.allConfigs = allConfigs;
+        this.databaseAlias = databaseAlias;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ConfigLoader implements Runnable {
         Statement stmt = null;
         ResultSet rset = null;
         try {
-            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            conn = PoolManager.getInstance().getConnection(databaseAlias);
             stmt = conn.createStatement();
             rset = stmt.executeQuery(sqlString);
 

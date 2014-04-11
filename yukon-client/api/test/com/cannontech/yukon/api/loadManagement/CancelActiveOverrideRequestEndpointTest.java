@@ -36,7 +36,6 @@ import com.cannontech.yukon.api.utils.TestUtils;
 
 @Ignore("YUK-11816")
 public class CancelActiveOverrideRequestEndpointTest {
-    
     private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
     private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
     
@@ -173,20 +172,17 @@ public class CancelActiveOverrideRequestEndpointTest {
     }
     
     private class MockCustomerAccountDao extends CustomerAccountDaoAdapter {
-
         @Override
-        public CustomerAccount getByAccountNumber(String accountNumber, 
-                                                  List<? extends YukonEnergyCompany> energyCompany) {
+        public CustomerAccount getByAccountNumber(String accountNumber,
+                Iterable<? extends YukonEnergyCompany> energyCompany) {
             if (accountNumber.equals(UNKNOWN_ACCOUNT_NUMBER)) {
                 throw new NotFoundException("Unknown account");
-            } else {
-                CustomerAccount account = new CustomerAccount();
-                account.setAccountId(1);
-                account.setAccountNumber(accountNumber);
-                return account;
             }
+            CustomerAccount account = new CustomerAccount();
+            account.setAccountId(1);
+            account.setAccountNumber(accountNumber);
+            return account;
         }
-
     }
     
     private class MockYukonEnergyCompanyService extends YukonEnergyCompanyServiceAdapter {
@@ -198,10 +194,9 @@ public class CancelActiveOverrideRequestEndpointTest {
     }
     
     private class MockOptOutService extends OptOutServiceAdapter {
-        
         @Override
         public void cancelOptOut(List<Integer>eventIdList, LiteYukonUser user) {
-            
+            // Don't need to do no nothing but don't need to throw no exception neither.
         }
     }
     
@@ -220,8 +215,4 @@ public class CancelActiveOverrideRequestEndpointTest {
             return events;
         }
     }
-    
-    
-
- 
 }

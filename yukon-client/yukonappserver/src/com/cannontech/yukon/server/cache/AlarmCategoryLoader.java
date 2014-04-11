@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
@@ -13,12 +13,12 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 
 public class AlarmCategoryLoader implements Runnable {
-    private ArrayList allAlarmStates = null;
+    private List<LiteAlarmCategory> allAlarmStates = null;
     private String databaseAlias = null;
 
-    public AlarmCategoryLoader(ArrayList alarmStateArray, String alias) {
-        this.allAlarmStates = alarmStateArray;
-        this.databaseAlias = alias;
+    public AlarmCategoryLoader(List<LiteAlarmCategory> allAlarmStates, String databaseAlias) {
+        this.allAlarmStates = allAlarmStates;
+        this.databaseAlias = databaseAlias;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class AlarmCategoryLoader implements Runnable {
         Statement stmt = null;
         ResultSet rset = null;
         try {
-            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            conn = PoolManager.getInstance().getConnection(databaseAlias);
             stmt = conn.createStatement();
             rset = stmt.executeQuery(sqlString);
 

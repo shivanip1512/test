@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
@@ -15,15 +15,15 @@ import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.db.command.Command;
 
 public class CommandLoader implements Runnable {
-    private ArrayList allCommands = null;
-    // <Integer(commandID), LiteCommand>
-    private Map allCommandsMap = null;
+    private List<LiteCommand> allCommands = null;
+    // command id -> LiteCommand
+    private Map<Integer, LiteCommand> allCommandsMap = null;
     private String databaseAlias = null;
 
-    public CommandLoader(ArrayList commandsArray_, Map commandsMap_, String alias) {
-        this.allCommands = commandsArray_;
-        this.allCommandsMap = commandsMap_;
-        this.databaseAlias = alias;
+    public CommandLoader(List<LiteCommand> allCommands, Map<Integer, LiteCommand> allCommandsMap, String databaseAlias) {
+        this.allCommands = allCommands;
+        this.allCommandsMap = allCommandsMap;
+        this.databaseAlias = databaseAlias;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class CommandLoader implements Runnable {
         Statement stmt = null;
         ResultSet rset = null;
         try {
-            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            conn = PoolManager.getInstance().getConnection(databaseAlias);
             stmt = conn.createStatement();
             rset = stmt.executeQuery(sqlString);
 
@@ -50,7 +50,7 @@ public class CommandLoader implements Runnable {
                 String category = rset.getString(4);
                 LiteCommand lc = new LiteCommand(cmdId, command, label, category);
                 allCommands.add(lc);
-                allCommandsMap.put(new Integer(cmdId), lc);
+                allCommandsMap.put(cmdId, lc);
             }
         } catch (SQLException e) {
             CTILogger.error(e.getMessage(), e);

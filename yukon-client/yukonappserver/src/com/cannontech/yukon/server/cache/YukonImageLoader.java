@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
@@ -14,12 +14,12 @@ import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.db.state.YukonImage;
 
 public class YukonImageLoader implements Runnable {
-    private ArrayList allStateImages = null;
+    private List<LiteYukonImage> allStateImages = null;
     private String databaseAlias = null;
 
-    public YukonImageLoader(ArrayList sImageArray, String alias) {
-        this.allStateImages = sImageArray;
-        this.databaseAlias = alias;
+    public YukonImageLoader(List<LiteYukonImage> allStateImages, String databaseAlias) {
+        this.allStateImages = allStateImages;
+        this.databaseAlias = databaseAlias;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class YukonImageLoader implements Runnable {
         Statement stmt = null;
         ResultSet rset = null;
         try {
-            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            conn = PoolManager.getInstance().getConnection(databaseAlias);
             stmt = conn.createStatement();
             rset = stmt.executeQuery(sqlString);
 

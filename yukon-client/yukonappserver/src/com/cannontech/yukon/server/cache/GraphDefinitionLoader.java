@@ -1,18 +1,19 @@
 package com.cannontech.yukon.server.cache;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 
 public class GraphDefinitionLoader implements Runnable {
     private String databaseAlias = null;
-    private ArrayList gDefList = null;
+    private List<LiteGraphDefinition> gDefList = null;
 
-    public GraphDefinitionLoader(ArrayList gDefList, String dbAlias) {
+    public GraphDefinitionLoader(List<LiteGraphDefinition> gDefList, String databaseAlias) {
         this.gDefList = gDefList;
-        this.databaseAlias = dbAlias;
+        this.databaseAlias = databaseAlias;
     }
 
     /**
@@ -35,7 +36,7 @@ public class GraphDefinitionLoader implements Runnable {
         java.sql.Statement stmt = null;
         java.sql.ResultSet rset = null;
         try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(this.databaseAlias);
+            conn = PoolManager.getInstance().getConnection(databaseAlias);
             stmt = conn.createStatement();
             rset = stmt.executeQuery(sqlString);
 

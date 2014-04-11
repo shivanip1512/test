@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.CTILogger;
@@ -116,43 +115,44 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     // stores a soft reference to the cache
     private static ServerDatabaseCache cache = null;
 
-    private PointDao pointDao = null;
-    private PaoDao paoDao = null;
+    @Autowired private PointDao pointDao = null;
+    @Autowired private PaoDao paoDao = null;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private ContactDao contactDao;
+    @Autowired private YukonUserEnergyCompanyLookup yukonUserEnergyCompanyLookup;
 
     private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
-    private ArrayList<LiteYukonPAObject> allYukonPAObjects = null;
+    private List<LiteYukonPAObject> allYukonPAObjects = null;
     // private ArrayList allPoints = null;
-    private ArrayList<LitePoint> allSystemPoints = null;
+    private List<LitePoint> allSystemPoints = null;
     private List<LiteNotificationGroup> allNotificationGroups = null;
 
-    private ArrayList<LiteAlarmCategory> allAlarmCategories = null;
-    private ArrayList<LiteGraphDefinition> allGraphDefinitions = null;
-    private ArrayList<LiteYukonPAObject> allMCTs = null;
-    private ArrayList<LiteHolidaySchedule> allHolidaySchedules = null;
-    private ArrayList<LiteBaseline> allBaselines = null;
-    private ArrayList<LiteConfig> allConfigs = null;
-    private ArrayList<LiteDeviceMeterNumber> allDeviceMeterGroups = null;
-    private ArrayList<LitePointLimit> allPointLimits = null;
-    private ArrayList<LiteYukonImage> allYukonImages = null;
+    private List<LiteAlarmCategory> allAlarmCategories = null;
+    private List<LiteGraphDefinition> allGraphDefinitions = null;
+    private List<LiteYukonPAObject> allMCTs = null;
+    private List<LiteHolidaySchedule> allHolidaySchedules = null;
+    private List<LiteBaseline> allBaselines = null;
+    private List<LiteConfig> allConfigs = null;
+    private List<LiteDeviceMeterNumber> allDeviceMeterGroups = null;
+    private List<LitePointLimit> allPointLimits = null;
+    private List<LiteYukonImage> allYukonImages = null;
     private volatile List<LiteCICustomer> allCICustomers = null;
-    private ArrayList<LiteLMConstraint> allLMProgramConstraints = null;
-    private ArrayList<LiteYukonPAObject> allLMScenarios = null;
-    private ArrayList<LiteLMProgScenario> allLMScenarioProgs = null;
-    private ArrayList<LiteLMPAOExclusion> allLMPAOExclusions = null;
+    private List<LiteLMConstraint> allLMProgramConstraints = null;
+    private List<LiteYukonPAObject> allLMScenarios = null;
+    private List<LiteLMProgScenario> allLMScenarioProgs = null;
+    private List<LiteLMPAOExclusion> allLMPAOExclusions = null;
 
-    private ArrayList<LiteTag> allTags = null;
+    private List<LiteTag> allTags = null;
 
-    private ArrayList<LiteSeasonSchedule> allSeasonSchedules = null;
-    private ArrayList<LiteTOUSchedule> allTOUSchedules = null;
-    private ArrayList<LiteTOUDay> allTOUDays = null;
+    private List<LiteSeasonSchedule> allSeasonSchedules = null;
+    private List<LiteTOUSchedule> allTOUSchedules = null;
+    private List<LiteTOUDay> allTOUDays = null;
 
-    private ArrayList<LiteYukonRole> allYukonRoles = null;
-    private ArrayList<LiteYukonRoleProperty> allYukonRoleProperties = null;
-    private ArrayList<LiteYukonGroup> allYukonGroups = null;
+    private List<LiteYukonRole> allYukonRoles = null;
+    private List<LiteYukonRoleProperty> allYukonRoleProperties = null;
+    private List<LiteYukonGroup> allYukonGroups = null;
 
     private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allYukonGroupRolePropertiesMap =
         null;
@@ -160,17 +160,17 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private volatile List<LiteEnergyCompany> allEnergyCompanies = null;
 
     // lists that are created by the joining/parsing of existing lists
-    private ArrayList<LiteYukonPAObject> allUnusedCCDevices = null; // PAO
-    private ArrayList<LiteYukonPAObject> allCapControlFeeders = null; // PAO
-    private ArrayList<LiteYukonPAObject> allCapControlSubBuses = null; // PAO
-    private ArrayList<LiteYukonPAObject> allCapControlSubStations = null; // PAO
-    private ArrayList<LiteYukonPAObject> allDevices = null; // PAO
-    private ArrayList<LiteYukonPAObject> allLMPrograms = null; // PAO
-    private ArrayList<LiteYukonPAObject> allLMControlAreas = null; // PAO
-    private ArrayList<LiteYukonPAObject> allLMGroups = null;// PAO
-    private ArrayList<LiteYukonPAObject> allLoadManagement = null; // PAO
-    private ArrayList<LiteYukonPAObject> allPorts = null; // PAO
-    private ArrayList<LiteYukonPAObject> allRoutes = null; // PAO
+    private List<LiteYukonPAObject> allUnusedCCDevices = null; // PAO
+    private List<LiteYukonPAObject> allCapControlFeeders = null; // PAO
+    private List<LiteYukonPAObject> allCapControlSubBuses = null; // PAO
+    private List<LiteYukonPAObject> allCapControlSubStations = null; // PAO
+    private List<LiteYukonPAObject> allDevices = null; // PAO
+    private List<LiteYukonPAObject> allLMPrograms = null; // PAO
+    private List<LiteYukonPAObject> allLMControlAreas = null; // PAO
+    private List<LiteYukonPAObject> allLMGroups = null;// PAO
+    private List<LiteYukonPAObject> allLoadManagement = null; // PAO
+    private List<LiteYukonPAObject> allPorts = null; // PAO
+    private List<LiteYukonPAObject> allRoutes = null; // PAO
 
     // Maps that are created by the joining/parsing of existing lists
     // private HashMap allPointidMultiplierHashMap = null;
@@ -188,8 +188,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         new ConcurrentHashMap<LiteYukonUser, LiteEnergyCompany>(1000, .75f, 30);
     private LiteEnergyCompany NULL_LITE_ENERGY_COMPANY = new LiteEnergyCompany(Integer.MIN_VALUE);
 
-    private ArrayList<LiteDeviceTypeCommand> allDeviceTypeCommands = null;
-    private ArrayList<LiteCommand> allCommands = null;
+    private List<LiteDeviceTypeCommand> allDeviceTypeCommands = null;
+    private List<LiteCommand> allCommands = null;
     private Map<Integer, LiteCommand> allCommandsMap = null;
     private Map<Integer, LiteStateGroup> allStateGroupMap = null;
     private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
@@ -199,15 +199,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private Map<MapKeyInts, String> userRolePropertyValueMap = null;
     private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
 
-    private YukonUserEnergyCompanyLookup yukonUserEnergyCompanyLookup;
-
-    public ServerDatabaseCache() {
-    }
-
-    protected ServerDatabaseCache(String databaseAlias) {
-        setDatabaseAlias(databaseAlias);
-    }
-
     @Override
     public synchronized DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType) {
         return newItem.getDBChangeMsgs(dbChangeType);
@@ -215,11 +206,10 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     @Override
     public synchronized List<LiteAlarmCategory> getAllAlarmCategories() {
-
         if (allAlarmCategories != null) {
             return allAlarmCategories;
         }
-        allAlarmCategories = new ArrayList<LiteAlarmCategory>();
+        allAlarmCategories = new ArrayList<>();
         AlarmCategoryLoader alarmStateLoader = new AlarmCategoryLoader(allAlarmCategories, databaseAlias);
         alarmStateLoader.run();
         return allAlarmCategories;
@@ -230,7 +220,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         if (allYukonImages != null) {
             return allYukonImages;
         }
-        allYukonImages = new ArrayList<LiteYukonImage>();
+        allYukonImages = new ArrayList<>();
         YukonImageLoader imageLoader = new YukonImageLoader(allYukonImages, databaseAlias);
         imageLoader.run();
         return allYukonImages;
@@ -239,7 +229,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllCapControlFeeders() {
         if (allCapControlFeeders == null) {
-            allCapControlFeeders = new ArrayList<LiteYukonPAObject>(getAllYukonPAObjects().size() / 2);
+            allCapControlFeeders = new ArrayList<>();
 
             for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
                 if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL
@@ -247,8 +237,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                     allCapControlFeeders.add(getAllYukonPAObjects().get(i));
                 }
             }
-
-            allCapControlFeeders.trimToSize();
         }
 
         return allCapControlFeeders;
@@ -257,16 +245,14 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllCapControlSubBuses() {
         if (allCapControlSubBuses == null) {
-            allCapControlSubBuses = new ArrayList<LiteYukonPAObject>(getAllYukonPAObjects().size() / 2);
+            allCapControlSubBuses = new ArrayList<>();
 
             for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_CAPCONTROL
-                    && getAllYukonPAObjects().get(i).getPaoType().getDeviceTypeId() == PAOGroups.CAP_CONTROL_SUBBUS) {
+                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL
+                    && getAllYukonPAObjects().get(i).getPaoType() == PaoType.CAP_CONTROL_SUBBUS) {
                     allCapControlSubBuses.add(getAllYukonPAObjects().get(i));
                 }
             }
-
-            allCapControlSubBuses.trimToSize();
         }
 
         return allCapControlSubBuses;
@@ -275,16 +261,14 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllCapControlSubStations() {
         if (allCapControlSubStations == null) {
-            allCapControlSubStations = new ArrayList<LiteYukonPAObject>(getAllYukonPAObjects().size() / 2);
+            allCapControlSubStations = new ArrayList<>();
 
             for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_CAPCONTROL
-                    && getAllYukonPAObjects().get(i).getPaoType().getDeviceTypeId() == PAOGroups.CAP_CONTROL_SUBSTATION) {
+                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL
+                    && getAllYukonPAObjects().get(i).getPaoType() == PaoType.CAP_CONTROL_SUBSTATION) {
                     allCapControlSubStations.add(getAllYukonPAObjects().get(i));
                 }
             }
-
-            allCapControlSubStations.trimToSize();
         }
 
         return allCapControlSubStations;
@@ -299,9 +283,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         allContactNotifsMap = new HashMap<Integer, LiteContactNotification>();
 
         ContactLoader contactLoader = new ContactLoader(allContactsMap, allContactNotifsMap, databaseAlias);
-
         contactLoader.run();
-        return;
     }
 
     /**
@@ -315,7 +297,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     public List<LiteCICustomer> getAllCICustomers() {
         List<LiteCICustomer> tempAllCICustomers = allCICustomers;
         if (tempAllCICustomers == null) {
-            tempAllCICustomers = new ArrayList<LiteCICustomer>();
+            tempAllCICustomers = new ArrayList<>();
             CICustomerLoader custLoader = new CICustomerLoader(tempAllCICustomers, databaseAlias);
             custLoader.run();
             allCICustomers = tempAllCICustomers;
@@ -329,9 +311,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allDeviceMeterGroups;
         }
 
-        allDeviceMeterGroups = new ArrayList<LiteDeviceMeterNumber>();
-        DeviceMeterGroupLoader deviceMeterGroupLoader =
-            new DeviceMeterGroupLoader(allDeviceMeterGroups, databaseAlias);
+        allDeviceMeterGroups = new ArrayList<>();
+        DeviceMeterGroupLoader deviceMeterGroupLoader = new DeviceMeterGroupLoader(allDeviceMeterGroups, databaseAlias);
         deviceMeterGroupLoader.run();
         return allDeviceMeterGroups;
     }
@@ -339,15 +320,13 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllDevices() {
         if (allDevices == null) {
-            allDevices = new ArrayList<LiteYukonPAObject>(getAllYukonPAObjects().size());
+            allDevices = new ArrayList<>();
 
             for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_DEVICE) {
+                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.DEVICE) {
                     allDevices.add(getAllYukonPAObjects().get(i));
                 }
             }
-
-            allDevices.trimToSize();
         }
 
         return allDevices;
@@ -356,15 +335,13 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllMCTs() {
         if (allMCTs == null) {
-            allMCTs = new ArrayList<LiteYukonPAObject>(getAllDevices().size() / 2);
+            allMCTs = new ArrayList<>();
 
             for (int i = 0; i < getAllDevices().size(); i++) {
                 if (DeviceTypesFuncs.isMCT(getAllDevices().get(i).getPaoType().getDeviceTypeId())) {
                     allMCTs.add(getAllDevices().get(i));
                 }
             }
-
-            allMCTs.trimToSize();
         }
 
         return allMCTs;
@@ -376,7 +353,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allGraphDefinitions;
         }
 
-        allGraphDefinitions = new ArrayList<LiteGraphDefinition>();
+        allGraphDefinitions = new ArrayList<>();
         GraphDefinitionLoader graphDefinitionLoader = new GraphDefinitionLoader(allGraphDefinitions, databaseAlias);
         graphDefinitionLoader.run();
         return allGraphDefinitions;
@@ -388,7 +365,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allHolidaySchedules;
         }
 
-        allHolidaySchedules = new ArrayList<LiteHolidaySchedule>();
+        allHolidaySchedules = new ArrayList<>();
         HolidayScheduleLoader holidayScheduleLoader = new HolidayScheduleLoader(allHolidaySchedules, databaseAlias);
         holidayScheduleLoader.run();
         return allHolidaySchedules;
@@ -400,7 +377,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allBaselines;
         }
 
-        allBaselines = new ArrayList<LiteBaseline>();
+        allBaselines = new ArrayList<>();
         BaselineLoader baselineLoader = new BaselineLoader(allBaselines, databaseAlias);
         baselineLoader.run();
         return allBaselines;
@@ -412,7 +389,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allSeasonSchedules;
         }
 
-        allSeasonSchedules = new ArrayList<LiteSeasonSchedule>();
+        allSeasonSchedules = new ArrayList<>();
         SeasonScheduleLoader seasonLoader = new SeasonScheduleLoader(allSeasonSchedules, databaseAlias);
         seasonLoader.run();
         return allSeasonSchedules;
@@ -424,7 +401,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allTOUSchedules;
         }
 
-        allTOUSchedules = new ArrayList<LiteTOUSchedule>();
+        allTOUSchedules = new ArrayList<>();
         TOUScheduleLoader touLoader = new TOUScheduleLoader(allTOUSchedules, databaseAlias);
         touLoader.run();
         return allTOUSchedules;
@@ -436,7 +413,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allTOUDays;
         }
 
-        allTOUDays = new ArrayList<LiteTOUDay>();
+        allTOUDays = new ArrayList<>();
         TOUDayLoader dayLoader = new TOUDayLoader(allTOUDays, databaseAlias);
         dayLoader.run();
         return allTOUDays;
@@ -444,7 +421,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     @Override
     public List<LiteGear> getAllGears() {
-        List<LiteGear> allGears = new ArrayList<LiteGear>();
+        List<LiteGear> allGears = new ArrayList<>();
         GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
         gearLoader.run();
         return allGears;
@@ -453,8 +430,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteCommand> getAllCommands() {
         if (allCommands == null) {
-            allCommands = new ArrayList<LiteCommand>();
-            allCommandsMap = new HashMap<Integer, LiteCommand>();
+            allCommands = new ArrayList<>();
+            allCommandsMap = new HashMap<>();
             CommandLoader commandLoader = new CommandLoader(allCommands, allCommandsMap, databaseAlias);
             commandLoader.run();
         }
@@ -479,7 +456,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allConfigs;
         }
 
-        allConfigs = new ArrayList<LiteConfig>();
+        allConfigs = new ArrayList<>();
         ConfigLoader configLoader = new ConfigLoader(allConfigs, databaseAlias);
         configLoader.run();
         return allConfigs;
@@ -492,7 +469,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allLMProgramConstraints;
         }
 
-        allLMProgramConstraints = new ArrayList<LiteLMConstraint>();
+        allLMProgramConstraints = new ArrayList<>();
         LMConstraintLoader lmConstraintsLoader = new LMConstraintLoader(allLMProgramConstraints, databaseAlias);
         lmConstraintsLoader.run();
         return allLMProgramConstraints;
@@ -501,7 +478,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteLMProgScenario> getAllLMScenarioProgs() {
         if (allLMScenarioProgs == null) {
-            allLMScenarioProgs = new ArrayList<LiteLMProgScenario>();
+            allLMScenarioProgs = new ArrayList<>();
             LMScenarioProgramLoader ldr = new LMScenarioProgramLoader(allLMScenarioProgs, databaseAlias);
             ldr.run();
         }
@@ -512,15 +489,13 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllLMScenarios() {
         if (allLMScenarios == null) {
-            allLMScenarios = new ArrayList<LiteYukonPAObject>(getAllYukonPAObjects().size() / 2);
+            allLMScenarios = new ArrayList<>();
 
             for (int i = 0; i < getAllLoadManagement().size(); i++) {
-                if (getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_SCENARIO) {
+                if (getAllLoadManagement().get(i).getPaoType() == PaoType.LM_SCENARIO) {
                     allLMScenarios.add(getAllLoadManagement().get(i));
                 }
             }
-
-            allLMScenarios.trimToSize();
         }
 
         return allLMScenarios;
@@ -529,7 +504,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteLMPAOExclusion> getAllLMPAOExclusions() {
         if (allLMPAOExclusions == null) {
-            allLMPAOExclusions = new ArrayList<LiteLMPAOExclusion>();
+            allLMPAOExclusions = new ArrayList<>();
             LMPAOExclusionLoader ldr = new LMPAOExclusionLoader(allLMPAOExclusions, databaseAlias);
             ldr.run();
         }
@@ -541,36 +516,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     public synchronized List<LiteYukonPAObject> getAllLMPrograms() {
         if (allLMPrograms == null) {
             // List allDevices = getAllLoadManagement();
-            allLMPrograms = new ArrayList<LiteYukonPAObject>(getAllLoadManagement().size() / 2);
+            allLMPrograms = new ArrayList<>();
 
             for (int i = 0; i < getAllLoadManagement().size(); i++) {
-                if (getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_CURTAIL_PROGRAM
-                    || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_DIRECT_PROGRAM
-                    || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_SEP_PROGRAM
-                    || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM) {
+                if (getAllLoadManagement().get(i).getPaoType() == PaoType.LM_CURTAIL_PROGRAM
+                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_DIRECT_PROGRAM
+                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_SEP_PROGRAM
+                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_ENERGY_EXCHANGE_PROGRAM) {
                     allLMPrograms.add(getAllLoadManagement().get(i));
                 }
             }
-
-            allLMPrograms.trimToSize();
-        }
-        return allLMPrograms;
-    }
-
-    @Override
-    public synchronized List<LiteYukonPAObject> getAllLMDirectPrograms() {
-        if (allLMPrograms == null) {
-            // List allDevices = getAllLoadManagement();
-            allLMPrograms = new ArrayList<LiteYukonPAObject>(getAllLoadManagement().size() / 2);
-
-            for (int i = 0; i < getAllLoadManagement().size(); i++) {
-                if (getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_DIRECT_PROGRAM
-                    || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_SEP_PROGRAM) {
-                    allLMPrograms.add(getAllLoadManagement().get(i));
-                }
-            }
-
-            allLMPrograms.trimToSize();
         }
         return allLMPrograms;
     }
@@ -578,15 +533,13 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public List<LiteYukonPAObject> getAllLMControlAreas() {
         if (allLMControlAreas == null) {
-            allLMControlAreas = new ArrayList<LiteYukonPAObject>(getAllLoadManagement().size() / 2);
+            allLMControlAreas = new ArrayList<>();
 
             for (int i = 0; i < getAllLoadManagement().size(); i++) {
-                if (getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_CONTROL_AREA) {
+                if (getAllLoadManagement().get(i).getPaoType() == PaoType.LM_CONTROL_AREA) {
                     allLMControlAreas.add(getAllLoadManagement().get(i));
                 }
             }
-
-            allLMControlAreas.trimToSize();
         }
         return allLMControlAreas;
     }
@@ -594,15 +547,13 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public List<LiteYukonPAObject> getAllLMGroups() {
         if (allLMGroups == null) {
-            allLMGroups = new ArrayList<LiteYukonPAObject>(getAllLoadManagement().size() / 2);
+            allLMGroups = new ArrayList<>();
 
             for (int i = 0; i < getAllLoadManagement().size(); i++) {
                 if (DeviceTypesFuncs.isLmGroup(getAllLoadManagement().get(i).getPaoType().getDeviceTypeId())) {
                     allLMGroups.add(getAllLoadManagement().get(i));
                 }
             }
-
-            allLMGroups.trimToSize();
         }
         return allLMGroups;
     }
@@ -610,7 +561,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllLoadManagement() {
         if (allLoadManagement == null) {
-            allLoadManagement = new ArrayList<LiteYukonPAObject>(getAllYukonPAObjects().size() / 2);
+            allLoadManagement = new ArrayList<>();
 
             for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
                 if (getAllYukonPAObjects().get(i).getPaoType().getPaoClass().getPaoClassId() == DeviceClasses.LOADMANAGEMENT
@@ -618,8 +569,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                     allLoadManagement.add(getAllYukonPAObjects().get(i));
                 }
             }
-
-            allLoadManagement.trimToSize();
         }
 
         return allLoadManagement;
@@ -631,7 +580,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allNotificationGroups;
         }
 
-        allNotificationGroups = new ArrayList<LiteNotificationGroup>();
+        allNotificationGroups = new ArrayList<>();
         ContactNotificationGroupLoader notifLoader =
             new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias);
         notifLoader.run();
@@ -642,7 +591,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     @Override
     public synchronized List<LiteNotificationGroup> getAllContactNotificationGroupsWithNone() {
-        List<LiteNotificationGroup> notifGroup = new ArrayList<LiteNotificationGroup>();
+        List<LiteNotificationGroup> notifGroup = new ArrayList<>();
 
         LiteNotificationGroup noneGroup = new LiteNotificationGroup(PointAlarming.NONE_NOTIFICATIONID);
         noneGroup.setNotificationGroupName("(none)");
@@ -659,7 +608,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allSystemPoints;
         }
 
-        allSystemPoints = new ArrayList<LitePoint>();
+        allSystemPoints = new ArrayList<>();
         // allPointsMap = new HashMap();
         SystemPointLoader systemPointLoader = new SystemPointLoader(allSystemPoints, databaseAlias);
         systemPointLoader.run();
@@ -690,7 +639,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allPointLimits;
         }
 
-        allPointLimits = new ArrayList<LitePointLimit>();
+        allPointLimits = new ArrayList<>();
         PointLimitLoader pointLimitLoader = new PointLimitLoader(allPointLimits, databaseAlias);
         pointLimitLoader.run();
         return allPointLimits;
@@ -699,16 +648,15 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllPorts() {
         if (allPorts == null) {
-            allPorts = new ArrayList<LiteYukonPAObject>(getAllYukonPAObjects().size() / 2);
+            allPorts = new ArrayList<>();
 
             for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_PORT
+                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.PORT
                     || getAllYukonPAObjects().get(i).getPaoType() == PaoType.RF_DA) {
 
                     allPorts.add(getAllYukonPAObjects().get(i));
                 }
             }
-            allPorts.trimToSize();
         }
         return allPorts;
     }
@@ -716,15 +664,13 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllRoutes() {
         if (allRoutes == null) {
-            allRoutes = new ArrayList<LiteYukonPAObject>(getAllYukonPAObjects().size() / 100);
+            allRoutes = new ArrayList<>();
 
             for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_ROUTE) {
+                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.ROUTE) {
                     allRoutes.add(getAllYukonPAObjects().get(i));
                 }
             }
-
-            allRoutes.trimToSize();
         }
 
         return allRoutes;
@@ -745,7 +691,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteTag> getAllTags() {
         if (allTags == null) {
-            allTags = new ArrayList<LiteTag>();
+            allTags = new ArrayList<>();
             TagLoader tagLoader = new TagLoader(allTags, databaseAlias);
             tagLoader.run();
             return allTags;
@@ -773,7 +719,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         Connection conn = null;
         Statement stmt = null;
         ResultSet rset = null;
-        allUnusedCCDevices = new ArrayList<LiteYukonPAObject>(32);
+        allUnusedCCDevices = new ArrayList<>(32);
 
         try {
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
@@ -781,7 +727,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             rset = stmt.executeQuery(sqlString);
 
             while (rset.next()) {
-
                 int paoID = rset.getInt(1);
                 LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoID);
 
@@ -817,7 +762,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allYukonPAObjects;
         }
 
-        allYukonPAObjects = new ArrayList<LiteYukonPAObject>();
+        allYukonPAObjects = new ArrayList<>();
         allPAOsMap = new HashMap<Integer, LiteYukonPAObject>();
         YukonPAOLoader yukLoader = new YukonPAOLoader(allYukonPAObjects, allPAOsMap);
         yukLoader.run();
@@ -828,7 +773,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonGroup> getAllYukonGroups() {
         if (allYukonGroups == null) {
-            allYukonGroups = new ArrayList<LiteYukonGroup>();
+            allYukonGroups = new ArrayList<>();
             YukonGroupLoader l = new YukonGroupLoader(allYukonGroups, databaseAlias);
             l.run();
         }
@@ -838,7 +783,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonRole> getAllYukonRoles() {
         if (allYukonRoles == null) {
-            allYukonRoles = new ArrayList<LiteYukonRole>();
+            allYukonRoles = new ArrayList<>();
             YukonRoleLoader l = new YukonRoleLoader(allYukonRoles, databaseAlias);
             l.run();
         }
@@ -848,7 +793,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonRoleProperty> getAllYukonRoleProperties() {
         if (allYukonRoleProperties == null) {
-            allYukonRoleProperties = new ArrayList<LiteYukonRoleProperty>();
+            allYukonRoleProperties = new ArrayList<>();
             final YukonRolePropertyLoader l = new YukonRolePropertyLoader(allYukonRoleProperties, databaseAlias);
             l.run();
         }
@@ -873,7 +818,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     public List<LiteEnergyCompany> getAllEnergyCompanies() {
         List<LiteEnergyCompany> ec = allEnergyCompanies;
         if (ec == null) {
-            ec = new ArrayList<LiteEnergyCompany>();
+            ec = new ArrayList<>();
             EnergyCompanyLoader l = new EnergyCompanyLoader(ec, databaseAlias);
             l.run();
             allEnergyCompanies = ec;
@@ -888,9 +833,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allDeviceTypeCommands;
         }
 
-        allDeviceTypeCommands = new ArrayList<LiteDeviceTypeCommand>();
-        DeviceTypeCommandLoader devTypeCmdLoader =
-            new DeviceTypeCommandLoader(allDeviceTypeCommands, databaseAlias);
+        allDeviceTypeCommands = new ArrayList<>();
+        DeviceTypeCommandLoader devTypeCmdLoader = new DeviceTypeCommandLoader(allDeviceTypeCommands, databaseAlias);
         devTypeCmdLoader.run();
         return allDeviceTypeCommands;
     }
@@ -1113,7 +1057,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             } else if (dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_ROUTE)) {
                 allRoutes = null;
             }
-
         } else if (database == DBChangeMsg.CHANGE_STATE_GROUP_DB) {
             retLBase = handleStateGroupChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB) {
@@ -1172,7 +1115,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 allEnergyCompanies = null;
                 userEnergyCompanyCache.clear();
             }
-
         } else if (database == DBChangeMsg.CHANGE_YUKON_USER_DB) {
             if (DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(dbCategory)) {
                 retLBase = handleYukonGroupChange(dbChangeType, id);
@@ -2230,11 +2172,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         allDeviceTypeCommands = null;
     }
 
-    @Override
-    public synchronized void setDatabaseAlias(String newAlias) {
-        databaseAlias = newAlias;
-    }
-
     /*
      * This method takes a userid and a roleid. It checks userRoleMap to see
      * if this role has been recovered from the db before. If it has not, it will
@@ -2453,20 +2390,5 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
         return DeviceCommPortLoader.getDevicesByDeviceAddress(masterAddress, slaveAddress);
 
-    }
-
-    @Required
-    public void setYukonUserEnergyCompanyLookup(YukonUserEnergyCompanyLookup yukonUserEnergyCompanyLookup) {
-        this.yukonUserEnergyCompanyLookup = yukonUserEnergyCompanyLookup;
-    }
-
-    @Required
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    @Required
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
 }

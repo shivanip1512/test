@@ -8,6 +8,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
+@SuppressWarnings("deprecation")
 public enum PaoCategory implements DatabaseRepresentationSource {
     DEVICE(PAOGroups.STRING_CAT_DEVICE, PAOGroups.CAT_DEVICE),
     ROUTE(PAOGroups.STRING_CAT_ROUTE, PAOGroups.CAT_ROUTE),
@@ -117,5 +118,4 @@ public enum PaoCategory implements DatabaseRepresentationSource {
         }
         return str;
     }
-
 }

@@ -192,9 +192,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
 
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
-    public CustomerAccount getByAccountNumber(final String accountNumber, 
-                                              List<? extends YukonEnergyCompany> energyCompanies) {
-        List<Integer> energyCompanyIds = Lists.transform(energyCompanies, YukonEnergyCompanyService.TO_ID_FUNCTION);
+    public CustomerAccount getByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies) {
+        Iterable<Integer> energyCompanyIds = Iterables.transform(energyCompanies, YukonEnergyCompanyService.TO_ID_FUNCTION);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ca.AccountId,AccountSiteId,AccountNumber,ca.CustomerId,BillingAddressId,AccountNotes");
