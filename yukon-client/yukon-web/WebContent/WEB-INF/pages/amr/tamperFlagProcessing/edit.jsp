@@ -68,7 +68,7 @@
                                                     fieldValue="${deviceGroupName}" 
                                                   dataJson="${groupDataJson}"
                                                   linkGroupName="true"/>
-                                                        
+                    <cti:msg2 var="deviceGroupText" key=".label.deviceGroup"/>
                     <tags:helpInfoPopup title="${deviceGroupText}">
                         <cti:msg2 key="yukon.web.modules.amr.tamperFlagEditor.popupInfo.deviceGroup"/>
                     </tags:helpInfoPopup>

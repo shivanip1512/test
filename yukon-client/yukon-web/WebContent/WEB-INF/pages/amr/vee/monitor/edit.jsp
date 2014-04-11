@@ -61,7 +61,7 @@
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
                     <tags:deviceGroupNameSelector fieldName="deviceGroupName" fieldValue="${deviceGroupName}" dataJson="${groupDataJson}" linkGroupName="true"/>
                     <cti:msg2 key=".deviceGroup" var="popupTitle"/>
-                    <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover"><i:inline key=".deviceGroup.helpText" /></tags:helpInfoPopup>
+                    <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover" width="600"><i:inline key=".deviceGroup.helpText" /></tags:helpInfoPopup>
                 </tags:nameValue2>
                 
                 <%-- threshold --%>
@@ -69,14 +69,14 @@
                     <div>
                         <input type="text" name="threshold" class="validation-value" value="${threshold}"><span><i:inline key=".thresholdUnits"/></span> 
                         <cti:msg2 key=".threshold" var="popupTitle"/>
-                        <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover"><i:inline key=".threshold.helpText"/></tags:helpInfoPopup>
+                        <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover" width="600"><i:inline key=".threshold.helpText"/></tags:helpInfoPopup>
                     </div>
                     <div>
                         <cti:msg2 key=".rereadThreshold" var="rereadThresholdText"/>
                         <label>
                             <input type="checkbox" name="reread" class="validation-value" <c:if test="${reread}">checked</c:if>><span>${rereadThresholdText}</span>
                         </label> 
-                        <tags:helpInfoPopup title="${rereadThresholdText}" classes="show-on-hover"><i:inline key=".rereadThreshold.helpText"/></tags:helpInfoPopup>
+                        <tags:helpInfoPopup title="${rereadThresholdText}" classes="show-on-hover" width="600"><i:inline key=".rereadThreshold.helpText"/></tags:helpInfoPopup>
                     </div>
                 </tags:nameValue2>
                 
@@ -84,7 +84,7 @@
                 <tags:nameValue2 nameKey=".slopeError">
                     <input type="text" name="slopeError" class="validation-value" value="${slopeError}"><span><i:inline key=".slopeErrorUnits"/></span>
                     <cti:msg2 key=".slopeError" var="popupTitle"/>
-                    <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover"><i:inline key=".slopeError.helpText"/></tags:helpInfoPopup>
+                    <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover" width="600"><i:inline key=".slopeError.helpText"/></tags:helpInfoPopup>
                 </tags:nameValue2>
                 
                 <%-- peak height minimum --%>
@@ -92,7 +92,7 @@
                     <div>
                         <input type="text" name="peakHeightMinimum" class="validation-value" value="${peakHeightMinimum}"><span><i:inline key=".peakHeightMinimumUnits"/></span>
                         <cti:msg2 key=".peakHeightMinimum" var="popupTitle"/>
-                        <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover"><i:inline key=".peakHeightMinimum.helpText"/></tags:helpInfoPopup>
+                        <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover" width="600"><i:inline key=".peakHeightMinimum.helpText"/></tags:helpInfoPopup>
                     </div>
                     <div>
                         <label>
@@ -100,7 +100,7 @@
                             <i:inline key=".setQuestionable"/>
                         </label>
                         <cti:msg2 key=".setQuestionable" var="popupTitle"/>
-                        <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover"><i:inline key=".setQuestionable.helpText"/></tags:helpInfoPopup>
+                        <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover" width="600"><i:inline key=".setQuestionable.helpText"/></tags:helpInfoPopup>
                     </div>        
                 </tags:nameValue2>
                 

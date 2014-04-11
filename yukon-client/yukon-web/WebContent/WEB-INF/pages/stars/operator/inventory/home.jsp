@@ -101,7 +101,8 @@ function showFileUpload() {
                             <%-- INVENTORY PICKER--%>
                             <tr>
                                 <td>
-                                    <form id="selectByInventoryPickerForm" action="/stars/operator/inventory/inventoryActions" method="post">
+                                    <cti:url value="/stars/operator/inventory/inventoryActions" var="inventoryPickerUrl"/>
+                                    <form id="selectByInventoryPickerForm" action="${inventoryPickerUrl}" method="post">
                                         <cti:csrfToken/>
                                         <input type="hidden" name="collectionType" value="idList"/>
                                         <input type="hidden" name="idList.ids" id="inventoryIds"/>

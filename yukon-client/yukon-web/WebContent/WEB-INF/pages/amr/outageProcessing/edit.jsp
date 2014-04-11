@@ -7,6 +7,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="amr" page="outageMonitorConfig.${mode}">
+
     
     <script type="text/javascript">
     
@@ -87,8 +88,8 @@
                                                     fieldValue="${deviceGroupName}" 
                                                   dataJson="${groupDataJson}"
                                                   linkGroupName="true"/>
-                                                        
-                    <tags:helpInfoPopup title="${deviceGroupText}">
+                    <cti:msg2 var="deviceGroupText" key=".label.deviceGroup"/>
+                    <tags:helpInfoPopup title="${deviceGroupText}" >
                         <cti:msg2 key=".popupInfo.deviceGroup"/>
                     </tags:helpInfoPopup>
                     
@@ -96,7 +97,7 @@
             
                 <%-- outages group --%>
                 <tags:nameValue2 nameKey=".label.outagesGroup">
-                    <div id="outageGroupNameDiv">${fn:escapeXml(outageGroupBase)}${fn:escapeXml(name)}</div>            
+                    <div id="outageGroupNameDiv">${fn:escapeXml(outageGroupBase)}${fn:escapeXml(name)}</div>
                 </tags:nameValue2>
             
                 <%-- number of outages --%>
@@ -104,7 +105,7 @@
                     
                     <input type="text" name="numberOfOutages" maxlength="3" size="3" style="text-align:right;" value="${numberOfOutages}"> 
                     <i:inline key=".label.numberOfOutagesOutages"/>
-                    
+                    <cti:msg2 var="numberOfOutagesText" key=".label.numberOfOutages"/>
                     <tags:helpInfoPopup title="${numberOfOutagesText}">
                         <cti:msg2 key=".popupInfo.numberOfOutages"/>
                     </tags:helpInfoPopup>
@@ -116,7 +117,7 @@
                         
                     <input type="text" name="timePeriod" maxlength="3" size="3" style="text-align:right;" value="${timePeriod}">
                     <i:inline key=".label.timePeriodDays"/>
-                    
+                    <cti:msg2 var="timePeriodText" key=".label.timePeriod"/>
                     <tags:helpInfoPopup title="${timePeriodText}">
                         <cti:msg2 key=".popupInfo.timePeriod"/>
                     </tags:helpInfoPopup>

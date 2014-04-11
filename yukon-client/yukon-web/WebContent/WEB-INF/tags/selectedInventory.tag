@@ -1,13 +1,13 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<%@ attribute name="id" required="true" type="java.lang.String"%>
-<%@ attribute name="inventoryCollection" required="true" type="java.lang.Object"%>
-
-<cti:includeScript link="/JavaScript/yukon.device.collection.js"/>
+<%@ attribute name="id" required="true" type="java.lang.String" %>
+<%@ attribute name="inventoryCollection" required="true" type="java.lang.Object" %>
 
 <c:set value="${inventoryCollection.count}" var="count"/>
 
@@ -20,8 +20,7 @@
     </cti:url>
 
     <cti:msg2 var="popupTitle" key="yukon.common.collection.inventory.selectedInventoryPopup.popupTitle"/>
-    <div title="${popupTitle}" id="${id}" class="dn"></div>
-    
+    <div id="${id}" data-title="${popupTitle}" data-width="450" data-height="300" data-url="${selectedInventoryTableUrl}" class="dn"></div>
 </c:if>
 
 <span class="strong-label-small">
@@ -32,7 +31,7 @@
     <c:if test="${count > 0}">
         <div class="dib">
             <cti:msg2 var="magTitle" key="yukon.common.collection.inventory.selectedInventoryPopup.magnifierTitle"/>
-            <a href="javascript:void(0);" title="${magTitle}" class="f-showSelectedInventory dib" data-function-arguments="{'id':'${id}', 'url':'${selectedInventoryTableUrl}'}"><i class="icon icon-magnifier"></i></a>
+            <a href="javascript:void(0);" title="${magTitle}" class="dib" popup="#${id}"><i class="icon icon-magnifier"></i></a>
         </div>
     </c:if>
 </span>

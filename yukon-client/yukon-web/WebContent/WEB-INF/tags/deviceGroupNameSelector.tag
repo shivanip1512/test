@@ -16,8 +16,6 @@
 <%@ attribute name="showSelectedDevicesIcon" %>
 <%@ attribute name="submitCallback" description="optional additional function to call when group is picked" %>
 
-<cti:includeScript link="/JavaScript/yukon.device.collection.js"/>
-
 <cti:uniqueIdentifier var="uniqueId" prefix="deviceGroupNameSelectorTag_"/>
 
 <c:if test="${empty pageScope.noGroupSelectedText}">
@@ -25,11 +23,11 @@
 </c:if>
 
 <c:if test="${empty pageScope.linkGroupName}">
-	<c:set var="linkGroupName" value="false"/>
+    <c:set var="linkGroupName" value="false"/>
 </c:if>
 
 <c:if test="${empty pageScope.showSelectedDevicesIcon}">
-	<c:set var="showSelectedDevicesIcon" value="true"/>
+    <c:set var="showSelectedDevicesIcon" value="true"/>
 </c:if>
 
 <cti:default var="fieldId" value="${fieldName}"/>
@@ -37,19 +35,21 @@
 <script>
     // ignores if present, creates if not
     yukon.namespace('yukon.ui.dialogs');
-    if ('undefined' === typeof yukon.ui.dialogs.${uniqueId}) {
+    if ('undefined' === typeof yukon.ui.dialogs['${uniqueId}']) {
         yukon.namespace('yukon.ui.dialogs.${uniqueId}');
     }
 
     $(document).on('click', '#viewSelectedDevices_${uniqueId}', function() {
-        var url = '<cti:url value="/bulk/selectedDevicesTableForGroupName"/>' + '?groupName=' + encodeURIComponent($(document.getElementById("${fieldId}")).val());
-        showSelectedDevices('#viewSelectedDevices_${uniqueId}', 'showSelectedDevices_${uniqueId}', url);
+        var url = yukon.url('/bulk/selectedDevicesTableForGroupName?groupName=' + encodeURIComponent($('#${fieldId}').val()));
+        $('#showSelectedDevices_${uniqueId}').load(url, function() {
+            $('#showSelectedDevices_${uniqueId}').dialog({width:450, height: 300});
+        });
     });
 
     $(document).on('click', '.deviceGroupLink_${uniqueId}', function() {
         // ugly? but we can't sumbit a real form since the tag will most likely appear within a form already.
         // this should be safe though, it is the same way that a redirecting ext tree works (ha).
-        var url = '<cti:url value="/group/editor/home"/>' + '?groupName=' + encodeURIComponent($(document.getElementById("${fieldId}")).val());
+        var url = yukon.url('/group/editor/home?groupName=' + encodeURIComponent($('#${fieldId}').val()));
         window.location.href = url;
     });
     
@@ -76,8 +76,8 @@
                 return maxHeight;
             };
 
-        if ('undefined' === typeof yukon.ui.dialogs.${uniqueId}.init) {
-            yukon.ui.dialogs.${uniqueId}.init = 'inited';
+        if ('undefined' === typeof yukon.ui.dialogs['${uniqueId}'].init) {
+            yukon.ui.dialogs['${uniqueId}'].init = 'inited';
         } else {
             // for some reason, this is called multiple times
             if (true === $('#window_selectGroupTree_${uniqueId}').dialog('isOpen')) {
@@ -94,10 +94,10 @@
             treeHelperPane = groupTreeObj.find('.tree_helper_controls');
             // Store the first value of the top offset of the dialog. Subsequent values vary
             // considerably and undermine the positioning logic
-            if ('undefined' === typeof yukon.ui.dialogs.${uniqueId}.offsetTop) {
-                yukon.ui.dialogs.${uniqueId}.offsetTop = offsetTop;
+            if ('undefined' === typeof yukon.ui.dialogs['${uniqueId}'].offsetTop) {
+                yukon.ui.dialogs['${uniqueId}'].offsetTop = offsetTop;
             } else {
-                offsetTop = yukon.ui.dialogs.${uniqueId}.offsetTop;
+                offsetTop = yukon.ui.dialogs['${uniqueId}'].offsetTop;
             }
             dialogHeight = window.windowHeight - offsetTop;
             // height set on dialog. when tree expanded
@@ -117,20 +117,20 @@
         }
     });
     
-	function setSelectedGroupName_${uniqueId}() {
-		<c:if test="${empty pageScope.fieldValue}">
-			$('#noGroupSelectedText_${uniqueId}').hide();
-		</c:if>
-		$('#deviceGroupName_${uniqueId}').html($(document.getElementById("${fieldId}")).val());
+    window['setSelectedGroupName_${uniqueId}'] = function() {
+        if ('${empty pageScope.fieldValue}' === 'true') {
+            $('#noGroupSelectedText_${uniqueId}').hide();
+        }
+        $('#deviceGroupName_${uniqueId}').html($(document.getElementById("${fieldId}")).val());
 
-		if (${pageScope.showSelectedDevicesIcon}) {
-			$('#viewDevicesIconSpan_${uniqueId}').show();
-		}
-		
-		if (${pageScope.linkGroupName}) {
-			$('.deviceGroupLink_${uniqueId}').show();
-		}
-	}
+        if ('${pageScope.showSelectedDevicesIcon}' === 'true') {
+            $('#viewDevicesIconSpan_${uniqueId}').show();
+        }
+        
+        if ('${pageScope.linkGroupName}' === 'true') {
+            $('.deviceGroupLink_${uniqueId}').show();
+        }
+    }
 
 </script>
 <div class="dib wsnw ${pageScope.classes}">
@@ -145,31 +145,31 @@
 </c:if>
 
 <c:choose>
-	<%-- PLAIN GROUP NAME --%>
-	<c:when test="${not pageScope.linkGroupName}">
+    <%-- PLAIN GROUP NAME --%>
+    <c:when test="${not pageScope.linkGroupName}">
         <a id="deviceGroupName_${uniqueId}" href="javascript:void(0);"
            title="${selectDeviceGroupChooseText}" 
            class="chooseGroupIcon_${uniqueId} fl simpleLink leftOfImageLabel">${pageScope.fieldValue}&nbsp;</a>
-	</c:when>
+    </c:when>
 
-	<%-- LINKED GROUP NAME --%>
-	<c:otherwise>
-		<a id="deviceGroupName_${uniqueId}" href="javascript:void(0);" 
+    <%-- LINKED GROUP NAME --%>
+    <c:otherwise>
+        <a id="deviceGroupName_${uniqueId}" href="javascript:void(0);" 
             class="deviceGroupLink_${uniqueId} fl leftOfImageLabel${linkCssClass}">${pageScope.fieldValue}&nbsp;</a>
-	</c:otherwise>
+    </c:otherwise>
 </c:choose>
 <%-- EDIT FOLDER --%>
 <a href="javascript:void(0);" title="${selectDeviceGroupChooseText}"
-	class="chooseGroupIcon_${uniqueId}"><i class="icon icon-folder-edit"></i></a>
+    class="chooseGroupIcon_${uniqueId}"><i class="icon icon-folder-edit"></i></a>
 
 <%-- MAGNIFIER ICON --%>
 <c:if test="${pageScope.showSelectedDevicesIcon}">
-	<cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
-	<cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
-	<span id="viewDevicesIconSpan_${uniqueId}" <c:if test="${empty pageScope.fieldValue}">style="display:none;"</c:if>>
-		<a id="viewSelectedDevices_${uniqueId}" href="javascript:void(0);" title="${popupTitle}" class="dib"><i class="icon icon-magnifier"></i></a>
-		<div id="showSelectedDevices_${uniqueId}" title="${popupTitle}" class="dn"></div>
-	</span>
+    <cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
+    <cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
+    <span id="viewDevicesIconSpan_${uniqueId}" <c:if test="${empty pageScope.fieldValue}">style="display:none;"</c:if>>
+        <a id="viewSelectedDevices_${uniqueId}" href="javascript:void(0);" title="${popupTitle}" class="dib"><i class="icon icon-magnifier"></i></a>
+        <div id="showSelectedDevices_${uniqueId}" title="${popupTitle}" class="dn"></div>
+    </span>
 </c:if>
 </div>
 

@@ -1,13 +1,13 @@
 <%@ tag trimDirectiveWhitespaces="true" %>
 
-<%@ attribute name="id" required="true"%>
-<%@ attribute name="on" description="Registers a click event on the element with this CSS selector to open the popup."%>
-<%@ attribute name="onClose"%>
-<%@ attribute name="options" description="JQUI dialog options. See http://api.jqueryui.com/dialog/"%>
-<%@ attribute name="showImmediately"%>
-<%@ attribute name="style"%>
-<%@ attribute name="styleClass"%>
-<%@ attribute name="title" required="true"%>
+<%@ attribute name="id" required="true" %>
+<%@ attribute name="on" description="Registers a click event on the element with this CSS selector to open the popup." %>
+<%@ attribute name="onClose" %>
+<%@ attribute name="options" description="JQUI dialog options. See http://api.jqueryui.com/dialog/" %>
+<%@ attribute name="showImmediately" %>
+<%@ attribute name="style" %>
+<%@ attribute name="styleClass" %>
+<%@ attribute name="title" required="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -17,7 +17,7 @@
 </div>
 <script type="text/javascript">
 var windowHeight = $(window).height(),
-position = {my: 'top', at: 'top+' + windowHeight/5 },
+position = {my: 'top', at: 'top+' + windowHeight / 5 },
 defaults = { width: 'auto', 
              autoOpen: false,
              title: '${cti:escapeJavaScript(title)}',

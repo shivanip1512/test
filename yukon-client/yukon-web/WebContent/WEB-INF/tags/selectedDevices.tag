@@ -8,14 +8,11 @@
 <%@ attribute name="deviceCollection" required="true" type="java.lang.Object"%>
 
 <c:set value="${deviceCollection.deviceCount}" var="deviceCount"/>
-<div class="note">
-    <div>
-        <strong><cti:msg2 key="yukon.common.device.bulk.selectedDevicesPopup.linkLabel"/>:&nbsp;&nbsp;</strong><cti:msg2 key="${deviceCollection.description}"/>
-        <c:if test="${deviceCount > 0}">
-            <tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/>
-        </c:if>
-    </div>
-    <div>
-        <strong><cti:msg2 key="yukon.common.device.bulk.selectedDevicesPopup.deviceCount"/>:&nbsp;&nbsp;</strong>${deviceCount}
-    </div>
+<div>
+    <strong><cti:msg2 key="yukon.common.device.bulk.selectedDevicesPopup.linkLabel"/>:</strong>&nbsp;
+    <span class="badge">${deviceCount}</span>&nbsp;
+    <cti:msg2 key="${deviceCollection.description}"/>
+    <c:if test="${deviceCount > 0}">
+        <tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/>
+    </c:if>
 </div>

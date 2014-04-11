@@ -7,29 +7,7 @@
 
 <cti:standardPage module="tools" page="configs">
 
-<script type="text/javascript">
-
-$(function() {
-    $('.f-deviceGroupBtn').click(function() {
-        var args = $(this).attr("data-function-arguments");
-        eval('args = ' + args);
-        showSelectedDevices(args.id, args.url);
-    });
-});
-
-function showSelectedDevices(divId, url) {
-    $.ajax({
-        url: url
-    }).done(function (transport, textStatus, jqXHR) {
-        $(document.getElementById(divId)).html(transport);
-        $(document.getElementById(divId)).dialog({width: "auto", height: 500});
-    });
-}
-
-</script>
-
-<cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
-<cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
+    <cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
 
     <%-- DEVICE CONFIGURATIONS --%>
     <div class="column-12-12">
@@ -60,16 +38,17 @@ function showSelectedDevices(divId, url) {
                                             <a href="${viewUrl}">${fn:escapeXml(config.name)}</a>
                                         </td>
                                         <td class="contextual-menu">
-                                            <c:url var="selectedDevicesTableUrl" value="/bulk/selectedDevicesTableForGroupName">
-                                                <c:set var="fullName" value="/System/Device Configs/${config.name}"/>
-                                                <c:param name="groupName" value="${fn:escapeXml(fullName)}"/>
-                                            </c:url>
-                                            <cti:uniqueIdentifier var="id" prefix="selectedDevicesPopup_"/>
-                                            
-                                            <a href="javascript:void(0);" title="${warning}" class="fl f-deviceGroupBtn" data-function-arguments="{'id':'${id}', 'url':'${selectedDevicesTableUrl}'}">${fn:escapeXml(config.numDevices)}</a>
-                                            
-                                            <!-- Device Group popup div -->
-                                            <div title="${popupTitle}" id="${id}" class="dn"></div>
+                                            <span class="fl">${fn:escapeXml(config.numDevices)}</span>
+                                            <c:if test="${config.numDevices > 0}">
+                                                <c:url var="deviceGroupPopupUrl" value="/bulk/selectedDevicesTableForGroupName">
+                                                    <c:set var="fullName" value="/System/Device Configs/${config.name}"/>
+                                                    <c:param name="groupName" value="${fn:escapeXml(fullName)}"/>
+                                                </c:url>
+                                                <cti:uniqueIdentifier var="deviceGroupPopupId" prefix="device-group-popup-"/>
+                                                <cti:icon icon="icon-magnifier" classes="cp show-on-hover" popup="#${deviceGroupPopupId}"/>
+                                                <%-- Device Group popup --%> 
+                                                <div id="${deviceGroupPopupId}" data-title="${popupTitle}" data-url="${deviceGroupPopupUrl}" data-width="450" data-height="300" class="dn"></div>
+                                            </c:if>
                                             
                                             <cm:dropdown triggerClasses="fr">
                                                 <cti:url var="groupUrl" value="/group/editor/home">

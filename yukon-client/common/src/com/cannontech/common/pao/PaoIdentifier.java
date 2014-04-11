@@ -5,6 +5,7 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.Validate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
@@ -33,6 +34,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
     }
 
     @Override
+    @JsonIgnore
     public PaoIdentifier getPaoIdentifier() {
         return this;
     }

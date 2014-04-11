@@ -48,6 +48,8 @@ public enum JsLibrary {
     HIGH_STOCK_EXPORTING("/resources/js/lib/highstock/modules/exporting.js"),
     HIGH_STOCK_NO_DATA("/resources/js/lib/highstock/modules/no-data-to-display.js"),
     
+    OPEN_LAYERS("/resources/js/lib/open-layers/ol.js"),
+    
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     
     YUKON("/JavaScript/yukon.js"),

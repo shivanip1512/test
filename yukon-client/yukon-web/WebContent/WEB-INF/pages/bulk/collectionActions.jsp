@@ -24,6 +24,8 @@
         <cti:msg var="headerReporting" key="yukon.common.device.bulk.collectionActions.header.reporting"/>
         <cti:msg var="deviceCollectionReportLabel" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel"/>
         <cti:msg var="deviceCollectionReportDescription" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription"/>
+        <cti:msg var="deviceCollectionMapLabel" key="yukon.common.device.bulk.collectionActions.deviceCollectionMapLabel"/>
+        <cti:msg var="deviceCollectionMapDescription" key="yukon.common.device.bulk.collectionActions.deviceCollectionMapDescription"/>
         <cti:msg var="dataAnalysisLabel" key="yukon.common.device.bulk.collectionActions.dataAnalysisLabel"/>
         <cti:msg var="dataAnalysisDiscription" key="yukon.common.device.bulk.collectionActions.dataAnalysisDiscription"/>
         <cti:msg var="archivedValueDataExporterLabel" key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel"/>
@@ -77,6 +79,7 @@
         <cti:url var="deviceCollectionReportUrl" value="/bulk/deviceCollectionReport"/>
         <cti:url var="dataAnalysisUrl" value="/bulk/archiveDataAnalysis/home/setup"/>
         <cti:url var="archivedValueDataExporterUrl" value="/tools/data-exporter/view"/>
+        <cti:url var="deviceCollectionMapUrl" value="/tools/map"/>
         
         <cti:url var="addPointsUrl" value="/bulk/addPoints/home"/>
         <cti:url var="updatePointsUrl" value="/bulk/updatePoints/home"/>
@@ -201,6 +204,10 @@
                             <tags:collectionActionTr buttonValue="${archivedValueDataExporterLabel}" description="${archivedValueDataExporterDescription}"
                                 action="${archivedValueDataExporterUrl}" deviceCollection="${deviceCollection}"/>
                         </cti:checkRolesAndProperties>
+                        
+                        <%-- MAP DEVICES --%>
+                        <tags:collectionActionTr buttonValue="${deviceCollectionMapLabel}" description="${deviceCollectionMapDescription}"
+                            action="${deviceCollectionMapUrl}" deviceCollection="${deviceCollection}"/>
                     </table>
                 </tags:sectionContainer>
             </cti:dataGridCell>

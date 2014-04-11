@@ -61,7 +61,7 @@ import com.google.common.collect.ImmutableList.Builder;
 
 @Controller
 public class LayoutController {
-	
+    
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private CommonModuleBuilder moduleBuilder;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -102,9 +102,9 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_SPECTRUM.getPath());
 
         //add the other standard libs
-    	builder.add(JsLibrary.YUKON.getPath());
-    	builder.add(JsLibrary.YUKON_ALERTS.getPath());
-    	builder.add(JsLibrary.YUKON_CONFIRM.getPath());
+        builder.add(JsLibrary.YUKON.getPath());
+        builder.add(JsLibrary.YUKON_ALERTS.getPath());
+        builder.add(JsLibrary.YUKON_CONFIRM.getPath());
         builder.add("/JavaScript/yukon.ui.util.js");
         builder.add("/JavaScript/yukon.data.updater.js");
         builder.add("/JavaScript/yukon.dropdown.js");
@@ -204,8 +204,8 @@ public class LayoutController {
         
         // setup menu
         if (skin.isLeftSideMenu()) {
-        	// handle new and old methods for specifying menu (but not both)
-        	boolean showNewMenu = false;
+            // handle new and old methods for specifying menu (but not both)
+            boolean showNewMenu = false;
             if (pageInfo != null) {
                 showNewMenu = pageInfo.isRenderMenu();
             }
@@ -226,47 +226,47 @@ public class LayoutController {
             }
             
             if (showMenu) {
-	            
-	        	final LeftSideMenuRenderer menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
-	            menuRenderer.setMenuSelection(menuSelection);
-	            // if bread crumbs were specified within the JSP, use them (old style)
-	            String breadCrumbs = tagInfo.getBreadCrumbs();
-	            if (breadCrumbs == null) {
-	                // otherwise get the from the PageDetail object (new style)
-	                breadCrumbs = pageDetail.getBreadCrumbText();
-	            }
-	            menuRenderer.setBreadCrumb(breadCrumbs);
-	            menuRenderer.setHomeUrl("/home");
-	            map.addAttribute("menuRenderer", new Writable() {
-	                @Override
-	                public void write(Writer out) throws IOException {
-	                    menuRenderer.renderMenu(out);
-	                }
-	            });
+                
+                final LeftSideMenuRenderer menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
+                menuRenderer.setMenuSelection(menuSelection);
+                // if bread crumbs were specified within the JSP, use them (old style)
+                String breadCrumbs = tagInfo.getBreadCrumbs();
+                if (breadCrumbs == null) {
+                    // otherwise get the from the PageDetail object (new style)
+                    breadCrumbs = pageDetail.getBreadCrumbText();
+                }
+                menuRenderer.setBreadCrumb(breadCrumbs);
+                menuRenderer.setHomeUrl("/home");
+                map.addAttribute("menuRenderer", new Writable() {
+                    @Override
+                    public void write(Writer out) throws IOException {
+                        menuRenderer.renderMenu(out);
+                    }
+                });
             }
         } else {
-        	map.addAttribute("menuRenderer", new Writable() {
+            map.addAttribute("menuRenderer", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {
                     try {
-						stdMenuRender.renderMenu(request, out);
-					} catch (JDOMException e) {
-						throw new IOException("Problem parsing menu_config.xml for menus.", e);
-					}
+                        stdMenuRender.renderMenu(request, out);
+                    } catch (JDOMException e) {
+                        throw new IOException("Problem parsing menu_config.xml for menus.", e);
+                    }
                 }
             });
-        	
-        	map.addAttribute("searchRenderer", new Writable() {
-        	    @Override
-                public void write(Writer out) throws IOException {
-        	        searchRenderer.render(moduleBase, request, out);
-                }
-        	});
-        	
-        	map.addAttribute("bcRenderer", new Writable() {
+            
+            map.addAttribute("searchRenderer", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {
-                	String breadCrumbs = tagInfo.getBreadCrumbs();
+                    searchRenderer.render(moduleBase, request, out);
+                }
+            });
+            
+            map.addAttribute("bcRenderer", new Writable() {
+                @Override
+                public void write(Writer out) throws IOException {
+                    String breadCrumbs = tagInfo.getBreadCrumbs();
                     if (breadCrumbs == null) {
                         /* Get the crumbs from the PageDetail object (new style) */
                         breadCrumbs = pageDetail.getBreadCrumbText();
@@ -290,7 +290,7 @@ public class LayoutController {
         map.addAttribute("energyCompanyName", energyCompanyName);
         map.addAttribute("username", username);
         
-    	map.addAttribute("displayName", buildDisplayName(userDao.getLiteContact(yukonUser.getLiteID()), yukonUser));
+        map.addAttribute("displayName", buildDisplayName(userDao.getLiteContact(yukonUser.getLiteID()), yukonUser));
         
         boolean showContextualNavigation = pageInfo != null && pageInfo.isShowContextualNavigation();
         map.addAttribute("showContextualNavigation", showContextualNavigation);
@@ -315,39 +315,39 @@ public class LayoutController {
     }
     
     private String buildDisplayName(LiteContact contact, LiteYukonUser user) {
-		if (contact == null) {
-			return user.getUsername();
-		} else if (StringUtils.isBlank(contact.getContFirstName()) && StringUtils.isBlank(contact.getContFirstName())) {
-			return user.getUsername();
-		} else if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE) && contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-			return user.getUsername();
-		}
-		if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE) || StringUtils.isBlank(contact.getContFirstName())) {
-			return user.getUsername();
-		} else {
-			String displayName = contact.getContFirstName();
-			if (!contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE) && !StringUtils.isBlank(contact.getContLastName())) {
-				displayName += " " + contact.getContLastName();
-			}
-			return displayName;
-		}
-	}
+        if (contact == null) {
+            return user.getUsername();
+        } else if (StringUtils.isBlank(contact.getContFirstName()) && StringUtils.isBlank(contact.getContFirstName())) {
+            return user.getUsername();
+        } else if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE) && contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+            return user.getUsername();
+        }
+        if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE) || StringUtils.isBlank(contact.getContFirstName())) {
+            return user.getUsername();
+        } else {
+            String displayName = contact.getContFirstName();
+            if (!contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE) && !StringUtils.isBlank(contact.getContLastName())) {
+                displayName += " " + contact.getContLastName();
+            }
+            return displayName;
+        }
+    }
 
-	@ModelAttribute("yukonVersion")
+    @ModelAttribute("yukonVersion")
     public String getYukonVersion() {
         return VersionTools.getYUKON_VERSION();
     }
-	
-	@ModelAttribute("showNM")
-	public boolean showNetworkManagerLink(ModelMap model, LiteYukonUser user) {
+    
+    @ModelAttribute("showNM")
+    public boolean showNetworkManagerLink(ModelMap model, LiteYukonUser user) {
 
-	    boolean showNM = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_NM_ACCESS, user);
-	    if (showNM) {
-	        String url = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_ADDRESS);
-	        model.addAttribute("nmUrl", url);
-	    }
+        boolean showNM = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_NM_ACCESS, user);
+        if (showNM) {
+            String url = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_ADDRESS);
+            model.addAttribute("nmUrl", url);
+        }
         return showNM;
-	}
+    }
     
     @ModelAttribute("buildInfo")
     public String getYukonBuild() {

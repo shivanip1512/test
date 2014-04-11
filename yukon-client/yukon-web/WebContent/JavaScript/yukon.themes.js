@@ -266,6 +266,4 @@ yukon.themes = (function () {
     return mod;
 })();
 
-$(function () {
-    yukon.themes.init($('#button-keys').data('buttonKeys'));
-});
+$(function() { yukon.themes.init($('#button-keys').data('buttonKeys')); });

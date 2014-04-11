@@ -13,12 +13,10 @@
 <cti:default var="icon" value="icon-magnifier"/>
 <cti:default var="type" value="link"/>
 
-<cti:includeScript link="/JavaScript/yukon.device.collection.js"/>
-
-<cti:uniqueIdentifier var="id" prefix="selectedDevicesPopup_"/>
+<cti:uniqueIdentifier var="id" prefix="selected-devices-popup-"/>
 
 <cti:msg2 var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle"/>
-<cti:msg2 var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning"/>
+<cti:msg2 var="targetTitle" key="yukon.common.device.bulk.selectedDevicesPopup.warning"/>
 
 <%-- CREATE URL --%>
 <c:choose>
@@ -43,19 +41,10 @@
 
 <c:choose>
     <c:when test="${type == 'link'}">
-        <a href="javascript:void(0);" 
-            title="${warning}" 
-            class="f-showSelectedDevices dib" 
-            data-function-arguments="{'id':'${id}', 'url':'${selectedDevicesTableUrl}'}">
-            <cti:icon icon="${icon}"/>
-        </a>
+        <cti:icon icon="${icon}" popup="#${id}" classes="cp fn" title="${targetTitle}" style="margin-bottom: -3px;"/>
     </c:when>
     <c:otherwise>
-        <cti:button renderMode="buttonImage" 
-            icon="${icon}"
-            title="${warning}"
-            classes="f-showSelectedDevices dib" 
-            data-function-arguments="{'id':'${id}', 'url':'${selectedDevicesTableUrl}'}"/>
+        <cti:button renderMode="buttonImage" icon="${icon}" title="${targetTitle}" popup="#${id}"/>
     </c:otherwise>
 </c:choose>
-<div title="${popupTitle}" id="${id}" class="dn"></div>
+<div data-title="${popupTitle}" id="${id}" class="dn" data-url="${selectedDevicesTableUrl}" data-width="450" data-height="300"></div>

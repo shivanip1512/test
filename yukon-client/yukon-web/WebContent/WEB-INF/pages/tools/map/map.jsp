@@ -6,6 +6,29 @@
 
 <cti:standardPage module="tools" page="map">
 
-<div id="map"></div>
+<style>
+.map {
+  height: 600px;
+  width: 100%;
+  border: 1px solid #bbb;
+  box-shadow: 0px 0px 5px #ddd;
+}
+</style>
 
+    <div class="stacked clearfix">
+        <div class="column-12-12">
+            <div class="column one">
+                <tags:selectedDevices deviceCollection="${collection}" id="selectedDevices"/>
+            </div>
+            <div class="column two nogutter">
+            </div>
+        </div>
+    </div>
+
+    <div id="map" class="clearfix map f-focus" tabindex="0"></div>
+    <cti:toJson id="locations" object="${locations}"/>
+
+    <cti:includeScript link="OPEN_LAYERS"/>
+    <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
+    <cti:includeScript link="/JavaScript/yukon.collection.map.js"/>
 </cti:standardPage>
