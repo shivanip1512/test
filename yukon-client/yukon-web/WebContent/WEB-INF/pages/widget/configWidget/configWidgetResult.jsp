@@ -4,6 +4,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
+<cti:msg var="failureResult" key="yukon.common.device.bulk.verifyConfigResults.failureResult"/>
+
 <c:choose>
     <c:when test="${verifyResult != null}">
         <tags:nameValueContainer2>
@@ -13,7 +15,7 @@
                         <span class="success"><i:inline key=".inSync"/></span>
                     </c:when>
                     <c:otherwise>
-                        <span class="error"><c:out value="${verifyResult.discrepancies}"/></span>
+                        <span class="error"><c:out value="${failureResult} ${verifyResult.discrepancies}"/></span>
                     </c:otherwise>
                 </c:choose>
             </tags:nameValue2>
