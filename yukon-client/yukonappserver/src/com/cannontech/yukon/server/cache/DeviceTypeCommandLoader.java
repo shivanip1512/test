@@ -44,9 +44,6 @@ public class DeviceTypeCommandLoader implements Runnable {
                 int devCmdId = rset.getInt(1);
                 int cmdId = rset.getInt(2);
                 String devType = rset.getString(3);
-                if (devType == null) {
-                    System.out.println("HERRE ");
-                }
                 int order = rset.getInt(4);
                 char visible = rset.getString(5).charAt(0);
                 LiteDeviceTypeCommand ldtc = new LiteDeviceTypeCommand(devCmdId, cmdId, devType, order, visible);
