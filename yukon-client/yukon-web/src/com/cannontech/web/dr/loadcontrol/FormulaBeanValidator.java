@@ -30,13 +30,8 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
         // Probably prudent to check for NaN, infinity etc
         YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "name", bean.getName(), false, 32);
         
-        // Determine if name is in use.  Must do for new formulas (formulaId is null) as well as existing
-        // formulas whose names have been edited (name in db is not same as name in bean).
-        if (bean.getFormulaId() == null
-                || !formulaDao.getFormulaById(bean.getFormulaId()).getName().equals(bean.getName())) {
-            if (formulaDao.isFormulaNameInUse(bean.getName())) {
-                errors.rejectValue("name", baseKey + "nameInUse");
-            }
+        if (formulaDao.isFormulaNameInUse(bean.getFormulaId(), bean.getName())) {
+            errors.rejectValue("name", baseKey + "nameInUse");
         }
         
         if (bean.getCalculationType() == Formula.CalculationType.FUNCTION) {

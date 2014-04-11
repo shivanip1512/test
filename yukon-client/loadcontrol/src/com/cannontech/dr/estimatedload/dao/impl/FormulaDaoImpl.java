@@ -103,9 +103,15 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     @Override
-    public boolean isFormulaNameInUse(String name) {
+    public boolean isFormulaNameInUse(Integer formulaId, String name) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) FROM").append(formulaTableName).append("WHERE Name").eq(name);
+        // If formulaId is null a new formula is being created, check all other formula names for uniqueness.
+        if (formulaId != null) {
+            // If formulaId is not null then an existing formula is being re-saved, check all other ids to ensure
+            // the possibly modified name is not already used.
+            sql.append("AND EstimatedLoadFormulaId").neq(formulaId);
+        }
         int count = yukonJdbcTemplate.queryForInt(sql);
         return count > 0;
     }
