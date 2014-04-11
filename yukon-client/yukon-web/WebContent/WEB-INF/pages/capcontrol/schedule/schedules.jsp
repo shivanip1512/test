@@ -6,6 +6,8 @@
 
 <cti:standardPage module="capcontrol"  page="schedules">
 
+<c:set var="baseUrl" value="/capcontrol/schedule/schedules"/>
+
 <cti:linkTabbedContainer mode="section">
     <cti:linkTab selectorKey="yukon.web.modules.capcontrol.schedules.tab.title"
                  initiallySelected='${true}'>
@@ -21,9 +23,9 @@
 
 <tags:pagedBox2 nameKey="scheduleContainer"
         searchResult="${searchResult}"
-        baseUrl="/capcontrol/schedule/schedules"
+        baseUrl="${baseUrl}"
         isFiltered="false"
-        showAllUrl="/capcontrol/schedule/schedules"
+        showAllUrl="${baseUrl}"
         styleClass="padBottom">
     <c:choose>
         <c:when test="${searchResult.hitCount == 0}">

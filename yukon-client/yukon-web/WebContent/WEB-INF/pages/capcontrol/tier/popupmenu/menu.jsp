@@ -28,31 +28,31 @@
 <c:if test="${showLocalControl}">
 $('#localControlsOption').click(function(event) {
     yukon.da.hideMenu();
-    yukon.da.getMenuFromURL('/capcontrol/menu/localControl?id=${paoId}', event, {});
+    yukon.da.getMenuFromURL('/yukon/capcontrol/menu/localControl?id=${paoId}', event, {});
 });
 </c:if>
 <c:if test="${showChangeOpState}">
 $('#changeOpStateOption').click(function(event) {
     yukon.da.hideMenu();
-    yukon.da.getMenuFromURL('/capcontrol/menu/opStateChange?bankId=${paoId}', event, {});
+    yukon.da.getMenuFromURL('/yukon/capcontrol/menu/opStateChange?bankId=${paoId}', event, {});
 });
 </c:if>
 <c:if test="${showResetBankOpCount}">
 $('#resetBankOpCountOption').click(function(event) {
     yukon.da.hideMenu();
-    yukon.da.getMenuFromURL('/capcontrol/menu/resetBankOpCount?bankId=${paoId}', event, {});
+    yukon.da.getMenuFromURL('/yukon/capcontrol/menu/resetBankOpCount?bankId=${paoId}', event, {});
 });
 </c:if>
 <c:if test="${showRecentCommands}">
 $('#recentEventsOption').click(function(event) {
     yukon.da.hideMenu();
-    window.location = '/capcontrol/search/recentEvents?value=${paoId}';
+    window.location = '/yukon/capcontrol/search/recentEvents?value=${paoId}';
 });
 </c:if>
 <c:if test="${showComments}">
 $('#viewCommentsOption').click(function(event) {
     yukon.da.hideMenu();
-    yukon.da.showDialog($(event.currentTarget).find('input').val(), '/capcontrol/comments/paoComments?paoId=${paoId}', {}, "#contentPopup" );
+    yukon.da.showDialog($(event.currentTarget).find('input').val(), '/yukon/capcontrol/comments/paoComments?paoId=${paoId}', {}, "#contentPopup" );
 });
 </c:if>
 </script>

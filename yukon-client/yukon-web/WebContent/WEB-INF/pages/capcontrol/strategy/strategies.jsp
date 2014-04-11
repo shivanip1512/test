@@ -4,6 +4,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
+<c:set var="baseUrl" value="/capcontrol/strategy/strategies"/>
+
 <cti:standardPage module="capcontrol" page="strategies">
 
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
@@ -11,9 +13,9 @@
 
     <tags:pagedBox2 nameKey="strategyContainer" 
             searchResult="${searchResult}"
-            baseUrl="/capcontrol/strategy/strategies"
+            baseUrl="${baseUrl}"
             isFiltered="false" 
-            showAllUrl="/capcontrol/strategy/strategies"
+            showAllUrl="${baseUrl}"
             styleClass="padBottom">
         <c:choose>
             <c:when test="${searchResult.hitCount == 0}">

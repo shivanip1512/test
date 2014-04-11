@@ -23,7 +23,7 @@ function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
     if (onReasonMenu) parameters.onReasonMenu = onReasonMenu;
     
     $.ajax({
-        url: '/capcontrol/command/itemCommand',
+        url: yukon.url('/capcontrol/command/itemCommand'),
         type: "POST",
         data: parameters,
         dataType: "html"
@@ -40,7 +40,7 @@ function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
 
 function doSystemCommand(commandId) {
     $.ajax({
-        url: '/capcontrol/command/system',
+        url: yukon.url('/capcontrol/command/system'),
         type: 'POST',
         data: {'commandId' : commandId}
     }).done( function(response){
@@ -50,7 +50,7 @@ function doSystemCommand(commandId) {
 
 function doChangeState(itemId, stateId) {
     $.ajax({
-        url: '/capcontrol/command/manualStateChange',
+        url: yukon.url('/capcontrol/command/manualStateChange'),
         type: 'POST',
         data: {'paoId' : itemId, 'rawStateId' : stateId}
     }).done( function(response){
@@ -61,7 +61,7 @@ function doChangeState(itemId, stateId) {
 function doResetBankOpCount(itemId, newOpCount) {
     yukon.da.hideMenu();
     $.ajax({
-        url: '/capcontrol/command/resetBankOpCount',
+        url: yukon.url('/capcontrol/command/resetBankOpCount'),
         type: 'POST',
         data: {'bankId' : itemId, 'newOpCount' : newOpCount}
     }).done( function(response){
@@ -75,7 +75,7 @@ function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
     if (onReasonMenu) parameters.onReasonMenu = onReasonMenu;
     
     $.ajax({
-        url: '/capcontrol/command/changeOpState',
+        url: yukon.url('/capcontrol/command/changeOpState'),
         type: 'POST',
         data: parameters
     }).done( function(response){

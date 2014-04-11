@@ -30,7 +30,7 @@
 <cti:msg2 var="confirmCommand" key=".confirmCommand"/>
 <cti:msg2 var="sendTimeSyncsCommand" key=".sendTimeSyncsCommand"/>
 
-<cti:url var="baseUrl" value="/capcontrol/schedule/scheduleAssignments" />
+<c:set var="baseUrl" value="/capcontrol/schedule/scheduleAssignments"/>
 
 <script type="text/javascript">
 $(function() {
@@ -76,7 +76,7 @@ $(function() {
 });
 
 function setOvUv(eventId, ovuv) {
-    $.getJSON(yukon.url('/capcontrol/schedule/setOvUv'), {
+    $.post(yukon.url('/capcontrol/schedule/setOvUv'), {
         'eventId': eventId, 
         'ovuv': ovuv
     }).done(function(json) {
