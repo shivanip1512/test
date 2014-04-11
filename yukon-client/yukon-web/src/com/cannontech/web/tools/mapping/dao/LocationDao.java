@@ -25,6 +25,6 @@ public interface LocationDao {
     public void save(Location location);
     
     /** Saves all locations to the database. */
-    public void saveAll(Collection<Location> location);
+    public void saveAll(Collection<Location> locations);
     
 }
