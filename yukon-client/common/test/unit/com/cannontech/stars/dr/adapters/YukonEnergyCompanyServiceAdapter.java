@@ -94,4 +94,19 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     public List<LiteYukonPAObject> getAllRoutes(EnergyCompany energyCompany) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    @Override
+    public void addCustomerListEntry(int customerId, EnergyCompany energyCompany) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public List<Integer> getCustomerListEntries(EnergyCompany energyCompany) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public List<EnergyCompany> getEnergyCompaniesByCustomer(int customerId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

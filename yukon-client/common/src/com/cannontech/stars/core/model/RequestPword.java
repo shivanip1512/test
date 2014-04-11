@@ -12,10 +12,10 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
@@ -99,7 +99,7 @@ public class RequestPword
                 foundData.add( " Contact Name: " + liteContact.getContFirstName() + " " + liteContact.getContLastName() );
                 foundData.add( " Username: " + YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(liteContact.getLoginID()).getUsername() );
 
-                LiteEnergyCompany[] cmps = processContact(liteContact);
+                List<EnergyCompany> cmps = processContact(liteContact);
                 processEnergyCompanies( cmps );
             }
         }
@@ -114,9 +114,9 @@ public class RequestPword
             foundData.clear();
             
             LiteYukonUser user = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername( userName );
-            if( user == null )
+            if( user == null ) {
                 setState( RET_FAILED, "USER_NOT_FOUND" );
-            else
+            } else
             {
                 foundData.add( " Username: " + user.getUsername() );                   
 
@@ -129,8 +129,8 @@ public class RequestPword
                 {
                     foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );                    
     
-                    LiteEnergyCompany[] cmps = processContact( lc );                    
-                    processEnergyCompanies( cmps );
+                    List<EnergyCompany> cmps = processContact(lc);
+                    processEnergyCompanies(cmps);
                 }
             }
         }
@@ -178,7 +178,7 @@ public class RequestPword
 
 	}
 	
-	protected LiteEnergyCompany[] processContact( LiteContact lCont_ )
+	protected List<EnergyCompany> processContact(LiteContact lCont_)
 	{
 		LiteCICustomer lCust = YukonSpringHook.getBean(ContactDao.class).getCICustomer( lCont_.getContactID() );
 
@@ -193,12 +193,12 @@ public class RequestPword
 		}
 
 
-		foundData.add( " Customer Name: " + lCust.getCompanyName() );					
+		foundData.add( " Customer Name: " + lCust.getCompanyName() );
 
-		LiteEnergyCompany[] cmp = 
-			YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompaniesByCustomer( lCust.getCustomerID() );
-	
-		return cmp;		
+		List<EnergyCompany> energyCompanies = 
+		        YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompaniesByCustomer(lCust.getCustomerID());
+		
+		return energyCompanies;
 	}
 
 	/**
@@ -209,30 +209,31 @@ public class RequestPword
 	 * @param allParams_
 	 * @return
 	 */
-	protected void processEnergyCompanies( LiteEnergyCompany[] comps_ )
+	protected void processEnergyCompanies(List<EnergyCompany> comps_)
 	{
 
-		if( comps_ == null || comps_.length <= 0 )
+		if( comps_ == null || comps_.size() <= 0 )
 		{
 			//do something here, dont know what for now
 			setState( RET_FAILED, "COMPANY_NOT_FOUND" );
 		}			
-		else if( comps_.length == 1 )
+		else if( comps_.size() == 1 )
 		{			
-			foundData.add( " Energy Company Name: " + comps_[0].getName() );					
+			foundData.add( " Energy Company Name: " + comps_.get(0).getName() );					
 			
 			String[] emails =
-					YukonSpringHook.getBean(ContactDao.class).getAllEmailAddresses( comps_[0].getPrimaryContactID() );
+					YukonSpringHook.getBean(ContactDao.class).getAllEmailAddresses( comps_.get(0).getContactId() );
 
 			for( int i = 0; i < emails.length; i++ )
 			{
 				CTILogger.debug( "Found email in EnergyCompany (" +
-					comps_[0].getName() + ") : " + emails[i] );					
+					comps_.get(0).getName() + ") : " + emails[i] );					
 			}
 
 
-			if( emails.length > 0 )
-				sendEmails( emails, genBody() );
+			if( emails.length > 0 ) {
+                sendEmails( emails, genBody() );
+            }
 			
 			setState( RET_SUCCESS, "" ); //success!!
 		}
@@ -242,10 +243,11 @@ public class RequestPword
 			setState( RET_FAILED, "MULTIPLE_COMPANIES" );
 			subject = "WebMaster: " + subject;
 			foundData.add( " " + getResultString() );
-			foundData.add( " Number of Energy Companies for this Data: " + comps_.length );
+			foundData.add( " Number of Energy Companies for this Data: " + comps_.size() );
 
-			for( int i = 0; i < comps_.length; i++ )
-				foundData.add( "   Energy Company " + i + ": " + comps_[i].getName() );
+			for( int i = 0; i < comps_.size(); i++ ) {
+                foundData.add( "   Energy Company " + i + ": " + comps_.get(i).getName() );
+            }
 			
 			sendEmails( new String[] { masterMail }, genBody() );			
 		}

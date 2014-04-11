@@ -1,6 +1,7 @@
 package com.cannontech.stars.core.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
@@ -8,15 +9,15 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.service.StarsSearchService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 /**
  * @author rneuharth
@@ -93,10 +94,10 @@ public class StarsRequestPword extends RequestPword {
 					}
 					
 					//we must get the Yukon lite energy company for the stars lite energy company
-					LiteEnergyCompany lEnrgy =
-						YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( eComp.getEnergyCompanyId());
+					EnergyCompany energyCompany =
+						YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(eComp.getEnergyCompanyId());
 
-					processEnergyCompanies( new LiteEnergyCompany[] { lEnrgy } );
+					processEnergyCompanies(Collections.singletonList(energyCompany));
 				}
 				else if( allCustAccts.size() < 1 ) {
 					setState( RET_FAILED, "NO_ACCOUNT" );					
@@ -143,12 +144,13 @@ public class StarsRequestPword extends RequestPword {
 	}
 	
 	@Override
-    protected LiteEnergyCompany[] processContact( LiteContact lCont_ ) {
+    protected List<EnergyCompany> processContact(LiteContact lCont_) {
 		LiteCustomer liteCust = YukonSpringHook.getBean(ContactDao.class).getCustomer( lCont_.getContactID() );
 		
 		if (liteCust.getEnergyCompanyID() != -1) {
-			LiteEnergyCompany liteComp = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( liteCust.getEnergyCompanyID() );
-			return new LiteEnergyCompany[] { liteComp };
+			EnergyCompany energyCompany = 
+			        YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(liteCust.getEnergyCompanyID());
+			return Collections.singletonList(energyCompany);
 		}
 		
 		// Try the parent's functionality

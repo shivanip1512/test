@@ -10,7 +10,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.db.company.EnergyCompany;
-import com.cannontech.database.db.web.EnergyCompanyCustomerList;
 
 /**
  * @author alauinger
@@ -29,7 +28,8 @@ public class EnergyCompanyLoader implements Runnable
 	/**
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run()
+	@Override
+    public void run()
 	{
    		long timerStart = System.currentTimeMillis();
    		
@@ -57,30 +57,6 @@ public class EnergyCompanyLoader implements Runnable
          	}
 
             SqlUtils.close(rset, stmt);
-         	
-         	//assign all the customers that belong to each Energycompany
-         	// NOTE: 1 customer may belong to several EnergyCompanies 
-				sql = 
-					"select EnergyCompanyID, CustomerID FROM " + EnergyCompanyCustomerList.tableName + " " +
-					"order by EnergyCompanyID";
-				stmt = conn.createStatement();
-				rset = stmt.executeQuery(sql);
-				while( rset.next() ) 
-				{
-					int engID = rset.getInt(1);
-					int cstID = rset.getInt(2);
-
-					for( int i = 0; i < allCompanies.size(); i++ )
-					{
-						LiteEnergyCompany company = allCompanies.get(i);
-						
-						if( company.getEnergyCompanyID() == engID )
-						{
-							company.getCiCustumerIDs().add( cstID );
-						}
-					}
-				}
-					
 
       	}
       	catch(SQLException e ) 

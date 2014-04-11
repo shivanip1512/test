@@ -38,7 +38,8 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.SeparableRowMapper;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -48,17 +49,18 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public final class CustomerDaoImpl implements CustomerDao {
 
-    private ContactDao contactDao;
-    private YukonUserDao yukonUserDao;    
-    private IDatabaseCache databaseCache;
-    private NextValueHelper nextValueHelper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private GraphCustomerListDao graphCustomerListDao;
-    private DeviceCustomerListDao deviceCustomerListDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private GraphCustomerListDao graphCustomerListDao;
+    @Autowired private DeviceCustomerListDao deviceCustomerListDao;
+    @Autowired private AddressDao addressDao;
+    @Autowired private YukonEnergyCompanyService ecService;
+    
     private static final String CUSTOMER_TABLE_NAME = "Customer";
     private static final String CI_CUSTOMER_TABLE_NAME = "CICustomerBase";
-    private AddressDao addressDao;
-    private EnergyCompanyDao energyCompanyDao;
     
     /**
      * CustomerFuncs constructor comment.
@@ -128,8 +130,9 @@ public final class CustomerDaoImpl implements CustomerDao {
         if (customer != null) {
             int primCntctID = customer.getPrimaryContactID();
             LiteContact liteContact = contactDao.getContact(primCntctID);
-            if (liteContact != null)
+            if (liteContact != null) {
                 allContacts.addElement(liteContact);
+            }
 
             for (int i = 0; i < customer.getAdditionalContacts().size(); i++) {
                 allContacts.addElement(customer.getAdditionalContacts()
@@ -151,8 +154,9 @@ public final class CustomerDaoImpl implements CustomerDao {
         if (customer != null) {
             int primCntctID = customer.getPrimaryContactID();
             LiteContact liteContact = contactDao.getContact(primCntctID);
-            if (liteContact != null)
+            if (liteContact != null) {
                 return liteContact;
+            }
         }
         return null;
     }
@@ -308,8 +312,9 @@ public final class CustomerDaoImpl implements CustomerDao {
         // Get the customer from AllCustomersMap (make use of the map), retun
         // null if NOT instance LiteCICustomer
         LiteCustomer lc = getLiteCustomer(customerID);
-        if (lc instanceof LiteCICustomer && lc.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
+        if (lc instanceof LiteCICustomer && lc.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
             return (LiteCICustomer) lc;
+        }
 
         return null;
     }
@@ -475,7 +480,8 @@ public final class CustomerDaoImpl implements CustomerDao {
     @Transactional
     public void addCICustomer(LiteCICustomer customer) throws DataAccessException {
         liteCICustomerTemplate.insert(customer);
-        energyCompanyDao.addEnergyCompanyCustomerListEntry(customer.getCustomerID(), customer.getEnergyCompanyID());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(customer.getEnergyCompanyID());
+        ecService.addCustomerListEntry(customer.getCustomerID(), energyCompany);
     }
     
     @Override
@@ -490,48 +496,6 @@ public final class CustomerDaoImpl implements CustomerDao {
         liteCICustomerTemplate.update(customer);
     }
 
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
-
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setGraphCustomerListDao(GraphCustomerListDao graphCustomerListDao) {
-        this.graphCustomerListDao = graphCustomerListDao;
-    }
-    
-    @Autowired
-    public void setDeviceCustomerListDao(DeviceCustomerListDao deviceCustomerListDao) {
-        this.deviceCustomerListDao = deviceCustomerListDao;
-    }
-    
-    @Autowired
-    public void setAddressDao(AddressDao addressDao) {
-        this.addressDao = addressDao;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
-    }
-    
     @PostConstruct
     public void init() throws Exception {
         liteCustomerTemplate = new SimpleTableAccessTemplate<LiteCustomer>(yukonJdbcTemplate, nextValueHelper);

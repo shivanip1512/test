@@ -2,7 +2,6 @@ package com.cannontech.stars.energyCompany.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -119,31 +118,6 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         return null;
     }
 
-    @Override
-    public LiteEnergyCompany[] getEnergyCompaniesByCustomer(int customerID_) {
-        List<LiteEnergyCompany> enrgComps = new ArrayList<LiteEnergyCompany>(16);
-        for (int i = 0; i < databaseCache.getAllEnergyCompanies().size(); i++) {
-            LiteEnergyCompany e = databaseCache.getAllEnergyCompanies().get(i);
-
-            for (int j = 0; j < e.getCiCustumerIDs().size(); i++) {
-                if (e.getCiCustumerIDs().elementAt(j) == customerID_) {
-                    enrgComps.add(e);
-                    break; // move onto the next energycompany
-                }
-            }
-        }
-
-        LiteEnergyCompany[] cArr = new LiteEnergyCompany[enrgComps.size()];
-        return enrgComps.toArray(cArr);
-    }
-
-    @Override
-    public void addEnergyCompanyCustomerListEntry(int customerId,
-            int energyCompanyId) {
-        String sql = "INSERT INTO EnergyCompanyCustomerList VALUES (?,?)";
-        yukonJdbcTemplate.update(sql, energyCompanyId, customerId);
-    }
-    
     @Override
     public void updateCompanyName(String name, int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

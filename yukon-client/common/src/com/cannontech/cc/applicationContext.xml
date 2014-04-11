@@ -209,9 +209,7 @@
     <property name="curtailmentEventNotifDao" ref="curtailmentEventNotifDao"/>
   </bean>
   <bean id="programParameterDao" class="com.cannontech.cc.daojdbc.ProgramParameterDaoImpl"/>
-  <bean id="economicEventDao" class="com.cannontech.cc.daojdbc.EconomicEventDaoImpl">
-    <property name="economicEventParticipantDao" ref="economicEventParticipantDao"/>
-  </bean>
+  <bean id="economicEventDao" class="com.cannontech.cc.daojdbc.EconomicEventDaoImpl"/>
   <bean id="economicEventParticipantDao" class="com.cannontech.cc.daojdbc.EconomicEventParticipantDaoImpl">
     <property name="economicEventNotifDao" ref="economicEventNotifDao"/>
   </bean>

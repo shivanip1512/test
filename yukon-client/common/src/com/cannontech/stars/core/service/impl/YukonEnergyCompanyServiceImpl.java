@@ -270,9 +270,37 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         Collections.sort(routeList, LiteComparators.liteStringComparator);
         return Collections.unmodifiableList(routeList);
     }
-    
-    
-    
+
+    @Override
+    public void addCustomerListEntry(int customerId, EnergyCompany energyCompany) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO EnergyCompanyCustomerList");
+        sql.values(energyCompany.getId(), customerId);
+        jdbcTemplate.update(sql);
+    }
+
+    @Override
+    public List<Integer> getCustomerListEntries(EnergyCompany energyCompany) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CustomerID FROM EnergyCompanyCustomerList");
+        sql.append("WHERE EnergyCompanyID").eq(energyCompany.getId());
+        return jdbcTemplate.query(sql, RowMapper.INTEGER);
+    }
+
+    @Override
+    public List<EnergyCompany> getEnergyCompaniesByCustomer(int customerId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EnergyCompanyID FROM EnergyCompanyCustomerList");
+        sql.append("WHERE CustomerID").eq(customerId);
+        List<Integer> ecIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+
+        List<EnergyCompany> customerEnergyCompanies = new ArrayList<>();
+        for (Integer ecId : ecIds) {
+            customerEnergyCompanies.add(getEnergyCompany(ecId));
+        }
+        return customerEnergyCompanies;
+    }
+
     private List<LiteYukonPAObject> getRoutes(EnergyCompany energyCompany) {
         List<Integer> routeIDs = getRouteIds(energyCompany.getId());
         List<LiteYukonPAObject> routeList =  Lists.newArrayListWithCapacity(routeIDs.size());
@@ -318,6 +346,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         } catch(IncorrectResultSizeDataAccessException e) {
             log.debug("EnergyCompany By AdditionalContact (" + user + ") Not Found: " + e);
         }
+
         return DEFAULT_ENERGY_COMPANY_ID;
     }
     

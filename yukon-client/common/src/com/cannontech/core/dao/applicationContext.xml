@@ -26,11 +26,7 @@
   </bean>
   <bean id="contactDao" class="com.cannontech.core.dao.impl.ContactDaoImpl" />
   <bean id="contactNotificationDao" class="com.cannontech.core.dao.impl.ContactNotificationDaoImpl" />
-  <bean id="customerDao" class="com.cannontech.core.dao.impl.CustomerDaoImpl" >
-  	<property name="contactDao" ref="contactDao"/>
-  	<property name="yukonUserDao" ref="yukonUserDao"/>
-    <property name="databaseCache" ref="databaseCache"/>
-  </bean>
+  <bean id="customerDao" class="com.cannontech.core.dao.impl.CustomerDaoImpl" />
   <bean id="demandResponseDao" class="com.cannontech.core.dao.impl.DemandResponseDaoImpl"/>
   <bean id="deviceCustomerListDao" class="com.cannontech.core.dao.impl.DeviceCustomerListDaoImpl" />
   <bean id="graphCustomerListDao" class="com.cannontech.core.dao.impl.GraphCustomerListDaoImpl" />

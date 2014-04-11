@@ -13,16 +13,6 @@ public interface EnergyCompanyDao {
      */
     LiteEnergyCompany getEnergyCompany(int energyCompanyID);
 
-    /**
-     * Returns all the LiteEnergyCompany's that have customerID_ in it.
-     */
-    LiteEnergyCompany[] getEnergyCompaniesByCustomer(int customerID_);
-
-    /**
-     * Adds a customer and energy company to EnergyCompanyCustomerList
-     */
-    void addEnergyCompanyCustomerListEntry(int customerId, int ecId);
-
     List<DisplayableServiceCompany> getAllServiceCompanies(Iterable<Integer> energyCompanyIds);
 
     void updateCompanyName(String name, int energyCompanyId);

@@ -82,6 +82,13 @@ public interface YukonEnergyCompanyService {
      */
     List<LiteYukonPAObject> getAllRoutes(EnergyCompany energyCompany);
     
+    void addCustomerListEntry(int customerId, EnergyCompany energyCompany);
+    
+    List<Integer> getCustomerListEntries(EnergyCompany energyCompany);
+    
+    List<EnergyCompany> getEnergyCompaniesByCustomer(int customerId);
+
+    
     /**
      * This method returns the direct child energy companies underneath the energy company.
      * It will not return any of the children of the child energy companies.  If you want that data you'll want to

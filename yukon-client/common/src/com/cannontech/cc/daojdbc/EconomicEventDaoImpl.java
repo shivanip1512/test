@@ -37,6 +37,8 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -45,13 +47,15 @@ import com.google.common.collect.Multimap;
 
 public class EconomicEventDaoImpl implements EconomicEventDao {
 
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private ProgramDao programDao;
+    @Autowired private EconomicEventParticipantDao economicEventParticipantDao;
+    @Autowired private YukonEnergyCompanyService ecService;
+    
     private SimpleTableAccessTemplate<EconomicEvent> eventTemplate;
     private SimpleTableAccessTemplate<EconomicEventPricing> pricingTemplate;
     private SimpleTableAccessTemplate<EconomicEventPricingWindow> windowTemplate;
-    private NextValueHelper nextValueHelper;
-    private ProgramDao programDao;
-    private EconomicEventParticipantDao economicEventParticipantDao;
 
     @Override
     public EconomicEvent getChildEvent(EconomicEvent event) {
@@ -116,20 +120,20 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
     }
 
     @Override
-    public List<EconomicEvent> getAllForEnergyCompany(LiteEnergyCompany energyCompany) {
+    public List<EconomicEvent> getAllForEnergyCompany(LiteEnergyCompany lec) {
+        EnergyCompany energyCompany = ecService.getEnergyCompany(lec.getEnergyCompanyID());
+        List<Integer> customerIds = ecService.getCustomerListEntries(energyCompany);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select distinct ee.*");
         sql.append("from CCurtEconomicEvent ee");
         sql.append(  "join CCurtEEParticipant eep on ee.CCurtEconomicEventID = eep.CCurtEconomicEventID");
-        sql.append("where eep.CustomerID in (");
-        sql.append(energyCompany.getCiCustumerIDs().toArray());
-        sql.append(")");
-
+        sql.append("where eep.CustomerID").in(customerIds);
         List<EconomicEvent> result = yukonJdbcTemplate.query(sql, new EconomicEventRowMapper());
         setRevisionsForEvents(result);
         return result;
     }
 
+    @Override
     public List<EconomicEvent> getAllForParticipants(List<EconomicEventParticipant> participantList) {
         List<Integer> eventIdList = Lists.newArrayListWithCapacity(participantList.size());
         for (EconomicEventParticipant participant : participantList) {
@@ -172,6 +176,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
     }
 
     private FieldMapper<EconomicEvent> economicEventFieldMapper = new FieldMapper<EconomicEvent>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, EconomicEvent event) {
             p.addValue("NotificationTime", event.getNotificationTime());
             p.addValue("WindowLengthMinutes", event.getWindowLengthMinutes());
@@ -188,16 +193,19 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
             p.addValue("Identifier", event.getIdentifier());
         }
 
+        @Override
         public Number getPrimaryKey(EconomicEvent event) {
             return event.getId();
         }
 
+        @Override
         public void setPrimaryKey(EconomicEvent event, int value) {
             event.setId(value);
         }
     };
 
     private FieldMapper<EconomicEventPricing> economicEventPricingFieldMapper = new FieldMapper<EconomicEventPricing>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, EconomicEventPricing pricing) {
             p.addValue("Revision", pricing.getRevision());
             p.addValue("CreationTime", pricing.getCreationTime());
@@ -216,6 +224,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
     };
     
     private FieldMapper<EconomicEventPricingWindow> economicEventPricingWindowFieldMapper = new FieldMapper<EconomicEventPricingWindow>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, EconomicEventPricingWindow window) {
             p.addValue("EnergyPrice", window.getEnergyPrice());
             p.addValue("Offset", window.getOffset());
@@ -254,6 +263,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
     private void setRevisionsForEvents(Collection<EconomicEvent> eventCol) {
         ChunkingMappedSqlTemplate mappedSqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("select * from CCurtEEPricing");
@@ -263,6 +273,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
         };
 
         YukonRowMapper<Map.Entry<Integer, EconomicEventPricing>> pricingRowMapper = new YukonRowMapper<Map.Entry<Integer, EconomicEventPricing>>() {
+            @Override
             public Map.Entry<Integer, EconomicEventPricing> mapRow(YukonResultSet rs) throws SQLException {
                 EconomicEventPricing value = new EconomicEventPricing();
                 value.setId(rs.getInt("CCurtEEPricingID"));
@@ -275,6 +286,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
         };
 
         Function<EconomicEvent, Integer> func = new Function<EconomicEvent, Integer>() {
+            @Override
             public Integer apply(EconomicEvent event) {
                 return event.getId();
             }
@@ -298,6 +310,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
     private void setPricingWindowsForPricings(Collection<EconomicEventPricing> pricingCol) {
         ChunkingMappedSqlTemplate mappedSqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("select * from CCurtEEPricingWindow");
@@ -307,6 +320,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
         };
 
         YukonRowMapper<Map.Entry<Integer, EconomicEventPricingWindow>> pricingWindowRowMapper = new YukonRowMapper<Map.Entry<Integer, EconomicEventPricingWindow>>() {
+            @Override
             public Map.Entry<Integer, EconomicEventPricingWindow> mapRow(YukonResultSet rs) throws SQLException {
                 EconomicEventPricingWindow window = new EconomicEventPricingWindow();
                 window.setId(rs.getInt("CCurtEEPricingWindowID"));
@@ -318,6 +332,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
         };
 
         Function<EconomicEventPricing, Integer> func = new Function<EconomicEventPricing, Integer>() {
+            @Override
             public Integer apply(EconomicEventPricing pricing) {
                 return pricing.getId();
             }
@@ -338,25 +353,6 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
         }
     }
 
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
-    }
-
-    public void setEconomicEventParticipantDao(EconomicEventParticipantDao economicEventParticipantDao) {
-        this.economicEventParticipantDao = economicEventParticipantDao;
-    }
-
     private class EconomicEventRowMapper implements YukonRowMapper<EconomicEvent> {
         private CachingDaoWrapper<Program> cachingProgramDao;
         
@@ -364,6 +360,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
             cachingProgramDao = new CachingDaoWrapper<Program>(programDao, initialItems);
         }
         
+        @Override
         public EconomicEvent mapRow(YukonResultSet rs) throws SQLException {
             EconomicEvent event = new EconomicEvent();
             event.setId(rs.getInt("CCurtEconomicEventID"));

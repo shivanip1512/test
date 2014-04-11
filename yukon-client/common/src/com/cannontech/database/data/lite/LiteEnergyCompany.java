@@ -1,14 +1,11 @@
 package com.cannontech.database.data.lite;
 
-import com.cannontech.common.util.NativeIntVector;
 
 public class LiteEnergyCompany extends LiteBase {
     private String name;
     private int primaryContactID;
     private int userID;
 
-    private NativeIntVector ciCustumerIDs = null;
-    
     public LiteEnergyCompany() {
         this(0, null, 0, 0);
     }
@@ -39,13 +36,6 @@ public class LiteEnergyCompany extends LiteBase {
 
     public int getUserID() {
         return userID;
-    }
-
-    public NativeIntVector getCiCustumerIDs() {
-        if( ciCustumerIDs == null ) {
-            ciCustumerIDs = new NativeIntVector(16);
-        }
-        return ciCustumerIDs;
     }
 
     @Override
