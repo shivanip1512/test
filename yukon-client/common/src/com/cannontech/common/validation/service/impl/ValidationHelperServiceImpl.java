@@ -26,8 +26,6 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 
 public class ValidationHelperServiceImpl implements ValidationHelperService {
     private static final Logger log = YukonLogManager.getLogger(ValidationHelperServiceImpl.class);
@@ -40,18 +38,10 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     private YukonJdbcOperations yukonJdbcOperations;
     private PointDao pointDao;
     private PaoLoadingService paoLoadingService;
-    
-    private Set<RphTag> validationPlusOkTags;
-    {
-        Builder<RphTag> builder = ImmutableSet.builder();
-        builder.addAll(RphTag.getAllValidation());
-        builder.add(RphTag.OK);
-        validationPlusOkTags = builder.build();
-    }
 
     @Override
     public void acceptAllMatchingRows(Set<RphTag> tags, LiteYukonUser liteYukonUser) {
-        List<Long> changeIds = rphTagUiDao.findMatchingChangeIds(tags, validationPlusOkTags);
+        List<Long> changeIds = rphTagUiDao.findMatchingChangeIds(tags);
         for (long changeId : changeIds) {
             acceptRawPointHistoryRow(changeId, liteYukonUser);
         }
@@ -59,7 +49,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
 
     @Override
     public void deleteAllMatchingRows(Set<RphTag> tags, LiteYukonUser liteYukonUser) {
-        List<Long> changeIds = rphTagUiDao.findMatchingChangeIds(tags, validationPlusOkTags);
+        List<Long> changeIds = rphTagUiDao.findMatchingChangeIds(tags);
         for (long changeId : changeIds) {
             deleteRawPointHistoryRow(changeId, liteYukonUser);
         }

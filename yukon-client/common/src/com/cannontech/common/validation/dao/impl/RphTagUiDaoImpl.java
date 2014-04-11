@@ -27,7 +27,6 @@ import com.cannontech.database.YukonRowMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 public class RphTagUiDaoImpl implements RphTagUiDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -146,19 +145,13 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     }
 
     @Override
-    public List<Long> findMatchingChangeIds(Set<RphTag> set, Set<RphTag> mask) {
-        Set<RphTag> mustNotHave = Sets.difference(mask, set);
+    public List<Long> findMatchingChangeIds(Set<RphTag> set) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select distinct ChangeId");
+        sql.append("select ChangeId");
         sql.append("from RphTag rt");
-        sql.append("where");
-        sql.append("rt.ChangeId NOT IN (");
-        sql.append("select rt2.ChangeId from RphTag rt2 ");
-        sql.append("where rt2.TagName ").in(mustNotHave);
-        sql.append(")");
-        sql.append("  AND rt.TagName").in(set);
+        sql.append("where rt.TagName ").in(set);
         sql.append("group by ChangeId");
-        sql.append("having count(*)").eq(set.size());
+        sql.append("having count(*) = 1");
 
         List<Long> result = yukonJdbcTemplate.query(sql, RowMapper.LONG);
         return result;

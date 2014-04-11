@@ -35,7 +35,6 @@ import com.google.common.collect.Ordering;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.VALIDATION_ENGINE)
-@RequestMapping("/veeReview/*")
 public class VeeReviewController {
     
     @Autowired private RphTagUiDao rphTagUiDao;
@@ -141,19 +140,18 @@ public class VeeReviewController {
         
     }
     
-    @RequestMapping("home")
+    @RequestMapping("/veeReview/home")
     public String home(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
         setUpModel(request, model, pagingParameters);
-        // get review points
         return "vee/review/review.jsp";
     }
     
-    @RequestMapping("reviewTable")
+    @RequestMapping("/veeReview/reviewTable")
     public String reviewTable(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
         setUpModel(request,  model, pagingParameters);
         return "vee/review/reviewTable.jsp";
     }
-    @RequestMapping("save")
+    @RequestMapping("/veeReview/save")
     public String save(HttpServletRequest request, ModelMap model, LiteYukonUser user, PagingParameters pagingParameters) 
             throws NumberFormatException {
         // gather changeIds
@@ -186,11 +184,6 @@ public class VeeReviewController {
 
         setUpModel(request,  model, pagingParameters);
         return "vee/review/reviewTable.jsp";
-    }
-    
-    @RequestMapping("advancedProcessing")
-    public String advancedProcessing(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
-        return "vee/review/menu.jsp";
     }
     
     private int addDisplayTypesToModel(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelMap model) {
@@ -281,18 +274,4 @@ public class VeeReviewController {
         }
     }
     
-    @Autowired
-    public void setRphTagUiDao(RphTagUiDao rphTagUiDao) {
-        this.rphTagUiDao = rphTagUiDao;
-    }
-    
-    @Autowired
-    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
-        this.rawPointHistoryDao = rawPointHistoryDao;
-    }
-    
-    @Autowired
-    public void setValidationHelperService(ValidationHelperService validationHelperService) {
-        this.validationHelperService = validationHelperService;
-    }
 }

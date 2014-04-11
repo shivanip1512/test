@@ -5,25 +5,20 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage page="validation.advanced" module="amr">
+    <cti:includeScript link="/JavaScript/yukon.ami.advanced.processing.js"/>
 
-<c:if test="${param.tagsAccepted}">
-    <div class="flashMessage">
+    <div id="tags-accepted" class="user-message success dn">
         <i:inline key=".tagsAccepted"/>
     </div>
-</c:if>
-    
-<c:if test="${param.tagsDeleted}">
-    <div class="flashMessage">
+
+    <div id="tags-deleted" class="user-message success dn">
         <i:inline key=".tagsDeleted"/>
     </div>
-</c:if>
     
-<c:if test="${param.validationEngineReset}">
-    <div class="flashMessage">
+    <div id="engine-reset" class="user-message success dn">
         <i:inline key=".engineReset"/> 
         <i:inline key=".engineRestart"/>
     </div>
-</c:if>
     
 <div class="column-12-12">
     <div class="column one">
@@ -31,34 +26,46 @@
                 <p>
                     <i:inline key=".acceptAllText"/>
                 </p>
-                <form method="post" action="acceptAllTaggedRows">
+                <form id="accept-form">
                     <cti:csrfToken/>
-                    <c:forEach var="tag" items="${rphTags}">
-                        <label>
-                            <input type="checkbox" name="selectedTags" value="${tag}">
-                            <cti:logo key="${tag.logoKey}"/>
-                            <cti:msg key="${tag}"/>
-                        </label><br>
-                    </c:forEach>
-                            
-                    <cti:button type="submit" value="Accept" nameKey="accept"/>
+                    <div class="stacked">
+                        <ul class="simple-list">
+                            <c:forEach items="${displayTypes}" var="displayType" varStatus="index">
+                                <li>
+                                    <label class="notes">
+                                        <input type="checkbox" id="display-type-checkbox" name="${displayType.rphTag}">
+                                        <cti:icon icon="${displayType.rphTag.iconClass}" classes="fn"/>
+                                        <cti:msg key="${displayType.rphTag.formatKey}"/>
+                                        <cti:dataUpdaterValue type="VALIDATION_PROCESSING" identifier="${displayType.rphTag}_VIOLATIONS" styleClass="badge"/>
+                                    </label>
+                                </li>
+                            </c:forEach>
+                        </ul>
+                    </div>
+                    <cti:button id="accept-all" nameKey="accept" busy="true"/>
                 </form>
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="deleteAll">
                 <p>
                     <i:inline key=".deleteAllText"/>
                 </p>
-                <form method="post" action="deleteAllTaggedRows">
+                <form id="delete-form">
                     <cti:csrfToken/>
-                    <c:forEach var="tag" items="${rphTags}">
-                        <label>
-                            <input type="checkbox" name="selectedTags" value="${tag}">
-                            <cti:logo key="${tag.logoKey}"/>
-                            <cti:msg key="${tag}"/>
-                        </label><br>
-                    </c:forEach>
-                            
-                    <cti:button type="submit" value="Delete" nameKey="delete"/>
+                    <div class="stacked">
+                        <ul class="simple-list">
+                            <c:forEach items="${displayTypes}" var="displayType" varStatus="index">
+                                <li>
+                                    <label class="notes">
+                                        <input type="checkbox" id="display-type-checkbox" name="${displayType.rphTag}">
+                                        <cti:icon icon="${displayType.rphTag.iconClass}" classes="fn"/>
+                                        <cti:msg key="${displayType.rphTag.formatKey}"/>
+                                        <cti:dataUpdaterValue type="VALIDATION_PROCESSING" identifier="${displayType.rphTag}_VIOLATIONS" styleClass="badge"/>
+                                    </label>
+                                </li>
+                            </c:forEach>
+                        </ul>
+                    </div>
+                    <cti:button id="delete-all" nameKey="delete" busy="true"/>
                 </form>
             </tags:sectionContainer2>    
     </div>
@@ -71,17 +78,17 @@
                     <i:inline key=".recalculateTags2"/>
                 </p>
                 <div class="clearfix stacked">
-                    <form method="post" action="resetValidationEngineOneYear">
+                    <form id="reset-one-year-form">
                         <cti:csrfToken/>
                         <span class="fl"><i:inline key=".deleteTagsOneYear"/></span>
-                        <cti:button type="submit" nameKey="reset"/>
+                        <cti:button id="reset-12-months" nameKey="reset" busy="true"/>
                     </form>
                 </div>
                 <div class="clearfix">
-                    <form method="post" action="resetValidationEngine">
+                    <form id="reset-all-form">
                         <cti:csrfToken/>
                         <span class="fl"><i:inline key=".deleteAllTags"/></span>
-                        <cti:button type="submit" nameKey="reset"/>
+                        <cti:button id="reset-all" nameKey="reset" busy="true"/>
                     </form>
                 </div>
             </tags:sectionContainer2>    

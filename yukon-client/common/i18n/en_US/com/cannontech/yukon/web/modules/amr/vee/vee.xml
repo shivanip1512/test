@@ -125,10 +125,10 @@
                 as are selected tags (but has not already been marked as Accepted). This has the same effect as the Delete selection
                 on the Review page. <strong class="warning">Archived usage readings will be removed
                 completely from the database. This cannot be undone!</strong>]]></entry>
-    <entry key="yukon.web.modules.amr.validation.advanced.recalculateTags1">The following options will reset the validation engine so that it reprocesses
-                all of the RawPointHistory rows from the beginning or from 12 months ago.</entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.recalculateTags1"><![CDATA[The following options will reset the validation engine so that it reprocesses
+                all of the RawPointHistory rows from the beginning or from <strong class="warning">12</strong> months ago.]]></entry>
     <entry key="yukon.web.modules.amr.validation.advanced.recalculateTags2">Before selecting one of these options, shut down the Yukon Service Manager service.
-                After pressing the Delete button, the service may be restarted.</entry>
+                After pressing the Reset button, the service may be restarted.</entry>
     <entry key="yukon.web.modules.amr.validation.advanced.deleteTagsOneYear">Delete previous 12 months of tags: </entry>
     <entry key="yukon.web.modules.amr.validation.advanced.deleteAllTags">Delete all tags: </entry>
 </properties>
