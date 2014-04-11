@@ -69,8 +69,9 @@ yukon.ThermostatScheduleEditor = {
                 $.ajax({
                     url: form.attr('action'),
                     type: 'POST',
-                    data: params,
-                    success: yukon.ThermostatScheduleEditor[this.value]
+                    data: params
+                }).done(function (data, textStatus, jqXHR) {
+                    yukon.ThermostatScheduleEditor[this.value]();
                 });
             }
         });

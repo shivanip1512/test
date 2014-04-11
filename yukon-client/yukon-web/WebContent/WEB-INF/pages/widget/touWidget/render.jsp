@@ -12,11 +12,10 @@
 $(function() {
     $('#touPopupLink').click(function(event) {
         $.ajax({
-            url: "${touSpecificsUrl}",
-            success: function(transport) {
-                $("#touDialog").html(transport);
-                $("#touDialog").dialog({width: "auto", minWidth: 400});
-            }
+            url: "${touSpecificsUrl}"
+        }).done(function (transport, textStatus, jqXHR) {
+            $("#touDialog").html(transport);
+            $("#touDialog").dialog({width: "auto", minWidth: 400});
         });
     });
 });

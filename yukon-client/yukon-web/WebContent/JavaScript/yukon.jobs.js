@@ -11,7 +11,7 @@ $(function() {
              url: "/group/scheduledGroupRequestExecutionResults/cancelJob",
              dataType: 'json',
              data: {'jobId': stopJobId}
-         });
+        });
     });
 
     $('.stopButton').on('click', function(event) {
@@ -25,17 +25,16 @@ $(function() {
         $.ajax({
             url: "toggleEnabled",
             dataType: 'json',
-            data: {'jobId': jobId},
-            success: function(data) {
-                if (data.jobEnabled === false) {
-                    $(toggleButton).closest('tr').addClass('subtle');
-                    $('#disableSpan_' + jobId).hide();
-                    $('#enableSpan_' + jobId).show();
-                } else {
-                    $(toggleButton).closest('tr').removeClass('subtle');
-                    $('#disableSpan_' + jobId).show();
-                    $('#enableSpan_' + jobId).hide();
-                }
+            data: {'jobId': jobId}
+        }).done(function (data, textStatus, jqXHR) {
+            if (data.jobEnabled === false) {
+                $(toggleButton).closest('tr').addClass('subtle');
+                $('#disableSpan_' + jobId).hide();
+                $('#enableSpan_' + jobId).show();
+            } else {
+                $(toggleButton).closest('tr').removeClass('subtle');
+                $('#disableSpan_' + jobId).show();
+                $('#enableSpan_' + jobId).hide();
             }
         });
     });

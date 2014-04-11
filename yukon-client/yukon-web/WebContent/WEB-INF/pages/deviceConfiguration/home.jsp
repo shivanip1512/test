@@ -19,11 +19,10 @@ $(function() {
 
 function showSelectedDevices(divId, url) {
     $.ajax({
-        url: url,
-        success: function(transport) {
-            $(document.getElementById(divId)).html(transport);
-            $(document.getElementById(divId)).dialog({width: "auto", height: 500});
-        }
+        url: url
+    }).done(function (transport, textStatus, jqXHR) {
+        $(document.getElementById(divId)).html(transport);
+        $(document.getElementById(divId)).dialog({width: "auto", height: 500});
     });
 }
 

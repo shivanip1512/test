@@ -72,12 +72,13 @@
         <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
     </div>
     
+    <cti:url var="schedulesUrl" value="/adminSetup/energyCompany/schedules"/>
     <tags:thermostatScheduleWidget schedule="${schedule}"
                                 thermostatId=""
                                 thermostatIds=""
                                 accountId=""
                                 temperatureUnit="${temperatureUnit}"
-                                actionPath="/adminSetup/energyCompany/schedules"
+                                actionPath="${schedulesUrl}"
                                 thermostatType="${schedule.thermostatType}"
                                 styleClass="vh stacked"
                                 customActions="true"
@@ -118,7 +119,7 @@
                                         thermostatIds="${thermostatIds}"
                                         accountId="${accountId}"
                                         temperatureUnit="${temperatureUnit}"
-                                        actionPath="/adminSetup/energyCompany/schedules/save?ecId=${ecId}"
+                                        actionPath="${schedulesUrl}/save?ecId=${ecId}"
                                         thermostatType="${thermostatType}"/>
                     </c:forEach>
                 </div>

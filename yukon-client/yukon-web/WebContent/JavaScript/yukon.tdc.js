@@ -226,10 +226,9 @@ yukon.tdc = (function () {
                 $.ajax({
                     url : $("#altScanRateForm").attr("action"),
                     data : $("#altScanRateForm").serialize(),
-                    type : "POST",
-                    success : function (data) {
-                        $('#tdc-popup').dialog('close');
-                    }
+                    type : "POST"
+                }).done(function (data, textStatus, jqXHR) {
+                    $('#tdc-popup').dialog('close');
                 });
             });
             $(document).on('click', '.f-manualEntry-send', function() {
@@ -240,10 +239,9 @@ yukon.tdc = (function () {
                 $.ajax({
                     url : $("#enableDisableForm").attr("action"),
                     data : $("#enableDisableForm").serialize(),
-                    type : "POST",
-                    success : function (data) {
-                        $('#tdc-popup').dialog('close');
-                    }
+                    type : "POST"
+                }).done(function (data, textStatus, jqXHR) {
+                    $('#tdc-popup').dialog('close');
                 });
 
             });
@@ -256,10 +254,9 @@ yukon.tdc = (function () {
                 $.ajax({
                     url: yukon.url('/tools/data-viewer/tagsSave'),
                     data: $("#tagsForm").serialize(),
-                    type: "POST",
-                    success: function(data) {
-                        $('#tdc-popup').dialog('close');
-                    }
+                    type: "POST"
+                }).done(function (data, textStatus, jqXHR) {
+                    $('#tdc-popup').dialog('close');
                 });
             });
             

@@ -7,7 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="adminSetup" page="operatorLogin.home">
-
+<cti:url var="removeUrl" value="/adminSetup/energyCompany/operatorLogin/remove"/>
     <script>
         function addUser(selectedItems, picker) {
             $('#userId').value = selectedItems[0][picker.idFieldName];
@@ -20,7 +20,7 @@
              var data = {};
              data.userId = userId;
              data.ecId = ecId;
-             $.post('/adminSetup/energyCompany/operatorLogin/remove', data).done(function(data) {  
+             $.post('${removeUrl}', data).done(function(data) {  
                  $("#"+userId).hide();
            });
         });
@@ -35,18 +35,16 @@
                 $.ajax({
                     type: "POST",
                     url: anchor.attr("href"),
-                    datatype: "json",
-                    success: function(jsonResponse) {
-                        icon.removeClass("icon-accept");
-                        icon.removeClass("icon-delete");
-                        icon.removeClass("icon-spinner");
-                        icon.addClass(jsonResponse.icon);
-                        icon.attr("title",jsonResponse.loginStatus);
-                    },
-                    error: function() {
-                        icon.removeClass("icon-spinner");
-                        icon.attr("class", originalClasses);
-                    }
+                    datatype: "json"
+                }).done(function (jsonResponse, textStatus, jqXHR) {
+                    icon.removeClass("icon-accept");
+                    icon.removeClass("icon-delete");
+                    icon.removeClass("icon-spinner");
+                    icon.addClass(jsonResponse.icon);
+                    icon.attr("title",jsonResponse.loginStatus);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    icon.removeClass("icon-spinner");
+                    icon.attr("class", originalClasses);
                 });
             });
         });

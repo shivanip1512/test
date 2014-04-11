@@ -11,6 +11,7 @@
     <cti:url var="generatedPasswordUrl" value="/stars/operator/account/generatePassword" />
     
     <script>
+        
         function generatePassword() {
             var dataHash = {userGroupName : $('#userGroupName').val()};
             var userId = $('#userId');
@@ -19,15 +20,14 @@
             }
 
             $.ajax({
-              url: '${generatedPasswordUrl}',
-              data: dataHash,
-              success: function(data){
-                   $('#password1').val(data);
-                   $('#password2').val(data);
-                   $("#showPasswordCheckbox").attr('checked', true);
-                   showPassword();
-              }
-           });
+                url: '${generatedPasswordUrl}',
+                data: dataHash
+            }).done(function (data, textStatus, jqXHR) {
+                 $('#password1').val(data);
+                 $('#password2').val(data);
+                 $("#showPasswordCheckbox").prop('checked', true);
+                 showPassword();
+            });
         };
 
         function showPassword() {

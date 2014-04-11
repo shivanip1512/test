@@ -81,7 +81,8 @@
             <cti:param name="monitorId" value="${monitor.id}"/>
         </cti:url>
         <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-        <cti:button nameKey="back" href="/meter/start"/>
+        <cti:url var="startUrl" value="/meter/start"/>
+        <cti:button nameKey="back" href="${startUrl}"/>
     </div>
 
 </cti:standardPage>

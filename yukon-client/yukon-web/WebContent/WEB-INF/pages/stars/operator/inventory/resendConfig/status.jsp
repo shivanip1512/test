@@ -14,10 +14,9 @@
 $(document).on('click', 'a.failedItems', function() {
     $.ajax({
         url: 'viewFailed',
-        data: {"taskId": '${task.taskId}'},
-        success: function(data) {
-            $('#failedContainer').html(data);
-        }
+        data: {"taskId": '${task.taskId}'}
+    }).done(function (data, textStatus, jqXHR) {
+        $('#failedContainer').html(data);
     });
 });
 

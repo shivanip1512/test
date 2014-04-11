@@ -56,16 +56,15 @@
                 var chartId = '${chartId}';
                 $.ajax({
                     url: '${chartUrl}',
-                    dataType : 'json',
-                    success: function(data) {
-                        yukon.flot.addChart({
-                            chartId: chartId,
-                            type: data.type,
-                            data: data.datas,
-                            options: data.options
-                        });
-                        yukon.flot.charts[chartId].methods.plotGraph(chartId);
-                    }
+                    dataType : 'json'
+                }).done(function (data, textStatus, jqXHR) {
+                    yukon.flot.addChart({
+                        chartId: chartId,
+                        type: data.type,
+                        data: data.datas,
+                        options: data.options
+                    });
+                    yukon.flot.charts[chartId].methods.plotGraph(chartId);
                 });
             });
         </script>

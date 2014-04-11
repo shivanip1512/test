@@ -402,22 +402,21 @@ yukon.flot = (function () {
             /* validation */
             _validateReloadParams(params);
             $.ajax({
-                url: params.dataUrl,
-                success: function(data) {
-                    /* if the chart hasn't been added yet, add it */
-                    if (typeof mod.charts[params.chartId] === 'undefined') {
-                        mod.addChart({
-                            chartId : params.chartId,
-                            type : data.type,
-                            options : data.options,
-                            methods : data.methods,
-                            data : data.datas
-                        });
-                    }
-                    mod.charts[params.chartId].options = _getDefaultMergedOptions(data.type, data.options);
-                    mod.charts[params.chartId].data_with_meta = data.datas;
-                    mod.charts[params.chartId].methods.plotGraph(params.chartId);
+                url: params.dataUrl
+            }).done(function (data, textStatus, jqXHR) {
+                /* if the chart hasn't been added yet, add it */
+                if (typeof mod.charts[params.chartId] === 'undefined') {
+                    mod.addChart({
+                        chartId : params.chartId,
+                        type : data.type,
+                        options : data.options,
+                        methods : data.methods,
+                        data : data.datas
+                    });
                 }
+                mod.charts[params.chartId].options = _getDefaultMergedOptions(data.type, data.options);
+                mod.charts[params.chartId].data_with_meta = data.datas;
+                mod.charts[params.chartId].methods.plotGraph(params.chartId);
             });
         }
     };

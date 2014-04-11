@@ -14,10 +14,9 @@ updateFeederBankInfo = function () {
     $.ajax({
         url: yukon.url('/capcontrol/move/feederBankInfo'),
         method: 'post',
-        data: params,
-        success: function(data) {
-            $('#controlOrders').html(data);
-        }
+        data: params
+    }).done(function (data, textStatus, jqXHR) {
+        $('#controlOrders').html(data);
     });
 }
 

@@ -20,12 +20,11 @@ $(function(){
 	
 	$("a.f-toggleJobEnabled").click(function(e){
 		$.ajax({
-			url: '${toggleJobAjaxUrl}?jobId=' + $(e.currentTarget).attr('data-jobid'),
-			success: function(data) {
-				var icon = 'icon-disabled';
-				if (data == true) icon = 'icon-enabled';
-				$(e.currentTarget).removeClass("icon-enabled icon-disabled").addClass(icon).attr('title', $(e.currentTarget).attr('data-'+ !data +'jobNameMsg'));
-			}
+			url: '${toggleJobAjaxUrl}?jobId=' + $(e.currentTarget).attr('data-jobid')
+		}).done(function (data, textStatus, jqXHR) {
+			var icon = 'icon-disabled';
+			if (data == true) icon = 'icon-enabled';
+			$(e.currentTarget).removeClass("icon-enabled icon-disabled").addClass(icon).attr('title', $(e.currentTarget).attr('data-'+ !data +'jobNameMsg'));
 		});
 	});
 });

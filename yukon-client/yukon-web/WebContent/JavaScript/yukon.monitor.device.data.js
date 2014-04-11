@@ -82,21 +82,19 @@ yukon.DeviceDataMonitor = (function () {
             $.ajax({
                 url: 'getViolationsCount',
                 data: {'monitorId': $('#monitorId').val()},
-                dataType: 'json',
-                success: function (data) {
-                    clearInterval(_violations_interval_id);
-                    if (data.status === 'working') {
-                        _violations_interval_id = setInterval(_get_violations_count, 3000);
-                    } else {
-                        var violations_container = $(_violations_loading_selector).closest('span');
-                        violations_container.html(data.count);
-                        
-                        if (data.count === 0) return;
-                        var report_links = $(_violations_links_selector).clone();
-                        report_links.removeClass("dn");
-                        violations_container.append(report_links);
-                        return;
-                    }
+                dataType: 'json'
+            }).done(function (data, textStatus, jqXHR) {
+                clearInterval(_violations_interval_id);
+                if (data.status === 'working') {
+                    _violations_interval_id = setInterval(_get_violations_count, 3000);
+                } else {
+                    var violations_container = $(_violations_loading_selector).closest('span');
+                    violations_container.html(data.count);
+                    if (data.count === 0) return;
+                    var report_links = $(_violations_links_selector).clone();
+                    report_links.removeClass("dn");
+                    violations_container.append(report_links);
+                    return;
                 }
             });
         },
@@ -153,13 +151,12 @@ yukon.DeviceDataMonitor = (function () {
             }
             _supported_counts_xhr = $.ajax({
                 url: url,
-                data: data,
-                success: function (data) {
+                data: data
+            }).done(function (data, textStatus, jqXHR) {
                     _get_supported_counts_success(data, '.f-supported_devices_count');
                     if(doValidate)
                     	_validate_processors();
-                }})
-            ;
+            });
         },
 
         _str_equal = function ( str1, str2 ) {
@@ -294,14 +291,13 @@ yukon.DeviceDataMonitor = (function () {
             problemAnchor.next().show();
             problemAnchor.hide();
             $.ajax({
-                url: problemAnchor.attr('data-url'),
-                success: function (transport) {
-                    var problemListContainer = $('#'+ problemAnchor.attr('target-id'));
-                    problemListContainer.html(transport);
-                    problemListContainer.dialog({width: "auto", minWidth: 500, height: 500, modal: true, title: problemAnchor.attr('target-title')});
-                    problemAnchor.next().hide();
-                    problemAnchor.show();
-                }
+                url: problemAnchor.attr('data-url')
+            }).done(function (transport, textStatus, jqXHR) {
+                var problemListContainer = $('#'+ problemAnchor.attr('target-id'));
+                problemListContainer.html(transport);
+                problemListContainer.dialog({width: "auto", minWidth: 500, height: 500, modal: true, title: problemAnchor.attr('target-title')});
+                problemAnchor.next().hide();
+                problemAnchor.show();
             });
         },
 
@@ -411,27 +407,25 @@ yukon.DeviceDataMonitor = (function () {
             }
             $.ajax({
                 url: _url_states,
-                data: {'stateGroupId': state_group_id},
-                success: function (data) {
-                    var DOM_states = row.find('.f-states');	// Div or control?
-                    var ctrl_name = DOM_states.attr('name') != undefined ? DOM_states.attr('name') : DOM_states.find(':input').attr('name'); 
-                    if (data.states.length > 1) {
-                        DOM_states.replaceWith('<select class="f-states" name="'+ ctrl_name +'"></select>');
-                        var state_select = row.find('.f-states');
-                        for (var ii=0; ii < data.states.length; ii++) {
-                            state_select.append('<option value="'+state_group_id+':'+data.states[ii].id+'">'+data.states[ii].text+'</option>');
-                        }
-                    } else {
-                        if (data.states.length == 0) {
-                            _blankout_states(row);
-	                    } else if (data.states.length == 1) {
-	                        DOM_states.replaceWith('<div class="f-states"><input type="hidden" name="'+ ctrl_name +'" value="'+ state_group_id+':'+data.states[0].id+'">'+ data.states[0].text +'</div>');
-	                    }
+                data: {'stateGroupId': state_group_id}
+            }).done(function (data, textStatus, jqXHR) {
+                var DOM_states = row.find('.f-states');	// Div or control?
+                var ctrl_name = DOM_states.attr('name') != undefined ? DOM_states.attr('name') : DOM_states.find(':input').attr('name'); 
+                if (data.states.length > 1) {
+                    DOM_states.replaceWith('<select class="f-states" name="'+ ctrl_name +'"></select>');
+                    var state_select = row.find('.f-states');
+                    for (var ii=0; ii < data.states.length; ii++) {
+                        state_select.append('<option value="'+state_group_id+':'+data.states[ii].id+'">'+data.states[ii].text+'</option>');
                     }
-                },
-                complete: function () {
-                    _get_supported_counts();
+                } else {
+                    if (data.states.length == 0) {
+                        _blankout_states(row);
+                    } else if (data.states.length == 1) {
+                        DOM_states.replaceWith('<div class="f-states"><input type="hidden" name="'+ ctrl_name +'" value="'+ state_group_id+':'+data.states[0].id+'">'+ data.states[0].text +'</div>');
+                    }
                 }
+            }).always( function (data, textStatus, jqXHR) {
+                _get_supported_counts();
             });
         }, // ENDS _state_group_changed_worker
 
@@ -481,29 +475,28 @@ yukon.DeviceDataMonitor = (function () {
             }
             _supported_counts_xhr[row_id] = $.ajax({
                 url: _url_state_groups,
-                data: {'attributeKey': attr_val, 'groupName': $('#groupName').val()},
-                success: function (data) {
-                    DOM_feedback.remove();
-                    if (data.stateGroups.length > 1) {
-                        DOM_stategroups.replaceWith('<select class="f-state_group" name="'+ ctrl_name +'"></select>');
-                        DOM_stategroups = row.find('select.f-state_group');
-                        for (var ii=0; ii < data.stateGroups.length; ii++) {
-                            DOM_stategroups.append('<option value="'+data.stateGroups[ii].id+'">'+data.stateGroups[ii].name+'</option>');
-                        }
-                    } else {
-                        var str = '<div class="f-state_group"><input type="hidden" name="'+ ctrl_name +'"';
-                        if (data.stateGroups.length == 0) {
-                            DOM_stategroups.replaceWith(str +' value="">'+ $('#str_na').text() +'</div>');
-	                    } else if (data.stateGroups.length == 1) {
-	                        var fullString = str +' value="'+ data.stateGroups[0].id +'">'+ data.stateGroups[0].name +'</div>';
-	                        DOM_stategroups.replaceWith(fullString);
-	                    }
-                    	DOM_stategroups = row.find('.f-state_group input');
+                data: {'attributeKey': attr_val, 'groupName': $('#groupName').val()}
+            }).done(function (data, textStatus, jqXHR) {
+                DOM_feedback.remove();
+                if (data.stateGroups.length > 1) {
+                    DOM_stategroups.replaceWith('<select class="f-state_group" name="'+ ctrl_name +'"></select>');
+                    DOM_stategroups = row.find('select.f-state_group');
+                    for (var ii=0; ii < data.stateGroups.length; ii++) {
+                        DOM_stategroups.append('<option value="'+data.stateGroups[ii].id+'">'+data.stateGroups[ii].name+'</option>');
                     }
-                    DOM_stategroups.trigger('change');
-                    if (data.stateGroups.length == 0)
-                        _blankout_states(row);
+                } else {
+                    var str = '<div class="f-state_group"><input type="hidden" name="'+ ctrl_name +'"';
+                    if (data.stateGroups.length == 0) {
+                        DOM_stategroups.replaceWith(str +' value="">'+ $('#str_na').text() +'</div>');
+                    } else if (data.stateGroups.length == 1) {
+                        var fullString = str +' value="'+ data.stateGroups[0].id +'">'+ data.stateGroups[0].name +'</div>';
+                        DOM_stategroups.replaceWith(fullString);
+                    }
+                	DOM_stategroups = row.find('.f-state_group input');
                 }
+                DOM_stategroups.trigger('change');
+                if (data.stateGroups.length == 0)
+                    _blankout_states(row);
             });
             
             var attributeIsUNSELECTED = attr_val == '-1';
@@ -592,18 +585,17 @@ yukon.DeviceDataMonitor = (function () {
             }
             _group_count_xhr = $.ajax({
                 url: _url_device_group_count,
-                data: {'groupName': groupName},
-                success: function (data) {
-                    $(_device_group_count).text(data.count);
-                    $(_device_group_count).prev().hide();
-                    $(_device_group_count).show();
-                    if( data.count > 0 )
-                        $('#monitor .f-add_processor').removeAttr("disabled");
-                    else
-                        $('#monitor .f-add_processor').attr("disabled", "disabled");
-                }
+                data: {'groupName': groupName}
+            }).done(function (data, textStatus, jqXHR) {
+                $(_device_group_count).text(data.count);
+                $(_device_group_count).prev().hide();
+                $(_device_group_count).show();
+                if( data.count > 0 )
+                    $('#monitor .f-add_processor').removeAttr("disabled");
+                else
+                    $('#monitor .f-add_processor').attr("disabled", "disabled");
             });
-            
+
             var procs = $('tr.processor .f-attribute');
             if(procs.length == 0)                       // if no processors:
                 _get_supported_counts();
