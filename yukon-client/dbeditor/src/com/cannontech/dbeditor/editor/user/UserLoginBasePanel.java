@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.editor.user;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -14,13 +15,16 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -44,7 +48,6 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -52,6 +55,8 @@ import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
@@ -62,6 +67,7 @@ public class UserLoginBasePanel extends DataInputPanel {
     private AuthenticationService authenticationService = YukonSpringHook.getBean(AuthenticationService.class);
     private UserGroupDao userGroupDao = YukonSpringHook.getBean(UserGroupDao.class);
     private YukonUserDao yukonUserDao = YukonSpringHook.getBean(YukonUserDao.class);
+    private YukonEnergyCompanyService ecService = YukonSpringHook.getBean(YukonEnergyCompanyService.class);
 
     private JLabel ivjJLabelUserName = null;
     private JPanel ivjJPanelLoginPanel = null;
@@ -79,7 +85,7 @@ public class UserLoginBasePanel extends DataInputPanel {
     private boolean passwordRequiresChanging = false;
     private long oldEnergyCompanyID = -1;
     private JCheckBox ivjJCheckBoxEnableEC = null;
-    private JComboBox ivjJComboBoxEnergyCompany = null;
+    private JComboBox<EnergyCompany> ivjJComboBoxEnergyCompany = null;
     private JPanel ivjJPanelEC = null;
     private String initialUsername;
 
@@ -141,24 +147,33 @@ public class UserLoginBasePanel extends DataInputPanel {
         return ivjJCheckBoxEnableLogin;
     }
 
-    private JComboBox getJComboBoxEnergyCompany() {
+    private JComboBox<EnergyCompany> getJComboBoxEnergyCompany() {
         if (ivjJComboBoxEnergyCompany == null) {
             try {
-                ivjJComboBoxEnergyCompany = new JComboBox();
+                ivjJComboBoxEnergyCompany = new JComboBox<>();
                 ivjJComboBoxEnergyCompany.setName("JComboBoxEnergyCompany");
                 ivjJComboBoxEnergyCompany.setPreferredSize(new Dimension(215, 23));
                 ivjJComboBoxEnergyCompany.setMinimumSize(new Dimension(215, 23));
-                // user code begin {1}
                 ivjJComboBoxEnergyCompany.setEnabled(false);
                 ivjJComboBoxEnergyCompany.setToolTipText("Only for use with STARS.  Verify that STARS and its " +
                 		"operator groups have been properly configured.");
-                // user code end
+                ivjJComboBoxEnergyCompany.setRenderer(new DefaultListCellRenderer() {
+                   @Override
+                    public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                             boolean isSelected, boolean cellHasFocus) {
+                         super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                         if (value instanceof EnergyCompany) {
+                             EnergyCompany ec = (EnergyCompany) value;
+                             setText(ec.getName());
+                         }
+                         return this;
+                    }
+                });
             } catch (Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
                 handleException(ivjExc);
             }
         }
+        
         return ivjJComboBoxEnergyCompany;
     }
 
@@ -221,8 +236,9 @@ public class UserLoginBasePanel extends DataInputPanel {
             ivjJListAuthType.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
-                    if (e.getStateChange() == ItemEvent.DESELECTED)
+                    if (e.getStateChange() == ItemEvent.DESELECTED) {
                         return;
+                    }
                     AuthenticationCategory type = (AuthenticationCategory) ivjJListAuthType.getSelectedItem();
                     boolean shouldSetPass = authenticationService.supportsPasswordSet(type.getSupportingAuthType());
                     if (type != initialAuthenticationCategory) {
@@ -300,7 +316,9 @@ public class UserLoginBasePanel extends DataInputPanel {
             ivjJListUserGroup.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
-                    if (e.getStateChange() == ItemEvent.DESELECTED) return;
+                    if (e.getStateChange() == ItemEvent.DESELECTED) {
+                        return;
+                    }
                     fireInputUpdate();
                 }
             });
@@ -673,14 +691,19 @@ public class UserLoginBasePanel extends DataInputPanel {
         if (getJCheckBoxEnableEC().isSelected()) {
             IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
-            List<LiteEnergyCompany> companies = new ArrayList<LiteEnergyCompany>(cache.getAllEnergyCompanies());
-            Collections.sort(companies, LiteComparators.liteStringComparator);
+            List<EnergyCompany> companies = new ArrayList<>(ecService.getAllEnergyCompanies());
+            Collections.sort(companies, new Comparator<EnergyCompany>() {
+                @Override
+                public int compare(EnergyCompany energyCompanyA, EnergyCompany energyCompanyB) {
+                    return energyCompanyA.getName().compareToIgnoreCase(energyCompanyB.getName());
+                }
+            });
 
             getJComboBoxEnergyCompany().removeAllItems();
-            for (int j = 0; j < companies.size(); j++) {
-                // weed out the default energy company
-                if (companies.get(j).getEnergyCompanyID() != -1)
-                    getJComboBoxEnergyCompany().addItem(companies.get(j));
+            for (EnergyCompany energyCompany : companies) {
+                if (energyCompany.getId() != YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID) {
+                    getJComboBoxEnergyCompany().addItem(energyCompany);
+                }
             }
 
         }
@@ -773,9 +796,9 @@ public class UserLoginBasePanel extends DataInputPanel {
         if (company != -1) {
             getJCheckBoxEnableEC().doClick();
             for (int d = 0; d < getJComboBoxEnergyCompany().getModel().getSize(); d++) {
-                LiteEnergyCompany ceo = (LiteEnergyCompany) getJComboBoxEnergyCompany().getModel().getElementAt(d);
-                if (ceo.getLiteID() == company) {
-                    getJComboBoxEnergyCompany().setSelectedItem(ceo);
+                EnergyCompany energyCompany = getJComboBoxEnergyCompany().getModel().getElementAt(d);
+                if (energyCompany.getId() == company) {
+                    getJComboBoxEnergyCompany().setSelectedItem(energyCompany);
                     oldEnergyCompanyID = company;
                     break;
                 }
