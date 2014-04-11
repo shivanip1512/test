@@ -22,16 +22,16 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -45,13 +45,13 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.DEVICE_RECONFIG)
 public class DeviceReconfigController {
 
-    private InventoryCollectionFactoryImpl inventoryCollectionFactory;
-    private CommandScheduleDao commandScheduleDao;
-    private InventoryConfigEventLogService inventoryConfigEventLogService;
-    private InventoryConfigTaskDao inventoryConfigTaskDao;
-    private MemoryCollectionProducer memoryCollectionProducer;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private EnergyCompanyDao energyCompanyDao;
+    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private CommandScheduleDao commandScheduleDao;
+    @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
+    @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
+    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     private class OptionsValidator extends SimpleValidator<DeviceReconfigOptions> {
 
@@ -78,8 +78,8 @@ public class DeviceReconfigController {
     private void setupModelMap(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         inventoryCollectionFactory.addCollectionToModelMap(request, modelMap);
         
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        List<CommandSchedule> schedules = commandScheduleDao.getAll(energyCompany.getEnergyCompanyID());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        List<CommandSchedule> schedules = commandScheduleDao.getAll(energyCompany.getId());
         modelMap.addAttribute("schedules", schedules);
     }
     
@@ -87,7 +87,7 @@ public class DeviceReconfigController {
     public String save(@ModelAttribute("deviceReconfigOptions") DeviceReconfigOptions deviceReconfigOptions, BindingResult bindingResult, 
                        HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext) throws ServletRequestBindingException {
 
-        int energyCompanyId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
+        int energyCompanyId = ecService.getEnergyCompany(userContext.getYukonUser()).getId();
         OptionsValidator validator = new OptionsValidator();
         validator.validate(deviceReconfigOptions, bindingResult);
 
@@ -168,41 +168,6 @@ public class DeviceReconfigController {
         inventoryConfigEventLogService.taskDeleted(userContext.getYukonUser(), task.getTaskName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.deviceReconfig.deletionSuccessful", task.getTaskName()));
         return "redirect:/stars/operator/inventory/home";
-    }
-    
-    @Autowired
-    public void setInventoryCollectionFactory(InventoryCollectionFactoryImpl inventoryCollectionFactory) {
-        this.inventoryCollectionFactory = inventoryCollectionFactory;
-    }
-    
-    @Autowired
-    public void setCommandScheduleDao(CommandScheduleDao commandScheduleDao) {
-        this.commandScheduleDao = commandScheduleDao;
-    }
-    
-    @Autowired
-    public void setInventoryConfigEventLogService(InventoryConfigEventLogService inventoryConfigEventLogService) {
-        this.inventoryConfigEventLogService = inventoryConfigEventLogService;
-    }
-    
-    @Autowired
-    public void setInventoryConfigTaskDao(InventoryConfigTaskDao inventoryConfigTaskDao) {
-        this.inventoryConfigTaskDao = inventoryConfigTaskDao;
-    }
-    
-    @Autowired
-    public void setMemoryCollectionProducer(MemoryCollectionProducer memoryCollectionProducer) {
-        this.memoryCollectionProducer = memoryCollectionProducer;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
     }
     
 }

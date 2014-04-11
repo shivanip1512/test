@@ -19,7 +19,6 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
@@ -118,15 +117,6 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
             }
         }
         return null;
-    }
-
-    @Override
-    public LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
-        LiteEnergyCompany liteEnergyCompany = databaseCache.getALiteEnergyCompanyByUserID(user);
-        if (liteEnergyCompany == null) {
-            return getEnergyCompany(defaultEcId);
-        }
-        return liteEnergyCompany;
     }
 
     @Override

@@ -8,11 +8,10 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
-import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 /**
  * @author yao
@@ -63,8 +62,9 @@ public class StarsYukonUser {
 		if (customer != null) {
 			Vector<Integer> acctIDs = customer.getAccountIDs();
 			int[] accountIDs = new int[ acctIDs.size() ];
-			for (int i = 0; i < acctIDs.size(); i++)
-				accountIDs[i] = acctIDs.get(i).intValue();
+			for (int i = 0; i < acctIDs.size(); i++) {
+                accountIDs[i] = acctIDs.get(i).intValue();
+            }
 			
 			return accountIDs;
 		}
@@ -75,19 +75,22 @@ public class StarsYukonUser {
 	private void init() throws InstantiationException {
 	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 	    if (rolePropertyDao.checkRole(YukonRole.OPERATOR_ADMINISTRATOR, this.getYukonUser())) {
-			LiteEnergyCompany energyCompany = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( getYukonUser() );
-			if (energyCompany == null)
-				throw new InstantiationException( "Cannot find the energy company for user id = " + getYukonUser().getUserID() );
+			EnergyCompany energyCompany = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(getYukonUser());
+			if (energyCompany == null) {
+                throw new InstantiationException( "Cannot find the energy company for user id = " + getYukonUser().getUserID() );
+            }
 			
-			energyCompanyID = energyCompany.getEnergyCompanyID();
+			energyCompanyID = energyCompany.getId();
 		}
 		else if (rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, this.getYukonUser())) {
 			LiteContact liteContact = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact( getUserID() );
-			if (liteContact == null)
-				throw new InstantiationException( "Cannot find contact information for user id = " + getYukonUser().getUserID() );
+			if (liteContact == null) {
+                throw new InstantiationException( "Cannot find contact information for user id = " + getYukonUser().getUserID() );
+            }
 			customer = YukonSpringHook.getBean(ContactDao.class).getCustomer( liteContact.getContactID() );
-			if (customer == null)
-				throw new InstantiationException( "Cannot find customer information for user id = " + getYukonUser().getUserID() );
+			if (customer == null) {
+                throw new InstantiationException( "Cannot find customer information for user id = " + getYukonUser().getUserID() );
+            }
 			
 			energyCompanyID = customer.getEnergyCompanyID();
 		}
@@ -106,25 +109,33 @@ public class StarsYukonUser {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final StarsYukonUser other = (StarsYukonUser) obj;
         if (customer == null) {
-            if (other.customer != null)
+            if (other.customer != null) {
                 return false;
-        } else if (!customer.equals(other.customer))
+            }
+        } else if (!customer.equals(other.customer)) {
             return false;
-        if (energyCompanyID != other.energyCompanyID)
+        }
+        if (energyCompanyID != other.energyCompanyID) {
             return false;
+        }
         if (yukonUser == null) {
-            if (other.yukonUser != null)
+            if (other.yukonUser != null) {
                 return false;
-        } else if (!yukonUser.equals(other.yukonUser))
+            }
+        } else if (!yukonUser.equals(other.yukonUser)) {
             return false;
+        }
         return true;
     }
     

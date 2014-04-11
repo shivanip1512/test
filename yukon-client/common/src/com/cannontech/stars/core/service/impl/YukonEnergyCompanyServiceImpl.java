@@ -25,9 +25,11 @@ import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -65,7 +67,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
                 cachedRouteIds.clear();
             }
         });
-        
+
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY,
                 new DatabaseChangeEventListener() {
             @Override
@@ -75,7 +77,24 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
                 }
             }
         });
-        
+
+        asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
+            @Override
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {
+                    synchronized (YukonEnergyCompanyServiceImpl.this) {
+                        if (energyCompanies != null) {
+                            for (EnergyCompany energyCompany : energyCompanies.values()) {
+                                if (energyCompany.getUser().getUserID() == dbChange.getId()) {
+                                    energyCompanies = null;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -101,7 +120,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
     
     @Override
-    public EnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
+    public EnergyCompany getEnergyCompany(LiteYukonUser user) {
         try {
             return getEnergyCompanyByOperator(user);
         } catch (EnergyCompanyNotFoundException e) {
@@ -109,40 +128,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
             log.debug("EnergyCompany By Operator (" + user + ") Not Found: " + e);
         }
 
-        // primary contact
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT ectam.EnergyCompanyId");
-            sql.append("FROM ECToAccountMapping ectam, CustomerAccount ca, Customer cu, Contact c");
-            sql.append("WHERE ectam.AccountId = ca.AccountId");
-            sql.append("    AND ca.CustomerId = cu.CustomerId");
-            sql.append("    AND cu.PrimaryContactID = c.ContactID");
-            sql.append("    AND c.LoginId").eq(user.getUserID());
-
-            int ecId = jdbcTemplate.queryForInt(sql);
-            return getEnergyCompany(ecId);
-        } catch(IncorrectResultSizeDataAccessException e) {
-            log.debug("EnergyCompany By Contact (" + user + ") Not Found: " + e);
-        }
-
-        // additional contact
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT ectam.EnergyCompanyId");
-            sql.append("FROM ECToAccountMapping ectam, CustomerAccount ca,");
-            sql.append("    CustomerAdditionalContact cac, Contact c");
-            sql.append("WHERE ectam.AccountId = ca.AccountId");
-            sql.append("    AND ca.CustomerId = cac.CustomerID");
-            sql.append("    AND cac.ContactID = c.ContactID");
-            sql.append("    AND c.LoginId").eq(user.getUserID());
-
-            int ecId = jdbcTemplate.queryForInt(sql);
-            return getEnergyCompany(ecId);
-        } catch(IncorrectResultSizeDataAccessException e) {
-            log.debug("EnergyCompany By AdditionalContact (" + user + ") Not Found: " + e);
-        }
-
-        throw new EnergyCompanyNotFoundException("Energy company doesn't exist for user " + user);
+        return getEnergyCompany(getEnergyCompanyIdForUser(user));
     }
 
     @Override
@@ -161,7 +147,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         EnergyCompany energyCompany = getEnergyCompany(energyCompanyId); 
         return energyCompany;
     }
-    
+
     @Override
     public List<EnergyCompany> getAllEnergyCompanies() {
         return new ArrayList<>(getEnergyCompanies().values());
@@ -285,6 +271,8 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return Collections.unmodifiableList(routeList);
     }
     
+    
+    
     private List<LiteYukonPAObject> getRoutes(EnergyCompany energyCompany) {
         List<Integer> routeIDs = getRouteIds(energyCompany.getId());
         List<LiteYukonPAObject> routeList =  Lists.newArrayListWithCapacity(routeIDs.size());
@@ -296,7 +284,44 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return Collections.unmodifiableList(routeList);
     }
     
-    protected synchronized Map<Integer, EnergyCompany> getEnergyCompanies() {
+    /**
+     * Returns energy company id for customer account or default energy company's id
+     */
+    private int getEnergyCompanyIdForUser(LiteYukonUser user) {
+        // primary contact
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT ectam.EnergyCompanyId");
+            sql.append("FROM ECToAccountMapping ectam, CustomerAccount ca, Customer cu, Contact c");
+            sql.append("WHERE ectam.AccountId = ca.AccountId");
+            sql.append("    AND ca.CustomerId = cu.CustomerId");
+            sql.append("    AND cu.PrimaryContactID = c.ContactID");
+            sql.append("    AND c.LoginId").eq(user.getUserID());
+
+            return jdbcTemplate.queryForInt(sql);
+        } catch(IncorrectResultSizeDataAccessException e) {
+            log.debug("EnergyCompany By Contact (" + user + ") Not Found: " + e);
+        }
+
+        // additional contact
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT ectam.EnergyCompanyId");
+            sql.append("FROM ECToAccountMapping ectam, CustomerAccount ca,");
+            sql.append("    CustomerAdditionalContact cac, Contact c");
+            sql.append("WHERE ectam.AccountId = ca.AccountId");
+            sql.append("    AND ca.CustomerId = cac.CustomerID");
+            sql.append("    AND cac.ContactID = c.ContactID");
+            sql.append("    AND c.LoginId").eq(user.getUserID());
+
+            return jdbcTemplate.queryForInt(sql);
+        } catch(IncorrectResultSizeDataAccessException e) {
+            log.debug("EnergyCompany By AdditionalContact (" + user + ") Not Found: " + e);
+        }
+        return DEFAULT_ENERGY_COMPANY_ID;
+    }
+    
+    private synchronized Map<Integer, EnergyCompany> getEnergyCompanies() {
         if (energyCompanies == null) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT EC.EnergyCompanyId as EcId, ECM.EnergyCompanyId as ParentEcId, Name, PrimaryContactID,");

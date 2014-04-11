@@ -1,4 +1,3 @@
-<%@page import="com.cannontech.stars.energyCompany.dao.EnergyCompanyDao"%>
 <%@page import="com.cannontech.spring.YukonSpringHook"%>
 <%@ page language="java" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
@@ -15,6 +14,8 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="com.cannontech.user.YukonUserContext" %>
 <%@ page import="com.cannontech.servlet.YukonUserContextUtils" %>
+<%@ page import="com.cannontech.stars.core.service.YukonEnergyCompanyService" %>
+
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
@@ -26,9 +27,7 @@
     TimeZone tz = userContext.getTimeZone();
     LiteYukonUser user = userContext.getYukonUser();
     
-    if( YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(user) != null) { 
-    	energyCompanyID = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(user).getEnergyCompanyID();
-	}
+    energyCompanyID = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(user).getId();
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();
    	

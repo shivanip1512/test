@@ -66,7 +66,6 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
@@ -606,7 +605,7 @@ public class StarsAdminUtil {
                 LiteYukonUser liteUser =
                     YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(loginID.intValue());
 
-                if (YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteUser).getEnergyCompanyID() == member.getLiteID()) {
+                if (YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(liteUser).getId() == member.getLiteID()) {
                     map.setItemID(loginID);
                     map.setMappingCategory(EcMappingCategory.MEMBER_LOGIN);
                     Transaction.createTransaction(Transaction.DELETE, map).execute();

@@ -13,14 +13,14 @@ import com.cannontech.common.search.result.UltraLightYukonUser;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class ECOperatorCandidatePicker extends DatabasePicker<UltraLightYukonUser> {
 
-    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     private final static String[] searchColumnNames = new String[] {
         "UserId", "UserName"};
@@ -56,9 +56,8 @@ public class ECOperatorCandidatePicker extends DatabasePicker<UltraLightYukonUse
     protected void updateFilters(List<SqlFilter> sqlFilters,
             List<PostProcessingFilter<UltraLightYukonUser>> postProcessingFilters,
             String extraArgs, YukonUserContext userContext) {
-        LiteEnergyCompany energyCompany =
-            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        sqlFilters.add(new OperatorCandidateFilter(energyCompany.getEnergyCompanyID()));
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        sqlFilters.add(new OperatorCandidateFilter(energyCompany.getId()));
     }
     
     private static class ECOperatorCandidateRowMapper extends

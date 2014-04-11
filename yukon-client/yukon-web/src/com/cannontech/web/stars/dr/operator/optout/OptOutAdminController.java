@@ -34,9 +34,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.ProgramToAlternateProgramDao;
@@ -52,7 +50,7 @@ import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -76,10 +74,8 @@ public class OptOutAdminController {
     @Autowired private ProgramDao programDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ProgramToAlternateProgramDao programToAlternameProgramDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsEventLogService starsEventLogService;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private OptOutSurveyService optOutSurveyService;
     @Autowired private SelectionListService selectionListService;
     
@@ -94,9 +90,9 @@ public class OptOutAdminController {
                 YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, 
                 YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS); 
         
-        if(yukonEnergyCompanyService.isEnergyCompanyOperator(user)){
-            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-            model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
+        if(ecService.isEnergyCompanyOperator(user)){
+            EnergyCompany energyCompany = ecService.getEnergyCompany(user);
+            model.addAttribute("energyCompanyId", energyCompany.getId());
     
             Map<String, Object> optOutsJson = systemOptOuts(new ArrayList<Integer>(0), userContext);
             model.addAttribute("totalNumberOfAccounts", optOutsJson.get("totalNumberOfAccounts"));
@@ -107,7 +103,7 @@ public class OptOutAdminController {
             // programNameEnabledMap
             OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(user);
             Map<Integer, OptOutEnabled> programSpecificEnabledOptOuts = 
-                optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getEnergyCompanyId()); 
+                optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getId()); 
     
             Map<String, OptOutEnabled> programNameEnabledMap = Maps.newLinkedHashMap();
             for (Entry<Integer, OptOutEnabled> programOptOutEnabledEntry : programSpecificEnabledOptOuts.entrySet()) {
@@ -158,7 +154,7 @@ public class OptOutAdminController {
 
     @RequestMapping(value = "/operator/optOut/systemOptOuts", method = RequestMethod.POST)
     public @ResponseBody Map<String, Object>  systemOptOuts(@RequestBody List<Integer> assignedProgramIds, YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(userContext.getYukonUser());
         Map<String, Object> json = new HashMap<>();
 
         json.put("totalNumberOfAccounts", customerAccountDao.getTotalNumberOfAccounts(yukonEnergyCompany, assignedProgramIds));
@@ -296,7 +292,7 @@ public class OptOutAdminController {
         // Only load these events when they have the property set
         if (rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS, user)) {
         
-            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+            EnergyCompany energyCompany = ecService.getEnergyCompany(user);
             List<OptOutEvent> scheduledEvents = 
                 optOutEventDao.getAllScheduledOptOutEvents(energyCompany);
             
@@ -337,7 +333,7 @@ public class OptOutAdminController {
 
     private void setUpOptOutSurveys(LiteYukonUser user, ModelMap model) {
         if (rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT, user)) {
-            int energyCompanyId = energyCompanyDao.getEnergyCompany(user).getEnergyCompanyID();
+            int energyCompanyId = ecService.getEnergyCompany(user).getId();
             Set<OptOutSurvey> surveys = new HashSet<>(optOutSurveyService.findSurveys(energyCompanyId, 0, Integer.MAX_VALUE).getResultList());
             model.addAttribute("totalSurveys", surveys.size());
             final Date now = new Date();

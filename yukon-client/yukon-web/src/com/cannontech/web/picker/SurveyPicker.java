@@ -10,13 +10,13 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.survey.dao.impl.EnergyCompanyFilter;
 import com.cannontech.common.survey.dao.impl.SurveyRowMapper;
 import com.cannontech.common.survey.model.Survey;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class SurveyPicker extends DatabasePicker<Survey> {
-    private EnergyCompanyDao energyCompanyDao;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     private final static String[] searchColumnNames = new String[] {
             "surveyName", "surveyKey" };
@@ -39,9 +39,8 @@ public class SurveyPicker extends DatabasePicker<Survey> {
     protected void updateFilters(List<SqlFilter> sqlFilters,
             List<PostProcessingFilter<Survey>> postProcessingFilters,
             String extraArgs, YukonUserContext userContext) {
-        LiteEnergyCompany energyCompany =
-            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        sqlFilters.add(new EnergyCompanyFilter(energyCompany.getEnergyCompanyID()));
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        sqlFilters.add(new EnergyCompanyFilter(energyCompany.getId()));
     }
 
     @Override
@@ -52,10 +51,5 @@ public class SurveyPicker extends DatabasePicker<Survey> {
     @Override
     public List<OutputColumn> getOutputColumns() {
         return outputColumns;
-    }
-
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
     }
 }

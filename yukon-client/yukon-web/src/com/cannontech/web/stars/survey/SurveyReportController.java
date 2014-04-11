@@ -30,13 +30,12 @@ import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.simplereport.ColumnInfo;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.simplereport.YukonReportDefinition;
 import com.cannontech.simplereport.YukonReportDefinitionFactory;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -50,7 +49,6 @@ import com.google.common.collect.Maps;
 @RequestMapping("/surveyReport/*")
 public class SurveyReportController {
     @Autowired private SurveyDao surveyDao;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
@@ -125,7 +123,7 @@ public class SurveyReportController {
     }
 
     private String config(ModelMap model, Survey survey, YukonUserContext userContext) {
-        int ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
         List<Question> questions = surveyDao.getQuestionsBySurveyId(survey.getSurveyId());
         model.addAttribute("questions", questions);
         Map<Integer, Object> questionsById = Maps.newHashMap();
@@ -134,8 +132,8 @@ public class SurveyReportController {
                               new JsonSafeQuestion(question));
         }
         model.addAttribute("questionsById", questionsById);
-        model.addAttribute("ecId", ecId);
-        model.addAttribute("energyCompanyName", ecService.getEnergyCompany(ecId).getName());
+        model.addAttribute("ecId", energyCompany.getId());
+        model.addAttribute("energyCompanyName", energyCompany.getName());
 
         return "surveyReport/config.jsp";
     }
@@ -178,18 +176,17 @@ public class SurveyReportController {
         List<List<String>> data = simpleReportService.getFormattedData(reportDefinition, reportModel, userContext);
         model.addAttribute("data", data);
 
-        int ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
-        model.addAttribute("ecId", ecId);
-        model.addAttribute("energyCompanyName", ecService.getEnergyCompany(ecId).getName());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        model.addAttribute("ecId", energyCompany.getId());
+        model.addAttribute("energyCompanyName", energyCompany.getName());
 
         return "surveyReport/report.jsp";
     }
 
     private Survey verifyEnergyCompany(int surveyId, YukonUserContext userContext) {
         Survey survey = surveyDao.getSurveyById(surveyId);
-        LiteEnergyCompany energyCompany =
-            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        if (energyCompany.getEnergyCompanyID() != survey.getEnergyCompanyId()) {
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        if (energyCompany.getId() != survey.getEnergyCompanyId()) {
             throw new NotAuthorizedException("energy company mismatch");
         }
         return survey;

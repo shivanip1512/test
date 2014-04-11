@@ -36,10 +36,9 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -66,7 +65,6 @@ public class SurveyController {
 
     @Autowired private SurveyDao surveyDao;
     @Autowired private SurveyService surveyService;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private YukonEnergyCompanyService ecService;
 
     private Validator detailsValidator = new SimpleValidator<Survey>(Survey.class) {
@@ -130,7 +128,7 @@ public class SurveyController {
     public String list(ModelMap model, @ModelAttribute("backingBean") ListBackingBean backingBean, Integer ecId,
             YukonUserContext userContext) {
         if (ecId == null) {
-            ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
+            ecId = ecService.getEnergyCompany(userContext.getYukonUser()).getId();
         }
         SearchResults<Survey> surveys =
             surveyService.findSurveys(ecId, backingBean.getStartIndex(), backingBean.getItemsPerPage());
@@ -144,9 +142,9 @@ public class SurveyController {
     @RequestMapping("listTable")
     public String listTable(ModelMap model, @ModelAttribute("backingBean") ListBackingBean backingBean,
             YukonUserContext userContext) {
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
         SearchResults<Survey> surveys =
-            surveyService.findSurveys(energyCompany.getEnergyCompanyID(), backingBean.getStartIndex(),
+            surveyService.findSurveys(energyCompany.getId(), backingBean.getStartIndex(),
                 backingBean.getItemsPerPage());
         model.addAttribute("surveys", surveys);
 
@@ -161,9 +159,9 @@ public class SurveyController {
             Survey survey = verifyEditable(surveyId, userContext);
             surveys.add(survey);
         } else {
-            LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+            EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
             SearchResults<Survey> surveyResults =
-                surveyService.findSurveys(energyCompany.getEnergyCompanyID(), 0, Integer.MAX_VALUE);
+                surveyService.findSurveys(energyCompany.getId(), 0, Integer.MAX_VALUE);
             surveys = surveyResults.getResultList();
         }
         String sampleFile = sampleXmlFile(surveys);
@@ -234,10 +232,10 @@ public class SurveyController {
 
         List<MessageSourceResolvable> messages = surveyService.getKeyErrorsForQuestions(surveyId, userContext);
         flashScope.setMessage(messages, FlashScopeMessageType.WARNING);
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
 
-        int ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
-        model.addAttribute("ecId", ecId);
-        model.addAttribute("energyCompanyName", ecService.getEnergyCompany(ecId).getName());
+        model.addAttribute("ecId", energyCompany.getId());
+        model.addAttribute("energyCompanyName", energyCompany.getName());
 
         return "survey/edit.jsp";
     }
@@ -246,10 +244,10 @@ public class SurveyController {
     public String editDetails(ModelMap model, Integer surveyId, YukonUserContext userContext) {
         Survey survey;
 
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
         if (surveyId == null || surveyId == 0) {
             survey = new Survey();
-            survey.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
+            survey.setEnergyCompanyId(energyCompany.getId());
             survey.setSurveyKey(surveyDao.getNextSurveyKey());
         } else {
             survey = verifyEditable(surveyId, userContext);
@@ -401,8 +399,8 @@ public class SurveyController {
     }
 
     private Survey verifyEditable(Survey survey, YukonUserContext userContext) {
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        if (energyCompany.getEnergyCompanyID() != survey.getEnergyCompanyId()) {
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        if (energyCompany.getId() != survey.getEnergyCompanyId()) {
             throw new NotAuthorizedException("energy company mismatch");
         }
         return survey;

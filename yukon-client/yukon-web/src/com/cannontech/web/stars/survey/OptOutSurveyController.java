@@ -32,12 +32,12 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -53,12 +53,12 @@ import com.google.common.collect.Sets;
 public class OptOutSurveyController {
     private final static String baseKey = "yukon.web.modules.operator.surveyList";
 
-    private OptOutSurveyDao optOutSurveyDao;
-    private OptOutSurveyService optOutSurveyService;
-    private SurveyDao surveyDao;
-    private EnergyCompanyDao energyCompanyDao;
-    private PaoDao paoDao;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private OptOutSurveyDao optOutSurveyDao;
+    @Autowired private OptOutSurveyService optOutSurveyService;
+    @Autowired private SurveyDao surveyDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private YukonEnergyCompanyService ecService;
     
     private Validator validator = new SimpleValidator<OptOutSurveyDto>(OptOutSurveyDto.class) {
         @Override
@@ -80,10 +80,10 @@ public class OptOutSurveyController {
     public String list(ModelMap model,
             @ModelAttribute("backingBean") ListBackingBean backingBean,
             YukonUserContext userContext) {
-        LiteEnergyCompany energyCompany =
-            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        
         SearchResults<OptOutSurvey> optOutSurveys =
-            optOutSurveyService.findSurveys(energyCompany.getEnergyCompanyID(),
+            optOutSurveyService.findSurveys(energyCompany.getId(),
                                  backingBean.getStartIndex(),
                                  backingBean.getItemsPerPage());
         model.addAttribute("optOutSurveys", optOutSurveys);
@@ -96,7 +96,7 @@ public class OptOutSurveyController {
         Map<Integer, String> programNamesById = paoDao.getYukonPAONames(programIds);
         model.addAttribute("programNamesById", programNamesById);
 
-        model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
+        model.addAttribute("energyCompanyId", energyCompany.getId());
 
         return "optOutSurvey/list.jsp";
     }
@@ -150,9 +150,8 @@ public class OptOutSurveyController {
         if (optOutSurveyId == null || optOutSurveyId == 0) {
             optOutSurveyDto = new OptOutSurveyDto();
             optOutSurveyDto.setStartDate(new Date());
-            LiteEnergyCompany energyCompany =
-                energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-            optOutSurveyDto.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
+            EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+            optOutSurveyDto.setEnergyCompanyId(energyCompany.getId());
         } else {
             OptOutSurvey optOutSurvey =
                 optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
@@ -206,41 +205,9 @@ public class OptOutSurveyController {
 
     private void verifyEditable(int energyCompanyId,
             YukonUserContext userContext) {
-        LiteEnergyCompany energyCompany =
-            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        if (energyCompany.getEnergyCompanyID() != energyCompanyId) {
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        if (energyCompany.getId() != energyCompanyId) {
             throw new NotAuthorizedException("energy company mismatch");
         }
-    }
-
-    @Autowired
-    public void setOptOutSurveyDao(OptOutSurveyDao optOutSurveyDao) {
-        this.optOutSurveyDao = optOutSurveyDao;
-    }
-
-    @Autowired
-    public void setOptOutSurveyService(OptOutSurveyService optOutSurveyService) {
-        this.optOutSurveyService = optOutSurveyService;
-    }
-
-    @Autowired
-    public void setSurveyDao(SurveyDao surveyDao) {
-        this.surveyDao = surveyDao;
-    }
-
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
-    }
-
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    @Autowired
-    public void setDatePropertyEditorFactory(
-            DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
     }
 }

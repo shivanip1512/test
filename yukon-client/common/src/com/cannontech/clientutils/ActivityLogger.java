@@ -11,11 +11,11 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.activity.ActivityLog;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 /**
  * ActivityLogger provides a mechanism for applications to log interesting things that
@@ -83,10 +83,10 @@ public class ActivityLogger {
 			{	
 				LiteYukonUser liteUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser( userID );
 				if (liteUser != null) {
-				    LiteEnergyCompany liteComp = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( liteUser );
+				    EnergyCompany liteComp = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany( liteUser );
 				    if (liteComp != null)
 				    { 			
-				        energyCompanyID = liteComp.getEnergyCompanyID();
+				        energyCompanyID = liteComp.getId();
 				    }
 				}
 			}
@@ -112,7 +112,7 @@ public class ActivityLogger {
 							}
 							if(accountID == -1)
 							{					
-								accountID = ((Integer) acctIDs.get(0)).intValue();
+								accountID = acctIDs.get(0).intValue();
 							}
 						}
 					}

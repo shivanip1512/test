@@ -18,7 +18,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.activity.ActivityLogSummary;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.graph.GraphRenderers;
@@ -28,7 +27,8 @@ import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.util.SessionAttribute;
 
@@ -111,7 +111,8 @@ public class GraphBean extends Graph
 	 * Method setPeriod.
 	 * @param newPeriod java.lang.String
 	 */
-	public void setPeriod(String newPeriod)
+	@Override
+    public void setPeriod(String newPeriod)
 	{
 		//Actually compares the periods in super and this so we 
 		// know if the page must be set in this.
@@ -128,8 +129,9 @@ public class GraphBean extends Graph
 	 */
 	public void setGdefid(int newGdefid)
 	{
-		if( newGdefid != getGdefid())
-			setGraphDefinition(newGdefid);			
+		if( newGdefid != getGdefid()) {
+            setGraphDefinition(newGdefid);
+        }			
 	}
 	/**
 	 * Method getGdefid.
@@ -137,10 +139,11 @@ public class GraphBean extends Graph
 	 */
 	public int getGdefid()
 	{
-		if( getGraphDefinition() != null)
-			return getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue();
-		else
-			return -1;
+		if( getGraphDefinition() != null) {
+            return getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue();
+        } else {
+            return -1;
+        }
 	}
 	/**
 	 * Method setPointID.
@@ -148,8 +151,9 @@ public class GraphBean extends Graph
 	 */
 	public void setPointid(int newPointID)
 	{
-		if( newPointID != getPointid())
-			setPointIDs(newPointID);			
+		if( newPointID != getPointid()) {
+            setPointIDs(newPointID);
+        }			
 	}	
 	/**
 	 * Method getPointID.
@@ -157,10 +161,11 @@ public class GraphBean extends Graph
 	 */
 	public int getPointid()
 	{
-		if( getPointIDs() != null)
-			return getPointIDs()[0];
-		else
-			return -1;
+		if( getPointIDs() != null) {
+            return getPointIDs()[0];
+        } else {
+            return -1;
+        }
 	}
 	
 
@@ -199,8 +204,9 @@ public class GraphBean extends Graph
 	 */
 	public void setFormat(String newFormat)
 	{
-		if( !newFormat.equalsIgnoreCase(format))
-			format = newFormat;
+		if( !newFormat.equalsIgnoreCase(format)) {
+            format = newFormat;
+        }
 	}
 	
 	/**
@@ -277,14 +283,15 @@ public class GraphBean extends Graph
 	
 	public void encode(java.io.OutputStream out, String format) throws IOException
 	{
-		if( format.equalsIgnoreCase("png") )
-			encodePng(out);
-		else if( format.equalsIgnoreCase("jpg") )
-			encodeJpeg(out);
-		else if( format.equalsIgnoreCase("svg") )
-			encodeSVG(out);
-		else	//default to png
-			encodePng(out);
+		if( format.equalsIgnoreCase("png") ) {
+            encodePng(out);
+        } else if( format.equalsIgnoreCase("jpg") ) {
+            encodeJpeg(out);
+        } else if( format.equalsIgnoreCase("svg") ) {
+            encodeSVG(out);
+        } else {
+            encodePng(out);
+        }
 	}
 	
 
@@ -296,10 +303,11 @@ public class GraphBean extends Graph
 	 */
 	public SessionAttribute getDataNow(LiteYukonUser liteYukonUser, String[] custDevices)
 	{
-		LiteEnergyCompany liteEC = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteYukonUser);
+		EnergyCompany energyCompany = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(liteYukonUser);
 		int ecId = -1;
-		if (liteEC != null)
-			ecId = liteEC.getEnergyCompanyID();
+		if (energyCompany != null) {
+            ecId = energyCompany.getId();
+        }
 			
 		ActivityLogSummary actLogSummary = new ActivityLogSummary(liteYukonUser.getUserID(), ecId);
 		actLogSummary.retrieve();

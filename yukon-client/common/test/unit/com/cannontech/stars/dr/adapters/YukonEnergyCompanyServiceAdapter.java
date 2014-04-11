@@ -71,7 +71,7 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     }
 
     @Override
-    public EnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
+    public EnergyCompany getEnergyCompany(LiteYukonUser user) {
         throw new UnsupportedOperationException("not implemented");
     }
 

@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -23,9 +23,9 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 @CheckRoleProperty(YukonRoleProperty.DEVICE_RECONFIG)
 public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
     
-    private InventoryConfigTaskDao inventoryConfigTaskDao;
-    private InventoryConfigEventLogService inventoryConfigEventLogService;
-    private EnergyCompanyDao energyCompanyDao;
+    @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
+    @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     @Override
     public ModelAndView render(HttpServletRequest request,HttpServletResponse response) throws Exception {
@@ -33,8 +33,9 @@ public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("deviceReconfigMonitorsWidget/render.jsp");
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        List<InventoryConfigTask> tasks = inventoryConfigTaskDao.getAll(energyCompany.getEnergyCompanyID());
+
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        List<InventoryConfigTask> tasks = inventoryConfigTaskDao.getAll(energyCompany.getId());
         mav.addObject("tasks", tasks);
 
         return mav;
@@ -52,20 +53,5 @@ public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
         
         ModelAndView mav = render(request, response);
         return mav;
-    }
-
-    @Autowired
-    public void setInventoryConfigTaskDao(InventoryConfigTaskDao inventoryConfigTaskDao) {
-        this.inventoryConfigTaskDao = inventoryConfigTaskDao;
-    }
-    
-    @Autowired
-    public void setInventoryConfigEventLogService(InventoryConfigEventLogService inventoryConfigEventLogService) {
-        this.inventoryConfigEventLogService = inventoryConfigEventLogService;
-    }
-
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
     }
 }

@@ -12,9 +12,9 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideType;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
@@ -22,20 +22,19 @@ import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
 import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEnabledTemporaryOverride;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 /**
  * Implementation class for OptOutEventDao
  */
 public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDao {
 
-	private YukonJdbcTemplate yukonJdbcTemplate;
-	private NextValueHelper nextValueHelper;
-	
-	private EnergyCompanyDao energyCompanyDao;
+	@Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+	@Autowired private NextValueHelper nextValueHelper;
+	@Autowired private YukonEnergyCompanyService ecService;
 	
 	@Override
-	public List<OptOutCountsTemporaryOverride> getAllOptOutCounts(LiteEnergyCompany energyCompany) throws NoTemporaryOverrideException {
+	public List<OptOutCountsTemporaryOverride> getAllOptOutCounts(EnergyCompany energyCompany) throws NoTemporaryOverrideException {
 		
 		Date now = new Date();
 		
@@ -45,7 +44,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.COUNTS);
 		sql.append("	AND StartDate").lte(now);
 		sql.append("	AND StopDate").gt(now);
-		sql.append("	AND EnergyCompanyId").eq(energyCompany.getEnergyCompanyID());
+		sql.append("	AND EnergyCompanyId").eq(energyCompany.getId());
 		
 		List<OptOutCountsTemporaryOverride> settings = yukonJdbcTemplate.query(sql, new OptOutCountsTemporaryOverrideRowMapper());
 			
@@ -162,8 +161,8 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 	private void setTemporaryOverrideValue(OptOutTemporaryOverrideType type,
 			LiteYukonUser user, Date startDate, Date stopDate, Object value, Integer webpublishingProgramId) {
 
-		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-		int energyCompanyID = energyCompany.getEnergyCompanyID();
+		EnergyCompany energyCompany = ecService.getEnergyCompany(user);
+		int energyCompanyID = energyCompany.getId();
 		String typeString = type.toString();
 
 		// Update any existing override to end when the new override starts
@@ -227,21 +226,4 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 	        return result;
 	    }
 	}
-	
-	// DI Setters
-	@Autowired
-	public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
-	}
-	
-	@Autowired
-	public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-		this.energyCompanyDao = energyCompanyDao;
-	}
-	
-	@Autowired
-	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-	
 }

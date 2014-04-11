@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -27,10 +27,10 @@ import com.cannontech.cc.service.EconomicService;
 import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 /**
  * ***Header Information
@@ -79,23 +79,10 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 
 	private int detailRecordCount = 0;
 
-	private EnergyCompanyDao energyCompanyDao;
-	private CustomerStubDao customerStubDao;
-	private BaseEventDao baseEventDao;
+	@Autowired private YukonEnergyCompanyService ecService;
+	@Autowired private CustomerStubDao customerStubDao;
+	@Autowired private BaseEventDao baseEventDao;
 
-	@Required
-	public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-		this.energyCompanyDao = energyCompanyDao;
-	}
-	@Required
-	public void setCustomerStubDao(CustomerStubDao customerStubDao) {
-		this.customerStubDao = customerStubDao;
-	}
-	@Required
-	public void setBaseEventDao(BaseEventDao baseEventDao) {
-		this.baseEventDao = baseEventDao;
-	}
-	
 	private String buildHeaderString() {
 		String header = new String();
 		header += "%HEADER%,";	//header flag
@@ -244,8 +231,8 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 	private String getEvents() {
 		detailRecordCount = 0;
 		String eventString = new String();
-		LiteEnergyCompany liteEnergyCompany = energyCompanyDao.getEnergyCompany(getBillingFileDefaults().getLiteYukonUser());
-        List<CICustomerStub> customersForEC = customerStubDao.getCustomersForEC(liteEnergyCompany.getEnergyCompanyID());
+		EnergyCompany energyCompany = ecService.getEnergyCompany(getBillingFileDefaults().getLiteYukonUser());
+        List<CICustomerStub> customersForEC = customerStubDao.getCustomersForEC(energyCompany.getId());
 
         for (CICustomerStub customerStub : customersForEC) {
         	//Allow events with an earlier start(from) date to be included

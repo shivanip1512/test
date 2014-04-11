@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cc.dao.CustomerStubDao;
@@ -13,29 +14,22 @@ import com.cannontech.cc.dao.GroupDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.GroupCustomerNotif;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.support.CustomerPointTypeHelper;
 
 public class GroupServiceImpl implements GroupService {
-    private GroupDao groupDao;
-    private CustomerStubDao customerStubDao;
-    private GroupCustomerNotifDao groupCustomerNotifDao;
-    private CustomerPointTypeHelper pointTypeHelper;
-    private EnergyCompanyDao energyCompanyDao;
+    @Autowired private GroupDao groupDao;
+    @Autowired private CustomerStubDao customerStubDao;
+    @Autowired private GroupCustomerNotifDao groupCustomerNotifDao;
+    @Autowired private CustomerPointTypeHelper pointTypeHelper;
+    @Autowired private YukonEnergyCompanyService ecService;
 
-    public GroupCustomerNotifDao getGroupCustomerNotifDao() {
-        return groupCustomerNotifDao;
-    }
-
-    public void setGroupCustomerNotifDao(GroupCustomerNotifDao groupCustomerNotifDao) {
-        this.groupCustomerNotifDao = groupCustomerNotifDao;
-    }
-
+    @Override
     public List<Group> getAllGroups(LiteYukonUser user) {
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-        List<Group> groupsForEnergyCompany = groupDao.getGroupsForEnergyCompany(energyCompany.getEnergyCompanyID());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(user);
+        List<Group> groupsForEnergyCompany = groupDao.getGroupsForEnergyCompany(energyCompany.getId());
         Collections.sort(groupsForEnergyCompany);
         return groupsForEnergyCompany;
     }
@@ -48,46 +42,34 @@ public class GroupServiceImpl implements GroupService {
         return pointTypeHelper.getSatisfiedPointGroups(customerList);
     }
 
-    public GroupDao getGroupDao() {
-        return groupDao;
-    }
-
-    public void setGroupDao(GroupDao groupDao) {
-        this.groupDao = groupDao;
-    }
-
-    public CustomerStubDao getCustomerStubDao() {
-        return customerStubDao;
-    }
-
-    public void setCustomerStubDao(CustomerStubDao customerDao) {
-        this.customerStubDao = customerDao;
-    }
-
-    public Group createNewGroup(LiteYukonUser yukonUser) {
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(yukonUser);
+    @Override
+    public Group createNewGroup(LiteYukonUser user) {
+        EnergyCompany energyCompany = ecService.getEnergyCompany(user);
         Group newGroup = new Group();
-        
-        newGroup.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
+        newGroup.setEnergyCompanyId(energyCompany.getId());
         return newGroup;
     }
 
+    @Override
     @Transactional
     public Group getGroup(Integer groupId) {
         return groupDao.getForId(groupId);
     }
 
+    @Override
     @Transactional
     public void deleteGroup(Group group) {
         groupDao.delete(group);
     }
 
+    @Override
     @Transactional
     public void saveGroup(Group group, List<GroupCustomerNotif> required) {
         groupDao.save(group);
         groupCustomerNotifDao.saveNotifsForGroup(group, required);
     }
 
+    @Override
     @Transactional
     public List<GroupCustomerNotif> getUnassignedCustomers(Group group, boolean newGroup) {
         List<CICustomerStub> customers;
@@ -106,6 +88,7 @@ public class GroupServiceImpl implements GroupService {
         return customerList;
     }
     
+    @Override
     @Transactional
     public List<GroupCustomerNotif> getAssignedCustomers(Group group) {
         return groupCustomerNotifDao.getAllForGroup(group);
@@ -115,8 +98,5 @@ public class GroupServiceImpl implements GroupService {
         this.pointTypeHelper = pointTypeHelper;
     }
 
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
-    }
 }
 

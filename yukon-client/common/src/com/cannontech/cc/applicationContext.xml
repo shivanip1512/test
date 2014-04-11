@@ -6,23 +6,8 @@
        
        default-lazy-init="true">
 
-  <bean id="programService" class="com.cannontech.cc.service.ProgramServiceImpl" scope="singleton">
-    <property name="energyCompanyDao" ref="energyCompanyDao"/>
-    <property name="baseEventDao" ref="baseEventDao"/>
-    <property name="programDao" ref="programDao"/>
-    <property name="programParameterDao" ref="programParameterDao"/>
-    <property name="groupDao" ref="groupDao"/>
-    <property name="programTypeDao" ref="programTypeDao"/>
-    <property name="availableProgramGroupDao" ref="availableProgramGroupDao"/>
-    <property name="programNotificationGroupDao" ref="programNotificationGroupDao"/>
-  </bean>
-  <bean id="groupService" class="com.cannontech.cc.service.GroupServiceImpl" scope="singleton">
-    <property name="customerStubDao" ref="customerStubDao"/>
-    <property name="groupCustomerNotifDao" ref="groupCustomerNotifDao"/>
-    <property name="pointTypeHelper" ref="customerPointTypeHelper"/>
-    <property name="energyCompanyDao" ref="energyCompanyDao"/>
-    <property name="groupDao" ref="groupDao"/>
-  </bean>
+  <bean id="programService" class="com.cannontech.cc.service.ProgramServiceImpl"/>
+  <bean id="groupService" class="com.cannontech.cc.service.GroupServiceImpl"/>
   <bean id="eventService" class="com.cannontech.cc.service.EventService" scope="singleton">
     <property name="baseEventDao" ref="baseEventDao"/>
     <property name="strategyFactory" ref="strategyFactory"/>

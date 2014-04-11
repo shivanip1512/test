@@ -9,20 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class CommandScheduleWidget extends WidgetControllerBase {
     
-    private CommandScheduleDao commandScheduleDao;
-    private CommandScheduleEventLogService commandScheduleEventLogService;
-    private EnergyCompanyDao energyCompanyDao;
+    @Autowired private CommandScheduleDao commandScheduleDao;
+    @Autowired private CommandScheduleEventLogService commandScheduleEventLogService;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -30,8 +30,8 @@ public class CommandScheduleWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("commandScheduleWidget/render.jsp");
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        List<CommandSchedule> schedules = commandScheduleDao.getAll(energyCompany.getEnergyCompanyID());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        List<CommandSchedule> schedules = commandScheduleDao.getAll(energyCompany.getId());
         mav.addObject("schedules", schedules);
 
         return mav;
@@ -72,20 +72,5 @@ public class CommandScheduleWidget extends WidgetControllerBase {
         
         ModelAndView mav = render(request, response);
         return mav;
-    }
-
-    @Autowired
-    public void setCommandScheduleDao(CommandScheduleDao commandScheduleDao) {
-        this.commandScheduleDao = commandScheduleDao;
-    }
-    
-    @Autowired
-    public void setCommandScheduleEventLogService(CommandScheduleEventLogService commandScheduleEventLogService) {
-        this.commandScheduleEventLogService = commandScheduleEventLogService;
-    }
-
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
     }
 }

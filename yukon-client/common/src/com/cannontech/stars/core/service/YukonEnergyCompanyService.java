@@ -30,9 +30,9 @@ public interface YukonEnergyCompanyService {
      * Returns energy company associated with this user.
      * 
      * This user can be an operator or residential user.
-     * If no energy company is found throws EnergyCompanyNotFoundException
+     * If no energy company is found returns default energy company
      */
-    EnergyCompany getEnergyCompanyByUser(LiteYukonUser user);
+    EnergyCompany getEnergyCompany(LiteYukonUser user);
 
     /**
      * This method returns whether or not the operator provided is an Energy Company Operator

@@ -10,11 +10,10 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.db.capcontrol.LiteCapControlStrategy" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
-<%@ page import="com.cannontech.stars.energyCompany.dao.EnergyCompanyDao" %>
 <%@ page import="com.cannontech.analysis.ReportFilter"%>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
-<%@ page import="com.cannontech.database.db.company.EnergyCompany" %>
+<%@ page import="com.cannontech.stars.core.service.YukonEnergyCompanyService" %>
 <%@ page import= "java.util.List" %>
 <%@ page import= "java.util.ArrayList" %>
 
@@ -33,7 +32,7 @@
     LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 %>
 <jsp:useBean id="REPORT_BEAN" class="com.cannontech.analysis.gui.ReportBean" scope="session"/>
-<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(lYukonUser)== null?EnergyCompany.DEFAULT_ENERGY_COMPANY_ID:YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(lYukonUser).getEnergyCompanyID())%>"/>
+<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(lYukonUser).getId())%>"/>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="REPORT_BEAN" property="groupType" param="groupType"/>

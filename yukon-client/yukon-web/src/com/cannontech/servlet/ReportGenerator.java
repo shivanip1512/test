@@ -47,8 +47,7 @@ import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
-import com.cannontech.user.SystemUserContext;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -63,6 +62,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
      * @exception javax.servlet.ServletException The exception description.
      * @exception java.io.IOException The exception description.
      */
+    @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException
     {
         HttpSession session = req.getSession(false);
@@ -88,11 +88,8 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
         TimeZone tz = yukonUserContext.getTimeZone();
 
         //Default energycompany properties in case we can't find one?
-        Integer energyCompanyID = null;	//default?
         LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
-        if( YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteYukonUser) != null) {
-            energyCompanyID = new Integer(YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteYukonUser).getEnergyCompanyID());
-        }
+        Integer energyCompanyID = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(liteYukonUser).getId();
 
         File tempDir = WebUtils.getTempDir(getServletContext());
         File tempFile = File.createTempFile("reportCache", ".tmp", tempDir);
@@ -148,28 +145,32 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 
             //The extension for the report, the format it is to be generated in
             param = req.getParameter("ext");
-            if( param != null)
+            if( param != null) {
                 ext = param.toLowerCase();
+            }
 
             //A filename for downloading the report to.
             String fileName = "Report";
             param = req.getParameter("fileName");
-            if( param != null)
+            if( param != null) {
                 fileName = param.toString();
+            }
             fileName += "." + ext;
 
 
             //The action of generating a report, content-disposition changes based on downloading or viewing option.
             param = req.getParameter("ACTION");
-            if( param != null)
+            if( param != null) {
                 action = param;
+            }
 
-            if( param != null && param.equalsIgnoreCase("DownloadReport"))
+            if( param != null && param.equalsIgnoreCase("DownloadReport")) {
                 resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
-            else if( param != null && param.equalsIgnoreCase("GenerateMissedMeterList"))
+            } else if( param != null && param.equalsIgnoreCase("GenerateMissedMeterList")) {
                 resp.addHeader("Content-Disposition", "attachment; filename=MissedList.txt");
-            else
-                resp.setHeader("Content-Disposition", "inline; filename="+fileName);					
+            } else {
+                resp.setHeader("Content-Disposition", "inline; filename="+fileName);
+            }					
 
             // Work order model specific parameters
             Integer orderID = null;
@@ -191,7 +192,9 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
                 param = req.getParameter("ServiceStatus");
                 if (param != null) {
                     serviceStatus = Integer.valueOf(param);
-                    if (serviceStatus.intValue() == 0) serviceStatus = null;
+                    if (serviceStatus.intValue() == 0) {
+                        serviceStatus = null;
+                    }
                     reportKey += " SerStat" + serviceStatus;
                 }
                 param = req.getParameter("SearchColumn");

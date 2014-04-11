@@ -58,7 +58,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired protected SystemDateFormattingService systemDateFormattingService;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
     @Autowired private SelectionListService selectionListService;
 
     @Override

@@ -18,6 +18,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Multimap;
 
@@ -124,7 +125,7 @@ public interface OptOutEventDao {
 	 * @param energyCompany - Energy company to get opt outs for
 	 * @return List of scheduled opt outs
 	 */
-	public List<OptOutEvent> getAllScheduledOptOutEvents(LiteStarsEnergyCompany energyCompany);
+	public List<OptOutEvent> getAllScheduledOptOutEvents(EnergyCompany energyCompany);
 	
 	/**
 	 * Method to get a list of all currently scheduled opt out events for the account

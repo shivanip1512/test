@@ -15,7 +15,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.users.model.LiteUserGroup;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -31,8 +30,7 @@ import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
 import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEnabledTemporaryOverride;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -47,20 +45,19 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     @Autowired private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
     @Autowired private RoleDao roleDao;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private GlobalSettingDao globalSettingDao;
 
 	@Override
 	public OptOutCountsTemporaryOverride getDefaultOptOutCounts(LiteYukonUser user) {
 
-		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+		EnergyCompany energyCompany = ecService.getEnergyCompany(user);
 		
 		OptOutCountsTemporaryOverride rolePropSetting = new OptOutCountsTemporaryOverride();
 		if(globalSettingDao.getBoolean(GlobalSettingType.OPT_OUTS_COUNT)) {
@@ -90,7 +87,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
     @Override
     public List<OptOutCountsTemporaryOverride> getProgramSpecificOptOutCounts(LiteYukonUser user) {
 
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+        EnergyCompany energyCompany = ecService.getEnergyCompany(user);
         
         List<OptOutCountsTemporaryOverride> settings = Lists.newArrayList();
         try {
@@ -114,9 +111,9 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
         // Get the default value for the system without taking into effect temporary overrides.
         OptOutEnabled optOutEnabled = isSystemOptOutEnabledForOperator(user);
 
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+        EnergyCompany energyCompany = ecService.getEnergyCompany(user);
         OptOutEnabledTemporaryOverride energyCompanyOptOutTemporaryOverride = 
-            optOutTemporaryOverrideDao.findCurrentSystemOptOutTemporaryOverrides(energyCompany.getEnergyCompanyID());
+            optOutTemporaryOverrideDao.findCurrentSystemOptOutTemporaryOverrides(energyCompany.getId());
         
         // Check if a system wide temporary override has occurred for this time frame and use that
         // value if it exists.
@@ -130,12 +127,12 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 	@Override
 	public OptOutEnabled getOptOutEnabled(LiteYukonUser user) {
 
-		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+		EnergyCompany energyCompany = ecService.getEnergyCompany(user);
 
 		Map<Integer, OptOutEnabledTemporaryOverride> programIdOptOutTemporaryOverrideMap = 
-		    getProgramIdOptOutTemporaryOverrideMap(energyCompany.getEnergyCompanyID());
+		    getProgramIdOptOutTemporaryOverrideMap(energyCompany.getId());
 		OptOutEnabledTemporaryOverride energyCompanyOptOutTemporaryOverride =
-		    optOutTemporaryOverrideDao.findCurrentSystemOptOutTemporaryOverrides(energyCompany.getEnergyCompanyID());
+		    optOutTemporaryOverrideDao.findCurrentSystemOptOutTemporaryOverrides(energyCompany.getId());
 		OptOutEnabled optOutEnabled = OptOutEnabled.ENABLED;
 		
 		//use the global setting first
@@ -220,8 +217,8 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
         // If user is operator - there is no way to determine the 'master' optout enabled
         // state if there are multiple residential customer groups, so just grab the
         // first one in the list and use that as the default current state
-	    YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-        List<LiteUserGroup> residentialCustomerUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
+	    EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
+        List<LiteUserGroup> residentialCustomerUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getId());
 
         if (residentialCustomerUserGroups.size() > 0) {
             log.debug("Checking the first user group "+residentialCustomerUserGroups.get(0).getUserGroupName()+" to see if system opt outs are enabled.");

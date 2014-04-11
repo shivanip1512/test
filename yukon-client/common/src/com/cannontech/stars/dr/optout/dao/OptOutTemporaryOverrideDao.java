@@ -3,12 +3,12 @@ package com.cannontech.stars.dr.optout.dao;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
 import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
 import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEnabledTemporaryOverride;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 /**
  * Dao class for persisting OptOutEvents and OptOutTemporaryOverrides
@@ -36,7 +36,7 @@ public interface OptOutTemporaryOverrideDao {
 	 * @return True if opt outs temporarily count, False if temporarily don't count
 	 * @throws NoTemporaryOverrideException if there is no temporary override value
 	 */
-	public List<OptOutCountsTemporaryOverride> getAllOptOutCounts(LiteEnergyCompany energyCompany) throws NoTemporaryOverrideException;
+	public List<OptOutCountsTemporaryOverride> getAllOptOutCounts(EnergyCompany energyCompany) throws NoTemporaryOverrideException;
 
 	/**
 	 * Method used to set the opt out enabled state to a given value for the time period supplied

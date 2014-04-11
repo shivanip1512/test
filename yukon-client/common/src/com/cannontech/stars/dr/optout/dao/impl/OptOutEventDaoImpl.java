@@ -54,6 +54,7 @@ import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.OverrideStatus;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -504,7 +505,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 	
 	@Override
-	public List<OptOutEvent> getAllScheduledOptOutEvents(LiteStarsEnergyCompany energyCompany) {
+	public List<OptOutEvent> getAllScheduledOptOutEvents(EnergyCompany energyCompany) {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT ooe.* ");
@@ -512,7 +513,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("JOIN ECToAccountMapping ectam ON ectam.AccountId = ooe.CustomerAccountId");
 		sql.append("WHERE ooe.EventState ").eq(OptOutEventState.SCHEDULED.toString());
 		sql.append("	AND ooe.StartDate ").gt(new Instant());
-		sql.append("	AND ectam.EnergyCompanyId ").eq(energyCompany.getEnergyCompanyId());
+		sql.append("	AND ectam.EnergyCompanyId ").eq(energyCompany.getId());
 		
 		List<OptOutEvent> eventList = yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
 		return eventList;

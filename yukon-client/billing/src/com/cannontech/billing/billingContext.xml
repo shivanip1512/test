@@ -25,9 +25,5 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<property name="itronClient"><ref bean="itronClient"/></property>
 	</bean>
   
-  	<bean id="curtailmentEventsItronFormat" class="com.cannontech.billing.format.simple.CurtailmentEventsItronFormat" scope="prototype">
-		<property name="customerStubDao" ref="customerStubDao"/>
-		<property name="baseEventDao" ref="baseEventDao"/>
-		<property name="energyCompanyDao" ref="energyCompanyDao"/>
-	</bean>
+  	<bean id="curtailmentEventsItronFormat" class="com.cannontech.billing.format.simple.CurtailmentEventsItronFormat" scope="prototype"/>
 </beans>
