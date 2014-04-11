@@ -34,6 +34,10 @@ public class YukonEnergyCompanyServiceTest {
             
             // No need to do anything for this test
         }
+        @Override
+        public void addDBChangeListener(com.cannontech.database.cache.DBChangeListener l) {
+            // No need to do anything for this test
+        };
     };
 
     public YukonEnergyCompanyService ecService  = new YukonEnergyCompanyServiceImpl(asyncDynamicDataSource) {
