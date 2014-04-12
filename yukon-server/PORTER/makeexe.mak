@@ -111,8 +111,6 @@ $(EXECS)
 
 
 ALL:            $(EXECS)
-                -@if exist $(COMPILEBASE)\porter\lib\libeay32.dll copy $(COMPILEBASE)\porter\lib\libeay32.dll $(YUKONOUTPUT)
-                -@if exist $(COMPILEBASE)\porter\lib\ssleay32.dll copy $(COMPILEBASE)\porter\lib\ssleay32.dll $(YUKONOUTPUT)
 
 
 $(PORTER_EXE_FULLBUILD) :
