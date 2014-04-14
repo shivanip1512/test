@@ -1,7 +1,7 @@
 package com.cannontech.web.dr;
 
-import static com.cannontech.system.GlobalSettingType.*;
-import static org.apache.commons.lang3.StringUtils.*;
+import static com.cannontech.system.GlobalSettingType.RF_BROADCAST_PERFORMANCE;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -98,7 +98,13 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
         
         final List<LiteNotificationGroup> notifGroups = new ArrayList<>();
         for (int groupId : notifGroupIds) {
-            notifGroups.add(notificationGroupDao.getLiteNotificationGroup(groupId));
+            LiteNotificationGroup group = notificationGroupDao.getLiteNotificationGroup(groupId);
+            if(group != null) {
+                notifGroups.add(group);
+            } else {
+                log.warn("RFN Performance Verification is configured to email notification group with id "
+                         + groupId + ", but that group has been deleted.");
+            }
         }
 
         if (notifGroups.isEmpty()) {
