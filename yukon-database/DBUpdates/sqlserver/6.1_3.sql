@@ -13,4 +13,4 @@ ALTER TABLE EstimatedLoadFormula
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.1', '31-APR-2014', 'Latest Update', 3, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('6.1', '14-APR-2014', 'Latest Update', 3, GETDATE());
