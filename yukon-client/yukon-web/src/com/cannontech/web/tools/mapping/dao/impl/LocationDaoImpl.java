@@ -3,11 +3,16 @@ package com.cannontech.web.tools.mapping.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
+import org.geojson.Crs;
+import org.geojson.Feature;
+import org.geojson.FeatureCollection;
+import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -26,19 +31,43 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.web.tools.mapping.dao.LocationDao;
 import com.cannontech.web.tools.mapping.model.Location;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class LocationDaoImpl implements LocationDao {
 
-    @Autowired private YukonJdbcTemplate template;
-    @Autowired private ConfigurationSource configSource;
-    
+    @Autowired
+    private YukonJdbcTemplate template;
+    @Autowired
+    private ConfigurationSource configSource;
+
     private static String projection = "EPSG:4326";
+
     @PostConstruct
     private void projection() {
         String mapProjection = configSource.getString(MasterConfigStringKeysEnum.MAP_PROJECTION);
         if (StringUtils.isNotEmpty(mapProjection)) {
             projection = mapProjection;
+        }
+    }
+
+    public enum FeaturePropertiesKey {
+        PAO_IDENTIFIER("paoIdentifier"),
+        TIMESTAMP("timestamp");
+
+        private final String featurePropertiesKey;
+
+        FeaturePropertiesKey(String featurePropertiesKey) {
+            this.featurePropertiesKey = featurePropertiesKey;
+        }
+
+        public String getFeaturePropertiesKey() {
+            return featurePropertiesKey;
+        }
+
+        @Override
+        public String toString() {
+            return this.getFeaturePropertiesKey();
         }
     }
 
@@ -86,6 +115,32 @@ public class LocationDaoImpl implements LocationDao {
             }
         });
         return lastLocations;
+    }
+
+    @Override
+    public FeatureCollection getLastLocationsAsGeoJson(Iterable<? extends YukonPao> paos) {
+        Set<Location> locations = getLastLocations(paos);
+        FeatureCollection features = new FeatureCollection();
+        // Set coordinate reference system for these locations.
+        Map<String, Object> crsProperties = Maps.newHashMap();
+        crsProperties.put("name", projection);
+        Crs crs = new Crs();
+        crs.setProperties(crsProperties);
+        features.setCrs(crs);
+        for (Location location : locations) {
+            Feature feature = new Feature();
+            // Feature "id" is paoId.
+            feature.setId(Integer.toString(location.getPaoIdentifier().getPaoId()));
+            Point point = new Point(location.getLongitude(), location.getLatitude());
+            feature.setGeometry(point);
+            // Set feature properties.
+            feature.getProperties().put(FeaturePropertiesKey.PAO_IDENTIFIER.toString(),
+                                        location.getPaoIdentifier());
+            feature.getProperties().put(FeaturePropertiesKey.TIMESTAMP.toString(),
+                                        location.getTimestamp().getMillis());
+            features.add(feature);
+        }
+        return features;
     }
 
     @Override
@@ -165,5 +220,4 @@ public class LocationDaoImpl implements LocationDao {
             save(location);
         }
     }
-
 }
