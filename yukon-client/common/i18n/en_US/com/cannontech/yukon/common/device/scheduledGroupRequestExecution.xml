@@ -81,8 +81,8 @@
     <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.executionCount.linkText">Executions</entry>
     <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.status.linkText">Status</entry>
     <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.modules.tools.schedules.all.enable.hoverText">Enable ({0})</entry>
-    <entry key="yukon.web.modules.tools.schedules.all.disable.hoverText">Disable ({0})</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.enable.hoverText">Click to disable ({0})</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.disable.hoverText">Click to enable ({0})</entry>
     <entry key="yukon.web.modules.tools.schedules.all.cancel.hoverText">Cancel current run of {0}</entry>
     <entry key="yukon.web.modules.tools.schedules.all.cancelConfirm.title">Stop Scheduled Request Execution</entry>
     <entry key="yukon.web.modules.tools.schedules.all.cancelConfirm.message">Are you sure you want to stop "{0}"?</entry>

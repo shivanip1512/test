@@ -62,15 +62,25 @@ public class TabbedContentSelectorTag extends BodyTagSupport {
         JspWriter out = pageContext.getOut();
         try {
             
-            if (mode == Mode.section) classes += " section";
+            if (mode == Mode.section) {
+                classes += " section";
+            }
             
             out.print("<div class=\"dn "+ classes +"\"");
-            if (!StringUtils.isEmpty(id)) out.print(" id=\"" + id + "\"");
+            if (!StringUtils.isEmpty(id)) {
+                out.print(" id=\"" + id + "\"");
+            }
             out.println(">");
             
             out.println("<ul>");
-            for(int i=0; i<tabIds.size(); i++){
-                out.println("<li><a href=\"#" + tabIds.get(i) + "\">" + tabNames.get(i) + "</a></li>");
+            int selectedTabIndex = getSelectedTabIndex();
+            for (int i = 0; i < tabIds.size(); i++) {
+                out.println("<li");
+                if (i == selectedTabIndex) {
+                    out.println(" data-selected=\"" + i + "\"");
+                }
+                out.println(">");
+                out.println("<a href=\"#" + tabIds.get(i) + "\">" + tabNames.get(i) + "</a></li>");
             }
             out.println("</ul>");
             
@@ -103,4 +113,5 @@ public class TabbedContentSelectorTag extends BodyTagSupport {
     public void setId(String id) {
         this.id = id;
     }
+    
 }

@@ -91,6 +91,9 @@ public class ScheduledGroupRequestExecutionController {
 		String queuedRetryCount = ServletRequestUtils.getStringParameter(request, "queuedRetryCount", null);
 		String nonQueuedRetryCount = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
 		String maxTotalRunTimeHours = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
+		if(maxTotalRunTimeHours != null && maxTotalRunTimeHours.equals("0")) {
+		    maxTotalRunTimeHours = null;
+		}
 		String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName", null);
 		PageEditMode pageEditMode = PageEditMode.CREATE;
 		
@@ -209,6 +212,9 @@ public class ScheduledGroupRequestExecutionController {
 		DeviceRequestType requestType = DeviceRequestType.valueOf(requestTypeStr);
 		String formUniqueId = ServletRequestUtils.getRequiredStringParameter(request, "formUniqueId");
 		
+		// edit job
+        int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
+		
 		// validate cron
 		String cronExpression = null;
 		try {
@@ -226,7 +232,7 @@ public class ScheduledGroupRequestExecutionController {
 			String nonQueuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
 			String maxTotalRunTimeHoursStr = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
 			return makeErrorMav("Invalid Schedule Time.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, deviceGroupName,
-			                    retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr);
+			                    retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr, editJobId);
 		}
 		
 		// validate device group
@@ -242,7 +248,7 @@ public class ScheduledGroupRequestExecutionController {
 			String nonQueuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
 			String maxTotalRunTimeHoursStr = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
             return makeErrorMav("No Device Group Selected.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, null,
-                                retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr);
+                                retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr, editJobId);
         }
 		
 		// validate schedule name
@@ -257,7 +263,7 @@ public class ScheduledGroupRequestExecutionController {
 			String nonQueuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
 			String maxTotalRunTimeHoursStr = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
 			return makeErrorMav("Schedule Must Have Name.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, deviceGroupName,
-			                    retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr);
+			                    retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr, editJobId);
 		}
 		
 		// validate retry options
@@ -334,7 +340,7 @@ public class ScheduledGroupRequestExecutionController {
                 String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
                 String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
                 return makeErrorMav(retryErrorReason, requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, deviceGroupName,
-                                    retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr);
+                                    retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr, editJobId);
             }
 		}
         
@@ -347,9 +353,6 @@ public class ScheduledGroupRequestExecutionController {
 		int retryCount = queuedRetryCount + nonQueuedRetryCount;
 		Integer stopRetryAfterHoursCount = maxTotalRunTimeHours;
 		Integer turnOffQueuingAfterRetryCount = queuedRetryCount;
-		
-		// edit job
-		int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
 		
 		// schedule / edit
 		if (requestType.equals(DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ)) {
@@ -376,7 +379,8 @@ public class ScheduledGroupRequestExecutionController {
 		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 		if (selectedAttributes.size() == 0) {
 			return makeErrorMav("No Attribute(s) Selected", DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, scheduleName, cronExpression, null, null, null, deviceGroupName,
-			                    retryCheckbox, retryCount == 0 ? "" : String.valueOf(retryCount), stopRetryAfterHoursCount == null ? "" : stopRetryAfterHoursCount.toString(), turnOffQueuingAfterRetryCount == null ? "" : turnOffQueuingAfterRetryCount.toString());
+			                    retryCheckbox, retryCount == 0 ? "" : String.valueOf(retryCount), stopRetryAfterHoursCount == null ? "" : stopRetryAfterHoursCount.toString(), 
+			                    turnOffQueuingAfterRetryCount == null ? "" : turnOffQueuingAfterRetryCount.toString(), editJobId);
 		}
 		
 		// schedule / re-schedule
@@ -386,7 +390,11 @@ public class ScheduledGroupRequestExecutionController {
 		if (editJobId <= 0) {
 			job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
 		} else {
-			job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
+		    boolean isDisabled = scheduledRepeatingJobDao.getById(editJobId).isDisabled();
+		    job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
+		    if(isDisabled) {
+		        jobManager.disableJob(job);
+		    }
 		}
 		
 		mav.addObject("jobId", job.getId());
@@ -432,7 +440,8 @@ public class ScheduledGroupRequestExecutionController {
 		if (errorReason != null) {
 		    
 		    return makeErrorMav(errorReason, DeviceRequestType.SCHEDULED_GROUP_COMMAND, scheduleName, cronExpression, null, commandSelectValue, commandString, deviceGroupName,
-                                retryCheckbox, retryCount == 0 ? "" : String.valueOf(retryCount), stopRetryAfterHoursCount == null ? "" : stopRetryAfterHoursCount.toString(), turnOffQueuingAfterRetryCount == null ? "" : turnOffQueuingAfterRetryCount.toString());
+                                retryCheckbox, retryCount == 0 ? "" : String.valueOf(retryCount), stopRetryAfterHoursCount == null ? "" : stopRetryAfterHoursCount.toString(), 
+                                turnOffQueuingAfterRetryCount == null ? "" : turnOffQueuingAfterRetryCount.toString(), editJobId);
 		}
         
         // schedule /  re-schedule
@@ -442,9 +451,12 @@ public class ScheduledGroupRequestExecutionController {
         if (editJobId <= 0) {
         	job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
         } else {
-        	job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
+            boolean isDisabled = scheduledRepeatingJobDao.getById(editJobId).isDisabled();
+            job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
+            if(isDisabled) {
+                jobManager.disableJob(job);
+            }
         }
-		
         mav.addObject("jobId", job.getId());
         
 		return mav;
@@ -452,9 +464,12 @@ public class ScheduledGroupRequestExecutionController {
 
 	// ERROR MAV
 	private ModelAndView makeErrorMav(String errorMsg, DeviceRequestType requestType, String scheduleName, String cronExpression, String selectedAttributeStrs, String commandSelectValue, String commandString, String deviceGroupName,
-	                                  boolean retryCheckbox, String queuedRetryCountStr, String nonQueuedRetryCountStr, String maxTotalRunTimeHoursStr) {
+	                                  boolean retryCheckbox, String queuedRetryCountStr, String nonQueuedRetryCountStr, String maxTotalRunTimeHoursStr, int editJobId) {
 		
 		ModelAndView mav = new ModelAndView("redirect:home");
+		if(editJobId != 0) {
+		    mav.addObject("editJobId", editJobId);
+		}
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("requestType", requestType.name());
 		mav.addObject("selectedAttributeStrs", selectedAttributeStrs);
