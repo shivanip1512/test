@@ -8653,6 +8653,17 @@ void CtiCCSubstationBusStore::createAndSendClientMessages( unsigned long &msgBit
     else if (modifiedStationIdsSet.size() > 0 )
     {
         CtiCCSubstation_set modifiedStationSet;
+
+        // add called out stations
+        for each ( long stationID in modifiedStationIdsSet )
+        {
+            if ( CtiCCSubstationPtr station = findSubstationByPAObjectID(stationID) )
+            {
+                modifiedStationSet.insert( station );
+            }
+        }
+
+        // add stations from called out busses
         for each (long busId in modifiedBusIdsSet)
         {
             if (CtiCCSubstationBusPtr bus = findSubBusByPAObjectID(busId))
