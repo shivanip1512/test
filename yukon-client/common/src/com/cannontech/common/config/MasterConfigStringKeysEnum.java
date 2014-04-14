@@ -35,8 +35,9 @@ public enum MasterConfigStringKeysEnum {
     YUKON_EXTERNAL_URL,
     MSP_ALTGROUP_EXTENSION, //YUK-10787
     MSP_SUBSTATIONNAME_EXTENSION, //YUK-10787
-    RFN_METER_DISCONNECT_ARMING, 
-    EXCLUDED_POINT_QUALITIES, //YUK-11910
+    RFN_METER_DISCONNECT_ARMING,
+    EXCLUDED_POINT_QUALITIES, //YUK-11910 
+    MAP_PROJECTION,
     ;
     
     private static final Set<MasterConfigStringKeysEnum> sensitiveData;

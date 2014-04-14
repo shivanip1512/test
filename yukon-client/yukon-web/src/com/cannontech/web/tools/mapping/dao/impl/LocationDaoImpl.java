@@ -5,10 +5,15 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -25,8 +30,17 @@ import com.google.common.collect.Sets;
 
 public class LocationDaoImpl implements LocationDao {
 
-    @Autowired
-    YukonJdbcTemplate template;
+    @Autowired private YukonJdbcTemplate template;
+    @Autowired private ConfigurationSource configSource;
+    
+    private static String projection = "EPSG:4326";
+    @PostConstruct
+    private void projection() {
+        String mapProjection = configSource.getString(MasterConfigStringKeysEnum.MAP_PROJECTION);
+        if (StringUtils.isNotEmpty(mapProjection)) {
+            projection = mapProjection;
+        }
+    }
 
     private final static YukonRowMapper<Location> LOCATION_MAPPER = new YukonRowMapper<Location>() {
         @Override
