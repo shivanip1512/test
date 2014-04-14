@@ -16,12 +16,7 @@ public interface RfdaCreationService {
      */
     public RfnDevice create(final RfnIdentifier rfnIdentifier);
     
-    public void incrementDeviceLookupAttempt();
-    
     public void incrementNewDeviceCreated();
-    
-    @ManagedAttribute
-    public int getDeviceLookupAttempt();
     
     @ManagedAttribute
     public int getNewDeviceCreated();

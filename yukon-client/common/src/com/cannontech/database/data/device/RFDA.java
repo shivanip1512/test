@@ -40,18 +40,18 @@ public class RFDA extends RfnBase {
     public CommPort getCommPort() {
         if( commPort == null ) {
             commPort = new CommPort();
-            commPort.setAlarmInhibit(new Character('N'));
+            commPort.setAlarmInhibit('N');
             commPort.setCommonProtocol("None");
             
             Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());;
             commPort.setDbConnection(conn);
             
-            commPort.setPerformanceAlarm(new Character('N'));
-            commPort.setPerformThreshold(new Integer(90));
+            commPort.setPerformanceAlarm('N');
+            commPort.setPerformThreshold(90);
             
             commPort.setPortID(getPAObjectID());
             commPort.setSharedPortType(CtiUtilities.STRING_NONE );
-            commPort.setSharedSocketNumber(new Integer(CommPort.DEFAULT_SHARED_SOCKET_NUMBER) );
+            commPort.setSharedSocketNumber(CommPort.DEFAULT_SHARED_SOCKET_NUMBER);
         }
         return commPort;
     }

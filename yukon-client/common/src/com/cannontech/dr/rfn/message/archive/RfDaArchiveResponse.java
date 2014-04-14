@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public class RfDaArchiveResponse implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private final static long serialVersionUID = 1L;
 
     private long sensorId;
 
@@ -17,10 +17,6 @@ public class RfDaArchiveResponse implements Serializable {
 
     public void setSensorId(long sensorId) {
         this.sensorId = sensorId;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     @Override
