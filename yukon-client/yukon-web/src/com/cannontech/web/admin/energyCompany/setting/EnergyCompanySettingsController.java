@@ -32,7 +32,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
 import com.cannontech.stars.energyCompany.model.SettingCategory;
@@ -52,7 +51,6 @@ public class EnergyCompanySettingsController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private EnergyCompanyService energyCompanyService;
-    @Autowired private EnergyCompanyDao ecDao;
 
     private MappedPropertiesHelper<EnergyCompanySettingType> mappedPropertiesHelper;
 

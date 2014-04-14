@@ -42,7 +42,14 @@ public class LiteStarsEnergyCompanyFactory {
         applyPropertySetters(liteStarsEnergyCompany);
         return liteStarsEnergyCompany;
     }
-    
+
+    public LiteStarsEnergyCompany createEnergyCompany(int energyCompanyId, String name, int contactId, int userId) {
+        LiteStarsEnergyCompany liteStarsEnergyCompany =
+                new LiteStarsEnergyCompany(energyCompanyId, name, contactId, userId);
+        applyPropertySetters(liteStarsEnergyCompany);
+        return liteStarsEnergyCompany;
+    }
+
     public LiteStarsEnergyCompany createEnergyCompany(int energyCompanyId) {
         LiteStarsEnergyCompany energyCompany = new LiteStarsEnergyCompany(energyCompanyId);
         applyPropertySetters(energyCompany);

@@ -23,6 +23,7 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.RowMapper;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -30,9 +31,12 @@ import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -55,6 +59,8 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DbChangeManager dbChangeManager;
 
     private Map<Integer, List<Integer>> cachedRouteIds = new ConcurrentHashMap<>();
     private Map<Integer, EnergyCompany> energyCompanies;
@@ -304,6 +310,37 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return customerEnergyCompanies;
     }
 
+    @Override
+    public int createEnergyCompany(String name, int contactId, LiteYukonUser ecUser) {
+        int energyCompanyId = nextValueHelper.getNextValue("EnergyCompany");
+
+        SqlStatementBuilder insertSql = new SqlStatementBuilder();
+        SqlParameterSink insertParams = insertSql.insertInto("EnergyCompany");
+        insertParams.addValue("EnergyCompanyId", energyCompanyId);
+        insertParams.addValue("Name", name);
+        insertParams.addValue("PrimaryContactId", contactId);
+        insertParams.addValue("UserId", ecUser.getUserID());
+        jdbcTemplate.update(insertSql);
+
+        return energyCompanyId;
+    }
+
+    @Override
+    public void updateCompanyName(String name, int ecId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE EnergyCompany");
+        sql.append("SET Name").eq(name);
+        sql.append("WHERE EnergyCompanyId").eq_k(ecId);
+        
+        jdbcTemplate.update(sql);
+        
+        dbChangeManager.processDbChange(ecId,
+                                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                                        DBChangeMsg.CAT_ENERGY_COMPANY,
+                                        DBChangeMsg.CAT_ENERGY_COMPANY,
+                                        DbChangeType.UPDATE);
+    }
+    
     private List<LiteYukonPAObject> getRoutes(EnergyCompany energyCompany) {
         List<Integer> routeIDs = getRouteIds(energyCompany.getId());
         List<LiteYukonPAObject> routeList =  Lists.newArrayListWithCapacity(routeIDs.size());

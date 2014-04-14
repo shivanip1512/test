@@ -175,13 +175,17 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         setLiteType( LiteTypes.ENERGY_COMPANY );
     }
     
+    protected LiteStarsEnergyCompany(int energyCompanyId, String name, int contactId, int userId) {
+        setLiteType(LiteTypes.ENERGY_COMPANY);
+        setLiteID(energyCompanyId);
+        setName(name);
+        setPrimaryContactID(contactId);
+        setUser(YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userId));
+    }
+    
     protected LiteStarsEnergyCompany(com.cannontech.database.db.company.EnergyCompany energyCompany) {
-        super();
-        setLiteType( LiteTypes.ENERGY_COMPANY );
-        setLiteID( energyCompany.getEnergyCompanyId().intValue() );
-        setName( energyCompany.getName() );
-        setPrimaryContactID( energyCompany.getPrimaryContactId().intValue() );
-        setUser(YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(energyCompany.getUserId()));
+        this(energyCompany.getEnergyCompanyId(), energyCompany.getName(),
+             energyCompany.getPrimaryContactId(), energyCompany.getUserId());
     }
     
     public void initialize() {

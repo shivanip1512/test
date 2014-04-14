@@ -91,6 +91,13 @@ public interface YukonEnergyCompanyService {
     List<EnergyCompany> getEnergyCompaniesByCiCustomer(int customerId);
 
     /**
+     * Returns the energy company Id of the newly created energy company
+     */
+    int createEnergyCompany(String name, int contactId, LiteYukonUser user);
+    
+    void updateCompanyName(String name, int ecId);
+    
+    /**
      * Get the direct child energy companies underneath the energy company.
      * 
      * It will not return any of the children of the child energy companies.  If you want that data you'll want

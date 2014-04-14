@@ -73,7 +73,6 @@ import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.impl.EnergyCompanySettingDaoImpl;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -99,7 +98,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private LiteStarsEnergyCompanyFactory energyCompanyFactory;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SiteInformationDao siteInformationDao;
@@ -145,43 +143,42 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             contactNotificationDao.saveNotification(email);
         }
         
-        /* Create Energy Company */
-        com.cannontech.database.db.company.EnergyCompany energyCompany = new com.cannontech.database.db.company.EnergyCompany();
-        energyCompany.setName(energyCompanyDto.getName());
-        energyCompany.setPrimaryContactId(contact.getContactID());
-        energyCompany.setUserId(ecUser.getUserID());
-        energyCompanyDao.save(energyCompany);
-        
+        int energyCompanyId =  ecService.createEnergyCompany(energyCompanyDto.getName(), contact.getContactID(), ecUser);
+
         /* This method doesn't 'create' anything, it just news a LiteStarsEnergyCompany and injects dependencies. */
-        LiteStarsEnergyCompany liteEnergyCompany = energyCompanyFactory.createEnergyCompany(energyCompany);
+        LiteStarsEnergyCompany liteStarsEnergyCompany = 
+                energyCompanyFactory.createEnergyCompany(energyCompanyId, energyCompanyDto.getName(),
+                                                         contact.getContactID(), ecUser.getUserID());
         
-        dbChangeManager.processDbChange(energyCompany.getEnergyCompanyId(), 
+        dbChangeManager.processDbChange(energyCompanyId, 
                                         DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
                                         DBChangeMsg.CAT_ENERGY_COMPANY,
                                         DbChangeType.ADD);
 
+        ecMappingDao.addEnergyCompanyOperatorLoginListMapping(ecUser.getUserID(), energyCompanyId);
+        
         /* Set Default Route */
         defaultRouteService.setupNewDefaultRoute(energyCompanyDto.getName(), ecUser, energyCompanyDto.getDefaultRouteId());
         
         /* Set Operator Group List */
         List<Integer> operatorUserGroupIdsList = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getOperatorUserGroupIds());
         Iterable<Integer> operatorUserGroupIds = Iterables.concat(Collections.singleton(energyCompanyDto.getPrimaryOperatorUserGroupId()), operatorUserGroupIdsList);
-        ecMappingDao.addECToOperatorUserGroupMapping(energyCompany.getEnergyCompanyId(), operatorUserGroupIds);
+        ecMappingDao.addECToOperatorUserGroupMapping(energyCompanyId, operatorUserGroupIds);
         
         /* Set Residential Customer Group List */
         if (StringUtils.isNotBlank(energyCompanyDto.getResidentialUserGroupIds())) {
             List<Integer> customerUserGroupIds = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getResidentialUserGroupIds());
-            ecMappingDao.addECToResidentialUserGroupMapping(energyCompany.getEnergyCompanyId(), customerUserGroupIds);
+            ecMappingDao.addECToResidentialUserGroupMapping(energyCompanyId, customerUserGroupIds);
         }
         
         /* Add as member to parent */
         if (parentId != null) {
-            StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(parentId), liteEnergyCompany, ecUser.getUserID(), user);
+            StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(parentId), liteStarsEnergyCompany, ecUser.getUserID(), user);
         }
         
-        starsDatabaseCache.addEnergyCompany(liteEnergyCompany);
+        starsDatabaseCache.addEnergyCompany(liteStarsEnergyCompany);
         
-        return liteEnergyCompany;
+        return liteStarsEnergyCompany;
     }
     
     @Override

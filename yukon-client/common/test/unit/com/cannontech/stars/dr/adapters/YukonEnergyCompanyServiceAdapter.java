@@ -109,4 +109,14 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     public List<EnergyCompany> getEnergyCompaniesByCiCustomer(int customerId) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    @Override
+    public int createEnergyCompany(String name, int contactId, LiteYukonUser user) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public void updateCompanyName(String name, int ecId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

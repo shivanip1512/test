@@ -18,7 +18,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.web.admin.energyCompany.general.model.GeneralInfo;
@@ -29,7 +28,6 @@ public class GeneralInfoService {
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private AddressDao addressDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private DefaultRouteService defaultRouteService;
@@ -79,7 +77,7 @@ public class GeneralInfoService {
         int addressId = contact.getAddressID();
         
         /* Name */
-        energyCompanyDao.updateCompanyName(generalInfo.getName(), generalInfo.getEcId());
+        ecService.updateCompanyName(generalInfo.getName(), generalInfo.getEcId());
         
         /* Phone */
         updateNotification(generalInfo.getPhone(), ContactNotificationType.PHONE, contactId);
