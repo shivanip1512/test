@@ -27,7 +27,6 @@ public enum RfnLcrPointDataMap {
     RELAY_3_REMAINING_CONTROL(BuiltInAttribute.RELAY_3_REMAINING_CONTROL, "/DRReport/Relays/Relay[@id=2]/RemainingControlTime"),
     REPORTING_INTERVAL(BuiltInAttribute.REPORTING_INTERVAL, "/DRReport/Info/ReportingInterval"),
     SERVICE_STATUS(BuiltInAttribute.SERVICE_STATUS, "/DRReport/Info/Flags", 0xC, 2, null),
-    TAMPER_FLAG(BuiltInAttribute.TAMPER_FLAG, "/DRReport/Info/Flags", 0x10, 4, null),
     TOTAL_LUF_EVENT(BuiltInAttribute.TOTAL_LUF_COUNT, "/DRReport/Info/TotalLUFEvents"),
     TOTAL_LUV_EVENT(BuiltInAttribute.TOTAL_LUV_COUNT, "/DRReport/Info/TotalLUVEvents");
 
@@ -60,7 +59,6 @@ public enum RfnLcrPointDataMap {
         builder.add(RECORDING_INTERVAL);
         builder.add(REPORTING_INTERVAL);
         builder.add(SERVICE_STATUS);
-        builder.add(TAMPER_FLAG);
         builder.add(TOTAL_LUF_EVENT);
         builder.add(TOTAL_LUV_EVENT);
         builder.add(RELAY_1_LOAD_SIZE);

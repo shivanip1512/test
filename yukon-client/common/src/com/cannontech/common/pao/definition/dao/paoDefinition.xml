@@ -4467,11 +4467,6 @@
                 <name>Service Status</name>
                 <stategroup value="LCR Service Status" />
             </point>
-            <point type="Status" offset="3">
-                <init>true</init>
-                <name>Runtime Tamper</name>
-                <stategroup value="TrueFalse" />
-            </point>
         </points>
         <attributes>
             <attribute name="BLINK_COUNT">
@@ -4500,9 +4495,6 @@
             </attribute>
             <attribute name="SERVICE_STATUS">
                 <basicLookup point="Service Status" />
-            </attribute>
-            <attribute name="TAMPER_FLAG">
-                <basicLookup point="Runtime Tamper" />
             </attribute>
             <attribute name="TOTAL_LUF_COUNT">
                 <basicLookup point="Total LUF Event Count" />
