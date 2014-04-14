@@ -56,6 +56,7 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrDataMappingServiceImpl.class);
     private static final LogHelper logHelper = YukonLogManager.getLogHelper(RfnLcrDataMappingServiceImpl.class);
     private static final DateTime year2001 = new DateTime(2001, 1, 1, 0, 0);
+    private static final int MAX_INTERVALS = 24;
 
     @Override
     public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data) {
@@ -165,7 +166,13 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             
             Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp).plus(Duration.standardMinutes(minutesToAdd));
             
+            int intervalCount = 1;
             for (Integer interval : intervalData) {
+                if (intervalCount++ > MAX_INTERVALS) {
+                    // The RFN LCR returns 36 valid timestamped hourly values every 24 hours,
+                    // the 12 hours are duplicated. Throw out the last 12 values.
+                    break;
+                }
                 // Skip all intervals occuring in the future since the device sends us 36
                 // intervals every time even if they have not happened yet. 
                 // Also skip if interval value is 0xFFFF which indicates an invalid hour. 
