@@ -712,7 +712,7 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers">No triggers found</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.separator">-</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.actions.title">Actions</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.unknown">This Control Area is not in Load Management</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.unknown">Unable to get control area information. Ensure the Load Management server is connected and the control area is properly configured.</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.noControl">You do not have permission to control this control area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.noAssignedPrograms">There are currently no programs assigned to this control area.</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.inactive">This control area is not active.</entry>
@@ -786,7 +786,7 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 
 <entry key="yukon.web.modules.dr.programDetail.heading.actions.title">Actions</entry>
 <entry key="yukon.web.modules.dr.programDetail.noControl">You do not have permission to control this program</entry>
-<entry key="yukon.web.modules.dr.programDetail.unknown">This program is not in Load Management</entry>
+<entry key="yukon.web.modules.dr.programDetail.unknown">Unable to get program information. Ensure the Load Management server is connected and the program is properly configured.</entry>
 <entry key="yukon.web.modules.dr.programDetail.notRunning">This program is not running.</entry>
 <entry key="yukon.web.modules.dr.programDetail.alreadyRunning">This program is already running.</entry>
 <entry key="yukon.web.modules.dr.programDetail.start.label">Start Program</entry>
@@ -850,7 +850,7 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.loadCapacity">Load Capacity</entry>
 
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.actions.title">Actions</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.unknown">This load group is not in Load Management</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.unknown">Unable to get load group information. Ensure the Load Management server is connected and the load group is properly configured.</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.disabled">This load group is disabled and cannot be controlled.</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.noControl">You do not have permission to control this load group</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed">Send Shed</entry>
