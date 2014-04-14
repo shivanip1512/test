@@ -35,7 +35,6 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.YukonRowMapperAdapter;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
@@ -120,9 +119,8 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
     }
 
     @Override
-    public List<EconomicEvent> getAllForEnergyCompany(LiteEnergyCompany lec) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(lec.getEnergyCompanyID());
-        List<Integer> customerIds = ecService.getCustomerListEntries(energyCompany);
+    public List<EconomicEvent> getAllForEnergyCompany(EnergyCompany energyCompany) {
+        List<Integer> customerIds = ecService.getCiCustomerIds(energyCompany);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select distinct ee.*");
         sql.append("from CCurtEconomicEvent ee");

@@ -96,17 +96,17 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     }
 
     @Override
-    public void addCustomerListEntry(int customerId, EnergyCompany energyCompany) {
+    public void addCiCustomer(int customerId, EnergyCompany energyCompany) {
         throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public List<Integer> getCustomerListEntries(EnergyCompany energyCompany) {
+    public List<Integer> getCiCustomerIds(EnergyCompany energyCompany) {
         throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public List<EnergyCompany> getEnergyCompaniesByCustomer(int customerId) {
+    public List<EnergyCompany> getEnergyCompaniesByCiCustomer(int customerId) {
         throw new UnsupportedOperationException("not implemented");
     }
 }

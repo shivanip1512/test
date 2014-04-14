@@ -81,7 +81,6 @@ import com.cannontech.yukon.server.cache.ContactNotificationGroupLoader;
 import com.cannontech.yukon.server.cache.DeviceCommPortLoader;
 import com.cannontech.yukon.server.cache.DeviceMeterGroupLoader;
 import com.cannontech.yukon.server.cache.DeviceTypeCommandLoader;
-import com.cannontech.yukon.server.cache.EnergyCompanyLoader;
 import com.cannontech.yukon.server.cache.GearLoader;
 import com.cannontech.yukon.server.cache.GraphDefinitionLoader;
 import com.cannontech.yukon.server.cache.HolidayScheduleLoader;
@@ -156,8 +155,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allYukonGroupRolePropertiesMap =
         null;
-
-    private volatile List<LiteEnergyCompany> allEnergyCompanies = null;
 
     // lists that are created by the joining/parsing of existing lists
     private List<LiteYukonPAObject> allUnusedCCDevices = null; // PAO
@@ -815,18 +812,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     }
 
     @Override
-    public List<LiteEnergyCompany> getAllEnergyCompanies() {
-        List<LiteEnergyCompany> ec = allEnergyCompanies;
-        if (ec == null) {
-            ec = new ArrayList<>();
-            EnergyCompanyLoader l = new EnergyCompanyLoader(ec, databaseAlias);
-            l.run();
-            allEnergyCompanies = ec;
-        }
-        return Collections.unmodifiableList(ec);
-    }
-
-    @Override
     public synchronized List<LiteDeviceTypeCommand> getAllDeviceTypeCommands() {
 
         if (allDeviceTypeCommands != null) {
@@ -1101,7 +1086,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         } else if (database == DBChangeMsg.CHANGE_COMMAND_DB) {
             retLBase = handleCommandChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB) {
-            allEnergyCompanies = null;
             userEnergyCompanyCache.clear();
 
         } else if (database == DBChangeMsg.CHANGE_CUSTOMER_DB) {
@@ -1111,8 +1095,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             if (dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER)) {
                 allCICustomers = null;
 
-                // LiteEnergyCompany has a list of all cicustomers
-                allEnergyCompanies = null;
                 userEnergyCompanyCache.clear();
             }
         } else if (database == DBChangeMsg.CHANGE_YUKON_USER_DB) {
@@ -2033,8 +2015,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
         allYukonGroupRolePropertiesMap = null;
 
-        allEnergyCompanies = null;
-
         // lists that are created by the joining/parsing of existing lists
         // allGraphTaggedPoints = null; //Points
         allUnusedCCDevices = null; // PAO
@@ -2302,30 +2282,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
 
         return specifiedCustomer;
-    }
-
-    @Override
-    public LiteEnergyCompany getALiteEnergyCompanyByUserID(LiteYukonUser liteYukonUser) {
-
-        // try to load from map
-        LiteEnergyCompany liteEnergyCompany = userEnergyCompanyCache.get(liteYukonUser);
-
-        // when null, not found in cache...load entry
-        if (liteEnergyCompany == null) {
-            liteEnergyCompany =
-                yukonUserEnergyCompanyLookup.loadLiteEnergyCompanyByUser(liteYukonUser, getAllEnergyCompanies());
-            if (liteEnergyCompany == null) {
-                // user doesn't have a EC, but we need to cache this knowledge somehow
-                userEnergyCompanyCache.put(liteYukonUser, NULL_LITE_ENERGY_COMPANY);
-            } else {
-                userEnergyCompanyCache.put(liteYukonUser, liteEnergyCompany);
-            }
-        }
-
-        if (liteEnergyCompany == NULL_LITE_ENERGY_COMPANY) { // == on purpose
-            return null;
-        }
-        return liteEnergyCompany;
     }
 
     /*

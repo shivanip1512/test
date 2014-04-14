@@ -275,7 +275,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public void addCustomerListEntry(int customerId, EnergyCompany energyCompany) {
+    public void addCiCustomer(int customerId, EnergyCompany energyCompany) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO EnergyCompanyCustomerList");
         sql.values(energyCompany.getId(), customerId);
@@ -283,7 +283,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public List<Integer> getCustomerListEntries(EnergyCompany energyCompany) {
+    public List<Integer> getCiCustomerIds(EnergyCompany energyCompany) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CustomerID FROM EnergyCompanyCustomerList");
         sql.append("WHERE EnergyCompanyID").eq(energyCompany.getId());
@@ -291,10 +291,10 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public List<EnergyCompany> getEnergyCompaniesByCustomer(int customerId) {
+    public List<EnergyCompany> getEnergyCompaniesByCiCustomer(int ciCustomerId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EnergyCompanyID FROM EnergyCompanyCustomerList");
-        sql.append("WHERE CustomerID").eq(customerId);
+        sql.append("WHERE CustomerID").eq(ciCustomerId);
         List<Integer> ecIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
 
         List<EnergyCompany> customerEnergyCompanies = new ArrayList<>();

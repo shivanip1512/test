@@ -81,11 +81,14 @@ public interface YukonEnergyCompanyService {
      */
     List<LiteYukonPAObject> getAllRoutes(EnergyCompany energyCompany);
 
-    void addCustomerListEntry(int customerId, EnergyCompany energyCompany);
+    void addCiCustomer(int customerId, EnergyCompany energyCompany);
 
-    List<Integer> getCustomerListEntries(EnergyCompany energyCompany);
+    List<Integer> getCiCustomerIds(EnergyCompany energyCompany);
 
-    List<EnergyCompany> getEnergyCompaniesByCustomer(int customerId);
+    /**
+     * Only gets energy companies for CI customers. NOT residential customers
+     */
+    List<EnergyCompany> getEnergyCompaniesByCiCustomer(int customerId);
 
     /**
      * Get the direct child energy companies underneath the energy company.

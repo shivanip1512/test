@@ -481,7 +481,7 @@ public final class CustomerDaoImpl implements CustomerDao {
     public void addCICustomer(LiteCICustomer customer) throws DataAccessException {
         liteCICustomerTemplate.insert(customer);
         EnergyCompany energyCompany = ecService.getEnergyCompany(customer.getEnergyCompanyID());
-        ecService.addCustomerListEntry(customer.getCustomerID(), energyCompany);
+        ecService.addCiCustomer(customer.getCustomerID(), energyCompany);
     }
     
     @Override

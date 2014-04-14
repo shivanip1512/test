@@ -13,9 +13,9 @@ import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.common.exception.PointDataException;
 import com.cannontech.core.dao.SimplePointAccessDao;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.customer.CICustomerPointType;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.support.CustomerPointTypeHelper;
 import com.cannontech.support.CustomerPointTypeLookup;
 import com.cannontech.support.NoPointException;
@@ -81,8 +81,8 @@ public class CustomerPointService {
         pointTypeHelper.createPoint(customer, pointType);
     }
     
-    public List<CICustomerStub> getCustomers(LiteEnergyCompany energyCompany) {
-        List<CICustomerStub> customersForEC = customerStubDao.getCustomersForEC(energyCompany.getEnergyCompanyID());
+    public List<CICustomerStub> getCustomers(EnergyCompany energyCompany) {
+        List<CICustomerStub> customersForEC = customerStubDao.getCustomersForEC(energyCompany.getId());
         Collections.sort(customersForEC);
         return customersForEC;
     }

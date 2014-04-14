@@ -5,11 +5,10 @@ import java.util.TimeZone;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class CommercialCurtailmentBean {
     private LiteYukonUser yukonUser;
@@ -53,9 +52,8 @@ public class CommercialCurtailmentBean {
         return "M/d/yy H:mm:ss";
     }
     
-    public LiteEnergyCompany getEnergyCompany() {
-        int ecId = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(getYukonUser()).getId();
-        return YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(ecId);
+    public EnergyCompany getEnergyCompany() {
+        return YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(getYukonUser());
     }
     
     public void setAuthDao(AuthDao authDao) {

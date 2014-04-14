@@ -7,7 +7,7 @@ import javax.faces.model.ListDataModel;
 
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.service.EventService;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.web.cc.methods.BaseDetailBean;
 
 public class EventOverviewBean {
@@ -42,7 +42,7 @@ public class EventOverviewBean {
 
     public ListDataModel getPendingEventListModel() {
         if (pendingEventListModel == null) {
-            LiteEnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
+            EnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
             List<BaseEvent> eventList = eventService.getPendingEventList(energyCompany);
             Collections.reverse(eventList);
             pendingEventListModel = new ListDataModel(eventList);
@@ -56,7 +56,7 @@ public class EventOverviewBean {
     
     public ListDataModel getCurrentEventListModel() {
         if (currentEventListModel == null) {
-            LiteEnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
+            EnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
             List<BaseEvent> eventList = eventService.getCurrentEventList(energyCompany);
             Collections.reverse(eventList);
             currentEventListModel = new ListDataModel(eventList);
@@ -70,7 +70,7 @@ public class EventOverviewBean {
 
     public ListDataModel getRecentEventListModel() {
         if (recentEventListModel == null) {
-            LiteEnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
+            EnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
             List<BaseEvent> eventList = eventService.getRecentEventList(energyCompany);
             Collections.reverse(eventList);
             recentEventListModel = new ListDataModel(eventList);

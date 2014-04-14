@@ -17,11 +17,9 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class ActivityDetailModel extends ReportModelBase<Object> {
@@ -382,11 +380,11 @@ public class ActivityDetailModel extends ReportModelBase<Object> {
     {
         try
         {
-            Integer ecID = new Integer(rset.getInt(1));
-            LiteEnergyCompany lec = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(ecID.intValue());
+            int ecID = rset.getInt(1);
+            EnergyCompany energyCompany = YukonSpringHook.getBean(YukonEnergyCompanyService.class).findEnergyCompany(ecID);
             String ecName = "(delete)";
-            if( lec != null) {
-                ecName = lec.getName();
+            if(energyCompany != null) {
+                ecName = energyCompany.getName();
             }
 
             Integer userID = new Integer(rset.getInt(2));

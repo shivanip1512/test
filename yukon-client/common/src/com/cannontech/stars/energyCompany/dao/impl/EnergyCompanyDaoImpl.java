@@ -2,7 +2,6 @@ package com.cannontech.stars.energyCompany.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -17,7 +16,6 @@ import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
@@ -105,17 +103,6 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
                 }
             },
             sql.getArguments());
-    }
-
-    @Override
-    public LiteEnergyCompany getEnergyCompany(int energyCompanyID) {
-        for (Iterator<LiteEnergyCompany> i = databaseCache.getAllEnergyCompanies().iterator(); i.hasNext();) {
-            LiteEnergyCompany e = i.next();
-            if (e.getEnergyCompanyID() == energyCompanyID) {
-                return e;
-            }
-        }
-        return null;
     }
 
     @Override

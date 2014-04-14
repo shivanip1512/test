@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.UnknownRolePropertyException;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.notif.outputs.UnknownCustomerException;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 
 /**
@@ -17,7 +17,7 @@ import com.cannontech.notif.outputs.UnknownCustomerException;
  */
 public class NotificationQueue implements NotificationQueueMBean {
     private boolean _shutdown = false;
-    private Map<LiteEnergyCompany, CallPool> _poolMap = new TreeMap<LiteEnergyCompany, CallPool>();
+    private Map<Integer, CallPool> _poolMap = new TreeMap<>();
     private int _notificationsProcessed = 0;
     
     private @Autowired CallPoolFactory callPoolFactory;
@@ -45,6 +45,7 @@ public class NotificationQueue implements NotificationQueueMBean {
             final CallPool callPool = getCallPool(notification.getContactable().getEnergyCompany());
             
             notification.addPropertyChangeListener(new PropertyChangeListener() {
+                @Override
                 public void propertyChange(PropertyChangeEvent evt) {
                     if (evt.getNewValue().equals(SingleNotification.STATE_READY)
                         && !_shutdown) {
@@ -74,14 +75,13 @@ public class NotificationQueue implements NotificationQueueMBean {
         }
     }
     
-    private synchronized CallPool getCallPool(LiteEnergyCompany energyCompany) throws UnknownRolePropertyException {
+    private synchronized CallPool getCallPool(EnergyCompany energyCompany) throws UnknownRolePropertyException {
         if (_poolMap.containsKey(energyCompany)) {
-            return _poolMap.get(energyCompany);
-        } else {
-            CallPool newPool = callPoolFactory.createCallPool(energyCompany);
-            _poolMap.put(energyCompany, newPool);
-            return newPool;
+            return _poolMap.get(energyCompany.getId());
         }
+        CallPool newPool = callPoolFactory.createCallPool(energyCompany);
+        _poolMap.put(energyCompany.getId(), newPool);
+        return newPool;
     }
     
     public synchronized Call getCall(String token) throws UnknownCallTokenException {
@@ -95,6 +95,7 @@ public class NotificationQueue implements NotificationQueueMBean {
         throw new UnknownCallTokenException(token);
     }
     
+    @Override
     public int getActiveCalls() {
         int result = 0;
         for (Iterator<CallPool> iter = _poolMap.values().iterator(); iter.hasNext();) {
@@ -104,6 +105,7 @@ public class NotificationQueue implements NotificationQueueMBean {
         return result;
     }
 
+    @Override
     public int getCallsProcessed() {
         return _notificationsProcessed;
     }

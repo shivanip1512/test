@@ -14,7 +14,6 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteHolidaySchedule;
@@ -140,8 +139,6 @@ public interface IDatabaseCache {
 
     Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonGroupRolePropertyMap();
 
-    List<LiteEnergyCompany> getAllEnergyCompanies();
-
     List<LiteDeviceTypeCommand> getAllDeviceTypeCommands();
 
     /**
@@ -208,8 +205,6 @@ public interface IDatabaseCache {
     LiteCustomer getACustomerByPrimaryContactID(int contactID);
 
     LiteCustomer getACustomerByCustomerID(int customerID);
-
-    LiteEnergyCompany getALiteEnergyCompanyByUserID(LiteYukonUser liteYukonUser);
 
     void releaseUserRoleMap();
 

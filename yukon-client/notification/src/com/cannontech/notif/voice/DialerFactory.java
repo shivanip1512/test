@@ -2,11 +2,11 @@ package com.cannontech.notif.voice;
 
 import javax.annotation.PostConstruct;
 
-import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public interface DialerFactory {
 
     @PostConstruct
-    public abstract Dialer createDialer(LiteEnergyCompany energyCompany);
+    public abstract Dialer createDialer(EnergyCompany energyCompany);
 
 }

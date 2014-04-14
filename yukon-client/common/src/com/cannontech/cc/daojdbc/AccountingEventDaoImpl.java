@@ -22,8 +22,8 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class AccountingEventDaoImpl implements  AccountingEventDao {
     
@@ -68,13 +68,13 @@ public class AccountingEventDaoImpl implements  AccountingEventDao {
     }
 
     @Override
-    public List<AccountingEvent> getAllForEnergyCompany(LiteEnergyCompany energyCompany) {
+    public List<AccountingEvent> getAllForEnergyCompany(EnergyCompany energyCompany) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ae.*");
         sql.append("from CCurtAcctEvent ae");
         sql.append(  "join CCurtProgram p on ae.CCurtProgramID = p.CCurtProgramID");
         sql.append(  "join CCurtProgramType pt on pt.CCurtProgramTypeID = p.CCurtProgramTypeID");
-        sql.append("where pt.EnergyCompanyID").eq(energyCompany.getLiteID());
+        sql.append("where pt.EnergyCompanyID").eq(energyCompany.getId());
         
         List<AccountingEvent> result = yukonJdbcTemplate.query(sql, new AccountingEventRowMapper());
         return result;
@@ -98,6 +98,7 @@ public class AccountingEventDaoImpl implements  AccountingEventDao {
     }
 
     private FieldMapper<AccountingEvent> accountingEventFieldMapper = new FieldMapper<AccountingEvent>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, AccountingEvent event) {
             p.addValue("CCurtProgramID", event.getProgram().getId());
             p.addValue("Duration", event.getDuration());
@@ -105,9 +106,11 @@ public class AccountingEventDaoImpl implements  AccountingEventDao {
             p.addValue("StartTime", event.getStartTime());
             p.addValue("Identifier", event.getIdentifier());
         }
+        @Override
         public Number getPrimaryKey(AccountingEvent event) {
             return event.getId();
         }
+        @Override
         public void setPrimaryKey(AccountingEvent event, int value) {
             event.setId(value);
         }
@@ -147,6 +150,7 @@ public class AccountingEventDaoImpl implements  AccountingEventDao {
             cachingProgramDao = new CachingDaoWrapper<Program>(programDao, initialItems);
         }
         
+        @Override
         public AccountingEvent mapRow(YukonResultSet rs) throws SQLException {
             AccountingEvent event = new AccountingEvent();
             event.setId(rs.getInt("CCurtAcctEventID"));

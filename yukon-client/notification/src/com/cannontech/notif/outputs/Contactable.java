@@ -4,13 +4,14 @@ import java.util.*;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NotificationTypeChecker;
-import com.cannontech.core.dao.*;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
 
@@ -79,10 +80,8 @@ public class Contactable {
             int primaryContactID = customer.getPrimaryContactID();
             yukonUser = YukonSpringHook.getBean(ContactDao.class).getYukonUser(primaryContactID);
         } catch (UnknownCustomerException e) {
-            LiteEnergyCompany energyCompany = getEnergyCompany();
-            int userID;
-            userID = energyCompany.getUserID();
-            yukonUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userID);
+            EnergyCompany energyCompany = getEnergyCompany();
+            yukonUser = energyCompany.getUser();
         }
         return yukonUser;
     }
@@ -93,14 +92,14 @@ public class Contactable {
      * 
      * @return a valid LiteEnergyCompany for this Contactable
      */
-    public LiteEnergyCompany getEnergyCompany() {
+    public EnergyCompany getEnergyCompany() {
         int energyCompanyID;
         try {
             energyCompanyID = _contactableBase.getContactableCustomer().getEnergyCompanyID();
         } catch (UnknownCustomerException e) {
             energyCompanyID = YukonSpringHook.getBean(YukonEnergyCompanyService.class).DEFAULT_ENERGY_COMPANY_ID;
         }
-        return YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(energyCompanyID);
+        return YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(energyCompanyID);
     }
 
     @Override

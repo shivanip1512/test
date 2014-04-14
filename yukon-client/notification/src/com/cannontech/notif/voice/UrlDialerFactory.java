@@ -16,27 +16,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.SimpleTemplateProcessor;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.Maps;
 
 
 public class UrlDialerFactory implements DialerFactory {
+    private static final Logger log = YukonLogManager.getLogger(UrlDialerFactory.class);
+
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonUserDao yukonUserDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
 
-    private static final Logger log = YukonLogManager.getLogger(UrlDialerFactory.class);
-
     @Override
-    public Dialer createDialer(LiteEnergyCompany energyCompany) {
-        final LiteYukonUser ecUser = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
+    public Dialer createDialer(EnergyCompany energyCompany) {
+        final LiteYukonUser ecUser = energyCompany.getUser();
 
         int retryCount = configurationSource.getInteger("IVR_URL_DIALER_RETRY_COUNT", 3);
         int retryDelayMs = configurationSource.getInteger("IVR_URL_DIALER_RETRY_DELAY_MS", 4000);

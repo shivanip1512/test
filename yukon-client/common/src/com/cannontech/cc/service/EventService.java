@@ -7,7 +7,7 @@ import java.util.List;
 import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.common.util.predicate.Predicate;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class EventService {
     public class CurrentEventPredicate implements Predicate<BaseEvent> {
@@ -15,6 +15,7 @@ public class EventService {
         public CurrentEventPredicate() {
             now = new Date();
         }
+        @Override
         public boolean evaluate(BaseEvent event) {
             
             if (event.getStopTime().before(now)) {
@@ -30,6 +31,7 @@ public class EventService {
     }
     public class PendingEventPredicate implements Predicate<BaseEvent> {
         private Date now = new Date();
+        @Override
         public boolean evaluate(BaseEvent event) {
             if (event.getStartTime().before(now)) {
                 return false;
@@ -53,6 +55,7 @@ public class EventService {
             calendar.add(Calendar.MONTH, -6);
             sixMonthsAgo = calendar.getTime();
         }
+        @Override
         public boolean evaluate(BaseEvent event) {
             if (event.getStopTime().before(sixMonthsAgo)) {
                 return false;
@@ -66,18 +69,18 @@ public class EventService {
     private BaseEventDao baseEventDao;
     private StrategyFactory strategyFactory;
     
-    public List<BaseEvent> getCurrentEventList(LiteEnergyCompany energyCompany) {
+    public List<BaseEvent> getCurrentEventList(EnergyCompany energyCompany) {
         List<BaseEvent> allEvents = baseEventDao.getAllForEnergyCompany(energyCompany, 
                                                                         new CurrentEventPredicate());
         return allEvents;
     }
     
-    public List<BaseEvent> getPendingEventList(LiteEnergyCompany energyCompany) {
+    public List<BaseEvent> getPendingEventList(EnergyCompany energyCompany) {
         List<BaseEvent> allEvents = baseEventDao.getAllForEnergyCompany(energyCompany, new PendingEventPredicate());
         return allEvents;
     }
     
-    public List<BaseEvent> getRecentEventList(LiteEnergyCompany energyCompany) {
+    public List<BaseEvent> getRecentEventList(EnergyCompany energyCompany) {
         List<BaseEvent> allEvents = baseEventDao.getAllForEnergyCompany(energyCompany, new RecentEventPredicate());
         return allEvents;
     }

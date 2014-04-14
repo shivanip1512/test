@@ -196,7 +196,7 @@ public class RequestPword
 		foundData.add( " Customer Name: " + lCust.getCompanyName() );
 
 		List<EnergyCompany> energyCompanies = 
-		        YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompaniesByCustomer(lCust.getCustomerID());
+		        YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompaniesByCiCustomer(lCust.getCustomerID());
 		
 		return energyCompanies;
 	}

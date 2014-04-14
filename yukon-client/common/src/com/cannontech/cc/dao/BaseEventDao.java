@@ -11,7 +11,7 @@ import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Program;
 import com.cannontech.common.util.predicate.Predicate;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.collect.Sets;
 
 /**
@@ -25,7 +25,7 @@ public class BaseEventDao implements CommonEventOperations<BaseEvent> {
     public BaseEventDao() {
     }
     
-    public List<BaseEvent> getAllForEnergyCompany(LiteEnergyCompany energyCompany, Predicate<BaseEvent> predicate) {
+    public List<BaseEvent> getAllForEnergyCompany(EnergyCompany energyCompany, Predicate<BaseEvent> predicate) {
         List<BaseEvent> allEvents = new LinkedList<BaseEvent>();
         for (CommonEventOperations<?> dao : childDaos) {
             List<? extends BaseEvent> events = dao.getAllForEnergyCompany(energyCompany);
@@ -39,8 +39,10 @@ public class BaseEventDao implements CommonEventOperations<BaseEvent> {
         return allEvents;
     }
     
-    public List<BaseEvent> getAllForEnergyCompany(LiteEnergyCompany energyCompany) {
+    @Override
+    public List<BaseEvent> getAllForEnergyCompany(EnergyCompany energyCompany) {
         return getAllForEnergyCompany(energyCompany, new Predicate<BaseEvent>() {
+            @Override
             public boolean evaluate(BaseEvent object) {
                 return true;
             }
@@ -67,14 +69,17 @@ public class BaseEventDao implements CommonEventOperations<BaseEvent> {
         return allEvents;
     }
     
+    @Override
     public List<BaseEvent> getAllForCustomer(CICustomerStub customer) {
         return getAllForCustomer(customer, new Predicate<BaseEvent>() {
+            @Override
             public boolean evaluate(BaseEvent object) {
                 return true;
             }
         });
     }
     
+    @Override
     public List<BaseEvent> getAllForProgram(Program program) {
         List<BaseEvent> allEvents = new LinkedList<BaseEvent>();
         for (CommonEventOperations<?> dao : childDaos) {

@@ -13,12 +13,11 @@ import org.jdom.transform.XSLTransformer;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.*;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 
 /**
@@ -42,8 +41,8 @@ public class NotificationTransformer {
         _outputType = outputType;
     }
     
-    public NotificationTransformer(LiteEnergyCompany energyCompany, String outputType) throws TransformException {
-        LiteYukonUser user = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(energyCompany.getUserID());
+    public NotificationTransformer(EnergyCompany energyCompany, String outputType) throws TransformException {
+        LiteYukonUser user = energyCompany.getUser();
         RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
         String dirName = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.TEMPLATE_ROOT, user);
         if (dirName.equals("")){

@@ -23,8 +23,8 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class CurtailmentEventDaoImpl implements CurtailmentEventDao {
     
@@ -58,13 +58,13 @@ public class CurtailmentEventDaoImpl implements CurtailmentEventDao {
     }
 
     @Override
-    public List<CurtailmentEvent> getAllForEnergyCompany(LiteEnergyCompany energyCompany) {
+    public List<CurtailmentEvent> getAllForEnergyCompany(EnergyCompany energyCompany) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ce.*");
         sql.append("from CCurtCurtailmentEvent ce");
         sql.append(  "join CCurtProgram p on ce.CCurtProgramID = p.CCurtProgramID");
         sql.append(  "join CCurtProgramType pt on pt.CCurtProgramTypeID = p.CCurtProgramTypeID");
-        sql.append("where pt.EnergyCompanyID").eq(energyCompany.getEnergyCompanyID());
+        sql.append("where pt.EnergyCompanyID").eq(energyCompany.getId());
         
         List<CurtailmentEvent> result = yukonJdbcTemplate.query(sql, new CurtailmentEventRowMapper());
         return result;
@@ -99,6 +99,7 @@ public class CurtailmentEventDaoImpl implements CurtailmentEventDao {
     }
 
     private FieldMapper<CurtailmentEvent> curtailmentEventFieldMapper = new FieldMapper<CurtailmentEvent>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, CurtailmentEvent curtailmentEvent) {
             p.addValue("CCurtProgramID", curtailmentEvent.getProgram().getId());
             p.addValue("NotificationTime", curtailmentEvent.getNotificationTime());
@@ -108,9 +109,11 @@ public class CurtailmentEventDaoImpl implements CurtailmentEventDao {
             p.addValue("StartTime", curtailmentEvent.getStartTime());
             p.addValue("IDENTIFIER", curtailmentEvent.getIdentifier());
         }
+        @Override
         public Number getPrimaryKey(CurtailmentEvent curtailmentEvent) {
             return curtailmentEvent.getId();
         }
+        @Override
         public void setPrimaryKey(CurtailmentEvent curtailmentEvent, int value) {
             curtailmentEvent.setId(value);
         }
@@ -150,6 +153,7 @@ public class CurtailmentEventDaoImpl implements CurtailmentEventDao {
             cachingProgramDao = new CachingDaoWrapper<Program>(programDao, initialItems);
         }
         
+        @Override
         public CurtailmentEvent mapRow(YukonResultSet rs) throws SQLException {
             CurtailmentEvent curtailmentEvent = new CurtailmentEvent();
             curtailmentEvent.setId(rs.getInt("CCurtCurtailmentEventID"));
