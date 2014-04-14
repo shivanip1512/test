@@ -639,11 +639,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         if (allPorts == null) {
             allPorts = new ArrayList<>();
 
-            for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.PORT
-                    || getAllYukonPAObjects().get(i).getPaoType() == PaoType.RF_DA) {
-
-                    allPorts.add(getAllYukonPAObjects().get(i));
+            for (LiteYukonPAObject pao : getAllYukonPAObjects()) {
+                if (pao.getPaoType().getPaoCategory() == PaoCategory.PORT || pao.getPaoType() == PaoType.RF_DA) {
+                    allPorts.add(pao);
                 }
             }
         }
