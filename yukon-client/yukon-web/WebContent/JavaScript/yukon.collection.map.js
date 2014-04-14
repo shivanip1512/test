@@ -15,7 +15,7 @@ yukon.collection.map = (function () {
     initialized = false,
     map = {},
     
-    _buildIconArray = function() {
+    _buildIconArray = function(dest_projection) {
         var 
         icons = [],
         locations = yukon.fromJson('#locations');
@@ -24,8 +24,8 @@ yukon.collection.map = (function () {
             var 
             location = locations[loc],
             iconFeature = new ol.Feature({
-                geometry: new ol.geom.Point(ol.proj.transform([location.longitude, location.latitude], 'EPSG:4326', 'EPSG:3857')),
-                name: 'Some Meter'
+                geometry: new ol.geom.Point(ol.proj.transform([location.longitude, location.latitude], 'EPSG:4326', dest_projection)),
+                paoId: location.paoIdentifier.paoId
             }),
             iconStyle = new ol.style.Style({
                 image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
@@ -51,7 +51,7 @@ yukon.collection.map = (function () {
                 return;
             }
             
-            var vectorSource = new ol.source.Vector({ features: _buildIconArray() }),
+            var vectorSource = new ol.source.Vector({}),
                 iconLayer = new ol.layer.Vector({ source: vectorSource }),
                 osmLayer = new ol.layer.Tile({ source: new ol.source.OSM({ layer: 'sat' }) });
             
@@ -60,10 +60,14 @@ yukon.collection.map = (function () {
                 target: 'map',
                 layers: [osmLayer, iconLayer],
                 view: new ol.View2D({
-                    center: ol.proj.transform([-93.557708, 45.254846], 'EPSG:4326', 'EPSG:3857'),
+                    center: [0, 0],
                     zoom: 9
                 })
             });
+            
+            var dest_projection = mod.getMap().getView().getProjection().getCode();
+            map.getLayers().getAt(1).getSource().addFeatures(_buildIconArray(dest_projection));
+            map.getView().setCenter(ol.proj.transform([-93.557708, 45.254846], 'EPSG:4326', dest_projection));
             
             initialized = true;
         },
@@ -75,9 +79,9 @@ yukon.collection.map = (function () {
         changeIcon: function () {
             
             var 
+            dest_projection = mod.getMap().getView().getProjection().getCode(),
             iconFeature = new ol.Feature({
-                geometry: new ol.geom.Point(ol.proj.transform([-93.557708, 45.254846], 'EPSG:4326', 'EPSG:3857')),
-                name: 'New Meter'
+                geometry: new ol.geom.Point(ol.proj.transform([-93.557708, 45.254846], 'EPSG:4326', dest_projection))
             }),
             iconStyle = new ol.style.Style({
                 image: new ol.style.Icon(({
@@ -97,6 +101,4 @@ yukon.collection.map = (function () {
     return mod;
 })();
 
-$(function() {
-    yukon.collection.map.init();
-});
+$(function() { yukon.collection.map.init(); });
