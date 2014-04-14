@@ -43,7 +43,6 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -61,7 +60,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Autowired private TransactionTemplate transactionTemplate;
     @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private HardwareUiService hardwareSevice;

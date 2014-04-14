@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -40,7 +39,6 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteHolidaySchedule;
@@ -102,7 +100,6 @@ import com.cannontech.yukon.server.cache.YukonRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
 import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
 import com.cannontech.yukon.server.cache.bypass.YukonCustomerLookup;
-import com.cannontech.yukon.server.cache.bypass.YukonUserEnergyCompanyLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserRolePropertyLookup;
 
 /**
@@ -119,7 +116,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private ContactDao contactDao;
-    @Autowired private YukonUserEnergyCompanyLookup yukonUserEnergyCompanyLookup;
 
     private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
@@ -181,10 +177,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     // derived from allYukonUsers,allYukonRoles,allYukonGroups
     // see type info in IDatabaseCache
-    private final ConcurrentMap<LiteYukonUser, LiteEnergyCompany> userEnergyCompanyCache =
-        new ConcurrentHashMap<LiteYukonUser, LiteEnergyCompany>(1000, .75f, 30);
-    private LiteEnergyCompany NULL_LITE_ENERGY_COMPANY = new LiteEnergyCompany(Integer.MIN_VALUE);
-
     private List<LiteDeviceTypeCommand> allDeviceTypeCommands = null;
     private List<LiteCommand> allCommands = null;
     private Map<Integer, LiteCommand> allCommandsMap = null;
@@ -1085,17 +1077,12 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             retLBase = handleDeviceTypeCommandChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_COMMAND_DB) {
             retLBase = handleCommandChange(dbChangeType, id);
-        } else if (database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB) {
-            userEnergyCompanyCache.clear();
-
         } else if (database == DBChangeMsg.CHANGE_CUSTOMER_DB) {
             allNotificationGroups = null;
             retLBase = handleCustomerChange(dbChangeType, id, dbCategory, noObjectNeeded);
 
             if (dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER)) {
                 allCICustomers = null;
-
-                userEnergyCompanyCache.clear();
             }
         } else if (database == DBChangeMsg.CHANGE_YUKON_USER_DB) {
             if (DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(dbCategory)) {
@@ -1108,7 +1095,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             allYukonGroups = null;
             allYukonRoles = null;
             allYukonGroupRolePropertiesMap = null;
-            userEnergyCompanyCache.clear();
         } else if (database == DBChangeMsg.CHANGE_USER_GROUP_DB) {
             retLBase = handleUserGroupChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB) {
@@ -2033,10 +2019,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         allPAOsMap = null;
         customerCache.clear();
         allContactsMap.clear();
-
-        // derived from allYukonUsers,allYukonRoles,allYukonGroups
-        // see type info in IDatabaseCache
-        userEnergyCompanyCache.clear();
     }
 
     @Override

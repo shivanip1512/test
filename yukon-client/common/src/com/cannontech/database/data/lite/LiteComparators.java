@@ -11,7 +11,8 @@ public final class LiteComparators
 {
 	public static Comparator<LitePoint> litePointDeviceIDComparator = new Comparator<LitePoint>()
 	{
-		public int compare(LitePoint o1, LitePoint o2)
+		@Override
+        public int compare(LitePoint o1, LitePoint o2)
 		{
 			int thisVal = o1.getPaobjectID();
 			int anotherVal = o2.getPaobjectID();
@@ -33,13 +34,15 @@ public final class LiteComparators
 
 	public static Comparator<LiteYukonPAObject> litePaoPortIDComparator = new Comparator<LiteYukonPAObject>()
 	{
-		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
+		@Override
+        public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			int thisVal = o1.getPortID();
 			int anotherVal = o2.getPortID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
-		public boolean equals(Object obj)
+		@Override
+        public boolean equals(Object obj)
 		{
 			return false;
 		}
@@ -47,18 +50,20 @@ public final class LiteComparators
 
 	public static Comparator<LiteYukonPAObject> litePaoTypeComparator = new Comparator<LiteYukonPAObject>()
 	{
-		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
+		@Override
+        public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			int thisVal = o1.getPaoType().getDeviceTypeId();
 			int anotherVal = o2.getPaoType().getDeviceTypeId();
 			
 			
-			if( thisVal != anotherVal )
-				return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+			if( thisVal != anotherVal ) {
+                return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+            }
 				
 			//if the types are equal, we need to sort by Name
-			String thisName = ((LiteYukonPAObject)o1).getPaoName();
-			String anotherName = ((LiteYukonPAObject)o2).getPaoName();
+			String thisName = o1.getPaoName();
+			String anotherName = o2.getPaoName();
 				
 			return( thisName.compareToIgnoreCase(anotherName) );			
 			//return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
@@ -71,7 +76,8 @@ public final class LiteComparators
 
 	public static Comparator<LitePoint> litePointPointOffsetComparator = new Comparator<LitePoint>()
 	{
-		public int compare(LitePoint o1, LitePoint o2)
+		@Override
+        public int compare(LitePoint o1, LitePoint o2)
 		{
 			int thisVal = o1.getPointOffset();
 			int anotherVal = o2.getPointOffset();
@@ -85,7 +91,8 @@ public final class LiteComparators
 	
 	public static Comparator<LitePoint> litePointIDComparator = new Comparator<LitePoint>()
 	{
-		public int compare(LitePoint o1, LitePoint o2)
+		@Override
+        public int compare(LitePoint o1, LitePoint o2)
 		{
 			int thisVal = o1.getPointID();
 			int anotherVal = o2.getPointID();
@@ -99,14 +106,16 @@ public final class LiteComparators
 
 	public static Comparator<LiteYukonPAObject> liteYukonPAObjectPortComparator = new Comparator<LiteYukonPAObject>()
 	{
-		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
+		@Override
+        public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			int thisVal = o1.getPortID();
 			int anotherVal = o2.getPortID();
             
             
-            if( thisVal != anotherVal )
+            if( thisVal != anotherVal ) {
                 return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+            }
                 
             //if the types are equal, we need to sort by Name
             String thisName = o1.getPaoName();
@@ -125,7 +134,8 @@ public final class LiteComparators
 
 	public static Comparator<LiteYukonPAObject> liteYukonPAObjectIDComparator = new Comparator<LiteYukonPAObject>()
 	{
-		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
+		@Override
+        public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			int thisVal = o1.getYukonID();
 			int anotherVal = o2.getYukonID();
@@ -139,7 +149,8 @@ public final class LiteComparators
 
    public static Comparator<LiteYukonImage> liteYukonImageCategoryComparator = new Comparator<LiteYukonImage>()
    {
-      public int compare(LiteYukonImage o1, LiteYukonImage o2)
+      @Override
+    public int compare(LiteYukonImage o1, LiteYukonImage o2)
       {
          String thisVal = o1.getImageCategory();
          String anotherVal = o2.getImageCategory();
@@ -154,7 +165,8 @@ public final class LiteComparators
 
 	public static Comparator<LiteBase> liteBaseIDComparator = new Comparator<LiteBase>()
 	{
-		public int compare(LiteBase o1, LiteBase o2)
+		@Override
+        public int compare(LiteBase o1, LiteBase o2)
 		{
 			int thisVal = o1.getLiteID();
 			int anotherVal = o2.getLiteID();
@@ -168,16 +180,19 @@ public final class LiteComparators
 
 	public static Comparator<Object> liteNameComparator = new Comparator<Object>()
 	{
-		public int compare(Object o1, Object o2)
+		@Override
+        public int compare(Object o1, Object o2)
 		{
-			if( o1 == null || o2 == null )
-				return -1;
+			if( o1 == null || o2 == null ) {
+                return -1;
+            }
 
 			String thisVal = o1.toString();
 			String anotherVal = o2.toString();
 			return ( thisVal.compareToIgnoreCase(anotherVal) );
 		}
-		public boolean equals(Object obj)
+		@Override
+        public boolean equals(Object obj)
 		{
 			return false;
 		}
@@ -185,13 +200,15 @@ public final class LiteComparators
 	
 	public static Comparator<LiteYukonRole> liteRoleCategoryComparator = new Comparator<LiteYukonRole>()
 	{
-		public int compare(LiteYukonRole o1, LiteYukonRole o2)
+		@Override
+        public int compare(LiteYukonRole o1, LiteYukonRole o2)
 		{
 			String thisVal = o1.getCategory();
 			String anotherVal = o2.getCategory();
 
-			if( !thisVal.equalsIgnoreCase(anotherVal) )
-				return( thisVal.compareToIgnoreCase(anotherVal) );
+			if( !thisVal.equalsIgnoreCase(anotherVal) ) {
+                return( thisVal.compareToIgnoreCase(anotherVal) );
+            }
 				
 			//if the Categories are equal, we need to sort by Role Name
 			String thisName = o1.getRoleName();
@@ -210,7 +227,8 @@ public final class LiteComparators
 	 */
 	public static Comparator<LiteDeviceTypeCommand> liteDeviceTypeCommandComparator = new Comparator<LiteDeviceTypeCommand>()
 	{
-		public int compare(LiteDeviceTypeCommand o1, LiteDeviceTypeCommand o2)
+		@Override
+        public int compare(LiteDeviceTypeCommand o1, LiteDeviceTypeCommand o2)
 		{
 			int thisVal = o1.getDisplayOrder();
 			int anotherVal = o2.getDisplayOrder();
@@ -226,7 +244,8 @@ public final class LiteComparators
 	 */
 	public static Comparator<LiteCommand> liteCommandComparator = new Comparator<LiteCommand>()
 	{
-		public int compare(LiteCommand o1, LiteCommand o2)
+		@Override
+        public int compare(LiteCommand o1, LiteCommand o2)
 		{
 			String thisVal = o1.getLabel();
 			String anotherVal = o2.getLabel();
@@ -241,7 +260,8 @@ public final class LiteComparators
 	//   ADD ALL LIGHT CLASSES YOU WANT TO COMPARE BELOW!!!!!!!!!!!!!
 	public static Comparator<LiteBase> liteStringComparator = new Comparator<LiteBase>()
 	{
-		public int compare(LiteBase o1, LiteBase o2)
+		@Override
+        public int compare(LiteBase o1, LiteBase o2)
 		{
 			String thisVal = null, anotherVal = null;
             
@@ -259,11 +279,6 @@ public final class LiteComparators
 			{
 				thisVal = ((LiteCICustomer)o1).getCompanyName();
 				anotherVal = ((LiteCICustomer)o2).getCompanyName();
-			}
-			else if(o1 instanceof LiteEnergyCompany && o2 instanceof LiteEnergyCompany)
-			{
-				thisVal = ((LiteEnergyCompany)o1).getName();
-				anotherVal = ((LiteEnergyCompany)o2).getName();
 			}
 			else if (o1 instanceof LitePoint && o2 instanceof LitePoint)
 			{

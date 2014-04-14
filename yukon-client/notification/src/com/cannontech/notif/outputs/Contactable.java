@@ -86,11 +86,11 @@ public class Contactable {
         return yukonUser;
     }
     /**
-     * Determines the appropriate LiteEnergyCompany by first finding the parent
+     * Determines the appropriate EnergyCompany by first finding the parent
      * customer. When the parent customer cannot be found, the default energy
      * company will be returned.
      * 
-     * @return a valid LiteEnergyCompany for this Contactable
+     * @return a valid EnergyCompany for this Contactable
      */
     public EnergyCompany getEnergyCompany() {
         int energyCompanyID;

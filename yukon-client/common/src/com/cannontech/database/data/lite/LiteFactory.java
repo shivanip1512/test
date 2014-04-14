@@ -179,8 +179,9 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			((com.cannontech.database.db.tags.Tag)returnObject).setTagName( ((LiteTag)liteObject).getTagName() );
 			((com.cannontech.database.db.tags.Tag)returnObject).setTagLevel( new Integer(((LiteTag)liteObject).getTagLevel()));
 			Character inhibit = new Character('N');
-			if(((LiteTag)liteObject).isInhibit())
-				inhibit = new Character('Y');
+			if(((LiteTag)liteObject).isInhibit()) {
+                inhibit = new Character('Y');
+            }
 			((com.cannontech.database.db.tags.Tag)returnObject).setInhibit( inhibit );
 			((com.cannontech.database.db.tags.Tag)returnObject).setColorID(new Integer(((LiteTag)liteObject).getColorID()) );
 			((com.cannontech.database.db.tags.Tag)returnObject).setImageID(new Integer(((LiteTag)liteObject).getImageID()) );
@@ -227,11 +228,6 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			((Command)returnObject).setCategory(((LiteCommand)liteObject).getCategory());
 			break;
 /* TODO add SystemRole,YukonRoleProperty */		 		
-	 	case LiteTypes.ENERGY_COMPANY:
-	 		returnObject = new com.cannontech.database.data.company.EnergyCompanyBase();
-	 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setEnergyCompanyID(new Integer(((LiteEnergyCompany)liteObject).getLiteID()));
-	 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setName( ((LiteEnergyCompany)liteObject).getName());
-	 		break;
 /* TODO: add LiteTypes.TAG? */
 		case LiteTypes.SETTLEMENT:
 			returnObject = new SettlementConfig();
@@ -245,10 +241,11 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			break;
 	}
 
-	if( returnObject == null )
-		throw new IllegalArgumentException("*** Unable to create a DBPersistant object from a givent Lite object in: createDBPersistent(LiteBase liteObject)");
-	else
-		return returnObject;
+	if( returnObject == null ) {
+        throw new IllegalArgumentException("*** Unable to create a DBPersistant object from a givent Lite object in: createDBPersistent(LiteBase liteObject)");
+    } else {
+        return returnObject;
+    }
 }
 /**
  * This method was created in VisualAge.
@@ -500,9 +497,9 @@ public static DBPersistent convertLiteToDBPers( LiteBase lBase )
 	{					
 		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
 			YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( lBase.getLiteID() ) );
-	}
-	else
- 		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( lBase );
+	} else {
+        userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( lBase );
+    }
 
 	return userObject;
 }
@@ -515,9 +512,9 @@ public static DBPersistent convertLiteToDBPersAndRetrieve( LiteBase lBase ) {
 	{					
 		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
 			YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( lBase.getLiteID() ) );
-	}
-	else
- 		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( lBase );
+	} else {
+        userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( lBase );
+    }
 	
 	try
     {

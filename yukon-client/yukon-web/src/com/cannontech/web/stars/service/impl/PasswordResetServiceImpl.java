@@ -31,7 +31,6 @@ import com.cannontech.stars.core.login.model.PasswordResetInfo;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.tools.email.EmailException;
 import com.cannontech.tools.email.EmailHtmlMessage;
 import com.cannontech.tools.email.EmailService;
@@ -52,7 +51,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private EmailService emailService;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;

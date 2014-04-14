@@ -89,7 +89,7 @@ public class CustomerPointTypeLookup {
     
     /**
      * Convenience method that determines the customer's Energy Company and then
-     * calls getPointTypeGroups(LiteEnergyCompany).
+     * calls getPointTypeGroups(EnergyCompany).
      * @param liteCICustomer
      * @return
      */
@@ -101,7 +101,7 @@ public class CustomerPointTypeLookup {
 
     /**
      * Conveneince method that determines the customer's Energy Company and then
-     * calls getApplicablePoints(LiteEnergyCompany).
+     * calls getApplicablePoints(EnergyCompany).
      * @param liteCICustomer
      * @return List of applicable point types
      */

@@ -4,10 +4,6 @@
 <beans>
     <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache"/>
 
-    <bean id="yukonUserEnergyCompanyLookup" class="com.cannontech.yukon.server.cache.bypass.YukonUserEnergyCompanyLookup">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-    </bean>
-
     <bean id="dbPersistentBeanFactory"
         class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
         <property name="serviceLocatorInterface"
