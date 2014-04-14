@@ -40,4 +40,7 @@ public interface ServiceCompanyDao {
      * This method returns the total number of inventory that are attached to a given service company
      */
     public int getInventoryCountForServiceCompany(int serviceCompanyId);
+
+    List<com.cannontech.core.dao.impl.ServiceCompanyDaoImpl.DisplayableServiceCompany> getAllServiceCompanies(Iterable<Integer> energyCompanyIds);
+
 }

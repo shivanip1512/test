@@ -37,6 +37,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -63,7 +64,6 @@ import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.MeteringType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -94,7 +94,7 @@ public class AssetDashboardController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private PaoDao paoDao;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private ServiceCompanyDao serviceCompanyDao;
     @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private InventoryDao inventoryDao;
@@ -373,7 +373,7 @@ public class AssetDashboardController {
         List<Integer> energyCompanyIds = 
                 Lists.transform(ecService.getEnergyCompany(energyCompany.getId()).getParents(true), 
                                 YukonEnergyCompanyService.TO_ID_FUNCTION);
-        model.addAttribute("serviceCompanies", energyCompanyDao.getAllServiceCompanies(energyCompanyIds));
+        model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         /* Setup elements to hide/show based on device type/class */
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
@@ -599,7 +599,7 @@ public class AssetDashboardController {
         
         List<Integer> energyCompanyIds = 
                 Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
-        model.addAttribute("serviceCompanies", energyCompanyDao.getAllServiceCompanies(energyCompanyIds));
+        model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         /* Setup elements to hide/show based on device type/class */
         model.addAttribute("displayTypeKey", ".displayType." + clazz);

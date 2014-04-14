@@ -19,6 +19,7 @@ import com.cannontech.core.dao.DesignationCodeDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -28,12 +29,11 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 
 public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
-    
-    private DesignationCodeDao designationCodeDao;
-    private ContactNotificationDao contactNotificationDao;
-    
-    private NextValueHelper nextValueHelper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private DesignationCodeDao designationCodeDao;
+    @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+
     private SimpleTableAccessTemplate<ServiceCompanyDto> serviceCompanyTemplate;
 
     private SqlFragmentSource selectBase;
@@ -222,25 +222,44 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         return yukonJdbcTemplate.queryForInt(sql);
     }
     
-    // DI
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    public static class DisplayableServiceCompany {
+        int serviceCompanyId;
+        String serviceCompanyName;
+
+        public int getServiceCompanyId() {
+            return serviceCompanyId;
+        }
+
+        public void setServiceCompanyId(int serviceCompanyId) {
+            this.serviceCompanyId = serviceCompanyId;
+        }
+
+        public String getServiceCompanyName() {
+            return serviceCompanyName;
+        }
+
+        public void setServiceCompanyName(String serviceCompanyName) {
+            this.serviceCompanyName = serviceCompanyName;
+        }
     }
 
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
+    @Override
+    public List<DisplayableServiceCompany> getAllServiceCompanies(Iterable<Integer> energyCompanyIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select sc.CompanyID companyId, sc.CompanyName companyName from ServiceCompany sc");
+        sql.append("join ECToGenericMapping ecgm on ecgm.ItemID = sc.CompanyID");
+        sql.append("and ecgm.MappingCategory").eq_k(EcMappingCategory.SERVICE_COMPANY);
+        sql.append("where ecgm.EnergyCompanyID").in(energyCompanyIds);
+        List<DisplayableServiceCompany> allServiceCompanies = yukonJdbcTemplate.query(sql, 
+                new YukonRowMapper<DisplayableServiceCompany>() {
+            @Override
+            public DisplayableServiceCompany mapRow(YukonResultSet rs) throws SQLException {
+                DisplayableServiceCompany sc = new DisplayableServiceCompany();
+                sc.setServiceCompanyId(rs.getInt("companyId"));
+                sc.setServiceCompanyName(SqlUtils.convertDbValueToString(rs.getString("companyName")));
+                return sc;
+            }
+        });
+        return allServiceCompanies;
     }
-    
-    @Autowired
-    public void setContactNotificationDao(ContactNotificationDao contactNotifiactionDao) {
-        this.contactNotificationDao = contactNotifiactionDao;
-    }
-    
-    @Autowired
-    public void setDesignationCodeDao(DesignationCodeDao designationCodeDao) {
-        this.designationCodeDao = designationCodeDao;
-    }
-
 }

@@ -84,7 +84,6 @@ import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.MeteringType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -126,7 +125,6 @@ public class OperatorHardwareController {
     @Autowired private ContactDao contactDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DefaultRouteService defaultRouteService;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
@@ -673,7 +671,7 @@ public class OperatorHardwareController {
         
         List<Integer> energyCompanyIds = 
                 Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
-        model.addAttribute("serviceCompanies", energyCompanyDao.getAllServiceCompanies(energyCompanyIds));
+        model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         // Setup elements to hide/show based on device type/class
         HardwareClass clazz = type.getHardwareClass();
