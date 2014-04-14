@@ -7,7 +7,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="adminSetup" page="operatorLogin.home">
-<cti:url var="removeUrl" value="/adminSetup/energyCompany/operatorLogin/remove"/>
     <script>
         function addUser(selectedItems, picker) {
             $('#userId').value = selectedItems[0][picker.idFieldName];
@@ -20,7 +19,7 @@
              var data = {};
              data.userId = userId;
              data.ecId = ecId;
-             $.post('${removeUrl}', data).done(function(data) {  
+             $.post(yukon.url('/adminSetup/energyCompany/operatorLogin/remove'), data).done(function(data) {  
                  $("#"+userId).hide();
            });
         });
