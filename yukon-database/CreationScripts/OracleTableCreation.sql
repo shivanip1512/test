@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/6/2014 4:09:01 PM                          */
+/* Created on:     4/14/2014 12:25:46 PM                        */
 /*==============================================================*/
 
 
@@ -715,7 +715,6 @@ create table CCEventLog  (
    SubID                NUMBER                          not null,
    FeederID             NUMBER                          not null,
    EventType            NUMBER                          not null,
-   EventSubType         NUMBER,
    SeqID                NUMBER                          not null,
    Value                NUMBER                          not null,
    Text                 VARCHAR2(120)                   not null,
@@ -733,6 +732,7 @@ create table CCEventLog  (
    AreaID               NUMBER                          not null,
    SpAreaID             NUMBER                          not null,
    RegulatorId          NUMBER                          not null,
+   EventSubType         NUMBER,
    constraint PK_CCEventLog primary key (LogID)
 );
 
