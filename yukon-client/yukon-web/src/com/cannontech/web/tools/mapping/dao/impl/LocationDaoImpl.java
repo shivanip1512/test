@@ -2,7 +2,6 @@ package com.cannontech.web.tools.mapping.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +42,7 @@ public class LocationDaoImpl implements LocationDao {
     };
 
     @Override
-    public Set<Location> getLastLocations(Collection<? extends YukonPao> paos) {
+    public Set<Location> getLastLocations(Iterable<? extends YukonPao> paos) {
         Set<Integer> paoIds = Sets.newHashSet();
         for (YukonPao yukonPao : paos) {
             paoIds.add(yukonPao.getPaoIdentifier().getPaoId());
@@ -132,7 +131,7 @@ public class LocationDaoImpl implements LocationDao {
     }
 
     @Override
-    public void saveAll(Collection<Location> locations) {
+    public void saveAll(Iterable<Location> locations) {
         /*
          * // If "update if already exists" logic is not required, then SQL batch inserts can be
          * // used instead.

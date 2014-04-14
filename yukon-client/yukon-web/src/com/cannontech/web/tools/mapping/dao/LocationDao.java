@@ -1,6 +1,5 @@
 package com.cannontech.web.tools.mapping.dao;
 
-import java.util.Collection;
 import java.util.Set;
 
 import com.cannontech.common.pao.YukonPao;
@@ -13,7 +12,7 @@ public interface LocationDao {
      * Paos without a location are ignored. If no paos have a
      * location, an empty set is returned.
      */
-    public Set<Location> getLastLocations(Collection<? extends YukonPao> paos);
+    public Set<Location> getLastLocations(Iterable<? extends YukonPao> paos);
     
     /** Get most recent location for PAObjectId. */
     public Location getLastLocation(int paoId);
@@ -25,6 +24,6 @@ public interface LocationDao {
     public void save(Location location);
     
     /** Saves all locations to the database. */
-    public void saveAll(Collection<Location> locations);
+    public void saveAll(Iterable<Location> locations);
     
 }
