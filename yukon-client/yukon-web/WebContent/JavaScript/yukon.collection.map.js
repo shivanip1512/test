@@ -15,32 +15,37 @@ yukon.collection.map = (function () {
     initialized = false,
     map = {},
     
-    _buildIconArray = function(dest_projection) {
-        var 
-        icons = [],
-        locations = yukon.fromJson('#locations');
-        
-        for (loc in locations) {
-            var 
-            location = locations[loc],
-            iconFeature = new ol.Feature({
-                geometry: new ol.geom.Point(ol.proj.transform([location.longitude, location.latitude], 'EPSG:4326', dest_projection)),
-                paoId: location.paoIdentifier.paoId
-            }),
-            iconStyle = new ol.style.Style({
-                image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-                    anchor: [0.5, 0.5],
-                    opacity: 1.0,
-                    src: yukon.url('/WebConfig/yukon/Icons/electric_16.png')
-                }))
-            });
-
-            iconFeature.setStyle(iconStyle);
+    _loadIconLayer = function(dest_projection) {
+        $.getJSON('/yukon/tools/map/locations?collectionType=group&group.name=%2FRF+Cart+Devices').done(function(fc) {
             
-            icons.push(iconFeature);
-        }
-        
-        return icons;
+            var 
+            icons = [],
+            src_projection = fc.crs.properties.name;  // Yukon currently storing coords as ESPG:4326 (WGS84)
+            
+            for (i in fc.features) {
+                var
+                feature = fc.features[i],
+                icon = new ol.Feature({paoIdentifier: feature.properties.paoIdentifier}),
+                iconStyle = new ol.style.Style({
+                    image: new ol.style.Icon({
+                        anchor: [0.5, 0.5],
+                        opacity: 1.0,
+                        src: yukon.url('/WebConfig/yukon/Icons/electric_16.png')
+                    })
+                });
+                icon.setStyle(iconStyle);
+                
+                if (src_projection === dest_projection) {
+                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates)); 
+                } else {
+                    icon.setGeometry(new ol.geom.Point(ol.proj.transform(feature.geometry.coordinates, src_projection, dest_projection)));
+                }
+                
+                icons.push(icon);
+            }
+            
+            map.addLayer(new ol.layer.Vector({ source: new ol.source.Vector({ features: icons, projection: dest_projection }) }));
+        });
     };
 
     mod = {
@@ -51,14 +56,12 @@ yukon.collection.map = (function () {
                 return;
             }
             
-            var vectorSource = new ol.source.Vector({}),
-                iconLayer = new ol.layer.Vector({ source: vectorSource }),
-                osmLayer = new ol.layer.Tile({ source: new ol.source.OSM({ layer: 'sat' }) });
+            var osmLayer = new ol.layer.Tile({ source: new ol.source.MapQuest({layer: 'osm'}) });
             
             map = new ol.Map({
                 controls: ol.control.defaults().extend([new ol.control.FullScreen()]),
                 target: 'map',
-                layers: [osmLayer, iconLayer],
+                layers: [osmLayer],
                 view: new ol.View2D({
                     center: [0, 0],
                     zoom: 9
@@ -66,8 +69,8 @@ yukon.collection.map = (function () {
             });
             
             var dest_projection = mod.getMap().getView().getProjection().getCode();
-            map.getLayers().getAt(1).getSource().addFeatures(_buildIconArray(dest_projection));
             map.getView().setCenter(ol.proj.transform([-93.557708, 45.254846], 'EPSG:4326', dest_projection));
+            _loadIconLayer(dest_projection);
             
             initialized = true;
         },

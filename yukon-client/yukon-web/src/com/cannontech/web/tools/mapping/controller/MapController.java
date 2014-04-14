@@ -1,9 +1,13 @@
 package com.cannontech.web.tools.mapping.controller;
 
 import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.geojson.Crs;
+import org.geojson.Feature;
+import org.geojson.FeatureCollection;
+import org.geojson.Point;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.web.tools.mapping.dao.LocationDao;
-import com.cannontech.web.tools.mapping.model.Location;
 
 @Controller
 public class MapController {
@@ -31,40 +34,49 @@ public class MapController {
     @RequestMapping(value="/map", params="collectionType")
     public String map(ModelMap model, DeviceCollection deviceCollection) {
         
-//        Set<Location> locations = locationDao.getLastLocations(collection.getDeviceList());
-        Set<Location> locations = getFakeLocations(deviceCollection);
-        
-        model.addAttribute("locations", locations);
         model.addAttribute("collection", deviceCollection);
         
         return "map/map.jsp";
     }
     
     @RequestMapping("/map/locations")
-    public @ResponseBody Set<Location> locations(DeviceCollection deviceCollection) {
+    public @ResponseBody FeatureCollection locations(DeviceCollection deviceCollection) {
         
-//        Set<Location> locations = locationDao.getLastLocations(collection.getDeviceList());
-        Set<Location> locations = getFakeLocations(deviceCollection);
+//        FeatureCollection locations = locationDao.getLastLocationsAsGeoJson(collection.getDeviceList());
+        FeatureCollection locations = getFakeLocations(deviceCollection);
         
         return locations;
     }
     
-    private Set<Location> getFakeLocations(DeviceCollection deviceCollection) {
+    private FeatureCollection getFakeLocations(DeviceCollection deviceCollection) {
+        
+        FeatureCollection collection = new FeatureCollection();
+        
+        Map<String, Object> crsProperties = new HashMap<>();
+        crsProperties.put("name", "EPSG:4326"); // Yukon is assuming WSG84 (EPSG:4326)
+        Crs crs = new Crs();
+        crs.setProperties(crsProperties);
+        
+        collection.setCrs(crs);
         
         DecimalFormat df = new DecimalFormat("##.######");
         
-        Set<Location> locations = new HashSet<>();
-        
         for (SimpleDevice device : deviceCollection.getDeviceList()) {
-            Location loc = new Location();
-            loc.setPaoIdentifier(device.getPaoIdentifier());
-            loc.setTimestamp(Instant.now().minus(Duration.standardDays((long) ((Math.random() * (10 - 1)) + 1))));
-            loc.setLatitude(Double.parseDouble(df.format((Math.random() * (45.3 - 45.0)) + 45.0)));
-            loc.setLongitude(Double.parseDouble(df.format(((Math.random() * (93.5 - 93.0)) + 93.0) * -1)));
             
-            locations.add(loc);
+            Feature feature = new Feature();
+            feature.setId(Integer.toString(device.getDeviceId()));
+            
+            double latitude = Double.parseDouble(df.format((Math.random() * (45.3 - 45.0)) + 45.0));
+            double longitude = Double.parseDouble(df.format(((Math.random() * (93.5 - 93.0)) + 93.0) * -1));
+            Point point = new Point(longitude, latitude);
+            feature.setGeometry(point);
+            
+            feature.getProperties().put("paoIdentifier", device.getPaoIdentifier());
+            feature.getProperties().put("timestamp", Instant.now().minus(Duration.standardDays((long) ((Math.random() * (10 - 1)) + 1))));
+            
+            collection.add(feature);
         }
         
-        return locations;
+        return collection;
     }
 }

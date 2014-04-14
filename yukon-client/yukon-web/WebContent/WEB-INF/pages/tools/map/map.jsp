@@ -26,7 +26,6 @@
     </div>
 
     <div id="map" class="clearfix map f-focus" tabindex="0"></div>
-    <cti:toJson id="locations" object="${locations}"/>
 
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
