@@ -1574,19 +1574,19 @@
                 <name>Voltage Phase A</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="4" />
+                <decimalplaces value="2" />
             </point>
             <point type="Analog" offset="42">
                 <name>Voltage Phase B</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="4" />
+                <decimalplaces value="2" />
             </point>
             <point type="Analog" offset="43">
                 <name>Voltage Phase C</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="4" />
+                <decimalplaces value="2" />
             </point>
         </points>
         <commands>
