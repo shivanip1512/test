@@ -83,7 +83,7 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("statusPointMonitors", statusPointMonitors);
         
         List<PorterResponseMonitor> porterResponseMonitors = porterResponseMonitorDao.getAllMonitors();
-       Collections.sort(porterResponseMonitors);
+        Collections.sort(porterResponseMonitors);
         model.addAttribute("porterResponseMonitors", porterResponseMonitors);
         
         List<ValidationMonitor> validationMonitors = validationMonitorDao.getAll();

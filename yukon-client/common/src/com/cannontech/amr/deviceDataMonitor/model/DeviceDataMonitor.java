@@ -14,148 +14,154 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeStateGroup;
 import com.cannontech.common.util.LazyList;
 
-public class DeviceDataMonitor implements PointMonitor, Serializable,  Comparable<DeviceDataMonitor>{
-    
-    private static final long serialVersionUID = 1L;
+public class DeviceDataMonitor implements PointMonitor, Serializable,
+		Comparable<DeviceDataMonitor> {
 
-    private Integer id;
-    private String name;
-    private String groupName = null;
-    private boolean enabled = true;
-    private List<DeviceDataMonitorProcessor> processors = LazyList.ofInstance(DeviceDataMonitorProcessor.class);
+	private static final long serialVersionUID = 1L;
 
-    public DeviceDataMonitor() {/* for use by Spring */}
+	private Integer id;
+	private String name;
+	private String groupName = null;
+	private boolean enabled = true;
+	private List<DeviceDataMonitorProcessor> processors = LazyList
+			.ofInstance(DeviceDataMonitorProcessor.class);
 
-    public DeviceDataMonitor(Integer id, 
-                                String name, 
-                                String groupName, 
-                                boolean enabled,
-                                List<DeviceDataMonitorProcessor> processors) {
-        this.id = id;
-        this.groupName = groupName;
-        this.name = name;
-        this.enabled = enabled;
-        this.processors = processors;
-    }
+	public DeviceDataMonitor() {/* for use by Spring */
+	}
 
-    public Integer getId() {
-        return id;
-    }
+	public DeviceDataMonitor(Integer id, String name, String groupName,
+			boolean enabled, List<DeviceDataMonitorProcessor> processors) {
+		this.id = id;
+		this.groupName = groupName;
+		this.name = name;
+		this.enabled = enabled;
+		this.processors = processors;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public String getGroupName() {
-        return groupName;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
+	public String getGroupName() {
+		return groupName;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+	public boolean isEnabled() {
+		return enabled;
+	}
 
-    public List<DeviceDataMonitorProcessor> getProcessors() {
-        return processors;
-    }
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
-    public void setProcessors(List<DeviceDataMonitorProcessor> processors) {
-        this.processors = processors;
-    }
+	public List<DeviceDataMonitorProcessor> getProcessors() {
+		return processors;
+	}
 
-    @Override
-    public MonitorEvaluatorStatus getEvaluatorStatus() {
-        return this.enabled ? MonitorEvaluatorStatus.ENABLED : MonitorEvaluatorStatus.DISABLED;
-    }
+	public void setProcessors(List<DeviceDataMonitorProcessor> processors) {
+		this.processors = processors;
+	}
 
-    public Set<Attribute> getProcessorAttributes() {
-        Set<Attribute> attributes = new HashSet<>();
-        for (DeviceDataMonitorProcessor processor : processors) {
-            attributes.add(processor.getAttribute());
-        }
-        return attributes;
-    }
-    
-    public String getViolationsDeviceGroupName() {
-        return DeviceGroupUtil.removeInvalidDeviceGroupNameCharacters(this.name);
-    }
+	@Override
+	public MonitorEvaluatorStatus getEvaluatorStatus() {
+		return this.enabled ? MonitorEvaluatorStatus.ENABLED
+				: MonitorEvaluatorStatus.DISABLED;
+	}
 
-    public List<AttributeStateGroup> getAttributeStateGroups() {
-        List<AttributeStateGroup> attributeStateGroup = new ArrayList<>();
-        for (DeviceDataMonitorProcessor processor: this.processors) {
-            attributeStateGroup.add(new AttributeStateGroup(processor.getAttribute(), processor.getStateGroup()));
-        }
-        return attributeStateGroup;
-    }
+	public Set<Attribute> getProcessorAttributes() {
+		Set<Attribute> attributes = new HashSet<>();
+		for (DeviceDataMonitorProcessor processor : processors) {
+			attributes.add(processor.getAttribute());
+		}
+		return attributes;
+	}
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (enabled ? 1231 : 1237);
-        result = prime * result + ((groupName == null) ? 0 : groupName.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((processors == null) ? 0 : processors.hashCode());
-        return result;
-    }
+	public String getViolationsDeviceGroupName() {
+		return DeviceGroupUtil
+				.removeInvalidDeviceGroupNameCharacters(this.name);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        DeviceDataMonitor other = (DeviceDataMonitor) obj;
-        if (enabled != other.enabled)
-            return false;
-        if (groupName == null) {
-            if (other.groupName != null)
-                return false;
-        } else if (!groupName.equals(other.groupName))
-            return false;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (processors == null) {
-            if (other.processors != null)
-                return false;
-        } else if (!processors.equals(other.processors))
-            return false;
-        return true;
-    }
+	public List<AttributeStateGroup> getAttributeStateGroups() {
+		List<AttributeStateGroup> attributeStateGroup = new ArrayList<>();
+		for (DeviceDataMonitorProcessor processor : this.processors) {
+			attributeStateGroup.add(new AttributeStateGroup(processor
+					.getAttribute(), processor.getStateGroup()));
+		}
+		return attributeStateGroup;
+	}
 
-    @Override
-    public String toString() {
-        return "DeviceDataMonitor [id=" + id + ", name=" + name + ", groupName=" + groupName
-               + ", enabled=" + enabled + "]";
-    }
-    @Override
-    public int compareTo(DeviceDataMonitor deviceDataMonitors) {
-        return this.getName().compareToIgnoreCase(deviceDataMonitors.getName());
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (enabled ? 1231 : 1237);
+		result = prime * result
+				+ ((groupName == null) ? 0 : groupName.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result
+				+ ((processors == null) ? 0 : processors.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DeviceDataMonitor other = (DeviceDataMonitor) obj;
+		if (enabled != other.enabled)
+			return false;
+		if (groupName == null) {
+			if (other.groupName != null)
+				return false;
+		} else if (!groupName.equals(other.groupName))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (processors == null) {
+			if (other.processors != null)
+				return false;
+		} else if (!processors.equals(other.processors))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "DeviceDataMonitor [id=" + id + ", name=" + name
+				+ ", groupName=" + groupName + ", enabled=" + enabled + "]";
+	}
+
+	@Override
+	public int compareTo(DeviceDataMonitor deviceDataMonitors) {
+		return this.getName().compareToIgnoreCase(deviceDataMonitors.getName());
+	}
 }
