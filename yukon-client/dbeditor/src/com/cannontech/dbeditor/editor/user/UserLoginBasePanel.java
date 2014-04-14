@@ -48,7 +48,6 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
@@ -541,13 +540,13 @@ public class UserLoginBasePanel extends DataInputPanel {
         }
 
         if (getJCheckBoxEnableEC().isSelected()) {
-            LiteEnergyCompany co = (LiteEnergyCompany) getJComboBoxEnergyCompany().getSelectedItem();
+            EnergyCompany co = (EnergyCompany) getJComboBoxEnergyCompany().getSelectedItem();
 
             EnergyCompanyOperatorLoginList ecop =
-                new EnergyCompanyOperatorLoginList(new Integer(co.getLiteID()), login.getUserID());
+                new EnergyCompanyOperatorLoginList(co.getId(), login.getUserID());
 
             // if this is the same energy company that it was before, don't bother updating
-            if (co.getLiteID() != oldEnergyCompanyID) {
+            if (co.getId() != oldEnergyCompanyID) {
                 login.setEnergyCompany(ecop);
             }
         }
