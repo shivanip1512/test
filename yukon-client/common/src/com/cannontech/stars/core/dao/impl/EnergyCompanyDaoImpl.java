@@ -48,9 +48,6 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-/*
- * This 'service' should be treated like a DAO.
- */
 public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     private final Logger log = YukonLogManager.getLogger(EnergyCompanyDaoImpl.class);
 
