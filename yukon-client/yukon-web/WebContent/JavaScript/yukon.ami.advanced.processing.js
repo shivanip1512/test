@@ -11,15 +11,13 @@ yukon.ami.advanced.processing = (function () {
             yukon.ui.busy('#reset-12-months');
             yukon.ui.busy('#reset-all');
             var acceptUrl = yukon.url('/amr/veeReview/advancedProcessing/acceptAll');
-            $.post(acceptUrl, $('#accept-form').serialize()).done(function(result) {
+            $.post(acceptUrl, $('#accept-form').serialize()).done(function() {
                 $('#accept-form input:checkbox').prop('checked', false);
                 yukon.ui.unbusy($('#accept-all'));
                 yukon.ui.unbusy('#delete-all');
                 yukon.ui.unbusy('#reset-12-months');
                 yukon.ui.unbusy('#reset-all');
-                if(result === true) {
-                    $('#tags-accepted').show();
-                }
+                $('#tags-accepted').show();
             });
             return false;
         });
@@ -29,15 +27,13 @@ yukon.ami.advanced.processing = (function () {
             yukon.ui.busy('#reset-12-months');
             yukon.ui.busy('#reset-all');
             var deleteUrl = yukon.url('/amr/veeReview/advancedProcessing/deleteAll');
-            $.post(deleteUrl, $('#delete-form').serialize()).done(function(result) {
+            $.post(deleteUrl, $('#delete-form').serialize()).done(function() {
                 $('#delete-form input:checkbox').prop('checked', false);
                 yukon.ui.unbusy('#delete-all');
                 yukon.ui.unbusy('#accept-all');
                 yukon.ui.unbusy('#reset-12-months');
                 yukon.ui.unbusy('#reset-all');
-                if(result === true) {
-                    $('#tags-deleted').show();
-                }
+                $('#tags-deleted').show();
             });
             return false;
         });
@@ -47,14 +43,12 @@ yukon.ami.advanced.processing = (function () {
             yukon.ui.busy('#delete-all');
             yukon.ui.busy('#reset-all');
             var resetOneYearUrl = yukon.url('/amr/veeReview/advancedProcessing/resetOneYear');
-            $.post(resetOneYearUrl).done(function(result) {
+            $.post(resetOneYearUrl).done(function() {
                 yukon.ui.unbusy($('#reset-12-months'));
                 yukon.ui.unbusy('#accept-all');
                 yukon.ui.unbusy('#delete-all');
                 yukon.ui.unbusy('#reset-all');
-                if(result === true) {
-                    $('#engine-reset').show();
-                }
+                $('#engine-reset').show();
             });
             return false;
         });
@@ -64,14 +58,12 @@ yukon.ami.advanced.processing = (function () {
             yukon.ui.busy('#delete-all');
             yukon.ui.busy('#reset-12-months');
             var resetUrl = yukon.url('/amr/veeReview/advancedProcessing/resetAll');
-            $.post(resetUrl).done(function(result) {
+            $.post(resetUrl).done(function() {
                 yukon.ui.unbusy($('#reset-all'));
                 yukon.ui.unbusy('#accept-all');
                 yukon.ui.unbusy('#delete-all');
                 yukon.ui.unbusy('#reset-12-months');
-                if(result === true) {
-                    $('#engine-reset').show();
-                }
+                $('#engine-reset').show();
             });
             return false;
         });
