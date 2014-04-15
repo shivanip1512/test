@@ -30,7 +30,7 @@ import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class ShipmentChangeController extends StarsInventoryActionController {
 
-    @Autowired private EnergyCompanyService ecDao;
+    @Autowired private EnergyCompanyService ecService;
     
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,
@@ -46,7 +46,7 @@ public class ShipmentChangeController extends StarsInventoryActionController {
         currentShipment.setShipmentNumber(request.getParameter("name"));
         String warehouse = request.getParameter("warehouse");
         currentShipment.setWarehouseID(warehouse == null ? 0 : Integer.valueOf(warehouse));
-        TimeZone systemTimeZone = ecDao.getDefaultTimeZone(pBean.getEnergyCompany().getEnergyCompanyId());
+        TimeZone systemTimeZone = ecService.getDefaultTimeZone(pBean.getEnergyCompany().getEnergyCompanyId());
         Date orderedDate = ServletUtil.parseDateStringLiberally(request.getParameter("orderingDate"), systemTimeZone);
         Date shipDate = ServletUtil.parseDateStringLiberally(request.getParameter("shipDate"), systemTimeZone);
         Date receivedDate = ServletUtil.parseDateStringLiberally(request.getParameter("receivingDate"), systemTimeZone);

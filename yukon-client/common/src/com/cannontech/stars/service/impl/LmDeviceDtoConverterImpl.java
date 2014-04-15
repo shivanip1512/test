@@ -24,7 +24,7 @@ import com.cannontech.util.ServletUtil;
 public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
 
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private EnergyCompanyService ecDao;
+    @Autowired private EnergyCompanyService ecService;
     
     @Override
     public LmDeviceDto createNewDto(String accountNo, String[] hwFields, LiteStarsEnergyCompany lsec) throws ParseException {
@@ -41,7 +41,7 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         dto.setDeviceType(deviceTypeText);
         
         dto.setFieldInstallDate(new Date());
-        TimeZone ecTimeZone = ecDao.getDefaultTimeZone(lsec.getEnergyCompanyId());
+        TimeZone ecTimeZone = ecService.getDefaultTimeZone(lsec.getEnergyCompanyId());
         if (!StringUtils.isBlank(hwFields[ImportFields.IDX_INSTALL_DATE])) {
             Date installDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_INSTALL_DATE], ecTimeZone);
             if (installDate == null) {
@@ -105,7 +105,7 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             dto.setDeviceType(hwFields[ImportFields.IDX_DEVICE_TYPE]);
         }
 
-        TimeZone ecTimeZone = ecDao.getDefaultTimeZone(energyCompany.getEnergyCompanyId());
+        TimeZone ecTimeZone = ecService.getDefaultTimeZone(energyCompany.getEnergyCompanyId());
         if (!StringUtils.isBlank(hwFields[ImportFields.IDX_INSTALL_DATE])) {
             Date installDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_INSTALL_DATE], ecTimeZone);
             if (installDate == null) {

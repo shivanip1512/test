@@ -22,7 +22,7 @@ import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class SearchCustAccountController extends StarsWorkorderActionController {
 
-    @Autowired private EnergyCompanyService ecDao;
+    @Autowired private EnergyCompanyService ecService;
     @Autowired private StarsSearchService starsSearchService;
 
     @Override
@@ -45,7 +45,7 @@ public class SearchCustAccountController extends StarsWorkorderActionController 
         
         StarsOperation operation = null;
         try {
-            TimeZone systemTimeZone = ecDao.getDefaultTimeZone(energyCompany.getEnergyCompanyId());
+            TimeZone systemTimeZone = ecService.getDefaultTimeZone(energyCompany.getEnergyCompanyId());
             operation = UpdateServiceRequestAction.getRequestOperation(request, systemTimeZone);
         }
         catch (WebClientException se) {
