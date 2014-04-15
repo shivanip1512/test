@@ -1,12 +1,9 @@
 package com.cannontech.web.tools.mapping.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.geojson.Crs;
@@ -15,7 +12,6 @@ import org.geojson.FeatureCollection;
 import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
@@ -28,6 +24,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.web.tools.mapping.dao.LocationDao;
 import com.cannontech.web.tools.mapping.model.Location;
@@ -36,20 +33,9 @@ import com.google.common.collect.Sets;
 
 public class LocationDaoImpl implements LocationDao {
 
-    @Autowired
-    private YukonJdbcTemplate template;
-    @Autowired
-    private ConfigurationSource configSource;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    private static String projection = "EPSG:4326";
-
-    @PostConstruct
-    private void projection() {
-        String mapProjection = configSource.getString(MasterConfigStringKeysEnum.MAP_PROJECTION);
-        if (StringUtils.isNotEmpty(mapProjection)) {
-            projection = mapProjection;
-        }
-    }
+    private final String projection;
 
     public enum FeaturePropertiesKey {
         PAO_IDENTIFIER("paoIdentifier"),
@@ -71,7 +57,7 @@ public class LocationDaoImpl implements LocationDao {
         }
     }
 
-    private final static YukonRowMapper<Location> LOCATION_MAPPER = new YukonRowMapper<Location>() {
+    private final static YukonRowMapper<Location> locationMapper = new YukonRowMapper<Location>() {
         @Override
         public Location mapRow(YukonResultSet rs) throws SQLException {
             PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PAObjectId", "Type");
@@ -83,6 +69,12 @@ public class LocationDaoImpl implements LocationDao {
             return location;
         }
     };
+
+    @Autowired
+    public LocationDaoImpl(ConfigurationSource configSource) {
+        String mapProjection = configSource.getString(MasterConfigStringKeysEnum.MAP_PROJECTION);
+        projection = StringUtils.isEmpty(mapProjection) ? "EPSG:4326" : mapProjection;
+    }
 
     @Override
     public Set<Location> getLastLocations(Iterable<? extends YukonPao> paos) {
@@ -106,11 +98,11 @@ public class LocationDaoImpl implements LocationDao {
             }
         };
         final Set<Location> lastLocations = Sets.newHashSet();
-        ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(template);
-        chunkingTemplate.query(sqlGenerator, paoIds, new RowCallbackHandler() {
+        ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+        chunkingTemplate.query(sqlGenerator, paoIds, new YukonRowCallbackHandler() {
             @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                Location location = LOCATION_MAPPER.mapRow(new YukonResultSet(rs));
+            public void processRow(YukonResultSet rs) throws SQLException {
+                Location location = locationMapper.mapRow(rs);
                 lastLocations.add(location);
             }
         });
@@ -154,7 +146,7 @@ public class LocationDaoImpl implements LocationDao {
         sql.append(/**/"WHERE l.PAObjectId").eq(paoId);
         sql.append(") ROW_NUMBERED ");
         sql.append("WHERE rowNumber").eq(1);
-        return template.queryForObject(sql, LOCATION_MAPPER);
+        return jdbcTemplate.queryForObject(sql, locationMapper);
     }
 
     @Override
@@ -164,10 +156,10 @@ public class LocationDaoImpl implements LocationDao {
         sql.append("FROM Location l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectId ");
         sql.append("WHERE PAObjectId").eq(paoId);
         final Set<Location> locations = Sets.newHashSet();
-        template.query(sql, new RowCallbackHandler() {
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                Location location = LOCATION_MAPPER.mapRow(new YukonResultSet(rs));
+            public void processRow(YukonResultSet rs) throws SQLException {
+                Location location = locationMapper.mapRow(rs);
                 locations.add(location);
             }
         });
@@ -184,7 +176,7 @@ public class LocationDaoImpl implements LocationDao {
         insertParams.addValue("Latitude", location.getLatitude());
         insertParams.addValue("Longitude", location.getLongitude());
         try {
-            template.update(insertSql);
+            jdbcTemplate.update(insertSql);
         } catch (DataIntegrityViolationException e) {
             // Device already has a location at this timestamp, update the coordinates.
             SqlStatementBuilder updateSql = new SqlStatementBuilder();
@@ -195,7 +187,7 @@ public class LocationDaoImpl implements LocationDao {
             updateParams.addValue("Longitude", location.getLongitude());
             updateSql.append("WHERE PAObjectId").eq(location.getPaoIdentifier().getPaoId());
             updateSql.append("AND Timestamp").eq(location.getTimestamp());
-            template.update(updateSql);
+            jdbcTemplate.update(updateSql);
         }
     }
 
