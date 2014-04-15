@@ -8,22 +8,22 @@
     <!--  This is a custom HandlerMapping that uses the path property from the 
           JnlpController classes to determine if the controller matches. -->
 
-    <context:component-scan base-package="com.cannontech.web.widget" />
+    <context:component-scan base-package="com.cannontech.web.widget"/>
 
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
         <property name="cacheSeconds" value="0"/>
         <property name="customArgumentResolvers">
             <list>
-                <bean class="com.cannontech.web.bulk.model.DeviceCollectionWebArgumentResolver" />
-                <bean class="com.cannontech.web.common.collection.InventoryCollectionWebArgumentResolver" />
-                <bean class="com.cannontech.web.login.UserContextWebArgumentResolver" />
+                <bean class="com.cannontech.web.bulk.model.DeviceCollectionWebArgumentResolver"/>
+                <bean class="com.cannontech.web.common.collection.InventoryCollectionWebArgumentResolver"/>
+                <bean class="com.cannontech.web.login.UserContextWebArgumentResolver"/>
                 <bean class="com.cannontech.web.login.EnumWebArgumentResolver"/>
                 <bean class="com.cannontech.web.common.flashScope.FlashScopeWebArgumentResolver"/>
                 <bean class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentWebArgumentResolver"/>
                 <bean class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentWebArgumentResolver"/>
             </list>
         </property>
-        <property name="order" value="1" />
+        <property name="order" value="1"/>
         <property name="messageConverters">
            <list>
                 <bean class="com.cannontech.web.spring.JacksonHttpMessageConverter"/>
@@ -58,5 +58,4 @@
     </bean>
     
     <bean name="/test/*" class="com.cannontech.web.widget.support.WidgetTestController"/>
-    
 </beans>

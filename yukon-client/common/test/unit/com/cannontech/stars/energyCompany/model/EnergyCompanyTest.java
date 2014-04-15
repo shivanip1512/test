@@ -97,7 +97,7 @@ public class EnergyCompanyTest {
     }
 
     @Test
-    public void basicTests() {
+    public void test_misc() {
         EnergyCompany mepl = energyCompanies.get(1);
         basicTests(mepl, "Middle Earth Power & Light", 3, null);
 

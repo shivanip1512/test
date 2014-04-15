@@ -10,25 +10,26 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd 
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
-    <!-- This is duplicated in all CannonDispatcherServlet contexts. -->
+    <!-- This file is included in every CannonDispatcherServlet context.  That is to say, everything in this file
+         is duplicated in all CannonDispatcherServlet contexts. -->
+
     <mvc:annotation-driven>
         <mvc:argument-resolvers>
-            <bean class="com.cannontech.web.bulk.model.DeviceCollectionHandlerMethodArgumentResolver" />
-            <bean class="com.cannontech.web.common.collection.InventoryCollectionHandlerMethodArgumentResolver" />
-            <bean class="com.cannontech.web.login.UserContextHandlerMethodArgumentResolver" />
-            <bean class="com.cannontech.web.login.EnumHandlerMethodArgumentResolver" />
-            <bean class="com.cannontech.web.spring.PagingParametersHandlerMethodArgumentResolver" />
-            <bean class="com.cannontech.web.common.flashScope.FlashScopeHandlerMethodArgumentResolver" />
-            <bean class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentHandlerMethodArgumentResolver" />
-            <bean class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentHandlerMethodArgumentResolver" />
+            <bean class="com.cannontech.web.bulk.model.DeviceCollectionHandlerMethodArgumentResolver"/>
+            <bean class="com.cannontech.web.common.collection.InventoryCollectionHandlerMethodArgumentResolver"/>
+            <bean class="com.cannontech.web.login.UserContextHandlerMethodArgumentResolver"/>
+            <bean class="com.cannontech.web.login.EnumHandlerMethodArgumentResolver"/>
+            <bean class="com.cannontech.web.spring.PagingParametersHandlerMethodArgumentResolver"/>
+            <bean class="com.cannontech.web.common.flashScope.FlashScopeHandlerMethodArgumentResolver"/>
+            <bean class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentHandlerMethodArgumentResolver"/>
+            <bean class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentHandlerMethodArgumentResolver"/>
         </mvc:argument-resolvers>
         <mvc:message-converters>
-            <bean class="com.cannontech.web.spring.JacksonHttpMessageConverter" />
+            <bean class="com.cannontech.web.spring.JacksonHttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
 
     <context:annotation-config/>
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
-
 </beans>
