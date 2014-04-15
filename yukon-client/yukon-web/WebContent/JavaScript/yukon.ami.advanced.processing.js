@@ -12,7 +12,7 @@ yukon.ami.advanced.processing = (function () {
             yukon.ui.busy('#reset-all');
             var acceptUrl = yukon.url('/amr/veeReview/advancedProcessing/acceptAll');
             $.post(acceptUrl, $('#accept-form').serialize()).done(function(result) {
-                $('#accept-form input:checkbox').removeAttr('checked');
+                $('#accept-form input:checkbox').prop('checked', false);
                 yukon.ui.unbusy($('#accept-all'));
                 yukon.ui.unbusy('#delete-all');
                 yukon.ui.unbusy('#reset-12-months');
@@ -30,8 +30,8 @@ yukon.ami.advanced.processing = (function () {
             yukon.ui.busy('#reset-all');
             var deleteUrl = yukon.url('/amr/veeReview/advancedProcessing/deleteAll');
             $.post(deleteUrl, $('#delete-form').serialize()).done(function(result) {
-                $('#delete-form input:checkbox').removeAttr('checked');
-                yukon.ui.unbusy($('#delete-all'));
+                $('#delete-form input:checkbox').prop('checked', false);
+                yukon.ui.unbusy('#delete-all');
                 yukon.ui.unbusy('#accept-all');
                 yukon.ui.unbusy('#reset-12-months');
                 yukon.ui.unbusy('#reset-all');
