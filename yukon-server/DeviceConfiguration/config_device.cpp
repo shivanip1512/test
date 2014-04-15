@@ -1,4 +1,8 @@
 #include "precompiled.h"
+
+#include <boost/make_shared.hpp>
+
+#include "std_helper.h"
 #include "config_device.h"
 
 
@@ -140,6 +144,61 @@ double DeviceConfig::getFloatValueFromKey( const std::string & key ) const
     }
 
     return std::atof( result->c_str() );
+}
+
+DeviceConfig::IndexedConfig DeviceConfig::getIndexedConfig( const std::string &prefix )
+{
+    // check if we already have this config
+    boost::optional<IndexedConfig> cashedIndexedConfig = mapFind( _cashedIndexedConfig, prefix );
+    if( cashedIndexedConfig )
+    {
+        return *cashedIndexedConfig;
+    }
+
+    IndexedConfig indexedConfig;
+
+    const size_t prefixLen = prefix.length();
+
+    std::istringstream iss;
+
+    for each( ConfigValueMap::value_type p in _configurationValues )
+    {
+        const std::string configKey = p.first.getHashStr();
+
+        // check if beginning of string matches prefix
+        if( configKey.compare(0, prefixLen, prefix) == 0 )
+        {
+            // find the first non-digit character
+            const size_t digitEnd = configKey.find_first_not_of("0123456789", prefixLen );
+
+            if( digitEnd != std::string::npos )
+            {
+                int index = -1;
+                iss.str( configKey.substr(prefixLen, digitEnd) );
+                iss >> index;
+
+                // make sure the index found is valid
+                if( index >= 0 )
+                {
+                    while( indexedConfig.size() < index )
+                    {
+                        std::string name = _name + "_" + prefix + CtiNumStr( indexedConfig.size() );
+                        indexedConfig.push_back( boost::make_shared<DeviceConfig>( 0, name ));
+                    }
+
+                    std::string identifier = configKey.substr(digitEnd, std::string::npos);
+                    indexedConfig[index]->insertValue( identifier, p.second );
+                }
+            }
+        }
+    }
+
+    if( ! indexedConfig.empty() )
+    {
+        _cashedIndexedConfig[prefix] = indexedConfig;
+    }
+
+    return indexedConfig;
 }
 
 

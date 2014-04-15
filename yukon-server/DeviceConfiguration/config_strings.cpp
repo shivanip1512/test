@@ -323,3 +323,11 @@ const string RfnStrings::TemperatureAlarmRepeatInterval     = "temperatureAlarmR
 const string RfnStrings::TemperatureAlarmRepeatCount        = "temperatureAlarmRepeatCount";
 const string RfnStrings::TemperatureAlarmHighTempThreshold  = "temperatureAlarmHighTempThreshold";
 
+// Channel configuration
+const string RfnStrings::ChannelSelectionPrefix          = "channelSelection";
+const string RfnStrings::ChannelSelectionMetric          = "metric";
+const string RfnStrings::ChannelRecordingIntervalPrefix  = "channelRecordingInterval";
+const string RfnStrings::ChannelRecordingIntervalMetric  = "metric";
+const string RfnStrings::ChannelRecordingIntervalSeconds = "channelRecordingIntervalSeconds";
+const string RfnStrings::ChannelReportingIntervalSeconds = "channelReportingIntervalSeconds";
+

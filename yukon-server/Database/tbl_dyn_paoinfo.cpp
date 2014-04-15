@@ -348,6 +348,11 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
         (Dpi::Key_RFN_TempAlarmHighTempThreshold,   "rfn temp alarm high temp threshold" )
 
         (Dpi::Key_RF_DA_DnpSlaveAddress, "rf da dnp slave address")
+
+        (Dpi::Key_RFN_ChannelSelectionMetrics,         "rfn channel selection metrics")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics, "rfn channel recording interval metrics")
+        (Dpi::Key_RFN_ChannelRecordingIntervalSeconds, "rfn channel recording interval seconds")
+        (Dpi::Key_RFN_ChannelReportingIntervalSeconds, "rfn channel reporting interval seconds")
         ;
 }
 

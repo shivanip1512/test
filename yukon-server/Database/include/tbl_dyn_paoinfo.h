@@ -341,6 +341,11 @@ public:
         Key_RFN_TempAlarmRepeatCount,
         Key_RFN_TempAlarmHighTempThreshold,
 
+        Key_RFN_ChannelSelectionMetrics,
+        Key_RFN_ChannelRecordingIntervalMetrics,
+        Key_RFN_ChannelRecordingIntervalSeconds,
+        Key_RFN_ChannelReportingIntervalSeconds,
+
         Key_RF_DA_DnpSlaveAddress
     };
 

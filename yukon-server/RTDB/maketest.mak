@@ -63,6 +63,7 @@ test_cmd_rfn_OvUvConfiguration.obj \
 test_cmd_rfn_TemperatureAlarm.obj \
 test_cmd_rfn_TouConfiguration.obj \
 test_cmd_rfn_RemoteDisconnect.obj \
+test_cmd_rfn_ChannelConfiguration.obj \
 test_cmd_device.obj \
 test_cmd_mct410_hourlyread.obj \
 test_cmd_mct410_disconnectConfiguration.obj \

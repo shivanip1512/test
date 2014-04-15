@@ -6,6 +6,7 @@
 #include "cmd_rfn_TouConfiguration.h"
 #include "cmd_rfn_OvUvConfiguration.h"
 #include "cmd_rfn_RemoteDisconnect.h"
+#include "cmd_rfn_ChannelConfiguration.h"
 
 
 namespace Cti       {
@@ -50,6 +51,9 @@ protected:
     int executePutConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     int executeGetConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
+    int executePutConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeGetConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+
     void handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand            & cmd );
     void handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand            & cmd );
     void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand                   & cmd );
@@ -70,6 +74,8 @@ protected:
     void handleCommandResult( const Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand & cmd );
     void handleCommandResult( const Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand   & cmd );
     void handleCommandResult( const Commands::RfnRemoteDisconnectGetConfigurationCommand          & cmd );
+    void handleCommandResult( const Commands::RfnChannelSelectionCommand                          & cmd );
+    void handleCommandResult( const Commands::RfnChannelIntervalRecordingCommand                  & cmd );
 
 private:
 

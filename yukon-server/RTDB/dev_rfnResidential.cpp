@@ -13,6 +13,7 @@
 #include <boost/assign/list_inserter.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/bimap.hpp>
+#include <boost/tokenizer.hpp>
 
 #include <limits>
 #include <string>
@@ -143,6 +144,56 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
     }
 
     return *meterId;
+}
+
+/**
+ * Convert a set of string to a single string using a separator
+ * @param input set of strings
+ * @return single string
+ */
+std::string convertSetToString( const std::set<std::string>& input )
+{
+    std::string result;
+
+    for each( const std::string& val in input )
+    {
+        result.append( " " + val );
+    }
+
+    return result;
+}
+
+template <typename T>
+boost::optional<T> findDynamicList( const RfnResidentialDevice& dev, CtiTableDynamicPaoInfo::PaoInfoKeys paoKey );
+
+/**
+ * convert a pao dynamic info string to a set of strings using a separator
+ * @param dev
+ * @param paoKey
+ * @return
+ */
+template <>
+boost::optional<std::set<std::string>> findDynamicList<std::set<std::string>>( const RfnResidentialDevice& dev, CtiTableDynamicPaoInfo::PaoInfoKeys paoKey )
+{
+    boost::optional<std::string> dynamicInfo = dev.findDynamicInfo<std::string>(paoKey);
+    if( ! dynamicInfo )
+    {
+        return boost::none;
+    }
+
+    boost::char_separator<char> sep(" ");
+    boost::tokenizer<boost::char_separator<char>> tokens(*dynamicInfo, sep);
+
+    std::set<std::string> result;
+    for each( const std::string& val in tokens )
+    {
+        if( ! result.insert(val).second )
+        {
+            return boost::none;
+        }
+    }
+
+    return result;
 }
 
 } // anonymous namespace
@@ -1395,6 +1446,105 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
     }
 }
 
+int RfnResidentialDevice::executePutConfigInstallChannels( CtiRequestMsg    * pReq,
+                                                           CtiCommandParser & parse,
+                                                           ReturnMsgList    & returnMsgs,
+                                                           RfnCommandList   & rfnRequests )
+{
+    using Commands::RfnSetChannelSelectionCommand;
+    using Commands::RfnSetChannelIntervalRecordingCommand;
+
+    typedef Commands::RfnChannelConfigurationCommand::MetricList MetricList;
+
+    try
+    {
+        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+        if( ! deviceConfig )
+        {
+            return NoConfigData;
+        }
+
+        {
+            const MetricList                  cfgChannelSelectionMetrics = getConfigData <MetricList>  ( deviceConfig, Config::RfnStrings::ChannelSelectionPrefix, Config::RfnStrings::ChannelSelectionMetric );
+            const boost::optional<MetricList> paoChannelSelectionMetrics = findDynamicList<MetricList> ( *this, CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics );
+
+            if( cfgChannelSelectionMetrics != paoChannelSelectionMetrics ||
+                parse.isKeyValid("force") )
+            {
+                if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+
+                rfnRequests.push_back( boost::make_shared<RfnSetChannelSelectionCommand>(
+                        cfgChannelSelectionMetrics ));
+            }
+
+        }
+
+        {
+            const MetricList  cfgChannelRecordingIntervalMetrics = getConfigData<MetricList> ( deviceConfig, Config::RfnStrings::ChannelRecordingIntervalPrefix, Config::RfnStrings::ChannelRecordingIntervalMetric );
+            const unsigned    cfgChannelRecordingIntervalSeconds = getConfigData<unsigned>   ( deviceConfig, Config::RfnStrings::ChannelRecordingIntervalSeconds );
+            const unsigned    cfgChannelReportingIntervalSeconds = getConfigData<unsigned>   ( deviceConfig, Config::RfnStrings::ChannelReportingIntervalSeconds );
+
+            const boost::optional<MetricList> paoChannelRecordingIntervalMetrics = findDynamicList<MetricList> ( *this, CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics );
+            const boost::optional<unsigned>   paoChannelRecordingIntervalSeconds = findDynamicInfo<unsigned>   ( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds );
+            const boost::optional<unsigned>   paoChannelReportingIntervalSeconds = findDynamicInfo<unsigned>   ( CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds );
+
+            if( cfgChannelRecordingIntervalMetrics != paoChannelRecordingIntervalMetrics ||
+                cfgChannelRecordingIntervalSeconds != paoChannelRecordingIntervalSeconds ||
+                cfgChannelReportingIntervalSeconds != paoChannelReportingIntervalSeconds ||
+                parse.isKeyValid("force") )
+            {
+                if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+
+                rfnRequests.push_back( boost::make_shared<RfnSetChannelIntervalRecordingCommand>(
+                        cfgChannelRecordingIntervalMetrics,
+                        cfgChannelRecordingIntervalSeconds,
+                        cfgChannelReportingIntervalSeconds));
+            }
+        }
+
+        if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
+        {
+            return ConfigCurrent;
+        }
+
+        return NoError;
+    }
+    catch( const MissingConfigDataException &e )
+    {
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return NoConfigData;
+    }
+    catch( const InvalidConfigDataException &e )
+    {
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return ErrorInvalidConfigData;
+    }
+}
+
+int RfnResidentialDevice::executeGetConfigInstallChannels( CtiRequestMsg    * pReq,
+                                                           CtiCommandParser & parse,
+                                                           ReturnMsgList    & returnMsgs,
+                                                           RfnCommandList   & rfnRequests )
+{
+    using Commands::RfnGetChannelSelectionFullDescriptionCommand;
+    using Commands::RfnGetChannelIntervalRecordingCommand;
+
+    rfnRequests.push_back( boost::make_shared<RfnGetChannelSelectionFullDescriptionCommand>() );
+    rfnRequests.push_back( boost::make_shared<RfnGetChannelIntervalRecordingCommand>() );
+
+    return NoError;
+}
+
 bool RfnResidentialDevice::disconnectConfigSupported() const
 {
     return disconnectConfigTypes.count(getType());
@@ -1760,6 +1910,18 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouHolidayCon
         setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday2, (*holidays_received)[1].asStringUSFormat() );
         setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday3, (*holidays_received)[2].asStringUSFormat() );
     }
+}
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnChannelSelectionCommand & cmd )
+{
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics, convertSetToString( cmd.getMetricsReceived() ));
+}
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnChannelIntervalRecordingCommand & cmd )
+{
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics, convertSetToString( cmd.getMetricsReceived() ));
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds, cmd.getIntervalRecordingSecondsReceived() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds, cmd.getIntervalReportingSecondsReceived() );
 }
 
 }

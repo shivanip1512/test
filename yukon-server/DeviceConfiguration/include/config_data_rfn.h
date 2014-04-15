@@ -151,6 +151,14 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string TemperatureAlarmRepeatInterval;
     static const std::string TemperatureAlarmRepeatCount;
     static const std::string TemperatureAlarmHighTempThreshold;
+    
+     // Channel configuration
+    static const std::string ChannelSelectionPrefix;
+    static const std::string ChannelSelectionMetric;
+    static const std::string ChannelRecordingIntervalPrefix;
+    static const std::string ChannelRecordingIntervalMetric;
+    static const std::string ChannelRecordingIntervalSeconds;
+    static const std::string ChannelReportingIntervalSeconds;
 };
 
 }

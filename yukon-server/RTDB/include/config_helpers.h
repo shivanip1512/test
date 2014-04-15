@@ -11,12 +11,10 @@
 #include <sstream>
 
 
-
 namespace Cti     {
 namespace Devices {
 
 namespace {
-
 
 /**
  * throws MissingConfigDataException() if no config value exist
@@ -78,9 +76,46 @@ unsigned getConfigData<unsigned>( const Config::DeviceConfigSPtr & deviceConfig,
     return static_cast<unsigned>( l_val );
 }
 
+template <typename T>
+T getConfigData( Config::DeviceConfigSPtr &deviceConfig, const std::string &prefix, const std::string &key );
 
+template <>
+std::set<std::string> getConfigData<std::set<std::string>>( Config::DeviceConfigSPtr &deviceConfig, const std::string &prefix, const std::string &key )
+{
+    std::set<std::string> result;
+
+    std::vector<Config::DeviceConfigSPtr> indexedConfig = deviceConfig->getIndexedConfig( prefix );
+
+    unsigned index = 0;
+    for each( const Config::DeviceConfigSPtr& config in indexedConfig )
+    {
+        boost::optional<std::string> val = config->findValue<std::string>( key );
+
+        if( ! val )
+        {
+            std::ostringstream configKey;
+            configKey << prefix << index << key;
+
+            throw MissingConfigDataException( configKey.str() );
+        }
+
+        if( ! result.insert(*val).second )
+        {
+            std::ostringstream configKey, cause;
+            configKey << prefix << index << key;
+            cause << "Unexpected duplicated config data \"" << val << "\"";
+
+            throw InvalidConfigDataException( configKey.str(), cause.str() );
+        }
+
+        index++;
+    }
+
+    return result;
 }
 
-}
-}
+} // Anonymous
+
+} // Devices
+} // Cti
 
