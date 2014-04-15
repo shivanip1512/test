@@ -62,7 +62,7 @@ public class TwoWayTransport extends AmqTransport {
         }
 
         if (inTransport != null) {
-            emptyConsumerMessage();
+            drainInboundMessages();
             inTransport.close();
             inTransport = null;
         }
@@ -73,7 +73,7 @@ public class TwoWayTransport extends AmqTransport {
     /**
      * Empty the receiving message queue
      */
-    private void emptyConsumerMessage() {
+    private void drainInboundMessages() {
         MessageListener listener = getListener();
         setListener(null);
 
