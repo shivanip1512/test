@@ -620,6 +620,7 @@ public enum BuiltInAttribute implements Attribute {
                 SITESCAN_ERROR,
                 STUCK_SWITCH,
                 TABLE_CRC_ERROR,
+                TAMPER_FLAG,                 //[PLC & RFN] Shared
                 TIME_ADJUSTMENT,
                 TIME_SYNC_FAILED,
                 THD_V_OR_TDD_I_ERROR,
@@ -767,6 +768,7 @@ public enum BuiltInAttribute implements Attribute {
         nonReadableRfnEventBuilder.addAll(Sets.difference(BuiltInAttribute.getRfnEventTypes(),
                                     EnumSet.of(BuiltInAttribute.POWER_FAIL_FLAG,
                                                BuiltInAttribute.REVERSE_POWER_FLAG,
+                                               BuiltInAttribute.TAMPER_FLAG,
                                                BuiltInAttribute.OUTAGE_STATUS)));
         rfnNonReadableEvents = nonReadableRfnEventBuilder.build();
     }
