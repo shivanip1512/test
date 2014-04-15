@@ -20,7 +20,7 @@ public class ExportFormatValidator extends SimpleValidator<ExportFormat> {
     @Override
     protected void doValidation(ExportFormat target, Errors errors) {
         
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "formatName", DataExporterFormatController.baseKey + "formatError.formatNameRequired");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "formatName", DataExporterFormatController.BASE_KEY + "formatError.formatNameRequired");
         YukonValidationUtils.checkExceedsMaxLength(errors, "formatName", target.getFormatName(), 100);
         YukonValidationUtils.checkExceedsMaxLength(errors, "delimiter", target.getDelimiter(), 20);
         YukonValidationUtils.checkExceedsMaxLength(errors, "header", target.getHeader(), 255);
@@ -28,11 +28,11 @@ public class ExportFormatValidator extends SimpleValidator<ExportFormat> {
 
         ExportFormat format = archiveValuesExportFormatDao.findByFormatName(target.getFormatName());
         if (format != null && format.getFormatId() != target.getFormatId()) {
-            errors.rejectValue("formatName", DataExporterFormatController.baseKey + "formatError.duplicateName");
+            errors.rejectValue("formatName", DataExporterFormatController.BASE_KEY + "formatError.duplicateName");
         }
 
         if (target.getFields().isEmpty()) {
-            errors.reject(DataExporterFormatController.baseKey + "formatError.fieldsRequired");
+            errors.reject(DataExporterFormatController.BASE_KEY + "formatError.fieldsRequired");
         }
     }
 }

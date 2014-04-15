@@ -570,4 +570,4 @@ yukon.dataExporterFormat = (function () {
     return mod;
 }());
 
-$(function() {yukon.dataExporterFormat.init();});
+$(function() { yukon.dataExporterFormat.init(); });

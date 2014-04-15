@@ -71,10 +71,10 @@ yukon.dialogConfirm = (function () {
                     _close_dialog();
                     window.location = element.attr("href");
                 };
-            } else if (element.attr("data-href")) {
+            } else if (element.attr("data-href") || element.data("href")) {
                 actionButton.click = function () {
                     _close_dialog();
-                    window.location = element.attr("data-href");
+                    window.location = element.data("href");
                 };
             } else if (element.data("data-onclick")) {
                 actionButton.click = function () {
@@ -82,14 +82,9 @@ yukon.dialogConfirm = (function () {
                     var scripts =  element.data("data-onclick");
                     eval(scripts);
                 };
-            } else if (element.data("href")) {
-                actionButton.click = function () {
-                    _close_dialog();
-                    window.location = element.data("href");
-                };
             }
             // Is the intent to submit a form on ok?
-            else if (element.attr("type") != undefined && element.attr("type").toLowerCase() == "submit") {
+            else if (typeof element.attr("type") !== 'undefined' && element.attr("type").toLowerCase() == "submit") {
                 actionButton.click = function () {
                     var form = element.closest("form")[0],
                         value = element.val(),

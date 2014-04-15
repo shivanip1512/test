@@ -223,7 +223,7 @@ public class DataExporterHomeController {
         }
         writer.close();
         
-        return  "";
+        return null;
     }
     
     private ExportFormat getExportFormat(int selectedFormatId, List<ExportFormat> allFormats) {

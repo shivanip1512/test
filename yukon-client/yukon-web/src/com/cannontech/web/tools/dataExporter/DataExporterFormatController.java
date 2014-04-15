@@ -62,7 +62,6 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -80,11 +79,10 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORT)
 public class DataExporterFormatController {
     
-    public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
-    private static Logger log = YukonLogManager.getLogger(DataExporterFormatController.class);
+    public final static String BASE_KEY = "yukon.web.modules.tools.bulk.archivedValueExporter.";
+    private final static Logger log = YukonLogManager.getLogger(DataExporterFormatController.class);
 
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
-    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private ExportAttributeValidator exportAttributeValidator;
     @Autowired private ExportFieldValidator exportFieldValidator;
     @Autowired private ExportFormatValidator exportFormatValidator;
@@ -157,10 +155,10 @@ public class DataExporterFormatController {
         
         if (format.getFormatId() == 0) {
             archiveValuesExportFormatDao.create(format);
-            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "createdFormat", format.getFormatName()));
+            flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "createdFormat", format.getFormatName()));
         } else {
             archiveValuesExportFormatDao.update(format);
-            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "updatedFormat", format.getFormatName()));
+            flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "updatedFormat", format.getFormatName()));
         }
 
         ArchivedValuesExporter archivedValuesExporter = new ArchivedValuesExporter();
@@ -170,14 +168,14 @@ public class DataExporterFormatController {
     }
     
     @RequestMapping(value = "/data-exporter/format/{id}", method = RequestMethod.DELETE)
-    public String delete(ModelMap model, FlashScope flashScope, @PathVariable int id) {
+    public String delete(FlashScope flashScope, @PathVariable int id) {
         
         String name = archiveValuesExportFormatDao.getName(id);
         archiveValuesExportFormatDao.delete(id);
         //delete any jobs using this format
         scheduledFileExportService.deleteAdeJobsByFormatId(id);
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "deletedFormat", name));
+        flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "deletedFormat", name));
         
         return "redirect:/tools/data-exporter/view";
     }
@@ -349,7 +347,7 @@ public class DataExporterFormatController {
             text.put("pattern", "");
         }
         
-        text.put("maxLength", exportField.getMaxLength() == 0 ? accessor.getMessage(baseKey + "noMax") : exportField.getMaxLength().toString());
+        text.put("maxLength", exportField.getMaxLength() == 0 ? accessor.getMessage(BASE_KEY + "noMax") : exportField.getMaxLength().toString());
         if (!isPlainText) {
             String padding = accessor.getMessage(exportField.getPadSide());
             if (exportField.getPadSide() != PadSide.NONE) {
@@ -432,10 +430,10 @@ public class DataExporterFormatController {
     }
     
     @InitBinder
-    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+    public void initBinder(WebDataBinder binder) {
         
         if (binder.getTarget() != null) {
-            binder.setMessageCodesResolver(new YukonMessageCodeResolver(baseKey));
+            binder.setMessageCodesResolver(new YukonMessageCodeResolver(BASE_KEY));
         }
 
         binder.registerCustomEditor(Attribute.class, new EnumPropertyEditor<>(BuiltInAttribute.class));

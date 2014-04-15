@@ -8,7 +8,7 @@ import com.cannontech.web.tools.dataExporter.DataExporterFormatController;
 
 public class ExportAttributeValidator extends SimpleValidator<ExportAttribute> {
     
-    private static final String invalidDaysPreviousMsgKey = DataExporterFormatController.baseKey + "formatError.lessThanZero.daysPrevious";
+    private static final String invalidDaysPreviousMsgKey = DataExporterFormatController.BASE_KEY + "formatError.lessThanZero.daysPrevious";
 
     public ExportAttributeValidator() {
         super(ExportAttribute.class);

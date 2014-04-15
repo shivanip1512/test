@@ -263,7 +263,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.SEMI_COLON">Semicolon ( ; )</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.COLON">Colon ( : )</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.SPACE"><![CDATA[Space ( &nbsp;&nbsp )]]></entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.NONE"><![CDATA[None (  )]]></entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.NONE">None (  )</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.CUSTOM">Custom</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.CUSTOM">Custom</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.noFormat">No Format</entry>

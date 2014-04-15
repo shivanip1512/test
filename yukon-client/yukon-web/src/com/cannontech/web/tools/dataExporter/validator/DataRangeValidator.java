@@ -18,13 +18,13 @@ public class DataRangeValidator extends SimpleValidator<DataRange> {
     protected void doValidation(DataRange target, Errors errors) {
         // Checking End Date
         if (target.getDataRangeType() == DataRangeType.END_DATE) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "endDate", DataExporterFormatController.baseKey + "formatError.endDateRequired");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "endDate", DataExporterFormatController.BASE_KEY + "formatError.endDateRequired");
         }
         
         // Checking Local Date Range
         if (target.getDataRangeType() == DataRangeType.DATE_RANGE) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localDateRange.startDate", DataExporterFormatController.baseKey + "formatError.startDateRequired");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localDateRange.endDate", DataExporterFormatController.baseKey + "formatError.endDateRequired");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localDateRange.startDate", DataExporterFormatController.BASE_KEY + "formatError.startDateRequired");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localDateRange.endDate", DataExporterFormatController.BASE_KEY + "formatError.endDateRequired");
         }
     }
 }

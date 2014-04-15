@@ -64,7 +64,7 @@ function showDevices() {
     $("#showDevicesButton").attr("disabled", "disabled");
     // escape the group name to escape problem characters
     var groupName = '${cti:escapeJavaScript(group.fullName)}';
-    $("#deviceMembers").load('/group/editor/getDevicesForGroup', {'groupName': groupName});
+    $("#deviceMembers").load(yukon.url('/group/editor/getDevicesForGroup'), {'groupName': groupName});
 }
 
 function removeAllDevices(confirmText) {
@@ -72,7 +72,7 @@ function removeAllDevices(confirmText) {
     if (doRemove) {
         $("#removeAllDevicesButton").attr("disabled", "disabled");
         var groupName = '${cti:escapeJavaScript(group.fullName)}';
-        $("#deviceMembers").load('/group/editor/removeAllDevicesFromGroup', {'groupName': groupName});
+        $("#deviceMembers").load(yukon.url('/group/editor/removeAllDevicesFromGroup'), {'groupName': groupName});
     }
 }
 
@@ -110,9 +110,10 @@ function confirmRemoveAllDevices(confirmText) {
         <div class="column one">
             <%-- GROUPS HIERARCHY BOX --%>
             <cti:msg2 key="yukon.web.deviceGroups.editor.groupsContainer.title" var="groupsTitle"/>
+            <cti:url value="/group/editor/home" var="baseGroupUrl"/>
             <tags:boxContainer title="${groupsTitle}" hideEnabled="false">
                 <jsTree:nodeValueRedirectingInlineTree  name="groupName"
-                                                        hrefBase="/group/editor/home"
+                                                        hrefBase="${baseGroupUrl}"
                                                         otherHrefParameters=""
                                                         id="deviceGroupEditorTree"
                                                         dataJson="${allGroupsDataJson}"
