@@ -18,7 +18,6 @@ public interface RphTagUiDao {
 
     /**
      * Returns the changeIds where the set of tags associated with the changeId
-     * AND'd with the mask is EQUAL to the set.
      * 
      * @param rphTags
      * @return
