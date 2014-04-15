@@ -37,7 +37,7 @@ public class ValidationEngineAdvancedProcessingController {
     @Autowired private RphTagUiDao rphTagUiDao;
     
     @RequestMapping("/veeReview/advancedProcessing")
-    public String advancedProcessing(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
+    public String advancedProcessing(ModelMap model) {
     
         Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
         
@@ -51,8 +51,7 @@ public class ValidationEngineAdvancedProcessingController {
     }
     
     @RequestMapping("/veeReview/advancedProcessing/acceptAll")
-    public @ResponseBody boolean acceptAllCheckedRows(HttpServletRequest request, ModelMap model, LiteYukonUser user, 
-            PagingParameters pagingParameters) {
+    public @ResponseBody boolean acceptAllCheckedRows(HttpServletRequest request, LiteYukonUser user) {
         Set<RphTag> selectedTags = getSelectedTags(request);
         
         validationHelperService.acceptAllMatchingRows(selectedTags, user);
@@ -62,8 +61,7 @@ public class ValidationEngineAdvancedProcessingController {
     }
     
     @RequestMapping("/veeReview/advancedProcessing/deleteAll")
-    public @ResponseBody boolean deleteAllCheckedRows(HttpServletRequest request, ModelMap model, LiteYukonUser user, 
-            PagingParameters pagingParameters) {
+    public @ResponseBody boolean deleteAllCheckedRows(HttpServletRequest request, LiteYukonUser user) {
       Set<RphTag> selectedTags = getSelectedTags(request);
       
       validationHelperService.deleteAllMatchingRows(selectedTags, user);
@@ -90,7 +88,7 @@ public class ValidationEngineAdvancedProcessingController {
     }
 
     @RequestMapping("/veeReview/advancedProcessing/resetOneYear")
-    public @ResponseBody boolean resetValidationEngineOneYear(YukonUserContext context, ModelMap model) {
+    public @ResponseBody boolean resetValidationEngineOneYear(YukonUserContext context) {
         Period oneYear = Period.years(1);
         DateTime now = new DateTime(context.getJodaTimeZone());
         DateTime since = now.minus(oneYear);
