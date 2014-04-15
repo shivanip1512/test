@@ -39,7 +39,6 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
@@ -52,7 +51,6 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     private final Logger log = YukonLogManager.getLogger(EnergyCompanyDaoImpl.class);
 
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private PaoDao paoDao;
@@ -159,7 +157,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
     @Override
     public boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany) {
-        return energyCompany.getEnergyCompanyId() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
+        return energyCompany.getEnergyCompanyId() == DEFAULT_ENERGY_COMPANY_ID;
     }
 
     @Deprecated
