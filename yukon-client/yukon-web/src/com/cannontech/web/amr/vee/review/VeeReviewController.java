@@ -35,6 +35,7 @@ import com.google.common.collect.Ordering;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.VALIDATION_ENGINE)
+@RequestMapping("/veeReview/")
 public class VeeReviewController {
     
     @Autowired private RphTagUiDao rphTagUiDao;
@@ -140,18 +141,18 @@ public class VeeReviewController {
         
     }
     
-    @RequestMapping("/veeReview/home")
+    @RequestMapping("home")
     public String home(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
         setUpModel(request, model, pagingParameters);
         return "vee/review/review.jsp";
     }
     
-    @RequestMapping("/veeReview/reviewTable")
+    @RequestMapping("reviewTable")
     public String reviewTable(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
         setUpModel(request,  model, pagingParameters);
         return "vee/review/reviewTable.jsp";
     }
-    @RequestMapping("/veeReview/save")
+    @RequestMapping("save")
     public String save(HttpServletRequest request, ModelMap model, LiteYukonUser user, PagingParameters pagingParameters) 
             throws NumberFormatException {
         // gather changeIds

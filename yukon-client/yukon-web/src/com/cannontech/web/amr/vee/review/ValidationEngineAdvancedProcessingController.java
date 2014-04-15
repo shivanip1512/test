@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.events.loggers.ValidationEventLogService;
-import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.validation.dao.RphTagUiDao;
 import com.cannontech.common.validation.model.RphTag;
 import com.cannontech.common.validation.service.ValidationHelperService;
@@ -30,13 +29,14 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.VALIDATION_ENGINE)
+@RequestMapping("/veeReview/")
 public class ValidationEngineAdvancedProcessingController {
     
     @Autowired private ValidationHelperService validationHelperService;
     @Autowired private ValidationEventLogService validationEventLogService;
     @Autowired private RphTagUiDao rphTagUiDao;
     
-    @RequestMapping("/veeReview/advancedProcessing")
+    @RequestMapping("advancedProcessing")
     public String advancedProcessing(ModelMap model) {
     
         Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
@@ -50,7 +50,7 @@ public class ValidationEngineAdvancedProcessingController {
         return "vee/review/menu.jsp";
     }
     
-    @RequestMapping("/veeReview/advancedProcessing/acceptAll")
+    @RequestMapping("advancedProcessing/acceptAll")
     public @ResponseBody boolean acceptAllCheckedRows(HttpServletRequest request, LiteYukonUser user) {
         Set<RphTag> selectedTags = getSelectedTags(request);
         
@@ -60,7 +60,7 @@ public class ValidationEngineAdvancedProcessingController {
         return true;
     }
     
-    @RequestMapping("/veeReview/advancedProcessing/deleteAll")
+    @RequestMapping("advancedProcessing/deleteAll")
     public @ResponseBody boolean deleteAllCheckedRows(HttpServletRequest request, LiteYukonUser user) {
       Set<RphTag> selectedTags = getSelectedTags(request);
       
@@ -80,14 +80,14 @@ public class ValidationEngineAdvancedProcessingController {
         }
         return new HashSet<RphTag>(tags);
     }
-    @RequestMapping("/veeReview/advancedProcessing/resetAll")
+    @RequestMapping("advancedProcessing/resetAll")
     public @ResponseBody boolean resetValidationEngine(LiteYukonUser user) {
         validationHelperService.resetValidationEngine(null);
         validationEventLogService.validationEngineReset(user);
         return true;
     }
 
-    @RequestMapping("/veeReview/advancedProcessing/resetOneYear")
+    @RequestMapping("advancedProcessing/resetOneYear")
     public @ResponseBody boolean resetValidationEngineOneYear(YukonUserContext context) {
         Period oneYear = Period.years(1);
         DateTime now = new DateTime(context.getJodaTimeZone());
