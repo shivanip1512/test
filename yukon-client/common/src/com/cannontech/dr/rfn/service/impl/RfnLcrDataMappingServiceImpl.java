@@ -224,7 +224,9 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         Integer value = null;
         value = data.evaluateAsInt(entry.getxPathQuery());
         if (value == null) {
-            log.error("No value was found when evaluating XPath query: " + entry.getxPathQuery());
+            if (log.isDebugEnabled()) {
+                log.debug("No value was found when evaluating XPath query: " + entry.getxPathQuery());
+            }
             return null;
         }
         // If the value is found inside a Flags element, to pull it out it must be bit-masked and -shifted.
