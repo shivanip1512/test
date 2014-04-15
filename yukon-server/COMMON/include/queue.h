@@ -70,7 +70,7 @@ private:
     queue_t      *_col;
     std::string   _name;
     unsigned int  _insertValue;
-    bool          _interruptNextRead;
+    bool          _interruptBlockingRead;
 
     boost::xtime xt_eot;
 
@@ -97,7 +97,7 @@ public:
     CtiQueue() :
     _col(0),
     _name("Unnamed Queue"),
-    _interruptNextRead(false)
+    _interruptBlockingRead(false)
     {
         xt_eot.sec  = INT_MAX;
         xt_eot.nsec = 0;
@@ -114,7 +114,7 @@ public:
     * if the collection is empty the next getQueue() will return immediately with a NULL pointer
     * if the collection is not empty, interrupt read flag is reset and getQueue return a valid object has it normally does
     */
-    void interruptNextRead()
+    void interruptBlockingRead()
     {
         lock_t scoped_lock(mux, xt_eot);
 
@@ -130,7 +130,7 @@ public:
             }
         }
 
-        _interruptNextRead = true;
+        _interruptBlockingRead = true;
     }
 
     void putQueue(T *pt)
@@ -202,10 +202,10 @@ public:
             lock_t scoped_lock(mux, xt_eot);
             while( getCollection().empty() )
             {
-                if( _interruptNextRead )
+                if( _interruptBlockingRead )
                 {
                     // if the collection is empty, reset the interrupt flag and return a NULL object
-                    _interruptNextRead = false;
+                    _interruptBlockingRead = false;
                     return NULL;
                 }
 
@@ -218,7 +218,7 @@ public:
             // cerr << "Number of entries " << getCollection().entries() << endl;
 
             // make sure the interrupt flag is false
-            _interruptNextRead = false;
+            _interruptBlockingRead = false;
         }
         catch(...)
         {
@@ -246,10 +246,10 @@ public:
             {
                 if(getCollection().empty())
                 {
-                    if( _interruptNextRead )
+                    if( _interruptBlockingRead )
                     {
                         // if the collection is empty, reset the interrupt flag and return a NULL object
-                        _interruptNextRead = false;
+                        _interruptBlockingRead = false;
                         return NULL;
                     }
 
@@ -268,7 +268,7 @@ public:
                 }
                 
                 // make sure the interrupt flag is set to false
-                _interruptNextRead = false;
+                _interruptBlockingRead = false;
             }
             // mutex automatically released in LockGuard destructor
         }

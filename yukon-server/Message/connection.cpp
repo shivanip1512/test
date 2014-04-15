@@ -485,7 +485,7 @@ void CtiConnection::close()
         _outthread.interrupt();
 
         // interrupt the current or the next getQueue() call
-        _outQueue.interruptNextRead();
+        _outQueue.interruptBlockingRead();
 
         _outthread.tryJoinOrTerminateFor( Chrono::seconds(2) );
 
@@ -681,7 +681,7 @@ void CtiConnection::triggerReconnect()
         _valid = false;
     
         // interrupt the current or the next getQueue() call
-        _outQueue.interruptNextRead();
+        _outQueue.interruptBlockingRead();
     }
 }
 

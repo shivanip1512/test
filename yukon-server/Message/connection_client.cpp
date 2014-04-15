@@ -80,7 +80,7 @@ void CtiClientConnection::onException( const cms::CMSException& ex )
         _valid = false;
 
         // interrupt the current or the next getQueue() call
-        _outQueue.interruptNextRead();
+        _outQueue.interruptBlockingRead();
     }
 
     logException( __FILE__, __LINE__, typeid(ex).name(), ex.getMessage() );
