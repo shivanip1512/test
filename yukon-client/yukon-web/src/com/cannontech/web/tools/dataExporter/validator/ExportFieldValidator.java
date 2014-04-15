@@ -13,7 +13,7 @@ import com.cannontech.web.tools.dataExporter.DataExporterFormatController;
 
 public class ExportFieldValidator extends SimpleValidator<ExportField> {
 
-    private static final String invalidPatternMsgKey = DataExporterFormatController.baseKey + "formatError.invalidPattern";
+    private static final String invalidPatternMsgKey = DataExporterFormatController.BASE_KEY + "formatError.invalidPattern";
     
     public ExportFieldValidator() {
         super(ExportField.class);
@@ -25,7 +25,7 @@ public class ExportFieldValidator extends SimpleValidator<ExportField> {
         if (field.getField().getType() == FieldType.PLAIN_TEXT ) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "plainText", field.getPattern(), 50);
         } else if (field.getMaxLength() == null || field.getMaxLength() < 0) {
-            errors.rejectValue("exportField.maxLength", DataExporterFormatController.baseKey + "formatError.lessThanZero.fieldSize");
+            errors.rejectValue("exportField.maxLength", DataExporterFormatController.BASE_KEY + "formatError.lessThanZero.fieldSize");
         }
 
         YukonValidationUtils.checkExceedsMaxLength(errors, "exportField.padChar", field.getPadChar(), 1);
