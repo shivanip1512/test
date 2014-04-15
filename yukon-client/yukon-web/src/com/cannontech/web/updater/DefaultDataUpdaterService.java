@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -15,8 +14,8 @@ import com.cannontech.common.util.TimeSource;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
 
 public class DefaultDataUpdaterService implements DataUpdaterService {
     private final static Logger log = YukonLogManager.getLogger(DefaultDataUpdaterService.class);
@@ -26,72 +25,83 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
     private Map<DataType, ? extends BulkUpdateBackingService> bulkBacks;
 
     @Override
-    public UpdateResponse getUpdates(Set<String> requests, long afterDate,
-                                     YukonUserContext userContext) {
+    public UpdateResponse getUpdates(Set<String> requests, long afterDate, YukonUserContext userContext) {
         if (log.isDebugEnabled()) {
             log.debug("getUpdates - getting updates for " + Joiner.on(",").join(requests));
         }
+
+        // Collect requests by type.
         ListMultimap<DataType, UpdateIdentifier> requestsToProcess = ArrayListMultimap.create();
         for (String request : requests) {
             UpdateIdentifier identifier = new UpdateIdentifier(request);
             requestsToProcess.put(identifier.getType(), identifier);
         }
+
+        // Handle requests by type.
         Map<String, String> response = new HashMap<>();
         for (DataType type : requestsToProcess.keySet()) {
-            List<UpdateIdentifier> updateIdentifiers = requestsToProcess.get(type);
+            List<UpdateIdentifier> identifiers = requestsToProcess.get(type);
             UpdateBackingService back = backs.get(type);
             BulkUpdateBackingService bulkBack = bulkBacks.get(type);
             if (back != null) {
-                for (UpdateIdentifier identifier : updateIdentifiers) {
+                if (log.isDebugEnabled()) {
+                    log.debug("handling values of type " + type + ": " + Joiner.on("; ").join(identifiers));
+                }
+                for (UpdateIdentifier identifier : identifiers) {
                     UpdateValue updateValue = getValue(back, identifier, afterDate, userContext, true);
-                    addUpdateValueToResponse(response, updateValue);
+                    if (updateValue != null) {
+                        response.put(identifier.getFullIdentifier(), updateValue.getValue());
+                    }
                 }
             } else if (bulkBack != null) {
-                List<UpdateValue> updateValues = getValues(bulkBack, updateIdentifiers, afterDate, userContext);
-                for (UpdateValue updateValue : updateValues) {
-                    addUpdateValueToResponse(response, updateValue);
+                if (log.isDebugEnabled()) {
+                    log.debug("handling bulked values of type " + type + ": " + Joiner.on("; ").join(identifiers));
                 }
+                List<UpdateValue> updateValues = getValues(bulkBack, identifiers, afterDate, userContext, true);
+                for (UpdateValue updateValue : updateValues) {
+                    if (updateValue != null) {
+                        response.put(updateValue.getIdentifier().getFullIdentifier(), updateValue.getValue());
+                    }
+                }
+            } else {
+                log.error("could not find handler for data type " + type);
             }
+            log.debug("done handling values of type " + type);
         }
+
         log.debug("getUpdates - creating response object");
         return new UpdateResponse(response, timeSource.getCurrentMillis());
     }
-    
+
     @Override
     public UpdateValue getFirstValue(String fullIdentifier, YukonUserContext userContext) {
-        UpdateValue updateValue = null;
         UpdateIdentifier identifier = new UpdateIdentifier(fullIdentifier);
+        if (log.isDebugEnabled()) {
+            log.debug("getFirstValue - handling " + identifier);
+        }
+        UpdateValue updateValue = null;
         UpdateBackingService back = backs.get(identifier.getType());
         BulkUpdateBackingService bulkBack = bulkBacks.get(identifier.getType());
         if (back != null) {
-            updateValue = getValue(back, new UpdateIdentifier(fullIdentifier), 0, userContext, false);
+            updateValue = getValue(back, identifier, 0, userContext, false);
         } else if (bulkBack != null) {
-            updateValue = getFirstValue(bulkBack, new UpdateIdentifier(fullIdentifier), userContext);
+            List<UpdateValue> updateValues = getValues(bulkBack, ImmutableList.of(identifier), 0, userContext, false);
+            if (updateValues.isEmpty()) {
+                updateValue = new UpdateValue(identifier);
+            } else {
+                updateValue = updateValues.get(0);
+            }
+        } else {
+            log.error("could not find handler for data type " + identifier.getType());
         }
+        log.debug("getFirstValue - done");
         return updateValue;
     }
-    
-    /*
-     * Adds update value to the response
-     */
-    private void addUpdateValueToResponse(Map<String, String> response, UpdateValue updateValue){
-        if (updateValue != null) {
-            String fullIdentifier = updateValue.getIdentifier().getFullIdentifier();
-            String value = updateValue.getValue();
-            response.put(fullIdentifier, value);
-        }
-    }
 
-    /*
-     * Returns update value
-     */
-    private UpdateValue getValue(UpdateBackingService back, UpdateIdentifier identifier,
-                                 long afterDate, YukonUserContext userContext, boolean wait) {
-        if (wait || back.isValueAvailableImmediately(identifier.getRemainder(),
-                                                     afterDate,
-                                                     userContext)) {
-            String value =
-                back.getLatestValue(identifier.getRemainder(), afterDate, userContext);
+    private UpdateValue getValue(UpdateBackingService back, UpdateIdentifier identifier, long afterDate,
+            YukonUserContext userContext, boolean canWait) {
+        if (canWait || back.isValueAvailableImmediately(identifier.getRemainder(), afterDate, userContext)) {
+            String value = back.getLatestValue(identifier.getRemainder(), afterDate, userContext);
             if (value != null) {
                 return new UpdateValue(identifier, value);
             }
@@ -102,45 +112,19 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
             // this must have been the initial call AND a value wasn't immediately available
             return new UpdateValue(identifier);
         }
+
         return null;
     }
 
-    /*
-     * Returns a latest cached value. If the cached value is not found an update value is returned
-     * with the value not set.
-     */
-    private UpdateValue getFirstValue(BulkUpdateBackingService back, UpdateIdentifier identifier,
-                                                YukonUserContext userContext) {
-        log.debug("getFirstValue - handling " + identifier);
-        UpdateValue updateValue;
-        Map<UpdateIdentifier, String> cachedValues =
-            back.getLatestValues(Lists.newArrayList(identifier), 0, userContext, false);
-        String cachedValue = cachedValues.get(identifier);
-        if (StringUtils.isNotEmpty(cachedValue)) {
-            updateValue = new UpdateValue(identifier, cachedValue);
-        } else {
-            updateValue = new UpdateValue(identifier);
-        }
-        log.debug("getFirstValue - done");
-        return updateValue;
-    }
-    
-    /*
-     * Returns a update values.
-     */
-    private List<UpdateValue> getValues(BulkUpdateBackingService back, List<UpdateIdentifier> identifiers,
-                                            long afterDate, YukonUserContext userContext) {
-        if (log.isDebugEnabled()) {
-            log.debug("getValues (bulk) - handling " + Joiner.on("; ").join(identifiers));
-        }
+    private List<UpdateValue> getValues(BulkUpdateBackingService bulkBack, List<UpdateIdentifier> identifiers,
+            long afterDate, YukonUserContext userContext, boolean canWait) {
         List<UpdateValue> updateValues = new ArrayList<>();
         Map<UpdateIdentifier, String> latestValues =
-            back.getLatestValues(identifiers, afterDate, userContext, true);
+            bulkBack.getLatestValues(identifiers, afterDate, userContext, canWait);
         for (UpdateIdentifier updateIdentifier : latestValues.keySet()) {
             UpdateValue updateValue = new UpdateValue(updateIdentifier, latestValues.get(updateIdentifier));
             updateValues.add(updateValue);
         }
-        log.debug("getValues (bulk) - done");
         return updateValues;
     }
 

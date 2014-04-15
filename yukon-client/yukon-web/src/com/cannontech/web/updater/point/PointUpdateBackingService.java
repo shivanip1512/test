@@ -13,11 +13,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.util.TimeSource;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -33,18 +32,20 @@ import com.google.common.collect.ListMultimap;
 public class PointUpdateBackingService implements BulkUpdateBackingService, AllPointDataListener {
     private final static Logger log = YukonLogManager.getLogger(PointUpdateBackingService.class);
 
-    private TimeSource timeSource;
-    private AsyncDynamicDataSource asyncDataSource;
-    private PointFormattingService pointFormattingService;
-    private int maxCacheSize = 1000;
-    private int maxOverSize = maxCacheSize / 20;
+    private final static int maxCacheSize = 1000;
+    private final static int maxOverSize = 100;
+
+    private final static Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
+
+    @Autowired private AsyncDynamicDataSource asyncDataSource;
+    @Autowired private PointFormattingService pointFormattingService;
+
     private Map<Integer, DatedPointValue> cache = 
         Collections.synchronizedMap(new LinkedHashMap<Integer, DatedPointValue>(maxCacheSize, .75f, true));
-    private final static Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
 
     @Override
     public Map<UpdateIdentifier, String> getLatestValues(List<UpdateIdentifier> updateIdentifiers, long afterDate,
-                                                         YukonUserContext userContext, boolean registerForPointData) {
+                                                         YukonUserContext userContext, boolean canWait) {
         if (log.isDebugEnabled()) {
             log.debug("getLatestValues - handling " + Joiner.on("; ").join(updateIdentifiers));
         }
@@ -53,22 +54,19 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
             PointIdentifier pointIdentifier = new PointIdentifier(updateIdentifier);
             identifiers.put(pointIdentifier.pointId, pointIdentifier);
         }
-        List<DatedPointValue> latestValues = getLatestValues(identifiers.keySet(), afterDate, registerForPointData);
+        List<DatedPointValue> latestValues = getLatestValues(identifiers.keySet(), afterDate, canWait);
         Map<UpdateIdentifier, String> formattedValues = formatValues(identifiers, latestValues, userContext);
         log.debug("getLatestValues - done");
         return formattedValues;
     }
         
-    /*
-     * Returns latest values
-     */
-    private List<DatedPointValue> getLatestValues(Set<Integer> pointIds, long afterDate, boolean registerForPointData) {
+    private List<DatedPointValue> getLatestValues(Set<Integer> pointIds, long afterDate, boolean canWait) {
         Set<Integer> pointsToRegister = new HashSet<>();
         List<DatedPointValue> values = new ArrayList<>();
         for (Integer pointId : pointIds) {
             DatedPointValue value = cache.get(pointId);
             if (value == null) {
-                if (registerForPointData) {
+                if (canWait) {
                     pointsToRegister.add(pointId);
                 }
             } else if (value.receivedTime >= afterDate) {
@@ -90,12 +88,8 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
         return values;
     }
 
-    /*
-     * Formats latest values
-     */
     private Map<UpdateIdentifier, String> formatValues(ListMultimap<Integer, PointIdentifier> identifiers,
                                                        List<DatedPointValue> values, YukonUserContext userContext) {
-
         Map<UpdateIdentifier, String> formattedValues = new HashMap<>();
         for (DatedPointValue datedPointValue : values) {
             List<PointIdentifier> pointIdentifier = identifiers.get(datedPointValue.value.getId());
@@ -134,12 +128,12 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
     	PointValueQualityHolder value;
     	long receivedTime;
         DatedPointValue(PointValueQualityHolder pointData) {
-            this.receivedTime = timeSource.getCurrentMillis();
+            this.receivedTime = System.currentTimeMillis();
             this.value = pointData;
         }
     }
-    
-    private class PointIdentifier {
+
+    private static class PointIdentifier {
         int pointId;
         String format;
         UpdateIdentifier updateIdentifier;
@@ -156,6 +150,7 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
         }
     }
 
+    @Override
     public void pointDataReceived(PointValueQualityHolder pointData) {
         DatedPointValue old = cache.get(pointData.getId());
         if (old == null) {
@@ -167,10 +162,8 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
     
     /**
      * The point data can actually be older than the most current value but we want to use it instead.
-     * This will happen if the pointdata was recorded before the point was created in Yukon ie: peak demand.
-     * We want to replace our 'newer' unitialized value with the a real value recorded before our point was created.
-     * @param old
-     * @param pointData
+     * This will happen if the point data was recorded before the point was created in Yukon e.g.: peak demand.
+     * We want to replace our 'newer' uninitialized value with the a real value recorded before our point was created.
      */
     private void checkBeforeUsing(DatedPointValue old, PointValueQualityHolder pointData) {
         boolean isNewer = pointData.getPointDataTimeStamp().after(old.value.getPointDataTimeStamp());
@@ -184,29 +177,5 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
         trimCache();
         DatedPointValue value = new DatedPointValue(pointData);
         cache.put(pointData.getId(), value);
-    }
-    
-    @Required
-    public void setTimeSource(TimeSource timeSource) {
-        this.timeSource = timeSource;
-    }
-    
-    public void setMaxCacheSize(int maxCacheSize) {
-        this.maxCacheSize = maxCacheSize;
-    }
-    
-    public void setMaxOverSize(int maxOverSize) {
-        this.maxOverSize = maxOverSize;
-    }
-    
-    @Required
-    public void setAsyncDataSource(AsyncDynamicDataSource asyncDataSource) {
-        this.asyncDataSource = asyncDataSource;
-    }
-    
-    @Required
-    public void setPointFormattingService(
-            PointFormattingService pointFormattingService) {
-        this.pointFormattingService = pointFormattingService;
     }
 }

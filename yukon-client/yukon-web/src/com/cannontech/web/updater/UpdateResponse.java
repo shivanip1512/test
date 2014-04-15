@@ -5,7 +5,6 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 
 public final class UpdateResponse {
-
     private final Map<String, String> data;
     private final long toDate;
 

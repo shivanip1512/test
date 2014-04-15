@@ -820,26 +820,9 @@
         factory-method="getCachedInstance" scope="request">
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
-    
-    <bean id="pointUpdateBackingService"
-        class="com.cannontech.web.updater.point.PointUpdateBackingService">
-        <property name="maxCacheSize">
-            <value type="int">1000</value>
-        </property>
-        <property name="asyncDataSource">
-            <ref bean="asyncDynamicDataSource" />
-        </property>
-        <property name="pointFormattingService">
-            <ref bean="pointFormattingServiceForRequest" />
-        </property>
-        <property name="timeSource">
-            <ref bean="timeSource" />
-        </property>
-        <property name="maxOverSize">
-            <value type="int">100</value>
-        </property>
-    </bean>
-    
+
+    <bean id="pointUpdateBackingService" class="com.cannontech.web.updater.point.PointUpdateBackingService"/>
+
     <bean id="pointDataUpdateRegistrationService"
         class="com.cannontech.web.updater.point.PointDataRegistrationServiceImpl" abstract="false">
         <property name="updaterService">
