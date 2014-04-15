@@ -75,11 +75,6 @@ public class MockStarsDatabaseCache extends StarsDatabaseCache {
     }
 
     @Override
-    public LiteStarsEnergyCompany deleteEnergyCompany(int energyCompanyID) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
     public LiteStarsEnergyCompany getDefaultEnergyCompany() {
         throw new MethodNotImplementedException();
     }

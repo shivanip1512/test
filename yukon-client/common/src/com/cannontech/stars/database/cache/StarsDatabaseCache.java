@@ -230,19 +230,17 @@ public class StarsDatabaseCache implements DBChangeListener {
 		synchronized (companies) { companies.add(company); }
 	}
 
-	public LiteStarsEnergyCompany deleteEnergyCompany(int energyCompanyID) {
+	public void deleteEnergyCompany(int energyCompanyID) {
         List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
 		synchronized (companies) {
 			for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = companies.get(i);
 				if (company.getEnergyCompanyId() == energyCompanyID) {
 					companies.remove( i );
-					return company;
+					return;
 				}
 			}
 		}
-		
-		return null;
 	}
 
 	public LiteStarsEnergyCompany getDefaultEnergyCompany() {

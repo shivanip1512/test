@@ -56,7 +56,6 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
@@ -385,6 +384,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         deletePrivilegeGroupsAndDefaultOperatorLogin(energyCompany);
         
         starsEventLogService.deleteEnergyCompany(user, energyCompanyName);
+        
+        StarsDatabaseCache.getInstance().deleteEnergyCompany(energyCompanyId);
         log.info("Deleting energy company " + energyCompany.getName() + " id# " + energyCompanyId + " completed.");
     }
 
@@ -472,18 +473,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         if (defaultRouteId >= 0) {
             defaultRouteService.removeDefaultRoute(energyCompany);
         }
-                
+
         // Delete the energy company!
-        
-        EnergyCompanyBase ec = new EnergyCompanyBase();
-        ec.setEnergyCompanyID( lsec.getEnergyCompanyId() );
-        ec.getEnergyCompany().setPrimaryContactId(lsec.getPrimaryContactID());
-        
-        log.info("Deleting energy company id# " + lsec.getEnergyCompanyId());
-        dbPersistentDao.performDBChange(ec, TransactionType.DELETE);
-        
-        StarsDatabaseCache.getInstance().deleteEnergyCompany( lsec.getLiteID() );
-        LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(lsec.getPrimaryContactID());
+
+        int contactId =  lsec.getPrimaryContactID();
+        LiteContact liteContact = contactDao.getContact(contactId);
         if (liteContact != null) {
             dbChangeManager.processDbChange(liteContact.getContactID(),
                                             DBChangeMsg.CHANGE_CONTACT_DB,
@@ -491,6 +485,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                                             DBChangeMsg.CAT_CUSTOMERCONTACT,
                                             DbChangeType.DELETE);
         }
+
+        EnergyCompanyBase ec = new EnergyCompanyBase();
+        ec.setEnergyCompanyID( lsec.getEnergyCompanyId() );
+        ec.getEnergyCompany().setPrimaryContactId(lsec.getPrimaryContactID());
+        
+        log.info("Deleting energy company id# " + lsec.getEnergyCompanyId());
+        dbPersistentDao.performDBChange(ec, TransactionType.DELETE);
     }
 
     /**

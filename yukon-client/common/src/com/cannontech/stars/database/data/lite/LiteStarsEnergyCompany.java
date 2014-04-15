@@ -20,7 +20,6 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.TransactionType;
-import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -66,7 +65,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private ECMappingDao ecMappingDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsDatabaseCache starsDatabaseCache;
-    private YukonJdbcTemplate yukonJdbcTemplate;
     private SelectionListService selectionListService;
     private YukonGroupDao yukonGroupDao;
     private EnergyCompanyService energyCompanyService;
@@ -929,10 +927,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
         this.yukonGroupDao = yukonGroupDao;
-    }
-    
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     public void setSelectionListService(SelectionListService selectionListService) {
