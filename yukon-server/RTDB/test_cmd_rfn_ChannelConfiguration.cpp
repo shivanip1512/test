@@ -739,7 +739,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                 ( "WattHourNet"              )
                 ( "WattsDelCurrentDemand"    );
 
-        const RfnCommand::CommandException expected( ErrorInvalidData, "Unknown metric \"WALDO\"" );
+        const RfnCommand::CommandException expected( BADPARAM, "Unknown metric \"WALDO\"" );
 
         boost::optional<RfnCommand::CommandException> actual;
 
@@ -1205,8 +1205,8 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
                         ( "VarHourNet"               ) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unknown metric \"WALDO\"" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of metrics 16, expected <= 15" ) );
+                ( RfnCommand::CommandException( BADPARAM, "Unknown metric \"WALDO\"" ) )
+                ( RfnCommand::CommandException( BADPARAM, "Number of metrics 16, expected <= 15" ) );
 
         std::vector< RfnCommand::CommandException > actual;
 

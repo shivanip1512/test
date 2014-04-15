@@ -349,8 +349,28 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
 
         (Dpi::Key_RF_DA_DnpSlaveAddress, "rf da dnp slave address")
 
-        (Dpi::Key_RFN_ChannelSelectionMetrics,         "rfn channel selection metrics")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics, "rfn channel recording interval metrics")
+        (Dpi::Key_RFN_ChannelSelectionMetrics0, "rfn channel selection metrics 0")
+        (Dpi::Key_RFN_ChannelSelectionMetrics1, "rfn channel selection metrics 1")
+        (Dpi::Key_RFN_ChannelSelectionMetrics2, "rfn channel selection metrics 2")
+        (Dpi::Key_RFN_ChannelSelectionMetrics3, "rfn channel selection metrics 3")
+        (Dpi::Key_RFN_ChannelSelectionMetrics4, "rfn channel selection metrics 4")
+        (Dpi::Key_RFN_ChannelSelectionMetrics5, "rfn channel selection metrics 5")
+        (Dpi::Key_RFN_ChannelSelectionMetrics6, "rfn channel selection metrics 6")
+        (Dpi::Key_RFN_ChannelSelectionMetrics7, "rfn channel selection metrics 7")
+        (Dpi::Key_RFN_ChannelSelectionMetrics8, "rfn channel selection metrics 8")
+        (Dpi::Key_RFN_ChannelSelectionMetrics9, "rfn channel selection metrics 9")
+
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics0, "rfn channel recording interval metrics 0")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics1, "rfn channel recording interval metrics 1")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics2, "rfn channel recording interval metrics 2")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics3, "rfn channel recording interval metrics 3")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics4, "rfn channel recording interval metrics 4")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics5, "rfn channel recording interval metrics 5")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics6, "rfn channel recording interval metrics 6")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics7, "rfn channel recording interval metrics 7")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics8, "rfn channel recording interval metrics 8")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics9, "rfn channel recording interval metrics 9")
+
         (Dpi::Key_RFN_ChannelRecordingIntervalSeconds, "rfn channel recording interval seconds")
         (Dpi::Key_RFN_ChannelReportingIntervalSeconds, "rfn channel reporting interval seconds")
         ;

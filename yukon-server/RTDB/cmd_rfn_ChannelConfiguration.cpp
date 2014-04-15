@@ -317,6 +317,11 @@ RfnChannelConfigurationCommand::MetricList RfnChannelConfigurationCommand::getMe
     return _metricsReceived;
 }
 
+RfnChannelConfigurationCommand::MetricIdList RfnChannelConfigurationCommand::getMetricsIdsReceived() const
+{
+    return _metricsIdsReceived;
+}
+
 RfnChannelConfigurationCommand::TlvList RfnChannelConfigurationCommand::getTlvsToSend() const
 {
     return TlvList();
@@ -385,8 +390,10 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
 
         result.description += (*metric)->_description + " (" + CtiNumStr(metricId) + ")\n";
 
-        validate( Condition( _metricsReceived.insert( (*metric)->_name ).second, ErrorInvalidData )
+        validate( Condition( _metricsIdsReceived.insert( metricId ).second, ErrorInvalidData )
                 << "Received unexpected duplicated metric: " << (*metric)->_description << " (" << metricId << ")" );
+
+        _metricsReceived.insert( (*metric)->_name );
     }
 }
 
@@ -439,6 +446,23 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
 
         result.description += "Metric qualifier: " + metricQFields.resolve() + "\n";
     }
+}
+
+RfnChannelConfigurationCommand::MetricIdList RfnChannelConfigurationCommand::resolveMetrics( const MetricList& metrics )
+{
+    MetricIdList metricsIds;
+
+    for each( MetricList::value_type metricName in metrics )
+    {
+        const boost::optional<const MetricItem*> metric = mapFind( metricNameResolver, metricName );
+
+        validate( Condition( metric, BADPARAM )
+                << "Unknown metric \"" << metricName << "\"" );
+
+        metricsIds.insert( (*metric)->_id );
+    }
+
+    return metricsIds;
 }
 
 //----------------------------------------------------------------------------
@@ -524,22 +548,12 @@ RfnSetChannelSelectionCommand::RfnSetChannelSelectionCommand( const MetricList& 
 {
     const unsigned maxMetrics = std::numeric_limits<unsigned char>::max();
 
-    validate( Condition( metrics.size() <= maxMetrics, ErrorInvalidData )
+    validate( Condition( metrics.size() <= maxMetrics, BADPARAM )
             << "Number of metrics " << metrics.size() << ", expected <= " << maxMetrics );
 
     _setChannelSelectionTlvPayload.push_back( metrics.size() );
 
-    std::set<unsigned> metricsIds;
-
-    for each( MetricList::value_type metricName in metrics )
-    {
-        const boost::optional<const MetricItem*> metric = mapFind( metricNameResolver, metricName );
-
-        validate( Condition( metric, ErrorInvalidData )
-                << "Unknown metric \"" << metricName << "\"" );
-
-        metricsIds.insert( (*metric)->_id );
-    }
+    MetricIdList metricsIds = resolveMetrics( metrics );
 
     for each( unsigned metricId in metricsIds )
     {
@@ -686,22 +700,12 @@ RfnSetChannelIntervalRecordingCommand::RfnSetChannelIntervalRecordingCommand( co
 
     const unsigned maxMetrics = 15;
 
-    validate( Condition( metrics.size() <= maxMetrics, ErrorInvalidData )
+    validate( Condition( metrics.size() <= maxMetrics, BADPARAM )
             << "Number of metrics " << metrics.size() << ", expected <= " << maxMetrics );
 
     _setIntervalRecordingTlvPayload.push_back( metrics.size() );
 
-    std::set<unsigned> metricsIds;
-
-    for each( MetricList::value_type metricName in metrics )
-    {
-        const boost::optional<const MetricItem*> metric = mapFind( metricNameResolver, metricName );
-
-        validate( Condition( metric, ErrorInvalidData )
-                << "Unknown metric \"" << metricName << "\"" );
-
-        metricsIds.insert( (*metric)->_id );
-    }
+    MetricIdList metricsIds = resolveMetrics( metrics );
 
     for each( unsigned metricId in metricsIds )
     {

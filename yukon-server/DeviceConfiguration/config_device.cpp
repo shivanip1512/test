@@ -193,10 +193,7 @@ DeviceConfig::IndexedConfig DeviceConfig::getIndexedConfig( const std::string &p
         }
     }
 
-    if( ! indexedConfig.empty() )
-    {
-        _cashedIndexedConfig[prefix] = indexedConfig;
-    }
+    _cashedIndexedConfig[prefix] = indexedConfig;
 
     return indexedConfig;
 }

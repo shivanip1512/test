@@ -79,6 +79,11 @@ unsigned getConfigData<unsigned>( const Config::DeviceConfigSPtr & deviceConfig,
 template <typename T>
 T getConfigData( Config::DeviceConfigSPtr &deviceConfig, const std::string &prefix, const std::string &key );
 
+/**
+ * Specialization of getConfigData() for indexed config items. Retrieve a set of configuration string for a given prefix and config key
+ * throws MissingConfigDataException() if config data is missing
+ * throws InvalidConfigDataException() if duplicated data is found
+ */
 template <>
 std::set<std::string> getConfigData<std::set<std::string>>( Config::DeviceConfigSPtr &deviceConfig, const std::string &prefix, const std::string &key )
 {

@@ -260,31 +260,8 @@ public:
         return val;
     }
 
-    template <>
-    boost::optional<unsigned char> findDynamicInfo(PaoInfoKeys k) const
-    {
-        long val;
-
-        if( ! getDynamicInfo(k, val) || val < 0 || val > std::numeric_limits<unsigned char>::max() )
-        {
-            return boost::none;
-        }
-
-        return static_cast<unsigned char>(val);
-    }
-
-    template <>
-    boost::optional<bool> findDynamicInfo(PaoInfoKeys k) const
-    {
-        long val;
-
-        if( ! getDynamicInfo(k, val) )
-        {
-            return boost::none;
-        }
-
-        return static_cast<bool>(val);
-    }
+    void setMultiKeyDynamicInfo( std::vector<PaoInfoKeys> keys, const std::string &value, unsigned maxLengthPerKey );
+    boost::optional<std::string> findMultiKeyDynamicInfo( std::vector<PaoInfoKeys> keys ) const;
 
     bool hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const;
     bool setStaticInfo(const CtiTableStaticPaoInfo &info);
@@ -364,6 +341,8 @@ public:
 
 };
 
+template<> IM_EX_DEVDB boost::optional<unsigned char> CtiDeviceBase::findDynamicInfo<unsigned char> (PaoInfoKeys k) const;
+template<> IM_EX_DEVDB boost::optional<bool>          CtiDeviceBase::findDynamicInfo<bool>          (PaoInfoKeys k) const;
 
 namespace Cti {
 namespace Devices {

@@ -927,6 +927,78 @@ bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,       CtiTime &destination) co
 
 long CtiDeviceBase::getDynamicInfo(PaoInfoKeys k) const  {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k);  }
 
+
+template <>
+boost::optional<unsigned char> CtiDeviceBase::findDynamicInfo<unsigned char>(PaoInfoKeys k) const
+{
+    long val;
+
+    if( ! getDynamicInfo(k, val) || val < 0 || val > std::numeric_limits<unsigned char>::max() )
+    {
+        return boost::none;
+    }
+
+    return static_cast<unsigned char>(val);
+}
+
+template <>
+boost::optional<bool> CtiDeviceBase::findDynamicInfo<bool>(PaoInfoKeys k) const
+{
+    long val;
+
+    if( ! getDynamicInfo(k, val) )
+    {
+        return boost::none;
+    }
+
+    return static_cast<bool>(val);
+}
+
+/**
+ * set a string value using a list of PaoInfoKeys
+ *
+ * @param keys
+ * @param value
+ * @param maxLengthPerKey
+ */
+void CtiDeviceBase::setMultiKeyDynamicInfo( std::vector<PaoInfoKeys> keys, const std::string &value, unsigned maxLengthPerKey )
+{
+    unsigned pos = 0;
+
+    for each( const PaoInfoKeys k in keys )
+    {
+        const unsigned len = std::min<unsigned>(maxLengthPerKey, value.size() - pos);
+
+        setDynamicInfo( k, value.substr(pos, len) );
+
+        pos += len;
+    }
+}
+
+/**
+ * find dynamic info from multiple PaoInfoKeys.
+ *
+ * @param keys
+ * @return result string of all dynamic info, boost::none if any info are missing
+ */
+boost::optional<std::string> CtiDeviceBase::findMultiKeyDynamicInfo( std::vector<PaoInfoKeys> keys ) const
+{
+    std::string result;
+
+    for each( const PaoInfoKeys k in keys )
+    {
+        std::string val;
+        if( ! getDynamicInfo(k, val) )
+        {
+            return boost::none;
+        }
+
+        result.append( val );
+    }
+
+    return result;
+}
+
 void CtiDeviceBase::setExpectedFreeze(int freeze)
 {
     return;
