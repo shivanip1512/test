@@ -1,14 +1,14 @@
-package com.cannontech.yukon.api.loadManagement.adapters;
+package com.cannontech.stars.dr.adapters;
 
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
-public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyService {
+public class EnergyCompanyDaoAdapter implements EnergyCompanyDao {
 
     @Override
     public List<EnergyCompany> getAllEnergyCompanies() {

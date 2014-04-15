@@ -10,7 +10,7 @@ import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
@@ -21,7 +21,7 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 public abstract class OverrideRequestEndpointBase {
     
     private CustomerAccountDao customerAccountDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+    private EnergyCompanyDao ecDao;
     
     protected AccountEventLogService accountEventLogService;
     protected OptOutService optOutService;
@@ -29,7 +29,7 @@ public abstract class OverrideRequestEndpointBase {
     protected RolePropertyDao rolePropertyDao;
 
     protected CustomerAccount getCustomerAccount(String accountNumber, LiteYukonUser user) throws AccountNotFoundException {
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         List<EnergyCompany> energyCompanies = energyCompany.getDescendants(true);
 
         try {
@@ -73,8 +73,8 @@ public abstract class OverrideRequestEndpointBase {
     }
     
     @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    public void setEnergyCompanyDao(EnergyCompanyDao ecDao) {
+        this.ecDao = ecDao;
     }
     
     

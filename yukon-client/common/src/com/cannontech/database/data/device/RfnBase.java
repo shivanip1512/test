@@ -13,7 +13,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -22,6 +22,7 @@ public class RfnBase extends DeviceBase {
     
     private RfnAddress rfnAddress = null;
     
+    @Override
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
         getRfnAddress().setDeviceID(deviceID);
@@ -52,7 +53,7 @@ public class RfnBase extends DeviceBase {
         if (paoType.isRfn() && !paoType.isMeter()) {
             HardwareService hardwareService = YukonSpringHook.getBean("hardwareService", HardwareService.class);
             InventoryDao inventoryDao = YukonSpringHook.getBean("inventoryDao", InventoryDao.class);
-            YukonEnergyCompanyService ecService = YukonSpringHook.getBean("yukonEnergyCompanyService", YukonEnergyCompanyService.class);
+            EnergyCompanyDao ecService = YukonSpringHook.getBean(EnergyCompanyDao.class);
             
             boolean skip = false;
             YukonInventory inventory = null;
@@ -100,6 +101,7 @@ public class RfnBase extends DeviceBase {
         rfnDeviceDao.updateDevice(device);
     }
     
+    @Override
     public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
         getRfnAddress().setDbConnection(conn);

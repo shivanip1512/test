@@ -61,10 +61,10 @@ import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.assetavailability.service.impl.NoInventoryException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.event.EventInventory;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -146,7 +146,7 @@ public class OperatorHardwareController {
     @Autowired private SelectionListService selectionListService;
     @Autowired private WarehouseDao warehouseDao;
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ZigbeeDeviceService zigbeeDeviceService;
 
@@ -670,7 +670,7 @@ public class OperatorHardwareController {
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 
-                Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+                Lists.transform(energyCompany.getParents(true), EnergyCompanyDao.TO_ID_FUNCTION);
         model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         // Setup elements to hide/show based on device type/class

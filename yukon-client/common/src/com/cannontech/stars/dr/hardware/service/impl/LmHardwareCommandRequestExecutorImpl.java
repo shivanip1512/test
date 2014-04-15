@@ -21,8 +21,8 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -35,7 +35,7 @@ import com.cannontech.stars.service.DefaultRouteService;
  */
 public class LmHardwareCommandRequestExecutorImpl implements LmHardwareCommandRequestExecutor {
 	
-	@Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+	@Autowired private EnergyCompanyDao yukonEnergyCompanyService;
 	@Autowired private StarsDatabaseCache starsDatabaseCache;
 	@Autowired private InventoryBaseDao inventoryBaseDao;
 	@Autowired private InventoryDao inventoryDao;

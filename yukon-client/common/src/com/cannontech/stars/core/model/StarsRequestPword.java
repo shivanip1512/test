@@ -11,9 +11,9 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.service.StarsSearchService;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -95,7 +95,7 @@ public class StarsRequestPword extends RequestPword {
 					
 					//we must get the Yukon lite energy company for the stars lite energy company
 					EnergyCompany energyCompany =
-						YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(eComp.getEnergyCompanyId());
+						YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(eComp.getEnergyCompanyId());
 
 					processEnergyCompanies(Collections.singletonList(energyCompany));
 				}
@@ -149,7 +149,7 @@ public class StarsRequestPword extends RequestPword {
 		
 		if (liteCust.getEnergyCompanyID() != -1) {
 			EnergyCompany energyCompany = 
-			        YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(liteCust.getEnergyCompanyID());
+			        YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteCust.getEnergyCompanyID());
 			return Collections.singletonList(energyCompany);
 		}
 		

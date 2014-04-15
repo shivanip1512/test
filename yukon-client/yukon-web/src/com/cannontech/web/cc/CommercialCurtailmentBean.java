@@ -7,7 +7,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class CommercialCurtailmentBean {
@@ -53,7 +53,7 @@ public class CommercialCurtailmentBean {
     }
     
     public EnergyCompany getEnergyCompany() {
-        return YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(getYukonUser());
+        return YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(getYukonUser());
     }
     
     public void setAuthDao(AuthDao authDao) {

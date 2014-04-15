@@ -20,11 +20,11 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.service.StarsSearchService;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -42,7 +42,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private ContactDao contactDao;
     
     @Override
@@ -124,7 +124,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
         if(searchMembers) {
             List<EnergyCompany> descendantEcs = 
                     ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
-            allEnergyCompanyIDs = Lists.transform(descendantEcs, YukonEnergyCompanyService.TO_ID_FUNCTION);
+            allEnergyCompanyIDs = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
         } else {
             allEnergyCompanyIDs.add(energyCompany.getEnergyCompanyId());
         }
@@ -164,7 +164,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
         if( searchMembers) {
             List<EnergyCompany> descendantEcs = 
                     ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
-            allEnergyCompanyIDs = Lists.transform(descendantEcs, YukonEnergyCompanyService.TO_ID_FUNCTION);
+            allEnergyCompanyIDs = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
         } else {
             allEnergyCompanyIDs.add(energyCompany.getEnergyCompanyId());
         }
@@ -217,7 +217,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
         if(searchMembers) {
             List<EnergyCompany> descendantEcs = 
                     ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
-            allEnergyCompanyIDs = Lists.transform(descendantEcs, YukonEnergyCompanyService.TO_ID_FUNCTION);
+            allEnergyCompanyIDs = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
         } else {
             allEnergyCompanyIDs.add(energyCompany.getEnergyCompanyId());
         }

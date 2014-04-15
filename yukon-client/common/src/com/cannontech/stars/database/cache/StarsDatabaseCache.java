@@ -45,7 +45,7 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.data.appliance.ApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteLMControlHistory;
@@ -79,7 +79,7 @@ import com.google.common.collect.Lists;
  */
 public class StarsDatabaseCache implements DBChangeListener {
 
-    public static final int DEFAULT_ENERGY_COMPANY_ID = YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID;
+    public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID;
 	private static final Duration CTRL_HIST_CACHE_INVALID_INTERVAL = Duration.standardDays(7);
 	
     // Array of all the energy companies (LiteStarsEnergyCompany)
@@ -185,7 +185,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 
 	/**
 	 *@deprecated To get a LiteStarsEnergyCompany by user, 
-	 *    use YukonEnergyCompanyService.getEnergyCompanyByOperator(),
+	 *    use EnergyCompanyDao.getEnergyCompanyByOperator(),
 	 *    then StarsDatabaseCache.getEnergyCompany(YukonEnergyCompany yukonEnergyCompany).
 	 */
 	@Deprecated

@@ -29,7 +29,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
@@ -57,7 +57,7 @@ public class ListController {
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private SelectionListDao selectionListDao;
     @Autowired private SelectionListService selectionListService;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private YukonListDao listDao;
 
     private final Validator validator = new SimpleValidator<SelectionListDto>(SelectionListDto.class) {

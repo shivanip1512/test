@@ -12,7 +12,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.MeteringType;
@@ -29,7 +29,7 @@ public class AddMeterController {
     @Autowired private PaoDao paoDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private HardwareUiService hardwareUiService;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @RequestMapping("view")

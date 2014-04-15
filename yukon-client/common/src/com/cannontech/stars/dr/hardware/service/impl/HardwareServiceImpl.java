@@ -24,8 +24,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
@@ -61,7 +61,7 @@ public class HardwareServiceImpl implements HardwareService {
 
     @Autowired private ApplianceDao applianceDao;
     @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;

@@ -13,11 +13,11 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.LiteStarsLMHardwareRowMapper;
 import com.cannontech.stars.core.dao.SmartLiteInventoryBaseRowMapper;
 import com.cannontech.stars.core.dao.StarsSearchDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -29,7 +29,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
     private static final YukonRowMapper<LiteInventoryBase> inventoryRowMapper = new SmartLiteInventoryBaseRowMapper();
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
 
     @Override

@@ -52,8 +52,8 @@ import com.cannontech.dr.dao.SepReportedAddressDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
@@ -126,7 +126,7 @@ public class OperatorHardwareConfigController {
     @Autowired private SepReportedAddressDao sepReportedAddressDao;
     @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     private final ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();

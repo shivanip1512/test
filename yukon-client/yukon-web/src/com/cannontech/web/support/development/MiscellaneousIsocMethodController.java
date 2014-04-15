@@ -14,7 +14,7 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
@@ -22,10 +22,9 @@ import com.cannontech.web.security.annotation.AuthorizeByCparm;
 @Controller
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class MiscellaneousIsocMethodController {
-    private static final Logger log =
-        YukonLogManager.getLogger(MiscellaneousIsocMethodController.class);
+    private static final Logger log = YukonLogManager.getLogger(MiscellaneousIsocMethodController.class);
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+    private EnergyCompanyDao ecDao;
     
     
     @RequestMapping("/development/miscellaneousMethod/insertProgramTypes")
@@ -40,7 +39,7 @@ public class MiscellaneousIsocMethodController {
             
             YukonEnergyCompany energyCompany;
             try {
-                energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+                energyCompany = ecDao.getEnergyCompanyByOperator(user);
             } catch (EmptyResultDataAccessException e) {
                 flashScope.setWarning(YukonMessageSourceResolvable.createDefaultWithoutCode("Current User must be an Energy Company Operator to insert Program Types"));
                 return "redirect:main";
@@ -93,7 +92,7 @@ public class MiscellaneousIsocMethodController {
     }
     
     @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    public void setEnergyCompanyDao(EnergyCompanyDao ecDao) {
+        this.ecDao = ecDao;
     }
 }

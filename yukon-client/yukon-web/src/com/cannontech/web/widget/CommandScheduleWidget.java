@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
@@ -22,7 +22,7 @@ public class CommandScheduleWidget extends WidgetControllerBase {
     
     @Autowired private CommandScheduleDao commandScheduleDao;
     @Autowired private CommandScheduleEventLogService commandScheduleEventLogService;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {

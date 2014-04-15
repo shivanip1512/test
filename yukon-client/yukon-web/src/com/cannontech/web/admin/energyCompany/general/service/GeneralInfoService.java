@@ -16,7 +16,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
@@ -28,7 +28,7 @@ public class GeneralInfoService {
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private AddressDao addressDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private DbChangeManager dbChangeManager;

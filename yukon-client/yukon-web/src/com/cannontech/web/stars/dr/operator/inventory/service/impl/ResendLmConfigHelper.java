@@ -9,8 +9,8 @@ import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -31,7 +31,7 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
     @Autowired InventoryBaseDao inventoryBaseDao;
     @Autowired InventoryDao inventoryDao;
     @Autowired LmHardwareCommandService commandService;
-    @Autowired YukonEnergyCompanyService yecService;
+    @Autowired EnergyCompanyDao yecService;
     
     public class ResendLmConfigTask extends CollectionBasedInventoryTask {
         

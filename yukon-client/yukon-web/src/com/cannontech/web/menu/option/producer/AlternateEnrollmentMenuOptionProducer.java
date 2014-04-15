@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.Pair;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.service.AlternateEnrollmentService;
@@ -28,7 +28,7 @@ public class AlternateEnrollmentMenuOptionProducer extends DynamicMenuOptionProd
 
     @Autowired private OptOutStatusService optOutStatusService;
     @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanyDao yecService;
     @Autowired private AlternateEnrollmentService aeService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 

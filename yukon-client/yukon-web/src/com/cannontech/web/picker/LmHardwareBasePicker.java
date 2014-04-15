@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryToECFilter;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseWithECIdRowMapper;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
@@ -15,7 +15,7 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class LmHardwareBasePicker extends DatabasePicker<LMHardwareBase> {
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     private final static String[] searchColumnNames = new String[] {
         "ManufacturerSerialNumber"
@@ -47,7 +47,7 @@ public class LmHardwareBasePicker extends DatabasePicker<LMHardwareBase> {
         }
 
         List<Integer> descendantEcIds = 
-                Lists.transform(ecService.getEnergyCompany(energyCompanyId).getDescendants(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+                Lists.transform(ecService.getEnergyCompany(energyCompanyId).getDescendants(true), EnergyCompanyDao.TO_ID_FUNCTION);
         sqlFilters.add(new InventoryToECFilter(descendantEcIds));
     }
 

@@ -54,7 +54,7 @@ import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -66,7 +66,7 @@ public class UserLoginBasePanel extends DataInputPanel {
     private AuthenticationService authenticationService = YukonSpringHook.getBean(AuthenticationService.class);
     private UserGroupDao userGroupDao = YukonSpringHook.getBean(UserGroupDao.class);
     private YukonUserDao yukonUserDao = YukonSpringHook.getBean(YukonUserDao.class);
-    private YukonEnergyCompanyService ecService = YukonSpringHook.getBean(YukonEnergyCompanyService.class);
+    private EnergyCompanyDao ecService = YukonSpringHook.getBean(EnergyCompanyDao.class);
 
     private JLabel ivjJLabelUserName = null;
     private JPanel ivjJPanelLoginPanel = null;
@@ -700,7 +700,7 @@ public class UserLoginBasePanel extends DataInputPanel {
 
             getJComboBoxEnergyCompany().removeAllItems();
             for (EnergyCompany energyCompany : companies) {
-                if (energyCompany.getId() != YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID) {
+                if (energyCompany.getId() != EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID) {
                     getJComboBoxEnergyCompany().addItem(energyCompany);
                 }
             }

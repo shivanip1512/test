@@ -14,7 +14,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideType;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
@@ -31,7 +31,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 
 	@Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 	@Autowired private NextValueHelper nextValueHelper;
-	@Autowired private YukonEnergyCompanyService ecService;
+	@Autowired private EnergyCompanyDao ecService;
 	
 	@Override
 	public List<OptOutCountsTemporaryOverride> getAllOptOutCounts(EnergyCompany energyCompany) throws NoTemporaryOverrideException {

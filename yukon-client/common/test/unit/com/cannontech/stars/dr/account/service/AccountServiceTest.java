@@ -34,10 +34,10 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteSiteInformation;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -55,7 +55,7 @@ import com.cannontech.stars.dr.account.model.ECToAccountMapping;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.impl.AccountServiceImpl;
 import com.cannontech.stars.dr.adapters.ContactServiceAdapter;
-import com.cannontech.stars.dr.adapters.YukonEnergyCompanyServiceAdapter;
+import com.cannontech.stars.dr.adapters.EnergyCompanyDaoAdapter;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.event.dao.EventAccountDao;
 import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
@@ -100,7 +100,7 @@ public class AccountServiceTest extends EasyMockSupport {
     private StarsCustAccountInformationDao starsCustAccountInformationDaoMock;
     private DbChangeManager dbChangeManager;
     private AccountEventLogService accountEventLogServiceMock;
-    private YukonEnergyCompanyService ecServiceMock;
+    private EnergyCompanyDao ecServiceMock;
     private ContactService contactServiceMock;
     private StarsDatabaseCache starsDatabaseCacheMock;
 
@@ -131,7 +131,7 @@ public class AccountServiceTest extends EasyMockSupport {
         dbChangeManager = createNiceMock(DbChangeManager.class);
         accountEventLogServiceMock = createMock(AccountEventLogService.class);
         
-        YukonEnergyCompanyService yecServiceMock = new YukonEnergyCompanyServiceAdapter() {
+        EnergyCompanyDao yecServiceMock = new EnergyCompanyDaoAdapter() {
             @Override
             public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
                 Builder ecBuilder = new EnergyCompany.Builder();

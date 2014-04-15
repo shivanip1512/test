@@ -34,7 +34,7 @@ import com.cannontech.simplereport.ColumnInfo;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.simplereport.YukonReportDefinition;
 import com.cannontech.simplereport.YukonReportDefinitionFactory;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -49,7 +49,7 @@ import com.google.common.collect.Maps;
 @RequestMapping("/surveyReport/*")
 public class SurveyReportController {
     @Autowired private SurveyDao surveyDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     @Autowired private SimpleReportService simpleReportService;

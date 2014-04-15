@@ -33,7 +33,7 @@ import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.impl.PaoNameDisplayablePaoRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapperAdapter;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -58,7 +58,7 @@ public class ProgramDaoImpl implements ProgramDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoDao paoDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     
     private ChunkingSqlTemplate chunkingSqlTemplate;
     

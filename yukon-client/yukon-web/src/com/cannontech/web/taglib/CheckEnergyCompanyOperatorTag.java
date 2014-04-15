@@ -12,7 +12,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -25,8 +25,8 @@ public class CheckEnergyCompanyOperatorTag extends TagSupport {
     public int doStartTag() throws JspException {
        
         int returnValue = EVAL_BODY_INCLUDE;
-        YukonEnergyCompanyService ecService =
-                YukonSpringHook.getBean("yukonEnergyCompanyService", YukonEnergyCompanyService.class);
+        EnergyCompanyDao ecService =
+                YukonSpringHook.getBean(EnergyCompanyDao.class);
         
         LiteYukonUser user = ServletUtil.getYukonUser(pageContext.getRequest());
 

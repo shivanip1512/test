@@ -39,7 +39,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountRowMapper;
@@ -64,7 +64,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     private static final YukonRowMapper<CustomerAccount> rowMapper;
     private static final YukonRowMapper<CustomerAccountWithNames> specialAccountInfoRowMapper;
@@ -193,7 +193,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public CustomerAccount getByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies) {
-        Iterable<Integer> energyCompanyIds = Iterables.transform(energyCompanies, YukonEnergyCompanyService.TO_ID_FUNCTION);
+        Iterable<Integer> energyCompanyIds = Iterables.transform(energyCompanies, EnergyCompanyDao.TO_ID_FUNCTION);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ca.AccountId,AccountSiteId,AccountNumber,ca.CustomerId,BillingAddressId,AccountNotes");

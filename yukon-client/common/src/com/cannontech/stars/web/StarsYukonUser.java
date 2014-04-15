@@ -10,7 +10,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 /**
@@ -75,7 +75,7 @@ public class StarsYukonUser {
 	private void init() throws InstantiationException {
 	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 	    if (rolePropertyDao.checkRole(YukonRole.OPERATOR_ADMINISTRATOR, this.getYukonUser())) {
-			EnergyCompany energyCompany = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(getYukonUser());
+			EnergyCompany energyCompany = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(getYukonUser());
 			if (energyCompany == null) {
                 throw new InstantiationException( "Cannot find the energy company for user id = " + getYukonUser().getUserID() );
             }

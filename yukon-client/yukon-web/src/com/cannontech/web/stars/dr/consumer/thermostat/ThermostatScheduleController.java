@@ -38,8 +38,8 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.service.AccountCheckerService;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
@@ -76,7 +76,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
     @Autowired private ThermostatService thermostatService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private AccountCheckerService accountCheckerService;
     
     @RequestMapping(value = "send", method = RequestMethod.POST)

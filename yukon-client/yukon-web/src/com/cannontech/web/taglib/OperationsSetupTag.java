@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.util.ServletUtil;
 
 
@@ -19,13 +19,13 @@ import com.cannontech.util.ServletUtil;
 public class OperationsSetupTag extends YukonTagSupport {
     
     private RolePropertyDao rolePropertyDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+    private EnergyCompanyDao ecDao;
     
     @Override
     public void doTag() throws JspException, IOException {
         LiteYukonUser user = ServletUtil.getYukonUser(getPageContext().getRequest());
         boolean superUser = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_SUPER_USER, user);
-        boolean isEnergyCompanyOperator = yukonEnergyCompanyService.isEnergyCompanyOperator(user);
+        boolean isEnergyCompanyOperator = ecDao.isEnergyCompanyOperator(user);
         boolean hasMultiSpeak = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP, user);
         boolean hasUserGroupEditor = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, user);
 
@@ -47,7 +47,7 @@ public class OperationsSetupTag extends YukonTagSupport {
     }
     
     @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    public void setEnergyCompanyDao(EnergyCompanyDao ecDao) {
+        this.ecDao = ecDao;
     }
 }

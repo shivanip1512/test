@@ -15,7 +15,7 @@ import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -34,7 +34,7 @@ public class ChangeServiceCompanyController {
 
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
     @Autowired private ChangeServiceCompanyHelper helper;
-    @Autowired private YukonEnergyCompanyService energyCompanyService;
+    @Autowired private EnergyCompanyDao energyCompanyService;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 

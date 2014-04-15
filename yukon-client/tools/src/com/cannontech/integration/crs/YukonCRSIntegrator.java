@@ -26,9 +26,9 @@ import com.cannontech.database.db.customer.Customer;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.MeterHardwareBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.customer.CustomerAccount;
 import com.cannontech.stars.database.data.event.EventWorkOrder;
@@ -361,8 +361,8 @@ public final class YukonCRSIntegrator
                 errorMsg.append("Invalid ServiceUtilityType found: " + servUtilType+ "; ");
             }
                 
-            int ecID_customer = YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID;
-        	int ecID_workOrder = YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID;            	
+            int ecID_customer = EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID;
+        	int ecID_workOrder = EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID;            	
 
         	//Get the serviceCompany from the zipcode
         	LiteStarsEnergyCompany liteStarsEnergyCompany = null;

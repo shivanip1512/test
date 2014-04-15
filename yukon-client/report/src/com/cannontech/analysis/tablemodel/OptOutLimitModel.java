@@ -25,7 +25,7 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
@@ -56,7 +56,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     private CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
     private DateFormattingService dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
     private ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
-    private YukonEnergyCompanyService yukonEnergyCompanyService = YukonSpringHook.getBean("yukonEnergyCompanyService", YukonEnergyCompanyService.class);
+    private EnergyCompanyDao yukonEnergyCompanyService = YukonSpringHook.getBean(EnergyCompanyDao.class);
     private EnrollmentDao enrollmentDao =  YukonSpringHook.getBean("enrollmentDao", EnrollmentDao.class);
     private LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);
     private ProgramDao programDao =  YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
@@ -263,7 +263,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             if (programIds != null) {
                 // Get the enrollments for the programIds supplied
                 List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
-                List<Integer> usableEnergyCompanies = Lists.transform(energyCompany.getDescendants(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+                List<Integer> usableEnergyCompanies = Lists.transform(energyCompany.getDescendants(true), EnergyCompanyDao.TO_ID_FUNCTION);
                 List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getIntersectingEnrollments(usableEnergyCompanies, groupIdsFromSQL, reportInterval);
                 
                 // Build up a multimap of account ids to enrolled inventory ids.

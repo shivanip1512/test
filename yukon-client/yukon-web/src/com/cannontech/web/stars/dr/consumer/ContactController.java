@@ -31,8 +31,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.service.AccountCheckerService;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
@@ -57,7 +57,7 @@ public class ContactController extends AbstractConsumerController {
     @Autowired private CustomerDao customerDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private GlobalSettingDao globalSettingsDao;
     @Autowired private LiteContactValidator liteContactValidator;

@@ -27,7 +27,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
@@ -51,7 +51,7 @@ public class ReportBean
 	private Vector<ReportTypes> availReportTypes = new Vector<ReportTypes>();
 	private String groupType = "";
 	private int userID = UserUtils.USER_YUKON_ID;
-	private int energyCompanyID = YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID;
+	private int energyCompanyID = EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID;
 	
 	private String start = "";
     private Date startDate = null;

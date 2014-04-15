@@ -33,7 +33,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.activemq.YukonTextMessageDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.TextMessageElementRequestMapper;
@@ -52,7 +52,7 @@ public class SendTextMessageEndpoint {
 
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private YukonTextMessageDao yukonTextMessageDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private LmHardwareCommandService lmHardwareCommandService;

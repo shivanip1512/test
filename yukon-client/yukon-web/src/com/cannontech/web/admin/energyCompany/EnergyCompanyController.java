@@ -35,7 +35,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
@@ -60,7 +60,7 @@ public class EnergyCompanyController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private EnergyCompanyDtoValidator energyCompanyDtoValidator;
     @Autowired private EnergyCompanyService energyCompanyService;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private PaoDao paoDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private YukonUserDao yukonUserDao;

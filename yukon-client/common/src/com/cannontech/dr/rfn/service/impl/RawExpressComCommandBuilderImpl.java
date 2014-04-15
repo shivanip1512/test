@@ -16,8 +16,8 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLMConfiguration;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
@@ -34,7 +34,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
 
     private static final Logger log = YukonLogManager.getLogger(RawExpressComCommandBuilderImpl.class);
     
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private StarsCustAccountInformationDao caiDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private LMGroupDao lmGroupDao;

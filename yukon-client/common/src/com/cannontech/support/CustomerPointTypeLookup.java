@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.db.customer.CICustomerPointType;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
@@ -23,7 +23,7 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 public class CustomerPointTypeLookup {
 
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     /**
      * This holds the map of keys to list of point types. In this

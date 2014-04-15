@@ -25,7 +25,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
@@ -51,7 +51,7 @@ public class DeviceReconfigController {
     @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     private class OptionsValidator extends SimpleValidator<DeviceReconfigOptions> {
 

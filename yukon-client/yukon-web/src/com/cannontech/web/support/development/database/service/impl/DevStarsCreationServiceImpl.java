@@ -23,8 +23,8 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -45,7 +45,7 @@ import com.cannontech.web.support.development.database.service.DevStarsCreationS
 import com.google.common.collect.Lists;
 
 public class DevStarsCreationServiceImpl extends DevObjectCreationBase implements DevStarsCreationService {
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonGroupDao yukonGroupDao;

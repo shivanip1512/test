@@ -16,7 +16,7 @@ import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompanyFactory;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -51,7 +51,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PorterExpressComCommandBuilder xcomCommandBuilder;
     @Autowired private CustomerEventDao customerEventDao;
-    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanyDao yecService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private LiteStarsEnergyCompanyFactory energyCompanyFactory;
     @Autowired private DefaultRouteService defaultRouteService;

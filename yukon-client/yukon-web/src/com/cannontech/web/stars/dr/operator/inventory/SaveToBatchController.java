@@ -24,7 +24,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
@@ -42,7 +42,7 @@ import com.google.common.collect.Lists;
 public class SaveToBatchController {
     
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private CustomerAccountDao customerAccountDao;

@@ -24,7 +24,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -49,7 +49,7 @@ public class SelectionListServiceImpl implements SelectionListService {
     @Autowired private SelectionListDao selectionListDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonListDao listDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private DBPersistentDao dbPersistentDao;
 
     @Override
@@ -85,7 +85,7 @@ public class SelectionListServiceImpl implements SelectionListService {
     @Override
     @Transactional
     public void restoreToDefault(YukonSelectionList list) {
-        YukonEnergyCompany defaultEc = ecService.getEnergyCompany(YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID);
+        YukonEnergyCompany defaultEc = ecService.getEnergyCompany(EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID);
         YukonSelectionList defaultList = getSelectionList(defaultEc, list.getListName());
         YukonSelectionList newList = new YukonSelectionList();
         newList.setListId(list.getListId());
@@ -230,7 +230,7 @@ public class SelectionListServiceImpl implements SelectionListService {
         }
 
         if (useDefault && !ecService.isDefaultEnergyCompany(energyCompany)) {
-            YukonEnergyCompany defaultEc = ecService.getEnergyCompany(YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID);
+            YukonEnergyCompany defaultEc = ecService.getEnergyCompany(EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID);
             YukonSelectionList dftList = getSelectionList(defaultEc, listName, false, false);
             if (dftList != null) {
                 // If the list is user updatable, returns a copy of the default list; otherwise

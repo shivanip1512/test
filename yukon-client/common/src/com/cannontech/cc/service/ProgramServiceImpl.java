@@ -28,7 +28,7 @@ import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.model.ProgramType;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class ProgramServiceImpl implements ProgramService {
@@ -39,7 +39,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired private ProgramParameterDao programParameterDao;
     @Autowired private BaseEventDao baseEventDao;
     @Autowired private ProgramNotificationGroupDao programNotificationGroupDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
    
     public ProgramServiceImpl() {
         super();

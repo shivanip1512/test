@@ -15,7 +15,7 @@ import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.support.CustomerPointTypeHelper;
 
@@ -24,7 +24,7 @@ public class GroupServiceImpl implements GroupService {
     @Autowired private CustomerStubDao customerStubDao;
     @Autowired private GroupCustomerNotifDao groupCustomerNotifDao;
     @Autowired private CustomerPointTypeHelper pointTypeHelper;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     @Override
     public List<Group> getAllGroups(LiteYukonUser user) {

@@ -16,7 +16,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 public class UnassignedApplianceCategoryPicker extends DatabasePicker<Map<String, Object>> {
 
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
 
     private final static String[] searchColumnNames = new String[] {
         "ac.applianceCategoryId", "ac.description", "yle.yukonDefinitionId", "ac.averageKwLoad"

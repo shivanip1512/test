@@ -35,8 +35,8 @@ import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallb
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
@@ -60,7 +60,7 @@ public class HardwareConfigService {
     @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
     @Autowired private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
-    @Autowired private YukonEnergyCompanyService yEcService;
+    @Autowired private EnergyCompanyDao yEcService;
 
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 

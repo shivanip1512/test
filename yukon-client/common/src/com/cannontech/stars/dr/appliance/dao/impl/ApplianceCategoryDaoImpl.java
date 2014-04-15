@@ -23,7 +23,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
@@ -40,7 +40,7 @@ import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WebConfigurationDao webConfigurationDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -235,7 +235,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
             ecSettingDao.getBoolean(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS,
                                     energyCompany.getId());
         if (inheritParentAppCats) {
-            List<Integer> parentIds = Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+            List<Integer> parentIds = Lists.transform(energyCompany.getParents(true), EnergyCompanyDao.TO_ID_FUNCTION);
             return new HashSet<>(parentIds);
         }
         return Collections.singleton(energyCompany.getId());

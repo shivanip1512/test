@@ -18,7 +18,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -32,7 +32,7 @@ import com.google.common.collect.Multimap;
 public class SiteMapHelper {
 
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonEnergyCompanyService energyCompanyService;
+    @Autowired private EnergyCompanyDao energyCompanyService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ObjectFormattingService objectFormattingService;

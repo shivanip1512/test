@@ -13,8 +13,8 @@ import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -39,7 +39,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private LmHardwareCommandService commandService;
     @Autowired private PorterExpressComCommandBuilder xcomCommandBuilder;
-    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanyDao yecService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     private static Logger log = YukonLogManager.getLogger(HardwareConfigServiceImpl.class);

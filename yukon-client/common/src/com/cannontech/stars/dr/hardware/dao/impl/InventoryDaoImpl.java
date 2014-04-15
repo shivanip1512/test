@@ -56,7 +56,7 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.stars.InventorySearchResult;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -90,7 +90,7 @@ import com.google.common.collect.Maps;
 public class InventoryDaoImpl implements InventoryDao {
 
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private LMHardwareEventDao hardwareEventDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -100,7 +100,7 @@ public class InventoryDaoImpl implements InventoryDao {
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DefaultRouteService defaultRouteService;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private SelectionListService selectionListService;
 
     private ChunkingSqlTemplate chunkingSqlTemplate;

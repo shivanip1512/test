@@ -49,7 +49,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.InventorySearchResult;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
@@ -95,7 +95,7 @@ public class AssetDashboardController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private PaoDao paoDao;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
@@ -233,7 +233,7 @@ public class AssetDashboardController {
             
             List<EnergyCompany> descendantEcs = 
                     ecService.getEnergyCompany(liteEc.getEnergyCompanyId()).getDescendants(true);
-            List<Integer> ecDescendantIds = Lists.transform(descendantEcs, YukonEnergyCompanyService.TO_ID_FUNCTION);
+            List<Integer> ecDescendantIds = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
             SearchResults<InventorySearchResult> results = 
                     inventoryDao.search(inventorySearch, ecDescendantIds, startIndex, itemsPerPage, starsMeters);
 
@@ -372,7 +372,7 @@ public class AssetDashboardController {
         
         List<Integer> energyCompanyIds = 
                 Lists.transform(ecService.getEnergyCompany(energyCompany.getId()).getParents(true), 
-                                YukonEnergyCompanyService.TO_ID_FUNCTION);
+                                EnergyCompanyDao.TO_ID_FUNCTION);
         model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         /* Setup elements to hide/show based on device type/class */
@@ -598,7 +598,7 @@ public class AssetDashboardController {
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 
-                Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+                Lists.transform(energyCompany.getParents(true), EnergyCompanyDao.TO_ID_FUNCTION);
         model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         /* Setup elements to hide/show based on device type/class */

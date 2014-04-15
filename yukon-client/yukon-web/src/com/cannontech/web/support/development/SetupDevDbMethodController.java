@@ -30,7 +30,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -65,7 +65,7 @@ public class SetupDevDbMethodController {
     @Autowired private DevStarsCreationService devStarsCreationService;
     @Autowired private DevEventLogCreationService devEventLogCreationService;
     @Autowired private RoleDao roleDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     @RequestMapping("main")
     public void main(ModelMap model) {

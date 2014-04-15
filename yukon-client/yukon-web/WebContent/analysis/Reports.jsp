@@ -13,7 +13,7 @@
 <%@ page import="com.cannontech.analysis.ReportFilter"%>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
-<%@ page import="com.cannontech.stars.core.service.YukonEnergyCompanyService" %>
+<%@ page import="com.cannontech.stars.core.dao.EnergyCompanyDao" %>
 <%@ page import= "java.util.List" %>
 <%@ page import= "java.util.ArrayList" %>
 
@@ -32,7 +32,7 @@
     LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 %>
 <jsp:useBean id="REPORT_BEAN" class="com.cannontech.analysis.gui.ReportBean" scope="session"/>
-<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(lYukonUser).getId())%>"/>
+<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(lYukonUser).getId())%>"/>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="REPORT_BEAN" property="groupType" param="groupType"/>

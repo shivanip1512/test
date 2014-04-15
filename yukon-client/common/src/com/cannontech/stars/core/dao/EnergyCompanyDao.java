@@ -1,4 +1,4 @@
-package com.cannontech.stars.core.service;
+package com.cannontech.stars.core.dao;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,7 +9,7 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Function;
 
-public interface YukonEnergyCompanyService {
+public interface EnergyCompanyDao {
 
     final int DEFAULT_ENERGY_COMPANY_ID = -1;
 

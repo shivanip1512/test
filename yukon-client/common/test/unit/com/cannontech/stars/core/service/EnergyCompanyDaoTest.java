@@ -10,12 +10,13 @@ import org.junit.Test;
 
 import com.cannontech.core.dynamic.impl.MockAsyncDynamicDataSourceImpl;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.stars.core.service.impl.YukonEnergyCompanyServiceImpl;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.core.dao.impl.EnergyCompanyDaoImpl;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.EnergyCompany.Builder;
 import com.google.common.collect.Lists;
 
-public class YukonEnergyCompanyServiceTest {
+public class EnergyCompanyDaoTest {
     /**
      *              2  -  8                             
      *           /  
@@ -40,7 +41,7 @@ public class YukonEnergyCompanyServiceTest {
         };
     };
 
-    public YukonEnergyCompanyService ecService  = new YukonEnergyCompanyServiceImpl(asyncDynamicDataSource) {
+    public EnergyCompanyDao ecService  = new EnergyCompanyDaoImpl(asyncDynamicDataSource) {
         @Override
         public EnergyCompany getEnergyCompany(int ecId) {
             return energyCompanies.get(ecId);
@@ -97,7 +98,7 @@ public class YukonEnergyCompanyServiceTest {
      */
     private void testExpectedEnergyCompanyIdList(List<Integer> expectedEnergyCompanyIds,
                                                  List<EnergyCompany> actualEnergyCompanies) {
-        List<Integer> actualEnergyCompanyIds = Lists.transform(actualEnergyCompanies, YukonEnergyCompanyService.TO_ID_FUNCTION);
+        List<Integer> actualEnergyCompanyIds = Lists.transform(actualEnergyCompanies, EnergyCompanyDao.TO_ID_FUNCTION);
         Assert.assertTrue(actualEnergyCompanyIds.containsAll(expectedEnergyCompanyIds));
         Assert.assertTrue(expectedEnergyCompanyIds.containsAll(actualEnergyCompanyIds));
     }

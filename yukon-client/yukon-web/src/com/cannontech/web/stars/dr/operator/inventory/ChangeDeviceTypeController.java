@@ -23,7 +23,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
@@ -44,7 +44,7 @@ public class ChangeDeviceTypeController {
 
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
     @Autowired private ChangeTypeHelper helper;
-    @Autowired private YukonEnergyCompanyService energyCompanyService;
+    @Autowired private EnergyCompanyDao energyCompanyService;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;

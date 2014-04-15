@@ -18,7 +18,7 @@ import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -36,7 +36,7 @@ public class ChangeDeviceStatusController {
 
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
     @Autowired private ChangeDeviceStatusHelper helper;
-    @Autowired private YukonEnergyCompanyService energyCompanyService;
+    @Autowired private EnergyCompanyDao energyCompanyService;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private SelectionListService selectionListService;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;

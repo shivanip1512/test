@@ -3,7 +3,7 @@
 
 
 <%@ page import="com.cannontech.spring.YukonSpringHook"%> 
-<%@ page import="com.cannontech.stars.core.service.YukonEnergyCompanyService" %>
+<%@ page import="com.cannontech.stars.core.dao.EnergyCompanyDao" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
@@ -28,18 +28,18 @@
 	}
 	Integer energyCompanyID = null;
 	if(liteYukonUser != null) {
-		energyCompanyID = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(liteYukonUser).getId();
+		energyCompanyID = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteYukonUser).getId();
 	}
 		
     Class[] types = { Integer.class,String.class };     
     java.lang.String sqlString =  "SELECT DISTINCT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
-                                  " FROM GRAPHDEFINITION GDEF ";
-	if( energyCompanyID != null && energyCompanyID.intValue() != YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID)
+                          " FROM GRAPHDEFINITION GDEF ";
+	if( energyCompanyID != null && energyCompanyID.intValue() != EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID)
 	{
 		sqlString += ", GRAPHCUSTOMERLIST GCL, ENERGYCOMPANYCUSTOMERLIST ECCL "+
-                     " WHERE ECCL.ENERGYCOMPANYID = " + energyCompanyID.intValue() + 
-                     " AND GCL.CUSTOMERID = ECCL.CUSTOMERID " + 
-                     " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID ";
+             " WHERE ECCL.ENERGYCOMPANYID = " + energyCompanyID.intValue() + 
+             " AND GCL.CUSTOMERID = ECCL.CUSTOMERID " + 
+             " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID ";
 	}
 	sqlString += " ORDER BY GDEF.NAME";
 	

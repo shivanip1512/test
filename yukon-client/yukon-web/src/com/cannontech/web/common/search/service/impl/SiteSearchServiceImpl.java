@@ -29,7 +29,7 @@ import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.search.result.Page;
@@ -44,7 +44,7 @@ import com.cannontech.web.search.lucene.index.site.DocumentBuilder;
 public class SiteSearchServiceImpl implements SiteSearchService {
     private final Logger log = YukonLogManager.getLogger(SiteSearchServiceImpl.class);
 
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private SiteSearchIndexManager siteSearchIndexManager;
     @Autowired private RolePropertyDao rolePropertyDao;;
 

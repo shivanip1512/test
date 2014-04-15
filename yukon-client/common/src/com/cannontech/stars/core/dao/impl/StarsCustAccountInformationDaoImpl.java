@@ -21,8 +21,8 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteAccountSite;
@@ -40,7 +40,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     
     private static final YukonRowMapper<LiteAccountInfo> mapper = new YukonRowMapper<LiteAccountInfo>() {
         @Override
@@ -112,7 +112,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
 
         // Get all the accessible energy companies
         EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
-        List<Integer> childEnergyCompanyIds = Lists.transform(energyCompany.getDescendants(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+        List<Integer> childEnergyCompanyIds = Lists.transform(energyCompany.getDescendants(true), EnergyCompanyDao.TO_ID_FUNCTION);
 
         LiteAccountInfo info = getByAccountId(accountId);
         if (!childEnergyCompanyIds.contains(info.getEnergyCompanyId())) {
@@ -195,7 +195,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
     
     private List<Integer> getEnergyCompanyIdList(int ecId) {
         List<EnergyCompany> energyCompnies = ecService.getEnergyCompany(ecId).getDescendants(true);
-        return Lists.transform(energyCompnies, YukonEnergyCompanyService.TO_ID_FUNCTION);
+        return Lists.transform(energyCompnies, EnergyCompanyDao.TO_ID_FUNCTION);
     }
     
 }

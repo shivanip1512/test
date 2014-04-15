@@ -12,7 +12,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.general.dao.OperatorAccountSearchDao;
 import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
@@ -28,7 +28,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private OperatorAccountSearchDao operatorAccountSearchDao;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 	
 	@Override
 	public AccountSearchResultHolder customerAccountSearch(OperatorAccountSearchBy searchBy, 
@@ -62,7 +62,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 			if (searchMembers) {
 			    List<EnergyCompany> descendantEcs = 
 	                    ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(false);
-			    searchEnergyCompanyIds.addAll(Lists.transform(descendantEcs, YukonEnergyCompanyService.TO_ID_FUNCTION));
+			    searchEnergyCompanyIds.addAll(Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION));
 			}
 	        
 	        // by acct number

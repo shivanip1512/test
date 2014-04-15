@@ -1,4 +1,4 @@
-package com.cannontech.stars.core.service.impl;
+package com.cannontech.stars.core.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
@@ -51,8 +51,8 @@ import com.google.common.collect.Lists;
 /*
  * This 'service' should be treated like a DAO.
  */
-public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService {
-    private final Logger log = YukonLogManager.getLogger(YukonEnergyCompanyServiceImpl.class);
+public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
+    private final Logger log = YukonLogManager.getLogger(EnergyCompanyDaoImpl.class);
 
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
@@ -66,7 +66,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     private Map<Integer, EnergyCompany> energyCompanies;
 
     @Autowired
-    public YukonEnergyCompanyServiceImpl(AsyncDynamicDataSource asyncDynamicDataSource){
+    public EnergyCompanyDaoImpl(AsyncDynamicDataSource asyncDynamicDataSource){
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_ROUTE,
                 new DatabaseChangeEventListener() {
             @Override
@@ -79,7 +79,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
                 new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
-                synchronized (YukonEnergyCompanyServiceImpl.this) {
+                synchronized (EnergyCompanyDaoImpl.this) {
                     energyCompanies = null;
                 }
             }
@@ -89,7 +89,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
             @Override
             public void dbChangeReceived(DBChangeMsg dbChange) {
                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {
-                    synchronized (YukonEnergyCompanyServiceImpl.this) {
+                    synchronized (EnergyCompanyDaoImpl.this) {
                         if (energyCompanies != null) {
                             for (EnergyCompany energyCompany : energyCompanies.values()) {
                                 if (energyCompany.getUser().getUserID() == dbChange.getId()) {

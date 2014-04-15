@@ -41,7 +41,7 @@ import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
@@ -90,7 +90,7 @@ public class InventoryFilterController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private SelectionListService selectionListService;
 

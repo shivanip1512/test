@@ -10,7 +10,7 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.AvailableLmHardwareFilter;
 import com.cannontech.stars.dr.hardware.dao.DisplayableLmHardwareRowMapper;
@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardware> {
     
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     private HardwareClass hardwareClass;
     
@@ -51,7 +51,7 @@ public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardw
             
             // gather parents energyCompanyIds
             EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
-            List<Integer> parentIds = Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+            List<Integer> parentIds = Lists.transform(energyCompany.getParents(true), EnergyCompanyDao.TO_ID_FUNCTION);
             AvailableLmHardwareFilter energyCompanyIdsFilter = new AvailableLmHardwareFilter(parentIds, hardwareClass);
             sqlFilters.add(energyCompanyIdsFilter);
         }

@@ -51,7 +51,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.weather.WeatherDataService;
 import com.cannontech.loadcontrol.weather.WeatherLocation;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
@@ -79,7 +79,7 @@ public class EstimatedLoadController {
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private PointDao pointDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;

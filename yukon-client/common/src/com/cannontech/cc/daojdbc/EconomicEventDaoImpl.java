@@ -36,7 +36,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
@@ -50,7 +50,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ProgramDao programDao;
     @Autowired private EconomicEventParticipantDao economicEventParticipantDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     
     private SimpleTableAccessTemplate<EconomicEvent> eventTemplate;
     private SimpleTableAccessTemplate<EconomicEventPricing> pricingTemplate;

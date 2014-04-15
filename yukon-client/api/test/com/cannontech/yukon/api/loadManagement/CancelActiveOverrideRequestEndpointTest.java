@@ -25,10 +25,10 @@ import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.loadManagement.adapters.CustomerAccountDaoAdapter;
+import com.cannontech.yukon.api.loadManagement.adapters.EnergyCompanyDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.LmHardwareBaseDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutEventDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
-import com.cannontech.yukon.api.loadManagement.adapters.YukonEnergyCompanyServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.CancelActiveOverrideRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockAccountEventLogService;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
@@ -85,7 +85,7 @@ public class CancelActiveOverrideRequestEndpointTest {
         impl.setLmHardwareBaseDao(new MockLmHardwareBaseDao());
         impl.setOptOutService(new MockOptOutService());
         impl.setRolePropertyDao(new MockRolePropertyDao());
-        impl.setYukonEnergyCompanyService(new MockYukonEnergyCompanyService());
+        impl.setEnergyCompanyDao(new MockEnergyCompanyDao());
         impl.setAccountEventLogService(new MockAccountEventLogService());
         impl.setOptOutEventDao(new MockOptOutEventDao());
     }
@@ -185,7 +185,7 @@ public class CancelActiveOverrideRequestEndpointTest {
         }
     }
     
-    private class MockYukonEnergyCompanyService extends YukonEnergyCompanyServiceAdapter {
+    private class MockEnergyCompanyDao extends EnergyCompanyDaoAdapter {
 
         @Override
         public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {

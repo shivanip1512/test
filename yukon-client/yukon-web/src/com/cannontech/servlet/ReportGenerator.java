@@ -47,7 +47,7 @@ import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -89,7 +89,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 
         //Default energycompany properties in case we can't find one?
         LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
-        Integer energyCompanyID = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(liteYukonUser).getId();
+        Integer energyCompanyID = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteYukonUser).getId();
 
         File tempDir = WebUtils.getTempDir(getServletContext());
         File tempFile = File.createTempFile("reportCache", ".tmp", tempDir);

@@ -27,7 +27,7 @@ import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.util.SessionAttribute;
@@ -303,7 +303,7 @@ public class GraphBean extends Graph
 	 */
 	public SessionAttribute getDataNow(LiteYukonUser liteYukonUser, String[] custDevices)
 	{
-		EnergyCompany energyCompany = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(liteYukonUser);
+		EnergyCompany energyCompany = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteYukonUser);
 		int ecId = -1;
 		if (energyCompany != null) {
             ecId = energyCompany.getId();

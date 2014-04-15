@@ -32,8 +32,8 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -75,7 +75,7 @@ public class OptOutAdminController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ProgramToAlternateProgramDao programToAlternameProgramDao;
     @Autowired private StarsEventLogService starsEventLogService;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private OptOutSurveyService optOutSurveyService;
     @Autowired private SelectionListService selectionListService;
     

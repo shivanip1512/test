@@ -24,7 +24,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -70,7 +70,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private LmHardwareCommandService lmHardwareCommandService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;

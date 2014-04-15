@@ -33,7 +33,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
@@ -58,7 +58,7 @@ public class OptOutSurveyController {
     @Autowired private SurveyDao surveyDao;
     @Autowired private PaoDao paoDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     
     private Validator validator = new SimpleValidator<OptOutSurveyDto>(OptOutSurveyDto.class) {
         @Override

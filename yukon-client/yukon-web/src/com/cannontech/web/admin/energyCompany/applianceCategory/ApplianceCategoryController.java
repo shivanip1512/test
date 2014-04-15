@@ -34,7 +34,7 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -83,7 +83,7 @@ public class ApplianceCategoryController {
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private StarsDatabaseCache cache;
     @Autowired private PaoDao paoDao;
-    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanyDao yecService;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ProgramToAlternateProgramDao ptapDao;

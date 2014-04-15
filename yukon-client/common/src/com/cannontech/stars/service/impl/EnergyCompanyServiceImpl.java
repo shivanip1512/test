@@ -58,9 +58,9 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
@@ -105,7 +105,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private WarehouseDao warehouseDao;
     @Autowired private AccountService accountService;
     @Autowired private UserGroupDao userGroupDao ;
@@ -296,7 +296,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         }
         /* Check my own and all my anticendants operator login list for this user's id. */
         List<Integer> parentIds = Lists.transform(energyCompany.getParents(true),
-                                                  YukonEnergyCompanyService.TO_ID_FUNCTION);
+                                                  EnergyCompanyDao.TO_ID_FUNCTION);
         for (int energyCompanyId : parentIds) {
             LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompanyId);
             if(lsec.getOperatorLoginIDs().contains(user.getUserID())) {

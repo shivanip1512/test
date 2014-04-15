@@ -15,7 +15,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class ActivityModel extends ReportModelBase<Object> {
@@ -274,7 +274,7 @@ public class ActivityModel extends ReportModelBase<Object> {
                 while( rset.next())
                 {
                     int ecID = rset.getInt(1);
-                    EnergyCompany ec = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(ecID);
+                    EnergyCompany ec = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(ecID);
                     String ecName = "(delete)";
                     if(ec != null) {
                         ecName = ec.getName();
@@ -336,7 +336,7 @@ public class ActivityModel extends ReportModelBase<Object> {
         try
         {
             int ecID = rset.getInt(1);
-            EnergyCompany energyCompany = YukonSpringHook.getBean(YukonEnergyCompanyService.class).findEnergyCompany(ecID);
+            EnergyCompany energyCompany = YukonSpringHook.getBean(EnergyCompanyDao.class).findEnergyCompany(ecID);
             String ecName = "(delete)";
             if(energyCompany != null) {
                 ecName = energyCompany.getName();

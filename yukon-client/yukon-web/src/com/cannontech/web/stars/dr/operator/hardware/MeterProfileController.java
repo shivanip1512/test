@@ -28,7 +28,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
@@ -54,7 +54,7 @@ public class MeterProfileController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private HardwareModelHelper helper;
     @Autowired private OperatorAccountService operatorAccountService;
     @Autowired private SelectionListService selectionListService;

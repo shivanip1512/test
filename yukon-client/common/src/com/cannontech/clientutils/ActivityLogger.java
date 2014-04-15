@@ -14,7 +14,7 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.activity.ActivityLog;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 /**
@@ -83,7 +83,7 @@ public class ActivityLogger {
 			{	
 				LiteYukonUser liteUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser( userID );
 				if (liteUser != null) {
-				    EnergyCompany liteComp = YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany( liteUser );
+				    EnergyCompany liteComp = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( liteUser );
 				    if (liteComp != null)
 				    { 			
 				        energyCompanyID = liteComp.getId();

@@ -20,7 +20,7 @@ import com.cannontech.common.model.Substation;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.system.GlobalSettingType;
@@ -37,7 +37,7 @@ public class SubstationController {
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private SubstationDao substationDao;
     @Autowired private SubstationToRouteMappingDao strmDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private GlobalSettingDao globalSettingDao;
     private TypeReference<List<Integer>> integerListType = new TypeReference<List<Integer>>() {/*Jackson requires*/};
 

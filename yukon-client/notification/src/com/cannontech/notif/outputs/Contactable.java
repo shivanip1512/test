@@ -10,7 +10,7 @@ import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
@@ -97,9 +97,9 @@ public class Contactable {
         try {
             energyCompanyID = _contactableBase.getContactableCustomer().getEnergyCompanyID();
         } catch (UnknownCustomerException e) {
-            energyCompanyID = YukonSpringHook.getBean(YukonEnergyCompanyService.class).DEFAULT_ENERGY_COMPANY_ID;
+            energyCompanyID = YukonSpringHook.getBean(EnergyCompanyDao.class).DEFAULT_ENERGY_COMPANY_ID;
         }
-        return YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(energyCompanyID);
+        return YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(energyCompanyID);
     }
 
     @Override

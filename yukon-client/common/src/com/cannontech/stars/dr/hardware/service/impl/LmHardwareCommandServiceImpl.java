@@ -26,8 +26,8 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.event.LMHardwareEvent;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
@@ -62,7 +62,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     
     @Autowired private YukonListDao yukonListDao;
     @Autowired private StarsDatabaseCache cache;
-    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanyDao yecService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private InventoryDao inventoryDao;

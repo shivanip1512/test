@@ -37,7 +37,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
@@ -65,7 +65,7 @@ public class SurveyController {
 
     @Autowired private SurveyDao surveyDao;
     @Autowired private SurveyService surveyService;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     private Validator detailsValidator = new SimpleValidator<Survey>(Survey.class) {
         @Override

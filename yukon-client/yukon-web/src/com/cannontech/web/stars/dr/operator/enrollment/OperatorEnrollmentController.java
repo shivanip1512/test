@@ -25,7 +25,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
@@ -65,7 +65,7 @@ public class OperatorEnrollmentController {
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
     @Autowired private AssignedProgramDao assignedProgramDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService; 
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService; 
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private RolePropertyDao rolePropertyDao;

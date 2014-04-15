@@ -13,14 +13,14 @@ import com.cannontech.common.search.result.UltraLightYukonUser;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class ECOperatorCandidatePicker extends DatabasePicker<UltraLightYukonUser> {
 
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     private final static String[] searchColumnNames = new String[] {
         "UserId", "UserName"};

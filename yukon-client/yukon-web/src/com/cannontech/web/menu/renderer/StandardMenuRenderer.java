@@ -27,7 +27,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -57,7 +57,7 @@ import com.google.common.collect.Iterables;
 public class StandardMenuRenderer {
 	
 	@Autowired private RolePropertyDao rpDao;
-	@Autowired private YukonEnergyCompanyService yecService;
+	@Autowired private EnergyCompanyDao yecService;
 	@Autowired private GlobalSettingDao gsDao;
 	@Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ConfigurationSource configurationSource;

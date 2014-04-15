@@ -38,7 +38,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -67,7 +67,7 @@ public class LayoutController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PageDetailProducer pageDetailProducer;
     @Autowired private ConfigurationSource configSource;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private YukonUserDao userDao;
     @Autowired private StandardMenuRenderer stdMenuRender;
     @Autowired private SearchRenderer searchRenderer;

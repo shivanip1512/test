@@ -33,8 +33,8 @@ import com.cannontech.dr.rfn.service.ExiParsingService.Schema;
 import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -57,7 +57,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired private PointDao pointDao;
     @Autowired private EnrollmentDao enrollmentService;
     @Autowired private InventoryDao inventoryDao;
-    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanyDao yecService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private LmHardwareCommandService commandService;
     @Autowired private InventoryBaseDao inventoryBaseDao;

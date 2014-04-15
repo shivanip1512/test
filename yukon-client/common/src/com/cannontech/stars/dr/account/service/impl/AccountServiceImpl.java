@@ -44,10 +44,10 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteSiteInformation;
@@ -113,7 +113,7 @@ public class AccountServiceImpl implements AccountService {
     @Autowired private YukonUserContextService userContextService;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private UserGroupDao userGroupDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
 
     @Override

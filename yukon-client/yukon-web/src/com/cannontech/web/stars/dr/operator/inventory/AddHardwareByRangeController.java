@@ -30,7 +30,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.AddByRange;
@@ -54,7 +54,7 @@ public class AddHardwareByRangeController {
     
     @Autowired private InventoryDao InventoryDao;
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private PaoDao paoDao;
@@ -150,7 +150,7 @@ public class AddHardwareByRangeController {
         boolean showVoltage = !hardwareType.isZigbee() && !hardwareClass.isGateway() && !hardwareClass.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
         
-        List<Integer> energyCompanyIds = Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+        List<Integer> energyCompanyIds = Lists.transform(energyCompany.getParents(true), EnergyCompanyDao.TO_ID_FUNCTION);
         
         model.addAttribute("hardwareTypeId", hardwareTypeEntry.getEntryID());
         model.addAttribute("type", hardwareTypeEntry.getEntryText());

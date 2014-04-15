@@ -239,7 +239,7 @@
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
     
-    <bean id="yukonEnergyCompanyService" class="com.cannontech.stars.core.service.impl.YukonEnergyCompanyServiceImpl"/>
+    <bean class="com.cannontech.stars.core.dao.impl.EnergyCompanyDaoImpl"/>
     
     <bean id="controlHistoryDao" class="com.cannontech.stars.dr.controlHistory.dao.impl.ControlHistoryDaoImpl"/>
     

@@ -17,8 +17,8 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.digi.model.GatewayDto;
 import com.cannontech.stars.dr.digi.model.ZigbeeDeviceDto;
@@ -35,7 +35,7 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
     private AttributeService attributeService;
     private InventoryBaseDao inventoryBaseDao;
     private GatewayDeviceDao gatewayDeviceDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+    private EnergyCompanyDao ecDao;
 
     @Override
     public GatewayDto createGatewayDto(DigiGateway digiGateway, Hardware hardware) {
@@ -57,7 +57,7 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
     
     @Override
     public List<Pair<InventoryIdentifier, ZigbeeDeviceDto>> buildZigbeeDeviceDtoList(int accountId) {
-        final YukonEnergyCompany yukonEc = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
+        final YukonEnergyCompany yukonEc = ecDao.getEnergyCompanyByAccountId(accountId);
         
         Set<HardwareType> zigbeeEndpointTypes = HardwareType.getZigbeeEndpointTypes();
 
@@ -130,8 +130,8 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
     }
     
     @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    public void setEnergyCompanyDao(EnergyCompanyDao ecDao) {
+        this.ecDao = ecDao;
     }
     
 }

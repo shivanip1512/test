@@ -38,7 +38,7 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.SeparableRowMapper;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -57,7 +57,7 @@ public final class CustomerDaoImpl implements CustomerDao {
     @Autowired private GraphCustomerListDao graphCustomerListDao;
     @Autowired private DeviceCustomerListDao deviceCustomerListDao;
     @Autowired private AddressDao addressDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     
     private static final String CUSTOMER_TABLE_NAME = "Customer";
     private static final String CI_CUSTOMER_TABLE_NAME = "CICustomerBase";

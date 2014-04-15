@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.BooleanClause.Occur;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.search.result.UltraLightCustomerAccount;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -25,7 +25,7 @@ import com.google.common.collect.Sets;
 public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccount> {
 
     private StarsDatabaseCache starsDatabaseCache;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+    private EnergyCompanyDao ecDao;
     
     private static List<OutputColumn> outputColumns;
     static {
@@ -43,7 +43,7 @@ public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccoun
     public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria, YukonUserContext userContext, String extraArgs) {
         
         // Get available energy company ids
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany liteStarsEnergyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         List<LiteStarsEnergyCompany> memberEnergyCompanies = ECUtils.getAllDescendants(liteStarsEnergyCompany);
         
@@ -94,7 +94,7 @@ public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccoun
     }
     
     @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    public void setEnergyCompanyDao(EnergyCompanyDao ecDao) {
+        this.ecDao = ecDao;
     }
 }

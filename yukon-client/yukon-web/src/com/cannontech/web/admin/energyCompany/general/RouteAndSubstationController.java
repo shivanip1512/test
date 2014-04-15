@@ -21,7 +21,7 @@ import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteSubstation;
@@ -73,7 +73,7 @@ public class RouteAndSubstationController {
     }
 
     @Autowired private EnergyCompanyService energyCompanyService;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private GeneralInfoService generalInfoService;
     @Autowired private PaoDao paoDao;

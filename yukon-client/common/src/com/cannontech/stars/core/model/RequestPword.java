@@ -14,7 +14,7 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -196,7 +196,7 @@ public class RequestPword
 		foundData.add( " Customer Name: " + lCust.getCompanyName() );
 
 		List<EnergyCompany> energyCompanies = 
-		        YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompaniesByCiCustomer(lCust.getCustomerID());
+		        YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompaniesByCiCustomer(lCust.getCustomerID());
 		
 		return energyCompanies;
 	}

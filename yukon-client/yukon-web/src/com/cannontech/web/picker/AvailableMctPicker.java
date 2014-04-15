@@ -12,7 +12,7 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.search.pao.db.AvailableMctFilter;
 import com.cannontech.common.search.result.UltraLightPao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 public class AvailableMctPicker extends DatabasePaoPicker {
 
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     @Override
     protected void updateFilters(List<SqlFilter> sqlFilters,
@@ -33,7 +33,7 @@ public class AvailableMctPicker extends DatabasePaoPicker {
             // gather parents energyCompanyIds
             EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
             Set<Integer> parentIds = new HashSet<>(Lists.transform(energyCompany.getParents(true),
-                                                                   YukonEnergyCompanyService.TO_ID_FUNCTION));
+                                                                   EnergyCompanyDao.TO_ID_FUNCTION));
             
             AvailableMctFilter energyCompanyIdsFilter = new AvailableMctFilter(parentIds, paoDefinitionDao);
             sqlFilters.add(energyCompanyIdsFilter);

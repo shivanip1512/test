@@ -19,8 +19,8 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.util.ConnectionException;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -46,12 +46,13 @@ public class OptOutCleanupService {
 	private CustomerAccountDao customerAccountDao;
 	private EnrollmentDao enrollmentDao;
 	private InventoryBaseDao inventoryBaseDao;
-	private YukonEnergyCompanyService yukonEnergyCompanyService;
+	private EnergyCompanyDao ecDao;
 	private ScheduledExecutor executor;
 	
 	@PostConstruct
 	public void init() throws Exception {
 	    executor.scheduleWithFixedDelay(new Runnable() {
+            @Override
             public void run() {
                 logger.debug("Starting opt out task.");
 
@@ -146,7 +147,7 @@ public class OptOutCleanupService {
     	Validate.notNull(event, "Event must not be null");
     	
     	int inventoryId = inventory.getInventoryID();
-    	YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
+    	YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByInventoryId(inventoryId);
     	
     	logger.debug("Cleaning up opt out event for inventory: " + event.getInventoryId() + " and account: " + event.getCustomerAccountId());
     	
@@ -176,8 +177,8 @@ public class OptOutCleanupService {
 	}
     
     @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    public void setEnergyCompanyDao(EnergyCompanyDao ecDao) {
+        this.ecDao = ecDao;
     }
     
     @Autowired

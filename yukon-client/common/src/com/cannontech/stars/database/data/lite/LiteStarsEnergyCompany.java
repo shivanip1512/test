@@ -33,9 +33,9 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.db.LMProgramWebPublishing;
 import com.cannontech.stars.database.db.appliance.ApplianceCategory;
@@ -73,7 +73,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private YukonGroupDao yukonGroupDao;
     private EnergyCompanyService energyCompanyService;
     private RoleDao roleDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+    private EnergyCompanyDao ecDao;
     private EnergyCompanySettingDao energyCompanySettingDao;
 
     private final static long serialVersionUID = 1L;
@@ -209,7 +209,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     @Override
     public String getName() {
         if (name == null) {
-            setName(yukonEnergyCompanyService.getEnergyCompany(getEnergyCompanyId()).getName());
+            setName(ecDao.getEnergyCompany(getEnergyCompanyId()).getName());
         }
         return name;
     }
@@ -815,8 +815,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         EnergyCompanyHierarchy ech = new EnergyCompanyHierarchy();
         
         int energyCompanyId = getEnergyCompanyId();
-        Integer parentEnergyCompanyId = yukonEnergyCompanyService.findParentEnergyCompany(energyCompanyId);
-        List<Integer> childEnergyCompanyIds = yukonEnergyCompanyService.getDirectChildEnergyCompanies(energyCompanyId);
+        Integer parentEnergyCompanyId = ecDao.findParentEnergyCompany(energyCompanyId);
+        List<Integer> childEnergyCompanyIds = ecDao.getDirectChildEnergyCompanies(energyCompanyId);
         
         // Translates all of the energy company ids into LiteStarsEnergyCompanies.
         if (parentEnergyCompanyId != null) {
@@ -958,8 +958,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         this.roleDao = roleDao;
     }
 
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    public void setEnergyCompanyDao(EnergyCompanyDao ecDao) {
+        this.ecDao = ecDao;
     }
 
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {

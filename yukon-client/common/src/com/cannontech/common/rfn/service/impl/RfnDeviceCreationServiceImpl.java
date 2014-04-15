@@ -39,7 +39,7 @@ import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
@@ -63,7 +63,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Autowired private YukonListDao yukonListDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private HardwareUiService hardwareSevice;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     private String templatePrefix;
     private Cache<String, Boolean> recentlyUncreatableTemplates;

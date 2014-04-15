@@ -8,7 +8,7 @@ import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 
@@ -22,7 +22,7 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 public class RolePropertyUserCheckerFactory {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private EnergyCompanySettingDao energyCompanSettingDao;
-    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanyDao yecService;
     
     public UserChecker createPropertyChecker(final YukonRoleProperty property) {
         Validate.isTrue(rolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);

@@ -5,7 +5,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 
 /**
  * @author yao
@@ -30,7 +30,7 @@ public class LiteWorkOrderBase extends LiteBase {
 	private String additionalOrderNumber = null;
 	private int accountID = com.cannontech.stars.database.db.customer.CustomerAccount.NONE_INT;
 	
-	private int energyCompanyID = YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID;
+	private int energyCompanyID = EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID;
 	
 	public LiteWorkOrderBase() {
 		super();

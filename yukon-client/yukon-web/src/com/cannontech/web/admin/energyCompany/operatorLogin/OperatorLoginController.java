@@ -35,7 +35,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
@@ -67,7 +67,7 @@ public class OperatorLoginController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private CsrfTokenService csrfTokenService;
 
     private void checkPermissionsAndSetupModel(EnergyCompanyInfoFragment energyCompanyInfoFragment,

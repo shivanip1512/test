@@ -59,7 +59,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.event.EventAccount;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -128,7 +128,7 @@ public class OperatorAccountController {
     @Autowired private LoginValidatorFactory loginValidatorFactory;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private UserGroupDao userGroupDao;

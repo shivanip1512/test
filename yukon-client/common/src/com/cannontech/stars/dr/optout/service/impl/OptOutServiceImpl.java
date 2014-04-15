@@ -58,9 +58,9 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
 import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
@@ -135,7 +135,7 @@ public class OptOutServiceImpl implements OptOutService {
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private EnergyCompanyService ecService;
-    @Autowired private YukonEnergyCompanyService yEcService;
+    @Autowired private EnergyCompanyDao yEcService;
     @Autowired @Qualifier("main") private Executor executor;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private InventoryDao inventoryDao;
@@ -157,7 +157,7 @@ public class OptOutServiceImpl implements OptOutService {
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private SurveyDao surveyDao;
     @Autowired private SystemDateFormattingService systemDateFormattingService;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
 
     private static final DateTimeFormatter logFormatter = DateTimeFormat.forPattern("MM/dd/yy HH:mm");

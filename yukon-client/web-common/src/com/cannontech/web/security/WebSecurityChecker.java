@@ -10,7 +10,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -23,7 +23,7 @@ public class WebSecurityChecker {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     
     public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey, boolean expecting) {
         final LiteYukonUser user = getYukonUser();

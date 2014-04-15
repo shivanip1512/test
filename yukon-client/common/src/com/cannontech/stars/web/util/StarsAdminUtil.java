@@ -50,8 +50,8 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.hardware.LMHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
@@ -495,7 +495,7 @@ public class StarsAdminUtil {
     }
 
     public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeId) {
-        YukonEnergyCompanyService yukonEnergyCompanyService = YukonSpringHook.getBean(YukonEnergyCompanyService.class);
+        EnergyCompanyDao yukonEnergyCompanyService = YukonSpringHook.getBean(EnergyCompanyDao.class);
         List<Integer> routeIds = yukonEnergyCompanyService.getRouteIds(energyCompany.getEnergyCompanyId());
         if (!routeIds.contains(routeId)) {
             return;
@@ -605,7 +605,7 @@ public class StarsAdminUtil {
                 LiteYukonUser liteUser =
                     YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(loginID.intValue());
 
-                if (YukonSpringHook.getBean(YukonEnergyCompanyService.class).getEnergyCompany(liteUser).getId() == member.getLiteID()) {
+                if (YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteUser).getId() == member.getLiteID()) {
                     map.setItemID(loginID);
                     map.setMappingCategory(EcMappingCategory.MEMBER_LOGIN);
                     Transaction.createTransaction(Transaction.DELETE, map).execute();

@@ -27,7 +27,7 @@ public interface CustomerAccountDao {
      * user, then calls {@link #getByAccountNumberForDescendentsOfEnergyCompany(String, YukonEnergyCompany)}.
      * @param user the user calling the method, only makes sense as an operator
      * @deprecated call getByAccountNumberForDescendentsOfEnergyCompany directly, get EC from
-     *             YukonEnergyCompanyService
+     *             EnergyCompanyDao
      */
     @Deprecated
     CustomerAccount getByAccountNumber(String accountNumber, LiteYukonUser user);

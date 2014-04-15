@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.util.Pair;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
@@ -32,7 +32,7 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
 	
 	@Autowired private AlternateEnrollmentService aeService;
 	@Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanyDao yecService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     
     private static final String VIEW = "consumer/alternateEnrollment.jsp";

@@ -29,7 +29,7 @@ import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 /**
@@ -79,7 +79,7 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 
 	private int detailRecordCount = 0;
 
-	@Autowired private YukonEnergyCompanyService ecService;
+	@Autowired private EnergyCompanyDao ecService;
 	@Autowired private CustomerStubDao customerStubDao;
 	@Autowired private BaseEventDao baseEventDao;
 

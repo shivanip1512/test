@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.search.pao.db.LmProgramForEnergyCompanyIdFilter;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.web.picker.service.LmProgramForEnergyCompanyIdFilterFactory;
@@ -15,7 +15,7 @@ import com.cannontech.web.picker.service.LmProgramForEnergyCompanyIdFilterFactor
 public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramForEnergyCompanyIdFilterFactory {
 
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 	
 	@Override
 	public SqlFilter getFilterForEnergyCompanyIdExtraArg(String energyCompanyIdExtraArg) {

@@ -31,7 +31,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
@@ -63,7 +63,7 @@ public class GeneralInfoController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsEventLogService starsEventLogService;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
     @Autowired private YukonGroupService yukonGroupService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private YukonUserDao yukonUserDao;

@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXPathTemplate;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -37,7 +37,7 @@ public class ThermostatScheduleHelper {
     
     private static final int SCHEDULE_NAME_LENGTH = 60;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private ThermostatService thermostatService;
     
     /**

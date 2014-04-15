@@ -24,7 +24,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.general.dao.OperatorAccountSearchDao;
 import com.cannontech.stars.dr.general.service.impl.AccountSearchResult;
 import com.cannontech.stars.util.ServletUtils;
@@ -39,7 +39,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	
     @Autowired private YukonJdbcOperations yukonJdbcOperations;
 	@Autowired private ContactNotificationDao contactNotificationDao;
-	@Autowired private YukonEnergyCompanyService ecService;
+	@Autowired private EnergyCompanyDao ecService;
 
 	private AccountSearchResultRowMapper accountSearchResultRowMapper = new AccountSearchResultRowMapper();
 

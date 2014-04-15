@@ -29,7 +29,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
@@ -72,7 +72,7 @@ public class DefaultThermostatScheduleController {
     @Autowired private ThermostatService thermostatService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     @RequestMapping("view")
     public String view(YukonUserContext userContext, ModelMap modelMap, int ecId, 

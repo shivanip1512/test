@@ -10,13 +10,13 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.survey.dao.impl.EnergyCompanyFilter;
 import com.cannontech.common.survey.dao.impl.SurveyRowMapper;
 import com.cannontech.common.survey.model.Survey;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class SurveyPicker extends DatabasePicker<Survey> {
-    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanyDao ecService;
 
     private final static String[] searchColumnNames = new String[] {
             "surveyName", "surveyKey" };
