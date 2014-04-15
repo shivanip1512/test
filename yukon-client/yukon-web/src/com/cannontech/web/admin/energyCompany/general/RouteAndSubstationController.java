@@ -73,7 +73,7 @@ public class RouteAndSubstationController {
     }
 
     @Autowired private EnergyCompanyService energyCompanyService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private GeneralInfoService generalInfoService;
     @Autowired private PaoDao paoDao;
@@ -97,7 +97,7 @@ public class RouteAndSubstationController {
         modelMap.addAttribute("mode", PageEditMode.VIEW);
         
         LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
-        EnergyCompany energyCompany = ecService.getEnergyCompany(lsec.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(lsec.getEnergyCompanyId());
         
         List<LiteYukonPAObject> availableRoutes = getAvailableRoutes(energyCompany);
         modelMap.addAttribute("availableRoutes", availableRoutes);
@@ -213,19 +213,19 @@ public class RouteAndSubstationController {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         int ecId = energyCompanyInfoFragment.getEnergyCompanyId();
         LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ecId);
-        EnergyCompany energyCompany = ecService.getEnergyCompany(ecId);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
         
         GeneralInfo generalInfo = generalInfoService.getGeneralInfo(energyCompany);
         modelMap.addAttribute("generalInfo", generalInfo);
         
-        Iterable<LiteYukonPAObject> allRoutes = ecService.getAllRoutes(energyCompany);
+        Iterable<LiteYukonPAObject> allRoutes = ecDao.getAllRoutes(energyCompany);
         Map<LiteYukonPAObject, Reason> routeToReason = Maps.newLinkedHashMap();
         for (LiteYukonPAObject liteYukonPAObject : allRoutes) {
             routeToReason.put(liteYukonPAObject, Reason.CAN_DELETE);
         }
         
         if (energyCompany.getParent() != null) {
-            Iterable<LiteYukonPAObject> ineritedRoutes = ecService.getAllRoutes(energyCompany.getParent());
+            Iterable<LiteYukonPAObject> ineritedRoutes = ecDao.getAllRoutes(energyCompany.getParent());
             for (LiteYukonPAObject liteYukonPAObject : ineritedRoutes) {
                 routeToReason.put(liteYukonPAObject, Reason.INHERITED);
             }
@@ -258,7 +258,7 @@ public class RouteAndSubstationController {
     private List<LiteYukonPAObject> getAvailableRoutes(EnergyCompany energyCompany) {
         List<LiteYukonPAObject> availableRoutes = new ArrayList<>();
         availableRoutes.addAll(Lists.newArrayList(paoDao.getAllLiteRoutes()));
-        availableRoutes.removeAll(ecService.getAllRoutes(energyCompany));
+        availableRoutes.removeAll(ecDao.getAllRoutes(energyCompany));
         return availableRoutes;
     }
     

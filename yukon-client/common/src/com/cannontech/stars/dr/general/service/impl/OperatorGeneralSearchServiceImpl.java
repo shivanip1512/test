@@ -28,7 +28,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private OperatorAccountSearchDao operatorAccountSearchDao;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 	
 	@Override
 	public AccountSearchResultHolder customerAccountSearch(OperatorAccountSearchBy searchBy, 
@@ -61,7 +61,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 			Set<Integer> searchEnergyCompanyIds = Sets.newHashSet(energyCompany.getLiteID());
 			if (searchMembers) {
 			    List<EnergyCompany> descendantEcs = 
-	                    ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(false);
+	                    ecDao.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(false);
 			    searchEnergyCompanyIds.addAll(Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION));
 			}
 	        

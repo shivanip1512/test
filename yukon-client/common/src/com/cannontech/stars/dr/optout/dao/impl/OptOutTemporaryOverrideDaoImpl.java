@@ -31,7 +31,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 
 	@Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 	@Autowired private NextValueHelper nextValueHelper;
-	@Autowired private EnergyCompanyDao ecService;
+	@Autowired private EnergyCompanyDao ecDao;
 	
 	@Override
 	public List<OptOutCountsTemporaryOverride> getAllOptOutCounts(EnergyCompany energyCompany) throws NoTemporaryOverrideException {
@@ -161,7 +161,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 	private void setTemporaryOverrideValue(OptOutTemporaryOverrideType type,
 			LiteYukonUser user, Date startDate, Date stopDate, Object value, Integer webpublishingProgramId) {
 
-		EnergyCompany energyCompany = ecService.getEnergyCompany(user);
+		EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
 		int energyCompanyID = energyCompany.getId();
 		String typeString = type.toString();
 

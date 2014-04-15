@@ -119,4 +119,9 @@ public class EnergyCompanyDaoAdapter implements EnergyCompanyDao {
     public void updateCompanyName(String name, int ecId) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    @Override
+    public List<Integer> getOperatorUserIds(EnergyCompany energyCompany) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 public class UnassignedApplianceCategoryPicker extends DatabasePicker<Map<String, Object>> {
 
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     private final static String[] searchColumnNames = new String[] {
         "ac.applianceCategoryId", "ac.description", "yle.yukonDefinitionId", "ac.averageKwLoad"
@@ -56,7 +56,7 @@ public class UnassignedApplianceCategoryPicker extends DatabasePicker<Map<String
 
                 YukonEnergyCompany yec;
                 try {
-                    yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+                    yec = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
                 } catch (EnergyCompanyNotFoundException e) {
                     return validAppliancesForEc;
                 }

@@ -65,7 +65,7 @@ public class SetupDevDbMethodController {
     @Autowired private DevStarsCreationService devStarsCreationService;
     @Autowired private DevEventLogCreationService devEventLogCreationService;
     @Autowired private RoleDao roleDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     @RequestMapping("main")
     public void main(ModelMap model) {
@@ -370,7 +370,7 @@ public class SetupDevDbMethodController {
             if (devStars.getEnergyCompany() == null) {
                 if (StringUtils.isBlank(devStars.getNewEnergyCompanyName())) {
                     errors.rejectValue("energyCompany", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
-                } else if (ecService.findEnergyCompany(devStars.getNewEnergyCompanyName()) != null){
+                } else if (ecDao.findEnergyCompany(devStars.getNewEnergyCompanyName()) != null){
                     errors.rejectValue("energyCompany", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.unavailable");
                 }
                 

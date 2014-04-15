@@ -40,7 +40,7 @@ import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WebConfigurationDao webConfigurationDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -92,7 +92,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<Integer> getApplianceCategoryIdsByEC(int energyCompanyId) {
         // Get available appliance category energy companies.
-        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
         Set<Integer> appCatEnergyCompanyIds = getAppCatEnergyCompanyIds(energyCompany);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -136,7 +136,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<ApplianceCategory> findApplianceCategories(int customerAccountId) {
-        YukonEnergyCompany ec = ecService.getEnergyCompanyByAccountId(customerAccountId);
+        YukonEnergyCompany ec = ecDao.getEnergyCompanyByAccountId(customerAccountId);
         List<Integer> applianceCategoryIdList = getApplianceCategoryIdsByEC(ec.getEnergyCompanyId());
 
         final Set<ApplianceCategory> set = new HashSet<ApplianceCategory>(applianceCategoryIdList.size());

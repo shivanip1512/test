@@ -22,15 +22,18 @@ import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class ECMappingDaoImpl implements ECMappingDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private EnergyCompanyDao ecDao;
 
     private ChunkingSqlTemplate chunkyJdbcTemplate;
 
@@ -426,7 +429,8 @@ public class ECMappingDaoImpl implements ECMappingDao {
     
     @Override
     public void removeParentLogin(int parentEcId, int childEcId) {
-        List<Integer> childOperatorLoginIds = starsDatabaseCache.getEnergyCompany(childEcId).getOperatorLoginIDs();
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(childEcId);
+        List<Integer> childOperatorLoginIds = ecDao.getOperatorUserIds(energyCompany);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ECToGenericMapping");
         sql.append("WHERE ItemId").in(childOperatorLoginIds);

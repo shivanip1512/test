@@ -62,7 +62,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     
     @Autowired private YukonListDao yukonListDao;
     @Autowired private StarsDatabaseCache cache;
-    @Autowired private EnergyCompanyDao yecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private InventoryDao inventoryDao;
@@ -115,7 +115,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         HardwareStrategyType strategy = getStrategy(type);
         final LmHardwareCommandStrategy impl = strategies.get(strategy);
         
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(device.getInventoryID());
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
         int ecId = yec.getEnergyCompanyId();
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(ecId);
         
@@ -190,7 +190,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         final LmHardwareCommandStrategy impl = strategies.get(strategy);
         
         int inventoryId = device.getInventoryID();
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(inventoryId);
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
         
         impl.sendCommand(command);
         log.debug("In-Service command sent: " + command);
@@ -215,7 +215,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         final LmHardwareCommandStrategy impl = strategies.get(strategy);
         
         int inventoryId = device.getInventoryID();
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(inventoryId);
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
         int ecId = yec.getEnergyCompanyId();
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(ecId);
 

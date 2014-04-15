@@ -83,7 +83,7 @@ public class ApplianceCategoryController {
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private StarsDatabaseCache cache;
     @Autowired private PaoDao paoDao;
-    @Autowired private EnergyCompanyDao yecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ProgramToAlternateProgramDao ptapDao;
@@ -390,7 +390,7 @@ public class ApplianceCategoryController {
         bean.getAssignedProgram().setApplianceCategoryId(acId);
         model.addAttribute("backingBean", bean);
 
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByOperator(context.getYukonUser());
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(context.getYukonUser());
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
         StarsCustSelectionList chanceOfControlList = lsec.getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
         List<ChanceOfControl> chanceOfControls = Lists.newArrayList();

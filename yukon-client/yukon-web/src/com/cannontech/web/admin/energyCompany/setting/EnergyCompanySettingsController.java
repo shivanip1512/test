@@ -49,7 +49,7 @@ public class EnergyCompanySettingsController {
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanyService energyCompanyService;
 
     private MappedPropertiesHelper<EnergyCompanySettingType> mappedPropertiesHelper;
@@ -165,7 +165,7 @@ public class EnergyCompanySettingsController {
 
         model.addAttribute("settingsBean", settingsBean);
         model.addAttribute("mappedPropertiesHelper", mappedPropertiesHelper);
-        model.addAttribute("energyCompanyName", ecService.getEnergyCompany(ecId).getName());
+        model.addAttribute("energyCompanyName", ecDao.getEnergyCompany(ecId).getName());
         model.addAttribute("categories", SettingCategory.values());
         model.addAttribute("energyCompanyInfoFragment", ecInfoFragment);
 

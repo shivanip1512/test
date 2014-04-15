@@ -32,7 +32,7 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
 	
 	@Autowired private AlternateEnrollmentService aeService;
 	@Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private EnergyCompanyDao yecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     
     private static final String VIEW = "consumer/alternateEnrollment.jsp";
@@ -40,7 +40,7 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
     @RequestMapping("view")
     public String view(@ModelAttribute CustomerAccount customerAccount, ModelMap model, YukonUserContext context) {
     	
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         energyCompanySettingDao.verifySetting(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, yec.getEnergyCompanyId());
         
         /* inventory to: set of normal programs, set of alternate programs */
@@ -65,7 +65,7 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
     		final YukonUserContext context) {
     	
         if (alternate != null || normal != null) {
-            YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+            YukonEnergyCompany yec = ecDao.getEnergyCompanyByAccountId(customerAccount.getAccountId());
             energyCompanySettingDao.verifySetting(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, yec.getEnergyCompanyId());
 
             try {

@@ -39,7 +39,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired private ProgramParameterDao programParameterDao;
     @Autowired private BaseEventDao baseEventDao;
     @Autowired private ProgramNotificationGroupDao programNotificationGroupDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
    
     public ProgramServiceImpl() {
         super();
@@ -49,7 +49,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional
     public List<Program> getProgramList(LiteYukonUser yukonUser) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(yukonUser);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(yukonUser);
         
         List<Program> programs = 
             programDao.getProgramsForEnergyCompany(energyCompany.getId());
@@ -70,7 +70,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional
     public List<ProgramType> getProgramTypeList(LiteYukonUser yukonUser) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(yukonUser);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(yukonUser);
         List<ProgramType> programTypes = 
             programTypeDao.getAllProgramTypes(energyCompany.getId());
         
@@ -157,7 +157,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     public Program createNewProgram(LiteYukonUser user) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
         Program newProgram = new Program();
         List<ProgramType> programTypes = 
             programTypeDao.getAllProgramTypes(energyCompany.getId());

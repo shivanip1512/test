@@ -27,7 +27,7 @@ import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class CreateReportController extends StarsWorkorderActionController {
 
-    @Autowired private EnergyCompanyService ecService;
+    @Autowired private EnergyCompanyService ecDao;
 
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
@@ -74,7 +74,7 @@ public class CreateReportController extends StarsWorkorderActionController {
         reportBean.setType(ReportTypes.EC_WORK_ORDER);
         reportBean.setUserID(user.getUserID());
         ((WorkOrderModel)reportBean.getModel()).loadData(liteStarsEC, workOrderBean.getWorkOrderList());
-        TimeZone ecTimezone = ecService.getDefaultTimeZone(workOrderBean.getEnergyCompany().getEnergyCompanyId());
+        TimeZone ecTimezone = ecDao.getDefaultTimeZone(workOrderBean.getEnergyCompany().getEnergyCompanyId());
         reportBean.getModel().setTimeZone(ecTimezone);
         reportBean.getModel().setEnergyCompanyID(workOrderBean.getEnergyCompany().getEnergyCompanyId());
 

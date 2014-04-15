@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 
 public class ECOperatorCandidatePicker extends DatabasePicker<UltraLightYukonUser> {
 
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     private final static String[] searchColumnNames = new String[] {
         "UserId", "UserName"};
@@ -56,7 +56,7 @@ public class ECOperatorCandidatePicker extends DatabasePicker<UltraLightYukonUse
     protected void updateFilters(List<SqlFilter> sqlFilters,
             List<PostProcessingFilter<UltraLightYukonUser>> postProcessingFilters,
             String extraArgs, YukonUserContext userContext) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         sqlFilters.add(new OperatorCandidateFilter(energyCompany.getId()));
     }
     

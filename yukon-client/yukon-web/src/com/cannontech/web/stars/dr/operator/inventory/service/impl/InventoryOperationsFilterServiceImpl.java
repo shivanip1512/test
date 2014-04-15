@@ -38,13 +38,13 @@ import com.google.common.collect.Sets;
 public class InventoryOperationsFilterServiceImpl implements InventoryOperationsFilterService {
     
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     
     @Override
     public Set<InventoryIdentifier> getInventory(FilterMode filterMode, List<RuleModel> rules, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
-        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany ec = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         SqlFragmentCollection whereClause;
         
         if (filterMode == FilterMode.AND) {

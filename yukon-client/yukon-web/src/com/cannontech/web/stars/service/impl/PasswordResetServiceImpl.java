@@ -51,7 +51,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private EmailService emailService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -187,7 +187,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private PasswordResetInfo getPasswordResetInfoByAccountNumber(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
         CustomerAccount passwordResetCustomerAccount = 
-                customerAccountDao.findByAccountNumber(forgottenPasswordField, ecService.getAllEnergyCompanies());
+                customerAccountDao.findByAccountNumber(forgottenPasswordField, ecDao.getAllEnergyCompanies());
         // getYukonUserByAccountId is more of a find method.  It returns null if it doesn't exist.
         if (passwordResetCustomerAccount != null) {
             passwordResetInfo.setUser(customerAccountDao.getYukonUserByAccountId(passwordResetCustomerAccount.getAccountId()));

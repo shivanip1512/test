@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 public class AvailableMctPicker extends DatabasePaoPicker {
 
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     @Override
     protected void updateFilters(List<SqlFilter> sqlFilters,
@@ -31,7 +31,7 @@ public class AvailableMctPicker extends DatabasePaoPicker {
             int energyCompanyId = NumberUtils.toInt(extraArgs);
             
             // gather parents energyCompanyIds
-            EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+            EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
             Set<Integer> parentIds = new HashSet<>(Lists.transform(energyCompany.getParents(true),
                                                                    EnergyCompanyDao.TO_ID_FUNCTION));
             

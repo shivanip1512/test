@@ -65,7 +65,7 @@ public class OperatorEnrollmentController {
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
     @Autowired private AssignedProgramDao assignedProgramDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService; 
+    @Autowired private EnergyCompanyDao ecDao; 
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -151,7 +151,7 @@ public class OperatorEnrollmentController {
         List<LoadGroup> loadGroups = null;
         
         YukonEnergyCompany yukonEnergyCompany = 
-            yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
+            ecDao.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
         model.addAttribute("energyCompanyId", yukonEnergyCompany.getEnergyCompanyId());
         boolean trackHardwareAddressingEnabled =
                 energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING,

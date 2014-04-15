@@ -40,7 +40,7 @@ public class SendManualThermostatSettingEndpoint {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ThermostatService thermostatService;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(SendManualThermostatSettingEndpoint.class);
@@ -135,7 +135,7 @@ public class SendManualThermostatSettingEndpoint {
         // Get all the serial numbers used in this web service call.
         Collection<String> serialNumbers = manualThermostatSetting.getSerialNumbers();
 
-        int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyByOperator(user).getId();
+        int yukonEnergyCompanyId = ecDao.getEnergyCompanyByOperator(user).getId();
         return inventoryDao.getSerialNumberToInventoryIdMap(serialNumbers, yukonEnergyCompanyId);
     }
 }

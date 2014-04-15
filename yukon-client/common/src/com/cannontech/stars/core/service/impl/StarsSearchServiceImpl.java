@@ -42,7 +42,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ContactDao contactDao;
     
     @Override
@@ -123,7 +123,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
         List<Integer> allEnergyCompanyIDs = new ArrayList<>();
         if(searchMembers) {
             List<EnergyCompany> descendantEcs = 
-                    ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
+                    ecDao.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
             allEnergyCompanyIDs = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
         } else {
             allEnergyCompanyIDs.add(energyCompany.getEnergyCompanyId());
@@ -163,7 +163,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
         List<Integer> allEnergyCompanyIDs = new ArrayList<>();
         if( searchMembers) {
             List<EnergyCompany> descendantEcs = 
-                    ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
+                    ecDao.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
             allEnergyCompanyIDs = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
         } else {
             allEnergyCompanyIDs.add(energyCompany.getEnergyCompanyId());
@@ -216,7 +216,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
         List<Integer> allEnergyCompanyIDs = new ArrayList<>();
         if(searchMembers) {
             List<EnergyCompany> descendantEcs = 
-                    ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
+                    ecDao.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
             allEnergyCompanyIDs = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
         } else {
             allEnergyCompanyIDs.add(energyCompany.getEnergyCompanyId());

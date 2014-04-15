@@ -25,7 +25,7 @@ public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
     
     @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
     @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     @Override
     public ModelAndView render(HttpServletRequest request,HttpServletResponse response) throws Exception {
@@ -34,7 +34,7 @@ public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
-        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         List<InventoryConfigTask> tasks = inventoryConfigTaskDao.getAll(energyCompany.getId());
         mav.addObject("tasks", tasks);
 

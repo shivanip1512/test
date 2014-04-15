@@ -15,7 +15,7 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class LmHardwareBasePicker extends DatabasePicker<LMHardwareBase> {
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     private final static String[] searchColumnNames = new String[] {
         "ManufacturerSerialNumber"
@@ -47,7 +47,7 @@ public class LmHardwareBasePicker extends DatabasePicker<LMHardwareBase> {
         }
 
         List<Integer> descendantEcIds = 
-                Lists.transform(ecService.getEnergyCompany(energyCompanyId).getDescendants(true), EnergyCompanyDao.TO_ID_FUNCTION);
+                Lists.transform(ecDao.getEnergyCompany(energyCompanyId).getDescendants(true), EnergyCompanyDao.TO_ID_FUNCTION);
         sqlFilters.add(new InventoryToECFilter(descendantEcIds));
     }
 

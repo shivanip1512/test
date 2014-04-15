@@ -75,7 +75,7 @@ public class OptOutAdminController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ProgramToAlternateProgramDao programToAlternameProgramDao;
     @Autowired private StarsEventLogService starsEventLogService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private OptOutSurveyService optOutSurveyService;
     @Autowired private SelectionListService selectionListService;
     
@@ -90,8 +90,8 @@ public class OptOutAdminController {
                 YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, 
                 YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS); 
         
-        if(ecService.isEnergyCompanyOperator(user)){
-            EnergyCompany energyCompany = ecService.getEnergyCompany(user);
+        if(ecDao.isEnergyCompanyOperator(user)){
+            EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
             model.addAttribute("energyCompanyId", energyCompany.getId());
     
             Map<String, Object> optOutsJson = systemOptOuts(new ArrayList<Integer>(0), userContext);
@@ -154,7 +154,7 @@ public class OptOutAdminController {
 
     @RequestMapping(value = "/operator/optOut/systemOptOuts", method = RequestMethod.POST)
     public @ResponseBody Map<String, Object>  systemOptOuts(@RequestBody List<Integer> assignedProgramIds, YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         Map<String, Object> json = new HashMap<>();
 
         json.put("totalNumberOfAccounts", customerAccountDao.getTotalNumberOfAccounts(yukonEnergyCompany, assignedProgramIds));
@@ -292,7 +292,7 @@ public class OptOutAdminController {
         // Only load these events when they have the property set
         if (rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS, user)) {
         
-            EnergyCompany energyCompany = ecService.getEnergyCompany(user);
+            EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
             List<OptOutEvent> scheduledEvents = 
                 optOutEventDao.getAllScheduledOptOutEvents(energyCompany);
             
@@ -333,7 +333,7 @@ public class OptOutAdminController {
 
     private void setUpOptOutSurveys(LiteYukonUser user, ModelMap model) {
         if (rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT, user)) {
-            int energyCompanyId = ecService.getEnergyCompany(user).getId();
+            int energyCompanyId = ecDao.getEnergyCompany(user).getId();
             Set<OptOutSurvey> surveys = new HashSet<>(optOutSurveyService.findSurveys(energyCompanyId, 0, Integer.MAX_VALUE).getResultList());
             model.addAttribute("totalSurveys", surveys.size());
             final Date now = new Date();

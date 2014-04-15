@@ -15,7 +15,7 @@ import com.cannontech.web.stars.dr.operator.validator.ContactNotificationDtoVali
 public class GeneralInfoValidator extends SimpleValidator<GeneralInfo> {
 
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     boolean ecNameChange = true;
 
@@ -54,7 +54,7 @@ public class GeneralInfoValidator extends SimpleValidator<GeneralInfo> {
             errors.rejectValue("email", "yukon.web.modules.adminSetup.generalInfo.invalidEmail");
         }
 
-        if (ecNameChange && ecService.findEnergyCompany(generalInfo.getName()) != null) {
+        if (ecNameChange && ecDao.findEnergyCompany(generalInfo.getName()) != null) {
             // Found an energycompany already using this name.
             errors.rejectValue("name", "yukon.web.modules.adminSetup.createEnergyCompany.name.unavailable");
         }

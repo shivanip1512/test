@@ -15,7 +15,7 @@ import com.cannontech.web.picker.service.LmProgramForEnergyCompanyIdFilterFactor
 public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramForEnergyCompanyIdFilterFactory {
 
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 	
 	@Override
 	public SqlFilter getFilterForEnergyCompanyIdExtraArg(String energyCompanyIdExtraArg) {
@@ -27,7 +27,7 @@ public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramFo
 		int energyCompanyId = NumberUtils.toInt(energyCompanyIdExtraArg);
 		
 		// gather parents energyCompanyIds
-		EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+		EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
 		
 		Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(energyCompany);
 		

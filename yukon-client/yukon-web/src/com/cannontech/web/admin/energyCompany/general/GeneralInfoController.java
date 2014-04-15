@@ -63,7 +63,7 @@ public class GeneralInfoController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsEventLogService starsEventLogService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonGroupService yukonGroupService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private YukonUserDao yukonUserDao;
@@ -76,7 +76,7 @@ public class GeneralInfoController {
         
         setupModelMap(model, context.getYukonUser(), ecId, fragment);
         model.addAttribute("mode", PageEditMode.VIEW);
-        LiteYukonUser user = ecService.getEnergyCompany(ecId).getUser();
+        LiteYukonUser user = ecDao.getEnergyCompany(ecId).getUser();
         if (user.getUserGroupId() == null) {
             flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.missingUserGroup",
                                                              user.getUsername()));
@@ -94,7 +94,7 @@ public class GeneralInfoController {
         
         setupModelMap(model, context.getYukonUser(), ecId, fragment);
         model.addAttribute("mode", PageEditMode.EDIT);
-        LiteYukonUser user = ecService.getEnergyCompany(ecId).getUser();
+        LiteYukonUser user = ecDao.getEnergyCompany(ecId).getUser();
         if(user.getUserGroupId() == null){
             flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.missingUserGroup",
                                                              user.getUsername()));
@@ -302,7 +302,7 @@ public class GeneralInfoController {
     private void setupModelMap(ModelMap model, LiteYukonUser user, int ecId, EnergyCompanyInfoFragment fragment) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
       
-        EnergyCompany energyCompany = ecService.getEnergyCompany(ecId);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
         GeneralInfo generalInfo = generalInfoService.getGeneralInfo(energyCompany);
         model.addAttribute("generalInfo", generalInfo);
         
@@ -337,7 +337,7 @@ public class GeneralInfoController {
     @ModelAttribute("operatorLogins")
     public List<LiteYukonUser> getOperatorLogins(int ecId) {
         List<LiteYukonUser> operators = Lists.newArrayList();
-        for (int userId : starsDatabaseCache.getEnergyCompany(ecId).getOperatorLoginIDs()) {
+        for (int userId : ecDao.getOperatorUserIds(ecDao.getEnergyCompany(ecId))) {
             operators.add(yukonUserDao.getLiteYukonUser(userId));
         }
         return operators;
@@ -351,7 +351,7 @@ public class GeneralInfoController {
     
     @ModelAttribute("routes")
     public List<LiteYukonPAObject> getRoutes(int ecId) {
-        return ecService.getAllRoutes(ecService.getEnergyCompany(ecId));
+        return ecDao.getAllRoutes(ecDao.getEnergyCompany(ecId));
     }
     
     @ModelAttribute("canCreateMembers")

@@ -42,7 +42,7 @@ import com.google.common.collect.Lists;
 public class SaveToBatchController {
     
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private CustomerAccountDao customerAccountDao;
@@ -54,7 +54,7 @@ public class SaveToBatchController {
     
     @RequestMapping("setup")
     public String setup(HttpServletRequest request, ModelMap model, String taskId, YukonUserContext userContext) throws ServletRequestBindingException, RemoteException {
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         inventoryCollectionFactory.addCollectionToModelMap(request, model);
@@ -80,7 +80,7 @@ public class SaveToBatchController {
         } catch(NotFoundException e) {
             ecDefaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
         }
-        List<LiteYukonPAObject> routes = yukonEnergyCompanyService.getAllRoutes(energyCompany);
+        List<LiteYukonPAObject> routes = ecDao.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
         model.addAttribute("ecDefaultRoute", ecDefaultRoute);
    
@@ -100,7 +100,7 @@ public class SaveToBatchController {
     @RequestMapping(value="do", params="save")
     public String startTask(HttpServletRequest request, ModelMap model, String taskId, YukonUserContext userContext,
             @ModelAttribute("saveToBatchInfo") SaveToBatchInfo saveToBatchInfo, BindingResult bindingResult) throws ServletRequestBindingException {
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         inventoryCollectionFactory.addCollectionToModelMap(request, model);
         InventoryCollection inventoryCollection = (InventoryCollection) model.get("inventoryCollection");
                 

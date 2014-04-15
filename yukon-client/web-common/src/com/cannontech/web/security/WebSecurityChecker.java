@@ -23,7 +23,7 @@ public class WebSecurityChecker {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     
     public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey, boolean expecting) {
         final LiteYukonUser user = getYukonUser();
@@ -91,7 +91,7 @@ public class WebSecurityChecker {
 
     public void checkEnergyCompanySetting(EnergyCompanySettingType setting) {
         final LiteYukonUser user = getYukonUser();
-        YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
         
         if (yec == null || !energyCompanySettingDao.getBoolean(setting, yec.getEnergyCompanyId())) {
             throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");

@@ -63,7 +63,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private EnrollmentDao enrollmentDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private ProgramDao programDao;
@@ -180,7 +180,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         // Get the current enrollments.  This list will be updated to reflect the desired enrollment
         // data then passed to applyEnrollments which will make it so.
         List<ProgramEnrollment> enrollmentData = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         
         // This handles an unenrollment with no program given.  In this case we we just want to unenroll
         // the device from every program it is enrolled.

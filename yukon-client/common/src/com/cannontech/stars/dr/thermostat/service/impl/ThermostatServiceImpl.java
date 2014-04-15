@@ -70,7 +70,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private LmHardwareCommandService lmHardwareCommandService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
@@ -544,7 +544,7 @@ public class ThermostatServiceImpl implements ThermostatService {
             logMsg.append(", Fan: " + event.getFanState());
         }
 
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(thermostat.getId());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByInventoryId(thermostat.getId());
 
         ActivityLogger.logEvent(userId, 
                                 accountId, 
@@ -575,7 +575,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     
     @Override
     public Set<ThermostatScheduleMode> getAllowedThermostatScheduleModesByAccountId(int accountId) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByAccountId(accountId);
         return getAllowedThermostatScheduleModes(yukonEnergyCompany);
     }
     

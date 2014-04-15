@@ -31,7 +31,7 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
     @Autowired InventoryBaseDao inventoryBaseDao;
     @Autowired InventoryDao inventoryDao;
     @Autowired LmHardwareCommandService commandService;
-    @Autowired EnergyCompanyDao yecService;
+    @Autowired EnergyCompanyDao ecDao;
     
     public class ResendLmConfigTask extends CollectionBasedInventoryTask {
         
@@ -72,7 +72,7 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
                         try {
                             if (identifier.getHardwareType().isConfigurable()) {
                                 LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByInventoryId(identifier.getInventoryId());
-                                YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(identifier.getInventoryId());
+                                YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(identifier.getInventoryId());
                                 
                                 LmHardwareCommand command = new LmHardwareCommand();
                                 command.setDevice(lmhb);

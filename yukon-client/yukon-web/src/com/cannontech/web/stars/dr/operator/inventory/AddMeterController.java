@@ -29,13 +29,13 @@ public class AddMeterController {
     @Autowired private PaoDao paoDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private HardwareUiService hardwareUiService;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @RequestMapping("view")
     public String view(ModelMap model, LiteYukonUser user, FlashScope flash, Integer mctId) {
         String view = "redirect:../view";
-        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
         MeteringType value = energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getEnergyCompanyId());
         if (value == MeteringType.yukon) {
             LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(mctId);

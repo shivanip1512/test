@@ -67,7 +67,7 @@ public class OperatorLoginController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private CsrfTokenService csrfTokenService;
 
     private void checkPermissionsAndSetupModel(EnergyCompanyInfoFragment energyCompanyInfoFragment,
@@ -257,7 +257,7 @@ public class OperatorLoginController {
                 yukonUserDao.getUserAuthenticationInfo(userId).getAuthenticationCategory();
         boolean supportsPasswordSet = authenticationService.supportsPasswordSet(authenticationCategory);
         model.addAttribute("supportsPasswordSet", supportsPasswordSet);
-        model.addAttribute("isPrimaryOperator", yukonEnergyCompanyService.isPrimaryOperator(operatorLoginId));
+        model.addAttribute("isPrimaryOperator", ecDao.isPrimaryOperator(operatorLoginId));
         model.addAttribute("isOperatorInOperatorUserGroup", ecMappingDao.isOperatorInOperatorUserGroup(operatorLoginId));
     }
     

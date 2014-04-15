@@ -72,7 +72,7 @@ public class DefaultThermostatScheduleController {
     @Autowired private ThermostatService thermostatService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     @RequestMapping("view")
     public String view(YukonUserContext userContext, ModelMap modelMap, int ecId, 
@@ -208,7 +208,7 @@ public class DefaultThermostatScheduleController {
     private void setupModelMap(ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment, YukonUserContext userContext) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
 
-        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
         
         GeneralInfo generalInfo = generalInfoService.getGeneralInfo(energyCompany);
         modelMap.addAttribute("generalInfo", generalInfo);

@@ -29,7 +29,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
     private static final YukonRowMapper<LiteInventoryBase> inventoryRowMapper = new SmartLiteInventoryBaseRowMapper();
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
 
     @Override
@@ -75,7 +75,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
         }
         
         // If we get to here, we didn't find the serial number for the energyCompany provided.  Throw exception.
-        YukonEnergyCompany otherEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(lmHardwareInOtherEnergyCompany.getInventoryID());
+        YukonEnergyCompany otherEnergyCompany = ecDao.getEnergyCompanyByInventoryId(lmHardwareInOtherEnergyCompany.getInventoryID());
         throw new ObjectInOtherEnergyCompanyException(lmHardwareInOtherEnergyCompany, otherEnergyCompany);
     }
 

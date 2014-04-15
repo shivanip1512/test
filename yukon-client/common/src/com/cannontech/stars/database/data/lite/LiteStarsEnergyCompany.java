@@ -14,13 +14,11 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteBase;
@@ -487,15 +485,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         }
         
         return allSubstations;
-    }
-    
-    public List<Integer> getOperatorLoginIDs() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT OperatorLoginID");
-        sql.append("FROM EnergyCompanyOperatorLoginList");
-        sql.append("WHERE EnergyCompanyID").eq(getEnergyCompanyId());
-        List<Integer> list = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
-        return list;
     }
 
     public LiteApplianceCategory getApplianceCategory(int applianceCategoryID) {

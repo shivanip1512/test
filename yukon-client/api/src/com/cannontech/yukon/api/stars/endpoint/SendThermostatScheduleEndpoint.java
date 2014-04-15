@@ -43,7 +43,7 @@ public class SendThermostatScheduleEndpoint {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ThermostatService thermostatService;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     
     private final Namespace ns = YukonXml.getYukonNamespace();
     private final Logger log = YukonLogManager.getLogger(SendThermostatScheduleEndpoint.class);
@@ -77,7 +77,7 @@ public class SendThermostatScheduleEndpoint {
             rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT, user);
             
             // Get the inventoryIds from the serial numbers supplied.
-            int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyByOperator(user).getId();
+            int yukonEnergyCompanyId = ecDao.getEnergyCompanyByOperator(user).getId();
             List<Integer> inventoryIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompanyId);
             if(inventoryIds.isEmpty()){
                 if(serialNumbers.isEmpty()){

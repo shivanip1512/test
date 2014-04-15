@@ -51,7 +51,7 @@ public class DeviceReconfigController {
     @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     private class OptionsValidator extends SimpleValidator<DeviceReconfigOptions> {
 
@@ -78,7 +78,7 @@ public class DeviceReconfigController {
     private void setupModelMap(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         inventoryCollectionFactory.addCollectionToModelMap(request, modelMap);
         
-        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         List<CommandSchedule> schedules = commandScheduleDao.getAll(energyCompany.getId());
         modelMap.addAttribute("schedules", schedules);
     }
@@ -87,7 +87,7 @@ public class DeviceReconfigController {
     public String save(@ModelAttribute("deviceReconfigOptions") DeviceReconfigOptions deviceReconfigOptions, BindingResult bindingResult, 
                        HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext) throws ServletRequestBindingException {
 
-        int energyCompanyId = ecService.getEnergyCompany(userContext.getYukonUser()).getId();
+        int energyCompanyId = ecDao.getEnergyCompany(userContext.getYukonUser()).getId();
         OptionsValidator validator = new OptionsValidator();
         validator.validate(deviceReconfigOptions, bindingResult);
 

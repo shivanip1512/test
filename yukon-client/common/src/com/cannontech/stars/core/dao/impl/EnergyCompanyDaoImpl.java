@@ -329,11 +329,18 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         
         jdbcTemplate.update(sql);
         
-        dbChangeManager.processDbChange(ecId,
-                                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
-                                        DBChangeMsg.CAT_ENERGY_COMPANY,
-                                        DBChangeMsg.CAT_ENERGY_COMPANY,
-                                        DbChangeType.UPDATE);
+        dbChangeManager.processDbChange(ecId, DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,  DBChangeMsg.CAT_ENERGY_COMPANY,
+                                        DBChangeMsg.CAT_ENERGY_COMPANY, DbChangeType.UPDATE);
+    }
+    
+    @Override
+    public List<Integer> getOperatorUserIds(EnergyCompany energyCompany) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT OperatorLoginID");
+        sql.append("FROM EnergyCompanyOperatorLoginList");
+        sql.append("WHERE EnergyCompanyID").eq(energyCompany.getId());
+        List<Integer> list = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        return list;
     }
     
     private List<LiteYukonPAObject> getRoutes(EnergyCompany energyCompany) {

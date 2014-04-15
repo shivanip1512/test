@@ -15,12 +15,12 @@ import com.cannontech.web.security.annotation.AuthorizeByCparm;
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class MiscellaneousMethodController {
     
-    @Autowired EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired EnergyCompanyDao ecDao;
     
     @RequestMapping("/development/miscellaneousMethod/main")
     public void main(YukonUserContext userContext, ModelMap model) {
         
-        YukonEnergyCompany energyCompanyByOperator = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany energyCompanyByOperator = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
        
         model.addAttribute("energyCompanyId",energyCompanyByOperator.getEnergyCompanyId());
     }

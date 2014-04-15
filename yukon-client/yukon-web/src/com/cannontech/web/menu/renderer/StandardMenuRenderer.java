@@ -57,7 +57,7 @@ import com.google.common.collect.Iterables;
 public class StandardMenuRenderer {
 	
 	@Autowired private RolePropertyDao rpDao;
-	@Autowired private EnergyCompanyDao yecService;
+	@Autowired private EnergyCompanyDao ecDao;
 	@Autowired private GlobalSettingDao gsDao;
 	@Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ConfigurationSource configurationSource;
@@ -208,7 +208,7 @@ public class StandardMenuRenderer {
                 return true;
             }
 		} else if (type == Permission.ecOperator) {
-			if (yecService.isEnergyCompanyOperator(user)) {
+			if (ecDao.isEnergyCompanyOperator(user)) {
                 return true;
             }
 		} else if (type == Permission.masterConfig) {

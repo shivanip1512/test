@@ -79,7 +79,7 @@ public class EstimatedLoadController {
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private PointDao pointDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
@@ -282,7 +282,7 @@ public class EstimatedLoadController {
         
         YukonEnergyCompany yec = null;
         try {
-            yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
+            yec = ecDao.getEnergyCompanyByOperator(context.getYukonUser());
         } catch (EnergyCompanyNotFoundException e) {
             model.addAttribute("noEnergyCompany", true);
             return "dr/formula/_appCatAssignmentsTable.jsp";

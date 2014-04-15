@@ -66,7 +66,7 @@ public class UserLoginBasePanel extends DataInputPanel {
     private AuthenticationService authenticationService = YukonSpringHook.getBean(AuthenticationService.class);
     private UserGroupDao userGroupDao = YukonSpringHook.getBean(UserGroupDao.class);
     private YukonUserDao yukonUserDao = YukonSpringHook.getBean(YukonUserDao.class);
-    private EnergyCompanyDao ecService = YukonSpringHook.getBean(EnergyCompanyDao.class);
+    private EnergyCompanyDao ecDao = YukonSpringHook.getBean(EnergyCompanyDao.class);
 
     private JLabel ivjJLabelUserName = null;
     private JPanel ivjJPanelLoginPanel = null;
@@ -690,7 +690,7 @@ public class UserLoginBasePanel extends DataInputPanel {
         if (getJCheckBoxEnableEC().isSelected()) {
             IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
-            List<EnergyCompany> companies = new ArrayList<>(ecService.getAllEnergyCompanies());
+            List<EnergyCompany> companies = new ArrayList<>(ecDao.getAllEnergyCompanies());
             Collections.sort(companies, new Comparator<EnergyCompany>() {
                 @Override
                 public int compare(EnergyCompany energyCompanyA, EnergyCompany energyCompanyB) {

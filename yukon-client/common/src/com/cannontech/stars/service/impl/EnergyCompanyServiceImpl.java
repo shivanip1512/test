@@ -85,7 +85,6 @@ import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.user.checker.UserCheckerBase;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
@@ -105,7 +104,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private WarehouseDao warehouseDao;
     @Autowired private AccountService accountService;
     @Autowired private UserGroupDao userGroupDao ;
@@ -123,7 +122,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         boolean topLevelEc = parentId == null;
         
         /* Check energy company name availability */
-        if(ecService.findEnergyCompany(energyCompanyDto.getName()) != null) {
+        if(ecDao.findEnergyCompany(energyCompanyDto.getName()) != null) {
             throw new EnergyCompanyNameUnavailableException();
         }
 
@@ -143,7 +142,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             contactNotificationDao.saveNotification(email);
         }
         
-        int energyCompanyId =  ecService.createEnergyCompany(energyCompanyDto.getName(), contact.getContactID(), ecUser);
+        int energyCompanyId =  ecDao.createEnergyCompany(energyCompanyDto.getName(), contact.getContactID(), ecUser);
 
         /* This method doesn't 'create' anything, it just news a LiteStarsEnergyCompany and injects dependencies. */
         LiteStarsEnergyCompany liteStarsEnergyCompany = 
@@ -203,15 +202,15 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     public boolean canEditEnergyCompany(LiteYukonUser user, int ecId) {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
         if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)
-                && ecService.isDefaultEnergyCompany(energyCompany)) {
+                && energyCompany.isDefaultEc()) {
             return false;
         }
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         boolean edit = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
         boolean manage = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
-        boolean isOperator = energyCompany.getOperatorLoginIDs().contains(user.getUserID());
+        boolean isOperator = ecDao.getOperatorUserIds(energyCompany).contains(user.getUserID());
         boolean isParentOp = isParentOperator(user.getUserID(), ecId);
         
         /* Can edit 
@@ -242,13 +241,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     public boolean canDeleteEnergyCompany(LiteYukonUser user, int ecId) {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
-        if (ecService.isDefaultEnergyCompany(energyCompany)) {
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
+        if (energyCompany.isDefaultEc()) {
             return false;
         }
 
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
-        boolean isOperator = starsDatabaseCache.getEnergyCompany(ecId).getOperatorLoginIDs().contains(user.getUserID()); 
+        boolean isOperator = ecDao.getOperatorUserIds(energyCompany).contains(user.getUserID()); 
         
         /* Can delete
          * IF user is a 'super user' && is not an operator of the energy company */
@@ -257,11 +256,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     public boolean isParentOperator(int userId, int ecId) {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
-        List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
-        allAscendants.remove(energyCompany); /* Remove this ec since that is a different rp check */
-        for (LiteStarsEnergyCompany parentEc : allAscendants) {
-            if (parentEc.getOperatorLoginIDs().contains(userId)) {
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
+        for (EnergyCompany parentEc : energyCompany.getParents(false)) {
+            if (ecDao.getOperatorUserIds(parentEc).contains(userId)) {
                 return true;
             }
         }
@@ -270,8 +267,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     public boolean isOperator(LiteYukonUser user) {
-        for (LiteStarsEnergyCompany ec : starsDatabaseCache.getAllEnergyCompanies()) {
-            if (ec.getOperatorLoginIDs().contains(user.getUserID())) {
+        for (EnergyCompany ec : ecDao.getAllEnergyCompanies()) {
+            if (ecDao.getOperatorUserIds(ec).contains(user.getUserID())) {
                 return true;
             }
         }
@@ -285,9 +282,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     public void verifyViewPageAccess(LiteYukonUser user, int ecId) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(ecId);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
         if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
-            if (ecService.isDefaultEnergyCompany(energyCompany)) {
+            if (energyCompany.isDefaultEc()) {
                 throw new NotAuthorizedException("default energy company is not editable");
             }
         }
@@ -295,11 +292,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             return;
         }
         /* Check my own and all my anticendants operator login list for this user's id. */
-        List<Integer> parentIds = Lists.transform(energyCompany.getParents(true),
-                                                  EnergyCompanyDao.TO_ID_FUNCTION);
-        for (int energyCompanyId : parentIds) {
-            LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-            if(lsec.getOperatorLoginIDs().contains(user.getUserID())) {
+        List<EnergyCompany> parents = energyCompany.getParents(true);
+        for (EnergyCompany parentEc : parents) {
+            if(ecDao.getOperatorUserIds(parentEc).contains(user.getUserID())) {
                 return;
             }
         }
@@ -339,10 +334,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             @Override
             public boolean check(LiteYukonUser user) {
                 
-                boolean isOperator = ecService.isEnergyCompanyOperator(user);
+                boolean isOperator = ecDao.isEnergyCompanyOperator(user);
 
                 if (isOperator) {
-                    YukonEnergyCompany yec = ecService.getEnergyCompanyByOperator(user);
+                    YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
                     return canEditEnergyCompany(user, yec.getEnergyCompanyId());
                 } else {
                     boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
@@ -361,7 +356,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany( energyCompanyId );
         String energyCompanyName = energyCompany.getName();
 
-        if (ecService.isDefaultEnergyCompany(energyCompany)) {
+        if (ecDao.isDefaultEnergyCompany(energyCompany)) {
             throw new IllegalArgumentException("The default energy company cannot be deleted.");
         }
 
@@ -393,7 +388,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         log.info("Deleting energy company " + energyCompany.getName() + " id# " + energyCompanyId + " completed.");
     }
 
-    private void deleteAllWarehouses(LiteStarsEnergyCompany energyCompany) {
+    private void deleteAllWarehouses(YukonEnergyCompany energyCompany) {
         List<Warehouse> warehouses = warehouseDao.getAllWarehousesForEnergyCompanyId(energyCompany.getEnergyCompanyId());
         
         for (Warehouse warehouse : warehouses) {
@@ -406,9 +401,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @param energyCompany
      * @param liteGroup
      */
-    private void deletePrivilegeGroupsAndDefaultOperatorLogin(LiteStarsEnergyCompany energyCompany) {
+    private void deletePrivilegeGroupsAndDefaultOperatorLogin(YukonEnergyCompany energyCompany) {
         // Delete the default operator login
-        int defaultUserId = energyCompany.getUser().getUserID();
+        int defaultUserId = energyCompany.getEnergyCompanyUser().getUserID();
         if (defaultUserId != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
                 defaultUserId != com.cannontech.user.UserUtils.USER_NONE_ID) {
             
@@ -452,7 +447,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @throws TransactionException
      */
     private void deleteEnergyCompanyBase(LiteStarsEnergyCompany lsec, String dbAlias) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(lsec.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(lsec.getEnergyCompanyId());
         log.info("Deleting energy company base id# " + lsec.getEnergyCompanyId());
         String sql;
         // Delete all other generic mappings
@@ -501,7 +496,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     /**
      * @param energyCompany
      */
-    private void deleteAllCustomerSelectionLists(LiteStarsEnergyCompany energyCompany) {
+    private void deleteAllCustomerSelectionLists(YukonEnergyCompany energyCompany) {
         // Delete customer selection lists
         List<YukonSelectionList> energyCompanySelectionLists = 
                 yukonListDao.getSelectionListsByEnergyCompanyId(energyCompany.getEnergyCompanyId());
@@ -566,7 +561,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     /**
      * @param energyCompany
      */
-    private void deleteAllDefaultThermostatSchedules(LiteStarsEnergyCompany energyCompany) {
+    private void deleteAllDefaultThermostatSchedules(YukonEnergyCompany energyCompany) {
         // Delete all default thermostat schedules
         List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllThermostatSchedulesForEC(energyCompany.getEnergyCompanyId());
 
@@ -644,8 +639,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @throws TransactionException
      * @throws WebClientException
      */
-    private void deleteAllCustomerAccounts(LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
-        List<Integer> accountIds = ecMappingDao.getAccountIds(energyCompany.getLiteID());
+    private void deleteAllCustomerAccounts(YukonEnergyCompany energyCompany, LiteYukonUser user) {
+        List<Integer> accountIds = ecMappingDao.getAccountIds(energyCompany.getEnergyCompanyId());
         for (Integer accountId : accountIds) {
             accountService.deleteAccount(accountId, user);
         }
@@ -655,12 +650,12 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @param energyCompany
      * @return
      */
-    private void deleteOperatorLoginList(LiteStarsEnergyCompany energyCompany) {
+    private void deleteOperatorLoginList(YukonEnergyCompany energyCompany) {
         // Delete entries in EnergyCompanyOperatorLoginList for EnergyCompanyId exclude the default operator login
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM EnergyCompanyOperatorLoginList");
         sql.append("WHERE EnergyCompanyId").eq(energyCompany.getEnergyCompanyId());
-        sql.append("AND OperatorLoginID").neq(energyCompany.getUser().getUserID());
+        sql.append("AND OperatorLoginID").neq(energyCompany.getEnergyCompanyUser().getUserID());
         yukonJdbcTemplate.update(sql); 
         log.info("Deleting Operator Login list for energy company " + energyCompany.getName() + " id# " + energyCompany.getEnergyCompanyId());
     }
@@ -669,7 +664,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public void addRouteToEnergyCompany(int energyCompanyId, final int routeId) {
         
         // remove (i.e. steal) route from children
-        final EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        final EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
         callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<EnergyCompany>() {
             @Override
             public void handle(EnergyCompany item) throws Exception {
@@ -701,7 +696,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public int removeRouteFromEnergyCompany(int energyCompanyId, final int routeId) {
         
         // make sure removed route isn't the default route
-        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
         callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<EnergyCompany>() {
             @Override
             public void handle(EnergyCompany item) throws Exception {

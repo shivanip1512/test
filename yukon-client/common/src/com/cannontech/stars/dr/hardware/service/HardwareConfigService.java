@@ -60,7 +60,7 @@ public class HardwareConfigService {
     @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
     @Autowired private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
-    @Autowired private EnergyCompanyDao yEcService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 
@@ -230,7 +230,7 @@ public class HardwareConfigService {
     public void init() {
         log.debug("HardwareConfigService - starting up");
 
-        Collection<EnergyCompany> allEnergyCompanies = yEcService.getAllEnergyCompanies();
+        Collection<EnergyCompany> allEnergyCompanies = ecDao.getAllEnergyCompanies();
         for (EnergyCompany energyCompany : allEnergyCompanies) {
             log.debug("HardwareConfigService - starting task for ecId = " + energyCompany.getId());
             Runnable task = new EnergyCompanyRunnable(energyCompany.getId());

@@ -32,7 +32,7 @@ import com.google.common.collect.Multimap;
 public class SiteMapHelper {
 
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private EnergyCompanyDao energyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ObjectFormattingService objectFormattingService;
@@ -129,7 +129,7 @@ public class SiteMapHelper {
             } else if (permission instanceof OtherPermission) {
                 switch((OtherPermission) permission){
                 case EC_OPERATOR:
-                    hasPermission = energyCompanyService.isEnergyCompanyOperator(user);
+                    hasPermission = ecDao.isEnergyCompanyOperator(user);
                     break;
                 case HIDEABLE:
                     hasPermission = true;

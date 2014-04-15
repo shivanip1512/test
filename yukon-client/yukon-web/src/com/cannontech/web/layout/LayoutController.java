@@ -67,7 +67,7 @@ public class LayoutController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PageDetailProducer pageDetailProducer;
     @Autowired private ConfigurationSource configSource;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserDao userDao;
     @Autowired private StandardMenuRenderer stdMenuRender;
     @Autowired private SearchRenderer searchRenderer;
@@ -281,7 +281,7 @@ public class LayoutController {
         String energyCompanyName = null;
         
         try {
-            YukonEnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(yukonUser);
+            YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(yukonUser);
             energyCompanyName = energyCompany.getName();
         } catch (EnergyCompanyNotFoundException e) {
            //The user does not need an Energy Company just to log in.

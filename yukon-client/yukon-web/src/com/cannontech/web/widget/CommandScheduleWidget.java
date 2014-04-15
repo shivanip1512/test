@@ -22,7 +22,7 @@ public class CommandScheduleWidget extends WidgetControllerBase {
     
     @Autowired private CommandScheduleDao commandScheduleDao;
     @Autowired private CommandScheduleEventLogService commandScheduleEventLogService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -30,7 +30,7 @@ public class CommandScheduleWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("commandScheduleWidget/render.jsp");
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         List<CommandSchedule> schedules = commandScheduleDao.getAll(energyCompany.getId());
         mav.addObject("schedules", schedules);
 

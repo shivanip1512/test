@@ -37,7 +37,7 @@ public class SubstationController {
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private SubstationDao substationDao;
     @Autowired private SubstationToRouteMappingDao strmDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private GlobalSettingDao globalSettingDao;
     private TypeReference<List<Integer>> integerListType = new TypeReference<List<Integer>>() {/*Jackson requires*/};
 
@@ -177,7 +177,7 @@ public class SubstationController {
         Substation substation = new Substation();
         substation.setId(id);
 
-        Collection<EnergyCompany> allEnergyCompanies = yukonEnergyCompanyService.getAllEnergyCompanies();
+        Collection<EnergyCompany> allEnergyCompanies = ecDao.getAllEnergyCompanies();
         for (EnergyCompany energyCompany : allEnergyCompanies) {
             energyCompanyService.removeSubstationFromEnergyCompany(energyCompany.getId(), id);
         }

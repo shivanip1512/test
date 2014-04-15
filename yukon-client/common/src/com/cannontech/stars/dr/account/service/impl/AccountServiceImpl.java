@@ -113,7 +113,7 @@ public class AccountServiceImpl implements AccountService {
     @Autowired private YukonUserContextService userContextService;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private UserGroupDao userGroupDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
 
     @Override
@@ -122,7 +122,7 @@ public class AccountServiceImpl implements AccountService {
             throws AccountNumberUnavailableException, UserNameUnavailableException {
         // Add the account to the user's energy company, we do not have a mechanism to allow
         // an operator user of a parent energy company to add accounts to member energy companies.
-        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(operator);
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(operator);
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
 
@@ -371,7 +371,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void deleteAccount(String accountNumber, LiteYukonUser user) {
-        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(user);
         try {
             CustomerAccount account =
                 customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
@@ -478,7 +478,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) {
-        YukonEnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
 
         int energyCompanyId = energyCompany.getEnergyCompanyId();
         String accountNumber = updatableAccount.getAccountNumber();
@@ -494,7 +494,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void updateAccount(UpdatableAccount updatableAccount, int accountId, LiteYukonUser user) {
 
-        YukonEnergyCompany energyCompanyOfAccount = ecService.getEnergyCompanyByAccountId(accountId);
+        YukonEnergyCompany energyCompanyOfAccount = ecDao.getEnergyCompanyByAccountId(accountId);
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
         String username = accountDto.getUserName();
@@ -861,7 +861,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto getAccountDto(String accountNumber, LiteYukonUser user) {
-        YukonEnergyCompany ec = ecService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
         CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, ec);
 
         YukonUserContext userContext = userContextService.getEnergyCompanyDefaultUserContext(ec.getEnergyCompanyUser());

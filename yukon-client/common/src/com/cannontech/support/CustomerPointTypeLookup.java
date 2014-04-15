@@ -23,7 +23,7 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 public class CustomerPointTypeLookup {
 
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     /**
      * This holds the map of keys to list of point types. In this
@@ -93,7 +93,7 @@ public class CustomerPointTypeLookup {
      */
     public Set<String> getPointTypeGroups(LiteCICustomer liteCICustomer) {
         int energyCompanyId = liteCICustomer.getEnergyCompanyID();
-        EnergyCompany energyCompany = ecService.findEnergyCompany(energyCompanyId);
+        EnergyCompany energyCompany = ecDao.findEnergyCompany(energyCompanyId);
         return getPointTypeGroups(energyCompany);
     }
 
@@ -105,7 +105,7 @@ public class CustomerPointTypeLookup {
      */
     public Set<CICustomerPointType> getApplicablePoints(LiteCICustomer liteCICustomer) {
         int energyCompanyId = liteCICustomer.getEnergyCompanyID();
-        EnergyCompany energyCompany = ecService.findEnergyCompany(energyCompanyId);
+        EnergyCompany energyCompany = ecDao.findEnergyCompany(energyCompanyId);
         return getApplicablePoints(energyCompany);
     }
 

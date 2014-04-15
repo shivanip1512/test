@@ -85,7 +85,7 @@ public class AccountImportService {
     @Autowired private AccountService accountService;
     @Autowired private ContactDao contactDao;
     @Autowired private EmailService emailService;
-    @Autowired private EnergyCompanyService ecService;
+    @Autowired private EnergyCompanyService ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private GlobalSettingDao globalSettingDao;
@@ -192,7 +192,7 @@ public class AccountImportService {
             importLog = new PrintWriter(new FileWriter(logFile), true);
             
             importLog.println("Start time: " 
-                    + StarsUtils.formatDate(now, ecService.getDefaultTimeZone(lsec.getEnergyCompanyId())));
+                    + StarsUtils.formatDate(now, ecDao.getDefaultTimeZone(lsec.getEnergyCompanyId())));
             importLog.println();
             
             // Creates a list of all the appliance categories names
@@ -986,7 +986,7 @@ public class AccountImportService {
             
             importLog.println("Stop time: "
                     + StarsUtils.formatDate(new Date(), 
-                          ecService.getDefaultTimeZone(result.getEnergyCompany().getEnergyCompanyId())));
+                          ecDao.getDefaultTimeZone(result.getEnergyCompany().getEnergyCompanyId())));
             importLog.println();
             importLog.close();
 
@@ -1031,7 +1031,7 @@ public class AccountImportService {
                 LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, lsec);
                 
                 if (!StringUtils.isBlank(hwFields[ImportFields.IDX_REMOVE_DATE])) {
-                    TimeZone ecTimezone = ecService.getDefaultTimeZone(result.getEnergyCompany().getEnergyCompanyId());
+                    TimeZone ecTimezone = ecDao.getDefaultTimeZone(result.getEnergyCompany().getEnergyCompanyId());
                     Date removeDate = 
                             ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_REMOVE_DATE], ecTimezone);
                     if (removeDate == null) {

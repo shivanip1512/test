@@ -624,9 +624,9 @@ public class LMControlHistoryUtil {
                                                                           int energyCompanyId) {
         LmControlHistoryUtilService lmControlHistoryUtilService =
             YukonSpringHook.getBean("lmControlHistoryUtilService", LmControlHistoryUtilService.class);
-        EnergyCompanyService ecService = YukonSpringHook.getBean(EnergyCompanyService.class);
+        EnergyCompanyService ecDao = YukonSpringHook.getBean(EnergyCompanyService.class);
 
-        TimeZone ecTimeZone = ecService.getDefaultTimeZone(energyCompanyId);
+        TimeZone ecTimeZone = ecDao.getDefaultTimeZone(energyCompanyId);
         DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
         
         DateTime oneYearAgoDate = getPeriodStartTime(StarsCtrlHistPeriod.PASTYEAR, energyCompanyTimeZone);
@@ -660,9 +660,9 @@ public class LMControlHistoryUtil {
                                                                           int energyCompanyId) {
         LmControlHistoryUtilService lmControlHistoryUtilService =
             YukonSpringHook.getBean("lmControlHistoryUtilService", LmControlHistoryUtilService.class);
-        EnergyCompanyService ecService = YukonSpringHook.getBean(EnergyCompanyService.class);
+        EnergyCompanyService ecDao = YukonSpringHook.getBean(EnergyCompanyService.class);
 
-        TimeZone ecTimeZone = ecService.getDefaultTimeZone(energyCompanyId);
+        TimeZone ecTimeZone = ecDao.getDefaultTimeZone(energyCompanyId);
         DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
 
         LiteStarsLMControlHistory liteCtrlHist = 

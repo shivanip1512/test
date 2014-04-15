@@ -37,7 +37,7 @@ public class ThermostatScheduleHelper {
     
     private static final int SCHEDULE_NAME_LENGTH = 60;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ThermostatService thermostatService;
     
     /**
@@ -112,7 +112,7 @@ public class ThermostatScheduleHelper {
      */
     private boolean validateThermostatScheduleMode(int customerId, ThermostatSchedule schedule,
                                                   Element errors, Namespace ns) {
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerId);
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByAccountId(customerId);
         Set<ThermostatScheduleMode> allowedThermostatScheduleModes =
             thermostatService.getAllowedThermostatScheduleModes(energyCompany);
         if (!allowedThermostatScheduleModes.contains(schedule.getThermostatScheduleMode())) {

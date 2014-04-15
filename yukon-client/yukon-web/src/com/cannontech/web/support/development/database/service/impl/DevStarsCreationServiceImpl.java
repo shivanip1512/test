@@ -45,7 +45,7 @@ import com.cannontech.web.support.development.database.service.DevStarsCreationS
 import com.google.common.collect.Lists;
 
 public class DevStarsCreationServiceImpl extends DevObjectCreationBase implements DevStarsCreationService {
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonGroupDao yukonGroupDao;
@@ -190,7 +190,7 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
                 ecMappingDao.addEnergyCompanyOperatorLoginListMapping(yukonUser, devStars.getEnergyCompany());
                 log.info("Set user yukon as operator login for " + devStars.getNewEnergyCompanyName());
             } else {
-                YukonEnergyCompany yukonOperator = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
+                YukonEnergyCompany yukonOperator = ecDao.getEnergyCompanyByOperator(yukonUser);
                 log.warn("Yukon user already set as operator login for " + yukonOperator.getName());
             }
         } catch (Exception e) {

@@ -61,7 +61,7 @@ public class HardwareServiceImpl implements HardwareService {
 
     @Autowired private ApplianceDao applianceDao;
     @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
@@ -89,7 +89,7 @@ public class HardwareServiceImpl implements HardwareService {
         LiteInventoryBase lib = inventoryBaseDao.getByInventoryId(inventoryId);
         int accountId = lib.getAccountID();
         
-        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
+        YukonEnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
         
         if (accountId > 0) {
             CustomerAccount ca = customerAccountDao.getById(accountId);
@@ -244,7 +244,7 @@ public class HardwareServiceImpl implements HardwareService {
 
     @Override
     public InventoryIdentifier createForAddByRangeTask(AddByRange abr, long sn, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
-        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
         Hardware hardware = new Hardware();
         hardware.setSerialNumber(String.valueOf(sn));
         

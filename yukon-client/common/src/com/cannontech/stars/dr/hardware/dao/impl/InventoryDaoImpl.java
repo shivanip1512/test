@@ -90,7 +90,6 @@ import com.google.common.collect.Maps;
 public class InventoryDaoImpl implements InventoryDao {
 
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
     @Autowired private LMHardwareEventDao hardwareEventDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -100,7 +99,7 @@ public class InventoryDaoImpl implements InventoryDao {
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DefaultRouteService defaultRouteService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private SelectionListService selectionListService;
 
     private ChunkingSqlTemplate chunkingSqlTemplate;
@@ -336,7 +335,7 @@ public class InventoryDaoImpl implements InventoryDao {
     @Override
     public Thermostat getThermostatById(int thermostatId) {
 
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(thermostatId);
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByInventoryId(thermostatId);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * ");
@@ -419,7 +418,7 @@ public class InventoryDaoImpl implements InventoryDao {
 
             LiteStarsEnergyCompany liteStarsEnergyCompany = 
                 starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-            EnergyCompany energyCompany = ecService.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+            EnergyCompany energyCompany = ecDao.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
             
             // Convert the category entryid into a InventoryCategory enum value
             int categoryEntryId = rs.getInt("CategoryId");

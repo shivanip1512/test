@@ -16,7 +16,7 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class SurveyPicker extends DatabasePicker<Survey> {
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     private final static String[] searchColumnNames = new String[] {
             "surveyName", "surveyKey" };
@@ -39,7 +39,7 @@ public class SurveyPicker extends DatabasePicker<Survey> {
     protected void updateFilters(List<SqlFilter> sqlFilters,
             List<PostProcessingFilter<Survey>> postProcessingFilters,
             String extraArgs, YukonUserContext userContext) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         sqlFilters.add(new EnergyCompanyFilter(energyCompany.getId()));
     }
 

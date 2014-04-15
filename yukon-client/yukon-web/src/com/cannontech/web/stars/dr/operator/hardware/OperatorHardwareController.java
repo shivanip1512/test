@@ -146,7 +146,7 @@ public class OperatorHardwareController {
     @Autowired private SelectionListService selectionListService;
     @Autowired private WarehouseDao warehouseDao;
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ZigbeeDeviceService zigbeeDeviceService;
 
@@ -157,7 +157,7 @@ public class OperatorHardwareController {
     public String list(YukonUserContext userContext, ModelMap model, AccountInfoFragment accountInfoFragment) {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         model.addAttribute("serialNumberSwitch", new SerialNumber());
         model.addAttribute("serialNumberThermostat", new SerialNumber());
         model.addAttribute("serialNumberGateway", new SerialNumber());
@@ -219,7 +219,7 @@ public class OperatorHardwareController {
                 model.addAttribute("showGatewayCheckingPopup", true);
             }
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-            EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+            EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
             setupListModel(accountInfoFragment, model, energyCompany, userContext);
             return "operator/hardware/hardwareList.jsp"; 
         }
@@ -288,7 +288,7 @@ public class OperatorHardwareController {
             model.addAttribute("anotherEC", StringEscapeUtils.escapeHtml4(e.getYukonEnergyCompany().getName()));
         }
         
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         setupListModel(accountInfoFragment, model, energyCompany, userContext);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         return "operator/hardware/hardwareList.jsp";
@@ -551,7 +551,7 @@ public class OperatorHardwareController {
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
 
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         LiteInventoryBase liteInventoryBase = inventoryBaseDao.getByInventoryId(inventoryId);
 
@@ -652,7 +652,7 @@ public class OperatorHardwareController {
         model.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         
         LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompany(lsec.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(lsec.getEnergyCompanyId());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("none", accessor.getMessage("yukon.web.defaults.none"));
@@ -666,7 +666,7 @@ public class OperatorHardwareController {
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = yukonEnergyCompanyService.getAllRoutes(energyCompany);
+        List<LiteYukonPAObject> routes = ecDao.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 

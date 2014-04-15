@@ -58,7 +58,7 @@ public class ProgramDaoImpl implements ProgramDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoDao paoDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     
     private ChunkingSqlTemplate chunkingSqlTemplate;
     
@@ -201,7 +201,7 @@ public class ProgramDaoImpl implements ProgramDao {
     @Transactional(readOnly = true)
     public Program getByProgramName(String programName, int energyCompanyId) {
         
-        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
         Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(energyCompany);
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
@@ -223,7 +223,7 @@ public class ProgramDaoImpl implements ProgramDao {
     @Transactional(readOnly = true)
     public Program getByAlternateProgramName(String alternateProgramName, int energyCompanyId) {
         
-        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
         Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(energyCompany);
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();

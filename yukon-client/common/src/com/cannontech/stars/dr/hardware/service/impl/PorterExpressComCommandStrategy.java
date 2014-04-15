@@ -51,7 +51,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PorterExpressComCommandBuilder xcomCommandBuilder;
     @Autowired private CustomerEventDao customerEventDao;
-    @Autowired private EnergyCompanyDao yecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private LiteStarsEnergyCompanyFactory energyCompanyFactory;
     @Autowired private DefaultRouteService defaultRouteService;
@@ -97,10 +97,10 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
         if (type == HardwareType.UTILITY_PRO) {
             try {
                 int ecId = -1;
-                if (yecService.isEnergyCompanyOperator(user)) {
-                    ecId = yecService.getEnergyCompanyByOperator(user).getId();
+                if (ecDao.isEnergyCompanyOperator(user)) {
+                    ecId = ecDao.getEnergyCompanyByOperator(user).getId();
                 } else {
-                    ecId = yecService.getEnergyCompanyByAccountId(account.getAccountId()).getEnergyCompanyId();
+                    ecId = ecDao.getEnergyCompanyByAccountId(account.getAccountId()).getEnergyCompanyId();
                 }
                 // We have to update the schedule mode for Utility Pro thermostats every
                 // time we update the schedule if 5-2 mode is enabled
@@ -143,7 +143,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     public void sendCommand(LmHardwareCommand parameters) throws CommandCompletionException {
         
         List<String> commands = Lists.newArrayList();
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(parameters.getDevice().getInventoryID());
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(parameters.getDevice().getInventoryID());
         boolean trackAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yec.getEnergyCompanyId());
         
         if (parameters.getType() == LmHardwareCommandType.CONFIG) {
@@ -205,7 +205,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
         log.debug("Sending porter ExpressCom broadcast command: " + command.getType());
         
         if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
-            EnergyCompany energyCompany = yecService.getEnergyCompanyByOperator(command.getUser());
+            EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(command.getUser());
             int routeId = defaultRouteService.getDefaultRouteId(energyCompany);
             Integer spid = (Integer) command.getParams().get(LmHardwareCommandParam.SPID);
             String xcomCommand = xcomCommandBuilder.getBroadcastCancelAllOptOuts(spid);

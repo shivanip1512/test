@@ -495,8 +495,8 @@ public class StarsAdminUtil {
     }
 
     public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeId) {
-        EnergyCompanyDao yukonEnergyCompanyService = YukonSpringHook.getBean(EnergyCompanyDao.class);
-        List<Integer> routeIds = yukonEnergyCompanyService.getRouteIds(energyCompany.getEnergyCompanyId());
+        EnergyCompanyDao ecDao = YukonSpringHook.getBean(EnergyCompanyDao.class);
+        List<Integer> routeIds = ecDao.getRouteIds(energyCompany.getEnergyCompanyId());
         if (!routeIds.contains(routeId)) {
             return;
         }

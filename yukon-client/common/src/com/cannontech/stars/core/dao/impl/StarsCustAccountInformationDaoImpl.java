@@ -40,7 +40,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     
     private static final YukonRowMapper<LiteAccountInfo> mapper = new YukonRowMapper<LiteAccountInfo>() {
         @Override
@@ -111,7 +111,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
         }
 
         // Get all the accessible energy companies
-        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
         List<Integer> childEnergyCompanyIds = Lists.transform(energyCompany.getDescendants(true), EnergyCompanyDao.TO_ID_FUNCTION);
 
         LiteAccountInfo info = getByAccountId(accountId);
@@ -194,7 +194,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
     }
     
     private List<Integer> getEnergyCompanyIdList(int ecId) {
-        List<EnergyCompany> energyCompnies = ecService.getEnergyCompany(ecId).getDescendants(true);
+        List<EnergyCompany> energyCompnies = ecDao.getEnergyCompany(ecId).getDescendants(true);
         return Lists.transform(energyCompnies, EnergyCompanyDao.TO_ID_FUNCTION);
     }
     

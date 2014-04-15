@@ -24,7 +24,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class InvoiceChangeController extends StarsInventoryActionController {
-    @Autowired private EnergyCompanyService ecService;
+    @Autowired private EnergyCompanyService ecDao;
 
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,
@@ -37,7 +37,7 @@ public class InvoiceChangeController extends StarsInventoryActionController {
         Invoice currentInvoice = pBean.getCurrentInvoice();
         
         currentInvoice.setInvoiceDesignation(request.getParameter("name"));
-        TimeZone ecTimeZone = ecService.getDefaultTimeZone(pBean.getEnergyCompany().getEnergyCompanyId());
+        TimeZone ecTimeZone = ecDao.getDefaultTimeZone(pBean.getEnergyCompany().getEnergyCompanyId());
         Date dateSubmitted = ServletUtil.parseDateStringLiberally(request.getParameter("dateSubmitted"), ecTimeZone);
         currentInvoice.setDateSubmitted(dateSubmitted);
         currentInvoice.setDatePaid(ServletUtil.parseDateStringLiberally(request.getParameter("datePaid"), ecTimeZone));

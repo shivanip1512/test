@@ -86,7 +86,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private StarsInventoryBaseService starsInventoryBaseService;
     @Autowired private HardwareTypeExtensionService hardwareTypeExtensionService;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private DbChangeManager dbChangeManager;
@@ -310,7 +310,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     public boolean updateHardware(LiteYukonUser user, Hardware hardware) {
         LiteInventoryBase liteInventoryBase = inventoryBaseDao.getByInventoryId(hardware.getInventoryId());
         setInventoryFieldsFromDto(liteInventoryBase, hardware);
-        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(hardware.getInventoryId());
+        YukonEnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(hardware.getInventoryId());
         hardware.setEnergyCompanyId(ec.getEnergyCompanyId());
         
         checkSerialNumber(hardware);
@@ -445,7 +445,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Override
     @Transactional
     public int createHardware(Hardware hardware, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         int inventoryId;
         String deviceLabel;
         
@@ -550,7 +550,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     public int addYukonMeter(int meterId, Integer accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
         accountId = accountId == null ? 0 : accountId;
         
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompany(user);
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompany(user);
         try {
             LiteInventoryBase liteInventoryBase = inventoryBaseDao.getByDeviceId(meterId);
             liteInventoryBase.setAccountID(accountId);
@@ -617,7 +617,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     public int changeOutInventory(int oldInventoryId, int newInventoryId, LiteYukonUser user, boolean isMeter) {
         
         int inventoryId;
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         LiteInventoryBase oldInventory = inventoryBaseDao.getByInventoryId(oldInventoryId);
         

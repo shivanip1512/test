@@ -22,7 +22,7 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 public class RolePropertyUserCheckerFactory {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private EnergyCompanySettingDao energyCompanSettingDao;
-    @Autowired private EnergyCompanyDao yecService;
+    @Autowired private EnergyCompanyDao ecDao;
     
     public UserChecker createPropertyChecker(final YukonRoleProperty property) {
         Validate.isTrue(rolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);
@@ -46,7 +46,7 @@ public class RolePropertyUserCheckerFactory {
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                return energyCompanSettingDao.getBoolean(setting, yecService.getEnergyCompanyByOperator(user).getEnergyCompanyId());
+                return energyCompanSettingDao.getBoolean(setting, ecDao.getEnergyCompanyByOperator(user).getEnergyCompanyId());
             };
             
             @Override
@@ -79,7 +79,7 @@ public class RolePropertyUserCheckerFactory {
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                return energyCompanSettingDao.getFalseBoolean(setting, yecService.getEnergyCompanyByOperator(user).getEnergyCompanyId());
+                return energyCompanSettingDao.getFalseBoolean(setting, ecDao.getEnergyCompanyByOperator(user).getEnergyCompanyId());
             };
             
             @Override

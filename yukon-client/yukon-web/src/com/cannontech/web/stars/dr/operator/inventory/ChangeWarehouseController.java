@@ -34,13 +34,13 @@ public class ChangeWarehouseController {
 
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
     @Autowired private ChangeWarehouseHelper helper;
-    @Autowired private EnergyCompanyDao energyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping("view")
     public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
-        YukonEnergyCompany ec = energyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany lec = starsDatabaseCache.getEnergyCompany(ec);
         
         List<Warehouse> warehouses = lec.getWarehouses();

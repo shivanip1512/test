@@ -39,7 +39,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	
     @Autowired private YukonJdbcOperations yukonJdbcOperations;
 	@Autowired private ContactNotificationDao contactNotificationDao;
-	@Autowired private EnergyCompanyDao ecService;
+	@Autowired private EnergyCompanyDao ecDao;
 
 	private AccountSearchResultRowMapper accountSearchResultRowMapper = new AccountSearchResultRowMapper();
 
@@ -297,7 +297,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	    	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContactId, ContactNotificationType.HOME_PHONE);
 	        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContactId, ContactNotificationType.WORK_PHONE);
 	        
-	        String energyCompanyName = ecService.getEnergyCompany(energyCompanyId).getName();
+	        String energyCompanyName = ecDao.getEnergyCompany(energyCompanyId).getName();
 	        
 	        return new AccountSearchResult(accountId, energyCompanyId, accountNumber, altTrackingNumber, firstName, 
 	                                       lastName, companyName, homePhoneNotif, workPhoneNotif, address, energyCompanyName);

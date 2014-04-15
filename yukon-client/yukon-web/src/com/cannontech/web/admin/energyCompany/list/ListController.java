@@ -57,7 +57,7 @@ public class ListController {
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private SelectionListDao selectionListDao;
     @Autowired private SelectionListService selectionListService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonListDao listDao;
 
     private final Validator validator = new SimpleValidator<SelectionListDto>(SelectionListDto.class) {
@@ -158,7 +158,7 @@ public class ListController {
         listDefinitions =
             objectFormattingService.sortDisplayableValues(listDefinitions, null, null, userContext);
 
-        YukonEnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         MeteringType meteringType = ecSettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION,
             MeteringType.class, energyCompany.getEnergyCompanyId());
 

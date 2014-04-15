@@ -53,7 +53,7 @@ import com.google.common.collect.ListMultimap;
  */
 public class CustomerEventDaoImpl implements CustomerEventDao {
 
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -64,7 +64,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
     @Override
     public ThermostatManualEvent getLastManualEvent(int inventoryId) {
 
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByInventoryId(inventoryId);
 
         // Query to get the row from LMThermostatManualEvent where the row's
         // event id matches the event id from the row in LMCustomerEventBase
@@ -132,7 +132,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
     @Transactional
     public void save(CustomerThermostatEvent event) {
         YukonEnergyCompany yukonEnergyCompany = 
-            yukonEnergyCompanyService.getEnergyCompanyByInventoryId(event.getThermostatId());
+            ecDao.getEnergyCompanyByInventoryId(event.getThermostatId());
         
         // Get next eventid
         int eventId = nextValueHelper.getNextValue("LMCustomerEventBase");

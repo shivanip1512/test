@@ -33,7 +33,7 @@ public class RunThermostatProgramEndpoint {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ThermostatService thermostatService;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(RunThermostatProgramEndpoint.class);
@@ -64,7 +64,7 @@ public class RunThermostatProgramEndpoint {
             rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
             
             // Send out run thermostat program commands
-            int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyByOperator(user).getId();
+            int yukonEnergyCompanyId = ecDao.getEnergyCompanyByOperator(user).getId();
             List<Integer> thermostatIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompanyId);
 
             // Send out run program commands

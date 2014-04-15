@@ -54,7 +54,7 @@ public class MeterProfileController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private HardwareModelHelper helper;
     @Autowired private OperatorAccountService operatorAccountService;
     @Autowired private SelectionListService selectionListService;
@@ -134,7 +134,7 @@ public class MeterProfileController {
     @RequestMapping(value="create", method=RequestMethod.GET)
     public String create(ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(context.getYukonUser());
         YukonListEntry typeEntry = selectionListService.getListEntry(energyCompany, HardwareType.NON_YUKON_METER.getDefinitionId());
         
         Hardware hardware = new Hardware();

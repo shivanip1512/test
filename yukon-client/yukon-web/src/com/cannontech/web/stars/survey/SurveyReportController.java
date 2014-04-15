@@ -49,7 +49,7 @@ import com.google.common.collect.Maps;
 @RequestMapping("/surveyReport/*")
 public class SurveyReportController {
     @Autowired private SurveyDao surveyDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     @Autowired private SimpleReportService simpleReportService;
@@ -123,7 +123,7 @@ public class SurveyReportController {
     }
 
     private String config(ModelMap model, Survey survey, YukonUserContext userContext) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         List<Question> questions = surveyDao.getQuestionsBySurveyId(survey.getSurveyId());
         model.addAttribute("questions", questions);
         Map<Integer, Object> questionsById = Maps.newHashMap();
@@ -176,7 +176,7 @@ public class SurveyReportController {
         List<List<String>> data = simpleReportService.getFormattedData(reportDefinition, reportModel, userContext);
         model.addAttribute("data", data);
 
-        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         model.addAttribute("ecId", energyCompany.getId());
         model.addAttribute("energyCompanyName", energyCompany.getName());
 
@@ -185,7 +185,7 @@ public class SurveyReportController {
 
     private Survey verifyEnergyCompany(int surveyId, YukonUserContext userContext) {
         Survey survey = surveyDao.getSurveyById(surveyId);
-        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         if (energyCompany.getId() != survey.getEnergyCompanyId()) {
             throw new NotAuthorizedException("energy company mismatch");
         }

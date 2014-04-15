@@ -25,12 +25,12 @@ public class CheckEnergyCompanyOperatorTag extends TagSupport {
     public int doStartTag() throws JspException {
        
         int returnValue = EVAL_BODY_INCLUDE;
-        EnergyCompanyDao ecService =
+        EnergyCompanyDao ecDao =
                 YukonSpringHook.getBean(EnergyCompanyDao.class);
         
         LiteYukonUser user = ServletUtil.getYukonUser(pageContext.getRequest());
 
-        if (!ecService.isEnergyCompanyOperator(user)) {
+        if (!ecDao.isEnergyCompanyOperator(user)) {
             if (showError) {
                 YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext((HttpServletRequest)pageContext.getRequest());
                 YukonUserContextMessageSourceResolver messageSourceResolver =

@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardware> {
     
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     private HardwareClass hardwareClass;
     
@@ -50,7 +50,7 @@ public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardw
             int energyCompanyId = NumberUtils.toInt(extraArgs);
             
             // gather parents energyCompanyIds
-            EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+            EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
             List<Integer> parentIds = Lists.transform(energyCompany.getParents(true), EnergyCompanyDao.TO_ID_FUNCTION);
             AvailableLmHardwareFilter energyCompanyIdsFilter = new AvailableLmHardwareFilter(parentIds, hardwareClass);
             sqlFilters.add(energyCompanyIdsFilter);

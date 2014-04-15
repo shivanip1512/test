@@ -95,7 +95,7 @@ public class AssetDashboardController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private PaoDao paoDao;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
@@ -112,10 +112,10 @@ public class AssetDashboardController {
     @RequestMapping("home")
     public String home(ModelMap model, YukonUserContext context) {
         LiteYukonUser user = context.getYukonUser();
-        boolean ecOperator = ecService.isEnergyCompanyOperator(context.getYukonUser());
+        boolean ecOperator = ecDao.isEnergyCompanyOperator(context.getYukonUser());
         
         if (ecOperator) {
-            EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
+            EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
             
             int ecId = energyCompany.getId();
             model.addAttribute("energyCompanyId", ecId);
@@ -195,7 +195,7 @@ public class AssetDashboardController {
                          Integer page,
                          FlashScope flashScope) {
         rpDao.verifyProperty(YukonRoleProperty.INVENTORY_SEARCH, context.getYukonUser());
-        YukonEnergyCompany ec = ecService.getEnergyCompanyByOperator(context.getYukonUser()); //This may be wrong
+        YukonEnergyCompany ec = ecDao.getEnergyCompanyByOperator(context.getYukonUser()); //This may be wrong
         LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(ec);
         
         String searchByStr = ServletRequestUtils.getStringParameter(request, "searchBy", null);
@@ -232,7 +232,7 @@ public class AssetDashboardController {
             int startIndex = (page - 1) * itemsPerPage;
             
             List<EnergyCompany> descendantEcs = 
-                    ecService.getEnergyCompany(liteEc.getEnergyCompanyId()).getDescendants(true);
+                    ecDao.getEnergyCompany(liteEc.getEnergyCompanyId()).getDescendants(true);
             List<Integer> ecDescendantIds = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
             SearchResults<InventorySearchResult> results = 
                     inventoryDao.search(inventorySearch, ecDescendantIds, startIndex, itemsPerPage, starsMeters);
@@ -352,7 +352,7 @@ public class AssetDashboardController {
         }
         
         model.addAttribute("editingRoleProperty", YukonRoleProperty.INVENTORY_CREATE_HARDWARE.name());
-        EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         model.addAttribute("energyCompanyId", energyCompany.getId());
         
         MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
@@ -367,11 +367,11 @@ public class AssetDashboardController {
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = ecService.getAllRoutes(energyCompany);
+        List<LiteYukonPAObject> routes = ecDao.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 
-                Lists.transform(ecService.getEnergyCompany(energyCompany.getId()).getParents(true), 
+                Lists.transform(ecDao.getEnergyCompany(energyCompany.getId()).getParents(true), 
                                 EnergyCompanyDao.TO_ID_FUNCTION);
         model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
@@ -565,7 +565,7 @@ public class AssetDashboardController {
         
         /* Warehouses */
         LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(hardware.getEnergyCompanyId());
-        EnergyCompany energyCompany = ecService.getEnergyCompany(lsec.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(lsec.getEnergyCompanyId());
         
         model.addAttribute("energyCompanyId", lsec.getEnergyCompanyId());
         
@@ -594,7 +594,7 @@ public class AssetDashboardController {
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = ecService.getAllRoutes(energyCompany);
+        List<LiteYukonPAObject> routes = ecDao.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 

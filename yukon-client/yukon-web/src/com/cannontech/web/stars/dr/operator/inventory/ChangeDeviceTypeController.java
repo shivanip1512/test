@@ -44,7 +44,7 @@ public class ChangeDeviceTypeController {
 
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
     @Autowired private ChangeTypeHelper helper;
-    @Autowired private EnergyCompanyDao energyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
@@ -55,7 +55,7 @@ public class ChangeDeviceTypeController {
 
     @RequestMapping("view")
     public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
-        EnergyCompany energyCompany = energyCompanyService.getEnergyCompanyByOperator(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         
         YukonSelectionList list = selectionListService.getSelectionList(energyCompany,
                                                 YukonSelectionListEnum.DEVICE_TYPE.getListName());

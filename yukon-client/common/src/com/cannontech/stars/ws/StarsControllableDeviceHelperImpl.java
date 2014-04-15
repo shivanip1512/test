@@ -51,7 +51,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private CustomerAccountDao customerAccountDao;    
     @Autowired private StarsInventoryBaseService starsInventoryBaseService;
     @Autowired private StarsDatabaseCache cache;
-    @Autowired private EnergyCompanyDao yecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
@@ -121,7 +121,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user) {
         
         //Get energyCompany for the user
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
         
         // Get Inventory, if exists on account
@@ -304,7 +304,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         LiteInventoryBase lib = null;
         
         //Get energyCompany for the user
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
         
         // Get Inventory if exists on account
@@ -332,7 +332,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         LiteInventoryBase liteInv = null;
         
         //Get energyCompany for the user
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
 
         // Get Inventory if exists on account

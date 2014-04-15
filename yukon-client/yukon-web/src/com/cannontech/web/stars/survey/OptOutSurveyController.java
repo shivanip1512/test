@@ -58,7 +58,7 @@ public class OptOutSurveyController {
     @Autowired private SurveyDao surveyDao;
     @Autowired private PaoDao paoDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     
     private Validator validator = new SimpleValidator<OptOutSurveyDto>(OptOutSurveyDto.class) {
         @Override
@@ -80,7 +80,7 @@ public class OptOutSurveyController {
     public String list(ModelMap model,
             @ModelAttribute("backingBean") ListBackingBean backingBean,
             YukonUserContext userContext) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         
         SearchResults<OptOutSurvey> optOutSurveys =
             optOutSurveyService.findSurveys(energyCompany.getId(),
@@ -150,7 +150,7 @@ public class OptOutSurveyController {
         if (optOutSurveyId == null || optOutSurveyId == 0) {
             optOutSurveyDto = new OptOutSurveyDto();
             optOutSurveyDto.setStartDate(new Date());
-            EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+            EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
             optOutSurveyDto.setEnergyCompanyId(energyCompany.getId());
         } else {
             OptOutSurvey optOutSurvey =
@@ -205,7 +205,7 @@ public class OptOutSurveyController {
 
     private void verifyEditable(int energyCompanyId,
             YukonUserContext userContext) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         if (energyCompany.getId() != energyCompanyId) {
             throw new NotAuthorizedException("energy company mismatch");
         }

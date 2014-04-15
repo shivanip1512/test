@@ -60,7 +60,7 @@ public class EnergyCompanyController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private EnergyCompanyDtoValidator energyCompanyDtoValidator;
     @Autowired private EnergyCompanyService energyCompanyService;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private PaoDao paoDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private YukonUserDao yukonUserDao;
@@ -88,12 +88,12 @@ public class EnergyCompanyController {
         if (superUser) {
             /* For super users show all energy companies. */
             List<EnergyCompany> companies =
-                Lists.newArrayList(yukonEnergyCompanyService.getAllEnergyCompanies());
+                Lists.newArrayList(ecDao.getAllEnergyCompanies());
             if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
                 Iterator<EnergyCompany> iter = companies.iterator();
                 while (iter.hasNext()) {
                     YukonEnergyCompany ec = iter.next();
-                    if (yukonEnergyCompanyService.isDefaultEnergyCompany(ec)) {
+                    if (ecDao.isDefaultEnergyCompany(ec)) {
                         iter.remove();
                         break;
                     }
@@ -103,11 +103,10 @@ public class EnergyCompanyController {
             return "energyCompany/home.jsp";
         }
 
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompany);
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
 
         List<EnergyCompany> companies = Lists.newArrayList();
-        if (lsec != null && lsec.getOperatorLoginIDs().contains(user.getUserID())) {
+        if (ecDao.getOperatorUserIds(energyCompany).contains(user.getUserID())) {
             /* If they belong to an energy company and are an operator, show energy company and all descendants. */
             companies.addAll(energyCompany.getDescendants(false));
         }

@@ -28,7 +28,7 @@ public class AlternateEnrollmentMenuOptionProducer extends DynamicMenuOptionProd
 
     @Autowired private OptOutStatusService optOutStatusService;
     @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private EnergyCompanyDao yecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private AlternateEnrollmentService aeService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
@@ -38,7 +38,7 @@ public class AlternateEnrollmentMenuOptionProducer extends DynamicMenuOptionProd
         List<MenuOption> menuOptions = new ArrayList<MenuOption>();
         
         CustomerAccount customer = customerAccountDao.getByUser(userContext.getYukonUser()).get(0);
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customer.getAccountId());
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByAccountId(customer.getAccountId());
         boolean altProgramEnrollment = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, yec.getEnergyCompanyId());
         
         // Generate a menu option if opt out is enabled and actual enrollment exists 

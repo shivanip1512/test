@@ -79,7 +79,7 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 
 	private int detailRecordCount = 0;
 
-	@Autowired private EnergyCompanyDao ecService;
+	@Autowired private EnergyCompanyDao ecDao;
 	@Autowired private CustomerStubDao customerStubDao;
 	@Autowired private BaseEventDao baseEventDao;
 
@@ -231,7 +231,7 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 	private String getEvents() {
 		detailRecordCount = 0;
 		String eventString = new String();
-		EnergyCompany energyCompany = ecService.getEnergyCompany(getBillingFileDefaults().getLiteYukonUser());
+		EnergyCompany energyCompany = ecDao.getEnergyCompany(getBillingFileDefaults().getLiteYukonUser());
         List<CICustomerStub> customersForEC = customerStubDao.getCustomersForEC(energyCompany.getId());
 
         for (CICustomerStub customerStub : customersForEC) {

@@ -90,7 +90,7 @@ public class InventoryFilterController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private SelectionListService selectionListService;
 
@@ -117,7 +117,7 @@ public class InventoryFilterController {
         FilterRuleType filterRuleType = FilterRuleType.valueOf(ruleType);
         RuleModel newRule = new RuleModel(filterRuleType);
         
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         YukonSelectionList devTypeList = selectionListService.getSelectionList(energyCompany,
                                                            YukonSelectionListEnum.DEVICE_TYPE.getListName());
@@ -146,7 +146,7 @@ public class InventoryFilterController {
         
         Set<InventoryIdentifier> inventory = null;
         
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         try {
             TimeZone ecTimeZone = ecService.getDefaultTimeZone(yukonEnergyCompany.getEnergyCompanyId());
             DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
@@ -193,14 +193,14 @@ public class InventoryFilterController {
     }
     
     public void setupFilterSelectionModelMap(ModelMap modelMap, YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         modelMap.addAttribute("energyCompanyId", yukonEnergyCompany.getEnergyCompanyId());
     }
     
     /* Global Model Attributes */
     @ModelAttribute(value="ruleTypes")
     public List<FilterRuleType> getRuleTypes(YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         
         List<FilterRuleType> ruleTypes = Lists.newArrayList(FilterRuleType.values());
         SerialNumberValidation value = energyCompanySettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
@@ -229,7 +229,7 @@ public class InventoryFilterController {
     
     @ModelAttribute(value="applianceTypes")
     public List<ApplianceCategory> getApplianceTypes(YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         
         List<ApplianceCategory> applianceCategories = applianceCategoryDao.getApplianceCategoriesByEcId(energyCompany.getEnergyCompanyId());
@@ -243,7 +243,7 @@ public class InventoryFilterController {
     
     @ModelAttribute(value="ciCustomerTypes")
     public List<YukonListEntry> getCiCustomerTypes(YukonUserContext userContext) {
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         return selectionListService.getSelectionList(energyCompany, 
                                  YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE).getYukonListEntries();
     }
@@ -255,14 +255,14 @@ public class InventoryFilterController {
     @ModelAttribute(value="energyCompanies")
     public List<YukonEnergyCompany> getEnergyCompanies(YukonUserContext userContext) {
         List<YukonEnergyCompany> energyCompanies = Lists.newArrayList();
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         energyCompanies.addAll(energyCompany.getDescendants(true));
         return energyCompanies;
     }
     
     @ModelAttribute(value="serviceCompanies")
     public List<ServiceCompanyDto> getServiceCompanies(YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         
         // Get all the parent and child energy company ids of this energy company
@@ -287,7 +287,7 @@ public class InventoryFilterController {
     }
     
     private List<Warehouse> getAvailableWarehouses(YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         List<Warehouse> warehouses = energyCompany.getAllWarehousesDownward();
         

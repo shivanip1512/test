@@ -135,7 +135,6 @@ public class OptOutServiceImpl implements OptOutService {
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private EnergyCompanyService ecService;
-    @Autowired private EnergyCompanyDao yEcService;
     @Autowired @Qualifier("main") private Executor executor;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private InventoryDao inventoryDao;
@@ -157,7 +156,7 @@ public class OptOutServiceImpl implements OptOutService {
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private SurveyDao surveyDao;
     @Autowired private SystemDateFormattingService systemDateFormattingService;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserDao yukonUserDao;
 
     private static final DateTimeFormatter logFormatter = DateTimeFormat.forPattern("MM/dd/yy HH:mm");
@@ -178,7 +177,7 @@ public class OptOutServiceImpl implements OptOutService {
 	    
 	    int customerAccountId = customerAccount.getAccountId();
         final YukonEnergyCompany yukonEnergyCompany = 
-            yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+            ecDao.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         
         List<Integer> inventoryIdList = request.getInventoryIdList();
         ReadableInstant startDate = request.getStartDate();
@@ -336,7 +335,7 @@ public class OptOutServiceImpl implements OptOutService {
                 @Override
                 public void run() {
                     try {
-                        EnergyCompany energyCompany = yEcService.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+                        EnergyCompany energyCompany = ecDao.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
                         optOutNotificationService.sendOptOutNotification(customerAccount, energyCompany, request, user);
                     } catch (MessagingException e) {
                         // Not much we can do - tried to send notification
@@ -464,7 +463,7 @@ public class OptOutServiceImpl implements OptOutService {
 			Integer inventoryId = event.getInventoryId();
 			LiteLmHardwareBase inventory = 
 				(LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
-			YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
+			YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByInventoryId(inventoryId);
             CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
     		
 			OptOutEventState state = event.getState();
@@ -503,7 +502,7 @@ public class OptOutServiceImpl implements OptOutService {
 					request.setDurationInHours(event.getDurationInHours());
 					request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
 					
-					EnergyCompany energyCompany = yEcService.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+					EnergyCompany energyCompany = ecDao.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
 					optOutNotificationService.sendCancelScheduledNotification(customerAccount, energyCompany, request, user);
 				} catch (MessagingException e) {
 					// Not much we can do - tried to send notification
@@ -522,7 +521,7 @@ public class OptOutServiceImpl implements OptOutService {
 	public void cancelAllOptOuts(LiteYukonUser user) {
 	    logger.debug("Cancel all opt outs command initiated by user: " + user.getUsername());
 	    
-		YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+		YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
 		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts((LiteStarsEnergyCompany) energyCompany);
 
 		boolean broadCastSpidEnabled 
@@ -789,7 +788,7 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	public OptOutCountHolder getCurrentOptOutCount(int inventoryId, int customerAccountId) {
 
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByAccountId(customerAccountId);
         TimeZone ecTimeZone = ecService.getDefaultTimeZone(yukonEnergyCompany.getEnergyCompanyId());
         DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
 
@@ -979,7 +978,7 @@ public class OptOutServiceImpl implements OptOutService {
 	                                                       LiteYukonUser user) throws ProgramNotFoundException {
 		Validate.isTrue(startTime.before(stopTime), "Start time must be before stop time.");
 
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         Program program = programService.getByProgramName(programName, energyCompany);
 		
 		List<OverrideHistory> historyList = new ArrayList<>();
@@ -1124,7 +1123,7 @@ public class OptOutServiceImpl implements OptOutService {
 	public OptOutLimit getCurrentOptOutLimit(int customerAccountId) {
 		
 	    // Get the energy company time zone to figure out how many opt outs a user has left.
-	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
+	    YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByAccountId(customerAccountId);
         TimeZone ecTimeZone = ecService.getDefaultTimeZone(yukonEnergyCompany.getEnergyCompanyId());
         DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
 
@@ -1201,7 +1200,7 @@ public class OptOutServiceImpl implements OptOutService {
             request.setDurationInHours(ooe.getDurationInHours());
             request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
 
-            EnergyCompany energyCompany = yEcService.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+            EnergyCompany energyCompany = ecDao.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
             optOutNotificationService.sendReenableNotification(customerAccount, energyCompany, request, user);
 
         } catch (MessagingException e) {

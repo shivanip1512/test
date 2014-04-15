@@ -146,9 +146,9 @@ public class AccountServiceTest extends EasyMockSupport {
                 return ecBuilder.build().get(1);
             }
         };
-        List<String> yukonEnergyCompanyServiceMockableMethods = 
+        List<String> ecDaoMockableMethods = 
             getMethodNamesToMock(yecServiceMock.getClass(), "getEnergyCompanyByOperator", "getEnergyCompanyByAccountId");
-        ecServiceMock = createPartialMock(yecServiceMock.getClass(), yukonEnergyCompanyServiceMockableMethods).createMock();        
+        ecServiceMock = createPartialMock(yecServiceMock.getClass(), ecDaoMockableMethods).createMock();        
         
         ContactService contServiceMock = new ContactServiceAdapter() {
             @Override
@@ -194,17 +194,17 @@ public class AccountServiceTest extends EasyMockSupport {
         ReflectionTestUtils.setField(accountService, "eventAccountDao", eventAccountDaoMock);
         ReflectionTestUtils.setField(accountService, "starsCustAccountInformationDao", starsCustAccountInformationDaoMock);
         ReflectionTestUtils.setField(accountService, "dbChangeManager", dbChangeManager);
-        ReflectionTestUtils.setField(accountService, "ecService", ecServiceMock);
+        ReflectionTestUtils.setField(accountService, "ecDao", ecServiceMock);
         ReflectionTestUtils.setField(accountService, "accountEventLogService", accountEventLogServiceMock);
         ReflectionTestUtils.setField(accountService, "starsDatabaseCache", starsDatabaseCacheMock);
         ReflectionTestUtils.setField(accountService, "userGroupDao", userGroupDaoMock);
 
     }
     
-    private <T> IMockBuilder<T> createPartialMock(final Class<T> toMock, List<String> yukonEnergyCompanyServiceMockableMethods) {
+    private <T> IMockBuilder<T> createPartialMock(final Class<T> toMock, List<String> ecDaoMockableMethods) {
         
         IMockBuilder<T> mockBuilder = createMockBuilder(toMock);
-        for (String methodName : yukonEnergyCompanyServiceMockableMethods) {
+        for (String methodName : ecDaoMockableMethods) {
             try {
                 mockBuilder.addMockedMethod(methodName);
             }catch (IllegalArgumentException e) {

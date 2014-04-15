@@ -44,7 +44,7 @@ import com.cannontech.web.search.lucene.index.site.DocumentBuilder;
 public class SiteSearchServiceImpl implements SiteSearchService {
     private final Logger log = YukonLogManager.getLogger(SiteSearchServiceImpl.class);
 
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private SiteSearchIndexManager siteSearchIndexManager;
     @Autowired private RolePropertyDao rolePropertyDao;;
 
@@ -186,7 +186,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         BooleanQuery query = new BooleanQuery();
         Query noEcQuery = new TermQuery(new Term("energyCompanyId", "none"));
         try {
-            EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
+            EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
             BooleanQuery ecQuery = new BooleanQuery();
             ecQuery.add(noEcQuery, Occur.SHOULD);
             ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(energyCompany.getId()))), Occur.SHOULD);

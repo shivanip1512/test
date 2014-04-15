@@ -22,7 +22,7 @@ public class SwitchContextServiceImpl implements SwitchContextService {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private LoginService loginService;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     @Override
     public void switchContext(final StarsYukonUser user, final HttpServletRequest request, 
@@ -42,7 +42,7 @@ public class SwitchContextServiceImpl implements SwitchContextService {
                 continue;
             }
             
-            if (ecService.getEnergyCompany(liteUser).getId() == memberID) {
+            if (ecDao.getEnergyCompany(liteUser).getId() == memberID) {
                 if (loginService.internalLogin(request, session, liteUser.getUsername(), true) == null) {
                     throw new WebClientException("The member login is no longer valid");
                 }

@@ -57,7 +57,7 @@ public class ContactController extends AbstractConsumerController {
     @Autowired private CustomerDao customerDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private GlobalSettingDao globalSettingsDao;
     @Autowired private LiteContactValidator liteContactValidator;
@@ -193,7 +193,7 @@ public class ContactController extends AbstractConsumerController {
     	}
 
     	// If Auto Create Login is true AND this is not the primary contact AND there is no login for this contact, create one.
-    	YukonEnergyCompany energyCompany =  yukonEnergyCompanyService.getEnergyCompanyByAccountId(account.getAccountId());
+    	YukonEnergyCompany energyCompany =  ecDao.getEnergyCompanyByAccountId(account.getAccountId());
     	boolean autoCreateLogin = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany.getEnergyCompanyId());
         
         if (autoCreateLogin && !contactDao.isPrimaryContact(contact.getContactID())

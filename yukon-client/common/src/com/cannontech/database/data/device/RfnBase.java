@@ -53,7 +53,7 @@ public class RfnBase extends DeviceBase {
         if (paoType.isRfn() && !paoType.isMeter()) {
             HardwareService hardwareService = YukonSpringHook.getBean("hardwareService", HardwareService.class);
             InventoryDao inventoryDao = YukonSpringHook.getBean("inventoryDao", InventoryDao.class);
-            EnergyCompanyDao ecService = YukonSpringHook.getBean(EnergyCompanyDao.class);
+            EnergyCompanyDao ecDao = YukonSpringHook.getBean(EnergyCompanyDao.class);
             
             boolean skip = false;
             YukonInventory inventory = null;
@@ -66,7 +66,7 @@ public class RfnBase extends DeviceBase {
             
             if (!skip) {
                 int inventoryId = inventory.getInventoryIdentifier().getInventoryId();
-                YukonEnergyCompany ec = ecService.getEnergyCompanyByInventoryId(inventoryId);
+                YukonEnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
                 
                 try {
                     hardwareService.deleteHardware(ec.getEnergyCompanyUser(), true, inventoryId);

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -110,6 +111,10 @@ public final class EnergyCompany implements YukonEnergyCompany {
 
     public List<EnergyCompany> getChildren() {
         return children;
+    }
+
+    public boolean isDefaultEc() {
+        return ecId == EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID;
     }
 
     /**

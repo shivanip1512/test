@@ -63,7 +63,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Autowired private YukonListDao yukonListDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private HardwareUiService hardwareSevice;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     private String templatePrefix;
     private Cache<String, Boolean> recentlyUncreatableTemplates;
@@ -187,7 +187,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             if (StringUtils.isEmpty(ecName)) {
                 throw new DeviceCreationException("RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg");
             }
-            EnergyCompany ec = ecService.getEnergyCompany(ecName);
+            EnergyCompany ec = ecDao.getEnergyCompany(ecName);
             LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ec.getId());
             
             List<YukonListEntry> typeEntries = yukonListDao.getYukonListEntry(type.getDefinitionId(), lsec);

@@ -126,7 +126,7 @@ public class OperatorHardwareConfigController {
     @Autowired private SepReportedAddressDao sepReportedAddressDao;
     @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     private final ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
@@ -275,7 +275,7 @@ public class OperatorHardwareConfigController {
         }
         
         YukonEnergyCompany yukonEnergyCompany = 
-                yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountInfo.getAccountId());
+                ecDao.getEnergyCompanyByAccountId(accountInfo.getAccountId());
         model.addAttribute("energyCompanyId", yukonEnergyCompany.getEnergyCompanyId());
         return "operator/hardware/config/edit.jsp";
     }

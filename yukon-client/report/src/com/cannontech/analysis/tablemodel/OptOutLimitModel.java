@@ -56,7 +56,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     private CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
     private DateFormattingService dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
     private ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
-    private EnergyCompanyDao yukonEnergyCompanyService = YukonSpringHook.getBean(EnergyCompanyDao.class);
+    private EnergyCompanyDao ecDao = YukonSpringHook.getBean(EnergyCompanyDao.class);
     private EnrollmentDao enrollmentDao =  YukonSpringHook.getBean("enrollmentDao", EnrollmentDao.class);
     private LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);
     private ProgramDao programDao =  YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
@@ -197,7 +197,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         Validate.notNull(getStopDateAsInstant(), "End date must not be null");
 
         ReadableInstant optOutEndDate = getStopDateAsInstant();
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         
         // Find the limits for the given opt out end date
         List<LiteUserGroup> residentialGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getId());

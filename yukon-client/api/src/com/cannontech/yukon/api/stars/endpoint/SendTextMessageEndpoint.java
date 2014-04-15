@@ -52,7 +52,7 @@ public class SendTextMessageEndpoint {
 
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonTextMessageDao yukonTextMessageDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private LmHardwareCommandService lmHardwareCommandService;
@@ -93,7 +93,7 @@ public class SendTextMessageEndpoint {
             // Validate text message
             Matcher matcher = pattern.matcher(deviceTextMessage.getMessage());
             if (matcher.matches()) {
-                int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyByOperator(user).getId();
+                int yukonEnergyCompanyId = ecDao.getEnergyCompanyByOperator(user).getId();
                 Map<String, Integer> serialNumberToInventoryIdMap =
                     inventoryDao.getSerialNumberToInventoryIdMap(deviceTextMessage.getSerialNumbers(), yukonEnergyCompanyId);
 

@@ -97,6 +97,8 @@ public interface EnergyCompanyDao {
     
     void updateCompanyName(String name, int ecId);
     
+    List<Integer> getOperatorUserIds(EnergyCompany energyCompany);
+    
     /**
      * Get the direct child energy companies underneath the energy company.
      * 

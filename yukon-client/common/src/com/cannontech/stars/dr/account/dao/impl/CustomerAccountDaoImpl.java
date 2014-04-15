@@ -64,7 +64,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     private static final YukonRowMapper<CustomerAccount> rowMapper;
     private static final YukonRowMapper<CustomerAccountWithNames> specialAccountInfoRowMapper;
@@ -167,8 +167,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccount getByAccountNumber(final String accountNumber, final LiteYukonUser user) {
-        YukonEnergyCompany yec = ecService.getEnergyCompanyByOperator(user);
-        EnergyCompany energyCompany = ecService.getEnergyCompany(yec.getEnergyCompanyId());
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(yec.getEnergyCompanyId());
         return getByAccountNumber(accountNumber, energyCompany.getDescendants(true));
     }
     

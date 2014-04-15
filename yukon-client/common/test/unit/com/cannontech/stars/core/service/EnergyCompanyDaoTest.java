@@ -41,7 +41,7 @@ public class EnergyCompanyDaoTest {
         };
     };
 
-    public EnergyCompanyDao ecService  = new EnergyCompanyDaoImpl(asyncDynamicDataSource) {
+    public EnergyCompanyDao ecDao  = new EnergyCompanyDaoImpl(asyncDynamicDataSource) {
         @Override
         public EnergyCompany getEnergyCompany(int ecId) {
             return energyCompanies.get(ecId);
@@ -65,13 +65,13 @@ public class EnergyCompanyDaoTest {
 
     @Test
     public void childEnergyCompaniesTest_NoChildren() {
-        List<EnergyCompany> childEnergyCompanies = ecService.getEnergyCompany(7).getDescendants(false);
+        List<EnergyCompany> childEnergyCompanies = ecDao.getEnergyCompany(7).getDescendants(false);
         Assert.assertTrue(childEnergyCompanies.isEmpty());
     }
 
     @Test
     public void childEnergyCompaniesTest_OneChild() {
-        List<EnergyCompany> childEnergyCompanies = ecService.getEnergyCompany(6).getDescendants(false);
+        List<EnergyCompany> childEnergyCompanies = ecDao.getEnergyCompany(6).getDescendants(false);
 
         Assert.assertEquals(1, childEnergyCompanies.size());
         testExpectedEnergyCompanyIdList(Arrays.asList(7), childEnergyCompanies);
@@ -79,7 +79,7 @@ public class EnergyCompanyDaoTest {
 
     @Test
     public void childEnergyCompaniesTest_MultipleChildren() {
-        List<EnergyCompany> childEnergyCompanies = ecService.getEnergyCompany(4).getDescendants(false);
+        List<EnergyCompany> childEnergyCompanies = ecDao.getEnergyCompany(4).getDescendants(false);
 
         Assert.assertEquals(3, childEnergyCompanies.size());
         testExpectedEnergyCompanyIdList(Arrays.asList(5, 6, 7), childEnergyCompanies);
@@ -87,7 +87,7 @@ public class EnergyCompanyDaoTest {
 
     @Test
     public void childEnergyCompaniesTest_TopEnergyCompany() {
-        List<EnergyCompany> childEnergyCompanies = ecService.getEnergyCompany(0).getDescendants(false);
+        List<EnergyCompany> childEnergyCompanies = ecDao.getEnergyCompany(0).getDescendants(false);
 
         Assert.assertEquals(8, childEnergyCompanies.size());
         testExpectedEnergyCompanyIdList(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8), childEnergyCompanies);

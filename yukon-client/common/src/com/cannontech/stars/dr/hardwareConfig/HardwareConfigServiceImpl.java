@@ -39,7 +39,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private LmHardwareCommandService commandService;
     @Autowired private PorterExpressComCommandBuilder xcomCommandBuilder;
-    @Autowired private EnergyCompanyDao yecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     private static Logger log = YukonLogManager.getLogger(HardwareConfigServiceImpl.class);
@@ -53,7 +53,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
             addSwitchCommand(energyCompanyId, accountId, inventoryId,
                              SwitchCommandQueue.SWITCH_COMMAND_DISABLE);
         } else {
-            LiteYukonUser user = yecService.getEnergyCompanyByInventoryId(inventoryId).getEnergyCompanyUser();
+            LiteYukonUser user = ecDao.getEnergyCompanyByInventoryId(inventoryId).getUser();
             LmHardwareCommand command = new LmHardwareCommand();
             command.setDevice(liteHw);
             command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
@@ -75,7 +75,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
             addSwitchCommand(energyCompanyId, accountId, inventoryId,
                              SwitchCommandQueue.SWITCH_COMMAND_ENABLE);
         } else {
-            LiteYukonUser user = yecService.getEnergyCompanyByInventoryId(inventoryId).getEnergyCompanyUser();
+            LiteYukonUser user = ecDao.getEnergyCompanyByInventoryId(inventoryId).getUser();
             LmHardwareCommand command = new LmHardwareCommand();
             command.setDevice(liteHw);
             command.setType(LmHardwareCommandType.IN_SERVICE);

@@ -57,7 +57,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired private PointDao pointDao;
     @Autowired private EnrollmentDao enrollmentService;
     @Autowired private InventoryDao inventoryDao;
-    @Autowired private EnergyCompanyDao yecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private LmHardwareCommandService commandService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
@@ -131,7 +131,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 List<ProgramEnrollment> activeEnrollments = enrollmentService.getActiveEnrollmentsByInventory(inventoryId);
                 if (!activeEnrollments.isEmpty()) {
                     /** Send config if auto-config is enabled */
-                    YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(inventoryId);
+                    YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
                     boolean autoConfig = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, yec.getEnergyCompanyId());
                     if (autoConfig) {
                         LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);

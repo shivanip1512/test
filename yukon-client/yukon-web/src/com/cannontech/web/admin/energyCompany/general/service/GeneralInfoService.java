@@ -28,7 +28,7 @@ public class GeneralInfoService {
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private AddressDao addressDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private DbChangeManager dbChangeManager;
@@ -71,13 +71,13 @@ public class GeneralInfoService {
     
     @Transactional
     public void save(GeneralInfo generalInfo, LiteYukonUser user) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(generalInfo.getEcId());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(generalInfo.getEcId());
         LiteContact contact = contactDao.getContact(energyCompany.getContactId());
         int contactId = contact.getContactID();
         int addressId = contact.getAddressID();
         
         /* Name */
-        ecService.updateCompanyName(generalInfo.getName(), generalInfo.getEcId());
+        ecDao.updateCompanyName(generalInfo.getName(), generalInfo.getEcId());
         
         /* Phone */
         updateNotification(generalInfo.getPhone(), ContactNotificationType.PHONE, contactId);

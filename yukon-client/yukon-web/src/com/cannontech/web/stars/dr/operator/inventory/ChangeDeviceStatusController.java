@@ -36,14 +36,14 @@ public class ChangeDeviceStatusController {
 
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
     @Autowired private ChangeDeviceStatusHelper helper;
-    @Autowired private EnergyCompanyDao energyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private SelectionListService selectionListService;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping("view")
     public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
-        YukonEnergyCompany energyCompany = energyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         
         YukonSelectionList list = selectionListService.getSelectionList(energyCompany, 
                                                 YukonSelectionListEnum.DEVICE_STATUS.getListName());

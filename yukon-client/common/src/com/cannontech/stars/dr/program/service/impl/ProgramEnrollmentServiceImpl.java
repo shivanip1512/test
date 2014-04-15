@@ -88,7 +88,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private AssignedProgramDao assignedProgramDao;
     @Autowired private ControlHistoryService controlHistoryService;
     @Autowired private DBPersistentDao dbPersistentDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     @Autowired private LoadGroupDao loadGroupDao;
@@ -119,7 +119,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             }
         }
         synchronized (accountIdMutex.get(accountId)) {
-            YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
+            YukonEnergyCompany yec = ecDao.getEnergyCompanyByAccountId(accountId);
     
             boolean trackAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yec.getEnergyCompanyId());
             boolean autoConfig = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, yec.getEnergyCompanyId());
@@ -301,7 +301,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                                              List<ProgramEnrollment> programEnrollmentList,
                                                              LiteInventoryBase liteInv, LiteYukonUser user) {
         final int customerAccountId = customerAccount.getAccountId();
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         LiteAccountInfo liteCustomerAccount = 
                 starsCustAccountInformationDao.getByAccountId(customerAccountId);
         // Don't allow concurrent threads to handle requests for the same account to avoid

@@ -23,7 +23,7 @@ import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class TimePeriodChangeController extends StarsInventoryActionController {
     
-    @Autowired private EnergyCompanyService ecService;
+    @Autowired private EnergyCompanyService ecDao;
     
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,
@@ -38,7 +38,7 @@ public class TimePeriodChangeController extends StarsInventoryActionController {
         currentPeriod.setScheduleID(pBean.getCurrentSchedule().getScheduleID());
         currentPeriod.setTimePeriodName(request.getParameter("name"));
         currentPeriod.setQuantity(new Integer(request.getParameter("quantity")));
-        TimeZone ecTimeZone = ecService.getDefaultTimeZone(pBean.getEnergyCompany().getEnergyCompanyId());
+        TimeZone ecTimeZone = ecDao.getDefaultTimeZone(pBean.getEnergyCompany().getEnergyCompanyId());
         Date shipDate = ServletUtil.parseDateStringLiberally( request.getParameter("shipDate"), ecTimeZone);
         if (shipDate == null)
         {

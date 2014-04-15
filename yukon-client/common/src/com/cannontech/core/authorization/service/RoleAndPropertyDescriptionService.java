@@ -28,7 +28,7 @@ public class RoleAndPropertyDescriptionService {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     /**
      * This will check that the user has the given roles, categories, has a

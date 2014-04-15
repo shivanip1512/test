@@ -57,7 +57,7 @@ public final class CustomerDaoImpl implements CustomerDao {
     @Autowired private GraphCustomerListDao graphCustomerListDao;
     @Autowired private DeviceCustomerListDao deviceCustomerListDao;
     @Autowired private AddressDao addressDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     
     private static final String CUSTOMER_TABLE_NAME = "Customer";
     private static final String CI_CUSTOMER_TABLE_NAME = "CICustomerBase";
@@ -480,8 +480,8 @@ public final class CustomerDaoImpl implements CustomerDao {
     @Transactional
     public void addCICustomer(LiteCICustomer customer) throws DataAccessException {
         liteCICustomerTemplate.insert(customer);
-        EnergyCompany energyCompany = ecService.getEnergyCompany(customer.getEnergyCompanyID());
-        ecService.addCiCustomer(customer.getCustomerID(), energyCompany);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(customer.getEnergyCompanyID());
+        ecDao.addCiCustomer(customer.getCustomerID(), energyCompany);
     }
     
     @Override

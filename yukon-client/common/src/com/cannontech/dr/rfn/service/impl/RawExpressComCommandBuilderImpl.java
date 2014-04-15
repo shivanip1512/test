@@ -34,7 +34,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
 
     private static final Logger log = YukonLogManager.getLogger(RawExpressComCommandBuilderImpl.class);
     
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private StarsCustAccountInformationDao caiDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private LMGroupDao lmGroupDao;
@@ -173,7 +173,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
 
     private ByteBuffer getExpressComForConfigCommand(LmHardwareCommand parameters) {
         ByteBuffer configCommand = ByteBuffer.allocate(1024);
-        YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(parameters.getDevice().getInventoryID());
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(parameters.getDevice().getInventoryID());
         boolean trackAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yec.getEnergyCompanyId());
 
         // Either we have track hardware addressing on or we need a group/appliance category.

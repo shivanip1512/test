@@ -76,7 +76,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
     @Autowired private ThermostatService thermostatService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private AccountCheckerService accountCheckerService;
     
     @RequestMapping(value = "send", method = RequestMethod.POST)
@@ -97,7 +97,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         AccountThermostatSchedule ats = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, account.getAccountId());
         ThermostatScheduleMode thermostatScheduleMode = ats.getThermostatScheduleMode();
                 
-        int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyByAccountId(account.getAccountId()).getEnergyCompanyId();
+        int yukonEnergyCompanyId = ecDao.getEnergyCompanyByAccountId(account.getAccountId()).getEnergyCompanyId();
 
         ThermostatScheduleUpdateResult message = thermostatService.sendSchedule(account, ats, thermostatIds, thermostatScheduleMode, yukonEnergyCompanyId, yukonUserContext.getYukonUser());
     

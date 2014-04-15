@@ -54,7 +54,7 @@ public class AddHardwareByRangeController {
     
     @Autowired private InventoryDao InventoryDao;
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private EnergyCompanyDao yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private PaoDao paoDao;
@@ -129,7 +129,7 @@ public class AddHardwareByRangeController {
     }
     
     private void setupModel(ModelMap model, AddByRange abr, YukonUserContext context, YukonListEntry hardwareTypeEntry) {
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(context.getYukonUser());
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
@@ -145,7 +145,7 @@ public class AddHardwareByRangeController {
         HardwareType hardwareType = InventoryDao.getHardwareTypeById(abr.getHardwareTypeId());
         HardwareClass hardwareClass = hardwareType.getHardwareClass();
         
-        List<LiteYukonPAObject> routes = yukonEnergyCompanyService.getAllRoutes(energyCompany);
+        List<LiteYukonPAObject> routes = ecDao.getAllRoutes(energyCompany);
         
         boolean showVoltage = !hardwareType.isZigbee() && !hardwareClass.isGateway() && !hardwareClass.isThermostat();
         model.addAttribute("showVoltage", showVoltage);

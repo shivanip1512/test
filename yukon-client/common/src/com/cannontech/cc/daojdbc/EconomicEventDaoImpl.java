@@ -50,7 +50,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ProgramDao programDao;
     @Autowired private EconomicEventParticipantDao economicEventParticipantDao;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
     
     private SimpleTableAccessTemplate<EconomicEvent> eventTemplate;
     private SimpleTableAccessTemplate<EconomicEventPricing> pricingTemplate;
@@ -120,7 +120,7 @@ public class EconomicEventDaoImpl implements EconomicEventDao {
 
     @Override
     public List<EconomicEvent> getAllForEnergyCompany(EnergyCompany energyCompany) {
-        List<Integer> customerIds = ecService.getCiCustomerIds(energyCompany);
+        List<Integer> customerIds = ecDao.getCiCustomerIds(energyCompany);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select distinct ee.*");
         sql.append("from CCurtEconomicEvent ee");

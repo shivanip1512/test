@@ -24,11 +24,11 @@ public class GroupServiceImpl implements GroupService {
     @Autowired private CustomerStubDao customerStubDao;
     @Autowired private GroupCustomerNotifDao groupCustomerNotifDao;
     @Autowired private CustomerPointTypeHelper pointTypeHelper;
-    @Autowired private EnergyCompanyDao ecService;
+    @Autowired private EnergyCompanyDao ecDao;
 
     @Override
     public List<Group> getAllGroups(LiteYukonUser user) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
         List<Group> groupsForEnergyCompany = groupDao.getGroupsForEnergyCompany(energyCompany.getId());
         Collections.sort(groupsForEnergyCompany);
         return groupsForEnergyCompany;
@@ -44,7 +44,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group createNewGroup(LiteYukonUser user) {
-        EnergyCompany energyCompany = ecService.getEnergyCompany(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
         Group newGroup = new Group();
         newGroup.setEnergyCompanyId(energyCompany.getId());
         return newGroup;
