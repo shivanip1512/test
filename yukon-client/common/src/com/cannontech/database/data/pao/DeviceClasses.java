@@ -17,6 +17,7 @@ public final class DeviceClasses
    public final static int GRID              = 1010;
    public final static int INVALID           = 1011;
    public final static int RFMESH            = 1012;
+   public final static int THERMOSTAT        = 1013;
    
    public static final String STRING_CLASS_RTU = "RTU";
    public static final String STRING_CLASS_TRANSMITTER = "TRANSMITTER";
@@ -29,7 +30,7 @@ public final class DeviceClasses
    public static final String STRING_CLASS_VIRTUAL = "VIRTUAL";
    public static final String STRING_CLASS_LOADMANAGER = "LOADMANAGEMENT";
    public static final String STRING_CLASS_GRID = "GRIDADVISOR";
-  
+   public static final String STRING_CLASS_THERMOSTAT = "THERMOSTAT";
    
    public static final Integer[] IN_DEVICEDIRECTCOMMSETTINGS_TABLE = 
    {
@@ -40,7 +41,8 @@ public final class DeviceClasses
    public static final Integer[] CORE_DEVICE_CLASSES = 
    {
 		CARRIER, IED, METER, RFMESH,
-		RTU, TRANSMITTER, VIRTUAL, GRID
+		RTU, TRANSMITTER, VIRTUAL, GRID,
+		THERMOSTAT
    };
  
 /**
@@ -74,7 +76,9 @@ public final static int getClass(String classString) {
 		return LOADMANAGEMENT;
     else if( compareString.equals(STRING_CLASS_GRID) )
         return GRID;
-	else
+    else if( compareString.equals(STRING_CLASS_THERMOSTAT) )
+        return THERMOSTAT;
+    else
 		return INVALID;
 }
 
@@ -119,9 +123,13 @@ public final static String getClass(int classInt)
 
         case GRID:
             return STRING_CLASS_GRID;
+            
         case PAOGroups.CAT_CAPCONTROL:
             return PAOGroups.STRING_CAT_CAPCONTROL;
-			
+		
+        case THERMOSTAT:
+            return STRING_CLASS_THERMOSTAT;
+            
 		default:
 			return PAOGroups.STRING_INVALID;
 	}

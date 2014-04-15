@@ -1,7 +1,7 @@
 package com.cannontech.common.pao;
 
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Set;
 
@@ -235,6 +235,8 @@ public enum PaoType implements DatabaseRepresentationSource {
     WEATHER_LOCATION(DeviceTypes.WEATHER_LOCATION, "WEATHER LOCATION", PaoCategory.DEVICE, PaoClass.VIRTUAL),
 
     RF_DA(DeviceTypes.RF_DA, "RF-DA", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
+    ECOBEE_SMART_SI(DeviceTypes.ECOBEE_SMART_SI, "", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ;
     
     private final int deviceTypeId;

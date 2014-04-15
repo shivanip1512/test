@@ -4382,6 +4382,58 @@
         </points>
     </pao>
 
+    <pao id="ECOBEE_SMART_SI">
+        <points>
+            <!-- ANALOG POINTS -->
+            <point type="Analog" offset="1">
+                <init>true</init>
+                <name>Outdoor Temp</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="2">
+                <init>true</init>
+                <name>Indoor Temp</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="3">
+                <init>true</init>
+                <name>Set Cool Temp</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="4">
+                <init>true</init>
+                <name>Set Heat Temp</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="5">
+                <init>true</init>
+                <name>Run Time Data Log</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="0"/>
+            </point>
+            <!-- STATUS POINTS -->
+            <point type="Status" offset="1">
+                <init>true</init>
+                <name>Event Activity</name>
+                <stategroup value="TwoStateActive" />
+            </point>
+        </points>
+        <attributes>
+            <attribute name="RELAY_1_RUN_TIME_DATA_LOG">
+                <basicLookup point="Run Time Data Log" />
+            </attribute>
+        </attributes>
+    </pao>
+    
     <!-- RF LCRs -->
     <pao id="RF_LCR" abstract="true">
         <displayGroup>RFMESH</displayGroup>

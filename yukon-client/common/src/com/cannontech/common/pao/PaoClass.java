@@ -25,8 +25,8 @@ public enum PaoClass implements DatabaseRepresentationSource {
     CAPCONTROL(PAOGroups.CLASS_CAPCONTROL, PAOGroups.STRING_CAT_CAPCONTROL),
     // Schedule doesn't seem have a constant already defined anywhere.
     SCHEDULE(0, "Schedule"),
-    RFMESH(DeviceClasses.RFMESH, "RFMESH");
-    ;
+    RFMESH(DeviceClasses.RFMESH, "RFMESH"),
+    THERMOSTAT(DeviceClasses.THERMOSTAT, DeviceClasses.STRING_CLASS_THERMOSTAT);
 
     // legacy class id
     private final int paoClassId;
