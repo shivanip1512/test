@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
-
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeStateGroup;
@@ -161,7 +159,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable,
 	}
 
 	@Override
-	public int compareTo(DeviceDataMonitor deviceDataMonitors) {
-		return this.getName().compareToIgnoreCase(deviceDataMonitors.getName());
+    public int compareTo(DeviceDataMonitor deviceDataMonitor) {
+        return name.compareToIgnoreCase(deviceDataMonitor.getName());
 	}
 }

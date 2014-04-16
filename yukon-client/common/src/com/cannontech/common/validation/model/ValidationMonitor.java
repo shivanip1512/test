@@ -116,7 +116,7 @@ public class ValidationMonitor implements PointMonitor,
 	}
 
 	@Override
-	public int compareTo(ValidationMonitor validationMonitors) {
-		return this.getName().compareToIgnoreCase(validationMonitors.getName());
+	public int compareTo(ValidationMonitor validationMonitor) {
+		return name.compareToIgnoreCase(validationMonitor.getName());
 	}
 }

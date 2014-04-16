@@ -114,7 +114,7 @@ public class PorterResponseMonitor implements Comparable<PorterResponseMonitor> 
     }
     
     @Override
-    public int compareTo(PorterResponseMonitor porterResponseMonitors) {
-        return this.getName().compareToIgnoreCase(porterResponseMonitors.getName());
+    public int compareTo(PorterResponseMonitor porterResponseMonitor) {
+        return name.compareToIgnoreCase(porterResponseMonitor.getName());
     }
 }
