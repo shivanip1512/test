@@ -67,7 +67,7 @@
     };
     
     backToTypeSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', '/capcontrol/ivvc/wizard/wizardParentSelected');
+        submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', yukon.url('/capcontrol/ivvc/wizard/wizardParentSelected'));
     };
 
     zoneSubmit = function() {

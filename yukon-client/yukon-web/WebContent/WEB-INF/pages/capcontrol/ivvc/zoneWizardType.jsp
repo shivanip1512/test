@@ -24,7 +24,8 @@
     };
 </script>
 
-<form:form id="zoneTypeForm" commandName="zoneDto" action="/capcontrol/ivvc/wizard/wizardTypeSelected" >
+<cti:url var="selectedTypeUrl" value="/capcontrol/ivvc/wizard/wizardTypeSelected"/>
+<form:form id="zoneTypeForm" commandName="zoneDto" action="${selectedTypeUrl}" >
     <form:hidden path="substationBusId"/>
     <form:hidden path="parentId"/>
 
