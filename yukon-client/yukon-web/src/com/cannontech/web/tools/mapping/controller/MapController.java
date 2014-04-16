@@ -8,8 +8,6 @@ import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.Point;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -73,7 +71,6 @@ public class MapController {
             feature.setGeometry(point);
             
             feature.getProperties().put(FeaturePropertiesKey.PAO_IDENTIFIER.toString(), device.getPaoIdentifier());
-            feature.getProperties().put(FeaturePropertiesKey.TIMESTAMP.toString(), Instant.now().minus(Duration.standardDays((long) ((Math.random() * (10 - 1)) + 1))));
             
             collection.add(feature);
         }

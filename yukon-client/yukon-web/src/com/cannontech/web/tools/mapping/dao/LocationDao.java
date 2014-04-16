@@ -28,9 +28,6 @@ public interface LocationDao {
     /** Get most recent location for PAObjectId. */
     public Location getLastLocation(int paoId);
 
-    /** Get all locations ever recorded for a PAObjectId. */
-    public Set<Location> getAllLocations(int paoId);
-
     /** Saves the location to the database. */
     public void save(Location location);
 

@@ -38,8 +38,7 @@ public class LocationDaoImpl implements LocationDao {
     private final String projection;
 
     public enum FeaturePropertiesKey {
-        PAO_IDENTIFIER("paoIdentifier"),
-        TIMESTAMP("timestamp");
+        PAO_IDENTIFIER("paoIdentifier");
 
         private final String featurePropertiesKey;
 
@@ -63,7 +62,6 @@ public class LocationDaoImpl implements LocationDao {
             PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PAObjectId", "Type");
             Location location = new Location();
             location.setPaoIdentifier(paoIdentifier);
-            location.setTimestamp(rs.getInstant("Timestamp"));
             location.setLatitude(rs.getDouble("Latitude"));
             location.setLongitude(rs.getDouble("Longitude"));
             return location;
@@ -86,14 +84,9 @@ public class LocationDaoImpl implements LocationDao {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT PAObjectId,Timestamp,Latitude,Longitude,Type ");
-                sql.append("FROM (");
-                sql.append(/**/"SELECT l.PAObjectId,Timestamp,Latitude,Longitude,Type,");
-                sql.append(/**//**/"ROW_NUMBER() OVER (PARTITION BY l.PAObjectId ORDER BY Timestamp DESC) AS rowNumber ");
-                sql.append(/**/"FROM Location l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
-                sql.append(/**/"WHERE l.PAObjectId").in(subList);
-                sql.append(") ROW_NUMBERED ");
-                sql.append("WHERE rowNumber").eq(1);
+                sql.append("SELECT l.PAObjectId,Latitude,Longitude,Type ");
+                sql.append("FROM Location l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
+                sql.append("WHERE l.PAObjectId").in(subList);
                 return sql;
             }
         };
@@ -128,8 +121,6 @@ public class LocationDaoImpl implements LocationDao {
             // Set feature properties.
             feature.getProperties().put(FeaturePropertiesKey.PAO_IDENTIFIER.toString(),
                                         location.getPaoIdentifier());
-            feature.getProperties().put(FeaturePropertiesKey.TIMESTAMP.toString(),
-                                        location.getTimestamp().getMillis());
             features.add(feature);
         }
         return features;
@@ -138,32 +129,10 @@ public class LocationDaoImpl implements LocationDao {
     @Override
     public Location getLastLocation(int paoId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PAObjectId,Timestamp,Latitude,Longitude,Type ");
-        sql.append("FROM (");
-        sql.append(/**/"SELECT l.PAObjectId,Timestamp,Latitude,Longitude,Type,");
-        sql.append(/**//**/"ROW_NUMBER() OVER (ORDER BY Timestamp DESC) AS rowNumber ");
-        sql.append(/**/"FROM Location l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
-        sql.append(/**/"WHERE l.PAObjectId").eq(paoId);
-        sql.append(") ROW_NUMBERED ");
-        sql.append("WHERE rowNumber").eq(1);
+        sql.append("SELECT l.PAObjectId,Latitude,Longitude,Type ");
+        sql.append("FROM Location l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
+        sql.append("WHERE l.PAObjectId").eq(paoId);
         return jdbcTemplate.queryForObject(sql, locationMapper);
-    }
-
-    @Override
-    public Set<Location> getAllLocations(int paoId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PAObjectId,Timestamp,Latitude,Longitude ");
-        sql.append("FROM Location l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectId ");
-        sql.append("WHERE PAObjectId").eq(paoId);
-        final Set<Location> locations = Sets.newHashSet();
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                Location location = locationMapper.mapRow(rs);
-                locations.add(location);
-            }
-        });
-        return locations;
     }
 
     @Override
@@ -172,21 +141,18 @@ public class LocationDaoImpl implements LocationDao {
         SqlStatementBuilder insertSql = new SqlStatementBuilder();
         SqlParameterSink insertParams = insertSql.insertInto("Location");
         insertParams.addValue("PAObjectId", location.getPaoIdentifier().getPaoId());
-        insertParams.addValue("Timestamp", location.getTimestamp());
         insertParams.addValue("Latitude", location.getLatitude());
         insertParams.addValue("Longitude", location.getLongitude());
         try {
             jdbcTemplate.update(insertSql);
         } catch (DataIntegrityViolationException e) {
-            // Device already has a location at this timestamp, update the coordinates.
+            // Device already has a location, update the coordinates.
             SqlStatementBuilder updateSql = new SqlStatementBuilder();
             SqlParameterSink updateParams = updateSql.update("Location");
             updateParams.addValue("PAObjectId", location.getPaoIdentifier().getPaoId());
-            updateParams.addValue("Timestamp", location.getTimestamp());
             updateParams.addValue("Latitude", location.getLatitude());
             updateParams.addValue("Longitude", location.getLongitude());
             updateSql.append("WHERE PAObjectId").eq(location.getPaoIdentifier().getPaoId());
-            updateSql.append("AND Timestamp").eq(location.getTimestamp());
             jdbcTemplate.update(updateSql);
         }
     }
@@ -198,12 +164,11 @@ public class LocationDaoImpl implements LocationDao {
          * // used instead.
          * SqlStatementBuilder sql = new SqlStatementBuilder();
          * sql.append("INSERT INTO Location (");
-         * sql.append("PAObjectId,Timestamp,Latitude,Longitude");
-         * sql.append(") VALUES (?,?,?,?) ");
+         * sql.append("PAObjectId,Latitude,Longitude");
+         * sql.append(") VALUES (?,?,?) ");
          * List<Object[]> batchArgs = Lists.newArrayList();
          * for (Location location : locations) {
          * batchArgs.add(new Object[] { location.getPaoIdentifier().getPaoId(),
-         * location.getTimestamp(),
          * location.getLatitude(), location.getLongitude() });
          * }
          * template.batchUpdate(sql.getSql(), batchArgs);
