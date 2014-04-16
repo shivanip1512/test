@@ -5,6 +5,15 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.common.util.IterableUtils;
 
+/**
+ * This class helps make logging more efficient by avoiding string concatenation when logging is off. It does
+ * not, however, avoid any other work that might happen building the arguments. For that reason, please use
+ * log4j methods.
+ * 
+ * @deprecated Please use log4j's built-in {@link Logger#isDebugEnabled()} and {@link Logger#isTraceEnabled()}
+ *             methods instead.
+ */
+@Deprecated
 public class LogHelper {
     private final Logger log;
 
