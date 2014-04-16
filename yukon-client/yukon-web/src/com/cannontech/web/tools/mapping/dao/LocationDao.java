@@ -14,7 +14,7 @@ public interface LocationDao {
      * Paos without a location are ignored. If no paos have a
      * location, an empty set is returned.
      */
-    public Set<Location> getLastLocations(Iterable<? extends YukonPao> paos);
+    public Set<Location> getLocations(Iterable<? extends YukonPao> paos);
 
     /**
      * Returns the most recent location for each pao in the given collection as GeoJSON. Paos
@@ -23,10 +23,10 @@ public interface LocationDao {
      * @param paos
      * @return a {@link FeatureCollection}
      */
-    public FeatureCollection getLastLocationsAsGeoJson(Iterable<? extends YukonPao> paos);
+    public FeatureCollection getLocationsAsGeoJson(Iterable<? extends YukonPao> paos);
 
     /** Get most recent location for PAObjectId. */
-    public Location getLastLocation(int paoId);
+    public Location getLocation(int paoId);
 
     /** Saves the location to the database. */
     public void save(Location location);

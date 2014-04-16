@@ -75,7 +75,7 @@ public class LocationDaoImpl implements LocationDao {
     }
 
     @Override
-    public Set<Location> getLastLocations(Iterable<? extends YukonPao> paos) {
+    public Set<Location> getLocations(Iterable<? extends YukonPao> paos) {
         Set<Integer> paoIds = Sets.newHashSet();
         for (YukonPao yukonPao : paos) {
             paoIds.add(yukonPao.getPaoIdentifier().getPaoId());
@@ -103,8 +103,8 @@ public class LocationDaoImpl implements LocationDao {
     }
 
     @Override
-    public FeatureCollection getLastLocationsAsGeoJson(Iterable<? extends YukonPao> paos) {
-        Set<Location> locations = getLastLocations(paos);
+    public FeatureCollection getLocationsAsGeoJson(Iterable<? extends YukonPao> paos) {
+        Set<Location> locations = getLocations(paos);
         FeatureCollection features = new FeatureCollection();
         // Set coordinate reference system for these locations.
         Map<String, Object> crsProperties = Maps.newHashMap();
@@ -127,7 +127,7 @@ public class LocationDaoImpl implements LocationDao {
     }
 
     @Override
-    public Location getLastLocation(int paoId) {
+    public Location getLocation(int paoId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT l.PAObjectId,Latitude,Longitude,Type ");
         sql.append("FROM Location l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
