@@ -221,27 +221,6 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         
         return yukonJdbcTemplate.queryForInt(sql);
     }
-    
-    public static class DisplayableServiceCompany {
-        int serviceCompanyId;
-        String serviceCompanyName;
-
-        public int getServiceCompanyId() {
-            return serviceCompanyId;
-        }
-
-        public void setServiceCompanyId(int serviceCompanyId) {
-            this.serviceCompanyId = serviceCompanyId;
-        }
-
-        public String getServiceCompanyName() {
-            return serviceCompanyName;
-        }
-
-        public void setServiceCompanyName(String serviceCompanyName) {
-            this.serviceCompanyName = serviceCompanyName;
-        }
-    }
 
     @Override
     public List<DisplayableServiceCompany> getAllServiceCompanies(Iterable<Integer> energyCompanyIds) {
@@ -254,9 +233,8 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
                 new YukonRowMapper<DisplayableServiceCompany>() {
             @Override
             public DisplayableServiceCompany mapRow(YukonResultSet rs) throws SQLException {
-                DisplayableServiceCompany sc = new DisplayableServiceCompany();
-                sc.setServiceCompanyId(rs.getInt("companyId"));
-                sc.setServiceCompanyName(SqlUtils.convertDbValueToString(rs.getString("companyName")));
+                DisplayableServiceCompany sc = new DisplayableServiceCompany(rs.getInt("companyId"),
+                                                     SqlUtils.convertDbValueToString(rs.getString("companyName")));
                 return sc;
             }
         });

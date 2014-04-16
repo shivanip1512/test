@@ -41,6 +41,23 @@ public interface ServiceCompanyDao {
      */
     public int getInventoryCountForServiceCompany(int serviceCompanyId);
 
-    List<com.cannontech.core.dao.impl.ServiceCompanyDaoImpl.DisplayableServiceCompany> getAllServiceCompanies(Iterable<Integer> energyCompanyIds);
+    List<DisplayableServiceCompany> getAllServiceCompanies(Iterable<Integer> energyCompanyIds);
 
+    final class DisplayableServiceCompany {
+        private final int serviceCompanyId;
+        private final String serviceCompanyName;
+
+        public DisplayableServiceCompany(int serviceCompanyId, String serviceCompanyName) {
+            this.serviceCompanyId = serviceCompanyId;
+            this.serviceCompanyName = serviceCompanyName;
+        }
+
+        public int getServiceCompanyId() {
+            return serviceCompanyId;
+        }
+
+        public String getServiceCompanyName() {
+            return serviceCompanyName;
+        }
+    }
 }
