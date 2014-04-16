@@ -88,14 +88,16 @@ yukon.flot = (function () {
             }
             
             // add graph labels
+            var topoffset = 0;
             if (chart.getData().length === 0) return;
             for (key in mod.charts[chartId].labels) {
                 obj = mod.charts[chartId].labels[key];
                 o = chart.pointOffset({ x: obj.x, y: obj.y,});
                 // we just append it to the chartContainer which Flot already uses for positioning
                 chartElement.append('<div style="position:absolute;left:' + (o.left - 10) +
-                                'px;top:' + (o.top - 25) + 'px;color:#666;font-size:smaller">' +
+                                'px;top:' + (o.top - 25 - topoffset) + 'px;color:#666;font-size:smaller">' +
                                 key + '</div>');
+                topoffset = topoffset+10;
             }
         },
         _validateReloadParams = function(params) {
