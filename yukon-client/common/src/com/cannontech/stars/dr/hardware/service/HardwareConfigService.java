@@ -49,7 +49,7 @@ import com.cannontech.stars.service.EnergyCompanyService;
 import com.google.common.collect.Lists;
 
 public class HardwareConfigService {
-    private static Logger log = YukonLogManager.getLogger(HardwareConfigService.class);
+    private final static Logger log = YukonLogManager.getLogger(HardwareConfigService.class);
 
     @Autowired private CommandScheduleDao commandScheduleDao;
     @Autowired private CommandRequestRouteExecutor commandRequestRouteExecutor;

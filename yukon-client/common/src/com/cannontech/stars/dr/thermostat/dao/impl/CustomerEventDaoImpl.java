@@ -45,44 +45,39 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.collect.ListMultimap;
 
 /**
  * Implementation class for CustomerEventDao
  */
 public class CustomerEventDaoImpl implements CustomerEventDao {
-
+    @Autowired private ECMappingDao ecMappingDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private SystemDateFormattingService systemDateFormattingService;
     @Autowired private SelectionListService selectionListService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     @Override
     public ThermostatManualEvent getLastManualEvent(int inventoryId) {
+        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
 
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByInventoryId(inventoryId);
-
-        // Query to get the row from LMThermostatManualEvent where the row's
-        // event id matches the event id from the row in LMCustomerEventBase
-        // where that row's EventDateTime is the most recent for a given
-        // inventoryid.
-        // In english: get the LMThermostatManualEvent row for the most recent
-        // event for the thermostat
+        // Query to get the row from LMThermostatManualEvent where the row's event id matches the event id from the
+        // row in LMCustomerEventBase where that row's EventDateTime is the most recent for a given inventory id.
+        // In English: get the LMThermostatManualEvent row for the most recent event for the thermostat.
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT LMTME.*, LMCEB.EventDateTime");
         sql.append("FROM LMThermostatManualEvent LMTME, LMCustomerEventBase LMCEB");
         sql.append("WHERE LMTME.EventId = LMCEB.EventId");
         sql.append("  AND LMTME.InventoryId").eq(inventoryId);
         sql.append("ORDER BY LMCEB.EventDateTime DESC");
-        
-        List<ThermostatManualEvent> eventList = yukonJdbcTemplate.query(sql,  new ThermostatManualEventMapper(yukonEnergyCompany));
 
-        // Build up the most relivent manual thermostat event grabbing the most recent temperatures for both heat and cool. If a past heat or cool
-        // temperature doesn't exist for a given thermostat, use the default temperature
+        List<ThermostatManualEvent> eventList = jdbcTemplate.query(sql, new ThermostatManualEventMapper(ec));
+
+        // Build up the most relevant manual thermostat event grabbing the most recent temperatures for both heat and
+        // cool. If a past heat or cool temperature doesn't exist for a given thermostat, use the default temperature.
         ThermostatManualEvent manualEvent = new ThermostatManualEvent();
     	if(eventList.size() > 0) {
     		manualEvent = eventList.get(0);
@@ -131,10 +126,9 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
     @Override
     @Transactional
     public void save(CustomerThermostatEvent event) {
-        YukonEnergyCompany yukonEnergyCompany = 
-            ecDao.getEnergyCompanyByInventoryId(event.getThermostatId());
+        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(event.getThermostatId());
         
-        // Get next eventid
+        // Get next event id
         int eventId = nextValueHelper.getNextValue("LMCustomerEventBase");
         event.setEventId(eventId);
 
@@ -142,10 +136,8 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         Date date = new Date();
         event.setDate(date);
 
-        
-        LiteStarsEnergyCompany liteStarsEnergyCompany = 
-            starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-        
+        LiteStarsEnergyCompany liteStarsEnergyCompany = starsDatabaseCache.getEnergyCompany(ec.getId());
+
         CustomerEventType eventType = event.getEventType();
         int eventTypeId = YukonListEntryHelper.getListEntryId(liteStarsEnergyCompany, eventType);
 
@@ -160,22 +152,21 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         baseSql.append("INSERT INTO LMCustomerEventBase");
         baseSql.append("(EventId, EventTypeId, ActionId, EventDateTime, Notes, AuthorizedBy)");
         baseSql.values(eventId, eventTypeId, actionId, date, notes, authorizedBy);
-        yukonJdbcTemplate.update(baseSql);
+        jdbcTemplate.update(baseSql);
 
         // Insert row into ECToLMCustomerEventMapping
         SqlStatementBuilder mappingSql = new SqlStatementBuilder();
         mappingSql.append("INSERT INTO ECToLMCustomerEventMapping");
         mappingSql.append("(EnergyCompanyId, EventId)");
-        mappingSql.values(yukonEnergyCompany.getEnergyCompanyId(), eventId);
-        yukonJdbcTemplate.update(mappingSql);
+        mappingSql.values(ec.getId(), eventId);
+        jdbcTemplate.update(mappingSql);
 
-        // Save event-specific data into db
+        // Save event-specific data into DB
         if (eventType.equals(CustomerEventType.HARDWARE)) {
             saveHardwareEvent(event);
         } else if (eventType.equals(CustomerEventType.THERMOSTAT_MANUAL) && event instanceof ThermostatManualEvent) {
-            saveManualEvent((ThermostatManualEvent) event, yukonEnergyCompany);
+            saveManualEvent((ThermostatManualEvent) event, ec);
         }
-
     }
 
     /**
@@ -183,34 +174,30 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
      * @param event - Event to add row for
      */
     private void saveHardwareEvent(CustomerThermostatEvent event) {
-
         // Insert row into LMHardwareEvent
         SqlStatementBuilder mappingSql = new SqlStatementBuilder();
         mappingSql.append("INSERT INTO LMHardwareEvent");
         mappingSql.append("(EventId, InventoryId)");
         mappingSql.append("VALUES (?,?)");
 
-        yukonJdbcTemplate.update(mappingSql.toString(),
-                                  event.getEventId(),
-                                  event.getThermostatId());
+        jdbcTemplate.update(mappingSql.toString(), event.getEventId(), event.getThermostatId());
     }
 
     /**
      * Helper method to add a row to the LMThermostatManualEvent table
      * @param event - Manual event to add row for
      */
-    private void saveManualEvent(ThermostatManualEvent event, YukonEnergyCompany yukonEnergyCompany) {
-
+    private void saveManualEvent(ThermostatManualEvent event, EnergyCompany ec) {
         Temperature previousHeatTemperature = event.getPreviousHeatTemperature();
         Temperature previousCoolTemperature = event.getPreviousCoolTemperature();
         boolean holdTemperature = event.isHoldTemperature();
 
         ThermostatMode mode = event.getMode();
         
-        YukonListEntry modeListEntry = selectionListService.getListEntry(yukonEnergyCompany, mode.getDefinitionId());
+        YukonListEntry modeListEntry = selectionListService.getListEntry(ec, mode.getDefinitionId());
 
         ThermostatFanState fanState = event.getFanState();
-        YukonListEntry fanStateEntry = selectionListService.getListEntry(yukonEnergyCompany, fanState.getDefinitionId());
+        YukonListEntry fanStateEntry = selectionListService.getListEntry(ec, fanState.getDefinitionId());
 
         Integer eventId = event.getEventId();
         Integer thermostatId = event.getThermostatId();
@@ -223,7 +210,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
                         (previousCoolTemperature == null) ? null : previousCoolTemperature.toFahrenheit().getValue(), 
                         (previousHeatTemperature == null) ? null : previousHeatTemperature.toFahrenheit().getValue());
 
-        yukonJdbcTemplate.update(eventSql);
+        jdbcTemplate.update(eventSql);
 
     }
 
@@ -231,16 +218,14 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
      * Helper class to map a result set into a LiteLMThermostatManualEvent
      */
     private class ThermostatManualEventMapper implements YukonRowMapper<ThermostatManualEvent> {
+        private final EnergyCompany ec;
 
-        private YukonEnergyCompany yukonEnergyCompany;
-
-        public ThermostatManualEventMapper(YukonEnergyCompany yukonEnergyCompany) {
-            this.yukonEnergyCompany = yukonEnergyCompany;
+        public ThermostatManualEventMapper(EnergyCompany ec) {
+            this.ec = ec;
         }
 
         @Override
         public ThermostatManualEvent mapRow(YukonResultSet rs) throws SQLException {
-
             int id = rs.getInt("EventId");
             int inventoryId = rs.getInt("InventoryId");
 
@@ -269,26 +254,20 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
             boolean hold = ("y".equalsIgnoreCase(holdTemp)) ? true : false;
             event.setHoldTemperature(hold);
 
-            LiteStarsEnergyCompany liteStarsEnergyCompany = 
-                starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-            
             // Convert the operation state entryid into a ThermostatMode enum
             // value
             int operationStateId = rs.getInt("OperationStateId");
-            int modeDefinitionId = YukonListEntryHelper.getYukonDefinitionId(liteStarsEnergyCompany,
-                                                                             YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_MODE,
-                                                                             operationStateId);
+            int modeDefinitionId =YukonListEntryHelper.getYukonDefinitionId(ec,
+                YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_MODE, operationStateId);
 
-            
             ThermostatMode mode = ThermostatMode.valueOf(modeDefinitionId);
             event.setMode(mode);
 
             // Convert the fan operation entryid into a ThermostatFanState enum
             // value
             int fanOperationId = rs.getInt("FanOperationId");
-            int fanStateDefinitionId = YukonListEntryHelper.getYukonDefinitionId(liteStarsEnergyCompany,
-                                                                                 YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_FAN_STATE,
-                                                                                 fanOperationId);
+            int fanStateDefinitionId = YukonListEntryHelper.getYukonDefinitionId(ec,
+                YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_FAN_STATE, fanOperationId);
             ThermostatFanState fanState = ThermostatFanState.valueOf(fanStateDefinitionId);
             event.setFanState(fanState);
 

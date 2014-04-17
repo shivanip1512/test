@@ -42,14 +42,14 @@ public interface SelectionListService {
      * Get a list of valid definitions to use with the given energy company and list type.
      */
     List<YukonDefinition> getValidDefinitions(int ecId, YukonSelectionListEnum listType);
-    
-    YukonSelectionList getSelectionList(YukonEnergyCompany energyCompany, String listName, 
-                                        boolean useInherited, boolean useDefault);
+
+    YukonSelectionList getSelectionList(YukonEnergyCompany energyCompany, String listName, boolean useInherited,
+        boolean useDefault);
 
     /**
      * Returns inherited or default lists if the current energy company doesn't have one
      */
-    YukonSelectionList getSelectionList(YukonEnergyCompany yukonEnergyCompany, String listName);
-    
+    YukonSelectionList getSelectionList(YukonEnergyCompany energyCompany, String listName);
+
     YukonListEntry getListEntry(YukonEnergyCompany energyCompany, int yukonDefId);
 }

@@ -32,18 +32,17 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class HardwareConfigServiceImpl implements HardwareConfigService {
+    private final static Logger log = YukonLogManager.getLogger(HardwareConfigServiceImpl.class);
 
-    @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private InventoryBaseDao inventoryBaseDao;
-    @Autowired private EnrollmentDao enrollmentDao;
-    @Autowired private LmHardwareCommandService commandService;
-    @Autowired private PorterExpressComCommandBuilder xcomCommandBuilder;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private LmHardwareCommandService lmHardwareCommandService;
+    @Autowired private PorterExpressComCommandBuilder xcomCommandBuilder;
 
-    private static Logger log = YukonLogManager.getLogger(HardwareConfigServiceImpl.class);
-    
     @Override
     public void disable(int inventoryId, int accountId, int energyCompanyId,
             YukonUserContext userContext) throws CommandCompletionException {
@@ -59,7 +58,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
             command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
             command.setUser(user);
 
-            commandService.sendOutOfServiceCommand(command);
+            lmHardwareCommandService.sendOutOfServiceCommand(command);
         }
         logEvent(accountId, energyCompanyId,
                  liteHw.getManufacturerSerialNumber(),
@@ -81,7 +80,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
             command.setType(LmHardwareCommandType.IN_SERVICE);
             command.setUser(user);
 
-            commandService.sendInServiceCommand(command);
+            lmHardwareCommandService.sendInServiceCommand(command);
         }
         logEvent(accountId, energyCompanyId,
                  liteHw.getManufacturerSerialNumber(),
@@ -92,7 +91,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
     public List<String> getConfigCommands(int inventoryId, int energyCompanyId, boolean includeInService) {
         LiteLmHardwareBase liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
         LiteStarsEnergyCompany lsec = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
-        boolean hardwareAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, lsec.getEnergyCompanyId());
+        boolean hardwareAddressing = ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, lsec.getEnergyCompanyId());
 
         List<String> retVal = Lists.newArrayList();
 

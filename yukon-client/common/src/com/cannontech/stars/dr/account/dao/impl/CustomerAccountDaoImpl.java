@@ -31,7 +31,6 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.AdvancedFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlParameterChildSink;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -56,19 +55,42 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
 public class CustomerAccountDaoImpl implements CustomerAccountDao {
-	
-    private final Logger logger = YukonLogManager.getLogger(CustomerAccountDaoImpl.class);
+    private final static Logger logger = YukonLogManager.getLogger(CustomerAccountDaoImpl.class);
 
     @Autowired private ContactDao contactDao;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private YukonUserDao userDao;
 
-    private static final YukonRowMapper<CustomerAccount> rowMapper;
-    private static final YukonRowMapper<CustomerAccountWithNames> specialAccountInfoRowMapper;
-    
+    private static final YukonRowMapper<CustomerAccount> rowMapper = new YukonRowMapper<CustomerAccount>() {
+        @Override
+        public CustomerAccount mapRow(YukonResultSet rs) throws SQLException {
+            CustomerAccount account = new CustomerAccount();
+            account.setAccountId(rs.getInt("AccountId"));
+            account.setAccountNotes(rs.getStringSafe("AccountNotes"));
+            account.setAccountNumber(rs.getStringSafe("AccountNumber"));
+            account.setAccountSiteId(rs.getInt("AccountSiteId"));
+            account.setBillingAddressId(rs.getInt("BillingAddressId"));
+            account.setCustomerId(rs.getInt("CustomerId"));
+            return account;
+        }
+    };
+    private static final YukonRowMapper<CustomerAccountWithNames> specialAccountInfoRowMapper =
+        new YukonRowMapper<CustomerAccountWithNames>() {
+            @Override
+            public CustomerAccountWithNames mapRow(YukonResultSet rs) throws SQLException {
+                CustomerAccountWithNames account = new CustomerAccountWithNames();
+                account.setAccountId(rs.getInt("AccountId"));
+                account.setAccountNumber(rs.getStringSafe("AccountNumber"));
+                account.setAlternateTrackingNumber(rs.getStringSafe("AltTrackNum"));
+                account.setLastName(rs.getStringSafe("ContLastName"));
+                account.setFirstName(rs.getStringSafe("ContFirstName"));
+                return account;
+            }
+        };
+
     private SimpleTableAccessTemplate<CustomerAccount> customerAccountTemplate;
     
     private AdvancedFieldMapper<CustomerAccount> customerAccountFieldMapper = new AdvancedFieldMapper<CustomerAccount>() {
@@ -94,7 +116,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
 
     @PostConstruct
     public void init() throws Exception {
-        customerAccountTemplate = new SimpleTableAccessTemplate<CustomerAccount>(yukonJdbcTemplate, nextValueHelper);
+        customerAccountTemplate = new SimpleTableAccessTemplate<CustomerAccount>(jdbcTemplate, nextValueHelper);
         customerAccountTemplate.setTableName("CustomerAccount");
         customerAccountTemplate.setPrimaryKeyField("AccountId");
         customerAccountTemplate.setAdvancedFieldMapper(customerAccountFieldMapper);
@@ -118,15 +140,10 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         selectAccountContactInfoSql = sql;
     }
     
-    static {
-        rowMapper = CustomerAccountDaoImpl.createRowMapper();
-        specialAccountInfoRowMapper = CustomerAccountDaoImpl.createCustomerAccountWithNamesRowMapper();
-    }
-    
     @Override
     public LiteYukonUser getYukonUserByAccountId(int accountId) {
         LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
-        return yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
+        return userDao.getLiteYukonUser(primaryContact.getLoginID());
     }
 
     @Override
@@ -142,7 +159,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("DELETE FROM CustomerAccount");
         sql.append("WHERE AccountId").eq(account.getAccountId());
 
-        int rowsAffected = yukonJdbcTemplate.update(sql);
+        int rowsAffected = jdbcTemplate.update(sql);
         boolean result = (rowsAffected == 1);
         return result;
     }
@@ -160,18 +177,17 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append(selectSql);
         sql.append("WHERE AccountId").eq(accountId);
         
-        CustomerAccount account = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        CustomerAccount account = jdbcTemplate.queryForObject(sql, rowMapper);
         return account;
     }
-    
+
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccount getByAccountNumber(final String accountNumber, final LiteYukonUser user) {
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
-        EnergyCompany energyCompany = ecDao.getEnergyCompany(yec.getEnergyCompanyId());
-        return getByAccountNumber(accountNumber, energyCompany.getDescendants(true));
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
+        return getByAccountNumber(accountNumber, ec.getDescendants(true));
     }
-    
+
     @Override
     public CustomerAccount getByAccountNumber(final String accountNumber, final int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -183,14 +199,13 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         
         CustomerAccount account = null;
         try {
-            account = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+            account = jdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Account with account number: " + accountNumber + " could not be found.", e);
         }
         return account;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public CustomerAccount getByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies) {
         Iterable<Integer> energyCompanyIds = Iterables.transform(energyCompanies, EnergyCompanyDao.TO_ID_FUNCTION);
@@ -204,7 +219,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         
         CustomerAccount account = null;
         try {
-            account = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+            account = jdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException e) {
         	throw new NotFoundException("Account with account number: " + accountNumber + " could not be found.", e);
         }
@@ -212,9 +227,9 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     }
 
     @Override
-    public CustomerAccount findByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanyIds) {
+    public CustomerAccount findByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies) {
         try {
-            return getByAccountNumber(accountNumber, energyCompanyIds);
+            return getByAccountNumber(accountNumber, energyCompanies);
         } catch (NotFoundException e) {
             return null;
         }
@@ -235,7 +250,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CustomerAccount> getAll() {
-        List<CustomerAccount> list = yukonJdbcTemplate.query(selectSql, rowMapper);
+        List<CustomerAccount> list = jdbcTemplate.query(selectSql, rowMapper);
         return list;
     }
     
@@ -248,7 +263,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE ca.AccountId = ib.AccountId"); 
         sql.append("AND ib.InventoryId").eq(inventoryId);
         
-        CustomerAccount account = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        CustomerAccount account = jdbcTemplate.queryForObject(sql, rowMapper);
         
         return account;
     }
@@ -263,7 +278,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE IB.InventoryId").in(inventoryIds);
         
         final Map<Integer, CustomerAccount> inventoryIdToCustomerAccount = Maps.newHashMap();
-        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 CustomerAccount customerAccount = rowMapper.mapRow(rs);
@@ -284,7 +299,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE IB.InventoryId").in(inventoryIds);
         
         final SetMultimap<CustomerAccount, Integer> accountToInventoryIds = HashMultimap.create();
-        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 CustomerAccount customerAccount = rowMapper.mapRow(rs);
@@ -297,7 +312,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     
     @Override
     public Map<Integer, Integer> getAccountIdsByInventoryIds(Iterable<Integer> inventoryIds) {
-        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         Function<Integer, Integer> identityFunction = Functions.identity();
         
@@ -326,7 +341,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     
     @Override
     public Map<Integer, String> getAccountNumbersByAccountIds(Iterable<Integer> accountIds) {
-        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
         
         Function<Integer, Integer> identityFunction = Functions.identity();
         
@@ -368,7 +383,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("  AND ((LMHCG.GroupEnrollStop IS NULL) ");
         sql.append("    OR (LMHCG.GroupEnrollStop").gte(startDate).append("))");
     
-        List<CustomerAccountWithNames> list = yukonJdbcTemplate.query(sql, specialAccountInfoRowMapper);
+        List<CustomerAccountWithNames> list = jdbcTemplate.query(sql, specialAccountInfoRowMapper);
         return list;
     }
     
@@ -380,7 +395,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE CA.AccountId").in(getAccountIdsByECSql(Collections.singletonList(ecId)));
         sql.append("AND CUST.CustomerId").eq(customerId);
         
-        List<CustomerAccountWithNames> rs = yukonJdbcTemplate.query(sql, specialAccountInfoRowMapper);
+        List<CustomerAccountWithNames> rs = jdbcTemplate.query(sql, specialAccountInfoRowMapper);
         return rs.get(0);
     }
 
@@ -388,7 +403,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     public Map<Integer, CustomerAccountWithNames> getAccountsWithNamesByAccountId(
             Iterable<Integer> accountIds) {
         ChunkingMappedSqlTemplate template =
-            new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+            new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -424,7 +439,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE CA.AccountId").in(getAccountIdsByECSql(Collections.singletonList(ecId)));
         sql.append("AND CA.AccountNumber").eq(accountNumber);
         
-        CustomerAccountWithNames account = yukonJdbcTemplate.queryForObject(sql, specialAccountInfoRowMapper);
+        CustomerAccountWithNames account = jdbcTemplate.queryForObject(sql, specialAccountInfoRowMapper);
         return account;
     }
     
@@ -465,13 +480,12 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("         FROM CustomerAdditionalContact");
         sql.append("         WHERE ContactId").eq(contactId).append("))");
         
-        CustomerAccount account = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        CustomerAccount account = jdbcTemplate.queryForObject(sql, rowMapper);
         return account;
     }
     
     @Override
-    public int getTotalNumberOfAccounts(final YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
-
+    public int getTotalNumberOfAccounts(final YukonEnergyCompany ec, List<Integer> assignedProgramIds) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(DISTINCT CA.AccountId)");
         sql.append("FROM CustomerAccount CA");
@@ -484,12 +498,12 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
                                                                                                   " LMHCG.GroupEnrollStop IS NULL)");
         }
 
-        sql.append("WHERE ECTAM.EnergyCompanyId").eq_k(yukonEnergyCompany.getEnergyCompanyId());
+        sql.append("WHERE ECTAM.EnergyCompanyId").eq_k(ec.getEnergyCompanyId());
         if (CollectionUtils.isEmpty(assignedProgramIds)) {
-            return yukonJdbcTemplate.queryForInt(sql);
+            return jdbcTemplate.queryForInt(sql);
         }
 
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -514,7 +528,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("AND YukonUser.UserId").eq(user.getUserID());
         sql.append("ORDER BY CustomerAccount.AccountId");
         
-        List<CustomerAccount> list = yukonJdbcTemplate.query(sql, rowMapper);
+        List<CustomerAccount> list = jdbcTemplate.query(sql, rowMapper);
         return list;
     }
 
@@ -532,40 +546,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE YU.UserId").eq(user.getUserID());
         sql.append("ORDER BY CA.AccountId");
 
-        List<CustomerAccount> list = yukonJdbcTemplate.query(sql, rowMapper);
+        List<CustomerAccount> list = jdbcTemplate.query(sql, rowMapper);
         return list;
-    }
-    
-    private static final YukonRowMapper<CustomerAccount> createRowMapper() {
-        final YukonRowMapper<CustomerAccount> rowMapper = new YukonRowMapper<CustomerAccount>() {
-            @Override
-            public CustomerAccount mapRow(YukonResultSet rs) throws SQLException {
-                final CustomerAccount account = new CustomerAccount();
-                account.setAccountId(rs.getInt("AccountId"));
-                account.setAccountNotes(rs.getStringSafe("AccountNotes"));
-                account.setAccountNumber(rs.getStringSafe("AccountNumber"));
-                account.setAccountSiteId(rs.getInt("AccountSiteId"));
-                account.setBillingAddressId(rs.getInt("BillingAddressId"));
-                account.setCustomerId(rs.getInt("CustomerId"));
-                return account;
-            }
-        };
-        return rowMapper;
-    }
-    
-    private static final YukonRowMapper<CustomerAccountWithNames> createCustomerAccountWithNamesRowMapper() {
-        final YukonRowMapper<CustomerAccountWithNames> rowMapper = new YukonRowMapper<CustomerAccountWithNames>() {
-            @Override
-            public CustomerAccountWithNames mapRow(YukonResultSet rs) throws SQLException {
-                final CustomerAccountWithNames account = new CustomerAccountWithNames();
-                account.setAccountId(rs.getInt("AccountId"));
-                account.setAccountNumber(SqlUtils.convertDbValueToString(rs.getString("AccountNumber")));
-                account.setAlternateTrackingNumber(SqlUtils.convertDbValueToString(rs.getString("AltTrackNum")));
-                account.setLastName(SqlUtils.convertDbValueToString(rs.getString("ContLastName")));
-                account.setFirstName(SqlUtils.convertDbValueToString(rs.getString("ContFirstName")));
-                return account;
-            }
-        };
-        return rowMapper;
     }
 }

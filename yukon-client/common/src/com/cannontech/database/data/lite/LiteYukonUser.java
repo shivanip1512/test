@@ -27,7 +27,7 @@ public class LiteYukonUser extends LiteBase {
     /** 
      *  New YukonUsers should be created using the non-lite objects. Don't use this anymore for creating users!
      *    In Short, LiteYukonUser should NEVER have been used for a "create" object since it requires a liteId to exist.
-     *    This only exists to support legacy YukonUserDao.save fuctionality.
+     *    This only exists to support legacy YukonUserDao.save functionality.
      */
     @Deprecated public final static int CREATE_NEW_USER_ID = 0;
     
@@ -59,15 +59,15 @@ public class LiteYukonUser extends LiteBase {
         this.userGroupId = userGroupId;
     }
 
-    public void retrieve( String dbAlias ) {
-        YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+    public void retrieve() {
+        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Username, Status, ForceReset, UserGroupId");
         sql.append("FROM YukonUser");
         sql.append("WHERE UserId").eq(getUserID());
 
-        yukonJdbcTemplate.query(sql, new ResultSetExtractor<LiteYukonUser>() {
+        jdbcTemplate.query(sql, new ResultSetExtractor<LiteYukonUser>() {
             @Override
             public LiteYukonUser extractData(ResultSet rs) throws SQLException, DataAccessException {
                 rs.next();

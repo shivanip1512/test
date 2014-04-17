@@ -32,7 +32,6 @@ import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 import com.google.common.collect.Lists;
@@ -136,8 +135,8 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<ApplianceCategory> findApplianceCategories(int customerAccountId) {
-        YukonEnergyCompany ec = ecDao.getEnergyCompanyByAccountId(customerAccountId);
-        List<Integer> applianceCategoryIdList = getApplianceCategoryIdsByEC(ec.getEnergyCompanyId());
+        EnergyCompany ec = ecDao.getEnergyCompanyByAccountId(customerAccountId);
+        List<Integer> applianceCategoryIdList = getApplianceCategoryIdsByEC(ec.getId());
 
         final Set<ApplianceCategory> set = new HashSet<ApplianceCategory>(applianceCategoryIdList.size());
 

@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.ParseExiException;
@@ -116,8 +115,10 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 	                messagesToSend = rfnLcrDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
 	                dynamicDataSource.putValues(messagesToSend);
 	                archivedReadings.addAndGet(messagesToSend.size());
-	                LogHelper.debug(log, "%d PointDatas generated for RfnLcrReadingArchiveRequest", messagesToSend.size());
-	                
+	                if (log.isDebugEnabled()) {
+	                    log.debug(messagesToSend.size() + " PointDatas generated for RfnLcrReadingArchiveRequest");
+	                }
+
 	                /** Handle addressing data */
 	                rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
                 }
@@ -191,11 +192,10 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             response.setDataPointId(readRequest.getDataPointId());
             response.setType(readRequest.getType());
             return response;
-        } else {
-            RfnLcrArchiveResponse response = new RfnLcrArchiveResponse();
-            response.setSensorId(archiveRequest.getSensorId());
-            return response;
         }
+        RfnLcrArchiveResponse response = new RfnLcrArchiveResponse();
+        response.setSensorId(archiveRequest.getSensorId());
+        return response;
     }
 
     @Override

@@ -1881,7 +1881,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case ADD:
             if (!noObjectNeeded) {
                 lu = new LiteYukonUser(id);
-                lu.retrieve(databaseAlias);
+                lu.retrieve();
                 lBase = lu;
             }
             break;
@@ -1889,7 +1889,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             if (!noObjectNeeded) {
                 lu = new LiteYukonUser(id);
-                lu.retrieve(databaseAlias);
+                lu.retrieve();
                 lBase = lu;
             }
             adjustUserMappings(id);
@@ -1899,6 +1899,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             adjustUserMappings(id);
             break;
 
+        case NONE:
+            break;
         }
 
         return lBase;

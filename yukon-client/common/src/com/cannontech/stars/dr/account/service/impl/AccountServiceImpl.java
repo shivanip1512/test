@@ -76,6 +76,7 @@ import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
@@ -84,37 +85,37 @@ public class AccountServiceImpl implements AccountService {
     private final static Logger log = YukonLogManager.getLogger(AccountServiceImpl.class);
 
     @Autowired private AccountEventLogService accountEventLogService;
-    @Autowired private YukonUserDao userDao;
-    @Autowired private AuthDao authDao;
+    @Autowired private AccountSiteDao accountSiteDao;
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private AddressDao addressDao;
+    @Autowired private ApplianceDao applianceDao;
+    @Autowired private AuthDao authDao;
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired private CallReportDao callReportDao;
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
-    @Autowired private CustomerDao customerDao;
-    @Autowired private SiteInformationDao siteInformationDao;
-    @Autowired private AccountSiteDao accountSiteDao;
+    @Autowired private ContactNotificationService contactNotificationService;
+    @Autowired private ContactService contactService;
     @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private CustomerDao customerDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private EventAccountDao eventAccountDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private LmHardwareBaseDao hardwareBaseDao;
     @Autowired private LMProgramEventDao lmProgramEventDao;
-    @Autowired private ApplianceDao applianceDao;
-    @Autowired private StarsWorkOrderBaseDao workOrderDao;
-    @Autowired private CallReportDao callReportDao;
-    @Autowired private EventAccountDao eventAccountDao;
-    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private SystemDateFormattingService systemDateFormattingService;
-    @Autowired private AuthenticationService authenticationService;
     @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
-    @Autowired private ContactNotificationService contactNotificationService;
-    @Autowired private ContactService contactService;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
-    @Autowired private YukonUserContextService userContextService;
-    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsWorkOrderBaseDao workOrderDao;
+    @Autowired private SiteInformationDao siteInformationDao;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
     @Autowired private UserGroupDao userGroupDao;
-    @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private YukonUserContextService userContextService;
+    @Autowired private YukonUserDao userDao;
 
     @Override
     @Transactional
@@ -122,7 +123,7 @@ public class AccountServiceImpl implements AccountService {
             throws AccountNumberUnavailableException, UserNameUnavailableException {
         // Add the account to the user's energy company, we do not have a mechanism to allow
         // an operator user of a parent energy company to add accounts to member energy companies.
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(operator);
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(operator);
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
 
@@ -137,8 +138,7 @@ public class AccountServiceImpl implements AccountService {
 
         // Checks to see if the account number is already being used.
         try {
-            CustomerAccount customerAccount =
-                customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
+            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, ec.getId());
             if (customerAccount != null) {
                 log.error("Account " + accountNumber
                     + " could not be added: The provided account number already exists.");
@@ -262,9 +262,8 @@ public class AccountServiceImpl implements AccountService {
             liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
         }
         liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
-        String tempUnit =
-            ecSettingDao.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, TemperatureUnit.class,
-                yukonEnergyCompany.getEnergyCompanyId()).getLetter();
+        String tempUnit = ecSettingDao.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT,
+            TemperatureUnit.class, ec.getId()).getLetter();
         liteCustomer.setTemperatureUnit(tempUnit);
         customerDao.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(liteCustomer.getLiteID(), DBChangeMsg.CHANGE_CUSTOMER_DB,
@@ -291,7 +290,7 @@ public class AccountServiceImpl implements AccountService {
             } else {
                 liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
             }
-            liteCICustomer.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
+            liteCICustomer.setEnergyCompanyID(ec.getId());
             customerDao.addCICustomer(liteCICustomer);
             dbChangeManager.processDbChange(liteCustomer.getLiteID(), DBChangeMsg.CHANGE_CUSTOMER_DB,
                 DBChangeMsg.CAT_CI_CUSTOMER, DBChangeMsg.CAT_CI_CUSTOMER, DbChangeType.ADD);
@@ -351,7 +350,7 @@ public class AccountServiceImpl implements AccountService {
 
         // Add mapping
         ECToAccountMapping ecToAccountMapping = new ECToAccountMapping();
-        ecToAccountMapping.setEnergyCompanyId(yukonEnergyCompany.getEnergyCompanyId());
+        ecToAccountMapping.setEnergyCompanyId(ec.getId());
         ecToAccountMapping.setAccountId(customerAccount.getAccountId());
         ecMappingDao.addECToAccountMapping(ecToAccountMapping);
         log.info("Account: " + accountNumber + " added successfully.");

@@ -55,7 +55,8 @@ public class SelectionListServiceImpl implements SelectionListService {
     @Override
     public SortedSetMultimap<SelectionListCategory, DisplayableSelectionList> getUserEditableLists(int ecId,
             LiteYukonUser user) {
-        LiteStarsEnergyCompany ec = starsDatabaseCache.getEnergyCompany(ecId);
+        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ecId);
+        EnergyCompany ec = ecDao.getEnergyCompany(ecId);
 
         Comparator<SelectionListCategory> selListComparator = Ordering.natural();
         Comparator<DisplayableSelectionList> dslComparator = new Comparator<DisplayableSelectionList>() {
@@ -66,7 +67,7 @@ public class SelectionListServiceImpl implements SelectionListService {
         };
         SortedSetMultimap<SelectionListCategory, DisplayableSelectionList> retVal =
             TreeMultimap.create(selListComparator, dslComparator);
-        Set<YukonSelectionList> userLists = getSelectionListsInUse(ec, user);
+        Set<YukonSelectionList> userLists = getSelectionListsInUse(lsec, user);
         for (YukonSelectionList list : userLists) {
             if (list.isUserUpdateAvailable()) {
                 retVal.put(list.getType().getCategory(),
@@ -78,14 +79,14 @@ public class SelectionListServiceImpl implements SelectionListService {
 
     @Override
     public boolean isListInherited(int ecId, YukonSelectionList list) {
-        YukonEnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
         return isListInherited(energyCompany, list);
     }
 
     @Override
     @Transactional
     public void restoreToDefault(YukonSelectionList list) {
-        YukonEnergyCompany defaultEc = ecDao.getEnergyCompany(EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID);
+        EnergyCompany defaultEc = ecDao.getEnergyCompany(EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID);
         YukonSelectionList defaultList = getSelectionList(defaultEc, list.getListName());
         YukonSelectionList newList = new YukonSelectionList();
         newList.setListId(list.getListId());
@@ -103,7 +104,7 @@ public class SelectionListServiceImpl implements SelectionListService {
         };
         List<Integer> entriesToDelete = Lists.transform(list.getYukonListEntries(), getEntryId);
         List<YukonListEntry> newEntries = Lists.newArrayList();
-        YukonEnergyCompany energyCompany = ecDao.getEnergyCompany(list.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(list.getEnergyCompanyId());
         boolean showAdditionalProtocols = showAdditionalProtocols(energyCompany);
         for (YukonListEntry entry : defaultList.getYukonListEntries()) {
             if (list.getType() == YukonSelectionListEnum.DEVICE_TYPE
@@ -127,7 +128,7 @@ public class SelectionListServiceImpl implements SelectionListService {
         List<YukonDefinition> retVal =
             Lists.newArrayList(YukonDefinition.valuesForList(listType));
         if (listType == YukonSelectionListEnum.DEVICE_TYPE) {
-            YukonEnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
+            EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
             if (!showAdditionalProtocols(energyCompany)) {
                 List<YukonDefinition> filteredRetVal = Lists.newArrayList();
                 for (YukonDefinition definition : retVal) {
@@ -141,11 +142,9 @@ public class SelectionListServiceImpl implements SelectionListService {
         return retVal;
     }
 
-    private boolean showAdditionalProtocols(YukonEnergyCompany ec) {
-        String optionalProductDevStr = ecSettingDao.getString(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV,
-            ec.getEnergyCompanyId());
-        boolean isEnabled = ecSettingDao.isEnabled(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV,
-            ec.getEnergyCompanyId());
+    private boolean showAdditionalProtocols(EnergyCompany ec) {
+        String optionalProductDevStr = ecSettingDao.getString(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, ec.getId());
+        boolean isEnabled = ecSettingDao.isEnabled(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, ec.getId());
         if (!isEnabled || StringUtils.isEmpty(optionalProductDevStr)) {
             return false;
         }
@@ -158,8 +157,8 @@ public class SelectionListServiceImpl implements SelectionListService {
         return false;
     }
 
-    private boolean isListInherited(YukonEnergyCompany energyCompany, YukonSelectionList list) {
-        boolean hasParent = ecDao.getEnergyCompany(energyCompany.getEnergyCompanyId()).getParent() != null;
+    private boolean isListInherited(EnergyCompany energyCompany, YukonSelectionList list) {
+        boolean hasParent = ecDao.getEnergyCompany(energyCompany.getId()).getParent() != null;
         YukonSelectionList ecList = getSelectionList(energyCompany, list.getListName(), false, false);
         return hasParent && ecList == null;
     }
@@ -210,33 +209,33 @@ public class SelectionListServiceImpl implements SelectionListService {
     }
 
     @Override
-    public YukonSelectionList getSelectionList(YukonEnergyCompany yukonEnergyCompany, String listName) {
-        return getSelectionList(yukonEnergyCompany, listName, true, true);
+    public YukonSelectionList getSelectionList(YukonEnergyCompany energyCompany, String listName) {
+        return getSelectionList(energyCompany, listName, true, true);
     }
-    
+
     @Override
-    public YukonSelectionList getSelectionList(YukonEnergyCompany yukonEnergyCompany, String listName, 
-                                               boolean useInherited, boolean useDefault) {
-        EnergyCompany energyCompany = ecDao.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+    public YukonSelectionList getSelectionList(YukonEnergyCompany energyCompany, String listName, boolean useInherited,
+            boolean useDefault) {
+        EnergyCompany ec = ecDao.getEnergyCompany(energyCompany.getEnergyCompanyId());
         YukonSelectionList yukonSelectionList =
-            listDao.findSelectionListByEnergyCompanyIdAndListName(energyCompany.getEnergyCompanyId(), listName);
+            listDao.findSelectionListByEnergyCompanyIdAndListName(ec.getId(), listName);
         if (yukonSelectionList != null) {
             return yukonSelectionList;
         }
 
         // If parent company exists, then search the parent company for the list
-        if (useInherited && energyCompany.getParent() != null) {
-            return getSelectionList(energyCompany.getParent(), listName, useInherited, useDefault);
+        if (useInherited && ec.getParent() != null) {
+            return getSelectionList(ec.getParent(), listName, useInherited, useDefault);
         }
 
-        if (useDefault && !ecDao.isDefaultEnergyCompany(energyCompany)) {
+        if (useDefault && !ecDao.isDefaultEnergyCompany(ec)) {
             YukonEnergyCompany defaultEc = ecDao.getEnergyCompany(EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID);
             YukonSelectionList dftList = getSelectionList(defaultEc, listName, false, false);
             if (dftList != null) {
                 // If the list is user updatable, returns a copy of the default list; otherwise
                 // returns the default list itself
                 if (dftList.isUserUpdateAvailable()) {
-                    return addSelectionList(energyCompany, listName, dftList, true);
+                    return addSelectionList(ec, listName, dftList, true);
                 }
 
                 return dftList;

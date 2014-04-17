@@ -290,10 +290,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         if (rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user)) {
             return;
         }
-        /* Check my own and all my anticendants operator login list for this user's id. */
+        // Check my own and all my ancestor's operator login lists for this user's id.
         List<EnergyCompany> parents = energyCompany.getParents(true);
         for (EnergyCompany parentEc : parents) {
-            if(ecDao.getOperatorUserIds(parentEc).contains(user.getUserID())) {
+            if (ecDao.getOperatorUserIds(parentEc).contains(user.getUserID())) {
                 return;
             }
         }
@@ -313,14 +313,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
-                boolean isEcOperator = isOperator(user);
-                
-                if (superUser || isEcOperator) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user)
+                        || isOperator(user);
             };
             
         };
@@ -332,18 +326,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                
-                boolean isOperator = ecDao.isEnergyCompanyOperator(user);
-
-                if (isOperator) {
+                if (ecDao.isEnergyCompanyOperator(user)) {
                     YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
                     return canEditEnergyCompany(user, yec.getEnergyCompanyId());
-                } else {
-                    boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
-                    boolean edit = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
-
-                    return superUser || edit;
                 }
+
+                return rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user)
+                        || rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
             }
         };
         return checker;
@@ -730,18 +719,15 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     @Transactional
-    public int removeSubstationFromEnergyCompany(int energyCompanyId, int substationId) {
-        
-        int rowsDeleted = ecMappingDao.deleteECToSubstationMapping(energyCompanyId, substationId);
+    public void removeSubstationFromEnergyCompany(int energyCompanyId, int substationId) {
+        ecMappingDao.deleteECToSubstationMapping(energyCompanyId, substationId);
         siteInformationDao.resetSubstation(substationId);
         
         dbChangeManager.processDbChange(DbChangeType.DELETE, 
                                         DbChangeCategory.ENERGY_COMPANY_SUBSTATIONS,
                                         energyCompanyId);
-
-        return rowsDeleted;
     }
-    
+
     private static void callbackWithSelfAndEachDescendant(EnergyCompany energyCompany, SimpleCallback<EnergyCompany> simpleCallback) {
         try {
             simpleCallback.handle(energyCompany);

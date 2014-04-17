@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 public final class SimpleTableAccessTemplate<T> {
 
     private String tableName;
-    private final YukonJdbcTemplate yukonJdbcTemplate;
+    private final YukonJdbcTemplate jdbcTemplate;
     private BaseFieldMapper<T> baseFieldMapper;
     private FieldMapper<T> fieldMapper;
     private AdvancedFieldMapper<T> advancedFieldMapper;
@@ -56,7 +56,7 @@ public final class SimpleTableAccessTemplate<T> {
 
     public SimpleTableAccessTemplate(final YukonJdbcTemplate yukonJdbcTemplate, 
                                       final NextValueHelper nextValueHelper) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
+        this.jdbcTemplate = yukonJdbcTemplate;
         this.nextValueHelper = nextValueHelper;
     }
 
@@ -79,13 +79,12 @@ public final class SimpleTableAccessTemplate<T> {
     
     public SimpleTableAccessTemplate<T> setPrimaryKeyValidOver(final int primaryKeyValidOver) {
         this.primaryKeyNeeded = new PrimaryKeyChecker<T>() {
+            @Override
             public boolean needsPrimaryKey(T value, BaseFieldMapper<T> baseFieldMapper) {
                 if (baseFieldMapper.getPrimaryKey(value) == null) {
                     return true;
-                } else {
-                    return baseFieldMapper.getPrimaryKey(value).longValue() <= primaryKeyValidOver;
                 }
-                
+                return baseFieldMapper.getPrimaryKey(value).longValue() <= primaryKeyValidOver;
             };
         };
         return this;
@@ -93,13 +92,12 @@ public final class SimpleTableAccessTemplate<T> {
     
     public SimpleTableAccessTemplate<T> setPrimaryKeyValidNotEqualTo(final int invalidPrimaryKey) {
         this.primaryKeyNeeded = new PrimaryKeyChecker<T>() {
+            @Override
             public boolean needsPrimaryKey(T value, BaseFieldMapper<T> baseFieldMapper) {
                 if (baseFieldMapper.getPrimaryKey(value) == null) {
                     throw new IllegalStateException("found null when a non-null value was assumed");
-                } else {
-                    return baseFieldMapper.getPrimaryKey(value).longValue() == invalidPrimaryKey;
                 }
-                
+                return baseFieldMapper.getPrimaryKey(value).longValue() == invalidPrimaryKey;
             };
         };
         return this;
@@ -145,9 +143,8 @@ public final class SimpleTableAccessTemplate<T> {
     public final int save(T object) {
         if (needsPrimaryKey(object)) {
             return insert(object);
-        } else {
-            return update(object);
         }
+        return update(object);
     }
     
     public final boolean saveWillUpdate(T object) {
@@ -201,10 +198,10 @@ public final class SimpleTableAccessTemplate<T> {
         sql.append(")");
         
         PreparedStatementSetter pss = createPreparedStatementSetter(parameterSource, fieldNameList);
-        
-        yukonJdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
+
+        jdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
         baseFieldMapper.setPrimaryKey(object, nextId);
-        
+
         if (helper != null) {
             // because the parent was an insert, insert the children
             List<ChildPair<?>> pairList = helper.getPairList();
@@ -267,7 +264,7 @@ public final class SimpleTableAccessTemplate<T> {
         // get property setter
         PreparedStatementSetter pss = createPreparedStatementSetter(parameterSource, fieldNameList);
         
-        yukonJdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
+        jdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
         
         if (helper != null) {
             // children handling
@@ -277,7 +274,7 @@ public final class SimpleTableAccessTemplate<T> {
                     SqlStatementBuilder deleteSql = new SqlStatementBuilder();
                     deleteSql.append("DELETE FROM").append(childPair.template.tableName);
                     deleteSql.append("WHERE").append(childPair.template.parentForeignKeyField).eq(primaryKeyId);
-                    yukonJdbcTemplate.update(deleteSql);
+                    jdbcTemplate.update(deleteSql);
                     insertChildPair(childPair, primaryKeyId);
                 }
             }

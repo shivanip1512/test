@@ -63,34 +63,33 @@ import com.cannontech.stars.dr.hardware.model.CustomerAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 public class HardwareUiServiceImpl implements HardwareUiService {
-
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private DeviceCreationService deviceCreationService;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
-    @Autowired private YukonListDao yukonListDao;
+    @Autowired private HardwareTypeExtensionService hardwareTypeExtensionService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private LMCustomerEventBaseDao lmCustomerEventBaseDao;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private LMHardwareEventDao lmHardwareEventDao;
-    @Autowired private PaoDao paoDao;
-    @Autowired private LMCustomerEventBaseDao lmCustomerEventBaseDao;
-    @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private MeterHardwareBaseDao meterHardwareBaseDao;
-    @Autowired private DeviceCreationService deviceCreationService;
-    @Autowired private StarsSearchDao starsSearchDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private WarehouseDao warehouseDao;
+    @Autowired private PaoDao paoDao;
     @Autowired private PaoLoadingService paoLoadingService;
-    @Autowired private StarsInventoryBaseService starsInventoryBaseService;
-    @Autowired private HardwareTypeExtensionService hardwareTypeExtensionService;
-    @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private InventoryDao inventoryDao;
-    @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private SelectionListService selectionListService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsSearchDao starsSearchDao;
+    @Autowired private StarsInventoryBaseService starsInventoryBaseService;
+    @Autowired private WarehouseDao warehouseDao;
+    @Autowired private YukonListDao listDao;
 
     @Override
     public Hardware getHardware(int inventoryId) {
@@ -107,7 +106,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         hardware.setAccountId(liteInventoryBase.getAccountID());
         
         int categoryId = liteInventoryBase.getCategoryID();
-        YukonListEntry categoryNameYLE = yukonListDao.getYukonListEntry(categoryId);
+        YukonListEntry categoryNameYLE = listDao.getYukonListEntry(categoryId);
         hardware.setCategoryName(categoryNameYLE.getEntryText());
         
         int deviceId = liteInventoryBase.getDeviceID();
@@ -150,7 +149,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         List<LiteLMHardwareEvent> events = lmHardwareEventDao.getByInventoryId(liteInventoryBase.getInventoryID());
         String installNotes = null;
         for (LiteLMHardwareEvent event : events) {
-            YukonListEntry entry = yukonListDao.getYukonListEntry(event.getActionID());
+            YukonListEntry entry = listDao.getYukonListEntry(event.getActionID());
             CustomerAction action = CustomerAction.valueOf(entry.getYukonDefID());
             /* The list of events is retrieved newest to oldest 
              * so the first install in the list will be the most recent */
@@ -162,7 +161,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         hardware.setInstallNotes(installNotes);
         
         /* Set Hardware Details based on type(Switch, Thermostat, or MCT */
-        YukonListEntry categoryEntry = yukonListDao.getYukonListEntry(categoryId);
+        YukonListEntry categoryEntry = listDao.getYukonListEntry(categoryId);
         InventoryCategory hardwareCategory = InventoryCategory.valueOf(categoryEntry.getYukonDefID());
 
         // Logic for determining display name and type is duplicated in InventoryPageIndexBuilder.
@@ -195,7 +194,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             hardware.setMeterNumber(meterNumber);
             hardware.setHardwareTypeEntryId(liteMeterHardwareBase.getMeterTypeID());
             
-            YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(liteMeterHardwareBase.getMeterTypeID());
+            YukonListEntry hardwareTypeEntry = listDao.getYukonListEntry(liteMeterHardwareBase.getMeterTypeID());
             HardwareType hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
             hardware.setHardwareType(hardwareType);
             
@@ -219,11 +218,11 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             
             hardware.setHardwareTypeEntryId(lmHardwareBase.getLMHarewareTypeId());
             
-            YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
+            YukonListEntry hardwareTypeEntry = listDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
             HardwareType hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
             hardware.setHardwareType(hardwareType);
             
-            YukonListEntry deviceTypeEntry = yukonListDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
+            YukonListEntry deviceTypeEntry = listDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
             String deviceType = deviceTypeEntry.getEntryText();
             hardware.setDisplayType(deviceType);
             String serialNumber = lmHardwareBase.getManufacturerSerialNumber();
@@ -273,18 +272,18 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     public SimpleDevice createTwoWayDevice(LiteYukonUser user, int inventoryId, String deviceName) 
     throws Lcr3102YukonDeviceCreationException {
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-        YukonListEntry deviceTypeEntry = yukonListDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
+        YukonListEntry deviceTypeEntry = listDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
         
         if (StringUtils.isBlank(deviceName)) {
             throw new Lcr3102YukonDeviceCreationException(Lcr3102YukonDeviceCreationException.Type.REQUIRED);
-        } else {
-            List<LiteYukonPAObject> existingDevicesWithName = paoDao.getLiteYukonPaoByName(deviceName, false);
-            if (existingDevicesWithName.size() > 0) {
-                throw new Lcr3102YukonDeviceCreationException(Lcr3102YukonDeviceCreationException.Type.UNAVAILABLE);
-            }
         }
-        
-        YukonListEntry entry = yukonListDao.getYukonListEntry(deviceTypeEntry.getEntryID());
+
+        List<LiteYukonPAObject> existingDevicesWithName = paoDao.getLiteYukonPaoByName(deviceName, false);
+        if (existingDevicesWithName.size() > 0) {
+            throw new Lcr3102YukonDeviceCreationException(Lcr3102YukonDeviceCreationException.Type.UNAVAILABLE);
+        }
+
+        YukonListEntry entry = listDao.getYukonListEntry(deviceTypeEntry.getEntryID());
         String deviceTypeName = entry.getEntryText();
         PaoType paoType = PaoType.getForDbString(deviceTypeName);
         int yukonDeviceTypeId = paoType.getDeviceTypeId();
@@ -310,8 +309,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     public boolean updateHardware(LiteYukonUser user, Hardware hardware) {
         LiteInventoryBase liteInventoryBase = inventoryBaseDao.getByInventoryId(hardware.getInventoryId());
         setInventoryFieldsFromDto(liteInventoryBase, hardware);
-        YukonEnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(hardware.getInventoryId());
-        hardware.setEnergyCompanyId(ec.getEnergyCompanyId());
+        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(hardware.getInventoryId());
+        hardware.setEnergyCompanyId(ec.getId());
         
         checkSerialNumber(hardware);
         
@@ -323,7 +322,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                         YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(liteInventoryBase.getDeviceID());
                     liteInventoryBase.setDeviceLabel(device.getPaoName());
                 }
-                inventoryBaseDao.saveInventoryBase(liteInventoryBase, ec.getEnergyCompanyId());
+                inventoryBaseDao.saveInventoryBase(liteInventoryBase, ec.getId());
             } else if (hardwareType.getInventoryCategory() == InventoryCategory.NON_YUKON_METER) {
                 /* Update MeterHardwareBase */
                 LiteMeterHardwareBase meterHardwareBase = (LiteMeterHardwareBase)liteInventoryBase;
@@ -331,7 +330,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 if(StringUtils.isBlank(meterHardwareBase.getDeviceLabel())){
                     meterHardwareBase.setDeviceLabel(meterHardwareBase.getMeterNumber());
                 }
-                inventoryBaseDao.saveMeterHardware(meterHardwareBase, ec.getEnergyCompanyId());
+                inventoryBaseDao.saveMeterHardware(meterHardwareBase, ec.getId());
                 
                 /* Update LMHardwareToMeterMapping */
                 List<Integer> assignedSwitches = Lists.newArrayList();
@@ -346,9 +345,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             LiteLmHardwareBase lmHardware = (LiteLmHardwareBase)liteInventoryBase;
             
             /* Update Type/Category */
-            YukonListEntry typeEntry = yukonListDao.getYukonListEntry(hardware.getHardwareTypeEntryId());
+            YukonListEntry typeEntry = listDao.getYukonListEntry(hardware.getHardwareTypeEntryId());
             // The Inventory Category list only exists on the default energy company.
-            List<YukonListEntry> categoryEntry = yukonListDao.getYukonListEntry(hardwareType.getInventoryCategory().getDefinitionId(), starsDatabaseCache.getDefaultEnergyCompany());
+            List<YukonListEntry> categoryEntry = listDao.getYukonListEntry(hardwareType.getInventoryCategory().getDefinitionId(), starsDatabaseCache.getDefaultEnergyCompany());
             lmHardware.setLmHardwareTypeID(typeEntry.getEntryID());
             lmHardware.setCategoryID(categoryEntry.get(0).getEntryID());
             
@@ -366,7 +365,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 SimpleDevice device = createTwoWayDevice(user, hardware.getInventoryId(), hardware.getTwoWayDeviceName());
                 lmHardware.setDeviceID(device.getDeviceId());
             }
-            inventoryBaseDao.saveLmHardware(lmHardware, ec.getEnergyCompanyId());
+            inventoryBaseDao.saveLmHardware(lmHardware, ec.getId());
             
             
             /* Log Serial Number Change */
@@ -385,7 +384,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         if (hardware.getInstallNotes() != null) {
             List<LiteLMHardwareEvent> events = lmHardwareEventDao.getByInventoryId(liteInventoryBase.getInventoryID());
             for (LiteLMHardwareEvent event : events) {
-                YukonListEntry entry = yukonListDao.getYukonListEntry(event.getActionID());
+                YukonListEntry entry = listDao.getYukonListEntry(event.getActionID());
                 if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL) {
                     /* The list of events is retrieved newest to oldest 
                      * so the first install in the list will be the most recent */
@@ -417,7 +416,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         List<LiteLMHardwareEvent> events = lmHardwareEventDao.getByInventoryId(inventoryId);
         List<HardwareHistory> hardwareHistory = Lists.newArrayList();
         for (LiteLMHardwareEvent event : events) {
-            YukonListEntry entry = yukonListDao.getYukonListEntry(event.getActionID());
+            YukonListEntry entry = listDao.getYukonListEntry(event.getActionID());
             // Filter the Programming action out of hardware history
             if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_PROGRAMMING) {
                 continue;
@@ -445,16 +444,16 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Override
     @Transactional
     public int createHardware(Hardware hardware, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
-        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         int inventoryId;
         String deviceLabel;
         
-        hardware.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
+        hardware.setEnergyCompanyId(energyCompany.getId());
         checkSerialNumber(hardware);
         
         HardwareType hardwareType;
         if (hardware.getHardwareTypeEntryId() > 0) {
-            YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(hardware.getHardwareTypeEntryId());
+            YukonListEntry hardwareTypeEntry = listDao.getYukonListEntry(hardware.getHardwareTypeEntryId());
             hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
         } else {
             /* This will be a real yukon MCT, they don't have a type coming from a yukon list entry. */
@@ -467,7 +466,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 /* InventoryBase */
                 LiteInventoryBase inventoryBase = buildInventoryBase(hardware, energyCompany);
                 
-                inventoryId = inventoryBaseDao.saveInventoryBase(inventoryBase, energyCompany.getEnergyCompanyId()).getInventoryID();
+                inventoryId = inventoryBaseDao.saveInventoryBase(inventoryBase, energyCompany.getId()).getInventoryID();
                 
                 if (hardware.getAccountId() > 0) {
                     starsInventoryBaseService.addInstallHardwareEvent(inventoryBase, "", energyCompany, user);
@@ -479,7 +478,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 /* MeterHardwareBase */
                 LiteMeterHardwareBase meterHardwareBase = buildMeterHardwareBase(hardware, energyCompany); 
                 
-                inventoryId = inventoryBaseDao.saveMeterHardware(meterHardwareBase, energyCompany.getEnergyCompanyId()).getInventoryID();
+                inventoryId = inventoryBaseDao.saveMeterHardware(meterHardwareBase, energyCompany.getId()).getInventoryID();
                 
                 /* Update LMHardwareToMeterMapping */
                 List<Integer> assignedSwitches = Lists.newArrayList();
@@ -496,7 +495,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         } else {
             /* LMHardwareBase and InventoryBase */
             LiteLmHardwareBase lmHardware = buildLmHardware(hardware, energyCompany); 
-            inventoryId = inventoryBaseDao.saveLmHardware(lmHardware, energyCompany.getEnergyCompanyId()).getInventoryID();
+            inventoryId = inventoryBaseDao.saveLmHardware(lmHardware, energyCompany.getId()).getInventoryID();
             
             /* Create two-way device if need be */
             if (hardware.isCreatingNewTwoWayDevice()) {
@@ -550,7 +549,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     public int addYukonMeter(int meterId, Integer accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
         accountId = accountId == null ? 0 : accountId;
         
-        YukonEnergyCompany energyCompany = ecDao.getEnergyCompany(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
         try {
             LiteInventoryBase liteInventoryBase = inventoryBaseDao.getByDeviceId(meterId);
             liteInventoryBase.setAccountID(accountId);
@@ -558,14 +557,14 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             Date now = new Date();
             liteInventoryBase.setInstallDate(now.getTime());
             
-            inventoryBaseDao.saveInventoryBase(liteInventoryBase, energyCompany.getEnergyCompanyId()).getInventoryID();
+            inventoryBaseDao.saveInventoryBase(liteInventoryBase, energyCompany.getId()).getInventoryID();
             dbChangeManager.processDbChange(liteInventoryBase.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
                 DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
 
             /* Reset the installation notes */
             List<LiteLMHardwareEvent> events = lmHardwareEventDao.getByInventoryId(liteInventoryBase.getInventoryID());
             for (LiteLMHardwareEvent event : events) {
-                YukonListEntry entry = yukonListDao.getYukonListEntry(event.getActionID());
+                YukonListEntry entry = listDao.getYukonListEntry(event.getActionID());
                 if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL) {
                     /* The list of events is retrieved newest to oldest 
                      * so the first install in the list will be the most recent */
@@ -617,8 +616,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     public int changeOutInventory(int oldInventoryId, int newInventoryId, LiteYukonUser user, boolean isMeter) {
         
         int inventoryId;
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ec);
         LiteInventoryBase oldInventory = inventoryBaseDao.getByInventoryId(oldInventoryId);
         
         /* If this is a meter change out, the newInventoryId will be a pao id */
@@ -630,7 +629,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             LiteInventoryBase newInventory = inventoryBaseDao.getByInventoryId(newInventoryId);
             newInventory.setAccountID(oldInventory.getAccountID());
             starsInventoryBaseService.removeDeviceFromAccount(oldInventory, energyCompany, user);
-            LiteInventoryBase inventoryBase = starsInventoryBaseService.addDeviceToAccount(newInventory, energyCompany, user, false);
+            LiteInventoryBase inventoryBase =
+                    starsInventoryBaseService.addDeviceToAccount(newInventory, energyCompany, user, false);
             inventoryId = inventoryBase.getInventoryID();
         }
         return inventoryId;
@@ -667,13 +667,13 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         return false;
     }
     
-    private LiteLmHardwareBase buildLmHardware(Hardware hardware, YukonEnergyCompany energyCompany) {
+    private LiteLmHardwareBase buildLmHardware(Hardware hardware, EnergyCompany energyCompany) {
         LiteLmHardwareBase lmHardware = new LiteLmHardwareBase();
         
         /* InventoryBase fields */
         int categoryId = inventoryDao.getCategoryIdForTypeId(hardware.getHardwareTypeEntryId(), energyCompany);
         lmHardware.setCategoryID(categoryId);
-        lmHardware.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
+        lmHardware.setEnergyCompanyId(energyCompany.getId());
         
         /* InventoryBase fields from Dto*/
         setInventoryFieldsFromDto(lmHardware, hardware);
@@ -693,13 +693,13 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         return lmHardware;
     }
     
-    private LiteMeterHardwareBase buildMeterHardwareBase(Hardware hardware, YukonEnergyCompany energyCompany) {
+    private LiteMeterHardwareBase buildMeterHardwareBase(Hardware hardware, EnergyCompany energyCompany) {
         LiteMeterHardwareBase meterHardware = new LiteMeterHardwareBase();
         
         /* InventoryBase fields */
         int categoryId = inventoryDao.getCategoryIdForTypeId(hardware.getHardwareTypeEntryId(), energyCompany);
         meterHardware.setCategoryID(categoryId);
-        meterHardware.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
+        meterHardware.setEnergyCompanyId(energyCompany.getId());
         
         /* InventoryBase fields from Dto*/
         setInventoryFieldsFromDto(meterHardware, hardware);
@@ -716,13 +716,13 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         return meterHardware;
     }
     
-    private LiteInventoryBase buildInventoryBase(Hardware hardware, YukonEnergyCompany energyCompany) {
+    private LiteInventoryBase buildInventoryBase(Hardware hardware, EnergyCompany energyCompany) {
         LiteInventoryBase liteInventoryBase = new LiteInventoryBase();
         
         /* InventoryBase fields */
         int categoryId = inventoryDao.getCategoryIdForTypeId(hardware.getHardwareTypeEntryId(), energyCompany);
         liteInventoryBase.setCategoryID(categoryId);
-        liteInventoryBase.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
+        liteInventoryBase.setEnergyCompanyId(energyCompany.getId());
         
         /* InventoryBase fields from Dto*/
         setInventoryFieldsFromDto(liteInventoryBase, hardware);

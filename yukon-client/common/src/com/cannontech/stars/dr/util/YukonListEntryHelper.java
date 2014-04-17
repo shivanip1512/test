@@ -50,10 +50,7 @@ public class YukonListEntryHelper {
      * @param listEntryId - Entry id of the entry
      * @return The yukon definition id
      */
-    public static int getYukonDefinitionId(
-            LiteStarsEnergyCompany energyCompany, String listName,
-            int listEntryId) {
-
+    public static int getYukonDefinitionId(YukonEnergyCompany energyCompany, String listName, int listEntryId) {
         YukonSelectionList selectionList = 
                 YukonSpringHook.getBean(SelectionListService.class).getSelectionList(energyCompany, listName);
 
