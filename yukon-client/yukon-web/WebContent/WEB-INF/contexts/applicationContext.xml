@@ -820,9 +820,9 @@
         factory-method="getCachedInstance" scope="request">
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
-
+    
     <bean id="pointUpdateBackingService" class="com.cannontech.web.updater.point.PointUpdateBackingService"/>
-
+    
     <bean id="pointDataUpdateRegistrationService"
         class="com.cannontech.web.updater.point.PointDataRegistrationServiceImpl" abstract="false">
         <property name="updaterService">
@@ -1060,6 +1060,8 @@
 
     <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag"/>
     <bean id="pointColorTagPrototype" class="com.cannontech.web.updater.point.PointColorTag"/>
+    
+    <bean id="getBooleanConfigParamTagPrototype" class="com.cannontech.web.taglib.GetBooleanConfigParamTag"/>
 
     <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag"/>
     

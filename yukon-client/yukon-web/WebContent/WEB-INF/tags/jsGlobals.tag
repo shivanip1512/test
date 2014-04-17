@@ -20,6 +20,7 @@ var YG = {
         TEXT: {
             ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
             cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>'
-        }
+        },
+        DEV_MODE: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true'
 };
 </script>

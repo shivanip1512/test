@@ -9,6 +9,28 @@
   <tlib-version>1.0</tlib-version>
   <shortname>CTI Tags</shortname>
   <uri>http://cannontech.com/tags/cti</uri>
+  
+  <tag>
+    <name>getBooleanConfigParam</name>
+    <description>Retrieve a boolean config param. Returns false if param not specified.</description>
+    <tag-class>com.cannontech.web.taglib.GetBooleanConfigParamTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>param</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
 
   <!-- Start of user/role/roleproperty tags -->
   <tag>
