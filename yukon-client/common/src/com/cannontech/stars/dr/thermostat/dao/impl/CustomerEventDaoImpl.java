@@ -257,7 +257,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
             // Convert the operation state entryid into a ThermostatMode enum
             // value
             int operationStateId = rs.getInt("OperationStateId");
-            int modeDefinitionId =YukonListEntryHelper.getYukonDefinitionId(ec,
+            int modeDefinitionId = YukonListEntryHelper.getYukonDefinitionId(ec,
                 YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_MODE, operationStateId);
 
             ThermostatMode mode = ThermostatMode.valueOf(modeDefinitionId);

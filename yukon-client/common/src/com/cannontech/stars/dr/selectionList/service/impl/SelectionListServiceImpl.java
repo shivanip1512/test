@@ -158,7 +158,7 @@ public class SelectionListServiceImpl implements SelectionListService {
     }
 
     private boolean isListInherited(EnergyCompany energyCompany, YukonSelectionList list) {
-        boolean hasParent = ecDao.getEnergyCompany(energyCompany.getId()).getParent() != null;
+        boolean hasParent = energyCompany.getParent() != null;
         YukonSelectionList ecList = getSelectionList(energyCompany, list.getListName(), false, false);
         return hasParent && ecList == null;
     }
@@ -228,7 +228,7 @@ public class SelectionListServiceImpl implements SelectionListService {
             return getSelectionList(ec.getParent(), listName, useInherited, useDefault);
         }
 
-        if (useDefault && !ecDao.isDefaultEnergyCompany(ec)) {
+        if (useDefault && !ec.isDefaultEc()) {
             YukonEnergyCompany defaultEc = ecDao.getEnergyCompany(EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID);
             YukonSelectionList dftList = getSelectionList(defaultEc, listName, false, false);
             if (dftList != null) {

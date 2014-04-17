@@ -333,7 +333,7 @@ public class InventoryDaoImpl implements InventoryDao {
     
     @Override
     public Thermostat getThermostatById(int thermostatId) {
-        EnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByInventoryId(thermostatId);
+        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(thermostatId);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * ");
@@ -341,7 +341,7 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("JOIN LMHardwareBase LMHB ON LMHB.inventoryId = IB.inventoryId ");
         sql.append("WHERE IB.inventoryId").eq(thermostatId);
 
-        Thermostat thermostat = jdbcTemplate.queryForObject(sql, new ThermostatRowMapper(yukonEnergyCompany));
+        Thermostat thermostat = jdbcTemplate.queryForObject(sql, new ThermostatRowMapper(ec));
         return thermostat;
     }
 
@@ -453,10 +453,8 @@ public class InventoryDaoImpl implements InventoryDao {
          * @return - Status of thermostat
          */
         private HardwareStatus getStatus(int statusEntryId, int thermostatId, HardwareType type) {
-            LiteStarsEnergyCompany liteStarsEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompany.getId());
-
             if (statusEntryId != 0) {
-                int statusDefinitionId = YukonListEntryHelper.getYukonDefinitionId(liteStarsEnergyCompany,
+                int statusDefinitionId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,
                                                                                    YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS,
                                                                                    statusEntryId);
                 HardwareStatus status = HardwareStatus.valueOf(statusDefinitionId);
@@ -469,7 +467,7 @@ public class InventoryDaoImpl implements InventoryDao {
             for (LiteLMHardwareEvent event : events) {
                 int actionId = event.getActionID();
 
-                int actionDefinitionId = YukonListEntryHelper.getYukonDefinitionId(liteStarsEnergyCompany,
+                int actionDefinitionId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,
                                                                                    YukonSelectionListDefs.YUK_LIST_NAME_LM_CUSTOMER_ACTION,
                                                                                    actionId);
 
