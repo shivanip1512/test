@@ -58,7 +58,7 @@ public final class PointFactory {
                 .setPointType(PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT));
             break;
         default: // this is bad
-            throw new Error("PointFactory::createPoint - Unrecognized point type");
+            throw new Error("PointFactory::createPoint - Unrecognized point type"); // this is also bad
         }
 
         return retPoint;
@@ -110,8 +110,9 @@ public final class PointFactory {
         } finally
         {
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (java.sql.SQLException e2) {}
         }
 
@@ -516,7 +517,9 @@ public final class PointFactory {
             CTILogger.error(e.getMessage(), e);
         } finally {
             try {
-                if (conn != null) conn.close();
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException e2) {}
         }
 
@@ -532,12 +535,13 @@ public final class PointFactory {
         } catch (PersistenceException te) {
             CTILogger.error(te);
         }
-        if (connection != null)
+        if (connection != null) {
             try {
                 connection.close();
             } catch (SQLException e) {
                 CTILogger.error(e);
             }
+        }
     }
 
 }
