@@ -49,7 +49,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.RFWMETER,
             PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
             PAOGroups.RFN430SL0, PAOGroups.RFN430SL1, PAOGroups.RFN430SL2, PAOGroups.RFN430SL3, PAOGroups.RFN430SL4,
-            PAOGroups.RF_DA
+            PAOGroups.RF_DA, PAOGroups.ECOBEE_SMART_SI
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
@@ -225,9 +225,9 @@ public Object[] createNewPanel(int panelIndex)
 			{
 				objs[0] = new com.cannontech.dbeditor.editor.device.PAOExclusionEditorPanel();
 				objs[1] = "Exclusion List";
-			}
-			else
-				objs = null;
+			} else {
+                objs = null;
+            }
 			
 			break;
 			
@@ -240,9 +240,9 @@ public Object[] createNewPanel(int panelIndex)
 			{
 				objs[0] = new com.cannontech.dbeditor.editor.device.ExclusionTimingEditorPanel();
 				objs[1] = "Exclusion Timing";
-			}
-			else
-				objs = null;
+			} else {
+                objs = null;
+            }
 			break;
 		
 		case 12:
@@ -345,8 +345,9 @@ public void setValue(Object val) {
 				Object[] panelTabs = createNewPanel(i);
 
 				//do not add null panels
-				if( panelTabs == null )
-					continue;
+				if( panelTabs == null ) {
+                    continue;
+                }
 
 				tempPanel = (DataInputPanel)panelTabs[0];
 				panels.addElement( tempPanel );
