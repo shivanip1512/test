@@ -19,7 +19,6 @@ import com.cannontech.core.dao.DesignationCodeDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -29,10 +28,10 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 
 public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
-    @Autowired private DesignationCodeDao designationCodeDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private DesignationCodeDao designationCodeDao;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     private SimpleTableAccessTemplate<ServiceCompanyDto> serviceCompanyTemplate;
 
@@ -52,14 +51,14 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         sql.append("LEFT JOIN YukonUser LG ON CT.LogInID = LG.UserID");
         selectBase = sql;
     }
-    
+
     // ServiceCompanyDto -> to -> sql
     private FieldMapper<ServiceCompanyDto> serviceCompanyDtoFieldMapper = new FieldMapper<ServiceCompanyDto>() {
 
         @Override
         public void extractValues(MapSqlParameterSource p, ServiceCompanyDto serviceCompanyDto) {
             p.addValue("CompanyName", serviceCompanyDto.getCompanyName());
-            p.addValue("MainPhoneNumber", serviceCompanyDto.getMainPhoneNumber());        
+            p.addValue("MainPhoneNumber", serviceCompanyDto.getMainPhoneNumber());
             p.addValue("MainFaxNumber", serviceCompanyDto.getMainFaxNumber());
             p.addValue("HIType", serviceCompanyDto.getHiType());
             p.addValue("AddressID", serviceCompanyDto.getAddress().getAddressID());
@@ -76,10 +75,8 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
             object.setCompanyId(value);
         }
     };
-    
-    // Row Mappers  sql -> to -> ServiceCompanyDto
-    private static class ServiceCompanyDtoRowMapper implements YukonRowMapper<ServiceCompanyDto> {
 
+    private static class ServiceCompanyDtoRowMapper implements YukonRowMapper<ServiceCompanyDto> {
         @Override
         public ServiceCompanyDto mapRow(YukonResultSet rs) throws SQLException {
             ServiceCompanyDto serviceCompanyDto = new ServiceCompanyDto();
@@ -89,34 +86,34 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
             serviceCompanyDto.setMainPhoneNumber(rs.getStringSafe("MainPhoneNumber"));
             serviceCompanyDto.setMainFaxNumber(rs.getStringSafe("MainFaxNumber"));
             serviceCompanyDto.setHiType(rs.getStringSafe("HIType"));
-            
-            //set address obj
+
+            // Set address object.
             ResultSet resultSet = rs.getResultSet();
             AddressDaoImpl.rowMapper.mapRow(resultSet, -1);
             serviceCompanyDto.setAddress(AddressDaoImpl.rowMapper.mapRow(resultSet, -1));
-            
-            //set primary contact obj
+
+            // Set primary contact object.
             serviceCompanyDto.setPrimaryContact(new LiteContact(rs.getInt("PrimaryContactID"),
-                                                                rs.getStringSafe("ContFirstName"),
-                                                                rs.getStringSafe("ContLastName"),
-                                                                rs.getInt("LogInID"),
-                                                                rs.getInt("AddressID")));
-            
+                rs.getStringSafe("ContFirstName"), rs.getStringSafe("ContLastName"), rs.getInt("LogInID"),
+                rs.getInt("AddressID")));
+
             return serviceCompanyDto;
         }
     }
-    
+
     private void populateServiceCompany(ServiceCompanyDto serviceCompany) {
         serviceCompany.setDesignationCodes(designationCodeDao.getDesignationCodesByServiceCompanyId(serviceCompany.getCompanyId()));
-        LiteContactNotification email = contactNotificationDao.getFirstNotificationForContactByType(serviceCompany.getPrimaryContact(), ContactNotificationType.EMAIL);
-        if(email != null) {
+        LiteContactNotification email =
+            contactNotificationDao.getFirstNotificationForContactByType(serviceCompany.getPrimaryContact(),
+                ContactNotificationType.EMAIL);
+        if (email != null) {
             serviceCompany.setEmailContactNotification(email.getNotification());
         }
     }
-    
+
     @PostConstruct
     public void init() throws Exception {
-        serviceCompanyTemplate = new SimpleTableAccessTemplate<ServiceCompanyDto>(yukonJdbcTemplate, nextValueHelper);
+        serviceCompanyTemplate = new SimpleTableAccessTemplate<ServiceCompanyDto>(jdbcTemplate, nextValueHelper);
         serviceCompanyTemplate.setTableName("ServiceCompany");
         serviceCompanyTemplate.setPrimaryKeyField("CompanyID");
         serviceCompanyTemplate.setFieldMapper(serviceCompanyDtoFieldMapper);
@@ -129,77 +126,76 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectBase);
         sql.append("WHERE CompanyId").eq(serviceCompanyId);
-        
-        ServiceCompanyDto serviceCompany = yukonJdbcTemplate.queryForObject(sql, new ServiceCompanyDtoRowMapper());
+
+        ServiceCompanyDto serviceCompany = jdbcTemplate.queryForObject(sql, new ServiceCompanyDtoRowMapper());
         populateServiceCompany(serviceCompany);
-        
+
         return serviceCompany;
     }
-    
+
     @Override
     public List<ServiceCompanyDto> getAllServiceCompanies() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectBase);
-        
-        List<ServiceCompanyDto> serviceCompanies = yukonJdbcTemplate.query(sql, new ServiceCompanyDtoRowMapper());
-        
-        for(ServiceCompanyDto serviceCompany : serviceCompanies) {
+
+        List<ServiceCompanyDto> serviceCompanies = jdbcTemplate.query(sql, new ServiceCompanyDtoRowMapper());
+
+        for (ServiceCompanyDto serviceCompany : serviceCompanies) {
             populateServiceCompany(serviceCompany);
         }
-        
+
         return serviceCompanies;
-        
     }
-    
+
     @Override
     public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompanies(Set<Integer> energyCompanyIds) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectBase);
         sql.append("WHERE ec.energycompanyid").in(energyCompanyIds);
-        
-        List<ServiceCompanyDto> serviceCompanies = yukonJdbcTemplate.query(sql, new ServiceCompanyDtoRowMapper());
-        
-        for(ServiceCompanyDto serviceCompany : serviceCompanies) {
+
+        List<ServiceCompanyDto> serviceCompanies = jdbcTemplate.query(sql, new ServiceCompanyDtoRowMapper());
+
+        for (ServiceCompanyDto serviceCompany : serviceCompanies) {
             populateServiceCompany(serviceCompany);
         }
-        
+
         return serviceCompanies;
     }
-    
+
     @Override
     public void create(ServiceCompanyDto serviceCompany, int energyCompanyId) {
         serviceCompanyTemplate.save(serviceCompany);
-        
-        //add to mapping table
+
+        // add to mapping table
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO ectogenericmapping");
         sql.values(energyCompanyId, serviceCompany.getCompanyId(), EcMappingCategory.SERVICE_COMPANY);
-        
-        yukonJdbcTemplate.update(sql);
+
+        jdbcTemplate.update(sql);
     }
-    
+
     @Override
     public void update(ServiceCompanyDto serviceCompany) {
         serviceCompanyTemplate.save(serviceCompany);
     }
-    
+
     @Override
     public void delete(int serviceCompanyId) {
         // Delete service company
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ServiceCompany");
         sql.append("WHERE CompanyID").eq(serviceCompanyId);
-        
-        yukonJdbcTemplate.update(sql);
-        
-        //delete from mapping table
+
+        jdbcTemplate.update(sql);
+
+        // delete from mapping table
         SqlStatementBuilder sql2 = new SqlStatementBuilder();
         sql2.append("DELETE FROM ectogenericmapping");
         sql2.append("WHERE ItemID").eq(serviceCompanyId);
         sql2.append("AND MappingCategory").eq_k(EcMappingCategory.SERVICE_COMPANY);
-        
-        yukonJdbcTemplate.update(sql2);
+
+        jdbcTemplate.update(sql2);
     }
 
     @Override
@@ -208,8 +204,8 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         sql.append("UPDATE InventoryBase");
         sql.append("SET InstallationCompanyId").eq(toServiceCompanyId);
         sql.append("WHERE InstallationCompanyId").eq(fromServiceCompanyId);
-        
-        yukonJdbcTemplate.update(sql);
+
+        jdbcTemplate.update(sql);
     }
 
     @Override
@@ -218,8 +214,8 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         sql.append("SELECT Count(*)");
         sql.append("FROM InventoryBase IB");
         sql.append("WHERE IB.InstallationCompanyId").eq(serviceCompanyId);
-        
-        return yukonJdbcTemplate.queryForInt(sql);
+
+        return jdbcTemplate.queryForInt(sql);
     }
 
     @Override
@@ -229,15 +225,16 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         sql.append("join ECToGenericMapping ecgm on ecgm.ItemID = sc.CompanyID");
         sql.append("and ecgm.MappingCategory").eq_k(EcMappingCategory.SERVICE_COMPANY);
         sql.append("where ecgm.EnergyCompanyID").in(energyCompanyIds);
-        List<DisplayableServiceCompany> allServiceCompanies = yukonJdbcTemplate.query(sql, 
-                new YukonRowMapper<DisplayableServiceCompany>() {
-            @Override
-            public DisplayableServiceCompany mapRow(YukonResultSet rs) throws SQLException {
-                DisplayableServiceCompany sc = new DisplayableServiceCompany(rs.getInt("companyId"),
-                                                     SqlUtils.convertDbValueToString(rs.getString("companyName")));
-                return sc;
-            }
-        });
+        List<DisplayableServiceCompany> allServiceCompanies =
+            jdbcTemplate.query(sql, new YukonRowMapper<DisplayableServiceCompany>() {
+                @Override
+                public DisplayableServiceCompany mapRow(YukonResultSet rs) throws SQLException {
+                    int id = rs.getInt("companyId");
+                    String name = rs.getStringSafe("companyName");
+                    DisplayableServiceCompany sc = new DisplayableServiceCompany(id, name);
+                    return sc;
+                }
+            });
         return allServiceCompanies;
     }
 }
