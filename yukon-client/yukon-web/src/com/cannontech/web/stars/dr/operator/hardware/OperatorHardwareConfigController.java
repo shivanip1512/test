@@ -246,7 +246,8 @@ public class OperatorHardwareConfigController {
             inService = EnrollmentInService.determineInService(enrollmentDao.isInService(inventoryId));
         }
         model.addAttribute("inService", inService);
-        model.addAttribute("canEnableDisable", !(inventory.getHardwareType().isZigbee() |inventory.getHardwareType().isEcobee()));
+        model.addAttribute("canEnableDisable", !inventory.getHardwareType().isZigbee() 
+                                            && !inventory.getHardwareType().isEcobee());
         model.addAttribute("isZigbee", inventory.getHardwareType().isZigbee());
         int deviceId = inventoryDao.getDeviceId(inventoryId);
         
