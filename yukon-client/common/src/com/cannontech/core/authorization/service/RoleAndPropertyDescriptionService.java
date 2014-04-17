@@ -35,16 +35,15 @@ public class RoleAndPropertyDescriptionService {
      * true value for the given role properties, or a true GlobalSetting value.
      * Categories, roles and properties are specified as a comma-separated
      * list of enum names.
-     *
+     * 
      * This works in an OR fashion. If the user passes any
      * of the role or property checks a boolean value of
      * true is returned.
-     *
+     * 
      * Specific categories or roles can be not'd by prepending a !. Properties
      * can be checked with the False Checks by prepending a !.
      */
-    public boolean checkIfAtLeaseOneExists(final String rolePropDescription,
-            final LiteYukonUser user) {
+    public boolean checkIfAtLeaseOneExists(final String rolePropDescription, final LiteYukonUser user) {
         return compile(rolePropDescription).check(user);
     }
 
@@ -54,7 +53,7 @@ public class RoleAndPropertyDescriptionService {
         }
 
         List<UserChecker> checkers = Lists.newArrayListWithExpectedSize(5);
-        // split value
+        // Split value.
         String[] valueArray = rolePropDescription.split("[\\s,\\n]+");
         for (String someEnumName : valueArray) {
             someEnumName = someEnumName.trim();
@@ -62,13 +61,13 @@ public class RoleAndPropertyDescriptionService {
                 continue;
             }
 
-            // check if it is inverted
+            // Check if it is inverted.
             boolean inverted = false;
             if (someEnumName.startsWith("!")) {
                 someEnumName = someEnumName.substring(1);
                 inverted = true;
             }
-            // see if it is a category
+
             try {
                 YukonRoleCategory category = YukonRoleCategory.valueOf(someEnumName);
                 UserChecker categoryChecker = userCheckerFactory.createCategoryChecker(category);
@@ -77,12 +76,10 @@ public class RoleAndPropertyDescriptionService {
                 }
                 checkers.add(categoryChecker);
                 continue;
-
             } catch (IllegalArgumentException e) {
+                // It's not a category.
             }
 
-
-            // see if it is a role
             try {
                 YukonRole role = YukonRole.valueOf(someEnumName);
                 UserChecker roleChecker = userCheckerFactory.createRoleChecker(role);
@@ -91,11 +88,10 @@ public class RoleAndPropertyDescriptionService {
                 }
                 checkers.add(roleChecker);
                 continue;
-
             } catch (IllegalArgumentException e) {
+                // It's not a role.
             }
 
-            // not a role, check if it is a property
             try {
                 YukonRoleProperty property = YukonRoleProperty.valueOf(someEnumName);
                 UserChecker propertyChecker;
@@ -106,59 +102,58 @@ public class RoleAndPropertyDescriptionService {
                 }
                 checkers.add(propertyChecker);
                 continue;
+            } catch (IllegalArgumentException ignore) {
+                // It's not a role property.
+            }
 
-            } catch (IllegalArgumentException ignore) { }
-
-            // see if it is a supported system setting
             try {
+                boolean globalSettingValue = globalSettingDao.getBoolean(GlobalSettingType.valueOf(someEnumName));
 
-                boolean bool = globalSettingDao.getBoolean(GlobalSettingType.valueOf(someEnumName));
-
-                UserChecker propertyChecker = bool ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
+                UserChecker propertyChecker = globalSettingValue ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
                 if (inverted) {
-                    propertyChecker = bool ? UserCheckerBase.FALSE : UserCheckerBase.TRUE;
+                    propertyChecker = globalSettingValue ? UserCheckerBase.FALSE : UserCheckerBase.TRUE;
                 }
                 checkers.add(propertyChecker);
                 continue;
+            } catch (IllegalArgumentException ignore) {
+                // It's not a system setting.
+            }
 
-            } catch (IllegalArgumentException ignore) { }
-
-            // see if it is a supported energy company setting
             try {
-                EnergyCompanySettingType setting = EnergyCompanySettingType.valueOf(someEnumName);
+                EnergyCompanySettingType ecSettingType = EnergyCompanySettingType.valueOf(someEnumName);
                 UserChecker settingChecker;
                 if (inverted) {
-                    settingChecker = userCheckerFactory.createECFalseSettingChecker(setting);
+                    settingChecker = userCheckerFactory.createECFalseSettingChecker(ecSettingType);
                 } else {
-                    settingChecker = userCheckerFactory.createECSettingChecker(setting);
+                    settingChecker = userCheckerFactory.createECSettingChecker(ecSettingType);
                 }
                 checkers.add(settingChecker);
                 continue;
+            } catch (IllegalArgumentException ignore) {
+                // It's not an energy company setting.
+            }
 
-            } catch (IllegalArgumentException ignore) { }
-
-            // see if it is a supported boolean key in master.cfg
             try {
+                MasterConfigBooleanKeysEnum key = MasterConfigBooleanKeysEnum.valueOf(someEnumName);
+                boolean configValue = configurationSource.getBoolean(key);
 
-            	MasterConfigBooleanKeysEnum key = MasterConfigBooleanKeysEnum.valueOf(someEnumName);
-            	boolean bool = configurationSource.getBoolean(key);
-
-                UserChecker propertyChecker = bool ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
+                UserChecker propertyChecker = configValue ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
                 if (inverted) {
-                    propertyChecker = bool ? UserCheckerBase.FALSE : UserCheckerBase.TRUE;
+                    propertyChecker = configValue ? UserCheckerBase.FALSE : UserCheckerBase.TRUE;
                 }
                 checkers.add(propertyChecker);
                 continue;
+            } catch (IllegalArgumentException ignore) {
+                // It's not a master.cfg boolean.
+            }
 
-            } catch (IllegalArgumentException ignore) { }
-
-            // if we get here, we must not have a valid role, property, or global setting
-            throw new IllegalArgumentException("Can't use '" + someEnumName + "', check that it is a valid role, category, boolean property, or boolean global setting.");
+            // If we get here, we must not have a valid setting of any time.
+            throw new IllegalArgumentException("Can't use '" + someEnumName
+                + "', check that it is a valid role, category, boolean property, or boolean global setting.");
         }
-        // if we get here, nothing matched
+
+        // If we get here, nothing matched.
         AggregateOrUserChecker userChecker = new AggregateOrUserChecker(checkers);
         return userChecker;
     }
-
-
 }
