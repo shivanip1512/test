@@ -12,40 +12,27 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Filter for all JSP that ensure no caching
- * @author ryan
- * 
  */
-public class NoCacheFilter implements Filter 
-{
-	// Save the filter config for getting at servlet context
-	private FilterConfig config;
-	
-	/**
-	 * @see javax.servlet.Filter#init(FilterConfig)
-	 */
-	public void init(FilterConfig fc) throws ServletException {
-		config = fc;
-	}
+public class NoCacheFilter implements Filter {
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // This simple filter has no state.
+    }
 
-	/**
-	 * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
-	public void doFilter( ServletRequest req, ServletResponse resp, FilterChain chain)
-                    throws IOException, ServletException
-	{
-        ((HttpServletResponse)resp).setHeader("Pragma", "no-cache");
-        ((HttpServletResponse)resp).setHeader("Cache-control", "no-cache, must-revalidate");
-        ((HttpServletResponse)resp).setDateHeader("Expires", 0);
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse resp, FilterChain chain) throws IOException,
+            ServletException {
+        HttpServletResponse response = (HttpServletResponse) resp;
 
-        chain.doFilter(req,resp);
-  	}
-	
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Cache-Control", "no-cache, no-store");
+        response.setDateHeader("Expires", 0);
 
-	/**
-	 * @see javax.servlet.Filter#destroy()
-	 */
-	public void destroy() {
-		config = null;
-	}
+        chain.doFilter(request, resp);
+    }
 
+    @Override
+    public void destroy() {
+        // This simple filter has no state.
+    }
 }
