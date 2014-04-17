@@ -1,3 +1,5 @@
+yukon.namespace('yukon.analytics');
+
 /**
  * Singleton that manages [Google] analytics for yukon. It is initialized 
  * when the public method "setTrackingIds" is first called. This is also when event listeners 
@@ -6,54 +8,55 @@
  * @class Manages [Google] analytics for Yukon
  * @requires jQuery 1.6+
  */
-
-yukon.namespace('yukon.analytics');
-
-yukon.analytics = (function () {
+yukon.analytics = (function() {
     
-    var _initialized = false,
-        _cooper_tracking_id = null,
-        _additional_tracking_ids = [],
-        _skipped_urls = {'/updater/update':1, '/addToHistory':1, '/isFavorite':1, '/isSubscribed':1,
-    		'/search/autocomplete.json':1, '/picker/build':1, '/picker/idSearch':1, '/picker/search':1},
+    var 
+    _initialized = false,
+    _cooper_tracking_id = null,
+    _additional_tracking_ids = [],
+    _skipped_urls = {
+        '/updater/update': 1, 
+        '/addToHistory': 1, 
+        '/isFavorite': 1, 
+        '/isSubscribed': 1,
+        '/search/autocomplete.json': 1, 
+        '/picker/build': 1, 
+        '/picker/idSearch': 1, 
+        '/picker/search': 1
+    },
 
-        /*---------------------*/
-        /* 'PRIVATE' functions */
-        /*---------------------*/
-        _init = function () {
-            if(_initialized) return;
-            if (typeof _gaq === "undefined" || _gaq === null) {
-                _gaq = [];
+    /* 'PRIVATE' functions */
+    _init = function() {
+        if(_initialized) return;
+        if (typeof _gaq === "undefined" || _gaq === null) {
+            _gaq = [];
+        }
+
+        (function(d) {
+            var g=d.createElement("script");
+            var s=d.getElementsByTagName("body")[0];
+            g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
+            s.appendChild(g); // append to bottom of <body> to prevent blocking (as opposed to <head>)
+        }(document));
+
+        _initialized = true;
+    },
+
+    _setAdditionalTrackingIds = function(args) {
+        var trackPageview = ['a._trackPageview'];
+        if (typeof args !== 'undefined' && typeof args.url === "string" && args.url !== "") {
+            trackPageview.push(args.url);
+        }
+        for (var i=0 ; i < _additional_tracking_ids.length ; i++) {
+            if (typeof _additional_tracking_ids[i] !== 'undefined' && _additional_tracking_ids[i] !== '') {
+                _gaq.push(['a._setAccount', _additional_tracking_ids[i]], trackPageview);
             }
+        }
+    },
 
-            (function (d) {
-                var g=d.createElement("script");
-                var s=d.getElementsByTagName("body")[0];
-                g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
-                s.appendChild(g); // append to bottom of <body> to prevent blocking (as opposed to <head>)
-            }(document));
-
-            _initialized = true;
-        },
-
-        _setAdditionalTrackingIds = function (args) {
-            var trackPageview = ['a._trackPageview'];
-            if (typeof args !== 'undefined' && typeof args.url === "string" && args.url !== "") {
-                trackPageview.push(args.url);
-            }
-            for (var i=0 ; i < _additional_tracking_ids.length ; i++) {
-                if (typeof _additional_tracking_ids[i] !== 'undefined' && _additional_tracking_ids[i] !== '') {
-                    _gaq.push(['a._setAccount', _additional_tracking_ids[i]], trackPageview);
-                }
-            }
-        },
-        mod;
-
-    mod = {
+    _mod = {
         
-        /*---------------------*/
         /* 'PUBLIC' functions */
-        /*---------------------*/
 
         /**
          * Sets the google analytics tracking Id's
@@ -61,7 +64,7 @@ yukon.analytics = (function () {
          * @param {String} args.cooper_tracking_id The Cooper Google Analytics Tracking Id
          * @param {String} args.additional_tracking_ids The additional Google Analytics Tracking Ids (comma separated string)
          */
-        setTrackingIds: function (args) {
+        setTrackingIds: function(args) {
             _init();
             if (typeof args.cooper_tracking_id === "string" && args.cooper_tracking_id !== "") {
                 _cooper_tracking_id = args.cooper_tracking_id;
@@ -73,12 +76,12 @@ yukon.analytics = (function () {
             }
 
             // Log all jQuery AJAX requests to Google Analytics
-            $(document).ajaxSend(function (event, xhr, settings) {
-            	var urlPath = settings.url;
-            	var indexOfQueryParams = urlPath.indexOf('?');
-            	if (indexOfQueryParams != -1) {
-            		urlPath = urlPath.substring(0, indexOfQueryParams);
-            	}
+            $(document).ajaxSend(function(event, xhr, settings) {
+                var urlPath = settings.url;
+                var indexOfQueryParams = urlPath.indexOf('?');
+                if (indexOfQueryParams != -1) {
+                    urlPath = urlPath.substring(0, indexOfQueryParams);
+                }
                 if (!_skipped_urls[urlPath] && typeof _gaq !== "undefined" && _gaq !== null) {
                     _gaq.push(["_setAccount", _cooper_tracking_id], ['_trackPageview', settings.url]);
                     if (_additional_tracking_ids.length > 0) {
@@ -88,5 +91,6 @@ yukon.analytics = (function () {
             });
         }
     };
-    return mod;
+    
+    return _mod;
 })();

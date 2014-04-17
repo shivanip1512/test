@@ -11,11 +11,13 @@ import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.web.tools.mapping.dao.LocationDao;
 import com.cannontech.web.tools.mapping.dao.LocationDao.FeaturePropertyType;
 
@@ -33,7 +35,8 @@ public class MapController {
     @RequestMapping(value="/map", params="collectionType")
     public String map(ModelMap model, DeviceCollection deviceCollection) {
         
-        model.addAttribute("collection", deviceCollection);
+        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", deviceCollection);
         
         return "map/map.jsp";
     }
@@ -77,4 +80,20 @@ public class MapController {
         
         return collection;
     }
+    
+    @ModelAttribute("iconMap")
+    private Map<PaoType, String> getPaoTypeIconMap() {
+        
+        Map<PaoType, String> icons = new HashMap<>();
+        for (PaoType type : PaoType.getMeterTypes()) {
+            if (type.isWaterMeter()) {
+                icons.put(type, "marker-water.png");
+            } else {
+                icons.put(type, "marker-electric.png");
+            }
+        }
+        
+        return icons;
+    }
+    
 }

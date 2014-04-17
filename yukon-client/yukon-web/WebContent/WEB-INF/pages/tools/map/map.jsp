@@ -16,16 +16,19 @@
 </style>
 
     <div class="stacked clearfix">
-        <div class="column-12-12">
-            <div class="column one">
-                <tags:selectedDevices deviceCollection="${collection}" id="selectedDevices"/>
-            </div>
-            <div class="column two nogutter">
-            </div>
-        </div>
+        <tags:selectedDevices deviceCollection="${deviceCollection}" id="selectedDevices"/>
     </div>
 
     <div id="map" class="clearfix map f-focus" tabindex="0"></div>
+    <div id="mouse-position" class="warning"></div>
+    
+    <cti:url value="/tools/map/locations" var="locationsUrl">
+        <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+            <cti:param name="${cp.key}" value="${cp.value}"/>
+        </c:forEach>
+    </cti:url>
+    <input id="locations" type="hidden" value="${fn:escapeXml(locationsUrl)}">
+    <cti:toJson object="${iconMap}" id="icon-map"/>
 
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
