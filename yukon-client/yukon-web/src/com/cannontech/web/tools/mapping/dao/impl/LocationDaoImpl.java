@@ -37,25 +37,6 @@ public class LocationDaoImpl implements LocationDao {
 
     private final String projection;
 
-    public enum FeaturePropertiesKey {
-        PAO_IDENTIFIER("paoIdentifier");
-
-        private final String featurePropertiesKey;
-
-        FeaturePropertiesKey(String featurePropertiesKey) {
-            this.featurePropertiesKey = featurePropertiesKey;
-        }
-
-        public String getFeaturePropertiesKey() {
-            return featurePropertiesKey;
-        }
-
-        @Override
-        public String toString() {
-            return this.getFeaturePropertiesKey();
-        }
-    }
-
     private final static YukonRowMapper<Location> locationMapper = new YukonRowMapper<Location>() {
         @Override
         public Location mapRow(YukonResultSet rs) throws SQLException {
@@ -119,7 +100,7 @@ public class LocationDaoImpl implements LocationDao {
             Point point = new Point(location.getLongitude(), location.getLatitude());
             feature.setGeometry(point);
             // Set feature properties.
-            feature.getProperties().put(FeaturePropertiesKey.PAO_IDENTIFIER.toString(),
+            feature.getProperties().put(FeaturePropertyType.PAO_IDENTIFIER.getKeyName(),
                                         location.getPaoIdentifier());
             features.add(feature);
         }

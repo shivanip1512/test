@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.web.tools.mapping.dao.LocationDao;
-import com.cannontech.web.tools.mapping.dao.impl.LocationDaoImpl.FeaturePropertiesKey;
+import com.cannontech.web.tools.mapping.dao.LocationDao.FeaturePropertyType;
 
 @Controller
 public class MapController {
@@ -70,7 +70,7 @@ public class MapController {
             Point point = new Point(longitude, latitude);
             feature.setGeometry(point);
             
-            feature.getProperties().put(FeaturePropertiesKey.PAO_IDENTIFIER.toString(), device.getPaoIdentifier());
+            feature.getProperties().put(FeaturePropertyType.PAO_IDENTIFIER.getKeyName(), device.getPaoIdentifier());
             
             collection.add(feature);
         }

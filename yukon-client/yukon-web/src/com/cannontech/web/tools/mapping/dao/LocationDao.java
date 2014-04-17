@@ -9,6 +9,25 @@ import com.cannontech.web.tools.mapping.model.Location;
 
 public interface LocationDao {
 
+    enum FeaturePropertyType {
+        PAO_IDENTIFIER("paoIdentifier");
+
+        private final String keyName;
+
+        FeaturePropertyType(String keyName) {
+            this.keyName = keyName;
+        }
+
+        public String getKeyName() {
+            return keyName;
+        }
+
+        @Override
+        public String toString() {
+            return getKeyName();
+        }
+    }
+
     /**
      * Get most recent location for each pao in the collection.
      * Paos without a location are ignored. If no paos have a
