@@ -1,7 +1,6 @@
 package com.cannontech.stars.dr.ecobee;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.inventory.Hardware;
@@ -31,6 +30,16 @@ public class EcoBeeBuilder implements HardwareTypeExtensionProvider {
     }
 
     @Override
+    public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {
+        paoPersistenceService.deletePao(pao.getPaoIdentifier());
+    }
+
+    @Override
+    public ImmutableSet<HardwareType> getTypes() {
+        return ImmutableSet.of(HardwareType.ECOBEE_SMART_SI);
+    }
+
+    @Override
     public void updateDevice(Hardware hardware) {
 //        PaoIdentifier ecoBeeIdentifier = new PaoIdentifier(hardware.getDeviceId(), PaoType.ECOBEE_SMART_SI);
 //        CompleteDevice ecoBeePao = paoPersistenceService.retreivePao(ecoBeeIdentifier, CompleteDevice.class);
@@ -44,30 +53,19 @@ public class EcoBeeBuilder implements HardwareTypeExtensionProvider {
     public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
         // Nothing extra to do
     }
-
-    @Override
-    @Transactional
-    public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {
-        paoPersistenceService.deletePao(pao.getPaoIdentifier());
-    }
-
+    
     @Override
     public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
-     // Nothing extra to do 
+        // Nothing extra to do 
     }
 
     @Override
     public void retrieveDevice(Hardware hardware) {
-     // Nothing extra to do 
+        // Nothing extra to do 
     }
 
     @Override
     public void validateDevice(Hardware hardware, Errors errors) {
-     // Nothing extra to do 
-    }
-
-    @Override
-    public ImmutableSet<HardwareType> getTypes() {
-        return ImmutableSet.of(HardwareType.ECOBEE_SMART_SI);
+        // Nothing extra to do 
     }
 }
