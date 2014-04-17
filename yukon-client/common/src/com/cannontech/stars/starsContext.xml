@@ -264,7 +264,8 @@
 	
 	<bean id="digiGatewayBuilder" class="com.cannontech.stars.dr.digi.builder.DigiGatewayBuilder"/>	
     <bean id="hardwareTypeExtensionService" class="com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionServiceImpl"/>
-	<bean class="com.cannontech.stars.dr.digi.builder.ZigbeeEndpointBuilder"/>
+    <bean class="com.cannontech.stars.dr.digi.builder.ZigbeeEndpointBuilder"/>
+    <bean class="com.cannontech.stars.dr.ecobee.EcoBeeBuilder"/>
 
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryEnrollmentDaoImpl"/>
     

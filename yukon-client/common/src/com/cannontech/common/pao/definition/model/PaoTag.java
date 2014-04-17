@@ -55,6 +55,7 @@ public enum PaoTag {
     RFN_DEMAND_RESET("RFN Device Supporting Demand Reset"),
     PLC_DEMAND_RESET("PLC Device Supporting Demand Reset"),
     RFN_POINT_CALCULATION("RFN Point Calculation"), // This may need to be split into one tag per point and/or used for plc devices later
+    ECOBEE_PROGRAM_ENROLLMENT("Ecobee Program Enrollment"),
     ;
 
     private final String description;

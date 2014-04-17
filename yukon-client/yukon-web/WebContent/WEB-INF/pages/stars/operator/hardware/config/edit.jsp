@@ -178,7 +178,7 @@ updateSub = function (data) {
             </tags:sectionContainer2>
         </c:if>
     </div>
-    <c:if test="${!isZigbee}">
+    <c:if test="${canEnableDisable}">
         <div class="column two nogutter">
             <c:if test="${configurable}">
                 <tags:sectionContainer2 nameKey="serviceStatus">

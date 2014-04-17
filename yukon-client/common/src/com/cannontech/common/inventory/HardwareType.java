@@ -67,7 +67,8 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     UTILITY_PRO_G2(YUK_DEF_ID_DEV_TYPE_UTILITYPRO_G2, ONE_WAY_RECEIVER, THERMOSTAT, EXPRESSCOM, true, true, true),
     UTILITY_PRO_G3(YUK_DEF_ID_DEV_TYPE_UTILITYPRO_G3, ONE_WAY_RECEIVER, THERMOSTAT, EXPRESSCOM, true, true, true),
     UTILITY_PRO_ZIGBEE(YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO, TWO_WAY_RECEIVER, THERMOSTAT, SEP, true, false, true),
-
+    ECOBEE_SMART_SI(YUK_DEF_ID_DEV_TYPE_ECOBEE_SMART_SI, TWO_WAY_RECEIVER, THERMOSTAT, ECOBEE, false, true, false),
+    
     /* Gateways*/
     DIGI_GATEWAY(YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, TWO_WAY_RECEIVER, GATEWAY, EXPRESSCOM, true, false, false);
     
@@ -77,6 +78,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     private final static ImmutableSet<HardwareType> saTypes = ImmutableSet.of(SA_205, SA_305, SA_SIMPLE);
     private final static ImmutableSet<HardwareType> zigbeeTypes;
     private final static ImmutableSet<HardwareType> zigbeeEndpointTypes;
+    private final static ImmutableSet<HardwareType> ecobeeTypes;
     private final static ImmutableSet<HardwareType> utilityProTypes;
     private final static ImmutableSet<HardwareType> autoModeEnableTypes;
     
@@ -122,6 +124,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
         supportsTextMessages = ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE, DIGI_GATEWAY);
+        ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI);
         
         // PaoType map
         starsToPaoMap = ArrayListMultimap.create();
@@ -255,6 +258,13 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     /**
+     * Returns true if this hardware type is an Ecobee thermostat.
+     */
+    public boolean isEcobee() {
+        return ecobeeTypes.contains(this);
+    }
+    
+    /**
      * Returns true if this hardware type supports the 'change device type' action.
      */
     public boolean isSupportsChangeType() {
@@ -363,6 +373,10 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
 
     public static ImmutableSet<HardwareType> getZigbeeEndpointTypes() {
         return zigbeeEndpointTypes;
+    }
+    
+    public static ImmutableSet<HardwareType> getEcobeeTypes() {
+        return ecobeeTypes;
     }
     
     /**

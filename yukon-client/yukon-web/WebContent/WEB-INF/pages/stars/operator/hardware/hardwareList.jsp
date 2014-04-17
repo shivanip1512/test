@@ -450,7 +450,9 @@
                                                 <cm:dropdownOption key=".manual.label" icon="icon-wrench" href="${editManualUrl}${thermostat.inventoryId}" />
                                             </c:if>
                                         </cti:checkRolesAndProperties>
-                                        <cm:dropdownOption key=".history.label" icon="icon-time" href="${thermostatHistoryUrl}${thermostat.inventoryId}" />
+                                        <c:if test="${thermostat.hardwareType.supportsSchedules}">
+                                            <cm:dropdownOption key=".history.label" icon="icon-time" href="${thermostatHistoryUrl}${thermostat.inventoryId}" />
+                                        </c:if>
                                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                             <c:if test="${inventoryChecking}">
                                                 <li>

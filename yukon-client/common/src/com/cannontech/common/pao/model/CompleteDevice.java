@@ -1,10 +1,11 @@
 package com.cannontech.common.pao.model;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(idColumnName="DeviceId")
+@YukonPao(idColumnName="DeviceId", paoTypes=PaoType.ECOBEE_SMART_SI)
 public class CompleteDevice extends CompleteYukonPao {
     private boolean alarmInhibit = false;
     private boolean controlInhibit = false;
@@ -35,8 +36,9 @@ public class CompleteDevice extends CompleteYukonPao {
     @Override
     public boolean equals(Object object){
         if (object instanceof CompleteDevice) {
-            if (!super.equals(object)) 
+            if (!super.equals(object)) {
                 return false;
+            }
             CompleteDevice that = (CompleteDevice) object;
             return Objects.equal(this.alarmInhibit, that.alarmInhibit)
                 && Objects.equal(this.controlInhibit, that.controlInhibit);

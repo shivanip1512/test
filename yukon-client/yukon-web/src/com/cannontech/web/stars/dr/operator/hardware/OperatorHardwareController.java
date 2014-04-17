@@ -338,7 +338,8 @@ public class OperatorHardwareController {
         
         setupHardwareViewEditModel(accountInfoFragment, hardware, model, userContext);
         boolean showViewMore = false;
-        if(HardwareType.getForClass(HardwareClass.THERMOSTAT).contains(hardware.getHardwareType())) {
+        if(HardwareType.getForClass(HardwareClass.THERMOSTAT).contains(hardware.getHardwareType())
+                && hardware.getHardwareType().isSupportsSchedules()) {
             showViewMore = true;
             operatorThermostatHelper.setupModelMapForCommandHistory(model, request, 
                     Collections.singletonList(inventoryId), accountInfoFragment.getAccountId(), 
