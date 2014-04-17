@@ -80,12 +80,12 @@ BOOST_AUTO_TEST_CASE( test_dev_rfDa_getconfig_dnp_address )
             BOOST_CHECK_EQUAL( command->getApplicationServiceId().value, 0x81 );
 
             std::vector<unsigned char> exp = boost::assign::list_of
-                    (0x01);
+                    (0x35);
 
             BOOST_CHECK_EQUAL( rcv, exp );
 
             std::vector<unsigned char> response = boost::assign::list_of
-                    (0x02)(0x12)(0x34);
+                    (0x36)(0x12)(0x34);
 
             Commands::RfnCommandResult result = command->decodeCommand( decode_time, response );
 

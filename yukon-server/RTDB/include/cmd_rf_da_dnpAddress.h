@@ -15,8 +15,8 @@ protected:
 
     enum CommandCode
     {
-        CommandCode_Request         = 0x01,
-        CommandCode_Response        = 0x02
+        CommandCode_Request         = 0x35,
+        CommandCode_Response        = 0x36
     };
 
     virtual Bytes getCommandHeader();  //  returns getCommandCode() in a vector

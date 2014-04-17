@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rf_da_dnpAddress )
     // execute
     {
         const std::vector< unsigned char > exp = boost::assign::list_of
-            (0x01);
+            (0x35);
 
         RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rf_da_dnpAddress )
     // decode
     {
         const std::vector< unsigned char > response = boost::assign::list_of
-            (0x02)(0x12)(0x34);
+            (0x36)(0x12)(0x34);
 
         RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
 
