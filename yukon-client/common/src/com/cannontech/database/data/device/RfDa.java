@@ -7,11 +7,11 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.port.CommPort;
 
-public class RFDA extends RfnBase {
+public class RfDa extends RfnBase {
 
     private CommPort commPort = null;
     
-    public RFDA() {
+    public RfDa() {
         super();
     }
 

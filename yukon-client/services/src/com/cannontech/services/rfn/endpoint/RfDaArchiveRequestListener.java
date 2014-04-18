@@ -17,17 +17,17 @@ import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.service.RfdaCreationService;
-import com.cannontech.dr.rfn.message.archive.RfDaArchiveRequest;
-import com.cannontech.dr.rfn.message.archive.RfDaArchiveResponse;
+import com.cannontech.common.rfn.service.RfDaCreationService;
+import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
+import com.cannontech.da.rfn.message.archive.RfDaArchiveResponse;
 import com.google.common.collect.ImmutableList;
 
 @ManagedResource
-public class RfdaReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfDaArchiveRequest> {
+public class RfDaArchiveRequestListener extends ArchiveRequestListenerBase<RfDaArchiveRequest> {
     
     private static final Logger log = YukonLogManager.getLogger(ArchiveRequestListenerBase.class);
     
-    @Autowired protected RfdaCreationService rfdaCreationService;
+    @Autowired protected RfDaCreationService rfdaCreationService;
     
     private static final String archiveResponseQueueName = "yukon.qr.obj.da.rfn.RfDaArchiveResponse";
     

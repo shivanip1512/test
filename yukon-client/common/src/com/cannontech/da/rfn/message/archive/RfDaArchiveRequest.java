@@ -1,4 +1,4 @@
-package com.cannontech.dr.rfn.message.archive;
+package com.cannontech.da.rfn.message.archive;
 
 import java.io.Serializable;
 

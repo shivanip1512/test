@@ -369,7 +369,7 @@
     <bean class="com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceCreationServiceImpl"/>
-    <bean class="com.cannontech.common.rfn.service.impl.RfdaCreationServiceImpl"/>
+    <bean class="com.cannontech.common.rfn.service.impl.RfDaCreationServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnExpressComMessageServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RawExpressComCommandBuilderImpl"/>

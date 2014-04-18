@@ -6,20 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.service.RfdaCreationService;
+import com.cannontech.common.rfn.service.RfDaCreationService;
 
-public class RfdaCreationServiceImpl implements RfdaCreationService {
+public class RfDaCreationServiceImpl implements RfDaCreationService {
     
-
     @Autowired private DeviceCreationService deviceCreationService;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
 
     private AtomicInteger newDeviceCreated = new AtomicInteger();

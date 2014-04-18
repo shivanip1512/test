@@ -497,7 +497,7 @@ public final class DeviceFactory {
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
             break;
         case RF_DA:
-            returnDevice = new RFDA();
+            returnDevice = new RfDa();
             returnDevice.setDeviceType(PaoType.RF_DA.name());
             returnDevice.setDeviceID(PaoType.RF_DA.getDeviceTypeId());
             returnDevice.setDeviceClass(PaoType.RF_DA.getPaoClass().name());

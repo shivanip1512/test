@@ -6,7 +6,7 @@ import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 
-public interface RfdaCreationService {
+public interface RfDaCreationService {
 
     /**
      * Creates an rfn device using {@link DeviceCreationService} using an
