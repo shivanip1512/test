@@ -14,11 +14,13 @@ import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.google.common.collect.ImmutableSet;
 
-public class EcoBeeBuilder implements HardwareTypeExtensionProvider {
+public class EcobeeBuilder implements HardwareTypeExtensionProvider {
 
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
 
+    private static final ImmutableSet<HardwareType> supportedType = ImmutableSet.of(HardwareType.ECOBEE_SMART_SI);
+    
     @Override
     public void createDevice(Hardware hardware) {
         CompleteDevice ecoBeePao = new CompleteDevice();
@@ -36,7 +38,7 @@ public class EcoBeeBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public ImmutableSet<HardwareType> getTypes() {
-        return ImmutableSet.of(HardwareType.ECOBEE_SMART_SI);
+        return supportedType;
     }
 
     @Override
