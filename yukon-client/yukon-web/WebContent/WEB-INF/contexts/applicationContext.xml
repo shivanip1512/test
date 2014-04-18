@@ -8,46 +8,46 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
        http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.1.xsd">
 
-    <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl" />
+    <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl"/>
     <bean id="inventoryCollectionFactory" class="com.cannontech.web.common.collection.InventoryCollectionFactoryImpl">
         <property name="collectionProducerList">
             <list>
-                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryIdListCollectionProducer" />
-                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryFileUploadCollectionProducer" />
+                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryIdListCollectionProducer"/>
+                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryFileUploadCollectionProducer"/>
                 <ref bean="memoryCollectionProducer"/>
             </list>
         </property>
     </bean>
 
     <bean id="requestDataValueProcessor" class="com.cannontech.web.security.csrf.CsrfRequestDataValueProcessor"/>
-    
+
     <bean id="webSecurityInterceptor" class="com.cannontech.web.security.WebSecurityInterceptor"/>
 
     <bean id="webSecurityAnnotationProcessor" class="com.cannontech.web.security.WebSecurityAnnotationProcessor"/>
-    
+
     <bean id="webSecurityChecker" class="com.cannontech.web.security.WebSecurityChecker"/>
-    
+
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="-1"/> <!-- no limit -->
     </bean>
-    
-    
+
+
     <!-- If we want the view resolver to continue to not jave the suffix, we'll need this. -->
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
         <property name="suffix" value=".jsp"/>
     </bean>
-    
+
     <bean id="themeResolver" class="com.cannontech.web.i18n.YukonGroupThemeResolver">
         <property name="defaultThemeName" value="default"/>
     </bean>
-    
+
     <!-- This is required because WebApplicationContexts only look locally for a bean named "themeSource" -->
     <bean id="themeSource" class="org.springframework.ui.context.support.DelegatingThemeSource">
         <property name="parentThemeSource" ref="mainThemeSource"/>
     </bean>
-    
+
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
-    
+
     <bean id="userContextResolver" class="com.cannontech.web.util.YukonUserContextConstructor">
         <property name="authDao" ref="authDao"/>
         <property name="defaultThemeResolver" ref="themeResolver"/>
@@ -56,25 +56,25 @@
     <bean id="timerTaskUtil" class="com.cannontech.stars.web.util.TimerTaskUtil">
       <property name="timer" ref="globalScheduledExecutor"/>
     </bean>
-    
+
     <bean id="moduleBuilder" class="com.cannontech.web.menu.CommonModuleBuilder">
         <constructor-arg value="/WEB-INF/module_config.xml"/>
         <property name="menuOptionProducerFactory">
             <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
-                <property name="serviceLocatorInterface" value="com.cannontech.web.menu.option.producer.MenuOptionProducerFactory" />
+                <property name="serviceLocatorInterface" value="com.cannontech.web.menu.option.producer.MenuOptionProducerFactory"/>
             </bean>
         </property>
         <property name="searchProducerFactory">
             <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
-                <property name="serviceLocatorInterface" value="com.cannontech.web.menu.option.producer.SearchProducerFactory" />
+                <property name="serviceLocatorInterface" value="com.cannontech.web.menu.option.producer.SearchProducerFactory"/>
             </bean>
         </property>
     </bean>
-    
+
     <bean id="standardMenuRenderer" class="com.cannontech.web.menu.renderer.StandardMenuRenderer">
         <constructor-arg value="/WEB-INF/menu_config.xml"/>
     </bean>
-    
+
     <bean class="com.cannontech.web.menu.renderer.SearchRenderer"/>
 
     <!-- Search Producers -->
@@ -82,13 +82,13 @@
     <bean id="amrSearchProducer" class="com.cannontech.web.menu.option.producer.MeteringSearchProducer"/>
     <bean id="drSearchProducer" class="com.cannontech.web.menu.option.producer.DrSearchProducer"/>
     <bean id="capControlSearchProducer" class="com.cannontech.web.menu.option.producer.CapControlSearchProducer"/>
-    
+
     <bean id="widgetInput.deviceId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <property name="name" value="deviceId"/>
         <property name="description" value="the id of the Yukon device"/>
         <property name="required" value="true"/>
     </bean>
-    
+
     <bean id="widgetInput.pointId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <property name="name" value="pointId"/>
         <property name="description" value="the id of the Yukon point"/>
@@ -124,31 +124,31 @@
         <property name="description" value="the id of a Yukon user"/>
         <property name="required" value="true"/>
     </bean>
-    
+
     <bean id="widgetInput.operatorAccountSearchSearchBy" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <property name="name" value="searchBy"/>
         <property name="description" value="Search type. See com.cannontech.stars.dr.general.model.OperatorAccountSearchBy"/>
         <property name="required" value="false"/>
     </bean>
-    
+
     <bean id="widgetInput.operatorAccountSearchSearchValue" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <property name="name" value="searchValue"/>
         <property name="description" value="value to search for"/>
         <property name="required" value="false"/>
     </bean>
-    
+
     <bean id="widgetInput.accountId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <property name="name" value="accountId"/>
         <property name="description" value="stars account id"/>
         <property name="required" value="true"/>
     </bean>
-    
+
     <bean id="widgetInput.energyCompanyId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <property name="name" value="widgetInput.energyCompanyId"/>
         <property name="description" value="stars widgetInput.energyCompany id"/>
         <property name="required" value="true"/>
     </bean>
-    
+
     <bean id="meterSearchWidget"
         class="com.cannontech.web.widget.MeterSearchWidget">
         <property name="roleAndPropertiesChecker">
@@ -160,11 +160,11 @@
 
     <bean id="accountInformationWidget"
         class="com.cannontech.web.widget.AccountInformationWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
-        <property name="lazyLoad" value="true" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
+        <property name="lazyLoad" value="true"/>
         <property name="inputs">
             <set>
-                <ref local="widgetInput.deviceId" />
+                <ref local="widgetInput.deviceId"/>
             </set>
         </property>
         <property name="roleAndPropertiesChecker">
@@ -173,14 +173,14 @@
             </bean>
            </property>
     </bean>
-    
+
     <bean id="cayentaAccountInformationWidget"
         class="com.cannontech.web.widget.CayentaAccountInformationWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
-        <property name="lazyLoad" value="true" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
+        <property name="lazyLoad" value="true"/>
         <property name="inputs">
             <set>
-                <ref local="widgetInput.deviceId" />
+                <ref local="widgetInput.deviceId"/>
             </set>
         </property>
         <property name="roleAndPropertiesChecker">
@@ -192,7 +192,7 @@
 
     <bean id="deviceGroupWidget"
         class="com.cannontech.web.widget.DeviceGroupWidget">
-        <property name="lazyLoad" value="true" />
+        <property name="lazyLoad" value="true"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -213,7 +213,7 @@
             </bean>
            </property>
     </bean>
-    
+
     <bean id="configWidget" class="com.cannontech.web.widget.ConfigWidget">
         <property name="inputs">
            <set>
@@ -229,7 +229,7 @@
 
     <bean id="disconnectMeterWidget"
         class="com.cannontech.web.widget.DisconnectMeterWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -241,10 +241,10 @@
             </bean>
            </property>
     </bean>
-    
+
     <bean id="meterOutagesWidget"
         class="com.cannontech.web.widget.MeterOutagesWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -259,10 +259,10 @@
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
     </bean>
-    
+
     <bean id="meterInformationWidget"
         class="com.cannontech.web.widget.MeterInformationWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -274,10 +274,10 @@
             </bean>
            </property>
     </bean>
-    
+
     <bean id="simpleAttributesWidget"
         class="com.cannontech.web.widget.SimpleAttributesWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -289,10 +289,10 @@
             </bean>
            </property>
     </bean>
-    
+
     <bean id="touScheduleWidget"
         class="com.cannontech.web.widget.TouScheduleWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -307,9 +307,9 @@
         <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
         <property name="databaseCache" ref="databaseCache"/>
     </bean>
-    
+
     <bean id="meterReadingsWidget" class="com.cannontech.web.widget.MeterReadingsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -337,9 +337,9 @@
           <value>USAGE</value>
         </property>
     </bean>
-    
+
     <bean id="polyphaseMeterReadingsWidget" class="com.cannontech.web.widget.MeterReadingsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -371,7 +371,7 @@
     </bean>
 
     <bean id="waterMeterReadingsWidget" class="com.cannontech.web.widget.MeterReadingsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -396,10 +396,10 @@
           <value>USAGE_WATER</value>
         </property>
     </bean>
-    
+
     <bean id="miniTdcWidget"
         class="com.cannontech.web.widget.MiniTdcWidget">
-        <property name="identityPath" value="miniTdcWidget/identity.jsp" />
+        <property name="identityPath" value="miniTdcWidget/identity.jsp"/>
         <property name="inputs">
            <set>
                 <bean class="com.cannontech.web.widget.support.SimpleWidgetInput">
@@ -413,10 +413,10 @@
         <property name="pointDao" ref="pointDao"/>
         <property name="paoDao" ref="paoDao"/>
     </bean>
-    
+
     <bean id="profileWidget"
         class="com.cannontech.web.widget.ProfileWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -428,10 +428,10 @@
             </bean>
            </property>
     </bean>
-    
+
     <bean id="pendingProfilesWidget"
      class="com.cannontech.web.widget.PendingProfilesWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -442,14 +442,14 @@
                 <constructor-arg value="METERING"/>
             </bean>
            </property>
-        <property name="loadProfileService" ref="loadProfileService" />
+        <property name="loadProfileService" ref="loadProfileService"/>
         <property name="paoDao" ref="paoDao"/>
-        
+
     </bean>
-    
+
     <bean id="userPermissionEditorWidget"
         class="com.cannontech.web.widget.UserPermissionEditorWidget">
-        <property name="identityPath" value="common/userPermissionIdentity.jsp" />
+        <property name="identityPath" value="common/userPermissionIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.constraint"/>
@@ -467,9 +467,9 @@
         <property name="paoDao" ref="paoDao"/>
         <property name="editorService" ref="userEditorService"/>
     </bean>
-    
+
     <bean id="groupPermissionEditorWidget" class="com.cannontech.web.widget.GroupPermissionEditorWidget">
-        <property name="identityPath" value="common/groupPermissionIdentity.jsp" />
+        <property name="identityPath" value="common/groupPermissionIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.constraint"/>
@@ -490,7 +490,7 @@
 
     <bean id="peakReportWidget"
         class="com.cannontech.web.widget.PeakReportWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -501,24 +501,24 @@
                 <constructor-arg value="METERING"/>
             </bean>
            </property>
-        <property name="peakReportService" ref="peakReportService" />
+        <property name="peakReportService" ref="peakReportService"/>
         <property name="meterDao" ref="meterDao"/>
         <property name="dateFormattingService" ref="dateFormattingService"/>
         <property name="attributeService" ref="attributeService"/>
-        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
+        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService"/>
     </bean>
-    
+
     <bean id="outageMonitorsWidget" class="com.cannontech.web.widget.OutageMonitorsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="roleAndPropertiesChecker">
                <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="OUTAGE_PROCESSING"/>
             </bean>
            </property>
     </bean>
-    
+
     <bean id="tamperFlagMonitorsWidget" class="com.cannontech.web.widget.TamperFlagMonitorsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="roleAndPropertiesChecker">
                <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="TAMPER_FLAG_PROCESSING"/>
@@ -527,7 +527,7 @@
     </bean>
 
     <bean id="allMonitorsWidget" class="com.cannontech.web.widget.AllMonitorsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="DEVICE_DATA_MONITORING OUTAGE_PROCESSING TAMPER_FLAG_PROCESSING STATUS_POINT_MONITORING PORTER_RESPONSE_MONITORING VALIDATION_ENGINE"/>
@@ -536,7 +536,7 @@
     </bean>
 
     <bean id="subscribedMonitorsWidget" class="com.cannontech.web.widget.SubscribedMonitorsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="DEVICE_DATA_MONITORING OUTAGE_PROCESSING TAMPER_FLAG_PROCESSING STATUS_POINT_MONITORING PORTER_RESPONSE_MONITORING VALIDATION_ENGINE"/>
@@ -545,7 +545,7 @@
     </bean>
 
     <bean id="deviceDataMonitorsWidget" class="com.cannontech.web.widget.DeviceDataMonitorsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="DEVICE_DATA_MONITORING"/>
@@ -554,8 +554,8 @@
     </bean>
 
     <bean id="meterEventsWidget" class="com.cannontech.web.widget.MeterEventsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
-        <property name="lazyLoad" value="true" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
+        <property name="lazyLoad" value="true"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -569,7 +569,7 @@
     </bean>
 
     <bean id="porterResponseMonitorsWidget" class="com.cannontech.web.widget.PorterResponseMonitorsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="PORTER_RESPONSE_MONITORING"/>
@@ -578,7 +578,7 @@
     </bean>
 
     <bean id="rfnDeviceMetadataWidget" class="com.cannontech.web.widget.RfnDeviceMetadataWidget">
-        <property name="lazyLoad" value="true" />
+        <property name="lazyLoad" value="true"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -587,7 +587,7 @@
     </bean>
 
     <bean id="rfnMeterDisconnectWidget" class="com.cannontech.web.widget.RfnMeterDisconnectWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -601,7 +601,7 @@
     </bean>
 
     <bean id="rfnOutagesWidget" class="com.cannontech.web.widget.RfnOutagesWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -615,7 +615,7 @@
     </bean>
 
     <bean id="statusPointMonitorsWidget" class="com.cannontech.web.widget.StatusPointMonitorsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="STATUS_POINT_MONITORING"/>
@@ -624,14 +624,14 @@
     </bean>
 
     <bean id="validationMonitorsWidget" class="com.cannontech.web.widget.ValidationMonitorsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="VALIDATION_ENGINE"/>
             </bean>
         </property>
     </bean>
-    
+
     <bean id="deviceReconfigMonitorsWidget" class="com.cannontech.web.widget.DeviceReconfigMonitorsWidget">
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
@@ -639,7 +639,7 @@
             </bean>
         </property>
     </bean>
-    
+
     <bean id="commandScheduleWidget" class="com.cannontech.web.widget.CommandScheduleWidget">
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
@@ -647,14 +647,14 @@
             </bean>
         </property>
     </bean>
-    
+
     <bean id="scheduledGroupRequestExecutionWidget" class="com.cannontech.web.widget.ScheduledGroupRequestExecutionWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
     </bean>
-    
+
     <bean id="systemActionsMenuWidget" class="com.cannontech.web.widget.SystemActionsMenuWidget">
     </bean>
-    
+
     <bean id="operatorAccountSearchWidget" class="com.cannontech.web.widget.OperatorAccountSearchWidget">
         <property name="roleAndPropertiesChecker">
                <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
@@ -668,25 +668,21 @@
            </set>
         </property>
     </bean>
-    
+
    <bean id="tdcBackingService" class="com.cannontech.web.updater.tdc.TdcBackingService"/>
-        
+
     <!-- Update Service -->
-    <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService"
-        abstract="false" lazy-init="default" autowire="default">
-        <property name="timeSource">
-            <ref bean="timeSource" />
-        </property>
+    <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService">
         <property name="backs">
             <map>
                 <entry key="ALERT">
-                    <ref local="alertUpdateBackingService" />
+                    <ref local="alertUpdateBackingService"/>
                 </entry>
                 <entry key="CBCAREA">
-                    <ref local="cbcAreaUpdateBackingService" />
+                    <ref local="cbcAreaUpdateBackingService"/>
                 </entry>
                 <entry key="CBCSPECIALAREA">
-                    <ref local="cbcSpecialAreaUpdateBackingService" />
+                    <ref local="cbcSpecialAreaUpdateBackingService"/>
                 </entry>
                 <entry key="SUBSTATION">
                     <ref local="subStationUpdateBackingService"/>
@@ -744,7 +740,7 @@
                 </entry>
                 <entry key="DR_CA_TRIGGER">
                     <ref local="drTriggerBackingService"/>
-                </entry>              
+                </entry>
                 <entry key="DR_PROGRAM">
                     <ref local="drProgramBackingService"/>
                 </entry>
@@ -756,10 +752,10 @@
                 </entry>
                 <entry key="PHASE_DETECT">
                     <ref local="phaseDetectBackingService"/>
-                </entry>    
+                </entry>
                 <entry key="DATABASE_MIGRATION">
                     <ref local="databaseMigrationBackingService"/>
-                </entry>                
+                </entry>
                 <entry key="VOLTAGE_REGULATOR">
                     <ref local="voltageRegulatorBackingService"/>
                 </entry>
@@ -803,19 +799,19 @@
                     <ref local="assetAvailabilityReadBackingService"/>
                 </entry>
                 <entry key="TDC">
-                    <ref local="tdcBackingService" />
+                    <ref local="tdcBackingService"/>
                 </entry>
             </map>
         </property>
         <property name="bulkBacks">
             <map>
                 <entry key="POINT">
-                    <ref local="pointUpdateBackingService" />
+                    <ref local="pointUpdateBackingService"/>
                 </entry>
             </map>
         </property>
     </bean>
-    
+
     <bean id="pointFormattingServiceForRequest" factory-bean="pointFormattingService"
         factory-method="getCachedInstance" scope="request">
         <aop:scoped-proxy proxy-target-class="false"/>
@@ -826,66 +822,66 @@
     <bean id="pointDataUpdateRegistrationService"
         class="com.cannontech.web.updater.point.PointDataRegistrationServiceImpl" abstract="false">
         <property name="updaterService">
-            <ref local="dataUpdaterService" />
+            <ref local="dataUpdaterService"/>
         </property>
     </bean>
-    
+
     <bean id="alertUpdateBackingService" class="com.cannontech.web.updater.alert.AlertUpdateBackingService">
         <property name="alertService" ref="alertService"/>
     </bean>
-    
+
     <bean id="cbcAreaUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
         <property name="capControlCache" ref="cbcCache"/>
-        <property name="formattingService" ref="cbcAreaFormattingService"/>        
+        <property name="formattingService" ref="cbcAreaFormattingService"/>
     </bean>
-    
+
     <bean id="cbcSpecialAreaUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
         <property name="capControlCache" ref="cbcCache"/>
-        <property name="formattingService" ref="cbcSpecialAreaFormattingService"/>        
+        <property name="formattingService" ref="cbcSpecialAreaFormattingService"/>
     </bean>
-    
+
     <bean id="subStationUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
         <property name="capControlCache" ref="cbcCache"/>
-        <property name="formattingService" ref="subStationFormattingService"/>        
+        <property name="formattingService" ref="subStationFormattingService"/>
     </bean>
-    
+
     <bean id="subBusUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
         <property name="capControlCache" ref="capControlCache"/>
         <property name="formattingService" ref="subBusFormattingService"/>
     </bean>
-    
+
     <bean id="feederUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
         <property name="capControlCache" ref="capControlCache"/>
-        <property name="formattingService" ref="feederFormattingService"/>    
+        <property name="formattingService" ref="feederFormattingService"/>
     </bean>
-    
+
     <bean id="capBankUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
         <property name="capControlCache" ref="capControlCache"/>
         <property name="formattingService" ref="capBankFormattingService"/>
     </bean>
-    
+
     <bean id="routeLocateBackingService" class="com.cannontech.web.updater.routeLocate.RouteLocateBackingService">
-        <property name="resultsCache" ref="routeLocateResultsCache" />
+        <property name="resultsCache" ref="routeLocateResultsCache"/>
     </bean>
-    
+
     <bean id="commanderUpdateBackingService" class="com.cannontech.web.updater.commander.GroupCommandResultBackingService">
-        <property name="groupCommandExecutor" ref="groupCommandExecutor" />
+        <property name="groupCommandExecutor" ref="groupCommandExecutor"/>
     </bean>
-    
+
     <bean id="backgroundProcessBackingService" class="com.cannontech.web.updater.bulk.BackgroundProcessBackingService">
-        <property name="recentResultsCache" ref="recentResultsCache" />
+        <property name="recentResultsCache" ref="recentResultsCache"/>
     </bean>
-    
+
     <bean id="groupMeterReadUpdateBackingService" class="com.cannontech.web.updater.groupMeterRead.GroupMeterReadUpdateBackingService"/>
-    
+
     <bean id="adaProfileReadBackingService" class="com.cannontech.web.updater.archiveDataAnalysis.AdaProfileReadBackingService"/>
-    
+
     <bean id="archiveDataBackingService" class="com.cannontech.web.updater.archiveDataAnalysis.ArchiveDataAnalysisBackingService"/>
-    
+
     <bean id="fdrTranslationImportBackingService" class="com.cannontech.web.updater.fdrTranslationImport.FdrTranslationImportBackingService"/>
-    
+
     <bean id="pointImportBackingService" class="com.cannontech.web.updater.pointImport.PointImportBackingService"/>
-    
+
     <bean id="commandRequestExecutionBackingService" class="com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionBackingService"/>
     <bean id="requestCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.RequestCountCommandExecutionUpdaterHandler"/>
     <bean id="resultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.ResultsCountCommandExecutionUpdaterHandler"/>
@@ -898,13 +894,13 @@
     <bean id="scheduledGroupRequestExecutionStatusService"
         class="com.cannontech.amr.scheduledGroupRequestExecution.service.impl.ScheduledGroupRequestExecutionStatusServiceImpl"
         scope="request">
-        <aop:scoped-proxy proxy-target-class="false" />
+        <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
 
     <bean id="scheduledGroupRequestExecutionBundleService"
         class="com.cannontech.amr.scheduledGroupRequestExecution.service.impl.ScheduledGroupRequestExecutionBundleServiceImpl"
         scope="request">
-        <aop:scoped-proxy proxy-target-class="false" />
+        <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
 
     <bean id="scheduledGroupRequestExecutionBackingService" class="com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionBackingService"/>
@@ -914,29 +910,29 @@
     <bean id="lastSuccessCountHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastSuccessCountHandler"/>
     <bean id="lastFailureCountHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastFailureCountHandler"/>
     <bean id="creCountHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.CreCountHandler"/>
-    
+
     <!-- outage -->
     <bean id="outageMonitorBackingService" class="com.cannontech.web.updater.outageProcessing.OutageMonitorBackingService">
     </bean>
     <bean id="violationsCountOutageProcessingUpdaterHandler" class="com.cannontech.web.updater.outageProcessing.handler.ViolationsCountOutageProcessingUpdaterHandler"/>
     <bean id="monitoringCountOutageProcessingUpdaterHandler" class="com.cannontech.web.updater.outageProcessing.handler.MonitoringCountOutageProcessingUpdaterHandler"/>
-    
+
     <!-- tamper -->
     <bean id="tamperFlagMonitorBackingService" class="com.cannontech.web.updater.tamperFlagProcessing.TamperFlagMonitorBackingService">
     </bean>
     <bean id="violationsCountTamperFlagProcessingUpdaterHandler" class="com.cannontech.web.updater.tamperFlagProcessing.handler.ViolationsCountTamperFlagProcessingUpdaterHandler"/>
     <bean id="monitoringCountTamperFlagProcessingUpdaterHandler" class="com.cannontech.web.updater.tamperFlagProcessing.handler.MonitoringCountTamperFlagProcessingUpdaterHandler"/>
-    
+
     <!-- status point -->
     <bean id="statusPointMonitorBackingService" class="com.cannontech.web.updater.statusPointMonitoring.StatusPointMonitorBackingService">
     </bean>
     <bean id="monitoringCountStatusPointProcessingUpdaterHandler" class="com.cannontech.web.updater.statusPointMonitoring.handler.MonitoringCountStatusPointProcessingUpdaterHandler"/>
-    
+
     <!-- device data monitor -->
     <bean id="deviceDataMonitorBackingService" class="com.cannontech.web.updater.deviceDataMonitor.DeviceDataMonitorBackingService"/>
     <bean id="deviceDataMonitorMonitoringCountUpdaterHandler" class="com.cannontech.web.updater.deviceDataMonitor.handler.MonitoringCountUpdaterHandler"/>
     <bean id="deviceDataMonitorViolationsCountUpdaterHandler" class="com.cannontech.web.updater.deviceDataMonitor.handler.ViolationsCountUpdaterHandler"/>
-    
+
     <!-- validation -->
     <bean id="validationMonitorBackingService" class="com.cannontech.web.updater.validationProcessing.ValidationMonitorBackingService">
     </bean>
@@ -948,7 +944,7 @@
     <bean class="com.cannontech.web.updater.validationProcessing.handler.PeekDownViolationsProcessor"/>
     <bean class="com.cannontech.web.updater.validationProcessing.handler.ChangeOutViolationsProcessor"/>
     <bean class="com.cannontech.web.updater.validationProcessing.handler.ShowViolationsProcessor"/>
-    
+
     <!-- jobs -->
     <bean id="jobBackingService" class="com.cannontech.web.updater.job.JobBackingService">
     </bean>
@@ -960,83 +956,83 @@
 
     <bean id="drEstimatedLoadBackingService" class="com.cannontech.web.updater.dr.EstimatedLoadBackingService"/>
     <bean id="drControlAreaBackingService" class="com.cannontech.web.updater.dr.ControlAreaBackingService"/>
-    <bean id="drTriggerBackingService" class="com.cannontech.web.updater.dr.TriggerBackingService"/>    
+    <bean id="drTriggerBackingService" class="com.cannontech.web.updater.dr.TriggerBackingService"/>
     <bean id="drProgramBackingService" class="com.cannontech.web.updater.dr.ProgramBackingService"/>
     <bean id="drLoadGroupBackingService" class="com.cannontech.web.updater.dr.LoadGroupBackingService"/>
     <bean id="drScenarioBackingService" class="com.cannontech.web.updater.dr.ScenarioBackingService"/>
     <bean id="weatherDataBackingService" class="com.cannontech.web.updater.dr.WeatherDataBackingService"/>
-    
+
     <bean class="com.cannontech.web.updater.dr.ScenarioEstimatedLoadField"/>
     <bean class="com.cannontech.web.updater.dr.ProgramEstimatedLoadField"/>
     <bean class="com.cannontech.web.updater.dr.ControlAreaEstimatedLoadField"/>
-    
-    <!-- phase detect -->    
+
+    <!-- phase detect -->
     <bean id="phaseDetectBackingService" class="com.cannontech.web.updater.phaseDetect.PhaseDetectBackingService"/>
     <bean id="isCompletePhaseDetectUpdaterHandler" class="com.cannontech.web.updater.phaseDetect.handler.IsCompletePhaseDetectUpdaterHandler"/>
     <bean id="resultsCountPhaseDetectUpdaterHandler" class="com.cannontech.web.updater.phaseDetect.handler.ResultsCountPhaseDetectUpdaterHandler"/>
-    
+
     <!-- database migration -->
     <bean id="databaseMigrationBackingService" class="com.cannontech.web.updater.databaseMigration.DatabaseMigrationBackingService"/>
-    
+
     <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService" abstract="true">
         <property name="filterCacheFactory" ref="filterCacheFactory"/>
-        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
-        <property name="updaterHelper" ref="updaterHelper" />
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver"/>
+        <property name="updaterHelper" ref="updaterHelper"/>
     </bean>
-    
+
     <bean id="abstractAreaFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractAreaFormatingService"
           parent="abstractFormattingService" abstract="true">
     </bean>
-    
+
     <bean class="com.cannontech.web.capcontrol.util.service.impl.CapControlWebUtilsServiceImpl"/>
 
     <bean id="capControlBackingService" class="com.cannontech.web.updater.capcontrol.CapControlBackingService"/>
     <bean id="capControlSystemEnableCommandHandler" class="com.cannontech.web.updater.capcontrol.handler.CapControlSystemEnableCommandHandler"/>
     <bean id="capControlLargestGraphTimeForSubBusUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.CapControlLargestGraphTimeForSubBusUpdaterHandler"/>
     <bean id="capControlLargestGraphTimeForZoneUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.CapControlLargestGraphTimeForZoneUpdaterHandler"/>
-    
+
     <bean id="ivvcAnalysisMessageUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.IvvcAnalysisMessageUpdaterHandler"/>
-    
-    <bean id="ivvcAnalysisMessageListener" class="com.cannontech.capcontrol.service.impl.IvvcAnalysisMessageListener" />
+
+    <bean id="ivvcAnalysisMessageListener" class="com.cannontech.capcontrol.service.impl.IvvcAnalysisMessageListener"/>
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-        <property name="destinationName" value="yukon.notif.stream.cc.IvvcAnalysisMessage" />
+        <property name="destinationName" value="yukon.notif.stream.cc.IvvcAnalysisMessage"/>
         <property name="pubSubDomain" value="false"/>
         <property name="concurrentConsumers" value="1"/>
-        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="connectionFactory" ref="connectionFactory"/>
         <property name="messageListener" ref="ivvcAnalysisMessageListener"/>
     </bean>
-    
+
     <bean id="voltageRegulatorBackingService" class="com.cannontech.web.updater.capcontrol.VoltageRegulatorBackingService"/>
     <bean id="voltageRegulatorModeUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorModeUpdaterHandler"/>
     <bean id="voltageRegulatorTapHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapHandler"/>
     <bean id="voltageRegulatorOpTimeHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorOpTimeHandler"/>
     <bean id="voltageRegulatorTapTooltipHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapTooltipHandler"/>
     <bean class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorVoltChangePerTapUpdaterHandler"/>
-    
+
     <bean id="cbcAreaFormattingService" class="com.cannontech.web.updater.capcontrol.AreaFormattingService"
           parent="abstractAreaFormattingService"/>
-    
+
     <bean id="cbcSpecialAreaFormattingService" class="com.cannontech.web.updater.capcontrol.SpecialAreaFormattingService"
           parent="abstractAreaFormattingService"/>
-    
+
     <bean id="subStationFormattingService" class="com.cannontech.web.updater.capcontrol.SubStationFormattingService"
           parent="abstractAreaFormattingService"/>
-    
+
     <bean id="subBusFormattingService" class="com.cannontech.web.updater.capcontrol.SubBusFormattingService"
           parent="abstractFormattingService"/>
-    
+
     <bean id="feederFormattingService" class="com.cannontech.web.updater.capcontrol.FeederFormattingService"
           parent="abstractFormattingService"/>
-    
+
     <bean id="capBankFormattingService" class="com.cannontech.web.updater.capcontrol.CapBankFormattingService"
           parent="abstractFormattingService"/>
-    
+
     <bean id="capControlValueTagPrototype" class="com.cannontech.web.updater.capcontrol.CapControlValueTag">
-        <property name="updaterService" ref="dataUpdaterService" />
+        <property name="updaterService" ref="dataUpdaterService"/>
     </bean>
-    
+
     <bean id="navigableHierarchyTagPrototype" class="com.cannontech.web.capcontrol.NavigableHierarchyTag"/>
-    
+
     <bean id="paoDetailUrlTagPrototype" class="com.cannontech.web.taglib.PaoDetailUrlTag">
         <property name="paoDetailUrlHelper" ref="paoDetailUrlHelper"/>
     </bean>
@@ -1044,16 +1040,16 @@
     <bean id="paoTypeIconTagPrototype" class="com.cannontech.web.taglib.PaoTypeIconTag">
         <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
     </bean>
-    
+
     <bean id="formatTemplateTagPrototype" class="com.cannontech.web.i18n.FormatTemplateTag">
-        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
-        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+        <property name="templateProcessorFactory" ref="templateProcessorFactory"/>
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver"/>
     </bean>
-    
+
     <bean id="dataUpdaterValueTagPrototype" class="com.cannontech.web.taglib.DataUpdaterValueTag">
         <property name="dataUpdaterService" ref="dataUpdaterService"/>
     </bean>
-    
+
     <bean id="classUpdaterTagPrototype" class="com.cannontech.web.taglib.ClassUpdaterTag">
         <property name="dataUpdaterService" ref="dataUpdaterService"/>
     </bean>
@@ -1064,54 +1060,54 @@
     <bean id="getBooleanConfigParamTagPrototype" class="com.cannontech.web.taglib.GetBooleanConfigParamTag"/>
 
     <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag"/>
-    
+
     <bean id="dataUpdaterCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterCallbackTag">
         <property name="registrationService" ref="dataUpdaterService"/>
     </bean>
-    
+
     <bean id="dataUpdaterEventCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterEventCallbackTag"/>
 
     <bean id="pointValueFormatterTagPrototype" class="com.cannontech.web.taglib.PointValueFormatterTag">
         <property name="pointFormattingService" ref="pointFormattingServiceForRequest"/>
     </bean>
-    
+
     <bean id="simpleReportLinkFromNameTagPrototype" class="com.cannontech.web.reports.SimpleReportLinkFromNameTag">
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
         <property name="simpleReportService" ref="simpleReportService"/>
     </bean>
-    
+
     <bean id="simpleReportUrlFromNameTagPrototype" class="com.cannontech.web.reports.SimpleReportUrlFromNameTag">
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
         <property name="simpleReportService" ref="simpleReportService"/>
     </bean>
-    
+
     <bean id="simpleReportLinkFromModelTagPrototype" class="com.cannontech.web.reports.SimpleReportLinkFromModelTag">
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
     </bean>
-    
+
     <bean id="deviceGroupHierarchyJsonPrototype" class="com.cannontech.web.taglib.DeviceGroupHierarchyJsonTag">
         <property name="deviceGroupService" ref="deviceGroupService"/>
         <property name="deviceGroupUiService" ref="deviceGroupUiService"/>
     </bean>
-    
+
     <bean id="checkYukonVersionUndefinedTagPrototype" class="com.cannontech.web.taglib.CheckYukonVersionUndefinedTag"/>
 
     <bean id="verifyRolesAndPropertiesTagPrototype" class="com.cannontech.web.taglib.VerifyRolesAndPropertiesTag">
         <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
-    
+
     <bean id="verifyRolePropertyValueTagPrototype" class="com.cannontech.web.taglib.VerifyRolePropertyValueTag">
         <property name="rolePropertyDao" ref="rolePropertyDao"/>
     </bean>
-    
+
     <bean id="verifyGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.taglib.VerifyGlobalRolesAndPropertiesTag">
         <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
-    
+
     <bean id="checkGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.taglib.CheckGlobalRolesAndPropertiesTag">
         <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
-    
+
     <bean id="checkPaoAuthorizationTagPrototype" class="com.cannontech.web.taglib.CheckPaoAuthorizationTag">
         <property name="paoAuthorizationService" ref="paoAuthorizationService"/>
     </bean>
@@ -1125,14 +1121,14 @@
     <bean id="csrfTokenTagPrototype" class="com.cannontech.web.taglib.CsrfTokenTag"/>
 
     <bean class="com.cannontech.web.security.csrf.impl.CsrfTokenServiceImpl"/>
-    
+
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
-        <property name="maxCacheSize" value="50" />
-        <property name="accessOrder" value="true" />
+        <property name="maxCacheSize" value="50"/>
+        <property name="accessOrder" value="true"/>
     </bean>
-    
+
     <bean id="csrTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
-        <property name="useCache" value="true" />
+        <property name="useCache" value="true"/>
         <property name="uniqueIdentifiers">
             <list>
                 <value>csrTrendWidget</value>
@@ -1140,14 +1136,14 @@
         </property>
         <aop:scoped-proxy/>
     </bean>
-    
+
     <bean id="hbcTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
-        <property name="useCache" value="false" />
+        <property name="useCache" value="false"/>
         <aop:scoped-proxy/>
     </bean>
 
     <bean id="electricTrendWidget" abstract="true">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -1203,15 +1199,15 @@
     </bean>
  
     <bean id="csrTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="electricTrendWidget">
-        <property name="cachingWidgetParameterGrabber" ref="csrTrendWidgetCachingWidgetParameterGrabber" />
+        <property name="cachingWidgetParameterGrabber" ref="csrTrendWidgetCachingWidgetParameterGrabber"/>
     </bean>
-    
+
     <bean id="hbcTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="electricTrendWidget">
-        <property name="cachingWidgetParameterGrabber" ref="hbcTrendWidgetCachingWidgetParameterGrabber" />
+        <property name="cachingWidgetParameterGrabber" ref="hbcTrendWidgetCachingWidgetParameterGrabber"/>
     </bean> 
 
     <bean id="waterCsrTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
-        <property name="useCache" value="true" />
+        <property name="useCache" value="true"/>
         <property name="uniqueIdentifiers">
             <list>
                 <value>waterCsrTrendWidget</value>
@@ -1221,7 +1217,7 @@
     </bean>
 
     <bean id="waterTrendWidget" abstract="true">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -1242,129 +1238,129 @@
     </bean>
 
     <bean id="waterCsrTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="waterTrendWidget">
-        <property name="cachingWidgetParameterGrabber" ref="waterCsrTrendWidgetCachingWidgetParameterGrabber" />
+        <property name="cachingWidgetParameterGrabber" ref="waterCsrTrendWidgetCachingWidgetParameterGrabber"/>
     </bean> 
 
     <bean id="operationsSetupTagPrototype" class="com.cannontech.web.taglib.OperationsSetupTag"/>
 
     <bean id="attributeResolverTagPrototype" class="com.cannontech.web.taglib.AttributeResolverTag">
-        <property name="deviceDao" ref="deviceDao" />
+        <property name="deviceDao" ref="deviceDao"/>
         <property name="attributeService" ref="attributeService"/>
     </bean>
 
     <bean id="globalSettingTagPrototype" class="com.cannontech.web.taglib.GlobalSettingTag">
-        <property name="globalSettingDao" ref="globalSettingDao" />
+        <property name="globalSettingDao" ref="globalSettingDao"/>
     </bean>
-    
+
     <bean id="formatDateTagPrototype" class="com.cannontech.web.taglib.FormatDateTag">
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
-    
+
     <bean id="formatPeriodTagPrototype" class="com.cannontech.web.taglib.FormatPeriodTag">
         <property name="durationFormattingService" ref="durationFormattingService"/>
     </bean>
-    
+
     <bean id="formatNotificationTagPrototype" class="com.cannontech.web.taglib.FormatNotificationTag"/>
 
     <bean id="formatMillisTagPrototype" class="com.cannontech.web.taglib.FormatMillisTag">
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
-    
+
     <bean id="formatDurationTagPrototype" class="com.cannontech.web.taglib.FormatDurationTag"/>
-    
+
     <bean id="formatCronTagPrototype" class="com.cannontech.web.taglib.FormatCronTag"/>
-    
+
     <bean id="formatObjectTagPrototype" class="com.cannontech.web.taglib.FormatObjectTag"/>
-    
+
     <bean id="formatIntervalTagPrototype" class="com.cannontech.web.taglib.FormatIntervalTag"/>
 
     <bean id="formatTimePeriodTagPrototype" class="com.cannontech.web.taglib.FormatTimePeriodTag"/>
-    
+
     <bean id="pointStatusColorTagPrototype" class="com.cannontech.web.taglib.PointStatusColorTag">
         <property name="pointDataRegistrationService" ref="pointDataUpdateRegistrationService"/>
     </bean>
-    
+
     <bean id="capBankStateColorTagPrototype" class="com.cannontech.web.taglib.CapBankStateColorTag">
-        <property name="updaterService" ref="dataUpdaterService" />
+        <property name="updaterService" ref="dataUpdaterService"/>
     </bean>
-    
+
     <bean id="customerAccountInfoTagPrototype" class="com.cannontech.web.stars.dr.taglib.CustomerAccountInfoTag">
         <property name="customerDao" ref="customerDao"/>
         <property name="accountSiteDao" ref="accountSiteDao"/>
         <property name="addressDao" ref="addressDao"/>
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver"/>
         <property name="phoneNumberFormattingService" ref="phoneNumberFormattingService"/>
-    </bean>     
-    
+    </bean>
+
     <bean id="userNameTagPrototype" class="com.cannontech.web.taglib.UserNameTag">
         <property name="yukonUserDao" ref="yukonUserDao"/>
     </bean>
-    
+
     <bean id="yukonListEntryListTagPrototype" class="com.cannontech.web.taglib.YukonListEntryListTag"/>
 
     <bean id="yukonListEntryValueTagPrototype" class="com.cannontech.web.taglib.YukonListEntryValueTag">
         <property name="yukonListDao" ref="yukonListDao"/>
     </bean>
-    
+
     <!-- Remember to add friendlyExceptionPropertyKey key to friendlyException.properties file -->
     <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver">
-        
-        <property name="exceptionStrings" ref="friendlyExceptionsProperties" />
-        
+
+        <property name="exceptionStrings" ref="friendlyExceptionsProperties"/>
+
         <property name="knownExceptions">
             <list>
                  <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.message.util.ConnectionException" />
-                    <property name="friendlyExceptionPropertyKey" value="ConnectionException" />
+                    <property name="exceptionClass" value="com.cannontech.message.util.ConnectionException"/>
+                    <property name="friendlyExceptionPropertyKey" value="ConnectionException"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.core.dynamic.exception.DynamicDataAccessException" />
-                    <property name="friendlyExceptionPropertyKey" value="DispatchInvalid" />
+                    <property name="exceptionClass" value="com.cannontech.core.dynamic.exception.DynamicDataAccessException"/>
+                    <property name="friendlyExceptionPropertyKey" value="DispatchInvalid"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.common.exception.InitiateLoadProfileRequestException" />
-                    <property name="friendlyExceptionPropertyKey" value="LoadProfileException" />
+                    <property name="exceptionClass" value="com.cannontech.common.exception.InitiateLoadProfileRequestException"/>
+                    <property name="friendlyExceptionPropertyKey" value="LoadProfileException"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.common.exception.PingMeterException" />
-                    <property name="friendlyExceptionPropertyKey" value="PingMeterException" />
+                    <property name="exceptionClass" value="com.cannontech.common.exception.PingMeterException"/>
+                    <property name="friendlyExceptionPropertyKey" value="PingMeterException"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.common.exception.PeakSummaryReportRequestException" />
-                    <property name="friendlyExceptionPropertyKey" value="PeakReportException" />
+                    <property name="exceptionClass" value="com.cannontech.common.exception.PeakSummaryReportRequestException"/>
+                    <property name="friendlyExceptionPropertyKey" value="PeakReportException"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.common.exception.MeterReadRequestException" />
-                    <property name="friendlyExceptionPropertyKey" value="MeterReadException" />
+                    <property name="exceptionClass" value="com.cannontech.common.exception.MeterReadRequestException"/>
+                    <property name="friendlyExceptionPropertyKey" value="MeterReadException"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.common.exception.NotAuthorizedException" />
-                    <property name="friendlyExceptionPropertyKey" value="NotAuthorizedException" />
+                    <property name="exceptionClass" value="com.cannontech.common.exception.NotAuthorizedException"/>
+                    <property name="friendlyExceptionPropertyKey" value="NotAuthorizedException"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.common.device.groups.TemporaryDeviceGroupNotFoundException" />
-                    <property name="friendlyExceptionPropertyKey" value="TemporaryDeviceGroupNotFoundException" />
+                    <property name="exceptionClass" value="com.cannontech.common.device.groups.TemporaryDeviceGroupNotFoundException"/>
+                    <property name="friendlyExceptionPropertyKey" value="TemporaryDeviceGroupNotFoundException"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.common.util.ResultResultExpiredException" />
-                    <property name="friendlyExceptionPropertyKey" value="ResultResultExpiredException" />
+                    <property name="exceptionClass" value="com.cannontech.common.util.ResultResultExpiredException"/>
+                    <property name="friendlyExceptionPropertyKey" value="ResultResultExpiredException"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException" />
-                    <property name="friendlyExceptionPropertyKey" value="DeviceCollectionCreationException" />
-                    <property name="includeCauseMessage" value="true" />
+                    <property name="exceptionClass" value="com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException"/>
+                    <property name="friendlyExceptionPropertyKey" value="DeviceCollectionCreationException"/>
+                    <property name="includeCauseMessage" value="true"/>
                 </bean>
             </list>
         </property>
-    
-    </bean>    
-    
+
+    </bean>
+
     <bean id="friendlyExceptionsProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="location">
             <value>/WEB-INF/friendlyExceptions.properties</value>
         </property>
     </bean>
-    
+
     <bean id="urlAccessChecker" class="com.cannontech.web.login.access.UrlAccessCheckerImpl">
         <property name="descriptionParser">
             <bean class="com.cannontech.web.login.access.UrlAccessDescriptionParser"/>
@@ -1377,10 +1373,10 @@
                 <value>ALLOW|/index.jsp|WEB_CLIENT</value>
                 <value>ALLOW|/home|WEB_CLIENT</value>
                 <value>DENY|/debug/**|!ENABLE_WEB_DEBUG_PAGES</value>
-                                                
+
                 <value>ALLOW|/stars/consumer/**|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/login/changelogin/updateusername|RESIDENTIAL_CUSTOMER</value>
-                <value>ALLOW|/login/changelogin/updatepassword|RESIDENTIAL_CUSTOMER</value>                                
+                <value>ALLOW|/login/changelogin/updatepassword|RESIDENTIAL_CUSTOMER</value>
                 <!-- Allow for Trending -->
                 <value>ALLOW|/servlet/GraphGenerator|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/servlet/Download|RESIDENTIAL_CUSTOMER</value>
@@ -1391,10 +1387,10 @@
                 <value>ALLOW|/spring/**|RESIDENTIAL_CUSTOMER</value>
 
                 <value>DENY|/**|RESIDENTIAL_CUSTOMER</value>
-                
+
                 <!-- Deny Capacitor Control to all except CBCSettingsRole role -->
-                <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>            
-                
+                <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>
+
                 <!-- Allow explicit access to each Admin page.  Default DENY to all pages unless ADMIN_EDIT_ENERGY_COMPANY -->
                 <!-- These should be removed with the rewrite of Energy Company configuration pages. -->
                 <!-- Authorization should be handled on the controller side (with the rewrite). -->
@@ -1403,106 +1399,106 @@
                 <value>ALLOW|/operator/Admin/Progress.jsp|WEB_CLIENT</value> <!-- Using WebClient to allow "full" access to  -->
                 <value>ALLOW|/operator/Admin/SwitchCommands.jsp|ADMIN_VIEW_BATCH_COMMANDS</value>
                 <value>DENY|/operator/Admin/**|*</value>
-                
-                
+
+
                 <value>ALLOW|/**|WEB_CLIENT</value>
                 <value>DENY|/**|*</value>
                 <!-- DO NOT REMOVE -->
             </list>
-        </property>    
+        </property>
     </bean>
 
-    <bean id="captchaService" class="com.cannontech.web.common.captcha.service.impl.CaptchaServiceImpl" />
-    <bean id="passwordResetService" class="com.cannontech.web.stars.service.impl.PasswordResetServiceImpl" />
+    <bean id="captchaService" class="com.cannontech.web.common.captcha.service.impl.CaptchaServiceImpl"/>
+    <bean id="passwordResetService" class="com.cannontech.web.stars.service.impl.PasswordResetServiceImpl"/>
     <bean id="loginService" class="com.cannontech.web.login.impl.LoginServiceImpl"/>
-    
+
     <bean class="com.cannontech.web.login.impl.LoginCookieHelperImpl"/>
-    
+
     <bean id="starsSessionInitializer" class="com.cannontech.web.login.impl.StarsSessionInitializer"/>
-    
+
     <bean id="themostatMenuOption" class="com.cannontech.web.menu.option.producer.ThermostatMenuOptionProducer">
-        <property name="inventoryDao" ref="inventoryDao" />
-        <property name="customerAccountDao" ref="customerAccountDao" />
+        <property name="inventoryDao" ref="inventoryDao"/>
+        <property name="customerAccountDao" ref="customerAccountDao"/>
         <property name="rolePropertyDao" ref="rolePropertyDao"/>
-        <property name="optOutStatusService" ref="optOutStatusService" />
+        <property name="optOutStatusService" ref="optOutStatusService"/>
     </bean>
-    
+
     <bean id="enrollmentMenuOption" class="com.cannontech.web.menu.option.producer.EnrollmentMenuOptionProducer">
-        <property name="optOutStatusService" ref="optOutStatusService" />
+        <property name="optOutStatusService" ref="optOutStatusService"/>
     </bean>
-    
+
     <bean id="alternateEnrollmentMenuOption" class="com.cannontech.web.menu.option.producer.AlternateEnrollmentMenuOptionProducer"/>
-    
+
     <bean id="faqMenuOption" class="com.cannontech.web.menu.option.producer.FaqMenuOptionProducer"/>
-    
+
     <bean id="trendingMenuOption" class="com.cannontech.web.menu.option.producer.TrendingMenuOptionProducer">
-        <property name="graphDao" ref="graphDao" />
+        <property name="graphDao" ref="graphDao"/>
     </bean>
     <bean id="optOutMenuOption" class="com.cannontech.web.menu.option.producer.OptOutMenuOptionProducer">
-        <property name="optOutStatusService" ref="optOutStatusService" />
+        <property name="optOutStatusService" ref="optOutStatusService"/>
     </bean>
 
     <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"><qualifier value="filter"/></bean>
-    
-    
+
+
     <bean id="deviceCollectionDeviceGroupHelper" class="com.cannontech.web.group.DeviceCollectionDeviceGroupHelper">
-        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
-        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
     </bean>
-    
-    <bean id="memoryCollectionProducer" class="com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer" />
+
+    <bean id="memoryCollectionProducer" class="com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer"/>
 
     <bean id="inventoryOperationsFilterService" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.InventoryOperationsFilterServiceImpl"/>
-    
+
     <bean id="zigbeeDeviceService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigbeeDeviceServiceImpl"/>
-    
+
     <bean id="fdrTranslationManagerService" class="com.cannontech.common.bulk.service.impl.FdrTranslationManagerServiceImpl"/>
     <bean id="fdrTranslationManagerCsvHelper" class="com.cannontech.common.bulk.service.FdrTranslationManagerCsvHelper"/>
-    
+
     <bean id="pointImportService" class="com.cannontech.common.bulk.service.impl.PointImportServiceImpl"/>
     <bean id="calculationImportService" class="com.cannontech.common.bulk.service.impl.CalculationImportServiceImpl"/>
     <bean id="pointImportProcessorFactory" class="com.cannontech.common.bulk.processor.PointImportProcessorFactory"/>
     <bean id="pointBuilderFactory" class="com.cannontech.common.point.PointBuilderFactory"/>
-    
+
     <!-- Simple HTTP Post Service Factory -->
     <bean id="simpleHttpPostServiceFactory" class="com.cannontech.web.simplePost.impl.SimpleHttpPostServiceFactoryImpl">
     </bean>
-    
+
     <!-- Cayenta API Service -->
     <bean id="cayentaApiService" class="com.cannontech.web.cayenta.service.impl.CayentaApiServiceImpl">
     </bean>
-    
+
     <bean id="paoDetailUrlHelper" class="com.cannontech.web.common.pao.service.PaoDetailUrlHelper"/>
     <bean id="yukonPointHelper" class="com.cannontech.web.common.pao.service.YukonPointHelperImpl"/>
     <bean id="paoPopupHelperImpl" class="com.cannontech.web.common.pao.service.PaoPopupHelperImpl"/>
 
     <bean id="scheduledGroupRequestExecutionJobWrapperFactory" class="com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory"/>
     <bean id="commandRequestExecutionWrapperFactory" class="com.cannontech.web.common.commandRequestExecution.CommandRequestExecutionWrapperFactory"/>
-    
+
     <!-- Cron tag handlers -->
     <bean id="cronExpressionTagService" class="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagServiceImpl"/>
-    
+
     <bean id="dailyCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.DailyCronTagStyleHandler"/>
     <bean id="monthlyCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.MonthlyCronTagStyleHandler"/>
     <bean id="oneTimeCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.OneTimeCronTagStyleHandler"/>
     <bean id="weeklyCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.WeeklyCronTagStyleHandler"/>
     <bean id="customCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleHandler"/>
-    
+
     <bean id="attributeSelectorHelperService" class="com.cannontech.web.util.AttributeSelectorHelperServiceImpl"/>
-    
+
     <!-- MULTISPEAK -->
     <bean id="mspMeterSearchService" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImpl"/>
-    
+
     <bean id="serviceLocationMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.ServiceLocationMspMeterSearchMethodResultProvider"/>
     <bean id="eaLocationMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.EaLocationMspMeterSearchMethodResultProvider"/>
     <bean id="facilityIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.FacilityIdMspMeterSearchMethodResultProvider"/>
     <bean id="accountNumberMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProvider"/>
     <bean id="custIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProvider"/>
-    
+
     <bean id="multispeakDeviceGroupSyncBackingService" class="com.cannontech.web.updater.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncBackingService"/>
-    
+
     <bean id="deviceReconfigMonitorBackingService" class="com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorBackingService"/>
-    
+
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.FailedCountUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.ItemsProcessedUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.NewOperationForFailedUpdaterHandler"/>
@@ -1533,9 +1529,9 @@
 
     <bean id="eventLogCategoryValidator" class="com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator"/>
     <bean id="eventLogTypeValidator" class="com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator"/>
-    
-      <bean id="loginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.LoginValidatorFactoryImpl" />
-      <bean id="optOutValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.OptOutValidatorFactoryImpl" />
+
+      <bean id="loginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.LoginValidatorFactoryImpl"/>
+      <bean id="optOutValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.OptOutValidatorFactoryImpl"/>
 
     <bean id="displayableApplianceService" class="com.cannontech.web.stars.dr.operator.service.impl.DisplayableApplianceServiceImpl"/>
     <bean id="starsApplianceService" class="com.cannontech.stars.dr.appliance.service.impl.StarsApplianceServiceImpl"/>
@@ -1543,59 +1539,59 @@
     <bean id="pageDetailProducer" class="com.cannontech.web.layout.PageDetailProducer"/>
 
     <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>
-    
+
     <bean id="generalInfoService" class="com.cannontech.web.admin.energyCompany.general.service.GeneralInfoService"/>
     <bean id="generalInfoValidator" class="com.cannontech.web.admin.energyCompany.general.model.GeneralInfoValidator"/>
     <bean id="energyCompanyDtoValidator" class="com.cannontech.web.admin.energyCompany.model.EnergyCompanyDtoValidator"/>
-    
+
     <bean id="zoneDtoValidator" class="com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator"/>
     <bean id="zoneDtoHelper" class="com.cannontech.web.capcontrol.ivvc.ZoneDtoHelper"/>
     <bean id="voltageFlatnessGraphService" class="com.cannontech.web.capcontrol.ivvc.service.impl.VoltageFlatnessGraphServiceImpl"/>
-    
+
     <bean id="hardwareValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareValidator"/>
     <bean id="serialNumberValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator"/>
     <bean id="meterConfigValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator"/>
-    
+
     <bean id="accountImportResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean id="accountImportDataValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountImportDataValidator"/>
     <bean id="accountImportSerivce" class="com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService"/>
     <bean id="accountImportBackingService" class="com.cannontech.web.updater.dr.AccountImportBackingService">
-        <property name="resultsCache" ref="accountImportResultsCache" />
+        <property name="resultsCache" ref="accountImportResultsCache"/>
     </bean>
-    
+
     <bean id="hardwareModelHelper" class="com.cannontech.web.stars.dr.operator.HardwareModelHelper"/>
-    
+
     <bean id="inventoryTaskResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean id="inventoryTaskBackingService" class="com.cannontech.web.updater.dr.InventoryTaskBackingService">
-        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
     <bean id="changeWarehouseHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeWarehouseHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
     <bean id="changeServiceCompanyHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeServiceCompanyHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
     <bean id="changeDeviceStatusHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceStatusHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
     <bean id="changeTypeHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeTypeHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
     <bean id="deleteInventoryHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.DeleteInventoryHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
     <bean id="addByRangeHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.AddByRangeHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
     <bean id="saveToBatchHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.SaveToBatchHelper">
         <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
     <bean id="resendLmConfigHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ResendLmConfigHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache" />
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
 
     <bean class="com.cannontech.web.stars.dr.consumer.OptOutControllerHelper"/>
-    
+
     <bean id="warehouseService" class="com.cannontech.web.admin.energyCompany.warehouse.service.impl.WarehouseServiceImpl"/>
     <bean id="serviceCompanyService" class="com.cannontech.web.admin.energyCompany.serviceCompany.service.impl.ServiceCompanyServiceImpl"/>
     <bean id="serviceCompanyDtoValidator" class="com.cannontech.web.admin.energyCompany.serviceCompany.model.ServiceCompanyDtoValidator"/>
@@ -1607,31 +1603,31 @@
     <bean id="exportAttributeValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportAttributeValidator"/>
     <bean id="exportFieldValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportFieldValidator"/>
     <bean id="dataRangeValidator" class="com.cannontech.web.tools.dataExporter.validator.DataRangeValidator"/>
-    
+
     <bean id="widgetHelper" class="com.cannontech.web.widget.AttributeReadingHelper"/>
-    
+
     <bean id="lmReportedDataBackingService" class="com.cannontech.web.updater.dr.LmReportedDataBackingService"/>
     <jms:listener-container 
-        connection-factory="connectionFactory"         
+        connection-factory="connectionFactory"
         destination-type="queue"
         concurrency="1"
         container-type="simple"
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.notif.obj.dr.rfn.LmAddressNotification" ref="lmReportedDataBackingService" method="handleAddress"/>
     </jms:listener-container>
-    
+
     <bean id="controlAuditResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ControlAuditServiceImpl"/>
-    
+
     <bean id="assetAvailabilityReadBackingService" class="com.cannontech.web.updater.assetAvailability.AssetAvailabilityReadBackingService"/>
     <bean class="com.cannontech.common.util.RecentResultsCache">
         <qualifier value="assetAvailabilityReads"/>
     </bean>
     <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityPingServiceImpl"/>
-    
+
     <!-- Contextual Menu Beans (start) -->
     <bean id="meterMenuDecider" class="com.cannontech.web.contextualMenu.MeterMenuDecider"/>
-    
+
     <bean id="menuItemAmrArchivedDataExporter" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
         <constructor-arg value="/tools/data-exporter/view"/>
@@ -1728,7 +1724,7 @@
         <constructor-arg value="DEVICE_ACTIONS"/>
         <constructor-arg value="MASS_DELETE"/>
     </bean>
-    
+
     <bean id="menuItemMeterDetail" class="com.cannontech.web.contextualMenu.model.menuEntry.SingleDeviceMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
         <constructor-arg value="/meter/home"/>

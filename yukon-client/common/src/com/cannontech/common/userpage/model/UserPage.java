@@ -51,6 +51,10 @@ public final class UserPage {
         return module;
     }
 
+    public String getModuleName() {
+        return module == null ? "" : module.getName();
+    }
+
     public String getTitle() {
         return title;
     }
