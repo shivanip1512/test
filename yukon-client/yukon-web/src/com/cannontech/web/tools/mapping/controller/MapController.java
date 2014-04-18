@@ -24,7 +24,7 @@ import com.cannontech.web.tools.mapping.dao.LocationDao.FeaturePropertyType;
 @Controller
 public class MapController {
     
-    @Autowired LocationDao locationDao;
+    @Autowired private LocationDao locationDao;
     
     @RequestMapping("/map")
     public String map(ModelMap model) {
