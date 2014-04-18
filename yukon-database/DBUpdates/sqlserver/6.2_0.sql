@@ -500,6 +500,18 @@ ALTER TABLE EstimatedLoadFormula
 /* @error ignore-end */
 /* End YUK-13225 */
 
+/* Start YUK-13217 */
+ALTER TABLE ArchiveValuesExportFormat
+ADD ExcludeAbnormal CHAR(1);
+GO
+
+UPDATE ArchiveValuesExportFormat
+SET ExcludeAbnormal = '0';
+
+ALTER TABLE ArchiveValuesExportFormat
+ALTER COLUMN ExcludeAbnormal CHAR(1) NOT NULL;
+/* End YUK-13217 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

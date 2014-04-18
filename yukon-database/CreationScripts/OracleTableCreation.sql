@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/14/2014 12:25:46 PM                        */
+/* Created on:     4/17/2014 4:37:21 PM                         */
 /*==============================================================*/
 
 
@@ -489,6 +489,7 @@ create table ArchiveValuesExportFormat  (
    Footer               VARCHAR2(255),
    FormatType           VARCHAR2(40)                    not null,
    TimeZoneFormat       VARCHAR2(20)                    not null,
+   ExcludeAbnormal      CHAR(1)                         not null,
    constraint PK_ArchiveValuesExpFormat primary key (FormatId)
 );
 
