@@ -30,7 +30,8 @@ yukon.collection.map = (function() {
             _featureCollection = fc;
             var 
             icons = [],
-            src_projection = fc.crs.properties.name;  // Yukon currently storing coords as ESPG:4326 (WGS84)
+            src_projection = fc.crs.properties.name,  // Yukon currently storing coords as ESPG:4326 (WGS84)
+            start = new Date().getTime();
             
             for (var i in fc.features) {
                 var
@@ -51,6 +52,7 @@ yukon.collection.map = (function() {
             _map.getView().fitExtent(_getLayer('icons').getSource().getExtent(), _map.getSize());
             
             _buildFeatureLookup();
+            debug.log('loading icons took '+ ((new Date().getTime() - start) * .001) + ' seconds');
         });
     },
     
@@ -137,8 +139,10 @@ yukon.collection.map = (function() {
                 
                 for (var ii = 0; ii < half; ii++) {
                     source.removeFeature(featureArray[ii]);
+                    // try skipped features when infinate loop is fixed https://groups.google.com/forum/#!topic/ol3-dev/LjHVWy3AHO0
+                    // _map.getSkippedFeatures().push(featureArray[ii]);
                 }
-                console.log('removing ' + half + ' features took '+ ((new Date().getTime() - start.getTime()) * .001) + ' seconds');
+                debug.log('removing ' + half + ' features took '+ ((new Date().getTime() - start.getTime()) * .001) + ' seconds');
             }
             _buildFeatureLookup();
         }

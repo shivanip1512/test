@@ -8,6 +8,8 @@ package com.cannontech.web;
  */
 public enum JsLibrary {
     
+    DEBUGGER("/resources/js/lib/debugger.js"), //http://benalman.com/projects/javascript-debug-console-log/
+    
     JQUERY("/JavaScript/lib/jQuery/jquery-1.11.0.js"), //http://www.jquery.com
     JQUERY_MIN("/JavaScript/lib/jQuery/jquery-1.11.0.min.js"), //http://www.jquery.com
     
@@ -49,8 +51,8 @@ public enum JsLibrary {
     HIGH_STOCK_NO_DATA("/resources/js/lib/highstock/modules/no-data-to-display.js"),
     
     OPEN_LAYERS_MIN("/resources/js/lib/open-layers/ol.js"),
-//    OPEN_LAYERS("/resources/js/lib/open-layers/ol-whitespace.js"),
-    OPEN_LAYERS("http://ol3js.org/en/master/build/ol-whitespace.js"),
+    OPEN_LAYERS("/resources/js/lib/open-layers/ol-whitespace.js"),
+//    OPEN_LAYERS("http://ol3js.org/en/master/build/ol-whitespace.js"),
     
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     

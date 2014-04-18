@@ -79,9 +79,12 @@ public class LayoutController {
     
     @PostConstruct
     public void initialize() {
+        
         boolean devMod = configSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
         
         Builder<String> builder = ImmutableList.builder();
+        
+        builder.add(JsLibrary.DEBUGGER.getPath());
         
         builder.add(JsLibrary.MODERNIZR.getPath());
         
@@ -118,6 +121,7 @@ public class LayoutController {
     // StandardPageTag forwards to here!
     @RequestMapping("/")
     public String display(final HttpServletRequest request, final HttpServletResponse response, ModelMap map) throws JspException {
+
         // get data passed over - in attributes
         final BodyContent bodyContent = StandardPageTag.getBodyContent(request);
         
@@ -308,7 +312,7 @@ public class LayoutController {
 
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-cache, no-store");
-
+        
         return skin.getViewName();
     }
     
@@ -323,12 +327,12 @@ public class LayoutController {
         if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE) || StringUtils.isBlank(contact.getContFirstName())) {
             return user.getUsername();
         }
-        String displayName = contact.getContFirstName();
-        if (!contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE) && !StringUtils.isBlank(contact.getContLastName())) {
-            displayName += " " + contact.getContLastName();
+            String displayName = contact.getContFirstName();
+            if (!contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE) && !StringUtils.isBlank(contact.getContLastName())) {
+                displayName += " " + contact.getContLastName();
+            }
+            return displayName;
         }
-        return displayName;
-    }
 
     @ModelAttribute("yukonVersion")
     public String getYukonVersion() {
@@ -353,8 +357,8 @@ public class LayoutController {
             return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/" 
             + buildInfo.get("BUILD_NUMBER") + "\">" + buildInfo.get("BUILD_NUMBER") + "</a>";
         }
-        return "undefined";
-    }
+            return "undefined";
+        }
     
     private Module getModuleBase(String moduleName) throws JspException {
         Module moduleBase = moduleBuilder.getModule(moduleName);
