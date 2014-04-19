@@ -14,7 +14,7 @@ import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 @Configurable(value="getBooleanConfigParamTagPrototype", autowire=Autowire.BY_NAME)
 public class GetBooleanConfigParamTag extends YukonTagSupport {
     
-    @Autowired ConfigurationSource configSource;
+    @Autowired private ConfigurationSource configSource;
     
     private String param;
     private String var;

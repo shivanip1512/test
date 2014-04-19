@@ -17,7 +17,7 @@
 	<script language="JavaScript">
 		function doDefinitionFilter(selectEl, filterType) {
 			var filterValue = selectEl.options[selectEl.selectedIndex].value;
-			if (filterValue.strip() == '') {
+			if (filterValue.trim() == '') {
 				window.location = '${url}';
 				return;
 			}

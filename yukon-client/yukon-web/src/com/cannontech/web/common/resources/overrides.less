@@ -352,3 +352,25 @@ span.dynatree-selected .dynatree-title {
 }
 .breadcrumb > li + li:before {padding: 0 2px 0 6px;}
 .label-info {background-color: #428bca;}
+
+/** Chosen Plugin Overrides */
+.chosen-container-single a.chosen-single {
+    box-shadow: 0px 0px 0px #fff inset,0px 0px 1px #fff;
+    color: #555;
+    height: 26px;
+    line-height: 24px;
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    border-top: 1px solid #c0c0c0;
+    border-radius: 2px;
+    margin: 0;
+    transition: border .1s ease-in-out,background-color .1s ease-in-out;
+}
+.chosen-container .chosen-results li.highlighted {
+    background-color: #efefef !important;
+    background-image: none;
+    color: #555;
+}
+.chosen-container-active.chosen-with-drop .chosen-single {
+    background-image: none;
+}

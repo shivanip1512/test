@@ -102,6 +102,7 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_TRAVERSABLE.getPath());
         builder.add(JsLibrary.JQUERY_TIPSY.getPath());
         builder.add(JsLibrary.JQUERY_SPECTRUM.getPath());
+        builder.add(JsLibrary.JQUERY_CHOSEN.getPath());
 
         //add the other standard libs
         builder.add(JsLibrary.YUKON.getPath());

@@ -32,6 +32,7 @@
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQueryUI/jquery-ui-1.10.4.custom.min.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQuery/plugins/tipsy/stylesheets/tipsy.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQuery/plugins/spectrum/spectrum.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/resources/js/lib/chosen/chosen.min.css"/>" >
         
         <c:set var="browser" value="${header['User-Agent']}" scope="session"/>
         
