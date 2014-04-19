@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -26,6 +26,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
@@ -41,12 +42,15 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.StateDao;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -58,10 +62,12 @@ import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
@@ -70,6 +76,7 @@ import com.google.common.collect.Sets;
 
 
 public class AttributeServiceImpl implements AttributeService {
+    
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoDefinitionService paoDefinitionService;
@@ -128,7 +135,7 @@ public class AttributeServiceImpl implements AttributeService {
     public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
-        return attributeDefinition.getPointIdentifier(pao);
+        return attributeDefinition.getPaoPointIdentifier(pao);
     }
     
     @Override
@@ -176,7 +183,7 @@ public class AttributeServiceImpl implements AttributeService {
                         log.error("Unable to look up values for " + attribute + " on " + pao);
                         throw e;
                     }
-                    LogHelper.debug(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
+                    log.debug("unable to look up values for " + attribute + " on " + pao + ": " + e.toString());
                 }
             }
             if (!points.isEmpty()) {
@@ -369,25 +376,71 @@ public class AttributeServiceImpl implements AttributeService {
 
     }
 
-    /**
-     * First time we need to get the State Groups for a particular Device Group
-     * + Attribute so that we can display only the appropriate options on the
-     * UI.
-     * 
-     * @category    YUK-11992
-     * @since       5.6.4
-     * 
-     * @param groupName         String      Must be findable in the database, eg. "/Group1 Meters"
-     * @param attributeKey      String      Should be exactly from the java constant, eg. BuiltInAttribute.USAGE.getKey()
-     * @return                  List<LiteStateGroup>
-     */
     @Override
-    public List<LiteStateGroup> findListOfStateGroupsForDeviceGroupAndAttributeKey(String groupName,
-                                                                                   String attributeKey) {
+    public List<LiteStateGroup> findStateGroups(List<SimpleDevice> devices, BuiltInAttribute attribute) {
+        
+        ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        
+        // get the points that match the attribute for these devices
+        List<Integer> pointIds = new ArrayList<>();
+        
+        // Look up point ids by pao type, sink into pointIds list
+        // About 6x faster than using getPointForAttribute(device, attribute) for each device
+        ListMultimap<PaoType, SimpleDevice> typeToDevices = ArrayListMultimap.create();
+        for (SimpleDevice device : devices) typeToDevices.put(device.getDeviceType(), device);
+        for (PaoType type : typeToDevices.keySet()) {
+            
+            try {
+                final PointIdentifier pi = paoDefinitionDao.getAttributeLookup(type, attribute).getPointTemplate().getPointIdentifier();
+                
+                SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append("select PointId");
+                        sql.append("from Point");
+                        sql.append("where PointType").eq(pi.getPointType());
+                        sql.append("and PointOffset").eq(pi.getOffset());
+                        sql.append("and PAObjectId").in(subList);
+                        return sql;
+                    }
+                };
+                chunkyTemplate.queryInto(generator, PaoUtils.asPaoIdList(typeToDevices.get(type)), RowMapper.INTEGER, pointIds);
+            } catch(IllegalUseOfAttribute e) {
+                // Ignore pao types that don't support this attribute
+            }
+        }
+        
+        // get the distinct list of stategroups for these points
+        Set<Integer> groupIds = new HashSet<>();
+        SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("select distinct StateGroupId");
+                sql.append("from Point");
+                sql.append("where PointId").in(subList);
+                return sql;
+            }
+        };
+        chunkyTemplate.queryInto(generator, pointIds, RowMapper.INTEGER, groupIds);
+        
+        List<LiteStateGroup> groups = new ArrayList<LiteStateGroup>();
+        for (Integer groupId : groupIds) {
+            groups.add(stateDao.getLiteStateGroup(groupId));
+        }
+        
+        return groups;
+    }
+    
+    @Override
+    public List<LiteStateGroup> findStateGroups(String groupName, BuiltInAttribute attribute) {
+        
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         if (group == null) {
             return new ArrayList<>(0);
         }
+        
         Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
         Multimap<Attribute, PaoType> dest = HashMultimap.create();
         Collection<PaoType> possiblePaoTypes = new ArrayList<>();
@@ -396,7 +449,7 @@ public class AttributeServiceImpl implements AttributeService {
 
         Multimaps.invertFrom(allDefinedAttributes, dest);
         for (Attribute attr : dest.keySet()) {
-            if (attr.getKey().equals(attributeKey) && !attributes.contains(attr)) {
+            if (attr == attribute && !attributes.contains(attr)) {
                 attributes.add(attr);
                 Collection<PaoType> coll = dest.get(attr);
                 possiblePaoTypes.addAll(coll);
@@ -419,10 +472,10 @@ public class AttributeServiceImpl implements AttributeService {
         if (attributes.isEmpty()) {
             return Collections.emptyList();
         }
-
-        SqlFragmentSource groupSqlWhereClause =
+        
+        SqlFragmentSource groupSqlWhereClause = 
                 deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
-
+        
         // get the state group ID's
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT P.stategroupid AS stategroupid");
@@ -483,7 +536,7 @@ public class AttributeServiceImpl implements AttributeService {
             }
         });
         return results;
-    } // ENDS findListOfStateGroupsForDeviceGroupAndAttributeKey
+    }
 
     @Override
     public List<PointIdentifier> findPointsForDevicesAndAttribute(
@@ -501,7 +554,7 @@ public class AttributeServiceImpl implements AttributeService {
         for (PaoType type : typeToDevice.keySet()) {
             AttributeDefinition attrDef = paoDefinitionDao.getAttributeLookup(type, builtInAttribute);
             YukonPao device = typeToDevice.get(type);
-            final PaoPointIdentifier ppi    = attrDef.getPointIdentifier(device); // throws ???
+            final PaoPointIdentifier ppi = attrDef.getPaoPointIdentifier(device); // throws ???
             if (!pis.contains(ppi.getPointIdentifier())) {
                 pis.add(ppi.getPointIdentifier());
             }

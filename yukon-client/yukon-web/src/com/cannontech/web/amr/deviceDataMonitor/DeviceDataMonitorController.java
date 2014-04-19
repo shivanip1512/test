@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -249,16 +250,18 @@ public class DeviceDataMonitorController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getStateGroupsForAttribute")
-    public @ResponseBody Map<String, ?> getStateGroupsForAttribute(String groupName, String attributeKey) {
-        List<LiteStateGroup> stateGroupList = attributeService
-                .findListOfStateGroupsForDeviceGroupAndAttributeKey(groupName, attributeKey);
+    public @ResponseBody Map<String, ?> getStateGroupsForAttribute(String groupName, BuiltInAttribute attribute) {
+        
+        List<LiteStateGroup> stateGroupList = attributeService.findStateGroups(groupName, attribute);
         List<Object> jsonSGs = new ArrayList<>();
+        
         for (LiteStateGroup group : stateGroupList) {
             Map<String, Object> sgObj = Maps.newHashMapWithExpectedSize(2);
             sgObj.put("id", group.getStateGroupID());
             sgObj.put("name", group.getStateGroupName());
             jsonSGs.add(sgObj);
         }
+        
         return Collections.singletonMap("stateGroups", jsonSGs);
     }
 
@@ -284,11 +287,13 @@ public class DeviceDataMonitorController {
         model.addAttribute("monitor", monitor);
 
         int monitoringCount = 0;
-        DeviceGroup monitoringGroup = deviceGroupService.findGroupName(monitor.getGroupName());
-        if (monitoringGroup != null) {
-            DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(monitoringGroup);
-            model.addAttribute("deviceCollection", deviceCollection);
-            monitoringCount = deviceGroupService.getDeviceCount(Collections.singleton(monitoringGroup));
+        if (StringUtils.isNotBlank(monitor.getGroupName())) {
+            DeviceGroup monitoringGroup = deviceGroupService.findGroupName(monitor.getGroupName());
+            if (monitoringGroup != null) {
+                DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(monitoringGroup);
+                model.addAttribute("deviceCollection", deviceCollection);
+                monitoringCount = deviceGroupService.getDeviceCount(Collections.singleton(monitoringGroup));
+            }
         }
         model.addAttribute("monitoringCount", monitoringCount);
         model.addAttribute("mode", PageEditMode.CREATE);
@@ -351,10 +356,10 @@ public class DeviceDataMonitorController {
         setupAttributes(model, userContext);
         Map<String, List<LiteStateGroup>> lookups = new HashMap<>();
         for (AttributeStateGroup asg : monitor.getAttributeStateGroups()) {
-            final String key = asg.getAttribute().getKey();
+            final BuiltInAttribute attribute = (BuiltInAttribute) asg.getAttribute();
             final List<LiteStateGroup> stateGroupList = attributeService
-                    .findListOfStateGroupsForDeviceGroupAndAttributeKey(monitor.getGroupName(), key);
-            lookups.put(key, stateGroupList);
+                    .findStateGroups(monitor.getGroupName(), attribute);
+            lookups.put(attribute.getKey(), stateGroupList);
         }
         model.addAttribute("mapAttributeKeyToStateGroupList", lookups);
     }

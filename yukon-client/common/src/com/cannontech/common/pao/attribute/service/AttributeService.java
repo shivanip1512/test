@@ -19,7 +19,6 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.user.YukonUserContext;
@@ -208,13 +207,26 @@ public interface AttributeService {
     throws IllegalUseOfAttribute;
 
     /**
-     * A Device Group may contain devices with many varieties of device types,
-     * so that even for a unique Attribute it is possible to have multiple State Groups.
+     * Return a list of state groups for the named device group and attribute.
+     * Different device types can have different points mapped to the same attribute
+     * so that even for a unique attribute it is possible to have multiple state groups.
+     * @since 5.6.4
      * 
-     * Note: returns empty list if groupName doesn't exist
+     * @param groupName Must be findable in the database, eg. "/Group1 Meters"
+     * @param attribute
      * 
-     * @param groupName         String      Must be findable in the database, eg. "/Group1 Meters". Note: Returns empty list if not found
-     * @param attributeKey      String      Should be exactly from the java constant, eg. BuiltInAttribute.USAGE.getKey()
+     * @return List<LiteStateGroup> The list of state groups or an empty list.
      */
-    public List<LiteStateGroup> findListOfStateGroupsForDeviceGroupAndAttributeKey(String groupName, String attributeKey);
+    public List<LiteStateGroup> findStateGroups(String groupName, BuiltInAttribute attribute);
+    
+    /**
+     * Return a list of state groups for the devices and attribute.
+     * Different device types can have different points mapped to the same attribute
+     * so that even for a unique attribute it is possible to have multiple state groups.
+     * @since 6.2.0
+     * 
+     * @return List<LiteStateGroup> The list of state groups or an empty list.
+     */
+    public List<LiteStateGroup> findStateGroups(List<SimpleDevice> devices, BuiltInAttribute attribute);
+    
 }

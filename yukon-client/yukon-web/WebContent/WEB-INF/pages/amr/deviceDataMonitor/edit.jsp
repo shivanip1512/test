@@ -94,7 +94,7 @@
                 noBlockOnAdd="true" 
                 disableAddButton="${disableAddProcessAtStart}">
             <div>
-            <table class="inputTable f-processors_table device_data_processors full-width dashed with-form-controls">
+            <table class="compact-results-table f-processors_table device_data_processors full-width dashed with-form-controls">
                 <thead>
                     <tr>
                         <th><i:inline key=".processors.attribute" /></th>

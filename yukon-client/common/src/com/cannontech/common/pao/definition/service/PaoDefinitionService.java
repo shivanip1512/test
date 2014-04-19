@@ -168,12 +168,8 @@ public interface PaoDefinitionService {
             PaoDefinition paoDefinition);
 
     /**
-     * 
-     * @param group
-     * @param possiblePaoTypes
-     * @return
-     * 
-     * @since	5.6.3, from MeterReadPercentageModel.java
+     * This method returns list of all PAO types in the group
      */
     public List<PaoType> findListOfPaoTypesInGroup(DeviceGroup group, Collection<PaoType> possiblePaoTypes);
+    
 }

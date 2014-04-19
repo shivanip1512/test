@@ -44,7 +44,7 @@ public class AttributeDefinition implements Comparable<AttributeDefinition> {
      * @param pao
      * @return
      */
-    public PaoPointIdentifier getPointIdentifier(YukonPao pao) {
+    public PaoPointIdentifier getPaoPointIdentifier(YukonPao pao) {
         return new PaoPointIdentifier(pao.getPaoIdentifier(), pointTemplate.getPointIdentifier());
     }
 
@@ -56,7 +56,7 @@ public class AttributeDefinition implements Comparable<AttributeDefinition> {
      */
     public PaoPointIdentifier findActualPointIdentifier(YukonPao pao) {
         try {
-            PaoPointIdentifier paoPointIdentifier = getPointIdentifier(pao);
+            PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifier(pao);
             pointDao.getPointId(paoPointIdentifier);
             return paoPointIdentifier;
         } catch (NotFoundException nfe) {
@@ -72,7 +72,7 @@ public class AttributeDefinition implements Comparable<AttributeDefinition> {
      * @throws NotFoundException
      */
     public int getPointId(YukonPao pao) throws NotFoundException {
-        PaoPointIdentifier paoPointIdentifier = getPointIdentifier(pao);
+        PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifier(pao);
         int pointId = pointDao.getPointId(paoPointIdentifier);
         return pointId;
     }

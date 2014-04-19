@@ -1,82 +1,74 @@
+yukon.namespace('yukon.DeviceDataMonitor');
+
 /**
  * Singleton that manages the device data monitor feature
  * 
  * @requires jQuery 1.8.3+
  * @requires jQuery UI 1.9.2+
  */
-
-yukon.namespace('yukon.DeviceDataMonitor');
-
 yukon.DeviceDataMonitor = (function () {
     
     var _initialized = false,
+    
         _waiting_to_finish_N_before_doing_counts = 0,
 
-        _DEFAULT_NO_STATE_VALUE =            "null",
-        _DEFAULT_NO_STATE_GROUP_VALUE =      "null",
+        _DEFAULT_NO_STATE_VALUE = "null",
 
-        _deviceViolationEnum_point =         "POINT",
+        _deviceViolationEnum_point = "POINT",
 
-        _monitor_update_btn =                ".f-update_monitor",
-        _monitor_btns_to_disable =           ".page-action-area button, .ui-dialog-buttonset button",
-        _monitor_delete_form =               ".f-delete_form",
-        _monitor_delete_btn =                "button.f-delete_btn",
-        _undo_row_links =                    ".undoRemoveBtn, .removeBtn",
-        _supported_count_details =           ".f-details",
-        _device_group_count =                ".f-device_group_count",
-        _supported_count =                   ".f-supported_counts",
-        _supported_count_details_list =      ".f-missing_list",
-        _monitor_toggle_form =               ".f-toggle_enabled_form",
-        _monitor_toggle_btn =                ".f-toggle_enabled",
-        _processors_table_selector =         ".f-processors_table",
-        _processors_table_body =             ".f-processors_table tbody",
-        _processors_table_new_row_model =    ".f-processors_table .f-new_row_model",
-        _monitor_form =                      "#monitor",
-        _name_selector =                     "#name",
-        _attribute_selector =                ".f-attribute",
-        _attribute_and_state_group =         ".f-attribute, .f-state_group",
-        _device_group_selector =             "#groupName",
-        _state_group_selector =              ".f-state_group",
-        _processor_add_btn_selector =        ".f-add_processor",
-        _violations_loading_selector =       ".f-violations_loading",
-        _violations_links_selector =         ".f-violation_report_links",
-        _new_row_model_class =               "f-new_row_model",
-        _supported_details_trigger_class =   "f-details_trigger",
-        _processor_class =                   "processor",
-        _processor_selector =                ".processor",
-        _add_point_selector =                ".add",
-        _refresh_violations_selector =       "#refreshViolationsAfterAddingPoint",
+        _monitor_update_btn = ".f-update_monitor",
+        _monitor_btns_to_disable = ".page-action-area button, .ui-dialog-buttonset button",
+        _monitor_delete_form = ".f-delete_form",
+        _undo_row_links = ".undoRemoveBtn, .removeBtn",
+        _supported_count_details = ".f-details",
+        _device_group_count = ".f-device_group_count",
+        _supported_count = ".f-supported_counts",
+        _supported_count_details_list = ".f-missing_list",
+        _monitor_toggle_form = ".f-toggle_enabled_form",
+        _monitor_toggle_btn = ".f-toggle_enabled",
+        _processors_table_selector = ".f-processors_table",
+        _processors_table_body = ".f-processors_table tbody",
+        _processors_table_new_row_model = ".f-processors_table .f-new_row_model",
+        _monitor_form = "#monitor",
+        _attribute_selector = ".f-attribute",
+        _device_group_selector = "#groupName",
+        _state_group_selector = ".f-state_group",
+        _processor_add_btn_selector = ".f-add_processor",
+        _violations_loading_selector = ".f-violations_loading",
+        _violations_links_selector = ".f-violation_report_links",
+        _new_row_model_class = "f-new_row_model",
+        _supported_details_trigger_class = "f-details_trigger",
+        _processor_class = "processor",
+        _processor_selector = ".processor",
+        _add_point_selector = ".add",
+        _refresh_violations_selector = "#refreshViolationsAfterAddingPoint",
 
-        _missing_field_selector =            ".f-showProblem",
-        _missing_field_help_selector =       ".f-showViolationHelp",
+        _missing_field_selector = ".f-showProblem",
+        _missing_field_help_selector = ".f-showViolationHelp",
 
-        _btn_create_update =                 ".page-action-area button.f-update_monitor",
-
-        // supported count "missing" text
-        _missing_or_no_group_text =       ".f-missing_or_no_stategroup_text",
-        _are_missing_points_text =        ".f-are_missing_points_text",
-        _view_details_text =              ".f-view_details_text",
-        _add_points_text =                ".f-add_points_text",
+        _btn_create_update = ".page-action-area button.f-update_monitor",
 
         // "are you sure" update dialog
-        _update_dialog_ids =              "#update_loading_dialog, #update_missing_dialog",
-        _update_or_create_event =         "e_ddm_update_or_create",
-        _count_status =                   "data-count-status",
-        _count_status_loading =           "loading",
-        _count_status_missing =           "missing",
-        _count_status_none_missing =      "none_missing",
+        _update_dialog_ids = "#update_loading_dialog, #update_missing_dialog",
+        _update_or_create_event = "e_ddm_update_or_create",
+        _count_status = "data-count-status",
+        _count_status_loading = "loading",
+        _count_status_missing = "missing",
+        _count_status_none_missing = "none_missing",
 
         // ajax urls
-        _url_device_group_count =             "getDeviceGroupCount",
-        _url_supported_counts_by_id =         "getSupportedCountsById",
-        _url_supported_counts_by_monitor =    "getSupportedCountsByMonitor",
-        _url_state_groups =                   "getStateGroupsForAttribute",
-        _url_states =                         "getStatesForGroup",
-        _url_to_display_devices_in_violation= "getDeviceListInViolation",
-        _url_to_add_points_to_display_devices="forwardToAddPoints",
+        _url_device_group_count = "getDeviceGroupCount",
+        _url_supported_counts_by_id = "getSupportedCountsById",
+        _url_supported_counts_by_monitor = "getSupportedCountsByMonitor",
+        _url_state_groups = "getStateGroupsForAttribute",
+        _url_states = "getStatesForGroup",
+        _url_to_display_devices_in_violation = "getDeviceListInViolation",
+        _url_to_add_points_to_display_devices = "forwardToAddPoints",
+        
+        _violations_interval_id = null, // reference to setInterval task
 
-        _supported_counts_xhr =                null,
-        _group_count_xhr =                     null,
+        _supported_counts_xhr = null,
+        _group_count_xhr = null,
 
         _get_violations_count = function () {
             $.ajax({
@@ -84,7 +76,9 @@ yukon.DeviceDataMonitor = (function () {
                 data: {'monitorId': $('#monitorId').val()},
                 dataType: 'json'
             }).done(function (data, textStatus, jqXHR) {
-                clearInterval(_violations_interval_id);
+                if (_violations_interval_id !== null && typeof _violations_interval_id !== 'undefined') {
+                    clearInterval(_violations_interval_id);
+                }
                 if (data.status === 'working') {
                     _violations_interval_id = setInterval(_get_violations_count, 3000);
                 } else {
@@ -180,7 +174,6 @@ yukon.DeviceDataMonitor = (function () {
                     + _supported_count_details_list).empty();
             $('.f-loading').hide();
 
-            var addStyle = data.totalMissingCount === 0 ? '': 'border-bottom: 1px dotted #ccc;';
             var helpDivId = 'totalSupportedHelpId';
             $(countSel).html("<div>"+ data.totalSupportedCountMessage 
                     +"<a href='javascript:void(0);' class='f-showViolationHelp violation_help_link' target-id='"+ helpDivId +"' target-title='"+ data.totalSupportedCountHelpTitle +"'><i class='icon icon-help'>&nbsp;</i></a>"
@@ -295,7 +288,7 @@ yukon.DeviceDataMonitor = (function () {
             }).done(function (transport, textStatus, jqXHR) {
                 var problemListContainer = $('#'+ problemAnchor.attr('target-id'));
                 problemListContainer.html(transport);
-                problemListContainer.dialog({width: "auto", minWidth: 500, height: 500, modal: true, title: problemAnchor.attr('target-title')});
+                problemListContainer.dialog({width: "auto", minWidth: 500, height: 500, title: problemAnchor.attr('target-title')});
                 problemAnchor.next().hide();
                 problemAnchor.show();
             });
@@ -304,7 +297,7 @@ yukon.DeviceDataMonitor = (function () {
         _display_local_help = function (event) {
             var problemAnchor = $(event.currentTarget);
             var problemHelpContainer = $('#'+ problemAnchor.attr('target-id'));
-            problemHelpContainer.dialog({width: 500, minWidth: 500, title: problemAnchor.attr('target-title'), modal: true});
+            problemHelpContainer.dialog({width: 500, minWidth: 500, title: problemAnchor.attr('target-title')});
         },
 
         _hide_counts_and_show_loading = function () {
@@ -475,7 +468,7 @@ yukon.DeviceDataMonitor = (function () {
             }
             _supported_counts_xhr[row_id] = $.ajax({
                 url: _url_state_groups,
-                data: {'attributeKey': attr_val, 'groupName': $('#groupName').val()}
+                data: {'attribute': attr_val, 'groupName': $('#groupName').val()}
             }).done(function (data, textStatus, jqXHR) {
                 DOM_feedback.remove();
                 if (data.stateGroups.length > 1) {
@@ -517,17 +510,17 @@ yukon.DeviceDataMonitor = (function () {
         }, // ENDS _update_state_groups_worker
 
         _get_state_group_value = function (row) {
-            var state_group_select  = row.find('select.f-state_group :eq(0)');
-            var state_group_input   = row.find('.f-state_group input :eq(0)');
-            var state_group_id      = state_group_select.length > 0 ? state_group_select.find(":selected").val() : state_group_input.val();
+            var state_group_select  = row.find('select.f-state_group');
+            var state_group_input   = row.find('.f-state_group input:hidden');
+            var state_group_id      = state_group_select.length > 0 ? state_group_select.val() : state_group_input.val();
             return state_group_id;
         },
 
         _validate_processors = function () {
             var missingCount = 0;
-            var procs = [$(_processor_selector).filter(":visible")];
-            procs.each(function (row) {
-                var ctrl = _get_state_group_value(row);   // for IE8
+            var procs = $(_processor_selector).filter(":visible");
+            procs.each(function (idx, row) {
+                var ctrl = _get_state_group_value($(row));   // for IE8
                 if( ctrl == null || ctrl.length < 1 )
                     missingCount++;
             });
@@ -567,8 +560,8 @@ yukon.DeviceDataMonitor = (function () {
             }
 
             // add our help icons next to the two column titles (Settings and Processors)
-            $('.f-settings_section .title-bar').append('<i class="icon icon-help f-open_settings_help"></i>');
-            $('.f-processors_section .title-bar').append('<i class="icon icon-help f-open_processors_help"></i>');
+            $('.f-settings_section .title-bar').append('<i class="icon icon-help f-open_settings_help cp"></i>');
+            $('.f-processors_section .title-bar').append('<i class="icon icon-help f-open_processors_help cp"></i>');
 
             _initialized = true;
         },
