@@ -21,7 +21,16 @@ public interface FormulaDao {
     /** Deletes a formula by its id **/
     public void deleteFormulaById(int formulaId);
 
-    /** Determines if a formula exists with a given name. */ 
+    /** 
+     * */ 
+    
+    /**
+     * Determines if a formula already exists with a given name, 
+     * for the purpose of duplicate detection/prevention.
+     * 
+     * @param formulaId The id of the formula currently being edited/updated (or null for a new formula).
+     * @param name The new name to be checked.
+     */
     public boolean isFormulaNameInUse(Integer formulaId, String name);
 
     /** 

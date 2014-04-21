@@ -211,20 +211,18 @@ public class FormulaServiceImpl implements FormulaService {
      * Calculates the result of a quadratic expression: a*x^2 + b*x.  The constant term is not specified at this
      * level, it is specified only once for an entire Formula.
      * 
-     * @param f The quadratic FormulaFunction that is being evaluated.
+     * @param formulaFunction The quadratic FormulaFunction that is being evaluated.
      * @param inputValue The input value for the input variable for the function. 
      * @return The output of the function as a Double. 
      */
-    private Double evaluateFunction(FormulaFunction f, Double inputValue) {
-        Double outputValue;
-        if (f.getInput().getInputType() == FormulaInput.InputType.CONTROL_PERCENT) {
+    private double evaluateFunction(FormulaFunction formulaFunction, double inputValue) {
+        double adjustedInputValue = inputValue;
+        if (formulaFunction.getInput().getInputType() == FormulaInput.InputType.CONTROL_PERCENT) {
             // Convert the integer gear control percentage (0 - 100) to a decimal (0.0 - 1.0).
-            Double percentageInputValue = inputValue / 100.0;
-            outputValue = f.getQuadratic() * Math.pow(percentageInputValue, 2) + f.getLinear() * percentageInputValue; 
-        } else {
-            outputValue = f.getQuadratic() * Math.pow(inputValue, 2) + f.getLinear() * inputValue; 
+            adjustedInputValue = inputValue / 100.0;
         }
-        return outputValue;
+        return formulaFunction.getQuadratic() * Math.pow(adjustedInputValue, 2) 
+                + formulaFunction.getLinear() * adjustedInputValue; 
     }
 
     /** 
