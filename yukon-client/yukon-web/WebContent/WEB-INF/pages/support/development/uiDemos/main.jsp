@@ -3,6 +3,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dev" page="uiDemos">
+<cti:includeScript link="/JavaScript/yukon.picker.js"/>
+<cti:includeScript link="/JavaScript/yukon.tables.js"/>
 
     <dt:pickerIncludes/>
     <cti:includeScript link="/resources/js/lib/google-code-prettify/prettify.js"/>

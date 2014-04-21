@@ -34,6 +34,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.OnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.dr.model.RfPerformanceSettings;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
@@ -147,6 +148,12 @@ public class HomeController {
         boolean showEcobeeStats = true;
         model.addAttribute("showEcobeeStats", showEcobeeStats);
         model.addAttribute("month", new DateTime().toString("MMM"));
+        
+        EcobeeSettings ecobeeSettings = new EcobeeSettings();
+        ecobeeSettings.setCheckErrors(true);
+        ecobeeSettings.setDataCollection(true);
+        ecobeeSettings.setErrorCheckTime(42);
+        model.addAttribute("ecobeeSettings", ecobeeSettings);
         
         return "dr/home.jsp";
     }

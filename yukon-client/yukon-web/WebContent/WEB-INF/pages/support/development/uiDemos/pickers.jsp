@@ -72,7 +72,7 @@ function inlinePickerSelectionMade(selectedItems) {
 }
 
 $(document).ready(function() {
-    inlinePicker.show.call(inlinePicker, true);
+    //inlinePicker.show.call(inlinePicker, true);
 });
 </script>
 
@@ -515,14 +515,14 @@ This page should be tested at 1024x768.
 <tags:sectionContainer2 nameKey="inlinePickers">
     <div id="inlinePickerContainer"></div>
     <tags:pickerDialog
-        id="inlinePicker"
-        type="${pickerType}"
-        destinationFieldName="inlineId"
-        linkType="none"
-        containerDiv="inlinePickerContainer" 
-        immediateSelectMode="true"
-        endAction="inlinePickerSelectionMade"/>
-</tags:sectionContainer2>
+         id="inlinePicker"
+         type="${pickerType}"
+         destinationFieldName="inlineId"
+         linkType="none"
+         containerDiv="inlinePickerContainer" 
+         immediateSelectMode="true"
+         endAction="inlinePickerSelectionMade"/>
+ </tags:sectionContainer2>
 <br>
 
 </cti:msgScope>

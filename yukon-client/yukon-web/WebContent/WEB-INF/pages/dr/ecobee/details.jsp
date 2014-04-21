@@ -8,6 +8,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="ecobee.details">
+<cti:includeScript link="/JavaScript/yukon.picker.js"/>
+
+    <script type="text/javascript">
+        function editLoadGroup () {
+            window.location.href = '${userUrl}?userId=' + $('#userId').val();
+        }
+    </script>
 
     <div class="column-12-12">
         <div class="column one">
@@ -57,6 +64,14 @@
                 </table>
                 <div class="action-area">
                     <cti:button nameKey="download" icon="icon-page-white-excel"/>
+                </div>
+                <div id="loadGroup">
+                    <input type="hidden" id="loadGroupId" name="loadGroupId">
+                    <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
+                        <tags:nameValue2 nameKey="yukon.web.modules.dr.ecobee.details.loadGroupPicker" rowId="loadGroupPickerContainer"/>
+                        <tags:pickerDialog type="loadGroupPicker" id="loadGroupPicker" linkType="none" containerDiv="loadGroupPickerContainer_content" 
+                            immediateSelectMode="true" destinationFieldId="loadGroupId" endAction="editLoadGroup"/>
+                    </tags:nameValueContainer2>
                 </div>
             </tags:sectionContainer2>
         </div>

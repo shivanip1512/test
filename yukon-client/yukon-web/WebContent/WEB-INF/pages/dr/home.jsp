@@ -181,29 +181,30 @@
                     <div class="action-area">
                         <a href="<cti:url value="/dr/ecobee"/>"><i:inline key=".details"/></a>
                         <cti:button nameKey="configure" popup="#ecobee-config" icon="icon-cog-edit"/>
-                        <div dialog id="ecobee-config" data-width="500" data-title="<cti:msg2 key=".ecobee.configure.title"/>" class="dn">
-                            <form:form action="ecobee/config" method="POST">
+                        <div dialog data-form id="ecobee-config" data-width="500" data-title="<cti:msg2 key=".ecobee.configure.title"/>" class="dn">
+                            <cti:url var="settingsUrl" value="/dr/ecobee/settings"/>
+                            <form:form action="${settingsUrl}" method="POST" commandName="ecobeeSettings">
                                 <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
-                                    <tags:nameValue2 nameKey=".ecobee.configure.errorChecking" rowId="ecobee-error-checking-toggle">
-<%--                                         <tags:hidden path="checkErrors"/> --%>
+                                    <tags:nameValue2 nameKey=".ecobee.configure.errorChecking" rowId="ecobee-error-checking-toggle" valueClass="full-width">
+                                        <tags:hidden path="checkErrors" id="ecobee-check-errors"/>
                                         <div class="button-group toggle-on-off">
                                             <cti:button nameKey="on" classes="on yes M0"/>
                                             <cti:button nameKey="off" classes="no M0"/>
                                         </div>
                                     </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".ecobee.configure.dailyErrorCheck" rowId="ecobee-error-check-schedule">
+                                    <tags:nameValue2 nameKey=".ecobee.configure.dailyErrorCheck" rowId="ecobee-error-check-schedule" valueClass="full-width">
                                         <div class="column-6-18 clearfix stacked">
                                             <div class="column one">
                                                 <span class="f-time-label fwb">&nbsp;</span>
-<%--                                                 <tags:hidden path="errorCheckTime"/> --%>
+                                                <tags:hidden path="errorCheckTime" id="ecobee-error-check-time"/>
                                             </div>
                                             <div class="column two nogutter">
                                                 <div class="f-time-slider" style="margin-top: 7px;"></div>
                                             </div>
                                         </div>
                                     </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".ecobee.configure.dataCollection" rowId="ecobee-data-collection-toggle">
-<%--                                         <tags:hidden path="dataCollection"/> --%>
+                                    <tags:nameValue2 nameKey=".ecobee.configure.dataCollection" rowId="ecobee-data-collection-toggle" valueClass="full-width">
+                                        <tags:hidden path="dataCollection" id="ecobee-data-collection"/>
                                         <div class="button-group toggle-on-off">
                                             <cti:button nameKey="on" classes="on yes M0"/>
                                             <cti:button nameKey="off" classes="no M0"/>
