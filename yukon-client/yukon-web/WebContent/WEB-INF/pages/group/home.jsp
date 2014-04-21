@@ -20,7 +20,7 @@ $(function() {
     });
 });
 
-function removeGroup(formName){
+function removeGroup(formName) {
     var confirmRemove = confirm('${removeGroupAreYouSure}');
     if(confirmRemove) {
         if(formName != null) {
@@ -36,7 +36,7 @@ function removeGroup(formName){
 
 // js implementation of DeviceGroupUtil.isValidName(name).
 function isValidGroupName(name) {
-    if(name == null || name.strip() == '' || (name.indexOf('/') != -1) || (name.indexOf('\\') != -1)) {
+    if(name == null || name.trim() == '' || (name.indexOf('/') != -1) || (name.indexOf('\\') != -1)) {
         return false;
     }
     return true;
