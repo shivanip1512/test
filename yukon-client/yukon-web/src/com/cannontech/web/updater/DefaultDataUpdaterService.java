@@ -7,10 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.TimeSource;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
@@ -20,7 +18,6 @@ import com.google.common.collect.ListMultimap;
 public class DefaultDataUpdaterService implements DataUpdaterService {
     private final static Logger log = YukonLogManager.getLogger(DefaultDataUpdaterService.class);
 
-    private TimeSource timeSource;
     private Map<DataType, ? extends UpdateBackingService> backs;
     private Map<DataType, ? extends BulkUpdateBackingService> bulkBacks;
 
@@ -70,7 +67,7 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
         }
 
         log.debug("getUpdates - creating response object");
-        return new UpdateResponse(response, timeSource.getCurrentMillis());
+        return new UpdateResponse(response, System.currentTimeMillis());
     }
 
     @Override
@@ -126,11 +123,6 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
             updateValues.add(updateValue);
         }
         return updateValues;
-    }
-
-    @Required
-    public void setTimeSource(TimeSource timeSource) {
-        this.timeSource = timeSource;
     }
 
     public void setBacks(Map<DataType, ? extends UpdateBackingService> backs) {
