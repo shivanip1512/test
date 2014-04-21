@@ -75,6 +75,7 @@ public LMGroupBasePanel( boolean showHistory )
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -105,6 +106,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -939,6 +941,7 @@ private javax.swing.JLabel getRouteLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) 
 {	
 	LMGroup lmGroup = (LMGroup)val;
@@ -1097,6 +1100,7 @@ private void initialize() {
  * This method must be implemented if a notion of data validity needs to be supported.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	boolean isValid;
@@ -1150,7 +1154,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aLMGroupBasePanel);
 		frame.setSize(aLMGroupBasePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -1178,6 +1183,7 @@ public void setSwitchType(String type)
 		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP ||
 	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT ||
 	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_DIGI_SEP ||
+	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_ECOBEE ||
 	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RFN_EXPRESSCOMM) );
 
 	//dont show the following options if this group is a MACRO
@@ -1208,6 +1214,7 @@ public void setSwitchType(String type)
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val)  
 {
 	lmGroup = (LMGroup)val;
@@ -1237,8 +1244,8 @@ public void setValue(Object val)
 			int assignedRouteID = ((IGroupRoute)lmGroup).getRouteID().intValue();
 
 			for( int i = 0 ; i < routes.size(); i++ )
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
-					getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
+				if( routes.get(i).getYukonID() == assignedRouteID )
+					getRouteComboBox().setSelectedItem(routes.get(i));
       }
 	}
 	

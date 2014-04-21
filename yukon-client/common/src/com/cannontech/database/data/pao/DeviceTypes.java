@@ -222,6 +222,8 @@ public interface DeviceTypes extends TypeBase
     public final static int RF_DA = DEVICE_OFFSET + 167;
             
     public final static int ECOBEE_SMART_SI = DEVICE_OFFSET + 168;
+    public final static int LM_GROUP_ECOBEE = DEVICE_OFFSET + 169;
+    public final static int LM_ECOBEE_PROGRAM = DEVICE_OFFSET + 170;
 
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]

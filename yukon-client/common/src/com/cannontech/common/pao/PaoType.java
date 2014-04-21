@@ -1,3 +1,4 @@
+
 package com.cannontech.common.pao;
 
 
@@ -237,6 +238,8 @@ public enum PaoType implements DatabaseRepresentationSource {
     RF_DA(DeviceTypes.RF_DA, "RF-DA", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     ECOBEE_SMART_SI(DeviceTypes.ECOBEE_SMART_SI, "Ecobee Smart SI", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
+    LM_ECOBEE_PROGRAM(DeviceTypes.LM_ECOBEE_PROGRAM, "EcoBee Program", PaoCategory.DEVICE, PaoClass.LOADMANAGEMENT),
+    LM_GROUP_ECOBEE(DeviceTypes.LM_GROUP_ECOBEE, "EcoBee Group", PaoCategory.DEVICE, PaoClass.GROUP),
     ;
     
     private final int deviceTypeId;
@@ -280,11 +283,13 @@ public enum PaoType implements DatabaseRepresentationSource {
             LM_CURTAIL_PROGRAM,
             LM_DIRECT_PROGRAM,
             LM_ENERGY_EXCHANGE_PROGRAM,
-            LM_SEP_PROGRAM);
+            LM_SEP_PROGRAM,
+            LM_ECOBEE_PROGRAM);
         
         directProgramTypes = ImmutableSet.of(
             LM_DIRECT_PROGRAM,
-            LM_SEP_PROGRAM);
+            LM_SEP_PROGRAM,
+            LM_ECOBEE_PROGRAM);
         
         cbcTypes = ImmutableSet.of(
                 CAPBANKCONTROLLER,

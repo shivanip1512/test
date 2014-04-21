@@ -1296,6 +1296,7 @@ public void setSwitchType(String type)
 		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP ||
 	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT ||
 	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_DIGI_SEP ||
+	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_ECOBEE ||
 	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RFN_EXPRESSCOMM) );
 	
 

@@ -36,7 +36,8 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
         PaoType.LM_GROUP_POINT,
         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
         PaoType.LM_GROUP_RIPPLE,
-        PaoType.LM_GROUP_VERSACOM
+        PaoType.LM_GROUP_VERSACOM,
+        PaoType.LM_GROUP_ECOBEE
     };  
 
 	private static final PaoType[] GROUP_LIST_SA = {
@@ -51,7 +52,8 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
         PaoType.LM_GROUP_SA205,
         PaoType.LM_GROUP_SA305,
         PaoType.LM_GROUP_SADIGITAL,
-        PaoType.LM_GROUP_VERSACOM
+        PaoType.LM_GROUP_VERSACOM,
+        PaoType.LM_GROUP_ECOBEE
     };
 	
 /**
@@ -89,6 +91,7 @@ private PaoType[] getGroupList() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getPreferredSize() {
 	return new Dimension( 350, 200 );
 }
@@ -210,6 +213,7 @@ public String getTypeOfSwitchSelectedString()
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	return LMFactory.createLoadManagement( getTypeOfSwitchSelected() );
@@ -280,15 +284,18 @@ private void initialize() {
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) {
 	//nothing to set
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getSwitchListScrollPane().requestFocus(); 

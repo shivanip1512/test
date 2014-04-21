@@ -1,7 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -23,6 +23,7 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
     private SpecialRippleMessagePanel specialRippleMessagePanel = null;
     private LMGroupExpressComEditorPanel lmGroupExpressComEditorPanel = null;
     private LMGroupDigiSepPanel lmGroupDigiSepEditorPanel = null;
+    private LMGroupEcoBeePanel lmGroupEcoBeeEditorPanel = null;
     private LMGroupPointEditorPanel lmGroupPointEditorPanel = null;
     
     private LMGroupMCTEditorPanel lmGroupMCTEditorPanel = null;
@@ -87,6 +88,13 @@ public LMGroupDigiSepPanel getlmGroupDigiSepEditorPanel()
         lmGroupDigiSepEditorPanel = new LMGroupDigiSepPanel();
     
     return lmGroupDigiSepEditorPanel;
+}
+
+public LMGroupEcoBeePanel getlmGroupEcoBeeEditorPanel() {
+    if( lmGroupEcoBeeEditorPanel == null )
+        lmGroupEcoBeeEditorPanel = new LMGroupEcoBeePanel();
+    
+    return lmGroupEcoBeeEditorPanel;
 }
 
 public SA205EditorPanel getSA205EditorPanel() 
@@ -414,6 +422,8 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
               || currentPanel == aSADigitalEditorPanel
               || currentPanel == golayEditorPanel
               || currentPanel == lmGroupMCTEditorPanel
-              || currentPanel == lmGroupDigiSepEditorPanel);
+              || currentPanel == lmGroupDigiSepEditorPanel
+              || (currentPanel == getLMGroupBasePanel() &&
+              getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_ECOBEE));
 }
 }

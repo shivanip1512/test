@@ -9893,6 +9893,9 @@
     <pao id="LM_GROUP_DIGI_SEP" inherits="LM_GROUP">
         <displayName>DIGI SEP GROUP</displayName>
     </pao>
+    <pao id="LM_GROUP_ECOBEE" inherits="LM_GROUP">
+        <displayName>EcoBee Group</displayName>
+    </pao>
     <pao id="MACRO_GROUP" inherits="LM_GROUP">
         <displayName>MACRO GROUP</displayName>
     </pao>
@@ -9937,6 +9940,12 @@
         <displayName>LM SEP PROGRAM</displayName>
         <tags>
             <tag name="SEP_PROGRAM_ENROLLMENT" />
+        </tags>
+    </pao>
+    <pao id="LM_ECOBEE_PROGRAM" inherits="LM_PROGRAM_BASE">
+        <displayName>LM EcoBeeProgram</displayName>
+        <tags>
+            <tag name="ECOBEE_PROGRAM_ENROLLMENT" />
         </tags>
     </pao>
 

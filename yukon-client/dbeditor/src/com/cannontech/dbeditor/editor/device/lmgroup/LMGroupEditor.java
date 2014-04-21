@@ -29,7 +29,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
           PAOGroups.LM_GROUP_SA305, PAOGroups.LM_GROUP_SA205,
           PAOGroups.LM_GROUP_SADIGITAL, PAOGroups.LM_GROUP_GOLAY,
           PaoType.LM_GROUP_DIGI_SEP.getDeviceTypeId(),
-          PaoType.ECOBEE_SMART_SI.getDeviceTypeId()},
+          PaoType.LM_GROUP_ECOBEE.getDeviceTypeId()},
 
         //com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupEmetconPanel
         { PAOGroups.LM_GROUP_EMETCON },
@@ -64,9 +64,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
         //com.cannontech.dbeditor.wizard.device.lmgroup.GolayEditorPanel
         { PAOGroups.LM_GROUP_GOLAY },
         
-        { PaoType.LM_GROUP_DIGI_SEP.getDeviceTypeId() },
-        
-        { PaoType.ECOBEE_SMART_SI.getDeviceTypeId() }
+        { PaoType.LM_GROUP_DIGI_SEP.getDeviceTypeId() }
     };
 
     

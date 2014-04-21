@@ -40,6 +40,11 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
             retLm.setPAOCategory(PaoCategory.getPaoCategory(type.getPaoCategory().getPaoCategoryId()));
             retLm.setPAOClass(type.getPaoClass().getDbString());
             break;
+        case PAOGroups.LM_GROUP_ECOBEE:
+            retLm = new LMGroupEcoBee();
+            retLm.setPAOCategory(PaoCategory.getPaoCategory(type.getPaoCategory().getPaoCategoryId()));
+            retLm.setPAOClass(type.getPaoClass().getDbString());
+            break;
         case PAOGroups.LM_GROUP_VERSACOM:
             retLm = new LMGroupVersacom();
             retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
