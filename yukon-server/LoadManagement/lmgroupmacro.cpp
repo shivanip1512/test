@@ -1,15 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupmacro.cpp
-
-        Programmer:  Aaron Lauinger
-
-        Description:    Source file for CtiLMGroupMacro
-                    Represents a lm macro group.
-
-        Initial Date:  6/24/2004
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001-2004
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"

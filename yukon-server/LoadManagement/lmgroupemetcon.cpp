@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupemetcon.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMGroupEmetcon.
-                        CtiLMGroupEmetcon maintains the state and handles
-                        the persistence of emetcon groups in Load Management.
-
-        Initial Date:  2/9/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"

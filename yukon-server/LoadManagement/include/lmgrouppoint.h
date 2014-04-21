@@ -1,12 +1,7 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
 #include "lmgroupbase.h"
 #include "msg_cmd.h"
-#include "observe.h"
 
 class CtiLMGroupPoint : public CtiLMGroupBase
 {

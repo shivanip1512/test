@@ -1,9 +1,5 @@
 #pragma once
 
-#include <vector>
-
-#include <rw/thr/recursiv.h> 
-
 #include "lmgroupbase.h"
 
 class CtiLMGroupMacro : public CtiLMGroupBase

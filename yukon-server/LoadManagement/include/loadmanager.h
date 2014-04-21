@@ -1,12 +1,5 @@
 #pragma once
 
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/runfunc.h>
-#include <rw/thr/srvpool.h>
-#include <rw/thr/thrutil.h>
-#include <rw/thr/countptr.h>
-#include <rw/collect.h>
-
 #include "dbaccess.h"
 #include "connection_client.h"
 #include "message.h"
@@ -22,7 +15,6 @@
 #include "ctibase.h"
 #include "logger.h"
 #include "yukon.h"
-#include "ctdpcptrq.h"
 #include "queue.h"
 
 class CtiLMControlArea;

@@ -1,7 +1,3 @@
-/*
-*   Copyright (c) 2009 Cooper Power Systems EAS. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 #include "precompiled.h"
 #include "timeperiod.h"
 #include "lmutility.h"

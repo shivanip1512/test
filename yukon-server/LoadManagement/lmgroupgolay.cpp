@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-  Filename:  lmgroupgolay.cpp
-
-  Programmer:  Aaron Lauinger
-
-  Description:    Source file for CtiLMGroupGolay.
-  CtiLMGroupGolay maintains the state and handles
-  the persistence of golay groups in Load Management.
-
-  Initial Date:  3/6/2004
-
-  COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
-  ---------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "lmgroupgolay.h"

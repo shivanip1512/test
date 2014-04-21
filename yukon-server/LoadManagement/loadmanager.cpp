@@ -1,17 +1,3 @@
-/*-----------------------------------------------------------------------------
-  Filename:  loadmanager.cpp
-
-  Programmer:  Josh Wolberg
-
-  Description:    Source file for CtiLoadManager
-  Once started CtiLoadManager is reponsible
-  for determining if and when to run the
-  schedules provided by the CtiLMControlAreaStore.
-
-  Initial Date:  2/12/2001
-
-  COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
-  -----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <map>
@@ -48,7 +34,7 @@
 #include "utility.h"
 #include "debug_timer.h"
 
-#include <rw/thr/prodcons.h>
+#include <rw/thr/thrfunc.h>
 
 #include "amq_constants.h"
 

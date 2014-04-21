@@ -1,10 +1,6 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/recursiv.h>
-
 #include "lmgroupbase.h"
-#include "observe.h"
 #include "BeatThePeakControlInterface.h"
 
 class CtiLMGroupExpresscom : public CtiLMGroupBase, public Cti::LoadManagement::BeatThePeakControlInterface

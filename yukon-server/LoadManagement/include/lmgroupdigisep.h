@@ -1,11 +1,6 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
 #include "lmgroupbase.h"
-#include "observe.h"
 #include "GroupControlInterface.h"
 #include "SepControlInterface.h"
 

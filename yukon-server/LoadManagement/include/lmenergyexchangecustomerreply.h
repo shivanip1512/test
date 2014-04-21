@@ -1,11 +1,7 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
 #include "ctitime.h"
 
-#include "observe.h"
 #include "lmenergyexchangehourlycustomer.h"
 #include "row_reader.h"
 

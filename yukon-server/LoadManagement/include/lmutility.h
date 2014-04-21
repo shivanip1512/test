@@ -1,7 +1,5 @@
-/*
-*   Copyright (c) 2009 Cooper Power Systems EAS. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #pragma once
+
 #include "CtiTime.h"
 #include "ctidate.h"
 

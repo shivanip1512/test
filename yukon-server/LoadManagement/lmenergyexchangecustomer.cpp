@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmenergyexchangecustomer.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMEnergyExchangeCustomer.
-                        CtiLMEnergyExchangeCustomer maintains the state and handles
-                        the persistence of groups in Load Management.
-
-        Initial Date:  5/8/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"

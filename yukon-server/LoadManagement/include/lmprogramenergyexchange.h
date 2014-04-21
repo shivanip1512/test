@@ -1,11 +1,6 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
 #include "lmprogrambase.h"
-#include "observe.h"
 #include "lmenergyexchangeoffer.h"
 #include "lmenergyexchangecustomer.h"
 

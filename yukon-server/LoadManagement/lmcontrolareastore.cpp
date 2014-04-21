@@ -3,7 +3,7 @@
 #include <map>
 
 #include <rw/thr/thrfunc.h>
-#include <rw/tphdict.h>
+#include <rw/timer.h>
 
 #include "mgr_holiday.h"
 #include "mgr_season.h"

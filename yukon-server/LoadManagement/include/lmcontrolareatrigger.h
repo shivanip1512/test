@@ -1,12 +1,7 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-#include <rw/tvdlist.h>
 #include "ctitime.h"
 #include "row_reader.h"
-#include "observe.h"
 #include "database_connection.h"
 #include "collectable.h"
 

@@ -1,17 +1,9 @@
 #pragma once
 
-#include <vector>
-#include <string>
-
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
 #include "dbmemobject.h"
-#include "observe.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
 #include "row_reader.h"

@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupexpress.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMGroupExpresscom.
-                        CtiLMGroupExpresscom maintains the state and handles
-                        the persistence of expresscom groups in Load Management.
-
-        Initial Date:  2/9/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
 #include "lmgroupemetcon.h"
 
 class CtiLMGroupMCT : public CtiLMGroupEmetcon

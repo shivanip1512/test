@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogramenergyexchange.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMProgramEnergyExchange.
-                        CtiLMProgramEnergyExchange maintains the state and handles
-                        the persistence of programs for Load Management.
-
-        Initial Date:  5/7/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"

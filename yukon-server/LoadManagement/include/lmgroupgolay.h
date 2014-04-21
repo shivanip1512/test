@@ -1,7 +1,5 @@
 #pragma once
 
-#include <rw/collect.h>
-
 #include "lmgroupbase.h"
 
 class CtiLMGroupGolay : public CtiLMGroupBase

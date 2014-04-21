@@ -1,12 +1,7 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
 #include "lmcurtailcustomer.h"
 #include "lmprogrambase.h"
-#include "observe.h"
 #include "database_connection.h"
 
 class CtiLMProgramCurtailment : public CtiLMProgramBase

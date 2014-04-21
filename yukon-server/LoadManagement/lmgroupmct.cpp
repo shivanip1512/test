@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupemetcon.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMGroupMCT.
-                        CtiLMGroupMCT maintains the state and handles
-                        the persistence of mct groups in Load Management.
-
-        Initial Date:  7/23/2003
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2003
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"

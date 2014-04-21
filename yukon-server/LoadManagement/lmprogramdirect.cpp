@@ -32,8 +32,6 @@
 #include "smartgearbase.h"
 #include "lmgroupdigisep.h"
 
-#include <rw/ordcltn.h>
-
 using std::string;
 using std::endl;
 using std::vector;

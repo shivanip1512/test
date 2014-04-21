@@ -1,11 +1,5 @@
 #pragma once
 
-#include <rw/thr/countptr.h>   
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/barrier.h>  
-
-#include "ctdpcptrq.h"
-
 #include "msg_server_req.h"
 
 #include "lmmessage.h"

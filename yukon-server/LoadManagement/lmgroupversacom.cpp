@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupversacom.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMGroupVersacom.
-                        CtiLMGroupVersacom maintains the state and handles
-                        the persistence of versacom groups in Load Management.
-
-        Initial Date:  2/9/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"

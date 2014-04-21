@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogramcontrolwindow.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMProgramControlWindow.
-                        CtiLMProgramControlWindow maintains the state and handles
-                        the persistence of programs for Load Management.
-
-        Initial Date:  2/13/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"

@@ -1,14 +1,3 @@
-/*-----------------------------------------------------------------------------
-    Filename:  clistener.cpp
-
-    Programmer:  Josh Wolberg
-
-    Description: Source file for CtiLMClientListener
-
-    Initial Date:  2/7/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "clistener.h"
@@ -18,8 +7,7 @@
 #include "executor.h"
 #include "logger.h"
 
-#include <rw/toolpro/sockport.h>
-#include <rw/toolpro/inetaddr.h>
+#include <rw/thr/thrfunc.h>
 
 #include "amq_constants.h"
 

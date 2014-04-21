@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-  Filename:  lmgroupsa305.cpp
-
-  Programmer:  Aaron Lauinger
-
-  Description:    Source file for CtiLMGroupSA305.
-  CtiLMGroupSA305 maintains the state and handles
-  the persistence of sa 305 groups in Load Management.
-
-  Initial Date:  3/6/2004
-
-  COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
-  ---------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "lmgroupsa305.h"

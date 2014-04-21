@@ -1,17 +1,9 @@
 #pragma once
 
-#include <vector>
-#include <set>
-
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
 #include "lmprogrambase.h"
-#include "observe.h"
 #include "lmprogramdirectgear.h"
 #include "lmcontrolarea.h"
 #include "tbl_lmprogramhistory.h"

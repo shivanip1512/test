@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmcicustomerbase.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMCICustomerBase.
-                        CtiLMCICustomerBase maintains the state and handles
-                        the persistence of groups in Load Management.
-
-        Initial Date:  3/26/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"

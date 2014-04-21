@@ -1,19 +1,9 @@
-/*-----------------------------------------------------------------------------
-    Filename:  lmmessage.cpp
-
-    Programmer:  Josh Wolberg
-
-    Description:    Source file for message classes.
-
-    Initial Date:  2/13/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "lmmessage.h"
 #include "lmid.h"
 #include "utility.h"
+
 #include <time.h>
 
 using std::vector;

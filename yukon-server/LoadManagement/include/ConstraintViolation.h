@@ -1,7 +1,5 @@
 #pragma once
 
-#include <rw/collect.h>
-
 #include "ctitime.h"
 
 #include "collectable.h"

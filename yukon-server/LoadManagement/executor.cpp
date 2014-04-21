@@ -1,14 +1,3 @@
-/*-----------------------------------------------------------------------------
-    Filename:  executor.cpp
-
-    Programmer:  Josh Wolberg
-
-    Description:    Defines Load Management executor classes.
-
-    Initial Date:  2/13/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "msg_server_req.h"

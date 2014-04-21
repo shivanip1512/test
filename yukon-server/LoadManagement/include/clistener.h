@@ -1,9 +1,6 @@
 #pragma once
 
-#include <rw/toolpro/sockaddr.h>
-#include <rw/toolpro/sockport.h>
 #include <rw/thr/thread.h>
-#include <rw/thr/recursiv.h>
 
 #include "connection_server.h"
 #include "lmmessage.h"
