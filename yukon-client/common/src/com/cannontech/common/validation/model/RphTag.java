@@ -10,13 +10,20 @@ import com.cannontech.common.i18n.LogoableEnum;
 import com.google.common.collect.ImmutableSet;
 
 public enum RphTag implements DisplayableEnum, LogoableEnum {
-    PU, // leave these in an order that makes sense for "display precedence" purposes. i.e PU > UU, PD > UD > UDC
-    PD, 
-    UU, 
-    UD, 
-    UDC,
-    OK;
-    
+    // leave these in an order that makes sense for "display precedence" purposes. i.e PU > UU, PD > UD > UDC
+    PU("icon-arrow-up-red"),
+    PD("icon-arrow-down-red"), 
+    UU("icon-trend-up"), 
+    UD("icon-trend-down"), 
+    UDC("icon-arrow-swap"),
+    OK("");
+
+    private final String iconClass;
+
+    RphTag(String iconClass) {
+        this.iconClass = iconClass;
+    }
+
     public boolean isPeak() {
         return name().startsWith("P"); // good enough for now
     }
@@ -41,17 +48,6 @@ public enum RphTag implements DisplayableEnum, LogoableEnum {
     }
     
     public String getIconClass() {
-        if(name().equalsIgnoreCase("PU")) {
-            return "icon-arrow-up-red";
-        } else if(name().equalsIgnoreCase("PD")) {
-            return "icon-arrow-down-red";
-        } else if(name().equalsIgnoreCase("UDC")) {
-            return "icon-arrow-swap";
-        } else if(name().equalsIgnoreCase("UU")) {
-            return "icon-trend-up";
-        } else if(name().equalsIgnoreCase("UD")) {
-            return "icon-trend-down";
-        }
-        return "";
+        return iconClass;
     }
 }
