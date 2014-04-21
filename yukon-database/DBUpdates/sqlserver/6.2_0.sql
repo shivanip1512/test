@@ -512,7 +512,7 @@ ALTER TABLE ArchiveValuesExportFormat
 ALTER COLUMN ExcludeAbnormal CHAR(1) NOT NULL;
 /* End YUK-13217 */
 
-/* Start YUK-13244 */
+/* Start YUK-13216 */
 CREATE TABLE PaoLocation (
    PAObjectId           NUMERIC              NOT NULL,
    Latitude             DECIMAL(9, 6)        NOT NULL,
@@ -526,7 +526,7 @@ ALTER TABLE PaoLocation
       REFERENCES YukonPAObject (PAObjectId)
          ON DELETE CASCADE;
 GO
-/* End YUK-13244 */
+/* End YUK-13216 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

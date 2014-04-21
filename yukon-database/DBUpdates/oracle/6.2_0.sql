@@ -495,7 +495,7 @@ ALTER TABLE ArchiveValuesExportFormat
 MODIFY ExcludeAbnormal CHAR(1) NOT NULL;
 /* End YUK-13217 */
 
-/* Start YUK-13244 */
+/* Start YUK-13216 */
 CREATE TABLE PaoLocation (
    PAObjectId           NUMBER              NOT NULL,
    Latitude             NUMBER(9, 6)        NOT NULL,
@@ -507,7 +507,7 @@ ALTER TABLE PaoLocation
    ADD CONSTRAINT FK_PaoLocation_YukonPAObject FOREIGN KEY (PAObjectId)
       REFERENCES YukonPAObject (PAObjectId)
          ON DELETE CASCADE;
-/* End YUK-13244 */
+/* End YUK-13216 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
