@@ -2,7 +2,7 @@ package com.cannontech.web.tools.mapping.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 
-public class Location {
+public class PaoLocation {
 
     private PaoIdentifier paoIdentifier;
     private double latitude;
@@ -53,7 +53,7 @@ public class Location {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Location other = (Location) obj;
+        PaoLocation other = (PaoLocation) obj;
         if (Double.doubleToLongBits(latitude) != Double.doubleToLongBits(other.latitude))
             return false;
         if (Double.doubleToLongBits(longitude) != Double.doubleToLongBits(other.longitude))

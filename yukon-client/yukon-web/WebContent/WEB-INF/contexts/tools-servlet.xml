@@ -14,6 +14,6 @@
     
     <context:component-scan base-package="com.cannontech.web.tools"/>
     
-    <bean class="com.cannontech.web.tools.mapping.dao.impl.LocationDaoImpl"/>
+    <bean class="com.cannontech.web.tools.mapping.dao.impl.PaoLocationDaoImpl"/>
     
 </beans>

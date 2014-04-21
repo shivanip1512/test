@@ -5,9 +5,9 @@ import java.util.Set;
 import org.geojson.FeatureCollection;
 
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.web.tools.mapping.model.Location;
+import com.cannontech.web.tools.mapping.model.PaoLocation;
 
-public interface LocationDao {
+public interface PaoLocationDao {
 
     enum FeaturePropertyType {
         PAO_IDENTIFIER("paoIdentifier");
@@ -33,7 +33,7 @@ public interface LocationDao {
      * Paos without a location are ignored. If no paos have a
      * location, an empty set is returned.
      */
-    public Set<Location> getLocations(Iterable<? extends YukonPao> paos);
+    public Set<PaoLocation> getLocations(Iterable<? extends YukonPao> paos);
 
     /**
      * Returns the most recent location for each pao in the given collection as GeoJSON. Paos
@@ -45,12 +45,12 @@ public interface LocationDao {
     public FeatureCollection getLocationsAsGeoJson(Iterable<? extends YukonPao> paos);
 
     /** Get most recent location for PAObjectId. */
-    public Location getLocation(int paoId);
+    public PaoLocation getLocation(int paoId);
 
     /** Saves the location to the database. */
-    public void save(Location location);
+    public void save(PaoLocation location);
 
     /** Saves all locations to the database. */
-    public void saveAll(Iterable<Location> locations);
+    public void saveAll(Iterable<PaoLocation> locations);
 
 }

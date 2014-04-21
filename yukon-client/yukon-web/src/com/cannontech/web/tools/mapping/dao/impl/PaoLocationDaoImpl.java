@@ -26,22 +26,22 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.web.tools.mapping.dao.LocationDao;
-import com.cannontech.web.tools.mapping.model.Location;
+import com.cannontech.web.tools.mapping.dao.PaoLocationDao;
+import com.cannontech.web.tools.mapping.model.PaoLocation;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-public class LocationDaoImpl implements LocationDao {
+public class PaoLocationDaoImpl implements PaoLocationDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     private final String projection;
 
-    private final static YukonRowMapper<Location> locationMapper = new YukonRowMapper<Location>() {
+    private final static YukonRowMapper<PaoLocation> locationMapper = new YukonRowMapper<PaoLocation>() {
         @Override
-        public Location mapRow(YukonResultSet rs) throws SQLException {
+        public PaoLocation mapRow(YukonResultSet rs) throws SQLException {
             PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PAObjectId", "Type");
-            Location location = new Location();
+            PaoLocation location = new PaoLocation();
             location.setPaoIdentifier(paoIdentifier);
             location.setLatitude(rs.getDouble("Latitude"));
             location.setLongitude(rs.getDouble("Longitude"));
@@ -50,13 +50,13 @@ public class LocationDaoImpl implements LocationDao {
     };
 
     @Autowired
-    public LocationDaoImpl(ConfigurationSource configSource) {
+    public PaoLocationDaoImpl(ConfigurationSource configSource) {
         String mapProjection = configSource.getString(MasterConfigStringKeysEnum.MAP_PROJECTION);
         projection = StringUtils.isEmpty(mapProjection) ? "EPSG:4326" : mapProjection;
     }
 
     @Override
-    public Set<Location> getLocations(Iterable<? extends YukonPao> paos) {
+    public Set<PaoLocation> getLocations(Iterable<? extends YukonPao> paos) {
         Set<Integer> paoIds = Sets.newHashSet();
         for (YukonPao yukonPao : paos) {
             paoIds.add(yukonPao.getPaoIdentifier().getPaoId());
@@ -66,17 +66,17 @@ public class LocationDaoImpl implements LocationDao {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT l.PAObjectId,Latitude,Longitude,Type ");
-                sql.append("FROM Location l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
+                sql.append("FROM PaoLocation l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
                 sql.append("WHERE l.PAObjectId").in(subList);
                 return sql;
             }
         };
-        final Set<Location> lastLocations = Sets.newHashSet();
+        final Set<PaoLocation> lastLocations = Sets.newHashSet();
         ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
         chunkingTemplate.query(sqlGenerator, paoIds, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                Location location = locationMapper.mapRow(rs);
+                PaoLocation location = locationMapper.mapRow(rs);
                 lastLocations.add(location);
             }
         });
@@ -85,7 +85,7 @@ public class LocationDaoImpl implements LocationDao {
 
     @Override
     public FeatureCollection getLocationsAsGeoJson(Iterable<? extends YukonPao> paos) {
-        Set<Location> locations = getLocations(paos);
+        Set<PaoLocation> locations = getLocations(paos);
         FeatureCollection features = new FeatureCollection();
         // Set coordinate reference system for these locations.
         Map<String, Object> crsProperties = Maps.newHashMap();
@@ -93,7 +93,7 @@ public class LocationDaoImpl implements LocationDao {
         Crs crs = new Crs();
         crs.setProperties(crsProperties);
         features.setCrs(crs);
-        for (Location location : locations) {
+        for (PaoLocation location : locations) {
             Feature feature = new Feature();
             // Feature "id" is paoId.
             feature.setId(Integer.toString(location.getPaoIdentifier().getPaoId()));
@@ -108,19 +108,19 @@ public class LocationDaoImpl implements LocationDao {
     }
 
     @Override
-    public Location getLocation(int paoId) {
+    public PaoLocation getLocation(int paoId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT l.PAObjectId,Latitude,Longitude,Type ");
-        sql.append("FROM Location l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
+        sql.append("FROM PaoLocation l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
         sql.append("WHERE l.PAObjectId").eq(paoId);
         return jdbcTemplate.queryForObject(sql, locationMapper);
     }
 
     @Override
-    public void save(Location location) {
+    public void save(PaoLocation location) {
         // Insert the location or update if already exists.
         SqlStatementBuilder insertSql = new SqlStatementBuilder();
-        SqlParameterSink insertParams = insertSql.insertInto("Location");
+        SqlParameterSink insertParams = insertSql.insertInto("PaoLocation");
         insertParams.addValue("PAObjectId", location.getPaoIdentifier().getPaoId());
         insertParams.addValue("Latitude", location.getLatitude());
         insertParams.addValue("Longitude", location.getLongitude());
@@ -129,7 +129,7 @@ public class LocationDaoImpl implements LocationDao {
         } catch (DataIntegrityViolationException e) {
             // Device already has a location, update the coordinates.
             SqlStatementBuilder updateSql = new SqlStatementBuilder();
-            SqlParameterSink updateParams = updateSql.update("Location");
+            SqlParameterSink updateParams = updateSql.update("PaoLocation");
             updateParams.addValue("PAObjectId", location.getPaoIdentifier().getPaoId());
             updateParams.addValue("Latitude", location.getLatitude());
             updateParams.addValue("Longitude", location.getLongitude());
@@ -139,7 +139,7 @@ public class LocationDaoImpl implements LocationDao {
     }
 
     @Override
-    public void saveAll(Iterable<Location> locations) {
+    public void saveAll(Iterable<PaoLocation> locations) {
         /*
          * // If "update if already exists" logic is not required, then SQL batch inserts can be
          * // used instead.
@@ -154,7 +154,7 @@ public class LocationDaoImpl implements LocationDao {
          * }
          * template.batchUpdate(sql.getSql(), batchArgs);
          */
-        for (Location location : locations) {
+        for (PaoLocation location : locations) {
             save(location);
         }
     }
