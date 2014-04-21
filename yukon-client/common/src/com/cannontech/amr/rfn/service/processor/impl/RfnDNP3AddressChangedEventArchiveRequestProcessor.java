@@ -17,11 +17,13 @@ import com.cannontech.message.dispatch.message.PointData;
 public class RfnDNP3AddressChangedEventArchiveRequestProcessor extends RfnEventConditionDataProcessorHelper
         implements RfnArchiveRequestProcessor {
     
-    private final static Logger logger = YukonLogManager.getLogger(RfnDNP3AddressChangedEventArchiveRequestProcessor.class);
+    private final static Logger log = YukonLogManager.getLogger(RfnDNP3AddressChangedEventArchiveRequestProcessor.class);
     
     @Override
     public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointData> pointDatas) {
-        logger.log(null, "Port Type: " + getEventDataWithType(event, RfnConditionDataType.OLD_DNP3_ADDRESS));
+        log.info(device.toString() + " changed address"
+                + " from: " + getEventDataWithType(event, RfnConditionDataType.OLD_DNP3_ADDRESS)
+                + " to: " + getEventDataWithType(event, RfnConditionDataType.NEW_DNP3_ADDRESS));
         
         Integer newAddress = (Integer) getEventDataWithType(event, RfnConditionDataType.NEW_DNP3_ADDRESS);
         rfnMeterEventService.processAttributePointData(device, 

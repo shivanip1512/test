@@ -17,11 +17,13 @@ import com.cannontech.message.dispatch.message.PointData;
 public class RfnOutstationPortAlarmEventArchiveRequestProcessor extends RfnEventConditionDataProcessorHelper
         implements RfnArchiveRequestProcessor {
     
-    private final static Logger logger = YukonLogManager.getLogger(RfnOutstationPortAlarmEventArchiveRequestProcessor.class);
+    private final static Logger log = YukonLogManager.getLogger(RfnOutstationPortAlarmEventArchiveRequestProcessor.class);
     
     @Override
     public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointData> pointDatas) {
-        logger.log(null, "Port Type: " + getEventDataWithType(event, RfnConditionDataType.PORT_TYPE));
+        log.info(device.toString() 
+                 + " port type: " + getEventDataWithType(event, RfnConditionDataType.PORT_TYPE)
+                 + " locked for " + getEventDataWithType(event, RfnConditionDataType.PORT_LOCKED_MINUTES) + "minutes");
         
         Long lockedMinutes = (Long) getEventDataWithType(event, RfnConditionDataType.PORT_LOCKED_MINUTES);
         rfnMeterEventService.processAttributePointData(device, 
