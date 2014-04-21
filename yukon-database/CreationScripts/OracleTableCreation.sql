@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/17/2014 4:37:21 PM                         */
+/* Created on:     4/21/2014 10:38:21 AM                        */
 /*==============================================================*/
 
 
@@ -6972,6 +6972,16 @@ create table PROFILEPEAKRESULT  (
 );
 
 /*==============================================================*/
+/* Table: PaoLocation                                           */
+/*==============================================================*/
+create table PaoLocation  (
+   PAObjectId           NUMBER                          not null,
+   Latitude             NUMBER(9,6),
+   Longitude            NUMBER(9,6),
+   constraint PK_PaoLocation primary key (PAObjectId)
+);
+
+/*==============================================================*/
 /* Table: PasswordHistory                                       */
 /*==============================================================*/
 create table PasswordHistory  (
@@ -12094,6 +12104,11 @@ alter table PORTTERMINALSERVER
 alter table PROFILEPEAKRESULT
    add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
       references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table PaoLocation
+   add constraint FK_PaoLocation_YukonPAObject foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
       on delete cascade;
 
 alter table PasswordHistory

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/17/2014 4:31:11 PM                         */
+/* Created on:     4/21/2014 10:44:45 AM                        */
 /*==============================================================*/
 
 
@@ -7402,6 +7402,17 @@ create table PROFILEPEAKRESULT (
 go
 
 /*==============================================================*/
+/* Table: PaoLocation                                           */
+/*==============================================================*/
+create table PaoLocation (
+   PAObjectId           numeric              not null,
+   Latitude             numeric(9,6)         null,
+   Longitude            numeric(9,6)         null,
+   constraint PK_PaoLocation primary key (PAObjectId)
+)
+go
+
+/*==============================================================*/
 /* Table: PasswordHistory                                       */
 /*==============================================================*/
 create table PasswordHistory (
@@ -13156,6 +13167,12 @@ go
 alter table PROFILEPEAKRESULT
    add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
       references DEVICE (DEVICEID)
+         on delete cascade
+go
+
+alter table PaoLocation
+   add constraint FK_PaoLocation_YukonPAObject foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
          on delete cascade
 go
 
