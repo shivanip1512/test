@@ -12,7 +12,8 @@
         
     <cti:msg key="yukon.common.device.group.addMultipleDevices" var="title"/>
     <tags:sectionContainer title="${title}">
-        <tags:deviceSelection action="/group/editor/addDevicesByCollection" 
+        <cti:url value="/group/editor/addDevicesByCollection" var="selectionUrl"/>
+        <tags:deviceSelection action="${selectionUrl}" 
             groupDataJson="${groupDataJson}"
             groupName="${groupName}"
             pickerType="devicePicker"/>
