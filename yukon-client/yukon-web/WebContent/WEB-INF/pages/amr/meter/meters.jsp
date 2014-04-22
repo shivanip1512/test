@@ -28,9 +28,9 @@
         
     </script>
     
-    <cti:url var="baseUrl" value="/meter/search"/>
-
-    <form id="filterForm" action="${baseUrl}">
+    
+    <cti:url var="formBaseUrl" value="/meter/search"/>
+    <form id="filterForm" action="${formBaseUrl}">
         <tags:boxContainer2 nameKey="meterSearch">
             <input type="hidden" name="startIndex" value="${meterSearchResults.startIndex}" />
             <input type="hidden" name="itemsPerPage" value="${meterSearchResults.count}" />
@@ -57,7 +57,7 @@
 
     <br>
     
-         
+    <c:set var="baseUrl" value="/meter/search"/>
         <%-- DATA ROWS --%>
     <c:if test="${meterSearchResults.hitCount > 0}">
         <c:set var="linkHeaderHtml">

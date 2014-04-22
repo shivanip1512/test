@@ -87,7 +87,7 @@ function setOvUv(eventId, ovuv) {
 }
 
 function clearFilter() {
-    window.location = '${baseUrl}';
+    window.location.href = yukon.url('/capcontrol/schedule/scheduleAssignments');
 }
 
 function startMultiScheduleAssignmentPopup(schedule, command) {

@@ -5,9 +5,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="tools" page="bulk.verifyConfig">
-
+<cti:url var="verifyURL" value="/bulk/config/doVerifyConfigs"/>
     <tags:bulkActionContainer key="yukon.common.device.bulk.verifyConfig" deviceCollection="${deviceCollection}">
-        <form id="verifyConfigForm" method="get" action="/bulk/config/doVerifyConfigs">
+        <form id="verifyConfigForm" method="get" action="${verifyURL}">
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             <cti:button nameKey="verify" type="submit" classes="primary action" busy="true"/>

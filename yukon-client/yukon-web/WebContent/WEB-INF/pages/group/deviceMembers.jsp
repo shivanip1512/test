@@ -12,6 +12,8 @@
 </cti:checkRolesAndProperties>
 </cti:checkRolesAndProperties>
 
+<cti:url var="removeDeviceURL" value="/group/editor/removeDevice"/>
+
 <c:choose>
 	<c:when test="${fn:length(deviceList) > 0}">
         <div class="stacked clearfix">
@@ -35,7 +37,7 @@
             						<c:choose>
             							<c:when test="${group.modifiable}">
             								<cti:uniqueIdentifier prefix="groupHierarchy_" var="thisId"/>
-            								<form id="${thisId}_removeDevice" action="/group/editor/removeDevice" method="post" class="dib">
+            								<form id="${thisId}_removeDevice" action="${removeDeviceURL}" method="post" class="dib">
                                                 <cti:csrfToken/>
             									<input type="hidden" name="deviceId" value="${device.paoIdentifier.paoId}" />
             									<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}" />

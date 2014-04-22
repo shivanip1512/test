@@ -10,6 +10,8 @@
 <cti:msg var="selectGroupLabel" key="yukon.common.device.groupMeterRead.home.selectGroupLabel"/>
 <cti:msg var="recentResultLinkLabel" key="yukon.common.device.groupMeterRead.home.recentResultsLinkLabel"/>
 
+<cti:url var="groupMeterReadURL" value="/group/groupMeterRead/readGroup"/>
+
 <cti:linkTabbedContainer mode="section">
     <cti:linkTab selectorKey="yukon.web.deviceGroups.editor.tab.title">
         <c:url value="/group/editor/home" />
@@ -32,8 +34,8 @@
             <br>
             <div class="error">${errorMsg}</div>
         </c:if>
-    
-        <form id="groupMeterReadForm" action="/group/groupMeterRead/readGroup" method="post">
+        
+        <form id="groupMeterReadForm" action="${groupMeterReadURL}" method="post">
             <cti:csrfToken/>
         <div class="column-12-12">
             <div class="column one">

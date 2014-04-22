@@ -3,6 +3,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
+<cti:url var="parseUploadURL" value="/group/updater/parseUpload"/>
+
 <cti:standardPage module="tools" page="deviceGroupUpload">
 
 <cti:linkTabbedContainer mode="section">
@@ -40,7 +42,7 @@
 <div class="column-10-14">
     <div class="column one">
         <tags:sectionContainer2 nameKey="options">
-            <form id="uploadForm" method="post" action="/group/updater/parseUpload" enctype="multipart/form-data">
+            <form id="uploadForm" method="post" action="${parseUploadURL}" enctype="multipart/form-data">
                 <cti:csrfToken/>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey="yukon.common.file">
