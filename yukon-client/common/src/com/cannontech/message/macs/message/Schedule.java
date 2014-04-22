@@ -1,559 +1,329 @@
 package com.cannontech.message.macs.message;
 
+import java.io.Serializable;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
+import com.cannontech.message.util.Message;
 
-/**
- * This type was created in VisualAge.
- */
+public class Schedule extends Message implements Serializable {
+    // String constants that represent the various
+    // last run status's
+    public final static String LAST_STATUS_NONE = "None";
+    public final static String LAST_STATUS_ERROR = "Error";
+    public final static String LAST_STATUS_FINISHED = "Finished";
 
-public class Schedule extends com.cannontech.message.util.Message implements java.io.Serializable
-{
-	// String constants that represent the various
-	// last run status's
-	public static final String LAST_STATUS_NONE = "None";
-	public static final String LAST_STATUS_ERROR = "Error";
-	public static final String LAST_STATUS_FINISHED = "Finished";
+    public final static String[] LAST_RUN_STATUS = { LAST_STATUS_NONE, LAST_STATUS_ERROR, LAST_STATUS_FINISHED };
 
-	public static final String[] LAST_RUN_STATUS =
-	{
-		LAST_STATUS_NONE,
-		LAST_STATUS_ERROR,
-		LAST_STATUS_FINISHED
-	};
-	
-	// String constants that represent the various
-	// states a schedule can be in
-	public static final String STATE_RUNNING = "Running";
-	public static final String STATE_WAITING = "Waiting";
-	public static final String STATE_PENDING = "Pending";
-	public static final String STATE_DISABLED = "Disabled";
-	
-	// An invalid time for any schedule date field being the Year 1900 in millis
-	public static final long INVALID_DATE = -2177452800000L;
+    // String constants that represent the various
+    // states a schedule can be in
+    public final static String STATE_RUNNING = "Running";
+    public final static String STATE_WAITING = "Waiting";
+    public final static String STATE_PENDING = "Pending";
+    public final static String STATE_DISABLED = "Disabled";
 
-	private int id = 0;
-	private String scheduleName = "";
-	private String categoryName = "";
-	private String type = "";
-	private int holidayScheduleId = 0;
-	private String scriptFileName = "";
-	private String currentState = STATE_WAITING;
+    // An invalid time for any schedule date field being the Year 1900 in millis
+    public final static long INVALID_DATE = -2177452800000L;
+
+    private int id = 0;
+    private String scheduleName = "";
+    private String categoryName = "";
+    private String type = "";
+    private int holidayScheduleId = 0;
+    private String scriptFileName = "";
+    private String currentState = STATE_WAITING;
     private boolean updatingState = false;
-	private String startPolicy = "";
-	private String stopPolicy = "";
-	private java.util.Date lastRunTime = new java.util.Date(INVALID_DATE);
-	private String lastRunStatus = LAST_STATUS_NONE;
-	private int startDay = 0;
-	private int startMonth = 0;
-	private int startYear = 0;
-	private String startTime = "00:00:00"; // must be 8 chars always!!
-	private String stopTime = "00:00:00";  // must be 8 chars always!!
-	private String validWeekDays = "YYYYYYYN";
-	private int duration = 0;
-	private java.util.Date manualStartTime = new java.util.Date(INVALID_DATE);
-	private java.util.Date manualStopTime = new java.util.Date(INVALID_DATE);
-	private int targetPAObjectId = 0;
-	private String startCommand = "";
-	private String stopCommand = "";
-	private int repeatInterval = 0;
-	private int templateType = ScriptTemplateTypes.NO_TEMPLATE_SCRIPT;
-	
-	// these do not get restored on the C++ side
-	private java.util.Date nextRunTime = null;
-	private java.util.Date nextStopTime = null;
+    private String startPolicy = "";
+    private String stopPolicy = "";
+    private Date lastRunTime = new Date(INVALID_DATE);
+    private String lastRunStatus = LAST_STATUS_NONE;
+    private int startDay = 0;
+    private int startMonth = 0;
+    private int startYear = 0;
+    private String startTime = "00:00:00"; // must be 8 chars always!!
+    private String stopTime = "00:00:00"; // must be 8 chars always!!
+    private String validWeekDays = "YYYYYYYN";
+    private int duration = 0;
+    private Date manualStartTime = new Date(INVALID_DATE);
+    private Date manualStopTime = new Date(INVALID_DATE);
+    private int targetPAObjectId = 0;
+    private String startCommand = "";
+    private String stopCommand = "";
+    private int repeatInterval = 0;
+    private int templateType = ScriptTemplateTypes.NO_TEMPLATE_SCRIPT;
 
-	// data that is not stored in the database and does not get restored
-	private transient NonPersistantScheduleData nonPersistantData = null;
+    // these do not get restored on the C++ side
+    private Date nextRunTime = null;
+    private Date nextStopTime = null;
 
-	// Schedule types
-	public static final String SIMPLE_TYPE = "Simple";
-	public static final String SCRIPT_TYPE = "Script";
+    // data that is not stored in the database and does not get restored
+    private transient NonPersistantScheduleData nonPersistantData = null;
 
-	// Start Policies
-	public static final String DATETIME_START = "DateTime";
-	public static final String DAYOFMONTH_START = "DayOfMonthTime";
-	public static final String WEEKDAY_START = "WeekDayTime";
-	public static final String MANUAL_START = "Manual";
+    // Schedule types
+    public final static String SIMPLE_TYPE = "Simple";
+    public final static String SCRIPT_TYPE = "Script";
 
-	// Stop Policies
-	public static final String UNTILCOMPLETE_STOP = "UntilComplete";
-	public static final String ABSOLUTETIME_STOP = "AbsoluteTime";
-	public static final String DURATION_STOP = "Duration";
-	public static final String MANUAL_STOP = "Manual";
+    // Start Policies
+    public final static String DATETIME_START = "DateTime";
+    public final static String DAYOFMONTH_START = "DayOfMonthTime";
+    public final static String WEEKDAY_START = "WeekDayTime";
+    public final static String MANUAL_START = "Manual";
 
-/**
- * Schedule constructor comment.
- */
-public Schedule() {
-	super();
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/20/00 11:20:32 AM)
- * @return boolean
- * @param val java.lang.Object
- */
-@Override
-public boolean equals(Object val) {
+    // Stop Policies
+    public final static String UNTILCOMPLETE_STOP = "UntilComplete";
+    public final static String ABSOLUTETIME_STOP = "AbsoluteTime";
+    public final static String DURATION_STOP = "Duration";
+    public final static String MANUAL_STOP = "Manual";
 
-	if( val instanceof Schedule )
-	{
-		return (getId() == ((Schedule) val).getId());
-	}
-	else
-		return super.equals(val);
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.lang.String
- */
-public java.lang.String getCategoryName() {
-	return categoryName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.lang.String
- */
-public java.lang.String getCurrentState() {
-	return currentState;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return int
- */
-public int getDuration() {
-	return duration;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/20/2001 1:45:29 PM)
- * @return int
- */
-public int getHolidayScheduleId() {
-	return holidayScheduleId;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return int
- */
-public int getId() {
-	return id;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.lang.String
- */
-public java.lang.String getLastRunStatus() {
-	return lastRunStatus;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.util.Date
- */
-public java.util.Date getLastRunTime() {
-	return lastRunTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.util.Date
- */
-public java.util.Date getManualStartTime() {
-	return manualStartTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.util.Date
- */
-public java.util.Date getManualStopTime() {
-	return manualStopTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/8/2001 2:05:07 PM)
- * @return java.util.Date
- */
-public java.util.Date getNextRunTime() {
-    if (nextRunTime == null) {
-        nextRunTime = new GregorianCalendar().getTime();
+    @Override
+    public boolean equals(Object val) {
+        if (val instanceof Schedule) {
+            return (getId() == ((Schedule) val).getId());
+        }
+        return super.equals(val);
     }
-	return nextRunTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/8/2001 2:05:07 PM)
- * @return java.util.Date
- */
-public java.util.Date getNextStopTime() {
-    if (nextStopTime == null) {
-        nextStopTime = new GregorianCalendar().getTime();
+
+    public String getCategoryName() {
+        return categoryName;
     }
-    return nextStopTime;
-}
 
-/**
- * Insert the method's description here.
- * Creation date: (3/9/2001 3:34:23 PM)
- * @return com.cannontech.macs.NonPersistantScheduleData
- */
-public NonPersistantScheduleData getNonPersistantData() 
-{
-	if( nonPersistantData == null )
-		nonPersistantData = new NonPersistantScheduleData();
+    public String getCurrentState() {
+        return currentState;
+    }
 
-	return nonPersistantData;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2001 4:44:06 PM)
- * @return int
- */
-public int getRepeatInterval() {
-	return repeatInterval;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.lang.String
- */
-public java.lang.String getScheduleName() {
-	return scheduleName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/1/2001 1:10:40 PM)
- * @return java.lang.String
- */
-public java.lang.String getScriptFileName() {
-	return scriptFileName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2001 4:44:06 PM)
- * @return java.lang.String
- */
-public java.lang.String getStartCommand() {
-	return startCommand;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return int
- */
-public int getStartDay() {
-	return startDay;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return int
- */
-public int getStartMonth() {
-	return startMonth;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.lang.String
- */
-public java.lang.String getStartPolicy() {
-	return startPolicy;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- */
-public String getStartTime() {
-	return startTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return int
- */
-public int getStartYear() {
-	return startYear;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2001 4:44:06 PM)
- * @return java.lang.String
- */
-public java.lang.String getStopCommand() {
-	return stopCommand;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.lang.String
- */
-public java.lang.String getStopPolicy() {
-	return stopPolicy;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- */
-public String getStopTime() {
-	return stopTime;
-}
+    public int getDuration() {
+        return duration;
+    }
 
-public int getTargetPAObjectId() {
-    return targetPAObjectId;
-}
-/**
- * @return int
- */
-public int getTemplateType(){
-    return templateType;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.lang.String
- */
-public java.lang.String getType() {
-	return type;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @return java.lang.String
- */
-public java.lang.String getValidWeekDays() {
-	return validWeekDays;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newCategoryName java.lang.String
- */
-public void setCategoryName(java.lang.String newCategoryName) {
-	categoryName = newCategoryName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newCurrentState java.lang.String
- */
-public void setCurrentState(java.lang.String newCurrentState) {
-	currentState = newCurrentState;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newDuration int
- */
-public void setDuration(int newDuration) {
-	duration = newDuration;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/20/2001 1:45:29 PM)
- * @param newHolidayScheduleId int
- */
-public void setHolidayScheduleId(int newHolidayScheduleId) {
-	holidayScheduleId = newHolidayScheduleId;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newId int
- */
-public void setId(int newId) {
-	id = newId;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newLastRunStatus java.lang.String
- */
-public void setLastRunStatus(java.lang.String newLastRunStatus) {
-	lastRunStatus = newLastRunStatus;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newLastRunTime java.util.Date
- */
-public void setLastRunTime(java.util.Date newLastRunTime) {
-	lastRunTime = newLastRunTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newManualStartTime java.util.Date
- */
-public void setManualStartTime(java.util.Date newManualStartTime) {
-	manualStartTime = newManualStartTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newManualStopTime java.util.Date
- */
-public void setManualStopTime(java.util.Date newManualStopTime) {
-	manualStopTime = newManualStopTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/8/2001 2:05:07 PM)
- * @param newNextRunTime java.util.Date
- */
-public void setNextRunTime(java.util.Date newNextRunTime) {
-	nextRunTime = newNextRunTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/8/2001 2:05:07 PM)
- * @param newNextStopTime java.util.Date
- */
-public void setNextStopTime(java.util.Date newNextStopTime) {
-	nextStopTime = newNextStopTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/9/2001 3:34:23 PM)
- * @param newNonPersistantData com.cannontech.macs.NonPersistantScheduleData
- */
-public void setNonPersistantData(NonPersistantScheduleData newNonPersistantData) {
-	nonPersistantData = newNonPersistantData;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2001 4:44:06 PM)
- * @param newRepeatInterval int
- */
-public void setRepeatInterval(int newRepeatInterval) {
-	repeatInterval = newRepeatInterval;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newScheduleName java.lang.String
- */
-public void setScheduleName(java.lang.String newScheduleName) {
-	scheduleName = newScheduleName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/1/2001 1:10:40 PM)
- * @param newScriptFileName java.lang.String
- */
-public void setScriptFileName(java.lang.String newScriptFileName) 
-{
-	scriptFileName = newScriptFileName;
-	getNonPersistantData().getScript().setFileName(newScriptFileName);
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2001 4:44:06 PM)
- * @param newStartCommand java.lang.String
- */
-public void setStartCommand(java.lang.String newStartCommand) {
-	startCommand = newStartCommand;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newStartDay int
- */
-public void setStartDay(int newStartDay) {
-	startDay = newStartDay;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newStartMonth int
- */
-public void setStartMonth(int newStartMonth) {
-	startMonth = newStartMonth;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newStartPolicy java.lang.String
- */
-public void setStartPolicy(java.lang.String newStartPolicy) {
-	startPolicy = newStartPolicy;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- */
-public void setStartTime(String newStartTime) {
-	startTime = newStartTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newStartYear int
- */
-public void setStartYear(int newStartYear) {
-	startYear = newStartYear;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2001 4:44:06 PM)
- * @param newStopCommand java.lang.String
- */
-public void setStopCommand(java.lang.String newStopCommand) {
-	stopCommand = newStopCommand;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newStopPolicy java.lang.String
- */
-public void setStopPolicy(java.lang.String newStopPolicy) {
-	stopPolicy = newStopPolicy;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- */
-public void setStopTime(String newStopTime) {
-	stopTime = newStopTime;
-}
+    public int getHolidayScheduleId() {
+        return holidayScheduleId;
+    }
 
-public void setTargetPAObjectId(int targetPAObjectId) {
-    this.targetPAObjectId = targetPAObjectId;
-}
-/**
- * @param newTemplateType
- */
-public void setTemplateType(int newTemplateType){
-    templateType = newTemplateType ;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newType java.lang.String
- */
-public void setType(java.lang.String newType) {
-	type = newType;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/16/2001 2:53:32 PM)
- * @param newValidWeekDays java.lang.String
- */
-public void setValidWeekDays(java.lang.String newValidWeekDays) {
-	validWeekDays = newValidWeekDays;
-}
-public boolean getUpdatingState() {
-    return updatingState;
-}
-public void setUpdatingState(boolean updatingState) {
-    this.updatingState = updatingState;
-}
+    public int getId() {
+        return id;
+    }
+
+    public String getLastRunStatus() {
+        return lastRunStatus;
+    }
+
+    public Date getLastRunTime() {
+        return lastRunTime;
+    }
+
+    public Date getManualStartTime() {
+        return manualStartTime;
+    }
+
+    public Date getManualStopTime() {
+        return manualStopTime;
+    }
+
+    public Date getNextRunTime() {
+        if (nextRunTime == null) {
+            nextRunTime = new GregorianCalendar().getTime();
+        }
+        return nextRunTime;
+    }
+
+    public Date getNextStopTime() {
+        if (nextStopTime == null) {
+            nextStopTime = new GregorianCalendar().getTime();
+        }
+        return nextStopTime;
+    }
+
+    public NonPersistantScheduleData getNonPersistantData() {
+        if (nonPersistantData == null) {
+            nonPersistantData = new NonPersistantScheduleData();
+        }
+
+        return nonPersistantData;
+    }
+
+    public int getRepeatInterval() {
+        return repeatInterval;
+    }
+
+    public String getScheduleName() {
+        return scheduleName;
+    }
+
+    public String getScriptFileName() {
+        return scriptFileName;
+    }
+
+    public String getStartCommand() {
+        return startCommand;
+    }
+
+    public int getStartDay() {
+        return startDay;
+    }
+
+    public int getStartMonth() {
+        return startMonth;
+    }
+
+    public String getStartPolicy() {
+        return startPolicy;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public int getStartYear() {
+        return startYear;
+    }
+
+    public String getStopCommand() {
+        return stopCommand;
+    }
+
+    public String getStopPolicy() {
+        return stopPolicy;
+    }
+
+    public String getStopTime() {
+        return stopTime;
+    }
+
+    public int getTargetPAObjectId() {
+        return targetPAObjectId;
+    }
+
+    public int getTemplateType() {
+        return templateType;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getValidWeekDays() {
+        return validWeekDays;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public void setCurrentState(String currentState) {
+        this.currentState = currentState;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setHolidayScheduleId(int holidayScheduleId) {
+        this.holidayScheduleId = holidayScheduleId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setLastRunStatus(String lastRunStatus) {
+        this.lastRunStatus = lastRunStatus;
+    }
+
+    public void setLastRunTime(Date lastRunTime) {
+        this.lastRunTime = lastRunTime;
+    }
+
+    public void setManualStartTime(Date manualStartTime) {
+        this.manualStartTime = manualStartTime;
+    }
+
+    public void setManualStopTime(Date manualStopTime) {
+        this.manualStopTime = manualStopTime;
+    }
+
+    public void setNextRunTime(Date nextRunTime) {
+        this.nextRunTime = nextRunTime;
+    }
+
+    public void setNextStopTime(Date nextStopTime) {
+        this.nextStopTime = nextStopTime;
+    }
+
+    public void setNonPersistantData(NonPersistantScheduleData nonPersistantData) {
+        this.nonPersistantData = nonPersistantData;
+    }
+
+    public void setRepeatInterval(int repeatInterval) {
+        this.repeatInterval = repeatInterval;
+    }
+
+    public void setScheduleName(String scheduleName) {
+        this.scheduleName = scheduleName;
+    }
+
+    public void setScriptFileName(String scriptFileName) {
+        this.scriptFileName = scriptFileName;
+        getNonPersistantData().getScript().setFileName(scriptFileName);
+    }
+
+    public void setStartCommand(String startCommand) {
+        this.startCommand = startCommand;
+    }
+
+    public void setStartDay(int startDay) {
+        this.startDay = startDay;
+    }
+
+    public void setStartMonth(int startMonth) {
+        this.startMonth = startMonth;
+    }
+
+    public void setStartPolicy(String startPolicy) {
+        this.startPolicy = startPolicy;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setStartYear(int startYear) {
+        this.startYear = startYear;
+    }
+
+    public void setStopCommand(String stopCommand) {
+        this.stopCommand = stopCommand;
+    }
+
+    public void setStopPolicy(String stopPolicy) {
+        this.stopPolicy = stopPolicy;
+    }
+
+    public void setStopTime(String stopTime) {
+        this.stopTime = stopTime;
+    }
+
+    public void setTargetPAObjectId(int targetPAObjectId) {
+        this.targetPAObjectId = targetPAObjectId;
+    }
+
+    public void setTemplateType(int templateType) {
+        this.templateType = templateType;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setValidWeekDays(String validWeekDays) {
+        this.validWeekDays = validWeekDays;
+    }
+
+    public boolean getUpdatingState() {
+        return updatingState;
+    }
+
+    public void setUpdatingState(boolean updatingState) {
+        this.updatingState = updatingState;
+    }
 }
