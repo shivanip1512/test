@@ -45,8 +45,9 @@
         $(document.getElementById("${buttonId}")).click(function() {
             var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
             var confirmed = true;
-            if (confirmText.strip() !== '') {
-                confirmed = confirm(confirmText);
+            debugger;
+            if (confirmText.trim() !== '') {
+                confirmed = confirm(confirmText);   
             }
             if (confirmed) {
                 ${widgetParameters.jsWidget}.doActionUpdate({command: '${method}', containerID: '${container}', key: '${buttonId}'});

@@ -66,6 +66,10 @@
 					<property name="category" value="DEVICE"/>
 					<property name="paoClass" value="GROUP"/>
 				</bean>
+                <bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
+                    <property name="category" value="SCHEDULE"/>
+                    <property name="paoClass" value="SCHEDULE"/>
+                </bean>
 			</list>
 		</property>
 	</bean>
