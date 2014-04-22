@@ -32,50 +32,43 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-//  Convert SOCKADDR to string using WSAAddressToString
+//  Convert SOCKADDR to string using WSAAddressToString()
 //-----------------------------------------------------------------------------
-struct AddrToStr
+inline std::string socketAddressToString(const SOCKADDR *addr, int addrlen)
 {
-private:
-    char  _str[INET6_ADDRSTRLEN]; // array of byte that can contain the largest address (IPV6)
-    DWORD _strlen;                // in case of a WSAEFAULT error, this parameter will contain the required length
-    int   _err_code;
+    // [0000:0000:0000:0000:0000:0000:127.127.127.127]:65535
+    // maximum length of address (IPV6) with port including null terminator = 54
 
-public:
+    char  str[54];              // array of byte that can contain the largest address (IPV6) with port
+    DWORD strlen= sizeof(str);  // in case of a WSAEFAULT error, this parameter will contain the required length
 
-    // constructor with explicit socket pointer address and length
-    AddrToStr( const SOCKADDR *addr, int addrlen )
+    if( WSAAddressToString((LPSOCKADDR)addr, (DWORD)addr, NULL, str, &strlen) == SOCKET_ERROR )
     {
-        _strlen   = sizeof(_str);
-        _err_code = 0;
-
-        if( WSAAddressToString((LPSOCKADDR)addr, (DWORD)addrlen, NULL, _str, &_strlen) == SOCKET_ERROR )
-        {
-            _err_code = WSAGetLastError();
-        }
+        int err_code = WSAGetLastError();
+        return std::string();   // on error, return an empty string
     }
 
-    std::string toString() const
-    {
-        if( _err_code )
-        {
-            return std::string(); // if there is any error, return an empty string
-        }
+    return std::string(str, strlen);
+}
 
-        return std::string(_str, _strlen);
+//-----------------------------------------------------------------------------
+//  get string IP Address from SOCKADDR using getNameInfo()
+//-----------------------------------------------------------------------------
+inline std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, int addrlen)
+{
+    // 0000:0000:0000:0000:0000:0000:127.127.127.127
+    // maximum length of address (IPV6) including null terminator = 46
+
+    char host[46]; // array of byte that can contain the largest IP address (IPV6)
+
+    if( getnameinfo( addr, addrlen, host, sizeof(host), 0, 0, NI_NUMERICHOST ) != 0 )
+    {
+        int err_code = WSAGetLastError();
+        return std::string();   // on error, return an empty string
     }
 
-    // cast operator to std::string
-    operator std::string() const
-    {
-        return toString();
-    }
-
-    int getError()
-    {
-        return _err_code;
-    }
-};
+    return host;
+}
 
 //-----------------------------------------------------------------------------
 //  Manages a socket address of IPv4 and IPv6 family
@@ -132,6 +125,8 @@ struct SocketAddress
         assert( _addrlen <= STORAGE_SIZE );
     }
 
+    // convert all components of the sockaddr into a human readable string
+    // NOTE: use only for display (logging)
     std::string toString() const
     {
         if( !_addrlen )
@@ -139,7 +134,24 @@ struct SocketAddress
             return std::string(); // if address length is null, return empty string
         }
 
-        return AddrToStr( &_addr.sa, _addrlen);
+        return socketAddressToString( &_addr.sa, _addrlen );
+    }
+
+    // get the IP address (string) from the sockaddr
+    std::string getIpAddress() const
+    {
+        if( !_addrlen )
+        {
+            return std::string(); // if address length is null, return empty string
+        }
+
+        return getIpAddressFromSocketAddress( &_addr.sa, _addrlen );
+    }
+
+    // get the 16-bit port number from network byte order
+    u_short getPort() const
+    {
+        return ntohs( _addr.sa_in.sin_port );
     }
 
     SocketAddress& operator=(const SocketAddress& ref)
@@ -253,14 +265,16 @@ public:
         return tmp;
     }
 
-    std::string toString()
+    // convert all components of the sockaddr into a human readable string
+    // NOTE: use only for display (logging)
+    std::string toString() const
     {
         if( !_p_ai )
         {
             return std::string(); // return empty string
         }
 
-        return AddrToStr(_p_ai->ai_addr, _p_ai->ai_addrlen);
+        return socketAddressToString(_p_ai->ai_addr, _p_ai->ai_addrlen);
     }
 
     PADDRINFOA get() const

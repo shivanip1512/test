@@ -620,8 +620,8 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
         return 0;
     }
 
-    p->ip   = from.toString();
-    p->port = ntohs(from._addr.sa_in.sin_port);
+    p->ip   = from.getIpAddress();
+    p->port = from.getPort();
     p->used = 0;
 
     const bool dumpPacket = (gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001) ||

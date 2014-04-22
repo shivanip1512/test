@@ -216,7 +216,7 @@ CtiFDRClientServerConnectionSPtr CtiFDRAcsMulti::createNewConnection(SOCKET newS
         return CtiFDRClientServerConnectionSPtr();
     }
 
-    const string ipString = peerAddr.toString();
+    const string ipString = peerAddr.getIpAddress();
 
     const boost::optional<string> nameFound = Cti::mapFind(_serverNameLookup, ipString);
 
