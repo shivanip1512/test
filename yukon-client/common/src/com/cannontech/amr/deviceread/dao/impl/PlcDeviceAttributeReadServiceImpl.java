@@ -41,24 +41,23 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableSet;
 
 public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeReadService {
+    private final static Logger log = YukonLogManager.getLogger(PlcDeviceAttributeReadServiceImpl.class);
 
-    private static final Logger log = YukonLogManager.getLogger(PlcDeviceAttributeReadServiceImpl.class);
-
-    @Autowired private MeterReadCommandGeneratorService meterReadCommandGeneratorService;
     @Autowired private AttributeService attributeService;
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
-    @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
-    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
+    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private MeterReadCommandGeneratorService meterReadCommandGeneratorService;
+    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
 
     private RecentResultsCache<GroupMeterReadResult> resultsCache = new RecentResultsCache<>();
 
     @Override
     public boolean isReadable(YukonPao device, Set<? extends Attribute> attributes, LiteYukonUser user) {
-        log.debug("Validating Readability for" + attributes + " on device " + device + " for " + user);
+        log.debug("Validating Readability for " + attributes + " on device " + device + " for " + user);
 
         List<PaoMultiPointIdentifier> paoPointIdentifiers =
             attributeService.findPaoMultiPointIdentifiersForAttributes(ImmutableSet.of(device), attributes).getDevicesAndPoints();
@@ -72,18 +71,23 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
     }
 
     @Override
-    public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attributes, DeviceRequestType type, LiteYukonUser user) {
+    public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attributes,
+            DeviceRequestType type, LiteYukonUser user) {
         log.info("Reading " + attributes + " on device " + device + " for " + user);
-        List<PaoMultiPointIdentifier> paoPointIdentifiers = attributeService.findPaoMultiPointIdentifiersForAttributes(ImmutableSet.of(device), attributes).getDevicesAndPoints();
+        List<PaoMultiPointIdentifier> paoPointIdentifiers =
+            attributeService.findPaoMultiPointIdentifiersForAttributes(ImmutableSet.of(device), attributes).getDevicesAndPoints();
 
-        List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers);
+        List<CommandRequestDevice> commandRequests =
+            meterReadCommandGeneratorService.getCommandRequests(paoPointIdentifiers);
         if (commandRequests.isEmpty()) {
             throw new RuntimeException("It isn't possible to read " + attributes + " for  " + device);
         }
 
-        CommandRequestExecutionTemplate<CommandRequestDevice> executionTemplate = commandRequestDeviceExecutor.getExecutionTemplate(type, user);
+        CommandRequestExecutionTemplate<CommandRequestDevice> executionTemplate =
+            commandRequestDeviceExecutor.getExecutionTemplate(type, user);
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
-        WaitableCommandCompletionCallback<Object> waitableCallback = waitableCommandCompletionCallbackFactory.createWaitable(callback);
+        WaitableCommandCompletionCallback<Object> waitableCallback =
+            waitableCommandCompletionCallbackFactory.createWaitable(callback);
         executionTemplate.execute(commandRequests, waitableCallback);
         try {
             waitableCallback.waitForCompletion();
@@ -94,28 +98,29 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
     }
 
     @Override
-    public CommandRequestExecutionObjects<CommandRequestDevice> backgroundReadDeviceCollection(final Iterable<PaoMultiPointIdentifier> pointsToRead, 
-                                   DeviceRequestType type, CommandCompletionCallback<CommandRequestDevice> callback, 
-                                   LiteYukonUser user, RetryParameters retryParameters) {
-
+    public CommandRequestExecutionObjects<CommandRequestDevice> backgroundReadDeviceCollection(
+            final Iterable<PaoMultiPointIdentifier> pointsToRead, DeviceRequestType type,
+            CommandCompletionCallback<CommandRequestDevice> callback, LiteYukonUser user,
+            RetryParameters retryParameters) {
         List<CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(pointsToRead);
-        CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = new CommandRequestRetryExecutor<>(commandRequestDeviceExecutor, retryParameters);
-        CommandRequestExecutionObjects<CommandRequestDevice> executionObjects = retryExecutor.execute(commandRequests, callback, type, user);
+        CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor =
+            new CommandRequestRetryExecutor<>(commandRequestDeviceExecutor, retryParameters);
+        CommandRequestExecutionObjects<CommandRequestDevice> executionObjects =
+            retryExecutor.execute(commandRequests, callback, type, user);
 
         return executionObjects;
     }
 
     @Override
-    public CommandRequestExecutionObjects<CommandRequestDevice> backgroundReadDeviceCollection(DeviceCollection deviceCollection,
-                   Set<? extends Attribute> attributes, DeviceRequestType type,
-                   CommandCompletionCallback<CommandRequestDevice> callback,
-                   LiteYukonUser user, RetryParameters retryParameters) {
-
+    public CommandRequestExecutionObjects<CommandRequestDevice> backgroundReadDeviceCollection(
+            DeviceCollection deviceCollection, Set<? extends Attribute> attributes, DeviceRequestType type,
+            CommandCompletionCallback<CommandRequestDevice> callback, LiteYukonUser user,
+            RetryParameters retryParameters) {
         List<PaoMultiPointIdentifier> attributePointIdentifiers =
             attributeService.findPaoMultiPointIdentifiersForAttributes(deviceCollection, attributes).getDevicesAndPoints();
         return backgroundReadDeviceCollection(attributePointIdentifiers, type, callback, user, retryParameters);
     }
- 
+
     @Override
     public List<GroupMeterReadResult> getCompleted() {
         return resultsCache.getCompleted();
@@ -125,7 +130,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
     public String addResult(GroupMeterReadResult groupMeterReadResult) {
         return resultsCache.addResult(groupMeterReadResult);
     }
-    
+
     @Override
     public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type) {
         List<GroupMeterReadResult> completed = getCompleted();
@@ -148,8 +153,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
         return resultsCache.getResult(id);
     }
 
-    private List<GroupMeterReadResult> filterByType(List<GroupMeterReadResult> pending,
-                                                    DeviceRequestType type) {
+    private List<GroupMeterReadResult> filterByType(List<GroupMeterReadResult> pending, DeviceRequestType type) {
         List<GroupMeterReadResult> pendingOfType = new ArrayList<>();
         for (GroupMeterReadResult result : pending) {
             if (result.getCommandRequestExecutionType().equals(type)) {

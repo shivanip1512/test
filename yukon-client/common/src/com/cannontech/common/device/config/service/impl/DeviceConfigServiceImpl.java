@@ -46,19 +46,20 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService {
-    private static final Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
-    
-    @Autowired private GroupCommandExecutor groupCommandExecutor;
+    private final static Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
+
     @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private GroupCommandExecutor groupCommandExecutor;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
-    private String sendConfigCommand(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, String command, DeviceRequestType type, LiteYukonUser user) {
+    private String sendConfigCommand(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback,
+            String command, DeviceRequestType type, LiteYukonUser user) {
         List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
         List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
         for (SimpleDevice device : deviceCollection.getDeviceList()) {
@@ -67,61 +68,67 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             } else {
                 // hit the db to find out I guess.
                 LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
-            	if (configuration != null && 
-            	    deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, device.getDeviceType())) {
-            		supportedDevices.add(device);
-            	} else {
-            		unsupportedDevices.add(device);
-            	}
+                if (configuration != null
+                    && deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, device.getDeviceType())) {
+                    supportedDevices.add(device);
+                } else {
+                    unsupportedDevices.add(device);
+                }
             }
         }
-        
+
         StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
         StoredDeviceGroup supportedGroup = temporaryDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(unsupportedGroup, unsupportedDevices);
         deviceGroupMemberEditorDao.addDevices(supportedGroup, supportedDevices);
         DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
         DeviceCollection supportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(supportedGroup);
-        
+
         String key = groupCommandExecutor.execute(supportedCollection, command, type, callback, user);
         GroupCommandResult result = groupCommandExecutor.getResult(key);
         result.setHandleUnsupported(true);
         result.setUnsupportedCollection(unsupportedCollection);
-        
+
         return key;
     }
-    
+
     @Override
-    public String sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
+    public String sendConfigs(DeviceCollection deviceCollection, String method,
+            SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         String commandString = "putconfig emetcon install all";
         if (method.equalsIgnoreCase("force")) {
             commandString += " force";
         }
-        
-        return sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
+
+        return sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND,
+            user);
     }
-    
+
     @Override
-    public String readConfigs(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
+    public String readConfigs(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback,
+            LiteYukonUser user) {
         String commandString = "getconfig install all";
-        
-        return sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
+
+        return sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ,
+            user);
     }
-    
+
     @Override
     public VerifyConfigCommandResult verifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {
         final VerifyConfigCommandResult result = new VerifyConfigCommandResult();
         final String commandString = "putconfig emetcon install all verify";
         List<YukonDevice> deviceList = Lists.newArrayList(devices);
-        
-        ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
-            @Override
-            public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
-                return buildStandardRequest(from, commandString);
-            }
-        };
 
-        Map<PaoIdentifier, DisplayablePao> displayableDeviceLookup = paoLoadingService.getDisplayableDeviceLookup(devices);
+        ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper =
+            new ObjectMapper<YukonDevice, CommandRequestDevice>() {
+                @Override
+                public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
+                    return buildStandardRequest(from, commandString);
+                }
+            };
+
+        Map<PaoIdentifier, DisplayablePao> displayableDeviceLookup =
+            paoLoadingService.getDisplayableDeviceLookup(devices);
         for (YukonDevice device : devices) {
             if (!isConfigCommandSupported(device)) {
                 deviceList.remove(device);
@@ -130,56 +137,60 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 // hit the db to find out I guess.
                 DisplayablePao displayableDevice = displayableDeviceLookup.get(device.getPaoIdentifier());
                 LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
-                if (configuration != null && 
-                    deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, device.getPaoIdentifier().getPaoType())) {
+                if (configuration != null
+                    && deviceConfigurationDao.isTypeSupportedByConfiguration(configuration,
+                        device.getPaoIdentifier().getPaoType())) {
                     VerifyResult verifyResult = new VerifyResult(displayableDevice);
                     verifyResult.setConfig(configuration);
                     result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
-                }else {
+                } else {
                     deviceList.remove(device);
                     result.getUnsupportedList().add(new SimpleDevice(device));
                 }
             }
         }
 
-        List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceList, objectMapper);
-        
-        CommandCompletionCallbackAdapter<CommandRequestDevice> commandCompletionCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
-            @Override
-            public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
-                SimpleDevice device = command.getDevice();
-                result.addResultString(device, value);
-            }
-            
-            @Override
-            public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                SimpleDevice device = command.getDevice();
-                result.addError(device, error.getPorter());
-            }
-            
-            @Override
-            public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                SimpleDevice device = command.getDevice();
-                result.addError(device, error.getPorter());
-                result.handleFailure(device);
-            }
+        List<CommandRequestDevice> requests =
+            new MappingList<YukonDevice, CommandRequestDevice>(deviceList, objectMapper);
 
-            @Override
-            public void receivedLastResultString(CommandRequestDevice command, String value) {
-                SimpleDevice device = command.getDevice();
-                result.addResultString(device, value);
-                if(result.getVerifyResultsMap().get(device).getDiscrepancies().isEmpty()) {
-                    result.handleSuccess(device);
-                }else {
+        CommandCompletionCallbackAdapter<CommandRequestDevice> commandCompletionCallback =
+            new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+                @Override
+                public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
+                    SimpleDevice device = command.getDevice();
+                    result.addResultString(device, value);
+                }
+
+                @Override
+                public void
+                    receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                    SimpleDevice device = command.getDevice();
+                    result.addError(device, error.getPorter());
+                }
+
+                @Override
+                public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                    SimpleDevice device = command.getDevice();
+                    result.addError(device, error.getPorter());
                     result.handleFailure(device);
                 }
-            }
-            
-            @Override
-            public void processingExceptionOccured(String reason) {
-                result.setExceptionReason(reason);
-            }
-        };
+
+                @Override
+                public void receivedLastResultString(CommandRequestDevice command, String value) {
+                    SimpleDevice device = command.getDevice();
+                    result.addResultString(device, value);
+                    if (result.getVerifyResultsMap().get(device).getDiscrepancies().isEmpty()) {
+                        result.handleSuccess(device);
+                    } else {
+                        result.handleFailure(device);
+                    }
+                }
+
+                @Override
+                public void processingExceptionOccured(String reason) {
+                    result.setExceptionReason(reason);
+                }
+            };
 
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback =
             waitableCommandCompletionCallbackFactory.createWaitable(commandCompletionCallback);
@@ -194,45 +205,46 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             result.setExceptionReason("Operation Timed Out");
             log.error(e);
         }
-        
+
         return result;
     }
-    
+
     @Override
     public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user) {
         VerifyConfigCommandResult verifyConfigResult = verifyConfigs(Collections.singleton(device), user);
         return verifyConfigResult.getVerifyResultsMap().get(new SimpleDevice(device));
     }
-    
+
     @Override
     public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String commandString = "getconfig install all";
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
+        CommandResultHolder resultHolder =
+            commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
         return resultHolder;
     }
-    
+
     @Override
     public CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String commandString = "putconfig emetcon install all";
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
+        CommandResultHolder resultHolder =
+            commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
         return resultHolder;
     }
 
     private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {
         CommandRequestDevice request = new CommandRequestDevice();
         request.setDevice(new SimpleDevice(device.getPaoIdentifier()));
-        
+
         request.setCommandCallback(new PorterCommandCallback(command));
         return request;
     }
-    
+
     /**
      * Helper method to save on some database hits.
-     * Returns false if any 
-     *  - PaoTag.DEVICE_CONFIGURATION is not supported
-     *  - ConfigurationType is DNP (not supported for read, send, verify commands)
+     * Returns false if any
+     * - PaoTag.DEVICE_CONFIGURATION is not supported
+     * - ConfigurationType is DNP (not supported for read, send, verify commands)
      * Else returns true.
-     * @param device
      */
     private boolean isConfigCommandSupported(YukonDevice device) {
         if (!paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), PaoTag.DEVICE_CONFIGURATION)) {

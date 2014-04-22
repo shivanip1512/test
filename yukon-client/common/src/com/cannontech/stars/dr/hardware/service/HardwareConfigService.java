@@ -51,16 +51,16 @@ import com.google.common.collect.Lists;
 public class HardwareConfigService {
     private final static Logger log = YukonLogManager.getLogger(HardwareConfigService.class);
 
-    @Autowired private CommandScheduleDao commandScheduleDao;
-    @Autowired private CommandRequestRouteExecutor commandRequestRouteExecutor;
-    @Autowired private EnergyCompanyService ecService;
     @Autowired private com.cannontech.stars.dr.hardwareConfig.HardwareConfigService hardwareConfigService;
+    @Autowired private CommandRequestRouteExecutor commandRequestRouteExecutor;
+    @Autowired private CommandScheduleDao commandScheduleDao;
+    @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private EnergyCompanyService ecService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
     @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
     @Autowired private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
-    @Autowired private EnergyCompanyDao ecDao;
 
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 
@@ -73,21 +73,18 @@ public class HardwareConfigService {
         }
 
         private void blockingCommandExecute(CommandRequestExecutionTemplate<CommandRequestRoute> template,
-                final LiteLmHardwareBase hardware, String command)
-                throws CommandCompletionException {
+                final LiteLmHardwareBase hardware, String command) throws CommandCompletionException {
             CommandCompletionCallback<CommandRequestRoute> callback =
                 new CommandCompletionCallbackAdapter<CommandRequestRoute>() {
                     @Override
-                    public void receivedLastError(CommandRequestRoute command,
-                            SpecificDeviceErrorDescription error) {
+                    public void receivedLastError(CommandRequestRoute command, SpecificDeviceErrorDescription error) {
                         hadErrors = true;
                     }
-            };
+                };
             hadErrors = false;
             WaitableCommandCompletionCallback<CommandRequestRoute> waitableCallback =
                 waitableCommandCompletionCallbackFactory.createWaitable(callback);
-            lmHardwareCommandRequestExecutor.executeWithTemplate(template, hardware, command,
-                                                               waitableCallback);
+            lmHardwareCommandRequestExecutor.executeWithTemplate(template, hardware, command, waitableCallback);
             try {
                 waitableCallback.waitForCompletion();
             } catch (InterruptedException interruptedException) {
@@ -112,7 +109,7 @@ public class HardwareConfigService {
             try {
                 List<String> commands =
                     hardwareConfigService.getConfigCommands(inventoryId, energyCompanyId,
-                                                            item.getInventoryConfigTask().isSendInService());
+                        item.getInventoryConfigTask().isSendInService());
                 log.trace(item.getInventoryId() + " needs " + commands.size() + " commands");
                 if (!commands.isEmpty()) {
                     status = Status.SUCCESS;
@@ -120,9 +117,8 @@ public class HardwareConfigService {
                         log.trace("processing command [" + command + "]");
                         blockingCommandExecute(template, hardware, command);
                         if (hadErrors) {
-                            log.error("error(s) executing command [" + command +
-                                      "]; inventory id=" + inventoryId +
-                                      "; CMRE id=" + template.getContextId().getId());
+                            log.error("error(s) executing command [" + command + "]; inventory id=" + inventoryId
+                                + "; CMRE id=" + template.getContextId().getId());
                             status = Status.FAIL;
                             break;
                         }
@@ -132,25 +128,23 @@ public class HardwareConfigService {
                     log.debug("no commands");
                 }
             } catch (CommandCompletionException cce) {
-                log.error("exception executing command; inventory id=" + inventoryId +
-                          "; CMRE id=" + template.getContextId().getId() +
-                          "; msg=[" + cce.getMessage() + "]");
+                log.error("exception executing command; inventory id=" + inventoryId + "; CMRE id="
+                    + template.getContextId().getId() + "; msg=[" + cce.getMessage() + "]");
                 status = Status.FAIL;
             } catch (InterruptedException ie) {
                 throw ie;
             } catch (Exception exception) {
-                log.error("unexpected error configuring device; inventory id=" + inventoryId +
-                          "; CMRE id=" + template.getContextId().getId() +
-                          "; msg=[" + exception.getMessage() + "]");
+                log.error("unexpected error configuring device; inventory id=" + inventoryId + "; CMRE id="
+                    + template.getContextId().getId() + "; msg=[" + exception.getMessage() + "]");
                 status = Status.FAIL;
             }
             inventoryConfigTaskDao.markComplete(item, status);
             if (status == Status.SUCCESS) {
                 inventoryConfigEventLogService.itemConfigSucceeded(user, hardware.getManufacturerSerialNumber(),
-                                                                   inventoryId, template.getContextId().getId());
+                    inventoryId, template.getContextId().getId());
             } else {
                 inventoryConfigEventLogService.itemConfigFailed(user, hardware.getManufacturerSerialNumber(),
-                                                                inventoryId, template.getContextId().getId());
+                    inventoryId, template.getContextId().getId());
             }
         }
 
@@ -179,8 +173,8 @@ public class HardwareConfigService {
                             }
                         }
                     } catch (ParseException parseException) {
-                        log.error("error parsing cron string [" + schedule.getStartTimeCronString() +
-                                  "]", parseException);
+                        log.error("error parsing cron string [" + schedule.getStartTimeCronString() + "]",
+                            parseException);
                     }
                 }
                 log.debug(activeSchedules.size() + " out of " + schedules.size() + " schedules active");
@@ -196,8 +190,9 @@ public class HardwareConfigService {
                     }
                     log.trace("using delay of " + delayBetweenCommands);
                     // (We're estimating 2 commands per configuration.)
-                    int numItems = delayBetweenCommands.isLongerThan(Duration.ZERO)
-                        ? (int) Math.round(60.0 * 1000.0 / delayBetweenCommands.getMillis() / 2.0) : 100;
+                    int numItems =
+                        delayBetweenCommands.isLongerThan(Duration.ZERO)
+                            ? (int) Math.round(60.0 * 1000.0 / delayBetweenCommands.getMillis() / 2.0) : 100;
                     numItems = Math.max(Math.min(numItems, 100), 1);
                     log.trace("getting no more than " + numItems + " items");
                     Iterable<InventoryConfigTaskItem> items =
