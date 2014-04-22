@@ -45,7 +45,6 @@
         $(document.getElementById("${buttonId}")).click(function() {
             var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
             var confirmed = true;
-            debugger;
             if (confirmText.trim() !== '') {
                 confirmed = confirm(confirmText);   
             }
