@@ -2391,9 +2391,13 @@ void PilServer::periodicActionThread()
 
     Cti::Timing::MillisecondTimer t;
 
+    CtiTime nextRfDaCheck;
+
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
+        const CtiTime Now;
+
         const unsigned elapsed = t.elapsed();
 
         if( elapsed > 1000 )
@@ -2425,6 +2429,23 @@ void PilServer::periodicActionThread()
 
         {
             _rfnManager.tick();
+        }
+
+        if( nextRfDaCheck < Now )
+        {
+            nextRfDaCheck = nextScheduledTimeAlignedOnRate(Now, 1800);
+
+            std::vector< CtiDeviceManager::ptr_type > rfDaDevices;
+
+            DeviceManager->getDevicesByType( TYPE_RF_DA, rfDaDevices );
+
+            for each( CtiDeviceSPtr device in rfDaDevices )
+            {
+                if( ! device->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RF_DA_DnpSlaveAddress) )
+                {
+                    putQueue( new CtiRequestMsg( device->getID(), "getconfig dnp address") );
+                }
+            }
         }
 
         //  <Add other periodic events here>
