@@ -31,7 +31,7 @@
 <cti:msg2 var="sendTimeSyncsCommand" key=".sendTimeSyncsCommand"/>
 
 <c:set var="baseUrl" value="/capcontrol/schedule/scheduleAssignments"/>
-
+<cti:url var="showAllUrl" value="/capcontrol/schedule/scheduleAssignments"/>
 <script type="text/javascript">
 $(function() {
     $(document).on('click', 'button.runSchedule', function(event){
@@ -171,7 +171,7 @@ function newScheduleAssignmentPopup(schedule, command) {
                 filterDialog="filterPopup" 
                 baseUrl="${baseUrl}"
                 isFiltered="${isFiltered}" 
-                showAllUrl="${baseUrl}">
+                showAllUrl="${showAllUrl}">
             <c:choose>
                 <c:when test="${searchResult.hitCount == 0}">
                     <span class="empty-list"><i:inline key=".noScheduleAssignments" /></span>

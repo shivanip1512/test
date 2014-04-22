@@ -4,9 +4,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
+<cti:url value="/capcontrol/schedule/scheduleAssignments" var="filterURL"/>
 <%-- Filtering popup --%>
 <i:simplePopup id="filterPopup" titleKey=".filterTitle">
-	<form name="filterForm" action="/capcontrol/schedule/scheduleAssignments">
+	<form name="filterForm" action="${filterURL}">
 		<tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".schedules">
                 <select name="schedule" id="scheduleSelection">
