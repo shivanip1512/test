@@ -15,7 +15,7 @@
                         <span class="success"><i:inline key=".inSync"/></span>
                     </c:when>
                     <c:otherwise>
-                        <span class="error"><c:out value="${failureResult} ${verifyResult.discrepancies}"/></span>
+                        <span class="error">${failureResult} ${fn:escapeXml(verifyResult.discrepancies)}"</span>
                     </c:otherwise>
                 </c:choose>
             </tags:nameValue2>
