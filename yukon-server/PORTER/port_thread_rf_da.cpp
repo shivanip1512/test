@@ -93,10 +93,10 @@ void RfDaPortHandler::receiveConfirm(Messaging::Rfn::E2eMessenger::Confirm msg)
 
 int RfDaPortHandler::sendOutbound( device_record &dr )
 {
-    if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+    if( gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::RfDaPortHandler::generateOutbound() - sending packet to "
+        dout << CtiTime() << " Cti::Porter::RfDaPortHandler::sendOutbound() - sending packet to "
                           << describeDeviceAddress(dr.device->getID()) << " "
                           << __FILE__ << " (" << __LINE__ << ")" << endl;
 
@@ -119,6 +119,12 @@ int RfDaPortHandler::sendOutbound( device_record &dr )
     Messaging::Rfn::E2eMessenger::sendE2eAp_Dnp(msg, boost::bind(&RfDaPortHandler::receiveConfirm, this, _1));
 
     return NoError;
+}
+
+
+unsigned RfDaPortHandler::getDeviceTimeout( const device_record &dr ) const
+{
+    return 150;
 }
 
 
@@ -153,8 +159,17 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
 
     if( ! _device_id )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::RfDaPortHandler::collectInbounds - _device_id not set " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        if( ! recentIndications.empty() && gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::RfDaPortHandler::collectInbounds - _device_id not set, logging packets " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        for each( Messaging::Rfn::E2eMessenger::Indication ind in recentIndications )
+        {
+            //  this packet was unhandled, so we trace it
+            traceInbound("(unhandled)", 0, &ind.payload.front(), ind.payload.size());
+        }
 
         return false;
     }
@@ -180,10 +195,17 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
     //  ignore the timer - this is bound to be quick
     for each( Messaging::Rfn::E2eMessenger::Indication ind in recentIndications )
     {
+        if( gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::RfDaPortHandler::collectInbounds - new inbound for \"" << ind.rfnIdentifier << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
         rf_packet *p = new rf_packet;
 
         p->rfnid = ind.rfnIdentifier;
         p->len = ind.payload.size();
+        p->used = 0;
         p->data = new unsigned char[p->len];
 
         std::copy(ind.payload.begin(), ind.payload.end(), p->data);

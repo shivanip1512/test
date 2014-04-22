@@ -460,10 +460,10 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
             return;
         }
 
-        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        if( gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Porter::UnsolicitedHandler::getOutMessages - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Porter::UnsolicitedHandler::handleDeviceRequest - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         dr->outbound.push_back(om);
@@ -475,10 +475,10 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
     }
     else
     {
-        if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        if( gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Porter::DNPUDP::getOutMessages - no device found for device id (" << om->DeviceID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Porter::UnsolicitedHandler::handleDeviceRequest - no device found for device id (" << om->DeviceID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         //  return an error - this deletes the OM
@@ -633,6 +633,8 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
             {
                 dnp_device->initUnsolicited();
 
+                dr->xfer.setInCountExpected(Cti::Protocol::DNP::DatalinkPacket::HeaderLength);  //  we expect at least a header
+
                 //  push a null OM on there so can distinguish this request from anything else that comes in
                 dr->outbound.push_back(0);
 
@@ -715,10 +717,7 @@ void Cti::Porter::UnsolicitedHandler::tryGenerate(device_record *dr)
     }
     else
     {
-        unsigned portDelay    = _port->getDelay(EXTRA_DELAY); // Additional timeout for the port.
-        unsigned cparmTimeout = gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 10);
-
-        const CtiTime timeout = CtiTime::now() + std::max(portDelay, cparmTimeout);
+        const CtiTime timeout = CtiTime::now() + getDeviceTimeout(*dr);
 
         const device_list::iterator waiting_itr = _waiting_for_data.insert(_waiting_for_data.end(), dr);
 
@@ -873,7 +872,7 @@ void UnsolicitedHandler::readPortQueue(CtiPortSPtr &port, om_list &local_queue)
     {
         port->incQueueSubmittal(1, CtiTime());
 
-        if( !printed && entries && gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        if( !printed && entries && gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Porter::UnsolicitedHandler::getOutMessages - " << entries << " additional entries on queue " << __FILE__ << " (" << __LINE__ << ")" << endl;

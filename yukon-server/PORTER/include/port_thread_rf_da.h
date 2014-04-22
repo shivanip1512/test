@@ -46,6 +46,7 @@ protected:
     void receiveConfirm(Messaging::Rfn::E2eMessenger::Confirm msg);
 
     virtual int  sendOutbound( device_record &dr );
+    virtual unsigned getDeviceTimeout( const device_record &dr ) const;
     virtual bool collectInbounds(const Cti::Timing::MillisecondTimer & timer, const unsigned long until);
 
     virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);

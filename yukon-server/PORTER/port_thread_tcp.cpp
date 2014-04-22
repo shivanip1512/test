@@ -312,6 +312,15 @@ int TcpPortHandler::sendOutbound( device_record &dr )
 }
 
 
+unsigned TcpPortHandler::getDeviceTimeout( const device_record &dr ) const
+{
+    unsigned portDelay    = _tcp_port->getDelay(EXTRA_DELAY); // Additional timeout for the port.
+    unsigned cparmTimeout = gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 10);
+
+    return std::max(portDelay, cparmTimeout);
+}
+
+
 string TcpPortHandler::describePort( void ) const
 {
     ostringstream ostr;

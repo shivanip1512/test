@@ -175,6 +175,7 @@ protected:
     virtual bool setupPort( void ) = 0;
     virtual bool manageConnections( void ) = 0;
     virtual int  sendOutbound( device_record &dr ) = 0;
+    virtual unsigned getDeviceTimeout( const device_record &dr ) const = 0;
     virtual bool collectInbounds( const Cti::Timing::MillisecondTimer & timer, const unsigned long until) = 0;
 
     virtual void loadDeviceProperties( const std::vector<const CtiDeviceSingle *> &devices ) = 0;

@@ -539,6 +539,15 @@ int UdpPortHandler::sendOutbound( device_record &dr )
 }
 
 
+unsigned UdpPortHandler::getDeviceTimeout( const device_record &dr ) const
+{
+    unsigned portDelay    = _udp_port->getDelay(EXTRA_DELAY); // Additional timeout for the port.
+    unsigned cparmTimeout = gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 10);
+
+    return std::max(portDelay, cparmTimeout);
+}
+
+
 string UdpPortHandler::describePort( void ) const
 {
     ostringstream ostr;
