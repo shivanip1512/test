@@ -2930,7 +2930,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     {
         deviceBase = (DeviceBase) val;
 
-        deviceType = PaoType.getPaoTypeId(deviceBase.getPAOType());
+        PaoType paoType = PaoType.getForDbString(deviceBase.getPAOType());
+
         String typeStr = deviceBase.getPAOType();
         // Override defalut type string for TapTerminal
         if (deviceType == PAOGroups.TAPTERMINAL) {
@@ -2940,23 +2941,20 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         getNameTextField().setText(deviceBase.getPAOName());
 
         SwingUtil.setCheckBoxState(getDisableFlagCheckBox(), deviceBase.getPAODisableFlag());
-        SwingUtil.setCheckBoxState(getControlInhibitCheckBox(), deviceBase.getDevice()
-            .getControlInhibit());
+        SwingUtil.setCheckBoxState(getControlInhibitCheckBox(), deviceBase.getDevice().getControlInhibit());
 
         // This is a bit ugly
         // The address could come from one of three different types of
         // devices even though they all have one
         // Note also getValue(DBPersistent)
-
         if (val instanceof CarrierBase) {
             setCarrierBaseValue((CarrierBase) val);
-        }
-        else if (val instanceof IDLCBase) {
+        } else if (val instanceof IDLCBase) {
             setIDLCBaseValue((IDLCBase) val);
-        }
-        else {
+        } else {
             if (deviceBase.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_VIRTUAL) ||
-                deviceBase.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_RFMESH)) {
+                deviceBase.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_RFMESH) ||
+                paoType == PaoType.ECOBEE_SMART_SI) {
                 getCommunicationPanel().setVisible(false);
             }
 
