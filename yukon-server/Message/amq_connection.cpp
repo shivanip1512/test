@@ -49,6 +49,11 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
     }
 }
 
+void ActiveMQConnectionManager::start()
+{
+    static_cast<CtiThread *>(gActiveMQConnection.get())->start();
+}
+
 void ActiveMQConnectionManager::close()
 {
     if( isRunning() )

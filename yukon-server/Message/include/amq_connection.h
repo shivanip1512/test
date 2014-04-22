@@ -66,7 +66,7 @@ private:
 }
 
 class IM_EX_MSG ActiveMQConnectionManager :
-    public CtiThread,
+    private CtiThread,
     public BaseConnection
 {
 public:
@@ -82,6 +82,8 @@ public:
 
     ActiveMQConnectionManager(const std::string &broker_uri);
     virtual ~ActiveMQConnectionManager();
+
+    static void start();
 
     static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message);
     template<class Msg>
@@ -175,7 +177,6 @@ private:
     void releaseConnectionObjects();
 
     void updateCallbacks();
-    bool addQueueCallback(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
 
     void registerConsumersForCallbacks(const CallbacksPerQueue &callbacks);
     void registerConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue);
