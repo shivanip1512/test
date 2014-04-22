@@ -385,6 +385,54 @@
     </bean>
     <!-- no processor for DeviceId field -->
     
+    <!-- LATITUDE BULK FIELD -->
+    <bean id="latitudeBulkField" parent="bulkFieldBase" class="com.cannontech.common.bulk.field.impl.LatitudeBulkField">
+
+        <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="ALWAYS_PROCESS" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Latitude" />
+                <property name="field" value="latitude" />
+                <property name="description">
+                    <value>The device's latitude</value>
+                </property>
+                <property name="type" ref="inputStringType" />
+            </bean>
+        </property>
+
+    </bean>
+    
+    <!-- LONGITUDE BULK FIELD -->
+    <bean id="longitudeBulkField" parent="bulkFieldBase" class="com.cannontech.common.bulk.field.impl.LongitudeBulkField">
+
+        <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="ALWAYS_PROCESS" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Longitude" />
+                <property name="field" value="longitude" />
+                <property name="description">
+                    <value>The device's longitude</value>
+                </property>
+                <property name="type" ref="inputStringType" />
+            </bean>
+        </property>
+
+    </bean>
+
+    <bean id="latLonBulkFieldProcessor" parent="bulkFieldProcessorBase"
+        class="com.cannontech.common.bulk.field.processor.impl.LatLonBulkFieldProcessor">
+        <property name="paoLocationDao" ref="paoLocationDao" />
+        <property name="updateableFields">
+            <set>
+                <ref bean="latitudeBulkField" />
+                <ref bean="longitudeBulkField" />
+            </set>
+        </property>
+    </bean>
 
     <!-- BULK FIELD FACTORY -->
     <bean id="bulkFieldFactory"
@@ -406,6 +454,8 @@
                 <ref bean="serialNumberBulkField" />
                 <ref bean="manufacturerBulkField" />
                 <ref bean="modelBulkField" />
+                <ref bean="latitudeBulkField" />
+                <ref bean="longitudeBulkField" />
             </list>
         </property>
     </bean>

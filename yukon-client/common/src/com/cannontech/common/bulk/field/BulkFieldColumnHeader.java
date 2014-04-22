@@ -14,6 +14,8 @@ public enum BulkFieldColumnHeader {
     RFN_SERIAL_NUMBER("rfnSerialNumber"),
     RFN_MANUFACTURER("rfnManufacturer"),
     RFN_MODEL("rfnModel"),
+    LATITUDE("latitude"),
+    LONGITUDE("longitude"),
     ;
     
     private String fieldName;

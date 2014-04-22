@@ -15,6 +15,8 @@ public class YukonDeviceDto {
     private String rfnSerialNumber;
     private String rfnManufacturer;
     private String rfnModel;
+    private Double latitude;
+    private Double longitude;
     
     // SETTER GETTERS
     public Integer getAddress() {
@@ -82,5 +84,17 @@ public class YukonDeviceDto {
     }
     public void setRfnModel(String rfnModel) {
         this.rfnModel = rfnModel;
+    }
+    public Double getLatitude() {
+        return latitude;
+    }
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+    public Double getLongitude() {
+        return longitude;
+    }
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }

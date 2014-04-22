@@ -29,6 +29,8 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
             .add(BulkFieldColumnHeader.DISCONNECT_ADDRESS)
             .add(BulkFieldColumnHeader.METER_NUMBER)
             .add(BulkFieldColumnHeader.ENABLE)
+            .add(BulkFieldColumnHeader.LATITUDE)
+            .add(BulkFieldColumnHeader.LONGITUDE)
             .build();
 
     @Override

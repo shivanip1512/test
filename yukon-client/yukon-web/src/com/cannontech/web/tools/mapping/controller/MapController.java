@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.web.tools.mapping.dao.PaoLocationDao;
-import com.cannontech.web.tools.mapping.dao.PaoLocationDao.FeaturePropertyType;
+import com.cannontech.core.dao.PaoLocationDao.FeaturePropertyType;
+import com.cannontech.web.tools.mapping.service.PaoLocationService;
 
 @Controller
 public class MapController {
     
-    @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private PaoLocationService paoLocationService;
     
     @RequestMapping("/map")
     public String map(ModelMap model) {
@@ -44,7 +44,7 @@ public class MapController {
     @RequestMapping("/map/locations")
     public @ResponseBody FeatureCollection locations(DeviceCollection deviceCollection) {
         
-//        FeatureCollection locations = locationDao.getLastLocationsAsGeoJson(collection.getDeviceList());
+//        FeatureCollection locations = paoLocationService.getLastLocationsAsGeoJson(collection.getDeviceList());
         FeatureCollection locations = getFakeLocations(deviceCollection);
         
         return locations;

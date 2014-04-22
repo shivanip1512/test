@@ -1,4 +1,4 @@
-package com.cannontech.web.tools.mapping.model;
+package com.cannontech.common.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 

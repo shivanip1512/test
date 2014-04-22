@@ -27,6 +27,8 @@ public class TemplateBulkImportMethod extends BulkImportMethodBase {
             .add(BulkFieldColumnHeader.DISCONNECT_ADDRESS)
             .add(BulkFieldColumnHeader.ENABLE)
             .add(BulkFieldColumnHeader.ADDRESS)
+            .add(BulkFieldColumnHeader.LATITUDE)
+            .add(BulkFieldColumnHeader.LONGITUDE)
             .build();
     
     @Override

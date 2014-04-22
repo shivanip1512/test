@@ -1,41 +1,30 @@
-package com.cannontech.web.tools.mapping.dao.impl;
+package com.cannontech.core.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.geojson.Crs;
-import org.geojson.Feature;
-import org.geojson.FeatureCollection;
-import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.model.PaoLocation;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.PaoLocationDao;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.web.tools.mapping.dao.PaoLocationDao;
-import com.cannontech.web.tools.mapping.model.PaoLocation;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class PaoLocationDaoImpl implements PaoLocationDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-
-    private final String projection;
 
     private final static YukonRowMapper<PaoLocation> locationMapper = new YukonRowMapper<PaoLocation>() {
         @Override
@@ -48,12 +37,6 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
             return location;
         }
     };
-
-    @Autowired
-    public PaoLocationDaoImpl(ConfigurationSource configSource) {
-        String mapProjection = configSource.getString(MasterConfigStringKeysEnum.MAP_PROJECTION);
-        projection = StringUtils.isEmpty(mapProjection) ? "EPSG:4326" : mapProjection;
-    }
 
     @Override
     public Set<PaoLocation> getLocations(Iterable<? extends YukonPao> paos) {
@@ -81,30 +64,6 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
             }
         });
         return lastLocations;
-    }
-
-    @Override
-    public FeatureCollection getLocationsAsGeoJson(Iterable<? extends YukonPao> paos) {
-        Set<PaoLocation> locations = getLocations(paos);
-        FeatureCollection features = new FeatureCollection();
-        // Set coordinate reference system for these locations.
-        Map<String, Object> crsProperties = Maps.newHashMap();
-        crsProperties.put("name", projection);
-        Crs crs = new Crs();
-        crs.setProperties(crsProperties);
-        features.setCrs(crs);
-        for (PaoLocation location : locations) {
-            Feature feature = new Feature();
-            // Feature "id" is paoId.
-            feature.setId(Integer.toString(location.getPaoIdentifier().getPaoId()));
-            Point point = new Point(location.getLongitude(), location.getLatitude());
-            feature.setGeometry(point);
-            // Set feature properties.
-            feature.getProperties().put(FeaturePropertyType.PAO_IDENTIFIER.getKeyName(),
-                                        location.getPaoIdentifier());
-            features.add(feature);
-        }
-        return features;
     }
 
     @Override

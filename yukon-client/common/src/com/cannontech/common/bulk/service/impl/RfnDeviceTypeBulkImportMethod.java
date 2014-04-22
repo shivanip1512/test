@@ -29,6 +29,8 @@ public class RfnDeviceTypeBulkImportMethod extends BulkImportMethodBase {
     private static ImmutableSet<BulkFieldColumnHeader> optionalColumns = new ImmutableSet.Builder<BulkFieldColumnHeader>()
             .add(BulkFieldColumnHeader.METER_NUMBER)
             .add(BulkFieldColumnHeader.ENABLE)
+            .add(BulkFieldColumnHeader.LATITUDE)
+            .add(BulkFieldColumnHeader.LONGITUDE)
             .build();
 
     @Override
