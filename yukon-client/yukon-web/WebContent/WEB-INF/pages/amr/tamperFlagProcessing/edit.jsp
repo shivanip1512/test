@@ -6,6 +6,9 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<cti:url value="/amr/tamperFlagProcessing/delete" var="monitorDeleteURL"/>
+<cti:url value="/amr/tamperFlagProcessing/toggleEnabled" var="toggleEnabledURL"/>
+<cti:url value="/amr/tamperFlagProcessing/update" var="updateURL"/>
 
 <cti:standardPage module="amr" page="tamperFlagEditor.${mode}">
 
@@ -29,18 +32,18 @@
         </c:if>
     
         <%-- MISC FORMS --%>
-        <form id="monitorDeleteForm" action="/amr/tamperFlagProcessing/delete" method="post">
+        <form id="monitorDeleteForm" action="${monitorDeleteURL}" method="post">
             <cti:csrfToken/>
             <input type="hidden" id="deleteTamperFlagMonitorId" name="deleteTamperFlagMonitorId" value="${tamperFlagMonitorId}">
         </form>
         
-        <form id="toggleEnabledForm" action="/amr/tamperFlagProcessing/toggleEnabled" method="post">
+        <form id="toggleEnabledForm" action="${toggleEnabledURL}" method="post">
             <cti:csrfToken/>
             <input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
         </form>
         
         <%-- UPDATE FORM --%>
-        <form id="updateForm" action="/amr/tamperFlagProcessing/update" method="post">
+        <form id="updateForm" action="${updateURL}" method="post">
             <cti:csrfToken/>        
             <input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
             

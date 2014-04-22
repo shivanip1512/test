@@ -4,8 +4,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
-
-    <form:form commandName="monitor" id="basicInfoForm" action="/amr/porterResponseMonitor/create" method="post">
+<cti:url value="/amr/porterResponseMonitor/create" var="createPorterURL"/>
+    <form:form commandName="monitor" id="basicInfoForm" action="${createPorterURL}" method="post">
 
         <input type="hidden" name="stateGroup" value="${monitor.stateGroup}">
 

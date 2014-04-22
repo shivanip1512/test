@@ -5,6 +5,9 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<cti:url value="/amr/outageProcessing/monitorEditor/delete" var="deleteURL"/>
+<cti:url value="/amr/outageProcessing/monitorEditor/toggleEnabled" var="toggleEnabledURL"/>
+<cti:url value="/amr/outageProcessing/monitorEditor/update" var="updateURL"/>
 
 <cti:standardPage module="amr" page="outageMonitorConfig.${mode}">
 
@@ -49,18 +52,18 @@
     </c:if>
 
     <%-- MISC FORMS --%>
-    <form id="configDeleteForm" action="/amr/outageProcessing/monitorEditor/delete" method="post">
+    <form id="configDeleteForm" action="${deleteURL}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="deleteOutageMonitorId" value="${outageMonitorId}">
     </form>
     
-    <form id="toggleEnabledForm" action="/amr/outageProcessing/monitorEditor/toggleEnabled" method="post">
+    <form id="toggleEnabledForm" action="${toggleEnabledURL}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
     </form>
         
         <%-- UPDATE FORM --%>
-    <form id="updateForm" action="/amr/outageProcessing/monitorEditor/update" method="post">
+    <form id="updateForm" action="${updateURL}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
         
