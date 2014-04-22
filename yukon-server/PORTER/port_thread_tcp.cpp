@@ -279,7 +279,7 @@ int TcpPortHandler::sendOutbound( device_record &dr )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Cti::Porter::TcpPortHandler::sendOutbound() - sending packet to "
-                          << sa.ip << ":" << sa.port << " "
+                          << sa.toString() << " "
                           << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         dout << hex;
@@ -414,7 +414,7 @@ std::string TcpPortHandler::describeDeviceAddress( const long device_id ) const
 {
     Connections::SocketAddress address = getDeviceSocketAddress(device_id);
 
-    return address.ip + ":" + CtiNumStr(address.port);
+    return address.toString();
 }
 
 

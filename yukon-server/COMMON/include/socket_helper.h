@@ -6,6 +6,8 @@
 #include <windows.h>
 #include <string>
 
+#include <boost/asio/ip/address.hpp>
+
 #include "numstr.h"
 #include "critical_section.h"
 #include "guard.h"
@@ -52,7 +54,7 @@ inline std::string socketAddressToString(const SOCKADDR *addr, int addrlen)
 }
 
 //-----------------------------------------------------------------------------
-//  get string IP Address from SOCKADDR using getNameInfo()
+//  Get string IP Address from SOCKADDR using getNameInfo()
 //-----------------------------------------------------------------------------
 inline std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, int addrlen)
 {
@@ -68,6 +70,27 @@ inline std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, int addrl
     }
 
     return host;
+}
+
+//-----------------------------------------------------------------------------
+//  Format a host name (or an ip address) and a port into a string
+//-----------------------------------------------------------------------------
+inline std::string formatHostAndPort(const std::string& host, u_short port)
+{
+    std::ostringstream ostr;
+
+    const boost::asio::ip::address ipAddress = boost::asio::ip::address::from_string(host);
+
+    if( ipAddress.is_v6() )
+    {
+        ostr << "[" << host << "]:" << port;
+    }
+    else
+    {
+        ostr << host << ":" << port;
+    }
+
+    return ostr.str();
 }
 
 //-----------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ctitime.h"
+#include "socket_helper.h"
 #include <vector>
 #include <string>
 
@@ -21,6 +22,11 @@ struct SocketAddress
     bool operator==(const SocketAddress &other) const
     {
         return ip == other.ip && port == other.port;
+    }
+
+    std::string toString() const
+    {
+        return formatHostAndPort(ip, port);
     }
 };
 

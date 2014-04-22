@@ -297,7 +297,7 @@ void UdpPortHandler::loadStaticRdsIPAndPort(const CtiDeviceSingle &device)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - loading device "
              << device.getName() << " "
-             << _ip_addresses[device_id] << ":" << _ports[device_id] << " "
+             << formatHostAndPort(_ip_addresses[device_id], _ports[device_id]) << " "
              << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
@@ -637,7 +637,7 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
             dout << CtiTime() << " " << __FUNCTION__ << " - unable to decode packet received from "
-                 << p->ip << ":" << p->port << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                 << p->describeAddress() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
             if( dumpPacket )
             {
@@ -669,7 +669,7 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
         dout << CtiTime() << " " << __FUNCTION__ << " - packet received from "
-             << p->ip << ":" << p->port << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+             << p->describeAddress() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         if( ! pText.empty() )
         {
@@ -701,7 +701,7 @@ bool UdpPortHandler::validatePacket(ip_packet *&p)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FUNCTION__ << "() - incoming packet from " << p->ip <<  ":" << p->port << " is invalid " << __FILE__ << "(" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " " << __FUNCTION__ << "() - incoming packet from " << p->describeAddress() << " is invalid " << __FILE__ << "(" << __LINE__ << ")" << endl;
         }
 
         //  this packet was unhandled, so we trace it
@@ -803,7 +803,7 @@ void UdpPortHandler::handleGpuffPacket(ip_packet *&p)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - incoming packet from " << p->ip << ":" << p->port << ": " << endl;
+        dout << CtiTime() << " **** Checkpoint - incoming packet from " << p->describeAddress() << endl;
     }
 
     GpuffProtocol::describeFrame(p->data, p->len, len, crc_included, ack_required, devt, ser);
@@ -942,12 +942,17 @@ std::string UdpPortHandler::describeDeviceAddress( const long device_id ) const
 
     if( ipAddress.empty() )
     {
-        return "none:none";
+        return "(IP Address is Undefined)";
     }
 
     boost::optional<u_short> port = mapFind(_ports, device_id);
 
-    return ipAddress + ":" + (port ? CtiNumStr(*port).toString() : "none");
+	if( ! port )
+	{
+		return ipAddress + " (Port is Undefined)";
+	}
+	
+	return formatHostAndPort(ipAddress, *port);
 }
 
 void UdpPortHandler::loadEncodingFilter()

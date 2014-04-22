@@ -10,6 +10,7 @@
 #include "millisecond_timer.h"
 
 #include "queue.h"
+#include "socket_helper.h"
 
 #include <map>
 #include <queue>
@@ -50,11 +51,7 @@ protected:
 
         virtual std::string describeAddress() const
         {
-            std::ostringstream ostr;
-
-            ostr << ip << ":" << port;
-
-            return ostr.str();
+            return formatHostAndPort(ip, port);
         }
     };
 
