@@ -114,6 +114,11 @@ public class EmailServiceImpl implements EmailService {
             properties.put("mail.smtp.port", smtpPort.toString());
         }
         
+        boolean smtpTls = globalSettingDao.getBoolean(GlobalSettingType.SMTP_TLS_ENABLED);
+        if (smtpTls) {
+            properties.put("mail.smtp.starttls.enable", "true");
+        }
+        
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         if (authenticator.getPasswordAuthentication() != null) {
             // Make sure we use authentication.
