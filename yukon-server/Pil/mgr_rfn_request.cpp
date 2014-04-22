@@ -110,7 +110,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
     {
         CtiLockGuard<CtiCriticalSection> lock(_indicationMux);
 
-        recentIndications.assign(_indications.begin(), _indications.end());
+        std::swap(recentIndications, _indications);
     }
 
     for each( E2eMessenger::Indication indication in recentIndications )
@@ -228,21 +228,25 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
         }
         else
         {
-            std::auto_ptr<RfnDeviceResult> result(new RfnDeviceResult);
-
-            result->request = activeRequest.request;
+            std::auto_ptr<RfnDeviceResult> result;
 
             stats.incrementCompletions(activeRequest.request.deviceId, activeRequest.currentPacket.retransmits, CtiTime::now());
 
             try
             {
-                result->commandResult = activeRequest.request.command->decodeCommand(CtiTime::now(), activeRequest.response);
-                result->status = NoError;
+                result.reset(
+                        new RfnDeviceResult(
+                                    activeRequest.request,
+                                    activeRequest.request.command->decodeCommand(CtiTime::now(), activeRequest.response),
+                                    NoError));
             }
             catch( Devices::Commands::DeviceCommand::CommandException &ce )
             {
-                result->commandResult.description = ce.error_description;
-                result->status = static_cast<YukonError_t>(ce.error_code);
+                result.reset(
+                        new RfnDeviceResult(
+                                    activeRequest.request,
+                                    ce.error_description,
+                                    static_cast<YukonError_t>(ce.error_code)));
             }
 
             {
@@ -275,7 +279,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
     {
         CtiLockGuard<CtiCriticalSection> lock(_confirmMux);
 
-        recentConfirms.assign(_confirms.begin(), _confirms.end());
+        std::swap(recentConfirms, _confirms);
     }
 
     for each( E2eMessenger::Confirm confirm in recentConfirms )
@@ -319,13 +323,11 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
             continue;
         }
 
-        std::auto_ptr<RfnDeviceResult> result(new RfnDeviceResult);
-
-        result->request = activeRequest.request;
-
-        result->status = *confirm.error;
-
-        result->commandResult = result->request.command->error(CtiTime::now(), result->status);
+        std::auto_ptr<RfnDeviceResult> result(
+                new RfnDeviceResult(
+                        activeRequest.request,
+                        activeRequest.request.command->error(CtiTime::now(), *confirm.error),
+                        *confirm.error));
 
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -409,9 +411,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                 }
             }
 
-            std::auto_ptr<RfnDeviceResult> result(new RfnDeviceResult);
-
-            result->request = activeRequest.request;
+            YukonError_t error = UnknownError;
 
             switch( activeRequest.status )
             {
@@ -420,17 +420,20 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                         CtiLockGuard<CtiLogger> dout_guard(dout);
                         dout << CtiTime() << " Timeout occurred for device \"" << activeRequest.request.rfnIdentifier << "\" deviceid " << activeRequest.request.deviceId << " in unknown state " << activeRequest.status << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                     }
-                    result->status = UnknownError;
                     break;
                 case ActiveRfnRequest::PendingConfirm:
-                    result->status = ErrorNetworkManagerTimeout;
+                    error = ErrorNetworkManagerTimeout;
                     break;
                 case ActiveRfnRequest::PendingReply:
-                    result->status = ErrorRequestTimeout;
+                    error = ErrorRequestTimeout;
                     break;
             }
 
-            result->commandResult = result->request.command->error(CtiTime::now(), result->status);
+            std::auto_ptr<RfnDeviceResult> result(
+                    new RfnDeviceResult(
+                            activeRequest.request,
+                            activeRequest.request.command->error(CtiTime::now(), error),
+                            error));
 
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -566,11 +569,11 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
         }
         catch( Devices::Commands::DeviceCommand::CommandException &ce )
         {
-            std::auto_ptr<RfnDeviceResult> result(new RfnDeviceResult);
-
-            result->request  = request;
-            result->status   = static_cast<YukonError_t>(ce.error_code);
-            result->commandResult.description = ce.error_description;
+            std::auto_ptr<RfnDeviceResult> result(
+                    new RfnDeviceResult(
+                            request,
+                            ce.error_description,
+                            static_cast<YukonError_t>(ce.error_code)));
 
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);

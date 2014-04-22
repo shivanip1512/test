@@ -36,9 +36,19 @@ void E2eMessenger::registerE2eDtHandler(Indication::Callback callback)
 
 void E2eMessenger::registerDnpHandler(Indication::Callback callback, const RfnIdentifier rfnid)
 {
-    readers_writer_lock_t::writer_lock_guard_t lock(gE2eMessenger->_callbackMux);
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << CtiTime() << " Registering DNP callback for RfnIdentifier " << rfnid << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+    }
 
-    gE2eMessenger->_dnp3Callbacks[rfnid] = callback;
+    {
+        readers_writer_lock_t::writer_lock_guard_t lock(gE2eMessenger->_callbackMux);
+
+        gE2eMessenger->_dnp3Callbacks[rfnid] = callback;
+    }
+
+    //  as soon as we get anyone interested in DNP messages, make sure the AMQ handler is started
+    ActiveMQConnectionManager::start();
 }
 
 
@@ -87,12 +97,14 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
             //  check protocol?
 
-            if( isE2eDt(indicationMsg->applicationServiceId) )
+            const unsigned asid = indicationMsg->applicationServiceId;
+
+            if( isE2eDt(asid) )
             {
                 if( ! _e2edtCallback )
                 {
                     CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << " WARNING - ASID " << indicationMsg->applicationServiceId << " unhandled, no E2EDT callback registered " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    dout << CtiTime() << " WARNING - E2EDT ASID " << asid << " unhandled, no E2EDT callback registered " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
                     return;
                 }
@@ -105,14 +117,14 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
                 return (*_e2edtCallback)(ind);
             }
 
-            if( isDnp3(indicationMsg->applicationServiceId) )
+            if( isDnp3(asid) )
             {
                 boost::optional<Indication::Callback> dnp3Callback = mapFind(_dnp3Callbacks, indicationMsg->rfnIdentifier);
 
                 if( ! dnp3Callback )
                 {
                     CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << " WARNING - ASID " << indicationMsg->applicationServiceId << " unhandled, no callback registered for RfnIdentifier " << indicationMsg->rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    dout << CtiTime() << " WARNING - DNP3 ASID " << asid << " unhandled, no callback registered for RfnIdentifier " << indicationMsg->rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
                     return;
                 }
@@ -127,7 +139,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " WARNING - ASID " << indicationMsg->applicationServiceId << " unhandled " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << CtiTime() << " WARNING - unknown ASID " << asid << " unhandled " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
             }
         }
     }
@@ -173,9 +185,12 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg, Conf
 
         c.rfnIdentifier = confirmMsg->rfnIdentifier;
 
-        const boost::optional<YukonError_t> error = mapFind(ConfirmErrors, confirmMsg->replyType);
+        if( confirmMsg->replyType != E2eDataConfirmMsg::ReplyType::OK )
+        {
+            const boost::optional<YukonError_t> error = mapFind(ConfirmErrors, confirmMsg->replyType);
 
-        c.error = (error ? *error : UnknownError);
+            c.error = (error ? *error : UnknownError);
+        }
 
         callback(c);
     }

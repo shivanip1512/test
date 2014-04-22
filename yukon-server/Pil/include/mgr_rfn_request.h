@@ -31,6 +31,13 @@ struct RfnDeviceRequest
 
 struct RfnDeviceResult
 {
+    RfnDeviceResult(const RfnDeviceRequest request_, Devices::Commands::RfnCommandResult commandResult_, const YukonError_t status_) :
+        request(request_),
+        commandResult(commandResult_),
+        status(status_)
+    {
+    }
+
     RfnDeviceRequest request;
     Devices::Commands::RfnCommandResult commandResult;
     YukonError_t status;
