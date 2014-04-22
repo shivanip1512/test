@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.model.Substation;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -34,9 +35,9 @@ public class MspSubstationsController {
     private MultispeakFuncs multispeakFuncs;
     private MultispeakDao multispeakDao;
     private MspObjectDao mspObjectDao;
-    
+    private static final String DOMAIN_MEMBERS_SUBSTATION_CODE = "getDomainMembers - substationCode";
     @RequestMapping("choose")
-    public ModelAndView choose(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView choose(HttpServletRequest request, HttpServletResponse response)  {
         
         ModelAndView mav = new ModelAndView("substations/mspSubstations.jsp");
         
@@ -64,6 +65,11 @@ public class MspSubstationsController {
             }
             
             MspSubstation mspSubstation = new MspSubstation(mspSubstationName, show);
+            if (!(PaoUtils.isValidPaoName(mspSubstationName))) {
+                mspObjectDao.logMSPActivity(DOMAIN_MEMBERS_SUBSTATION_CODE, "Found invalid substation description : " + mspSubstationName,
+                                            mspVendor.getCompanyName());
+                continue;
+            }
             mspSubstations.add(mspSubstation);
         }
         

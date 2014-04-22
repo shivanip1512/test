@@ -5,8 +5,10 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.List;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -156,6 +158,7 @@ private javax.swing.JTextField getNameTextField() {
 			ivjNameTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjNameTextField.setMinimumSize(new java.awt.Dimension(132, 24));
 			ivjNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_ROUTE_NAME_LENGTH));
+            ivjNameTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_DEVICE_NAME_LENGTH, PaoUtils.ILLEGAL_NAME_CHARS));
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}

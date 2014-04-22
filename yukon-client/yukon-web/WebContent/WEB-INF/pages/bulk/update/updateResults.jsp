@@ -7,7 +7,8 @@
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.updateResults.header"/>
     <tags:sectionContainer title="${headerTitle}" id="updateResultsContainer">
         <tags:backgroundProcessResultHolder resultsTypeMsgKey="update" callbackResult="${callbackResult}" />
-        <form id="updateResultsForm" type="post" action="/bulk/update/upload">
+        <cti:url var="submitUrl" value="/bulk/update/upload"/>
+        <form id="updateResultsForm" type="post" action="${submitUrl}">
             <cti:msg var="backToUploadButton" key="yukon.common.device.bulk.updateResults.backToUpload"/>
             <div class="page-action-area">
                 <cti:button type="submit" label="${backToUploadButton}"/>

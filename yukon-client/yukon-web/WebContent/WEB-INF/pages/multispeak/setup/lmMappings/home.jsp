@@ -79,8 +79,7 @@
         <tags:sectionContainer title="All Mappings" id="allMappingsSection">
         
             <div id="allMappingsTableDiv">
-                <cti:url var="allMappingsTableUrl" value="/WEB-INF/pages/multispeak/setup/lmMappings/allMappingsTable.jsp" />
-                <jsp:include page="${allMappingsTableUrl}"/>
+                <jsp:include page="allMappingsTable.jsp"/>
             </div>
                                 
         </tags:sectionContainer>

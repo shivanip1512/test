@@ -28,6 +28,8 @@ public class HierarchyImportInvalidDataResult implements HierarchyImportResult {
             return CapControlImporterHierarchyField.PARENT;
         case INVALID_TYPE:
             return CapControlImporterHierarchyField.TYPE;
+        case ILLEGAL_CHARS:
+            return CapControlImporterHierarchyField.NAME;
         default:
             return null;
         }

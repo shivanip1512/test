@@ -33,6 +33,7 @@ import com.cannontech.capcontrol.exception.CapControlHierarchyImportException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -91,7 +92,12 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		PaoType paoType;
 		
 		String name = line[headerColumnMap.get(CapControlImporterCbcField.CBC_NAME)];
-
+        if (!(PaoUtils.isValidPaoName(name))) {
+            throw new CapControlCbcImportException("Import of "
+                                                           + name
+                                                           + " failed. CBC name cannot include any of the following characters: / \\ , ' |",
+                                                   CbcImportResultType.ILLEGAL_CHARS);
+        }
 		ImportAction importAction = ImportAction.getForDbString(line[headerColumnMap.get(CapControlImporterCbcField.IMPORT_ACTION)]);
 
 		if (importAction != ImportAction.REMOVE) {
@@ -179,7 +185,13 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	    ImportAction importAction;
         
         String name = line[headerColumnMap.get(CapControlImporterHierarchyField.NAME)];
-        String ccType = line[headerColumnMap.get(CapControlImporterHierarchyField.TYPE)];    
+        if (!(PaoUtils.isValidPaoName(name))) {
+            throw new CapControlHierarchyImportException("Import of "
+                                                                 + name
+                                                                 + " failed. Hierarchy name cannot include any of the following characters: / \\ , ' |",
+                                                         HierarchyImportResultType.ILLEGAL_CHARS);
+        }
+        String ccType = line[headerColumnMap.get(CapControlImporterHierarchyField.TYPE)];   
         
         try {
             paoType = PaoType.getForDbString(ccType);

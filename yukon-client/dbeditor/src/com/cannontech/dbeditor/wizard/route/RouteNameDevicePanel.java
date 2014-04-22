@@ -3,8 +3,10 @@ package com.cannontech.dbeditor.wizard.route;
 import java.awt.Dimension;
 import java.util.List;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -121,6 +123,7 @@ private javax.swing.JTextField getRouteNameTextField() {
 			ivjRouteNameTextField.setName("RouteNameTextField");
 			ivjRouteNameTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjRouteNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_ROUTE_NAME_LENGTH));
+	        ivjRouteNameTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_DEVICE_NAME_LENGTH, PaoUtils.ILLEGAL_NAME_CHARS));
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}

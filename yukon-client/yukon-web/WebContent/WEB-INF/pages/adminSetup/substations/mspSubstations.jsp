@@ -3,7 +3,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<form action="/adminSetup/substations/routemapping/multispeak/add" method="post">
+<cti:msgScope paths="yukon.web.modules.adminSetup.substationToRouteMapping">
+<cti:url var="submitUrl" value="/adminSetup/substations/routemapping/multispeak/add"/>  
+<form action="${submitUrl}" method="post">
     <cti:csrfToken/>
 
     <div style="text-align:right;">
@@ -49,3 +51,4 @@
     </div>
 
 </form>
+</cti:msgScope>

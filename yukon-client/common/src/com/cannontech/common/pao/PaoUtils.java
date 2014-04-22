@@ -19,7 +19,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 
 public class PaoUtils {
-    public final static char[] ILLEGAL_NAME_CHARS = { '\'', ',', '|', '"' };
+    public final static char[] ILLEGAL_NAME_CHARS = { '\'', ',', '|', '"', '/', '\\' };
 
     private final static Function<PaoIdentifier, Integer> paoIdentifierToPaoIdFunction =
         new Function<PaoIdentifier, Integer>() {

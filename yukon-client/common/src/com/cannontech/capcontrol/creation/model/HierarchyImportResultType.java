@@ -17,6 +17,7 @@ public enum HierarchyImportResultType implements DatabaseRepresentationSource {
 	MISSING_DATA("Missing Data", 6),
 	OBJECT_EXISTS("Object Already Exists", 7),
 	NO_SUCH_OBJECT("Object Doesn't Exist", 8),
+	ILLEGAL_CHARS("Invalid Hierarchy name" , 9),
 	;
 	
 	private final String dbString;

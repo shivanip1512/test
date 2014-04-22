@@ -19,6 +19,7 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -113,6 +114,10 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         else if (StringUtils.isBlank(name)) {
             throw new DeviceCreationException("Device name is blank.");
         }
+        
+        if (!(PaoUtils.isValidPaoName(name))) {
+            throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ , ' |");
+        }
 
         // create
         int newDeviceId = paoDao.getNextPaoId();
@@ -139,7 +144,12 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         // create device
         int newDeviceId = paoDao.getNextPaoId();
         RfnBase newDevice = (RfnBase) DeviceFactory.createDevice(type.getDeviceTypeId());
-        newDevice.setDeviceID(newDeviceId);
+        newDevice.setDeviceID(newDeviceId);       
+        
+        if (StringUtils.isBlank(name) || !(PaoUtils.isValidPaoName(name))) {
+            throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ , ' |");
+        }
+        
         newDevice.setPAOName(name);
         newDevice.getRfnAddress().setSerialNumber(serialNumber);
         newDevice.getRfnAddress().setManufacturer(manufacturer);
@@ -209,6 +219,11 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         int newDeviceId = paoDao.getNextPaoId();
         DeviceBase newDevice = templateDevice;
         newDevice.setDeviceID(newDeviceId);
+        
+        if (StringUtils.isBlank(newDeviceName) || !(PaoUtils.isValidPaoName(newDeviceName))) {
+            throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ , ' |");
+        }
+        
         newDevice.setPAOName(newDeviceName);
         return newDevice;
 

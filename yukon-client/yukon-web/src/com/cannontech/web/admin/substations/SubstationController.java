@@ -8,23 +8,25 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -142,14 +144,14 @@ public class SubstationController {
      * @param response unused
      */
     @RequestMapping(value="routeMapping/edit", params="add")
-    public ModelAndView addSubstation(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView addSubstation(HttpServletRequest request, HttpServletResponse response, FlashScope flashScope) throws Exception {
         ModelAndView mav = new ModelAndView("redirect:view");
 
         String name = ServletRequestUtils.getStringParameter(request, "name");
-        if (StringUtils.isBlank(name)) {
+        if (!(DeviceGroupUtil.isValidName(name))) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.containsIllegalChars"));
             return mav;
         }
-
         Substation substation = new Substation();
         substation.setName(name);
         substationDao.add(substation);

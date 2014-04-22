@@ -17,6 +17,7 @@ import com.cannontech.common.csvImport.ImportResult;
 import com.cannontech.common.csvImport.ImportRow;
 import com.cannontech.common.csvImport.ImportValidationResult;
 import com.cannontech.common.csvImport.types.RegulatorType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.service.PaoPersistenceService;
@@ -112,6 +113,10 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
         }
         
         CompleteRegulator regulator = new CompleteRegulator();
+        if (!(PaoUtils.isValidPaoName(name))) {
+            return new CsvImportResult(ImportAction.ADD, CsvImportResultType.INVALID_CHARS, name);
+            
+        }
         regulator.setPaoName(name);
         setOptionalColumns(regulator, row);
 

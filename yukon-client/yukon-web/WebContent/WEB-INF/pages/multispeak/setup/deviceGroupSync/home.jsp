@@ -42,7 +42,8 @@
     
     <div class="column-12-12">
         <div class="column one">
-            <form id="startForm" action="/multispeak/setup/deviceGroupSync/start" method="post">
+          <cti:url var="submitUrl" value="/multispeak/setup/deviceGroupSync/start"/>
+            <form id="startForm" action="${submitUrl}" method="post">
                 <cti:csrfToken/>
                 <select name="deviceGroupSyncType" id="deviceGroupSyncTypeSelect">
                     <c:forEach var="type" items="${deviceGroupSyncTypes}">

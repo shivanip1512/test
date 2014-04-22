@@ -7,6 +7,7 @@ import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.service.CapControlCreationModel;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoScheduleDao;
@@ -33,7 +34,13 @@ public class CapControlCreationModelValidator extends SimpleValidator<CapControl
         if(StringUtils.isBlank(name)){
             errors.reject("A name must be specified for this object.");
         }
-
+        
+        if (type != CapControlTypes.CAP_CONTROL_SCHEDULE && type != CapControlTypes.CAP_CONTROL_STRATEGY) {
+            if (!PaoUtils.isValidPaoName(name)) {
+                errors.reject(name + " cannot include any of the following characters: / \\ , ' |");
+            }
+        }
+        
         if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
             if(paoScheduleDao.isUniqueName(name)){
                 errors.reject("There is already a Schedule with the name '" + name + "'");

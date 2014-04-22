@@ -4,6 +4,8 @@ import java.awt.Dimension;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.IEDBase;
@@ -144,6 +146,7 @@ private javax.swing.JTextField getNameTextField() {
 			ivjNameTextField.setColumns(12);
 			// user code begin {1}
 			ivjNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH));
+			ivjNameTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_DEVICE_NAME_LENGTH, PaoUtils.ILLEGAL_NAME_CHARS));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

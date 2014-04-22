@@ -28,6 +28,8 @@ public class CbcImportInvalidDataResult implements CbcImportResult {
             return CapControlImporterCbcField.COMM_CHANNEL;
         case INVALID_SERIAL_NUMBER:
             return CapControlImporterCbcField.CBC_SERIAL_NUMBER;
+        case ILLEGAL_CHARS:
+            return CapControlImporterCbcField.CBC_NAME;          
         default:
             return null;
         }

@@ -7,7 +7,8 @@
     <tags:sectionContainer title="${headerTitle}" id="importResultsContainer" hideEnabled="false">
     
         <tags:backgroundProcessResultHolder resultsTypeMsgKey="import" callbackResult="${callbackResult}" />
-        <form id="importResultsForm" type="post" action="/bulk/import/upload">
+        <cti:url var="submitUrl" value="/bulk/import/upload"/>
+        <form id="importResultsForm" type="post" action="${submitUrl}">
             <div class="page-action-area">
                 <cti:msg2 var="label" key="yukon.common.device.bulk.importResults.backToUpload" />
                 <cti:button type="submit" label="${label}"/>

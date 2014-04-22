@@ -6,8 +6,8 @@
 
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.importConfirm.header"/>
     <tags:sectionContainer title="${headerTitle}" id="importConfirmContainer" hideEnabled="false">
-    
-        <form id="importConfirmForm" action="/bulk/import/doImport" method="post">
+      <cti:url var="submitUrl" value="/bulk/import/doImport"/>
+        <form id="importConfirmForm" action="${submitUrl}" method="post">
             <cti:csrfToken/>
             <input type="hidden" value="${bulkImportType}" name="bulkImportType" />
             

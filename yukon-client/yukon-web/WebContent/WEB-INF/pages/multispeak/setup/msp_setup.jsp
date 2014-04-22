@@ -73,8 +73,8 @@
         }
 
     </script>
-    
-    <form name="mspForm" method="post" action="/multispeak/setup/save">
+    <cti:url var="saveUrl" value="/multispeak/setup/save"/>
+    <form name="mspForm" method="post" action="${saveUrl}">
         <cti:csrfToken/>
         <input type="hidden" name="actionEndpoint">
         <input type="hidden" name="actionService">
@@ -268,12 +268,13 @@
             <cti:button nameKey="create" busy="true" onclick="$('#create-form').submit();"/>
         </div>
     </form>
-        
-    <form id="create-form" name="mspCreateForm" method="post" action="/multispeak/setup/home">
+    <cti:url var="createUrl" value="/multispeak/setup/home"/>    
+    <form id="create-form" name="mspCreateForm" method="post" action="${createUrl}">
         <input type="hidden" name="New" value="New">
         <cti:csrfToken/>
     </form>
-    <form id="delete-form" name="mspDeleteForm" method="post" action="/multispeak/setup/delete">
+    <cti:url var="deleteUrl" value="/multispeak/setup/delete"/>
+    <form id="delete-form" name="mspDeleteForm" method="post" action="${deleteUrl}">
         <cti:csrfToken/>
         <input type="hidden" name="mspVendorId" value="${mspVendor.vendorID}">
     </form>

@@ -3,6 +3,9 @@ package com.cannontech.dbeditor.wizard.route;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -60,6 +63,7 @@ private javax.swing.JTextField getMacroNameTextBox() {
 			ivjMacroNameTextBox.setName("MacroNameTextBox");
 			ivjMacroNameTextBox.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjMacroNameTextBox.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_ROUTE_NAME_LENGTH));
+			ivjMacroNameTextBox.setDocument(new TextFieldDocument(TextFieldDocument.MAX_DEVICE_NAME_LENGTH, PaoUtils.ILLEGAL_NAME_CHARS));
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}

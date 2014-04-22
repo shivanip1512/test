@@ -57,7 +57,8 @@
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
                     <cti:button nameKey="create" type="submit" classes="primary action"/>
-                    <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
+                    <cti:url var="cancelUrl" value="/deviceConfiguration/home"/>
+                    <cti:button nameKey="cancel" name="cancel" href="${cancelUrl}"/>
                 </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
         </div>

@@ -26,6 +26,7 @@ import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -111,24 +112,17 @@ public class DeviceConfigurationConfigController {
         validator.validate(deviceConfigurationBackingBean, bindingResult);
         
         if (bindingResult.hasErrors()) {
-            flashScope.setMessage(
-                new YukonMessageSourceResolvable(baseKey + ".errorsExist"), 
-                FlashScopeMessageType.ERROR);
-            
+            flashScope.setMessage(new YukonMessageSourceResolvable(baseKey + ".errorsExist"), FlashScopeMessageType.ERROR);
+            return showConfigurationPageForErrorMessage(model, deviceConfigurationBackingBean);
             // We need to return to the edit view if this config has an Id, create otherwise.
-            PageEditMode mode = 
-                deviceConfigurationBackingBean.getConfigId() != null ? PageEditMode.EDIT : PageEditMode.CREATE;
-            
-            setupModelMap(model, 
-                          mode,
-                          deviceConfigurationBackingBean.getConfigId(),
-                          deviceConfigurationBackingBean, 
-                          null,
-                          null);
-            
-            return "configuration.jsp";
         }
-        
+
+        String configName = deviceConfigurationBackingBean.getConfigName();
+        if (!(DeviceGroupUtil.isValidName(configName))) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.containsIllegalChars"));
+            return showConfigurationPageForErrorMessage(model, deviceConfigurationBackingBean);
+        }
+
         try {
             int configId = 
                 deviceConfigurationService.saveConfigurationBase(deviceConfigurationBackingBean.getConfigId(), 
@@ -162,6 +156,28 @@ public class DeviceConfigurationConfigController {
         }
     }
     
+    /**
+     * Sets up the model map for rendering a configuration view.
+     * @param model the model map
+     * @param deviceConfigurationBackingBean the backing bean containing the configuration data.
+     */
+    
+    private String showConfigurationPageForErrorMessage(ModelMap model,
+                                                        DeviceConfigurationBackingBean deviceConfigurationBackingBean) {
+        PageEditMode mode =
+            deviceConfigurationBackingBean.getConfigId() != null ? PageEditMode.EDIT
+                    : PageEditMode.CREATE;
+
+        setupModelMap(model,
+                      mode,
+                      deviceConfigurationBackingBean.getConfigId(),
+                      deviceConfigurationBackingBean,
+                      null,
+                      null);
+
+        return "configuration.jsp";
+    }
+
     @RequestMapping("swapCategory")
     public String swapCategory(ModelMap model,
                                FlashScope flashScope,

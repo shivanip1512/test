@@ -12,6 +12,7 @@ public enum CbcImportResultType implements DatabaseRepresentationSource {
 	NO_SUCH_OBJECT("Object Doesn't Exist", 8),
 	INVALID_COMM_CHANNEL("Invalid Comm Channel", 9),
 	INVALID_SERIAL_NUMBER("Invalid Serial Number", 10),
+	ILLEGAL_CHARS("Invalid CBC name", 11)
 	;
 	
 	private final String dbString;

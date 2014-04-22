@@ -6,8 +6,8 @@
 
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.updateConfirm.header"/>
     <tags:sectionContainer title="${headerTitle}" id="updateConfirmContainer">
-    
-        <form id="updateConfirmForm" action="/bulk/update/doUpdate" method="post">
+       <cti:url var="submitUrl" value="/bulk/update/doUpdate"/>
+        <form id="updateConfirmForm" action="${submitUrl}" method="post">
             <cti:csrfToken/>
             <%-- CONFIRMATION INFO --%>
             <cti:msg var="rows" key="yukon.common.device.bulk.updateConfirm.rows"/>
