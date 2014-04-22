@@ -4,10 +4,13 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
 import com.cannontech.message.util.Message;
 
-public class Schedule extends Message implements Serializable {
+public class Schedule extends Message implements Serializable, YukonPao {
     // String constants that represent the various
     // last run status's
     public final static String LAST_STATUS_NONE = "None";
@@ -325,5 +328,16 @@ public class Schedule extends Message implements Serializable {
 
     public void setUpdatingState(boolean updatingState) {
         this.updatingState = updatingState;
+    }
+
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        try {
+            PaoType paoType = PaoType.getForDbString(type);
+            return new PaoIdentifier(id, paoType);
+        } catch (IllegalArgumentException e) {
+            // We don't have a valid PaoType yet.
+            return null;
+        }
     }
 }
