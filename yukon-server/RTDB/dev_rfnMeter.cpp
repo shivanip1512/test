@@ -22,6 +22,7 @@ const std::string RfnMeterDevice::ConfigPart::ovuv             = "ovuv";
 const std::string RfnMeterDevice::ConfigPart::display          = "display";
 const std::string RfnMeterDevice::ConfigPart::disconnect       = "disconnect";
 const std::string RfnMeterDevice::ConfigPart::temperaturealarm = "temperaturealarm";
+const std::string RfnMeterDevice::ConfigPart::channelconfig    = "channelconfig";
 
 
 int RfnMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
@@ -341,7 +342,7 @@ int RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiC
         {
             return NoConfigData;
         }
-        
+
         if ( hasDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported ) )
         {
             return ErrorUnsupportedFeature;
@@ -377,7 +378,7 @@ int RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiC
 
             rfnRequests.push_back( boost::make_shared<RfnSetTemperatureAlarmConfigurationCommand>( configuration ) );
         }
-        
+
         if ( ! parse.isKeyValid("force") && rfnRequests.empty() )
         {
             return ConfigCurrent;
@@ -414,7 +415,7 @@ void RfnMeterDevice::handleCommandResult( const Commands::RfnSetTemperatureAlarm
 
     if ( unsupported )
     {
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported, true ); 
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported, true );
     }
 }
 
@@ -424,7 +425,7 @@ void RfnMeterDevice::handleCommandResult( const Commands::RfnGetTemperatureAlarm
 
     if ( unsupported )
     {
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported, true ); 
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported, true );
     }
     else
     {

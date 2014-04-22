@@ -24,6 +24,7 @@ protected:
         static const std::string display;
         static const std::string disconnect;
         static const std::string temperaturealarm;
+        static const std::string channelconfig;
     };
 
     typedef boost::function<int (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)> ConfigMethod;

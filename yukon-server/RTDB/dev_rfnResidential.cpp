@@ -208,6 +208,7 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
             ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,               this ) )
             ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executeGetConfigVoltageAveragingInterval, this ) )
             ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executeGetConfigOvUv,                     this ) )
+            ( ConfigPart::channelconfig,    bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallChannels,          this ) )
                 ;
 
         if( disconnectConfigSupported() )
