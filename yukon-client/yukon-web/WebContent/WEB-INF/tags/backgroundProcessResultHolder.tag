@@ -14,7 +14,7 @@
 <script type="text/javascript">
     function refreshErrors (id) {
         if ($('#' + id).is(':visible')) {
-            $('#' + id).load('/bulk/processingExceptionErrorsRefresh',{'resultsId' : '${resultsId}'});
+            $('#' + id).load(yukon.url('/bulk/processingExceptionErrorsRefresh'),{'resultsId' : '${resultsId}'});
         }
     }
     function submitForm(id) {

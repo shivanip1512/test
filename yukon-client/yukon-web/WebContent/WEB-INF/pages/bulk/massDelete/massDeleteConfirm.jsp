@@ -26,9 +26,9 @@
                 </td>
             </tr>
         </table>
-        
+        <cti:url value="/bulk/massDelete/doMassDelete" var="massDeleteUrl"/>
         <div class="page-action-area">
-            <form id="massDeleteForm" method="post" action="/bulk/massDelete/doMassDelete">
+            <form id="massDeleteForm" method="post" action="${massDeleteUrl}">
                 <cti:csrfToken/>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 <cti:button nameKey="delete" type="submit" name="deleteButton" classes="primary action"/>
