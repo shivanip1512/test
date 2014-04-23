@@ -360,5 +360,5 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_IPC_420FD = {"IPC-420fD"};
     public static final String[] STRING_IPC_410FL = {"IPC-410fL"};
     public static final String[] STRING_WEATHER_LOCATION = {"WEATHER LOCATION"};
-    public static final String[] STRING_ECOBEE_SMART_SI = {"Ecobee Smart Si"};
+    public static final String[] STRING_ECOBEE_SMART_SI = {"ecobee Smart Si"};
 }
