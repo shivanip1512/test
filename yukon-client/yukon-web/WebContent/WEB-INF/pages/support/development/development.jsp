@@ -4,9 +4,9 @@
 <cti:standardPage module="dev" page="home">
     <div class="column-8-8-8">
         <div class="column one">
-            <tags:sectionContainer title="UI Demos">
+            <tags:sectionContainer title="Style Guide">
                 <ul class="simple-list">
-                    <li><a href="<cti:url value="/support/development/uiDemos/main"/>">UI Demos</a></li>
+                    <li><a href="<cti:url value="/support/development/styleguide/main"/>">Style Guide</a></li>
                     <li><a href="<cti:url value="/support/development/uiToolkitDemo/main"/>">UI Toolkit</a></li>
                 </ul>
             </tags:sectionContainer>

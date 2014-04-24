@@ -106,24 +106,24 @@
     <entry key="yukon.web.modules.dev.webServices.loadControl.hhMM">(HH:MM)</entry>
     <entry key="yukon.web.modules.dev.webServices.loadControl.testBtn.label">TEST</entry>
     
-    <!-- UI Demos -->
-    <entry key="yukon.web.modules.dev.uiDemos.pageName">UI Demos</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.confirmGotoHome.title">Confirm GOTO</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.confirmGotoHome.message">Are you sure you want to go home?  (Some say you can't go home.)</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.searchWikipedia.title">Confirm Search</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.searchWikipedia.message">Are you sure you want to search Wikipedia?</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog1.title">In-line Test, no OK</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inline1.label">In-line 1, no okAction</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog2.title">In-line Test, submit</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inline2.label">In-line 2, submit okAction</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog3.title">In-line Test, custom event</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inline3.label">In-line 3, custom event okAction</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog4.title">In-line Test, options</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inline4.label">In-line 4, options</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog5.title">In-line Test, options (custom buttons)</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog5.button1">Button 1</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog5.button2">Button 2</entry>
-    <entry key="yukon.web.modules.dev.uiDemos.inline5.label">In-line 5, options (custom buttons)</entry>
+    <!-- Style Guide -->
+    <entry key="yukon.web.modules.dev.styleguide.pageName">Style Guide</entry>
+    <entry key="yukon.web.modules.dev.styleguide.confirmGotoHome.title">Confirm GOTO</entry>
+    <entry key="yukon.web.modules.dev.styleguide.confirmGotoHome.message">Are you sure you want to go home?  (Some say you can't go home.)</entry>
+    <entry key="yukon.web.modules.dev.styleguide.searchWikipedia.title">Confirm Search</entry>
+    <entry key="yukon.web.modules.dev.styleguide.searchWikipedia.message">Are you sure you want to search Wikipedia?</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inlineDialog1.title">In-line Test, no OK</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inline1.label">In-line 1, no okAction</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inlineDialog2.title">In-line Test, submit</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inline2.label">In-line 2, submit okAction</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inlineDialog3.title">In-line Test, custom event</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inline3.label">In-line 3, custom event okAction</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inlineDialog4.title">In-line Test, options</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inline4.label">In-line 4, options</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inlineDialog5.title">In-line Test, options (custom buttons)</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inlineDialog5.button1">Button 1</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inlineDialog5.button2">Button 2</entry>
+    <entry key="yukon.web.modules.dev.styleguide.inline5.label">In-line 5, options (custom buttons)</entry>
     
     <!-- Point Injection -->
     <entry key="yukon.web.modules.dev.pointInjection.pageName">Point Injection</entry>

@@ -24,9 +24,10 @@ import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.taglib.MessageScopeHelper;
 
 @Controller
-@RequestMapping("/development/uiDemos/*")
+@RequestMapping("/development/styleguide/*")
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
-public class UiDemosController {
+public class StyleGuideController {
+    
     @Autowired private ObjectFormattingService objectFormattingService;
 
     public enum Colors implements DisplayableEnum {
@@ -60,6 +61,7 @@ public class UiDemosController {
     }
 
     private void setupModel(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        
         model.addAttribute("scopePeeker", new ScopePeeker(request));
 
         model.addAttribute("numberNegativeFive", -5);
@@ -98,46 +100,51 @@ public class UiDemosController {
         setupModel(model, request, userContext);
     }
     
+    @RequestMapping("grid")
+    public String grid() {
+        return "development/styleguide/grid.jsp";
+    }
+    
     @RequestMapping("containers")
     public String containers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         setupModel(model, request, userContext);
-        return "development/uiDemos/containers.jsp";
+        return "development/styleguide/containers.jsp";
     }
     
     @RequestMapping("buttons")
     public String buttons(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         setupModel(model, request, userContext);
-        return "development/uiDemos/buttons.jsp";
+        return "development/styleguide/buttons.jsp";
     }
     
     @RequestMapping("pickers")
     public String pickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         setupModel(model, request, userContext);
-        return "development/uiDemos/pickers.jsp";
+        return "development/styleguide/pickers.jsp";
     }
     
     @RequestMapping("i18nScopes")
     public String i18nScopes(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         setupModel(model, request, userContext);
-        return "development/uiDemos/i18n_scopes.jsp";
+        return "development/styleguide/i18n_scopes.jsp";
     }
     
     @RequestMapping("i18n")
     public String i18n(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         setupModel(model, request, userContext);
-        return "development/uiDemos/i18n.jsp";
+        return "development/styleguide/i18n.jsp";
     }
     
     @RequestMapping("dialogs")
     public String dialogs(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         setupModel(model, request, userContext);
-        return "development/uiDemos/dialogs.jsp";
+        return "development/styleguide/dialogs.jsp";
     }
     
     @RequestMapping("jsTesting")
     public String jsTesting(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         setupModel(model, request, userContext);
-        return "development/uiDemos/jsTesting.jsp";
+        return "development/styleguide/jsTesting.jsp";
     }
     
     @RequestMapping("sprites")
@@ -148,13 +155,13 @@ public class UiDemosController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "development/uiDemos/sprites.jsp";
+        return "development/styleguide/sprites.jsp";
     }
     
     @RequestMapping("more")
     public String more(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         setupModel(model, request, userContext);
-        return "development/uiDemos/more.jsp";
+        return "development/styleguide/more.jsp";
     }
     
     private void setupSprites(ModelMap model, HttpServletRequest request) throws IOException {

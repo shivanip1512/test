@@ -1402,7 +1402,7 @@
           <page name="webServices.eimTest" type="BASIC"/>
           <page name="webServices.loadControl" type="BASIC"/>
           <page name="webServices.account" type="BASIC"/>
-          <page name="uiDemos" type="BASIC"/>
+          <page name="styleguide" type="BASIC"/>
           <page name="pointInjection" type="BASIC"/>
           <page name="bulkPointInjection" type="BASIC"/>
           <page name="uiToolkitDemo" type="BASIC"/>
