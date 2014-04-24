@@ -722,7 +722,7 @@ public class PointDaoImpl implements PointDao {
         sql.append("and PointType").eq(PointTypes.getType(pointType));
         try {
             return template.queryForObject(sql, litePointRowMapper);
-        } catch (Exception e) {
+        } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unable to find point for deviceId=" + paobjectId + ", pointOffset=" + pointOffset + ", pointType=" + pointType);
         }
     }
