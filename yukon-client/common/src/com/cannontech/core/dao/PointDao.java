@@ -26,7 +26,7 @@ import com.google.common.collect.Multimap;
 
 public interface PointDao {
     
-    static final String litePointSql = 
+    String litePointSql = 
         "SELECT " +
                 "P.POINTID, POINTNAME, POINTTYPE, P.PAOBJECTID, POINTOFFSET, STATEGROUPID, " +
                 "UM.FORMULA, UM.UOMID, " +
@@ -38,7 +38,7 @@ public interface PointDao {
         "LEFT JOIN POINTANALOG PA ON P.POINTID = PA.POINTID " +
         "LEFT JOIN POINTACCUMULATOR PAC ON P.POINTID = PAC.POINTID ";
 
-    static final String litePaoPointSql = 
+    String litePaoPointSql = 
         "SELECT " +
                 "YPO.PAOBJECTID, YPO.TYPE, " +
                 "P.POINTID, POINTNAME, POINTTYPE, POINTOFFSET, STATEGROUPID, " +
