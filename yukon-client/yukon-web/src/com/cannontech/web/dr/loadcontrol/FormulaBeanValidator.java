@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
@@ -16,13 +17,11 @@ import com.cannontech.dr.estimatedload.dao.FormulaDao;
 
 public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
 
-    private String baseKey;
-    private FormulaDao formulaDao;
+    @Autowired private FormulaDao formulaDao;
+    private String baseKey = "yukon.web.modules.dr.formula.error.";
     
-    public FormulaBeanValidator(String baseKey, FormulaDao formulaDao) {
+    public FormulaBeanValidator() {
         super(FormulaBean.class);
-        this.baseKey = baseKey + "error.";
-        this.formulaDao = formulaDao;
     }
 
     @Override

@@ -1804,4 +1804,5 @@
     <bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
     <bean class="com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper"/>
     <bean id="userPageService" class="com.cannontech.web.common.userpage.service.impl.UserPageServiceImpl"/>
+    <bean class="com.cannontech.web.dr.loadcontrol.FormulaBeanValidator"/>
 </beans>
