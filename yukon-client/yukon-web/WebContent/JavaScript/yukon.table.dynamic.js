@@ -251,13 +251,23 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     dynamicProto.addItemSuccess = function (doUnblock) {
         var wrapperDiv = document.getElementById(this.tableId + '_wrapper'),
             tempRequestDiv = wrapperDiv.getElementsByClassName('tempRequest'),
-            newRow = $(tempRequestDiv).find('tr')[0],
+            newRow = $(tempRequestDiv[0]).find('tr')[0],
             newUndoRow = $(newRow).next()[0],
             tempRow = this.table.insertRow(-1),
             parentNode = tempRow.parentNode,
-            noItemsMessageDiv;
-        parentNode.replaceChild(newRow, tempRow);
-        parentNode.appendChild(newUndoRow);
+            noItemsMessageDiv,
+            tbody;
+
+        // IE puts the new rows in the TFOOT element, which breaks moveItemUp,
+        // which expects all tr's to be in tbody
+        if ('TFOOT' === parentNode.nodeName) {
+            tbody = $(wrapperDiv).find('tbody');
+            tbody[0].appendChild(newRow);
+            tbody[0].appendChild(newUndoRow);
+        } else {
+            parentNode.replaceChild(newRow, tempRow);
+            parentNode.appendChild(newUndoRow);
+        }
         this.updateMoveButtonVisibility.call(this, newRow);
         matchRowAndUndoRowHeights.call(this, newRow, newUndoRow);
         if ($(newRow).find("input:first[type='text']")) {
@@ -275,6 +285,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     dynamicProto.moveItemUp = function (event) {
         var thisRow = $(event.target).closest('tr'),
             previousRow = thisRow.prev().prev();
+
         // keep going back until we find a visible one
         while (previousRow[0].rowIndex >= 2 && !previousRow.is(':visible')) {
             previousRow = previousRow.prev().prev();
