@@ -1,9 +1,9 @@
-package com.cannontech.core.dao;
+package com.cannontech.common.pao.dao;
 
 import java.util.Set;
 
-import com.cannontech.common.model.PaoLocation;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.model.PaoLocation;
 
 public interface PaoLocationDao {
 

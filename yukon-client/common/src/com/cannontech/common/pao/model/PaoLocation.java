@@ -1,4 +1,4 @@
-package com.cannontech.common.model;
+package com.cannontech.common.pao.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 

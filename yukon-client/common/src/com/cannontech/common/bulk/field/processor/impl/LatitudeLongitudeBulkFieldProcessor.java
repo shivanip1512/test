@@ -6,8 +6,8 @@ import org.springframework.dao.DataAccessException;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.model.PaoLocation;
-import com.cannontech.core.dao.PaoLocationDao;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.PaoLocation;
 
 public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
 

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.core.dao.PaoLocationDao.FeaturePropertyType;
+import com.cannontech.common.pao.dao.PaoLocationDao.FeaturePropertyType;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 
 @Controller

@@ -12,5 +12,5 @@ public interface PaoLocationService {
      * @param paos
      * @return a {@link FeatureCollection}
      */
-    public FeatureCollection getLocationsAsGeoJson(Iterable<? extends YukonPao> paos);
+    FeatureCollection getLocationsAsGeoJson(Iterable<? extends YukonPao> paos);
 }

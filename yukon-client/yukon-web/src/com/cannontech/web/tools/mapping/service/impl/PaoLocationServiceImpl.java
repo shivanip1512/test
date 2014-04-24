@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
-import com.cannontech.common.model.PaoLocation;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.core.dao.PaoLocationDao;
-import com.cannontech.core.dao.PaoLocationDao.FeaturePropertyType;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.dao.PaoLocationDao.FeaturePropertyType;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Maps;
 

@@ -147,5 +147,5 @@
   
   <bean id="lmGearDao" class="com.cannontech.core.dao.impl.LMGearDaoImpl"/>
   
-  <bean id="paoLocationDao" class="com.cannontech.core.dao.impl.PaoLocationDaoImpl"/>
+  <bean class="com.cannontech.common.pao.dao.impl.PaoLocationDaoImpl"/>
 </beans>
