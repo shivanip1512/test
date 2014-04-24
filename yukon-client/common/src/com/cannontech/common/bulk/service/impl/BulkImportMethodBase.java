@@ -11,6 +11,7 @@ public abstract class BulkImportMethodBase implements BulkImportMethod {
 
     private String name;
     
+    @Override
     public String getName() {
         return name;
     }
@@ -20,6 +21,7 @@ public abstract class BulkImportMethodBase implements BulkImportMethod {
         this.name = name;
     }
 
+    @Override
     public BulkImportType getType() {
         return type;
     }

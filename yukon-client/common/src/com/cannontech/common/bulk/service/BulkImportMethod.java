@@ -8,7 +8,8 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.model.SimpleDevice;
 
 public interface BulkImportMethod {
-      
+
+    public String getName();
     public BulkImportType getType();
     
     public Set<BulkFieldColumnHeader> getRequiredColumns();

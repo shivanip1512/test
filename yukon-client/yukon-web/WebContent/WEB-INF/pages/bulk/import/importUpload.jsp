@@ -139,7 +139,7 @@ function updateImportTypeSelection() {
                                     <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.descriptionInstruction"/></th>
                                 </tr>
                             <thead>
-                            <c:forEach var="field" items="${method.requiredColumns}">
+                            <c:forEach var="field" items="${methodRequiredFieldsMap[method]}">
                                 <tr>
                                     <td class="strong-label-small">${field}</td>
                                     <td>

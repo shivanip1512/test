@@ -1,12 +1,15 @@
 package com.cannontech.web.bulk;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,6 +35,8 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.BULK_IMPORT_OPERATION)
 @Controller
@@ -44,15 +49,29 @@ public class ImportController {
     
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new ConcurrentHashMap<>();
     
+    @PostConstruct
+    public void init() {
+        // Order import methods by type (MCT|RFN), then by name (TEMPLATE|DEVICE).
+        Collections.sort(importMethods, new Comparator<BulkImportMethod>() {
+            @Override
+            public int compare(BulkImportMethod o1, BulkImportMethod o2) {
+                int cmp = o1.getType().name().compareTo(o2.getType().name());
+                if(cmp != 0) {
+                    cmp = o1.getName().compareTo(o2.getName());
+                }
+                return cmp;
+            }
+        });
+    }
+    
     // UPLOAD
     @RequestMapping("upload")
     public String upload(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
         
-        // template method columns
-        model.addAttribute("importMethods", importMethods);
-        model.addAttribute("methodUpdateableFieldsMap", getMethodUpdateabledFieldsMap());
+        // method columns
+        addColumnInfoToMav(model);
         
         // errors
         String errors = ServletRequestUtils.getStringParameter(request, "fileErrorKeys", "");
@@ -68,18 +87,6 @@ public class ImportController {
         
         return "import/importUpload.jsp";
     }
-    
-    private Map<BulkImportMethod, Set<BulkFieldColumnHeader>> getMethodUpdateabledFieldsMap() {
-        
-        Map<BulkImportMethod, Set<BulkFieldColumnHeader>> methodUpdateableFieldsMap = new HashMap<BulkImportMethod, Set<BulkFieldColumnHeader>>();
-        for (BulkImportMethod method : importMethods) {
-          
-            methodUpdateableFieldsMap.put(method, method.getOptionalColumns());
-        }
-        
-        return methodUpdateableFieldsMap;
-    }
-    
     
     // PARSE
     @RequestMapping("parseUpload")
@@ -135,11 +142,9 @@ public class ImportController {
             
             model.addAttribute("ignoreInvalidCols", bulkImportFileInfo.isIgnoreInvalidCols());
             model.addAttribute("importTypeSelector", bulkImportType);
-            model.addAttribute("importMethods", importMethods);
-            model.addAttribute("methodUpdateableFieldsMap", getMethodUpdateabledFieldsMap());
             model.addAttribute("headersErrorResolverList", parsedResult.getErrorResolvers());
             model.addAttribute("bulkImportTypes", BulkImportType.values());
-            
+            addColumnInfoToMav(model);
             return "import/importUpload.jsp";
         }
         
@@ -179,4 +184,33 @@ public class ImportController {
         return "import/importResults.jsp";
     }
     
+    private void addColumnInfoToMav(ModelMap model) {
+        
+        Map<BulkImportMethod, Set<BulkFieldColumnHeader>> methodRequiredFieldsMap = Maps.<BulkImportMethod, Set<BulkFieldColumnHeader>>newHashMap();
+        Map<BulkImportMethod, Set<BulkFieldColumnHeader>> methodUpdateableFieldsMap = new HashMap<BulkImportMethod, Set<BulkFieldColumnHeader>>();
+        
+        for (BulkImportMethod method : importMethods) {
+            Set<BulkFieldColumnHeader> orderedRequiredColumns = Sets.<BulkFieldColumnHeader> newTreeSet(new Comparator<BulkFieldColumnHeader>() {
+                @Override
+                public int compare(BulkFieldColumnHeader o1, BulkFieldColumnHeader o2) {
+                    return o1.getFieldName().compareTo(o2.getFieldName());
+                }
+            });
+            orderedRequiredColumns.addAll(method.getRequiredColumns());
+            methodRequiredFieldsMap.put(method, orderedRequiredColumns);
+            
+            Set<BulkFieldColumnHeader> orderedOptionalColumns = Sets.<BulkFieldColumnHeader> newTreeSet(new Comparator<BulkFieldColumnHeader>() {
+                @Override
+                public int compare(BulkFieldColumnHeader o1, BulkFieldColumnHeader o2) {
+                    return o1.getFieldName().compareTo(o2.getFieldName());
+                }
+            });
+            orderedOptionalColumns.addAll(method.getOptionalColumns());
+            methodUpdateableFieldsMap.put(method, orderedOptionalColumns);
+        }
+        
+        model.addAttribute("importMethods", importMethods);
+        model.addAttribute("methodRequiredFieldsMap", methodRequiredFieldsMap);
+        model.addAttribute("methodUpdateableFieldsMap", methodUpdateableFieldsMap);
+    }
 }

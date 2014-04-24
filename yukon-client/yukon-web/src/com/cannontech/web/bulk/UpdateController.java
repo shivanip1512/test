@@ -1,7 +1,7 @@
 package com.cannontech.web.bulk;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,6 +32,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.BULK_UPDATE_OPERATION)
 @Controller
@@ -168,7 +169,13 @@ public class UpdateController {
         Set<BulkFieldColumnHeader> updateableFields = bulkFieldService.getUpdateableBulkFieldColumnHeaders();
         Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
         
-        Set<BulkFieldColumnHeader> allFields = new HashSet<BulkFieldColumnHeader>();
+        Set<BulkFieldColumnHeader> allFields =
+            Sets.<BulkFieldColumnHeader>newTreeSet(new Comparator<BulkFieldColumnHeader>() {
+                @Override
+                public int compare(BulkFieldColumnHeader o1, BulkFieldColumnHeader o2) {
+                    return o1.getFieldName().compareTo(o2.getFieldName());
+                }
+            });
         allFields.addAll(updateableFields);
         allFields.addAll(identifierFields);
         
