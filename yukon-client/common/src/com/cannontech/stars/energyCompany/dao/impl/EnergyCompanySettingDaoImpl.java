@@ -62,10 +62,8 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
             parameterHolder.addValue("EnergyCompanyId", setting.getEnergyCompanyId());
             Object value = setting.getValue();
             if (setting.getType().isSensitiveInformation()) {
-                AESPasswordBasedCrypto encrypter;
                 try {
-                    encrypter = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey());
-                    value = encrypter.encryptToHexStr((String) value);
+                    value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).encryptToHexStr((String) value);
                 } catch (CryptoException | IOException | JDOMException e) {
                     throw new RuntimeException("Unable to encrypt value for setting " + setting.getType(), e);
                 }
@@ -205,10 +203,8 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
 
             Object value = rs.getObjectOfInputType("Value", type.getType());
             if (type.isSensitiveInformation()) {
-                AESPasswordBasedCrypto encrypter;
                 try {
-                    encrypter = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey());
-                    value = encrypter.decryptHexStr((String) value);
+                    value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).decryptHexStr((String) value);
                 } catch (CryptoException | IOException | JDOMException |DecoderException e) {
                     value = type.getDefaultValue();
                     log.error("Unable to decrypt value for setting " + type + ". Using the default value");
