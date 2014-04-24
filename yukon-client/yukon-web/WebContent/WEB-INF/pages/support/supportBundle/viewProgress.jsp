@@ -15,7 +15,7 @@ $(function() {
 
 function openFtpPopup(fileName){
     $.ajax({
-        url: "/support/infoOnBundle",
+        url: yukon.url("/support/infoOnBundle"),
         data: {fileName: fileName}
     }).done(function(results) {
         var form = $("#ftpPopupForm");
@@ -44,11 +44,11 @@ function openFtpPopup(fileName){
 }
 
 function refreshContent(){
-    $("#mainDiv").load("/support/getBundleProgress");
+    $("#mainDiv").load(yukon.url("/support/getBundleProgress"));
 }
 
 function checkUpdate(){
-    $.getJSON("/support/bundleInProgress").done(function(json) {
+    $.getJSON(yukon.url("/support/bundleInProgress")).done(function(json) {
         refreshContent();
         if(json.inProgress) {
             setTimeout(checkUpdate,1000);

@@ -10,7 +10,7 @@
 <script type="text/javascript">
 function openFtpPopup(fileName){
     $.ajax({
-        url: "/support/infoOnBundle",
+        url: yukon.url("/support/infoOnBundle"),
         data: {fileName: fileName}
     }).done(function(json) {
         var form = $("#ftpPopupForm");
@@ -102,6 +102,8 @@ $(function() {
     </div>
 </div>
 
+<cti:url value="/support/createBundle" var="createBundleURL"/>
+<cti:url value="/support/viewBundleProgress" var="viewBundleProgressURL"/>
 <cti:checkRolesAndProperties value="OPERATOR_ADMINISTRATOR">
 <div class="column-12-12 clearfix">
     <div class="column one">
@@ -109,7 +111,7 @@ $(function() {
             <cti:tabbedContentSelector mode="section">
                 <cti:msg2 key=".supportBundle.createNewHeading" var="createNewHeading"/>
                 <cti:tabbedContentSelectorContent selectorName="${createNewHeading}" >
-                    <form:form id="createBundleForm" commandName="supportBundle" action="/support/createBundle" method="POST">
+                    <form:form id="createBundleForm" commandName="supportBundle" action="${createBundleURL}" method="POST">
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".supportBundle.custNameLbl">
                                 <tags:input path="customerName"/>
@@ -143,14 +145,15 @@ $(function() {
                             </c:if>
                             <c:if test="${inProgress}">
                                 <i:inline key=".supportBundle.bundleInProgressMsg"/>
-                                <cti:button id="viewProgress" nameKey="supportBundle.viewProgressBtn" href="/support/viewBundleProgress" />
+                                <cti:button id="viewProgress" nameKey="supportBundle.viewProgressBtn" href="${viewBundleProgressURL}" />
                             </c:if>
                         </div>
                     </form:form>
                 </cti:tabbedContentSelectorContent>
                 <cti:msg2 key='.supportBundle.previousHeading' var="previousHeading"/>
+                <cti:url value="/support/downloadBundle" var="downloadBundleURl"/>
                 <cti:tabbedContentSelectorContent selectorName="${previousHeading}" >
-                    <form id="previousBundlesForm" action="/support/downloadBundle" method="POST">
+                    <form id="previousBundlesForm" action="${downloadBundleURl}" method="POST">
                         <cti:csrfToken/>
                         <c:if test="${empty bundleList}">
                             <span class="empty-list"><i:inline key=".supportBundle.noPreviousBundlesLbl"/></span>

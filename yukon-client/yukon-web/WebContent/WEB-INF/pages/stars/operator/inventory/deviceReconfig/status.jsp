@@ -72,9 +72,9 @@
             </li>
         </ul>
     </cti:classUpdater>
-    
+    <cti:url value="/stars/operator/inventory/inventoryActions/deviceReconfig/delete" var="deleteURL"/>
     <div class="page-action-area">
-        <form action="/stars/operator/inventory/inventoryActions/deviceReconfig/delete" method="post">
+        <form action="${deleteURL}" method="post">
             <cti:csrfToken/>
             <input type="hidden" value="${task.inventoryConfigTaskId}" name="taskId">
             

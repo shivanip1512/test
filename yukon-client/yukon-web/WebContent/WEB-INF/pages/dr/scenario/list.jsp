@@ -13,9 +13,10 @@
     <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
     <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
 
-    <cti:url var="baseUrl" value="/dr/scenario/list" />
+    <c:set var="baseUrl" value="/dr/scenario/list" />
     <cti:url var="submitUrl" value="${baseUrl}" />
     <cti:url var="clearFilterUrl" value="${baseUrl}">
+    
         <c:if test="${!empty param.itemsPerPage}">
             <cti:param name="itemsPerPage" value="${param.itemsPerPage}" />
         </c:if>
@@ -29,7 +30,7 @@
     
 <script type="text/javascript">
 function clearFilter() {
-    window.location = '${clearFilterUrl}';
+    window.location.href = yukon.url('/dr/scenario/list');
 }
 </script>
 

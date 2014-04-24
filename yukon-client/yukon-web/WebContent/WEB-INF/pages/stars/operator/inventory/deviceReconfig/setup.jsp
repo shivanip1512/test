@@ -5,13 +5,14 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
+<cti:url value="/stars/operator/inventory/deviceReconfig/save" var="deviceReconfigOptionsURl"/>
 <cti:standardPage module="operator" page="deviceReconfig">
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
 
     <div class="column-12-12">
         <div class="column one">
             <tags:sectionContainer2 nameKey="setupContainer">
-                <form:form id="saveForm" commandName="deviceReconfigOptions" action="/stars/operator/inventory/deviceReconfig/save" method="post">
+                <form:form id="saveForm" commandName="deviceReconfigOptions" action="${deviceReconfigOptionsURl}" method="post">
                     
                     <div class="stacked">
                         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>

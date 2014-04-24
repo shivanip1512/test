@@ -58,8 +58,9 @@
     </c:otherwise>
 </c:choose>
 
+<cti:url value="/stars/operator/inventory/commandSchedule" var="createNewScheduleURL"/>
 <div class="action-area">
-    <form id="createNewScheduleForm_${widgetParameters.widgetId}" action="/stars/operator/inventory/commandSchedule" method="get">
+    <form id="createNewScheduleForm_${widgetParameters.widgetId}" action="${createNewScheduleURL}" method="get">
         <tags:widgetActionRefresh nameKey="disableAll" method="disableAll"/>
         <input type="hidden" value="0" name="scheduleId">
         <cti:button nameKey="create" icon="icon-plus-green" type="submit"/>

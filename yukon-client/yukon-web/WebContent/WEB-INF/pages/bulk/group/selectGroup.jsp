@@ -9,14 +9,14 @@
       <c:set var="containerKey" value="yukon.common.device.bulk.addToGroup"/>
       <cti:msg var="buttonText" key="yukon.common.device.bulk.addToGroup.addToGroupButtonText"/>
       <cti:msg var="noDeviceGroupSelectedAlertText" key="yukon.common.device.bulk.addToGroup.noDeviceGroupSelectedAlertText"/>
-      <c:set var="formAction" value="/bulk/group/addToGroup"/>
+      <cti:url var="formAction" value="/bulk/group/addToGroup"/>
   </c:when>
   <c:when test="${addRemove eq 'REMOVE'}">
       <c:set var="pageName" value="bulk.removeFromGroup"/>
       <c:set var="containerKey" value="yukon.common.device.bulk.removeFromGroup"/>
       <cti:msg var="buttonText" key="yukon.common.device.bulk.removeFromGroup.removeFromGroupButtonText"/>
       <cti:msg var="noDeviceGroupSelectedAlertText" key="yukon.common.device.bulk.removeFromGroup.noDeviceGroupSelectedAlertText"/>
-      <c:set var="formAction" value="/bulk/group/removeFromGroup"/>
+      <cti:url var="formAction" value="/bulk/group/removeFromGroup"/>
   </c:when>
 </c:choose>
 

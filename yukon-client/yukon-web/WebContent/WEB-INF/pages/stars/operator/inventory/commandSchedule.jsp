@@ -6,11 +6,12 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
+<cti:url value="/stars/operator/inventory/updateSchedule" var="updateFormURL"/>
 <cti:standardPage module="operator" page="commandSchedule.${mode}">
     <tags:setFormEditMode mode="${mode}"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
-    <form:form id="updateForm" commandName="schedule" action="/stars/operator/inventory/updateSchedule">
+    <form:form id="updateForm" commandName="schedule" action="${updateFormURL}">
         <form:hidden path="commandSchedule.commandScheduleId"/>
         <form:hidden path="commandSchedule.startTimeCronString"/>
         <cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_" />
