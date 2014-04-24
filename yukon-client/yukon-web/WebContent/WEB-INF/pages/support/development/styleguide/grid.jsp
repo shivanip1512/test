@@ -1,5 +1,6 @@
 <style type="text/css">
-.grid-example .column {padding: 10px;background-color: #efefef;}
+.grid-example .column {padding: 10px;background-color: #efefef;min-height: 89px;}
+.grid-example .column .label {margin: 2px 0;display: inline-block;line-height: 14px;}
 </style>
 
 <h1>Grid System</h1>
@@ -13,10 +14,12 @@ The child elements are the columns, they use the <span class="label label-defaul
 The last column must always specify the <span class="label label-default">.nogutter</span> class.
 </p>
 <h5>A grid with one row, two columns, each being 12 columns widths wide:</h5>
-<pre class="code prettyprint">&lt;div class=&quot;column-12-12 clearfix&quot;&gt;
+<pre class="code prettyprint">
+&lt;div class=&quot;column-12-12 clearfix&quot;&gt;
     &lt;div class=&quot;column one&quot;&gt;&lt;/div&gt;
     &lt;div class=&quot;column two nogutter&quot;&gt;&lt;/div&gt;
-&lt;/div&gt;</pre>
+&lt;/div&gt;
+</pre>
 <div class="separated-sections">
 
     <div class="section">
