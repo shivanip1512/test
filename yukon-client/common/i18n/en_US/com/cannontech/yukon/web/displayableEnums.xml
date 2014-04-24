@@ -392,11 +392,11 @@
     <entry key="yukon.common.energyCompanySetting.OPTIONAL_PRODUCT_DEV">Optional Product Dev</entry>
     <entry key="yukon.common.energyCompanySetting.OPTIONAL_PRODUCT_DEV.description">This feature is for development purposes only</entry>
     <entry key="yukon.common.energyCompanySetting.ECOBEE_USERNAME">Username</entry>
-    <entry key="yukon.common.energyCompanySetting.ECOBEE_USERNAME.description">Username used to authenticate with ecobee API</entry>
+    <entry key="yukon.common.energyCompanySetting.ECOBEE_USERNAME.description">Username to authenticate with the ecobee service</entry>
     <entry key="yukon.common.energyCompanySetting.ECOBEE_PASSWORD">Password</entry>
-    <entry key="yukon.common.energyCompanySetting.ECOBEE_PASSWORD.description">Password used to authenticate with ecobee API</entry>
+    <entry key="yukon.common.energyCompanySetting.ECOBEE_PASSWORD.description">Password used to authenticate with the ecobee service</entry>
     <entry key="yukon.common.energyCompanySetting.ECOBEE_SERVER_URL">API URL</entry>
-    <entry key="yukon.common.energyCompanySetting.ECOBEE_SERVER_URL.description">URL to connect to ecobee API</entry>
+    <entry key="yukon.common.energyCompanySetting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service</entry>
 
     <entry key="yukon.common.energyCompanySetting.category.ACCOUNT">Account</entry>
     <entry key="yukon.common.energyCompanySetting.category.HARDWARE">Hardware</entry>
