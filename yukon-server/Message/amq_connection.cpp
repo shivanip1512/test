@@ -344,8 +344,6 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
             queueCallbacks = _callbacks.equal_range(queue);
         }
 
-        CallbacksPerQueue::const_iterator cb_itr = queueCallbacks.first;
-
         for each( const SerializedMessage &msg in queueMsgs_itr->second )
         {
             if( debugActivityInfo() )
@@ -355,6 +353,8 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
 
                 dout << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << ": " << msg << std::endl;
             }
+
+            CallbacksPerQueue::const_iterator cb_itr = queueCallbacks.first;
 
             for( ; cb_itr != queueCallbacks.second; ++cb_itr )
             {
