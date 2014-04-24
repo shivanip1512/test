@@ -19,7 +19,7 @@ import com.cannontech.common.gui.util.ColorTableCellRenderer;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.CtiTreeCellRenderer;
 import com.cannontech.common.gui.util.TreeViewPanel;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -33,6 +33,7 @@ import com.cannontech.database.model.DeviceTree_CustomPointsModel;
 import com.cannontech.database.model.DummyTreeNode;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.graph.gds.tablemodel.GDSTableModel;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener
 {
@@ -109,8 +110,8 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	
 		if( value != null )
 		{
-			LitePoint pt = new LitePoint(PointTypes.SYS_PID_THRESHOLD);
-			pt.retrieve(CtiUtilities.getDatabaseAlias());
+		    PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
+			LitePoint pt = pointDao.getLitePoint(PointTypes.SYS_PID_THRESHOLD);
 									
 			// Create the GDS to add in the tables.
 			GraphDataSeries gds = createGDS(pt, null);

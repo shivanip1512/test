@@ -22,6 +22,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.BiMap;
 
 public interface AttributeService {
 
@@ -32,7 +33,7 @@ public interface AttributeService {
      * @return The point for the given attribute
      * @throws IllegalUseOfAttribute
      */
-    public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
     
     /**
      * Method to get the PaoPointIdentifier for the given PAO for the given attribute.
@@ -48,7 +49,7 @@ public interface AttributeService {
      * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
      * @throws IllegalArgumentException if the pao does not have that attribute
      */
-    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
     
 
     /**
@@ -60,7 +61,7 @@ public interface AttributeService {
      * @param attributes
      * @return list of PaoMultiPointIdentifiers
      */
-    public PaoMultiPointIdentifierWithUnsupported findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
+    PaoMultiPointIdentifierWithUnsupported findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
     
     /**
      * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
@@ -71,9 +72,9 @@ public interface AttributeService {
      * @return list of PaoMultiPointIdentifiers
      * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
      */
-    public PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) throws IllegalUseOfAttribute;
+    PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) throws IllegalUseOfAttribute;
     
-    public List<PointIdentifier> findPointsForDevicesAndAttribute(
+    List<PointIdentifier> findPointsForDevicesAndAttribute(
             Iterable<? extends YukonPao> devices, Attribute attributes);
 
     /**
@@ -81,14 +82,14 @@ public interface AttributeService {
      * @param pao - The pao to get attributes for
      * @return An immutable set of all attributes available for this pao
      */
-    public Set<Attribute> getAvailableAttributes(YukonPao pao);
+    Set<Attribute> getAvailableAttributes(YukonPao pao);
     
     /**
      * Method to get a set of attributes available for the given PaoType
      * @param paoType - The PaoType to get attributes for
      * @return An immutable set of all attributes available for this paoType
      */
-    public Set<Attribute> getAvailableAttributes(PaoType paoType);
+    Set<Attribute> getAvailableAttributes(PaoType paoType);
 
     /**
      * Method to get a set of all attributes from the set of desired attributes for a given pao.
@@ -97,9 +98,9 @@ public interface AttributeService {
      * @param attributes  
      * @return A set of attributes (from desiredAttributes) that exist for a given pao.
      */
-    public Set<Attribute> getExistingAttributes(YukonPao pao, Set<? extends Attribute> desiredAttributes);
+    Set<Attribute> getExistingAttributes(YukonPao pao, Set<? extends Attribute> desiredAttributes);
     
-    public Attribute resolveAttributeName(String name);
+    Attribute resolveAttributeName(String name);
     
     /**
      * Method used to determine if a pao supports a given attribute
@@ -107,7 +108,7 @@ public interface AttributeService {
      * @param attribute - Attribute to determine support for
      * @return True if the pao supports the attribute
      */
-    public boolean isAttributeSupported(YukonPao pao, Attribute attribute);
+    boolean isAttributeSupported(YukonPao pao, Attribute attribute);
 
     /**
      * Method used to determine if a point exists on a pao for a given attribute
@@ -115,16 +116,16 @@ public interface AttributeService {
      * @param attribute - Attribute to determine if point exists
      * @return True if the point exists on the pao
      */
-    public boolean pointExistsForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    boolean pointExistsForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
     
-    public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
     
     /**
      * Method used to create a point for the pao and given attribute
      * @param pao - Pao to create point for
      * @param attribute - Attribute the point will represent
      */
-    public void createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    void createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
 
     /**
      * This method will determine if the point identified by the PaoPointIdentifier is an
@@ -132,21 +133,21 @@ public interface AttributeService {
      * nothing wrong with asking this question, but it would be more correct to call the other
      * version of this method that breaks the PAO and the Point into two parameters.
      */
-    public boolean isPointAttribute(PaoPointIdentifier paoPointIdentifier, Attribute attribute);
+    boolean isPointAttribute(PaoPointIdentifier paoPointIdentifier, Attribute attribute);
     
     /**
      * Returns a set of attributes for which "reading" makes sense. 
      * 
      * (Currently this is designed to exclude "profile" attributes.)
      */
-    public Set<Attribute> getReadableAttributes();
+    Set<Attribute> getReadableAttributes();
     
     /**
      * Returns a set of attributes for which "reading" makes sense. 
      * 
      * (Includes "profile" attributes.)
      */
-    public Set<Attribute> getAdvancedReadableAttributes();
+    Set<Attribute> getAdvancedReadableAttributes();
     
     /**
      * Returns a list of all the devices in a given DeviceGroup that support the given Attribute.
@@ -155,7 +156,7 @@ public interface AttributeService {
      * @param attribute
      * @return
      */
-    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
+    List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
     
     /**
      * Returns a list of all the devices in a given DeviceGroup that support ANY of the passed in Attributes.
@@ -164,7 +165,7 @@ public interface AttributeService {
      * @param attribute
      * @return
      */
-    public Set<SimpleDevice> getDevicesInGroupThatSupportAnyAttributes(DeviceGroup group, Set<? extends Attribute> attributes);
+    Set<SimpleDevice> getDevicesInGroupThatSupportAnyAttributes(DeviceGroup group, Set<? extends Attribute> attributes);
 
     /**
      * Reverse lookup of BuiltInAttribute based on Pao and Point Identifier from set of possible attributes.
@@ -174,7 +175,7 @@ public interface AttributeService {
      * @param possibleMatches
      * @return BuiltInAttribute
      */
-    public Set<BuiltInAttribute> findAttributesForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<? extends Attribute> possibleMatches);
+    Set<BuiltInAttribute> findAttributesForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<? extends Attribute> possibleMatches);
 
     /**
      * Creates a map of AttributeGroup to list of BuiltInAttribute.  The resulting map contains only
@@ -183,7 +184,7 @@ public interface AttributeService {
      * @param attributes The collection of Attribute objects that will be made into a grouped attribute map.
      * @param userContext Used to sort the attributes and AttributeGroup option groups according to the user's locale. 
      */
-    public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributeMapFromCollection(
+    Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributeMapFromCollection(
             Collection<? extends Attribute> attributes, YukonUserContext userContext);
 
     /**
@@ -192,7 +193,7 @@ public interface AttributeService {
      * @param context
      * @return
      */
-    public Comparator<Attribute> getNameComparator(YukonUserContext context);
+    Comparator<Attribute> getNameComparator(YukonUserContext context);
 
     /**
      * Resolves all BuiltInAttributes and returns a sorted map
@@ -201,9 +202,9 @@ public interface AttributeService {
      * @param context
      * @return
      */
-    public SortedMap<BuiltInAttribute, String> resolveAllToString(Set<BuiltInAttribute> bins, YukonUserContext context);
+    SortedMap<BuiltInAttribute, String> resolveAllToString(Set<BuiltInAttribute> bins, YukonUserContext context);
 
-    public PaoTypePointIdentifier getPaoTypePointIdentifierForAttribute(PaoType type, Attribute attribute)
+    PaoTypePointIdentifier getPaoTypePointIdentifierForAttribute(PaoType type, Attribute attribute)
     throws IllegalUseOfAttribute;
 
     /**
@@ -217,7 +218,7 @@ public interface AttributeService {
      * 
      * @return List<LiteStateGroup> The list of state groups or an empty list.
      */
-    public List<LiteStateGroup> findStateGroups(String groupName, BuiltInAttribute attribute);
+    List<LiteStateGroup> findStateGroups(String groupName, BuiltInAttribute attribute);
     
     /**
      * Return a list of state groups for the devices and attribute.
@@ -227,6 +228,30 @@ public interface AttributeService {
      * 
      * @return List<LiteStateGroup> The list of state groups or an empty list.
      */
-    public List<LiteStateGroup> findStateGroups(List<SimpleDevice> devices, BuiltInAttribute attribute);
+    List<LiteStateGroup> findStateGroups(List<SimpleDevice> devices, BuiltInAttribute attribute);
     
+    /**
+     * Takes an iterable of type T and returns a new Iterable of items that support
+     * the provided Attribute.
+     */
+    <T extends YukonPao> Iterable<T> filterPaosForAttribute(Iterable<T> paos, BuiltInAttribute attribute);
+
+    /**
+     * Takes an Set of type T and returns a new Set of items that support
+     * the provided Attribute.
+     */
+    <T extends YukonPao> Set<T> filterPaosForAttribute(Set<T> paos, BuiltInAttribute attribute);
+
+    /**
+     * Returns the list of point ids that map to the attribute and pao type for each device.
+     * Ignores devices that do not support the attribute.
+     */
+    List<Integer> getPointIds(List<SimpleDevice> devices, BuiltInAttribute attribute);
+
+    /**
+     * Returns a map of {@link SimpleDevice} to {@link LitePoint} for the point that maps 
+     * to the attribute and pao type for each device.
+     * Ignores devices that do not support the attribute.
+     */
+    BiMap<SimpleDevice, LitePoint> getPoints(List<SimpleDevice> devices, BuiltInAttribute attribute);
 }

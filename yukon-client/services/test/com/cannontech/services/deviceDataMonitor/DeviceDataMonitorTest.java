@@ -81,9 +81,9 @@ public class DeviceDataMonitorTest {
     private final static LiteStateGroup STATE_GROUP_2 = new LiteStateGroup(2);
     private final static LiteStateGroup STATE_GROUP_3 = new LiteStateGroup(3);
     
-    private final static LiteState STATE_1 = new LiteState(1);
-    private final static LiteState STATE_2 = new LiteState(2);
-    private final static LiteState STATE_3 = new LiteState(3);
+    private final static LiteState STATE_1 = new LiteState(1, null, 0, 0, 0);
+    private final static LiteState STATE_2 = new LiteState(2, null, 0, 0, 0);
+    private final static LiteState STATE_3 = new LiteState(3, null, 0, 0, 0);
     
     private final static PaoIdentifier PAO_IDENTIFIER_1 = new PaoIdentifier(1, PaoType.MCT410CL);
     private final static PaoIdentifier PAO_IDENTIFIER_2 = new PaoIdentifier(2, PaoType.MCT410CL);

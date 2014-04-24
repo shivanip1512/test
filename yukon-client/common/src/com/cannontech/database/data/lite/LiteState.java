@@ -1,114 +1,63 @@
 package com.cannontech.database.data.lite;
 
-/*
- */
-public class LiteState extends LiteBase
-{
-	private String stateText = null;
-	private int fgColor = 0;
-	private int bgColor = 0;
-   private int imageID = 0;
+public class LiteState extends LiteBase {
 
-/**
- * LiteState
- */
-public LiteState( int rawSt ) 
-{
-	this( rawSt, null, 0, 0, 0 );
-}
-/**
- * LiteState
- */
-public LiteState( int rawSt, String stText, int fgColor_, int bgColor_, int imgID ) 
-{
-	super();
-	setLiteID(rawSt);
-	stateText = stText;
-	setLiteType(LiteTypes.STATE);	
-	setFgColor( fgColor_ );
-	setBgColor( bgColor_ );
-   setImageID( imgID );
-}
-/**
- * This method was created by Cannon Technologies Inc.
- */
-public int getStateRawState() 
-{
-	return getLiteID();
-}
-/**
- * This method was created by Cannon Technologies Inc.
- */
-public String getStateText() {
-	return stateText;
-}
-/**
- * This method was created by Cannon Technologies Inc.
- */
-public void setStateRawState(int newValue) 
-{
-	setLiteID(newValue);
-}
-/**
- * This method was created by Cannon Technologies Inc.
- */
-public void setStateText(String newValue) {
-	this.stateText = new String(newValue);
-}
-/**
- * This method was created by Cannon Technologies Inc.
- */
-public String toString() {
-	return stateText;
-}
-	/**
-	 * Returns the imageID.
-	 * @return int
-	 */
-	public int getImageID()
-	{
-		return imageID;
-	}
+    private String stateText;
+    private int fgColor;
+    private int bgColor;
+    private int imageID;
 
-	/**
-	 * Sets the imageID.
-	 * @param imageID The imageID to set
-	 */
-	public void setImageID(int imageID)
-	{
-		this.imageID = imageID;
-	}
+    public LiteState(int rawState, String stateText, int fgColor, int bgColor, int imageId) {
+        super();
+        setLiteID(rawState);
+        this.stateText = stateText;
+        setLiteType(LiteTypes.STATE);
+        this.fgColor = fgColor;
+        this.bgColor = bgColor;
+        this.imageID = imageId;
+    }
 
-	/**
-	 * @return
-	 */
-	public int getBgColor()
-	{
-		return bgColor;
-	}
+    public int getStateRawState() {
+        return getLiteID();
+    }
+    
+    public void setStateRawState(int newValue) {
+        setLiteID(newValue);
+    }
 
-	/**
-	 * @return
-	 */
-	public int getFgColor()
-	{
-		return fgColor;
-	}
+    public String getStateText() {
+        return stateText;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setBgColor(int i)
-	{
-		bgColor = i;
-	}
+    public void setStateText(String stateText) {
+        this.stateText = stateText;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setFgColor(int i)
-	{
-		fgColor = i;
-	}
+    public int getFgColor() {
+        return fgColor;
+    }
 
+    public void setFgColor(int fgColor) {
+        this.fgColor = fgColor;
+    }
+
+    public int getBgColor() {
+        return bgColor;
+    }
+
+    public void setBgColor(int bgColor) {
+        this.bgColor = bgColor;
+    }
+
+    public int getImageID() {
+        return imageID;
+    }
+
+    public void setImageID(int imageID) {
+        this.imageID = imageID;
+    }
+
+    public String toString() {
+        return stateText;
+    }
 }

@@ -22,6 +22,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 
 public class ChunkingMappedSqlTemplate {
+    
     private SimpleJdbcOperations simpleJdbcTemplate;
     private int chunkSize = ChunkingSqlTemplate.DEFAULT_SIZE;
 

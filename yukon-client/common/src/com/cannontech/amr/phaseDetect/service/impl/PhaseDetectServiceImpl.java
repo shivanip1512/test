@@ -384,10 +384,10 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
             LitePoint phasePoint = attributeService.getPointForAttribute(device, BuiltInAttribute.PHASE);
             
             LiteStateGroup phaseStateGroup = stateDao.getLiteStateGroup("PhaseStatus");
-            LiteState liteState = new LiteState(0);
+            int rawState = 0;
             for (LiteState state : phaseStateGroup.getStatesList()) {
                 if (state.getStateText().equalsIgnoreCase(detectedPhase.name())) {
-                    liteState = state;
+                    rawState = state.getStateRawState();
                     break;
                 }
             }
@@ -396,7 +396,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
             pointData.setType(phasePoint.getPointType());
             pointData.setPointQuality(PointQuality.Normal);
             pointData.setTime(new Date());
-            pointData.setValue(liteState.getStateRawState());
+            pointData.setValue(rawState);
             pointData.setTagsPointMustArchive(true);
             pointData.setMillis(0);
             dynamicDataSource.putValue(pointData);

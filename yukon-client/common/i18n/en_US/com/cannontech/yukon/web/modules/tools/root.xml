@@ -16,6 +16,13 @@
     
     <!-- Map -->
     <entry key="yukon.web.modules.tools.map.pageName">Map Devices</entry>
+    <entry key="yukon.web.modules.tools.map.filter.label">Filter Devices</entry>
+    <entry key="yukon.web.modules.tools.map.filter.title">Filter Devices</entry>
+    <entry key="yukon.web.modules.tools.map.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.tools.map.states">Attribute State(s)</entry>
+    <entry key="yukon.web.modules.tools.map.chooseAttribute">Choose an attribute...</entry>
+    <entry key="yukon.web.modules.tools.map.retrievingStates">Retrieving states...</entry>
+    <entry key="yukon.web.modules.tools.map.noStatesForAttribute">No devices support the selected attribute.</entry>
     
     <!-- Trends -->
     <entry key="yukon.web.modules.tools.trends.pageName">Trends</entry>

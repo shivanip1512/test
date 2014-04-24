@@ -11,7 +11,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -50,18 +50,15 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
-/**
- * Implementation of AsyncDynamicDataSource
- */
 @ManagedResource
 public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, MessageListener  {
+    
     private static final Logger log = YukonLogManager.getLogger(AsyncDynamicDataSourceImpl.class);
     
-    
     private DispatchProxy dispatchProxy;
-    private IServerConnection dispatchConnection;
-    private IDatabaseCache databaseCache;
-    private DynamicDataSource dynamicDataSource;
+    @Autowired private IServerConnection dispatchConnection;
+    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private DynamicDataSource dynamicDataSource;
     
     // Note that this is purposefully different than the default com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE
     // that is set in the message class because there is already code that attaches
@@ -75,7 +72,6 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     // through this class, whereby all of the listeners will be invoked INCLUDING the DBEditor 
     // itself. When new code sends a DB Change directly through this code, we can invoke all of the 
     // listeners immediately and then ignore the reflection.
-    
     
     private volatile boolean allPointsRegistered = false;
     private SetMultimap<Integer, PointDataListener> pointIdPointDataListeners;
@@ -91,13 +87,10 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         pointIdSignalListeners =Multimaps.synchronizedSetMultimap(pointIdSignalListenersUnsynchronized);
     }
     
-    
     private List<SignalListener> alarmSignalListeners = new CopyOnWriteArrayList<SignalListener>();
-    
     private List<PointDataListener> allPointListeners = new CopyOnWriteArrayList<PointDataListener>();
-
-    private Set<DBChangeListener> dbChangeListeners = new CopyOnWriteArraySet<DBChangeListener>();
     
+    private Set<DBChangeListener> dbChangeListeners = new CopyOnWriteArraySet<DBChangeListener>();
     private Set<DBChangeLiteListener> dbChangeLiteListeners = new CopyOnWriteArraySet<DBChangeLiteListener>();
     
     @PostConstruct
@@ -250,31 +243,26 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     @Override
     public void messageReceived(MessageEvent e) {
         Object o = e.getMessage();
-        handleIncoming(o);        
+        handleIncoming(o);
     }
 
     private void handleIncoming(Object o) {
-        if(o instanceof PointData) {
+        if (o instanceof PointData) {
             handlePointData((PointData)o);
-        }
-        else if(o instanceof Signal) {
+        } else if (o instanceof Signal) {
             handleSignal((Signal)o);
-        }
-        else if(o instanceof DBChangeMsg) {
+        } else if (o instanceof DBChangeMsg) {
             handleDBChange((DBChangeMsg)o);
-        }
-        else if(o instanceof ServerResponseMsg) {
+        } else if (o instanceof ServerResponseMsg) {
             handleIncoming(((ServerResponseMsg)o).getPayload());
-        }
-        else if(o instanceof Multi<?>) {
+        } else if (o instanceof Multi<?>) {
             Multi<?> multi = (Multi<?>) o;
-            for(Object obj : multi.getVector()) {
+            for (Object obj : multi.getVector()) {
                 handleIncoming(obj);
             }
-        }
-        else if(o instanceof ConnStateChange) {
+        } else if (o instanceof ConnStateChange) {
             ConnStateChange csc = (ConnStateChange) o;
-            if(csc.isConnected()) {
+            if (csc.isConnected()) {
                reRegisterForEverything(); 
             }
         }
@@ -411,14 +399,6 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         this.dispatchProxy = dispatchProxy;
     }
     
-    public void setDispatchConnection(IServerConnection dispatchConnection) {
-        this.dispatchConnection = dispatchConnection;
-    }
-
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
-    
     public Set<PointDataListener> getPointDataListeners(int pointId) {
         Set<PointDataListener> listeners = pointIdPointDataListeners.get(pointId);
         return listeners;
@@ -427,10 +407,6 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public Set<SignalListener> getSignalListeners(int pointId) {
         Set<SignalListener> listeners = pointIdSignalListeners.get(pointId);
         return listeners;
-    }    
-    
-    @Required
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
     }
+    
 }

@@ -53,7 +53,6 @@ public enum JsLibrary {
     
     OPEN_LAYERS_MIN("/resources/js/lib/open-layers/ol.js"),
     OPEN_LAYERS("/resources/js/lib/open-layers/ol-whitespace.js"),
-//    OPEN_LAYERS("http://ol3js.org/en/master/build/ol-whitespace.js"),
     
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     

@@ -14,7 +14,6 @@ import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.message.dispatch.message.Multi;
@@ -25,6 +24,7 @@ import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.yukon.IServerConnection;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 
 /**
@@ -36,6 +36,7 @@ import com.google.common.collect.Iterables;
  * @author alauinger
  */
 class DispatchProxy {
+    
     private IServerConnection dispatchConnection;
     private ServerRequest serverRequest;   
     private Logger log = YukonLogManager.getLogger(DispatchProxy.class);
@@ -46,7 +47,7 @@ class DispatchProxy {
      * @return
      */
     PointData getPointData(int pointId) {
-        Multi m = getPointDataMulti(CtiUtilities.asSet(pointId));
+        Multi m = getPointDataMulti(ImmutableSet.of(pointId));
         List<PointData> pointData = new ArrayList<PointData>(1);
         extractPointData(pointData, m);
         Validate.isTrue(pointData.size() != 0, "Returned multi was empty: ", pointData.size());
@@ -62,8 +63,8 @@ class DispatchProxy {
      * @return
      */
     Set<PointData> getPointData(Set<Integer> pointIds) {
-        Set<PointData> pointData = new HashSet<PointData>((int)(pointIds.size()/0.75f)+1);
-        if(!pointIds.isEmpty()) {
+        Set<PointData> pointData = new HashSet<PointData>((int)(pointIds.size() / 0.75f) + 1);
+        if (!pointIds.isEmpty()) {
             Multi m = getPointDataMulti(pointIds);
             extractPointData(pointData, m);
         }
@@ -76,7 +77,7 @@ class DispatchProxy {
      * @return
      */
     Set<Signal> getSignals(int pointId) {
-        Map<Integer, Set<Signal>> sigs = getSignals(CtiUtilities.asSet(pointId)); 
+        Map<Integer, Set<Signal>> sigs = getSignals(ImmutableSet.of(pointId)); 
         Set<Signal> ret = sigs.get(pointId);
         if (ret == null) {
             ret = Collections.emptySet();
@@ -91,7 +92,7 @@ class DispatchProxy {
      * @return
      */
     Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) {
-        Map<Integer, Set<Signal>> signals = new HashMap<Integer, Set<Signal>>((int)(pointIds.size()/0.75f)+1);        
+        Map<Integer, Set<Signal>> signals = new HashMap<Integer, Set<Signal>>((int)(pointIds.size() / 0.75f) + 1);
         if(!pointIds.isEmpty()) {
             Multi m = getPointDataMulti(pointIds);
             extractSignals(signals, m);
@@ -106,7 +107,7 @@ class DispatchProxy {
      * @return
      */
     Set<Signal> getSignalsByCategory(int alarmCategoryId) {
-        Command cmd = makeCommandMsg(Command.ALARM_CATEGORY_REQUEST, CtiUtilities.asSet(alarmCategoryId));
+        Command cmd = makeCommandMsg(Command.ALARM_CATEGORY_REQUEST, ImmutableSet.of(alarmCategoryId));
         Multi m = (Multi) makeRequest(cmd);
         Set<Signal> signals = new HashSet<Signal>();
         extractSignals(signals, m);
@@ -129,9 +130,12 @@ class DispatchProxy {
     /**
      * Registers a set of point ids with dispatch
      * @param pointIds
+     * @throws {@link DispatchNotConnectedException}
      */
-    public void registerForPointIds(Set<Integer> pointIds) throws DispatchNotConnectedException{
+    public void registerForPointIds(Set<Integer> pointIds) throws DispatchNotConnectedException {
+        
         if (pointIds.isEmpty()) return;
+        
         validateDispatchConnection();
         PointRegistration pReg = new PointRegistration();
         pReg.setRegFlags(PointRegistration.REG_ADD_POINTS);
@@ -139,6 +143,9 @@ class DispatchProxy {
         dispatchConnection.write(pReg);
     }
     
+    /**
+     * Register with dispatch for all points.
+     */
     public void registerForPoints() {
         validateDispatchConnection();
         PointRegistration pReg = new PointRegistration();
@@ -147,10 +154,10 @@ class DispatchProxy {
     }
     
     /**
-     * Return the raw multi from dispatch for a set of point ids
-     * Also registers for point ids
+     * Return the raw multi from dispatch for a set of point ids.
+     * Also registers for point ids.
      * @param pointIds
-     * @return
+     * @throws {@link DynamicDataAccessException}
      */
     private Multi getPointDataMulti(Set<Integer> pointIds) {
         if (log.isDebugEnabled()) {
@@ -168,15 +175,13 @@ class DispatchProxy {
     }
     
     /**
-     * Handles sending a request to dispatch and waiting for a response
-     * Will throw a DynamicDataAccessException if there is a problem.
-     * @param cmd
-     * @return
+     * Handles sending a request to dispatch and waiting for a response.
+     * @throws {@link DynamicDataAccessException}
      */
     private Object makeRequest(Command cmd) {
         validateDispatchConnection();
-        ServerResponseMsg resp = serverRequest.makeServerRequest(dispatchConnection,cmd);
-        if(resp.getStatus() == ServerResponseMsg.STATUS_ERROR) {
+        ServerResponseMsg resp = serverRequest.makeServerRequest(dispatchConnection, cmd);
+        if (resp.getStatus() == ServerResponseMsg.STATUS_ERROR) {
             log.error("Dispatch returned the following message: " + resp.getMessage());
             throw new DynamicDataAccessException(resp.getStatusStr() + ": " + resp.getMessage());
         }        
@@ -185,16 +190,15 @@ class DispatchProxy {
     }
 
     private void validateDispatchConnection() throws DispatchNotConnectedException {
-        if(!dispatchConnection.isValid()) {
+        if (!dispatchConnection.isValid()) {
             throw new DispatchNotConnectedException();
         }
     }
     
     /**
      * Helper to create a command message 
-     * @param op
+     * @param op The operation type
      * @param pointIds
-     * @return
      */
     private Command makeCommandMsg(int op, Set<Integer> pointIds) {
         return makeCommandMsg(op, new ArrayList<Integer>(pointIds));
@@ -202,9 +206,8 @@ class DispatchProxy {
     
     /**
      * Helper to create a command message
-     * @param op
+     * @param op The operation type
      * @param pointIds
-     * @return
      */
     private Command makeCommandMsg(int op, List<Integer> pointIds) {
         Command cmd = new Command();

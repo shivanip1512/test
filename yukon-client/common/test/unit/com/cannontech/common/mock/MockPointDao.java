@@ -1,5 +1,6 @@
 package com.cannontech.common.mock;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -14,6 +15,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
@@ -280,6 +282,11 @@ public class MockPointDao implements PointDao {
 
     @Override
     public Multimap<Integer, Integer> getPaoPointMultimap(Iterable<Integer> paoIds) {
+        return null;
+    }
+
+    @Override
+    public LitePoint createLitePoint(YukonResultSet rs) throws SQLException {
         return null;
     }
 }

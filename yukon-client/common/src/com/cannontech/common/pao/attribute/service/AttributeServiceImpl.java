@@ -49,11 +49,13 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -63,6 +65,8 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -81,6 +85,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoDefinitionService paoDefinitionService;
     @Autowired private PointService pointService;
+    @Autowired private PointDao pointDao;
     @Autowired private PointCreationService pointCreationService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private StateDao stateDao;
@@ -375,9 +380,9 @@ public class AttributeServiceImpl implements AttributeService {
         return descriptionOrdering;
 
     }
-
+    
     @Override
-    public List<LiteStateGroup> findStateGroups(List<SimpleDevice> devices, BuiltInAttribute attribute) {
+    public List<Integer> getPointIds(List<SimpleDevice> devices, BuiltInAttribute attribute) {
         
         ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
@@ -410,6 +415,63 @@ public class AttributeServiceImpl implements AttributeService {
                 // Ignore pao types that don't support this attribute
             }
         }
+        
+        return pointIds;
+    }
+    
+    @Override
+    public BiMap<SimpleDevice, LitePoint> getPoints(List<SimpleDevice> devices, BuiltInAttribute attribute) {
+        
+        ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        
+        // get the points that match the attribute for these devices
+        final BiMap<SimpleDevice, LitePoint> points = HashBiMap.create();
+        
+        // Look up point ids by pao type, sink into pointIds list
+        // About 6x faster than using getPointForAttribute(device, attribute) for each device
+        ListMultimap<PaoType, SimpleDevice> typeToDevices = ArrayListMultimap.create();
+        for (SimpleDevice device : devices) typeToDevices.put(device.getDeviceType(), device);
+        for (PaoType type : typeToDevices.keySet()) {
+            
+            try {
+                final PointIdentifier pi = paoDefinitionDao.getAttributeLookup(type, attribute).getPointTemplate().getPointIdentifier();
+                
+                SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        
+                        SqlStatementBuilder sql = new SqlStatementBuilder(PointDao.litePaoPointSql);
+                        sql.append("where PointType").eq(pi.getPointType());
+                        sql.append("and PointOffset").eq(pi.getOffset());
+                        sql.append("and YPO.PAObjectId").in(subList);
+                        
+                        return sql;
+                    }
+                };
+                chunkyTemplate.query(generator, PaoUtils.asPaoIdList(typeToDevices.get(type)), new YukonRowCallbackHandler() {
+                    
+                    @Override
+                    public void processRow(YukonResultSet rs) throws SQLException {
+                        PaoIdentifier pao = rs.getPaoIdentifier("PAObjectId", "Type");
+                        LitePoint litePoint = pointDao.createLitePoint(rs);
+                        points.put(new SimpleDevice(pao), litePoint);
+                    }
+                });
+            } catch(IllegalUseOfAttribute e) {
+                // Ignore pao types that don't support this attribute
+            }
+        }
+        
+        return points;
+    }
+
+    @Override
+    public List<LiteStateGroup> findStateGroups(List<SimpleDevice> devices, BuiltInAttribute attribute) {
+        
+        ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        
+        // get the points that match the attribute for these devices
+        List<Integer> pointIds = getPointIds(devices, attribute);
         
         // get the distinct list of stategroups for these points
         Set<Integer> groupIds = new HashSet<>();
@@ -562,4 +624,25 @@ public class AttributeServiceImpl implements AttributeService {
 
         return pis;
     }
+
+    @Override
+    public <T extends YukonPao> Iterable<T> filterPaosForAttribute(Iterable<T> paos, final BuiltInAttribute attribute) {
+        return Iterables.filter(paos, new Predicate<YukonPao>() {
+            @Override
+            public boolean apply(YukonPao pao) {
+                return isAttributeSupported(pao, attribute);
+            }
+        });
+    }
+
+    @Override
+    public <T extends YukonPao> Set<T> filterPaosForAttribute(Set<T> paos, final BuiltInAttribute attribute) {
+        return Sets.filter(paos, new Predicate<YukonPao>() {
+            @Override
+            public boolean apply(YukonPao pao) {
+                return isAttributeSupported(pao, attribute);
+            }
+        });
+    }
+    
 }

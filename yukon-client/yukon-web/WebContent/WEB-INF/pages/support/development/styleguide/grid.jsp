@@ -13,7 +13,7 @@ The child elements are the columns, they use the <span class="label label-defaul
 <span class="label label-default">.one</span>, <span class="label label-default">.two</span>, <span class="label label-default">three</span> etc.
 The last column must always specify the <span class="label label-default">.nogutter</span> class.
 </p>
-<h5>A grid with one row, two columns, each being 12 columns widths wide:</h5>
+<h5>A grid with one row, two columns, each being 12 columns wide:</h5>
 <pre class="code prettyprint">
 &lt;div class=&quot;column-12-12 clearfix&quot;&gt;
     &lt;div class=&quot;column one&quot;&gt;&lt;/div&gt;

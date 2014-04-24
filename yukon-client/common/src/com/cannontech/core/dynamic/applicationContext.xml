@@ -1,38 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-	<description>
-		Defines dynamic data service related beans - use these to get real time Yukon point data
-	</description>
+    <description>
+        Defines dynamic data service related beans - use these to get real time Yukon point data
+    </description>
 
-	 <bean id="asyncDynamicDataSource" class="com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl">
-		<property name="dispatchConnection" ref="dispatchConnection"/>
-		<property name="dispatchProxy" ref="dispatchProxy"/>
-		<property name="databaseCache" ref="databaseCache"/>
-		<property name="dynamicDataSource" ref="dynamicDataSource"/>
-	 </bean>
-	 <bean id="dynamicDataSource" class="com.cannontech.core.dynamic.impl.DynamicDataSourceImpl">
-	 	<property name="dynamicDataCache" ref="dynamicDataCache"/>
-	 	<property name="dispatchProxy" ref="dispatchProxy"/>
-	 	<property name="pointDao" ref="pointDao"/>
-	 </bean>	 
-	 <bean id="serverRequest" class="com.cannontech.message.util.ServerRequestImpl" scope="prototype"/>
-	 <bean id="dynamicDataCache" class="com.cannontech.core.dynamic.impl.DynamicDataCache">
-	 	<property name="dispatchConnection" ref="dispatchConnection"/>
-	 </bean>
-	 <bean id="dispatchProxy" class="com.cannontech.core.dynamic.impl.DispatchProxy">
-	 	<property name="dispatchConnection" ref="dispatchConnection"/>
-	 	<property name="serverRequest" ref="serverRequest"/>
-	 </bean>
-     <bean id="pointService" class="com.cannontech.core.dynamic.impl.PointServiceImpl" >
-         <property name="dynamicDataSource" ref="dynamicDataSource"/>
-         <property name="pointDao" ref="pointDao"/>
-         <property name="stateDao" ref="stateDao"/>
-     </bean>
-     
-     <bean id="richPointDataService" class="com.cannontech.core.dynamic.impl.RichPointDataServiceImpl" />
-  
+    <bean id="asyncDynamicDataSource" class="com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl">
+        <property name="dispatchProxy" ref="dispatchProxy" />
+    </bean>
+    <bean id="dynamicDataSource" class="com.cannontech.core.dynamic.impl.DynamicDataSourceImpl"/>
+    
+    <bean id="serverRequest" class="com.cannontech.message.util.ServerRequestImpl" scope="prototype" />
+    <bean id="dynamicDataCache" class="com.cannontech.core.dynamic.impl.DynamicDataCache">
+        <property name="dispatchConnection" ref="dispatchConnection" />
+    </bean>
+    <bean id="dispatchProxy" class="com.cannontech.core.dynamic.impl.DispatchProxy">
+        <property name="dispatchConnection" ref="dispatchConnection" />
+        <property name="serverRequest" ref="serverRequest" />
+    </bean>
+    <bean id="pointService" class="com.cannontech.core.dynamic.impl.PointServiceImpl">
+        <property name="dynamicDataSource" ref="dynamicDataSource" />
+        <property name="pointDao" ref="pointDao" />
+        <property name="stateDao" ref="stateDao" />
+    </bean>
+
+    <bean id="richPointDataService" class="com.cannontech.core.dynamic.impl.RichPointDataServiceImpl" />
+
 </beans>
