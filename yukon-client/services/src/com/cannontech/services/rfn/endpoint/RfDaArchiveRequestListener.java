@@ -45,6 +45,7 @@ public class RfDaArchiveRequestListener extends ArchiveRequestListenerBase<RfDaA
                 RfnDevice device = rfdaCreationService.create(identifier);
                 rfdaCreationService.incrementNewDeviceCreated();
                 LogHelper.debug(log, "Created new device: %s", device);
+                sendAcknowledgement(archiveRequest);
                 return device;
             } catch (IgnoredTemplateException e) {
                 throw new RuntimeException("Unable to create device for " + identifier + " because template is ignored", e);
@@ -59,6 +60,7 @@ public class RfDaArchiveRequestListener extends ArchiveRequestListenerBase<RfDaA
         
         @Override
         public void processData(RfnDevice rfnDevice, RfDaArchiveRequest archiveRequest) {
+            //  no data to archive on this queue, just device creation requests that have no other payload
         }
     }
     
