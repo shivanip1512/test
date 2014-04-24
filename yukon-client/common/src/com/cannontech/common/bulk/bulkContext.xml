@@ -424,8 +424,7 @@
     </bean>
 
     <bean id="latLonBulkFieldProcessor" parent="bulkFieldProcessorBase"
-        class="com.cannontech.common.bulk.field.processor.impl.LatLonBulkFieldProcessor">
-        <property name="paoLocationDao" ref="paoLocationDao" />
+        class="com.cannontech.common.bulk.field.processor.impl.LatitudeLongitudeBulkFieldProcessor">
         <property name="updateableFields">
             <set>
                 <ref bean="latitudeBulkField" />

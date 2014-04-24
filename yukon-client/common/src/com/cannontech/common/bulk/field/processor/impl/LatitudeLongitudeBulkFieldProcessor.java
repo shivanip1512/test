@@ -1,6 +1,6 @@
 package com.cannontech.common.bulk.field.processor.impl;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
@@ -9,9 +9,9 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.PaoLocation;
 import com.cannontech.core.dao.PaoLocationDao;
 
-public class LatLonBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
+public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
 
-    private PaoLocationDao paoLocationDao;
+    @Autowired private PaoLocationDao paoLocationDao;
 
     @Override
     public void updateField(SimpleDevice identifier, YukonDeviceDto value)
@@ -36,10 +36,5 @@ public class LatLonBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
                                           + e.getMessage(),
                                           e);
         }
-    }
-    
-    @Required
-    public void setPaoLocationDao(PaoLocationDao paoLocationDao) {
-        this.paoLocationDao = paoLocationDao;
     }
 }
