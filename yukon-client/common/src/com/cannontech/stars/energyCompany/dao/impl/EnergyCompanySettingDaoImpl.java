@@ -1,13 +1,16 @@
 package com.cannontech.stars.energyCompany.dao.impl;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.jdom.JDOMException;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -28,6 +31,9 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.encryption.CryptoException;
+import com.cannontech.encryption.CryptoUtils;
+import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
@@ -50,13 +56,23 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
-    private final static FieldMapper<EnergyCompanySetting> fieldMapper = new FieldMapper<EnergyCompanySetting>() {
+    private static final FieldMapper<EnergyCompanySetting> fieldMapper = new FieldMapper<EnergyCompanySetting>() {
         @Override
         public void extractValues(MapSqlParameterSource parameterHolder, EnergyCompanySetting setting) {
             parameterHolder.addValue("EnergyCompanyId", setting.getEnergyCompanyId());
+            Object value = setting.getValue();
+            if (setting.getType().isSensitiveInformation()) {
+                AESPasswordBasedCrypto encrypter;
+                try {
+                    encrypter = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey());
+                    value = encrypter.encryptToHexStr((String) value);
+                } catch (CryptoException | IOException | JDOMException e) {
+                    throw new RuntimeException("Unable to encrypt value for setting " + setting.getType(), e);
+                }
+            }
             parameterHolder.addValue("Name", setting.getType());
             parameterHolder.addValue("Enabled", YNBoolean.valueOf(setting.isEnabled()));
-        	parameterHolder.addValue("Value", setting.getValue());
+            parameterHolder.addValue("Value", value);
             parameterHolder.addValue("Comments", setting.getComments());
             parameterHolder.addValue("LastChangedDate", setting.getLastChanged());
         }
@@ -184,10 +200,22 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
         public EnergyCompanySetting mapRow(YukonResultSet rs) throws SQLException {
 
             EnergyCompanySettingType type = rs.getEnum(("Name"), EnergyCompanySettingType.class);
-
             EnergyCompanySetting setting = new EnergyCompanySetting();
             setting.setType(type);
-            setting.setValue(rs.getObjectOfInputType("Value", type.getType()));
+
+            Object value = rs.getObjectOfInputType("Value", type.getType());
+            if (type.isSensitiveInformation()) {
+                AESPasswordBasedCrypto encrypter;
+                try {
+                    encrypter = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey());
+                    value = encrypter.decryptHexStr((String) value);
+                } catch (CryptoException | IOException | JDOMException |DecoderException e) {
+                    value = type.getDefaultValue();
+                    log.error("Unable to decrypt value for setting " + type + ". Using the default value");
+                }
+            }
+
+            setting.setValue(value);
             setting.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
             setting.setId(rs.getInt("EnergyCompanySettingId"));
             setting.setEnabled(rs.getBoolean("Enabled"));
@@ -279,7 +307,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     
     @PostConstruct
     public void init() {
-        insertTemplate = new SimpleTableAccessTemplate<EnergyCompanySetting>(yukonJdbcTemplate, nextValueHelper);
+        insertTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         insertTemplate.setTableName("EnergyCompanySetting");
         insertTemplate.setFieldMapper(fieldMapper);
         insertTemplate.setPrimaryKeyField("EnergyCompanySettingId");

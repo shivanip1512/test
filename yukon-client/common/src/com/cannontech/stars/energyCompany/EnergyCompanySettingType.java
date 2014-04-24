@@ -1,16 +1,12 @@
 package com.cannontech.stars.energyCompany;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
-import static com.cannontech.stars.energyCompany.model.SettingCategory.ACCOUNT;
-import static com.cannontech.stars.energyCompany.model.SettingCategory.HARDWARE;
-import static com.cannontech.stars.energyCompany.model.SettingCategory.MISC;
+import static com.cannontech.core.roleproperties.InputTypeFactory.*;
+import static com.cannontech.stars.energyCompany.model.SettingCategory.*;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
-import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.stars.energyCompany.model.SettingCategory;
 import com.cannontech.web.input.type.InputType;
 
@@ -19,7 +15,7 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     // ACCOUNT
     ACCOUNT_NUMBER_LENGTH(ACCOUNT, integerType(), 0),
     ALTERNATE_PROGRAM_ENROLLMENT(ACCOUNT, booleanType(), false),
-    APPLICABLE_POINT_TYPE_KEY(ACCOUNT, true, stringType(), null),
+    APPLICABLE_POINT_TYPE_KEY(ACCOUNT, true, false, stringType(), null),
     AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS(ACCOUNT, booleanType(), true),
     ROTATION_DIGIT_LENGTH(ACCOUNT, integerType(), 0),
 
@@ -34,14 +30,18 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     SERIAL_NUMBER_VALIDATION(HARDWARE, InputTypeFactory.enumType(SerialNumberValidation.class), SerialNumberValidation.NUMERIC),
     TRACK_HARDWARE_ADDRESSING(HARDWARE, booleanType(), false),
 
+    ECOBEE_USERNAME(ECOBEE, false, true, stringType(), ""),
+    ECOBEE_PASSWORD(ECOBEE, false, true, stringType(), ""),
+    ECOBEE_SERVER_URL(ECOBEE, stringType(), "https://api.ecobee.com/"),
+
     // MISC
     ADMIN_EMAIL_ADDRESS(MISC, stringType(), "info@cannontech.com"),
     ADMIN_ALLOW_DESIGNATION_CODE(MISC, booleanType(), false),
-    BROADCAST_OPT_OUT_CANCEL_SPID(MISC, true, integerType(), 1),
+    BROADCAST_OPT_OUT_CANCEL_SPID(MISC, true, false, integerType(), 1),
     ENERGY_COMPANY_DEFAULT_TIME_ZONE(MISC, stringType(), "America/Chicago"),
     INHERIT_PARENT_APP_CATS(MISC, booleanType(), true),
     OPTOUT_NOTIFICATION_RECIPIENTS(MISC, stringType(), null),
-    OPTIONAL_PRODUCT_DEV(MISC, true, stringType(), "00000000"),
+    OPTIONAL_PRODUCT_DEV(MISC, true, false, stringType(), "00000000"),
     SINGLE_ENERGY_COMPANY(MISC, booleanType(), true),
     ;
 
@@ -49,16 +49,24 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     private final boolean usesEnabledField;
     private final Object defaultValue;
     private final InputType<?> type;
+    private final boolean sensitiveInformation;
+
 
     private EnergyCompanySettingType(SettingCategory category, InputType<?> type, Object defaultValue) {
-        this(category, false, type, defaultValue);
+        this(category, false, false, type, defaultValue);
     }
 
-    private EnergyCompanySettingType(SettingCategory category, boolean usesEnabledField, InputType<?> type, Object defaultValue) {
+    private EnergyCompanySettingType(SettingCategory category, boolean usesEnabledField, boolean sensitiveInformation,
+                                     InputType<?> type, Object defaultValue) {
         this.category = category;
         this.usesEnabledField = usesEnabledField;
+        this.sensitiveInformation = sensitiveInformation;
         this.type = type;
         this.defaultValue = defaultValue;
+    }
+
+    public boolean isSensitiveInformation() {
+        return sensitiveInformation;
     }
 
     public boolean isUsesEnabledField() {

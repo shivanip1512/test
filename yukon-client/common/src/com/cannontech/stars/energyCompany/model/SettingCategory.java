@@ -6,6 +6,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum SettingCategory implements DisplayableEnum {
     ACCOUNT,
     HARDWARE,
+    ECOBEE,
     MISC,
     ;
 
