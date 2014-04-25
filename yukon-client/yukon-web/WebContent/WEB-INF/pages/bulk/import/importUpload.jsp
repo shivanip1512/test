@@ -139,7 +139,7 @@ function updateImportTypeSelection() {
                                     <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.descriptionInstruction"/></th>
                                 </tr>
                             <thead>
-                            <c:forEach var="field" items="${methodRequiredFieldsMap[method]}">
+                            <c:forEach var="field" items="${requiredFieldsByMethod[method]}">
                                 <tr>
                                     <td class="strong-label-small">${field}</td>
                                     <td>
@@ -153,7 +153,7 @@ function updateImportTypeSelection() {
                                 <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.optionalHeaders"/></th>
                                 <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.descriptionInstruction"/></th>
                             </tr>
-                            <c:forEach var="field" items="${methodUpdateableFieldsMap[method]}">
+                            <c:forEach var="field" items="${updateableFieldsByMethod[method]}">
                                 <tr>
                                     <td class="strong-label-small">${field}</td>
                                     <td>

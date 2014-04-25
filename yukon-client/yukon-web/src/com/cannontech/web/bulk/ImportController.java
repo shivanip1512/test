@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
@@ -35,8 +36,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.BULK_IMPORT_OPERATION)
 @Controller
@@ -56,7 +55,7 @@ public class ImportController {
             @Override
             public int compare(BulkImportMethod o1, BulkImportMethod o2) {
                 int cmp = o1.getType().name().compareTo(o2.getType().name());
-                if(cmp != 0) {
+                if(cmp == 0) {
                     cmp = o1.getName().compareTo(o2.getName());
                 }
                 return cmp;
@@ -186,31 +185,23 @@ public class ImportController {
     
     private void addColumnInfoToMav(ModelMap model) {
         
-        Map<BulkImportMethod, Set<BulkFieldColumnHeader>> methodRequiredFieldsMap = Maps.<BulkImportMethod, Set<BulkFieldColumnHeader>>newHashMap();
-        Map<BulkImportMethod, Set<BulkFieldColumnHeader>> methodUpdateableFieldsMap = new HashMap<BulkImportMethod, Set<BulkFieldColumnHeader>>();
+        Map<BulkImportMethod, Set<BulkFieldColumnHeader>> requiredFieldsByMethod = new HashMap<>();
+        Map<BulkImportMethod, Set<BulkFieldColumnHeader>> updateableFieldsByMethod  = new HashMap<>();
         
         for (BulkImportMethod method : importMethods) {
-            Set<BulkFieldColumnHeader> orderedRequiredColumns = Sets.<BulkFieldColumnHeader> newTreeSet(new Comparator<BulkFieldColumnHeader>() {
-                @Override
-                public int compare(BulkFieldColumnHeader o1, BulkFieldColumnHeader o2) {
-                    return o1.getFieldName().compareTo(o2.getFieldName());
-                }
-            });
+            Set<BulkFieldColumnHeader> orderedRequiredColumns =
+                new TreeSet<>(BulkFieldColumnHeader.FIELD_NAME_COMPARATOR);
             orderedRequiredColumns.addAll(method.getRequiredColumns());
-            methodRequiredFieldsMap.put(method, orderedRequiredColumns);
-            
-            Set<BulkFieldColumnHeader> orderedOptionalColumns = Sets.<BulkFieldColumnHeader> newTreeSet(new Comparator<BulkFieldColumnHeader>() {
-                @Override
-                public int compare(BulkFieldColumnHeader o1, BulkFieldColumnHeader o2) {
-                    return o1.getFieldName().compareTo(o2.getFieldName());
-                }
-            });
+            requiredFieldsByMethod.put(method, orderedRequiredColumns);
+
+            Set<BulkFieldColumnHeader> orderedOptionalColumns =
+                new TreeSet<>(BulkFieldColumnHeader.FIELD_NAME_COMPARATOR);
             orderedOptionalColumns.addAll(method.getOptionalColumns());
-            methodUpdateableFieldsMap.put(method, orderedOptionalColumns);
+            updateableFieldsByMethod.put(method, orderedOptionalColumns);
         }
         
         model.addAttribute("importMethods", importMethods);
-        model.addAttribute("methodRequiredFieldsMap", methodRequiredFieldsMap);
-        model.addAttribute("methodUpdateableFieldsMap", methodUpdateableFieldsMap);
+        model.addAttribute("requiredFieldsByMethod", requiredFieldsByMethod);
+        model.addAttribute("updateableFieldsByMethod", updateableFieldsByMethod );
     }
 }

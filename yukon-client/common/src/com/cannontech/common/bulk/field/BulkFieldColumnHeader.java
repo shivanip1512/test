@@ -1,5 +1,7 @@
 package com.cannontech.common.bulk.field;
 
+import java.util.Comparator;
+
 public enum BulkFieldColumnHeader {
     
     TEMPLATE("template"),
@@ -17,6 +19,14 @@ public enum BulkFieldColumnHeader {
     LATITUDE("latitude"),
     LONGITUDE("longitude"),
     ;
+    
+    public final static Comparator<BulkFieldColumnHeader> FIELD_NAME_COMPARATOR =
+            new Comparator<BulkFieldColumnHeader>() {
+                @Override
+                public int compare(BulkFieldColumnHeader o1, BulkFieldColumnHeader o2) {
+                    return o1.getFieldName().compareTo(o2.getFieldName());
+                }
+            };
     
     private String fieldName;
     
