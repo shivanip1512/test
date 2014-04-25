@@ -110,7 +110,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	
 		if( value != null )
 		{
-		    PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
+		    PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 			LitePoint pt = pointDao.getLitePoint(PointTypes.SYS_PID_THRESHOLD);
 									
 			// Create the GDS to add in the tables.
