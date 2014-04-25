@@ -1,5 +1,7 @@
 package com.cannontech.dr.ecobee.model;
 
+import org.joda.time.Instant;
+
 
 
 public class EcobeeDeviceReading {
@@ -9,15 +11,17 @@ public class EcobeeDeviceReading {
     private final Float setHeatTempInF;
     private final Integer runtimeSeconds;
     private final String eventActivity;
+    private final Instant date;
 
     public EcobeeDeviceReading(Float outdoorTempInF, Float indoorTempInF, Float setCoolTempInF,
-                               Float setHeatTempInF, Integer runtimeSeconds, String eventActivity) {
+                               Float setHeatTempInF, Integer runtimeSeconds, String eventActivity, Instant date) {
         this.outdoorTempInF = outdoorTempInF;
         this.indoorTempInF = indoorTempInF;
         this.setCoolTempInF = setCoolTempInF;
         this.setHeatTempInF = setHeatTempInF;
         this.runtimeSeconds = runtimeSeconds;
         this.eventActivity = eventActivity;
+        this.date = date;
     }
 
     public Float getOutdoorTempInF() {
@@ -42,5 +46,9 @@ public class EcobeeDeviceReading {
 
     public String getEventActivity() {
         return eventActivity;
+    }
+
+    public Instant getDate() {
+        return date;
     }
 }
