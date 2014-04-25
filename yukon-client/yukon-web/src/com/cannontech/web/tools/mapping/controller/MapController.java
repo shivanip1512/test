@@ -29,6 +29,8 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -36,13 +38,10 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.common.pao.dao.PaoLocationDao;
-import com.cannontech.common.pao.model.PaoLocation;
-import com.cannontech.web.tools.mapping.service.PaoLocationService;
-import com.cannontech.web.tools.mapping.service.PaoLocationService.FeaturePropertyType;
 import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
-import com.google.common.base.Function;
+import com.cannontech.web.tools.mapping.service.PaoLocationService;
+import com.cannontech.web.tools.mapping.service.PaoLocationService.FeaturePropertyType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableMap;
@@ -115,14 +114,13 @@ public class MapController {
     }
     
     @RequestMapping("/map/filter")
-    public @ResponseBody List<Integer> filter(DeviceCollection deviceCollection, @ModelAttribute("filter") final Filter filter) {
+    public @ResponseBody List<Integer> filter(DeviceCollection deviceCollection, @ModelAttribute Filter filter) {
         
         List<Integer> paoIds = new ArrayList<>();
-        Map<Integer, Group> groups = Maps.uniqueIndex(filter.getGroups(), new Function<Group, Integer>() {
-            @Override public Integer apply(Group group) { return group.getId(); }
-        });
+        Map<Integer, Group> groups = Maps.uniqueIndex(filter.getGroups(), Group.ID_FUNCTION);
         
-        BiMap<LitePoint, SimpleDevice> points = attributeService.getPoints(deviceCollection.getDeviceList(), filter.getAttribute()).inverse();
+        BiMap<LitePoint, SimpleDevice> points = 
+                attributeService.getPoints(deviceCollection.getDeviceList(), filter.getAttribute()).inverse();
         Map<Integer, LitePoint> pointIdToPoint = new HashMap<>();
         for (LitePoint point : points.keySet()) {
             pointIdToPoint.put(point.getLiteID(), point);
