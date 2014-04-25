@@ -1,5 +1,6 @@
 package com.cannontech.dr.assetavailability.dao;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,32 +15,37 @@ import com.cannontech.common.pao.YukonPao;
 public interface DRGroupDeviceMappingDao {
 
     /**
-     * @return The inventory ids / device ids associated with the specified load groups.
+     * Returns The inventory ids / device ids associated with the specified load groups.
      */
-    public Map<Integer, Integer> getInventoryAndDeviceIdsForLoadGroups(Iterable<Integer> loadGroupIds);
+    Map<Integer, Integer> getInventoryAndDeviceIdsForLoadGroups(Iterable<Integer> loadGroupIds);
     
     /**
-     * @return The set of device ids associated with the specified load group, program, scenario or
+     * Returns the manufacturers serial number for all inventory associated with the load groups
+     */
+    List<String> getInventorySerialNumbersForLoadGroups(Iterable<Integer> loadGroupIds);
+    
+    /**
+     * Returns The set of device ids associated with the specified load group, program, scenario or
      * control area.
      */
-    public Set<Integer> getDeviceIdsForGrouping(PaoIdentifier paoIdentifier);
+    Set<Integer> getDeviceIdsForGrouping(PaoIdentifier paoIdentifier);
     
     /**
-     * @return A set of all YukonPaos associated with the specified load group, program scenario or 
+     * Returns A set of all YukonPaos associated with the specified load group, program scenario or 
      * control area.
      */
-    public Set<YukonPao> getDevicesForGrouping(PaoIdentifier paoIdentifier);
+    Set<YukonPao> getDevicesForGrouping(PaoIdentifier paoIdentifier);
     
     /**
-     * @return A set of ids for the load groups in control area, scenario, load program, or load group
+     * Returns A set of ids for the load groups in control area, scenario, load program, or load group
      * specified by the paoIdentifier.
      * @throws IllegalArgumentException If the paoIdentifier is not a DR grouping.
      */
-    public Set<Integer> getLoadGroupIdsForDrGroup(PaoIdentifier paoIdentifier);
+    Set<Integer> getLoadGroupIdsForDrGroup(PaoIdentifier paoIdentifier);
     
     /**
-     * @return A map of inventoryId to SimpleDevice for all two-way inventory in the specified load group, program,
+     * Returns A map of inventoryId to SimpleDevice for all two-way inventory in the specified load group, program,
      * scenario or control area.
      */
-    public Map<Integer, SimpleDevice> getInventoryPaoMapForGrouping(YukonPao yukonPao);
+    Map<Integer, SimpleDevice> getInventoryPaoMapForGrouping(YukonPao yukonPao);
 }

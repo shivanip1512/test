@@ -1,6 +1,7 @@
 package com.cannontech.dr.assetavailability.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -133,6 +134,32 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
         return idsMap;
     }
     
+    @Override
+    public List<String> getInventorySerialNumbersForLoadGroups(Iterable<Integer> loadGroupIds) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ManufacturerSerialNumber");
+                sql.append("FROM LMHardwareConfiguration lmhc");
+                sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+                sql.append("JOIN LmHardwareBase lhb on lhb.InventoryID = ib.InventoryID");
+                sql.append("WHERE lmhc.AddressingGroupId").in(subList);
+                return sql;
+            }
+        };
+
+        final List<String> serialNumbers = new ArrayList<>();
+        chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                serialNumbers.add(rs.getString("ManufacturerSerialNumber"));
+            }
+        });
+
+        return serialNumbers;
+    }
+
     @Override
     public Set<Integer> getLoadGroupIdsForDrGroup(PaoIdentifier paoIdentifier) {
         PaoType paoType = paoIdentifier.getPaoType();
