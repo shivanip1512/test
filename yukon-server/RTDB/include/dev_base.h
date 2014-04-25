@@ -237,6 +237,8 @@ public:
     void setDynamicInfo(PaoInfoKeys k, const unsigned long &value);
     void setDynamicInfo(PaoInfoKeys k, const double        &value);
     void setDynamicInfo(PaoInfoKeys k, const CtiTime       &value);
+    void setDynamicInfo(PaoInfoKeys k, const std::vector<std::string> &values);
+
     bool getDynamicInfo(PaoInfoKeys k, std::string   &destination) const;
     bool getDynamicInfo(PaoInfoKeys k, int           &destination) const;
     bool getDynamicInfo(PaoInfoKeys k, unsigned int  &destination) const;
@@ -259,9 +261,6 @@ public:
 
         return val;
     }
-
-    void setMultiKeyDynamicInfo( std::vector<PaoInfoKeys> keys, const std::string &value, unsigned maxLengthPerKey );
-    boost::optional<std::string> findMultiKeyDynamicInfo( std::vector<PaoInfoKeys> keys ) const;
 
     bool hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const;
     bool setStaticInfo(const CtiTableStaticPaoInfo &info);
@@ -341,8 +340,9 @@ public:
 
 };
 
-template<> IM_EX_DEVDB boost::optional<unsigned char> CtiDeviceBase::findDynamicInfo<unsigned char> (PaoInfoKeys k) const;
-template<> IM_EX_DEVDB boost::optional<bool>          CtiDeviceBase::findDynamicInfo<bool>          (PaoInfoKeys k) const;
+template<> IM_EX_DEVDB boost::optional<unsigned char>            CtiDeviceBase::findDynamicInfo<unsigned char>            (PaoInfoKeys k) const;
+template<> IM_EX_DEVDB boost::optional<bool>                     CtiDeviceBase::findDynamicInfo<bool>                     (PaoInfoKeys k) const;
+template<> IM_EX_DEVDB boost::optional<std::vector<std::string>> CtiDeviceBase::findDynamicInfo<std::vector<std::string>> (PaoInfoKeys k) const;
 
 namespace Cti {
 namespace Devices {

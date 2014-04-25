@@ -146,54 +146,34 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
 }
 
 /**
- * Convert a set of value into a single string.
- * Note: follows the sequence provided by the set
+ * convert a set of metrics to a vector of string for dynamic info
+ *
+ * @param metrics set of metric string
+ * @return vector of strings for dynamic info
  */
-std::string convertValueSetToString( const std::set<unsigned>& values )
+std::vector<std::string> makeMetricListDynamicInfo( const Commands::RfnChannelConfigurationCommand::MetricList& metrics )
 {
-    std::set<unsigned>::const_iterator itr = values.begin();
-    if( itr == values.end() )
+    const unsigned maxCharPerIndex = 64; // max character per DynamicInfoItem indexed item
+    const std::string seperator = ",";
+
+    std::vector<std::string> result;
+
+    for each( const std::string& metric in metrics )
     {
-        return ""; // return empty string
+        if( result.empty() || (result.back().length() + seperator.length() + metric.length()) > maxCharPerIndex )
+        {
+            result.resize( result.size() + 1 );
+        }
+        else
+        {
+            result.back() += seperator;
+        }
+
+        result.back() += metric;
     }
 
-    std::ostringstream oss;
-    oss << std::hex;
-    oss << *(itr++);
-
-    while( itr != values.end() )
-    {
-        oss << "," << *(itr++);
-    }
-
-    return oss.str();
+    return result;
 }
-
-const unsigned metricsDynamicInfoMaxLengthPerKey = 100;
-
-const std::vector<CtiTableDynamicPaoInfo::PaoInfoKeys> channelSelectionMetricsDynamicKeys = boost::assign::list_of
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics0)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics1)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics2)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics3)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics4)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics5)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics6)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics7)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics8)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics9);
-
-const std::vector<CtiTableDynamicPaoInfo::PaoInfoKeys> channelRecordingIntervalMetricsDynamicKeys = boost::assign::list_of
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics0)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics1)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics2)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics3)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics4)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics5)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics6)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics7)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics8)
-        (CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics9);
 
 } // anonymous namespace
 
@@ -1456,7 +1436,7 @@ int RfnResidentialDevice::executePutConfigInstallChannels( CtiRequestMsg    * pR
     using Commands::RfnSetChannelIntervalRecordingCommand;
 
     typedef Commands::RfnChannelConfigurationCommand::MetricList MetricList;
-    typedef Commands::RfnChannelConfigurationCommand::MetricList MetricIdsList;
+    typedef std::vector<std::string> PaoMetricList;
 
     try
     {
@@ -1468,13 +1448,12 @@ int RfnResidentialDevice::executePutConfigInstallChannels( CtiRequestMsg    * pR
 
         {
             // channel selection configuration data
-            const MetricList  cfgChannelSelectionMetrics    = getConfigData<MetricList> ( deviceConfig, Config::RfnStrings::ChannelSelectionPrefix, Config::RfnStrings::ChannelSelectionMetric );
-            const std::string cfgChannelSelectionMetricsStr = convertValueSetToString   ( RfnChannelConfigurationCommand::resolveMetrics( cfgChannelSelectionMetrics ));
+            const MetricList    cfgChannelSelectionMetrics          = getConfigDataSet<std::string> ( deviceConfig, Config::RfnStrings::ChannelSelectionPrefix, Config::RfnStrings::ChannelSelectionMetric );
+            const PaoMetricList cfgChannelSelectionMetricsToCompare = makeMetricListDynamicInfo     ( cfgChannelSelectionMetrics );
 
-            // channel selection pao dynamic info
-            const boost::optional<std::string> paoChannelSelectionMetricsStr = findMultiKeyDynamicInfo( channelSelectionMetricsDynamicKeys );
+            boost::optional<PaoMetricList> paoChannelSelectionMetrics = findDynamicInfo<PaoMetricList>( CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics );
 
-            if( cfgChannelSelectionMetricsStr != paoChannelSelectionMetricsStr ||
+            if( cfgChannelSelectionMetricsToCompare != paoChannelSelectionMetrics ||
                 parse.isKeyValid("force") )
             {
                 if( parse.isKeyValid("verify") )
@@ -1490,17 +1469,17 @@ int RfnResidentialDevice::executePutConfigInstallChannels( CtiRequestMsg    * pR
 
         {
             // channel recording interval configuration data
-            const MetricList  cfgChannelRecordingIntervalMetrics    = getConfigData<MetricList> ( deviceConfig, Config::RfnStrings::ChannelRecordingIntervalPrefix, Config::RfnStrings::ChannelRecordingIntervalMetric );
-            const std::string cfgChannelRecordingIntervalMetricsStr = convertValueSetToString   ( RfnChannelConfigurationCommand::resolveMetrics( cfgChannelRecordingIntervalMetrics ));
-            const unsigned    cfgChannelRecordingIntervalSeconds    = getConfigData<unsigned>   ( deviceConfig, Config::RfnStrings::ChannelRecordingIntervalSeconds );
-            const unsigned    cfgChannelReportingIntervalSeconds    = getConfigData<unsigned>   ( deviceConfig, Config::RfnStrings::ChannelReportingIntervalSeconds );
+            const MetricList    cfgChannelRecordingIntervalMetrics          = getConfigDataSet<std::string> ( deviceConfig, Config::RfnStrings::ChannelRecordingIntervalPrefix, Config::RfnStrings::ChannelRecordingIntervalMetric );
+            const PaoMetricList cfgChannelRecordingIntervalMetricsToCompare = makeMetricListDynamicInfo     ( cfgChannelRecordingIntervalMetrics );
+            const unsigned      cfgChannelRecordingIntervalSeconds          = getConfigData<unsigned>       ( deviceConfig, Config::RfnStrings::ChannelRecordingIntervalSeconds );
+            const unsigned      cfgChannelReportingIntervalSeconds          = getConfigData<unsigned>       ( deviceConfig, Config::RfnStrings::ChannelReportingIntervalSeconds );
 
             // channel recording interval pao dynamic info
-            const boost::optional<std::string> paoChannelRecordingIntervalMetricsStr = findMultiKeyDynamicInfo   ( channelRecordingIntervalMetricsDynamicKeys );
-            const boost::optional<unsigned>    paoChannelRecordingIntervalSeconds    = findDynamicInfo<unsigned> ( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds );
-            const boost::optional<unsigned>    paoChannelReportingIntervalSeconds    = findDynamicInfo<unsigned> ( CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds );
+            const boost::optional<PaoMetricList> paoChannelRecordingIntervalMetrics = findDynamicInfo<PaoMetricList> ( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics );
+            const boost::optional<unsigned>      paoChannelRecordingIntervalSeconds = findDynamicInfo<unsigned>      ( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds );
+            const boost::optional<unsigned>      paoChannelReportingIntervalSeconds = findDynamicInfo<unsigned>      ( CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds );
 
-            if( cfgChannelRecordingIntervalMetricsStr != paoChannelRecordingIntervalMetricsStr ||
+            if( cfgChannelRecordingIntervalMetricsToCompare != paoChannelRecordingIntervalMetrics ||
                 cfgChannelRecordingIntervalSeconds != paoChannelRecordingIntervalSeconds ||
                 cfgChannelReportingIntervalSeconds != paoChannelReportingIntervalSeconds ||
                 parse.isKeyValid("force") )
@@ -1923,13 +1902,16 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouHolidayCon
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnChannelSelectionCommand & cmd )
 {
-    setMultiKeyDynamicInfo( channelSelectionMetricsDynamicKeys, convertValueSetToString( cmd.getMetricsIdsReceived() ), metricsDynamicInfoMaxLengthPerKey);
+    std::vector<std::string> paoMetrics = makeMetricListDynamicInfo( cmd.getMetricsReceived() );
+
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelSelectionMetrics, paoMetrics );
 }
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnChannelIntervalRecordingCommand & cmd )
 {
-    setMultiKeyDynamicInfo( channelRecordingIntervalMetricsDynamicKeys, convertValueSetToString( cmd.getMetricsIdsReceived() ), metricsDynamicInfoMaxLengthPerKey);
+    std::vector<std::string> paoMetrics = makeMetricListDynamicInfo( cmd.getMetricsReceived() );
 
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalMetrics, paoMetrics );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds, cmd.getIntervalRecordingSecondsReceived() );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds, cmd.getIntervalReportingSecondsReceived() );
 }

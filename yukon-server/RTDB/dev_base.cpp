@@ -916,6 +916,10 @@ void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const CtiTime &value)
 {
     Cti::DynamicPaoInfoManager::setInfo(getID(), k, (unsigned long) value.seconds());
 }
+void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const std::vector<std::string> &values)
+{
+    Cti::DynamicPaoInfoManager::setIndexedInfo(getID(), k, values);
+}
 
 bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,        string &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
 bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,           int &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
@@ -954,49 +958,10 @@ boost::optional<bool> CtiDeviceBase::findDynamicInfo<bool>(PaoInfoKeys k) const
     return static_cast<bool>(val);
 }
 
-/**
- * set a string value using a list of PaoInfoKeys
- *
- * @param keys
- * @param value
- * @param maxLengthPerKey
- */
-void CtiDeviceBase::setMultiKeyDynamicInfo( std::vector<PaoInfoKeys> keys, const std::string &value, unsigned maxLengthPerKey )
+template <>
+boost::optional<std::vector<std::string>> CtiDeviceBase::findDynamicInfo<std::vector<std::string>>(PaoInfoKeys k) const
 {
-    unsigned pos = 0;
-
-    for each( const PaoInfoKeys k in keys )
-    {
-        const unsigned len = std::min<unsigned>(maxLengthPerKey, value.size() - pos);
-
-        setDynamicInfo( k, value.substr(pos, len) );
-
-        pos += len;
-    }
-}
-
-/**
- * find dynamic info from multiple PaoInfoKeys.
- *
- * @param keys
- * @return result string of all dynamic info, boost::none if any info are missing
- */
-boost::optional<std::string> CtiDeviceBase::findMultiKeyDynamicInfo( std::vector<PaoInfoKeys> keys ) const
-{
-    std::string result;
-
-    for each( const PaoInfoKeys k in keys )
-    {
-        std::string val;
-        if( ! getDynamicInfo(k, val) )
-        {
-            return boost::none;
-        }
-
-        result.append( val );
-    }
-
-    return result;
+    return Cti::DynamicPaoInfoManager::getIndexedInfo<std::string> (getID(), k);
 }
 
 void CtiDeviceBase::setExpectedFreeze(int freeze)

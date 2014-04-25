@@ -5,6 +5,7 @@
 #include "config_exceptions.h"
 
 #include <boost/optional.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <limits>
 #include <string>
@@ -76,47 +77,81 @@ unsigned getConfigData<unsigned>( const Config::DeviceConfigSPtr & deviceConfig,
     return static_cast<unsigned>( l_val );
 }
 
-template <typename T>
-T getConfigData( Config::DeviceConfigSPtr &deviceConfig, const std::string &prefix, const std::string &key );
-
 /**
- * Specialization of getConfigData() for indexed config items. Retrieve a set of configuration string for a given prefix and config key
+ * getConfigData() for indexed config items. Retrieve a vector of config data for a given prefix and config key
  * throws MissingConfigDataException() if config data is missing
- * throws InvalidConfigDataException() if duplicated data is found
  */
-template <>
-std::set<std::string> getConfigData<std::set<std::string>>( Config::DeviceConfigSPtr &deviceConfig, const std::string &prefix, const std::string &key )
+template <typename T>
+std::vector<T> getConfigData( Config::DeviceConfigSPtr &deviceConfig, const std::string &prefix, const std::string &key )
 {
-    std::set<std::string> result;
+    unsigned index = 0;
+    std::vector<T> result;
 
     std::vector<Config::DeviceConfigSPtr> indexedConfig = deviceConfig->getIndexedConfig( prefix );
 
-    unsigned index = 0;
     for each( const Config::DeviceConfigSPtr& config in indexedConfig )
     {
-        boost::optional<std::string> val = config->findValue<std::string>( key );
-
-        if( ! val )
+        if( ! config )
         {
-            std::ostringstream configKey;
-            configKey << prefix << index << key;
+            std::string configKey = prefix + boost::lexical_cast<std::string>(index) + key;
 
-            throw MissingConfigDataException( configKey.str() );
+            // this is not expected, but better safe than sorry
+            throw MissingConfigDataException( configKey );
         }
 
-        if( ! result.insert(*val).second )
+        try
         {
-            std::ostringstream configKey, cause;
-            configKey << prefix << index << key;
-            cause << "Unexpected duplicated config data \"" << val << "\"";
+            result.push_back( getConfigData<T>( config, key ));
+        }
+        catch( MissingConfigDataException& )
+        {
+            std::string configKey = prefix + boost::lexical_cast<std::string>(index) + key;
 
-            throw InvalidConfigDataException( configKey.str(), cause.str() );
+            throw MissingConfigDataException( configKey );
+        }
+        catch( InvalidConfigDataException& ex )
+        {
+            std::string configKey = prefix + boost::lexical_cast<std::string>(index) + key;
+
+            throw InvalidConfigDataException( configKey, ex.cause );
         }
 
         index++;
     }
 
     return result;
+}
+
+
+/**
+ * get a set of values from and indexed configuration
+ * throws MissingConfigDataException() if config data is missing
+ * throws InvalidConfigDataException() if duplicated data is found or getConfigData() as encounter an error
+ */
+template <typename T>
+std::set<T> getConfigDataSet( Config::DeviceConfigSPtr &deviceConfig, const std::string &prefix, const std::string &key )
+{
+    unsigned index = 0;
+    std::set<T> result;
+
+    std::vector<T> values = getConfigData<T>(deviceConfig, prefix, key );
+
+    for each( const T& val in values )
+    {
+        if( ! result.insert(val).second )
+        {
+            std::string configKey = prefix + boost::lexical_cast<std::string>(index) + key;
+
+            std::ostringstream cause;
+            cause << "Unexpected duplicated config data \"" << val << "\"";
+
+            throw InvalidConfigDataException( configKey, cause.str() );
+        }
+
+        index++;
+   }
+
+   return result;
 }
 
 } // Anonymous

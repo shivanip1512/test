@@ -7,11 +7,13 @@
 #include "database_reader.h"
 #include "database_writer.h"
 #include "database_util.h"
-
 #include "std_helper.h"
+
+#include <sstream>
 
 #include <boost/assign.hpp>
 #include <boost/optional.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace {
 
@@ -349,28 +351,8 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
 
         (Dpi::Key_RF_DA_DnpSlaveAddress, "rf da dnp slave address")
 
-        (Dpi::Key_RFN_ChannelSelectionMetrics0, "rfn channel selection metrics 0")
-        (Dpi::Key_RFN_ChannelSelectionMetrics1, "rfn channel selection metrics 1")
-        (Dpi::Key_RFN_ChannelSelectionMetrics2, "rfn channel selection metrics 2")
-        (Dpi::Key_RFN_ChannelSelectionMetrics3, "rfn channel selection metrics 3")
-        (Dpi::Key_RFN_ChannelSelectionMetrics4, "rfn channel selection metrics 4")
-        (Dpi::Key_RFN_ChannelSelectionMetrics5, "rfn channel selection metrics 5")
-        (Dpi::Key_RFN_ChannelSelectionMetrics6, "rfn channel selection metrics 6")
-        (Dpi::Key_RFN_ChannelSelectionMetrics7, "rfn channel selection metrics 7")
-        (Dpi::Key_RFN_ChannelSelectionMetrics8, "rfn channel selection metrics 8")
-        (Dpi::Key_RFN_ChannelSelectionMetrics9, "rfn channel selection metrics 9")
-
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics0, "rfn channel recording interval metrics 0")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics1, "rfn channel recording interval metrics 1")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics2, "rfn channel recording interval metrics 2")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics3, "rfn channel recording interval metrics 3")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics4, "rfn channel recording interval metrics 4")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics5, "rfn channel recording interval metrics 5")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics6, "rfn channel recording interval metrics 6")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics7, "rfn channel recording interval metrics 7")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics8, "rfn channel recording interval metrics 8")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics9, "rfn channel recording interval metrics 9")
-
+        (Dpi::Key_RFN_ChannelSelectionMetrics,         "rfn channel selection metrics")
+        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics, "rfn channel recording interval metrics")
         (Dpi::Key_RFN_ChannelRecordingIntervalSeconds, "rfn channel recording interval seconds")
         (Dpi::Key_RFN_ChannelReportingIntervalSeconds, "rfn channel reporting interval seconds")
         ;
@@ -393,15 +375,45 @@ CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(Cti::RowReader& rdr) :
     rdr["value"]      >> _value;
     rdr["infokey"]    >> tmp_keyString;
 
-    const boost::optional<PaoInfoKeys> resolvedKey = Cti::bimapFind<PaoInfoKeys>(KeyNames.right, tmp_keyString);
+    boost::optional<PaoInfoKeys> resolvedKey = Cti::bimapFind<PaoInfoKeys>(KeyNames.right, tmp_keyString);
 
     if( ! resolvedKey )
     {
-        std::string tmp_OwnerString;
+        // this could be an indexed key
 
-        rdr["owner"] >> tmp_OwnerString;
+        // look for the last space character: space char precede digits
+        const unsigned pos = tmp_keyString.find_last_of(' ');
 
-        throw BadKeyException(_pao_id, tmp_keyString, tmp_OwnerString);
+        // make sure the position found is not the first nor the last character
+        if( pos != std::string::npos && pos > 0 && pos+1 < tmp_keyString.length() )
+        {
+            try
+            {
+                const int index = boost::lexical_cast<int>( tmp_keyString.substr(pos+1) );
+
+                if( index >= 0 )
+                {
+                    _index = index;
+
+                    // only try to resolve the key if the index is valid
+                    resolvedKey = Cti::bimapFind<PaoInfoKeys>(KeyNames.right, tmp_keyString.substr(0, pos-1));
+                }
+            }
+            catch( boost::bad_lexical_cast& )
+            {
+                // let it fall through,
+                // resolvedKey is expected to be boost::none
+            }
+        }
+
+        if( ! resolvedKey )
+        {
+            std::string tmp_OwnerString;
+
+            rdr["owner"] >> tmp_OwnerString;
+
+            throw BadKeyException(_pao_id, tmp_keyString, tmp_OwnerString);
+        }
     }
 
     _key = *resolvedKey;
@@ -423,6 +435,12 @@ bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn, con
         dout << CtiTime() << " **** Checkpoint - invalid attempt to insert into DynamicPaoInfo - paoid = " << _pao_id << ", owner = \"" << owner << "\", and keyString = \"" << *keyString << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
         return false;
+    }
+
+    if( _index )
+    {
+        // insert space character before digits
+        *keyString += " " + boost::lexical_cast<std::string>(*_index);
     }
 
     static const std::string sql = "insert into DynamicPaoInfo values (?, ?, ?, ?, ?)";
@@ -461,6 +479,12 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, con
         dout << CtiTime() << " **** Checkpoint - invalid attempt to insert into DynamicPaoInfo - paoid = " << getPaoID() << ", owner = \"" << owner << "\", and keyString = \"" << *keyString << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
         return false;
+    }
+
+    if( _index )
+    {
+        // insert space character before digits
+        *keyString += " " + boost::lexical_cast<std::string>(*_index);
     }
 
     static const std::string sql =
@@ -519,10 +543,22 @@ long CtiTableDynamicPaoInfo::getPaoID() const
 {
     return _pao_id;
 }
+
 CtiTableDynamicPaoInfo::PaoInfoKeys CtiTableDynamicPaoInfo::getKey() const
 {
     return _key;
 }
+
+boost::optional<unsigned> CtiTableDynamicPaoInfo::getIndex() const
+{
+    return _index;
+}
+
+void CtiTableDynamicPaoInfo::setIndex( unsigned index )
+{
+    _index = index;
+}
+
 std::string CtiTableDynamicPaoInfo::getKeyString(const PaoInfoKeys key)
 {
     if( const boost::optional<std::string> keyString = Cti::bimapFind<std::string>(KeyNames.left, key) )
@@ -586,4 +622,9 @@ void CtiTableDynamicPaoInfo::dump()
     dout << "getPaoID()   " << getPaoID() << std::endl;
     dout << "getKey()     " << getKey() << std::endl;
     dout << "getValue()   " << getValue() << std::endl;
+
+    if( getIndex() )
+    {
+        dout << "getIndex()   " << *getIndex() << std::endl;
+    }
 }

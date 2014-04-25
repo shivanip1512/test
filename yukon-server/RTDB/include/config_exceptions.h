@@ -33,11 +33,13 @@ struct InvalidConfigDataException : public std::exception
 {
 public:
     const std::string configKey;
+    const std::string cause;
     const std::string message;
 
-    InvalidConfigDataException( const std::string& key, const std::string& cause ) :
+    InvalidConfigDataException( const std::string& key, const std::string& cause_ ) :
         configKey( key ),
-        message( "Invalid data for config key \"" + key + "\" : " + cause )
+        cause( cause_ ),
+        message( "Invalid data for config key \"" + key + "\" : " + cause_ + "\"." )
     {
     }
 

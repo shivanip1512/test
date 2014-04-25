@@ -341,28 +341,8 @@ public:
         Key_RFN_TempAlarmRepeatCount,
         Key_RFN_TempAlarmHighTempThreshold,
 
-        Key_RFN_ChannelSelectionMetrics0,
-        Key_RFN_ChannelSelectionMetrics1,
-        Key_RFN_ChannelSelectionMetrics2,
-        Key_RFN_ChannelSelectionMetrics3,
-        Key_RFN_ChannelSelectionMetrics4,
-        Key_RFN_ChannelSelectionMetrics5,
-        Key_RFN_ChannelSelectionMetrics6,
-        Key_RFN_ChannelSelectionMetrics7,
-        Key_RFN_ChannelSelectionMetrics8,
-        Key_RFN_ChannelSelectionMetrics9,
-
-        Key_RFN_ChannelRecordingIntervalMetrics0,
-        Key_RFN_ChannelRecordingIntervalMetrics1,
-        Key_RFN_ChannelRecordingIntervalMetrics2,
-        Key_RFN_ChannelRecordingIntervalMetrics3,
-        Key_RFN_ChannelRecordingIntervalMetrics4,
-        Key_RFN_ChannelRecordingIntervalMetrics5,
-        Key_RFN_ChannelRecordingIntervalMetrics6,
-        Key_RFN_ChannelRecordingIntervalMetrics7,
-        Key_RFN_ChannelRecordingIntervalMetrics8,
-        Key_RFN_ChannelRecordingIntervalMetrics9,
-
+        Key_RFN_ChannelSelectionMetrics,
+        Key_RFN_ChannelRecordingIntervalMetrics,
         Key_RFN_ChannelRecordingIntervalSeconds,
         Key_RFN_ChannelReportingIntervalSeconds,
 
@@ -375,6 +355,7 @@ protected:
     PaoInfoKeys _key;
     std::string _value;
     bool _fromDb;
+    boost::optional<unsigned> _index;
 
 public:
 
@@ -407,6 +388,9 @@ public:
     PaoInfoKeys         getKey()         const;
     std::string         getValue()       const;
     static std::string  getKeyString(const PaoInfoKeys key);
+
+    void setIndex( unsigned index );
+    boost::optional<unsigned> getIndex() const;
 
     void getValue(int           &destination) const;
     void getValue(long          &destination) const;

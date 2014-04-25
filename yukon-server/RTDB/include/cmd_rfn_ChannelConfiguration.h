@@ -20,22 +20,18 @@ public:
     {};
 
     typedef std::set<std::string> MetricList;
-    typedef std::set<unsigned>    MetricIdList;
 
-    MetricList   getMetricsReceived() const;
-    MetricIdList getMetricsIdsReceived() const;
-
-    static MetricIdList resolveMetrics( const MetricList& metrics );
+    MetricList getMetricsReceived() const;
 
 protected:
+
     RfnChannelConfigurationCommand()
     {};
 
     typedef std::vector<TypeLengthValue> TlvList;
 
-    // contains list of metric ids for channel selection tlv type 1 or interval recording tlv type 1
-    MetricList   _metricsReceived;
-    MetricIdList _metricsIdsReceived;
+    // contains list of metrics for channel selection tlv type 1 or interval recording tlv type 1
+    MetricList _metricsReceived;
 
     virtual TlvList       getTlvsToSend() const;
     virtual unsigned char getResponseCommandCode() const = 0;
