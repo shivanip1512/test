@@ -24,9 +24,13 @@
     <entry key="yukon.web.modules.tools.map.chooseAttribute">Choose an attribute...</entry>
     <entry key="yukon.web.modules.tools.map.retrievingStates">Retrieving states...</entry>
     <entry key="yukon.web.modules.tools.map.noStatesForAttribute">No devices support the selected attribute.</entry>
-    <entry key="yukon.web.modules.tools.map.mq.label">MapQuest</entry>
-    <entry key="yukon.web.modules.tools.map.mqsat.label">Satellite</entry>
-    <entry key="yukon.web.modules.tools.map.osm.label">OSM</entry>
+    <entry key="yukon.web.modules.tools.map.map.label">Map</entry>
+    <entry key="yukon.web.modules.tools.map.satellite.label">Satellite</entry>
+    <entry key="yukon.web.modules.tools.map.hybrid.label">Hybrid</entry>
+    <entry key="yukon.web.modules.tools.map.device">Device</entry>
+    <entry key="yukon.web.modules.tools.map.type">Type</entry>
+    <entry key="yukon.web.modules.tools.map.latitude">Latitude</entry>
+    <entry key="yukon.web.modules.tools.map.longitude">Longitude</entry>
     
     <!-- Trends -->
     <entry key="yukon.web.modules.tools.trends.pageName">Trends</entry>

@@ -16,15 +16,22 @@ yukon.tools.map = (function() {
     _icons = [], /** The of {ol.Feature} device icon. */
     _map = {}, /** The openlayers map object. */
     _styles = { /** A cache of styles to avoid creating lots of objects using lots of memory. */
-        'electric': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-electric.png') }) }),
-        'water': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-water.png') }) }),
-        'gas': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-gas.png') }) }),
-        'generic': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png') }) })
+        'electric': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-electric.png'), anchor: [0.5, 1.0] }) }),
+        'water': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-water.png'), anchor: [0.5, 1.0] }) }),
+        'gas': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-gas.png'), anchor: [0.5, 1.0] }) }),
+        'generic': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png'), anchor: [0.5, 1.0] }) })
     },
     _tiles = [
-        new ol.layer.Tile({ name: 'mqosm', source: new ol.source.MapQuest({ layer: 'osm' }), visible: false }),
+        new ol.layer.Tile({ name: 'mqosm', source: new ol.source.MapQuest({ layer: 'osm' }) }),
         new ol.layer.Tile({ name: 'mqsat', source: new ol.source.MapQuest({ layer: 'sat' }), visible: false }),
-        new ol.layer.Tile({ name: 'osm', source: new ol.source.OSM() })
+        new ol.layer.Group({
+            name: 'hybrid',
+            layers: [
+                new ol.layer.Tile({ source: new ol.source.MapQuest({layer: 'sat'}) }),
+                new ol.layer.Tile({ source: new ol.source.MapQuest({layer: 'hyb'}) })
+            ],
+            visible: false
+        })
     ],
     
     /** 
@@ -85,6 +92,48 @@ yukon.tools.map = (function() {
         init: function() {
 
             if (_initialized) return;
+            
+            /* Setup map */
+            _map = new ol.Map({
+                controls: [
+                    new ol.control.Attribution(),
+                    new ol.control.FullScreen(), 
+                    new ol.control.ScaleLine({units: ol.control.ScaleLineUnits.IMPERIAL, target: 'scale-line'}), 
+                    new ol.control.Zoom(), 
+                    new ol.control.MousePosition({
+                        coordinateFormat: ol.coordinate.createStringXY(6),
+                        projection: 'EPSG:4326',
+                        target: 'mouse-position',
+                        undefinedHTML: '&nbsp;'
+                    })
+                ],
+                layers: _tiles,
+                target: 'map',
+                view: new ol.View2D({ center: ol.proj.transform([-97.734375, 40.529458], 'EPSG:4326', 'EPSG:3857'), zoom: 4 })
+            });
+            _destProjection = _map.getView().getProjection().getCode();
+            _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
+            _map.addLayer(new ol.layer.Vector({ name: 'filter', source: new ol.source.Vector({ projection: _destProjection }), visible: false }));
+            _loadIcons();
+            
+            /* Display popup on click */
+            var _overlay = new ol.Overlay({ element: document.getElementById('marker-info'), positioning: 'bottom-center', stopEvent: false });
+            _map.addOverlay(_overlay);
+            _map.on('click', function(ev) {
+                var feature = _map.forEachFeatureAtPixel(ev.pixel, function(feature, layer) { return feature; });
+                if (feature) {
+                    var 
+                    geometry = feature.getGeometry(),
+                    coord = geometry.getCoordinates(),
+                    url = 'map/device/' + feature.get('pao').paoId + '/info';
+                    $('#marker-info').load(url, function() {
+                        $('#marker-info').show();
+                        _overlay.setPosition(coord);
+                    });
+                } else {
+                    $('#marker-info').hide();
+                }
+            });
             
             /* Init attribute select and handle change events. */
             $('#attribute-select').chosen({width: '100%'}).on('change', function(ev) {
@@ -207,28 +256,12 @@ yukon.tools.map = (function() {
                 _getLayer('icons').getSource().addFeatures(add);
             });
             
-            // setup map
-            _map = new ol.Map({
-                controls: [
-                    new ol.control.FullScreen(), 
-                    new ol.control.ScaleLine({units: ol.control.ScaleLineUnits.IMPERIAL}), 
-                    new ol.control.Zoom(), 
-                    new ol.control.MousePosition({
-                        coordinateFormat: ol.coordinate.createStringXY(6),
-                        projection: 'EPSG:4326',
-                        className:  "custom-mouse-position",
-                        target: document.getElementById('mouse-position'),
-                        undefinedHTML: '&nbsp;'
-                    })
-                ],
-                layers: _tiles,
-                target: 'map',
-                view: new ol.View2D({ center: ol.proj.transform([-97.734375, 40.529458], 'EPSG:4326', 'EPSG:3857'), zoom: 4 })
+            /* Change mouse cursor when over marker.  There HAS to be a css way to do this! */
+            $(_map.getViewport()).on('mousemove', function(e) {
+                var pixel = _map.getEventPixel(e.originalEvent),
+                    hit = _map.forEachFeatureAtPixel(pixel, function(feature, layer) { return true; });
+                $('#' + _map.getTarget()).css('cursor', hit ? 'pointer' : 'default');
             });
-            _destProjection = _map.getView().getProjection().getCode();
-            _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
-            _map.addLayer(new ol.layer.Vector({ name: 'filter', source: new ol.source.Vector({ projection: _destProjection }), visible: false }));
-            _loadIcons();
             
             _initialized = true;
         },

@@ -14,11 +14,51 @@
   border: 1px solid #bbb;
   box-shadow: 0px 0px 5px #ddd;
 }
+.ol-scale-line, .ol-mouse-position {
+    background: rgba(0,60,136,0.3);
+    border-radius: 2px;
+    padding: 2px;
+    margin-right: 2px;
+    position: inherit;
+}
+.ol-mouse-position {color: #eee;padding: 2px 5px;width: 142px;}
 #filter-form .chosen-results {max-height: 100px;}
+#marker-info {
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 2px;
+    padding: 4px;
+    position: relative;
+    box-shadow: 0px 0px 10px #888;
+}
+#marker-info:after, #marker-info:before {
+    top: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+#marker-info:after {
+    border-color: rgba(252, 252, 252, 0);
+    border-top-color: #fff;
+    border-width: 6px;
+    margin-left: -6px;
+}
+#marker-info:before {
+    border-color: rgba(153, 153, 153, 0);
+    border-top-color: #bbb;
+    border-width: 7px;
+    margin-left: -7px;
+}
 </style>
 
     <input id="filtered-msg" type="hidden" value="<cti:msg2 key=".filtered"/>">
     <input id="unfiltered-msg" type="hidden" value="<cti:msg2 key=".filter.label"/>">
+    <div id="marker-info" class="well dn"></div>
 
     <div id="page-buttons">
         <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" popup="#map-popup"/>
@@ -59,10 +99,11 @@
     <div id="map" class="clearfix map f-focus" tabindex="0"></div>
     <div class="buffered">
         <div id="mouse-position" class="fl detail"></div>
+        <div id="scale-line" class="fl"></div>
         <div id="map-tiles" class="fr button-group">
-            <cti:button nameKey="mq" data-layer="mqosm" icon="icon-mapquest"/>
-            <cti:button nameKey="mqsat" data-layer="mqsat" icon="icon-mapquest"/>
-            <cti:button nameKey="osm" data-layer="osm" classes="on" icon="icon-osm"/>
+            <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
+            <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
+            <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
         </div>
     </div>
     
@@ -83,4 +124,5 @@
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
     <cti:includeScript link="/JavaScript/yukon.tools.map.js"/>
+    
 </cti:standardPage>

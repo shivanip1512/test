@@ -1080,7 +1080,8 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-trend-down{background-position: -32px -416px}
 .icon-trend-up{background-position: -48px -416px}
 .icon-mapquest{background-position: -64px -416px}
-.icon-osm{background-position: -80px -416px}
+.icon-map-sat{background-position: -80px -416px}
+.icon-map-hyb{background-position: -96px -416px}
 
 /* 32 pixel icons */
 .icon-32-blank {background-position: 32px 32px;}

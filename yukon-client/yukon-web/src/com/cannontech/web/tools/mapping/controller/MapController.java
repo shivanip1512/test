@@ -16,21 +16,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService.FeaturePropertyType;
 import com.cannontech.web.tools.mapping.model.Filter;
@@ -48,6 +55,9 @@ public class MapController {
     
     @Autowired private DynamicDataSource dds;
     @Autowired private PaoLocationService paoLocationService;
+    @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private PaoDao paoDao;
     @Autowired private ObjectFormattingService objectFormatting;
     @Autowired private AttributeService attributeService;
     
@@ -68,6 +78,24 @@ public class MapController {
         model.addAttribute("filter", filter);
         
         return "map/map.jsp";
+    }
+    
+    @RequestMapping("/map/device/{id}/info")
+    public String info(ModelMap model, @PathVariable int id) {
+        
+        YukonPao pao = paoDao.getYukonPao(id);
+        DisplayablePao displayable = paoLoadingService.getDisplayablePao(pao);
+//        PaoLocation location = paoLocationDao.getLocation(id);
+        
+        PaoLocation location = new PaoLocation();
+        location.setLatitude(45.254861);
+        location.setLongitude(-93.557715);
+        location.setPaoIdentifier(pao.getPaoIdentifier());
+        
+        model.addAttribute("pao", displayable);
+        model.addAttribute("location", location);
+        
+        return "map/info.jsp";
     }
     
     @RequestMapping("/map/locations")
@@ -134,6 +162,11 @@ public class MapController {
             
             double latitude = Double.parseDouble(df.format((Math.random() * (45.3 - 45.0)) + 45.0));
             double longitude = Double.parseDouble(df.format(((Math.random() * (93.5 - 93.0)) + 93.0) * -1));
+            if (collection.getFeatures().size() == 0) {
+                latitude = 45.254861;
+                longitude = -93.557715;
+            }
+            
             Point point = new Point(longitude, latitude);
             feature.setGeometry(point);
             

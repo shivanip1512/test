@@ -2099,6 +2099,12 @@
         <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
+        <name>newTab</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>If true, opens link in a new tab. Default: false.</description>
+    </attribute>
+    <attribute>
         <name>scope</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>

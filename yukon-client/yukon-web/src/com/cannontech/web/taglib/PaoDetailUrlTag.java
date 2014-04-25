@@ -13,10 +13,12 @@ import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 
 @Configurable("paoDetailUrlTagPrototype")
 public class PaoDetailUrlTag extends YukonTagSupport {
+    
     private PaoDetailUrlHelper paoDetailUrlHelper;
 
-    private YukonPao yukonPao = null;
-    private String var = null;
+    private YukonPao yukonPao;
+    private String var;
+    private boolean newTab;
     private String scope = TagUtils.SCOPE_PAGE;
 
     @Override
@@ -32,7 +34,9 @@ public class PaoDetailUrlTag extends YukonTagSupport {
             } else {
                 out.print("<a title=\"" + yukonPao.getPaoIdentifier() + "\" href=\"");
                 out.print(getRequest().getContextPath() + urlForPaoDetailPage);
-                out.print("\">");
+                out.print("\"");
+                if (newTab) out.print(" target=\"_blank\" ");
+                out.print(">");
                 getJspBody().invoke(out);
                 out.print("</a>");
             }
@@ -43,6 +47,10 @@ public class PaoDetailUrlTag extends YukonTagSupport {
     
     public void setVar(String var) {
         this.var = var;
+    }
+    
+    public void setNewTab(boolean newTab) {
+        this.newTab = newTab;
     }
     
     public void setScope(String scope) {
@@ -56,4 +64,5 @@ public class PaoDetailUrlTag extends YukonTagSupport {
     public void setPaoDetailUrlHelper(PaoDetailUrlHelper paoDetailUrlHelper) {
         this.paoDetailUrlHelper = paoDetailUrlHelper;
     }
+    
 }
