@@ -1,6 +1,7 @@
 package com.cannontech.web.dr;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.dr.ecobee.service.EcobeeException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -57,7 +59,8 @@ public class EcobeeController {
     
     // TODO: set requestMapping values
     //@RequestMapping(value="/ecobeeCsv", method=RequestMethod.GET)
-    public void ecobeeDataReportCsv(HttpServletResponse response, LiteYukonUser user) throws Exception {
+    public void ecobeeDataReportCsv(HttpServletResponse response, LiteYukonUser user) 
+            throws IOException, EcobeeException {
         response.setContentType("text/csv");
         // TODO: figure out good name for file
         response.setHeader("Content-Disposition","filename=\"ecobee_data_report.csv\"");
