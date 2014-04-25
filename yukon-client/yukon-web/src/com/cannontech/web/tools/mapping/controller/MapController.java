@@ -53,12 +53,12 @@ import com.google.common.collect.Sets;
 @Controller
 public class MapController {
     
-    @Autowired private DynamicDataSource dds;
+    @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private PaoDao paoDao;
-    @Autowired private ObjectFormattingService objectFormatting;
+    @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private AttributeService attributeService;
     
     @RequestMapping("/map")
@@ -72,7 +72,7 @@ public class MapController {
         
         model.addAttribute("deviceCollection", deviceCollection);
         ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> groups = BuiltInAttribute.getAllGroupedAttributes();
-        model.addAttribute("attributes", objectFormatting.sortDisplayableValues(groups, userContext));
+        model.addAttribute("attributes", objectFormattingService.sortDisplayableValues(groups, userContext));
         
         Filter filter = new Filter();
         model.addAttribute("filter", filter);
@@ -129,7 +129,7 @@ public class MapController {
         }
         
         Collection<Integer> pointIds = Collections2.transform(points.keySet(), LitePoint.ID_FUNCTION);
-        Set<? extends PointValueQualityHolder> values = dds.getPointValue(Sets.newHashSet(pointIds));
+        Set<? extends PointValueQualityHolder> values = dynamicDataSource.getPointValue(Sets.newHashSet(pointIds));
         
         for (PointValueQualityHolder pvqh : values) {
             LitePoint lp = pointIdToPoint.get(pvqh.getId());
