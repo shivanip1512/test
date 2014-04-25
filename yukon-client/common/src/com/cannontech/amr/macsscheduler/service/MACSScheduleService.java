@@ -1,15 +1,10 @@
 package com.cannontech.amr.macsscheduler.service;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.user.YukonUserContext;
 
 public interface MACSScheduleService<E> {
     
@@ -25,8 +20,4 @@ public interface MACSScheduleService<E> {
     
     public List<E> getAll() throws IOException;
  
-    public SearchResults<DisplayablePao> filterScripts(UiFilter<DisplayablePao> filter,
-                                                       Comparator<DisplayablePao> sorter, 
-                                                       int startIndex, int count,
-                                                       YukonUserContext userContext); 
 }
