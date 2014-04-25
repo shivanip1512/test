@@ -53,6 +53,7 @@ public enum JwsJnlp {
                 "aopalliance-1.0.jar",
                 "asm.jar",
                 "asm-attrs.jar",
+                "axis.jar",
                 "batik.jar",
                 "billing.jar",
                 "cglib-2.1.3.jar",
