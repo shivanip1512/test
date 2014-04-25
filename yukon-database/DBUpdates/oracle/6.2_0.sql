@@ -509,6 +509,36 @@ ALTER TABLE PaoLocation
          ON DELETE CASCADE;
 /* End YUK-13216 */
 
+/* Start YUK-13232 */
+UPDATE DeviceConfigCategoryItem
+SET ItemName = 'enableUnsolicitedMessagesClass1'
+WHERE DeviceConfigCategoryItemId IN (
+    SELECT I.DeviceConfigCategoryItemId
+    FROM DeviceConfigCategory C 
+    JOIN DeviceConfigCategoryItem I ON C.DeviceConfigCategoryId = I.DeviceConfigCategoryId
+    WHERE C.CategoryType = 'dnp'
+       AND ItemName = 'enableUnsolicitedMessages');
+ 
+INSERT INTO DeviceConfigCategoryItem
+SELECT ROW_NUMBER() OVER(ORDER BY I.DeviceConfigCategoryID) + (SELECT NVL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+    I.DeviceConfigCategoryId,
+    'enableUnsolicitedMessagesClass2',
+    I.ItemValue
+FROM DeviceConfigCategory C 
+JOIN DeviceConfigCategoryItem I ON C.DeviceConfigCategoryId = I.DeviceConfigCategoryId
+WHERE C.CategoryType = 'dnp'
+  AND I.ItemName = 'enableUnsolicitedMessagesClass1';
+ 
+INSERT INTO DeviceConfigCategoryItem
+SELECT ROW_NUMBER() OVER(ORDER BY I.DeviceConfigCategoryID) + (SELECT NVL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+    I.DeviceConfigCategoryId,
+    'enableUnsolicitedMessagesClass3',
+    I.ItemValue
+FROM DeviceConfigCategory C JOIN DeviceConfigCategoryItem I ON C.DeviceConfigCategoryId = I.DeviceConfigCategoryId
+WHERE C.CategoryType = 'dnp'
+  AND I.ItemName = 'enableUnsolicitedMessagesClass1';
+/* End YUK-13232 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

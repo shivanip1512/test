@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/21/2014 10:38:21 AM                        */
+/* Created on:     4/25/2014 11:17:20 AM                        */
 /*==============================================================*/
 
 
@@ -2749,7 +2749,9 @@ INSERT INTO DeviceConfigCategoryItem VALUES (0, 0, 'internalRetries', 2);
 INSERT INTO DeviceConfigCategoryItem VALUES (1, 0, 'omitTimeRequest', 'false');
 INSERT INTO DeviceConfigCategoryItem VALUES (2, 0, 'enableDnpTimesyncs', 'false');
 INSERT INTO DeviceConfigCategoryItem VALUES (3, 0, 'localTime', 'false');
-INSERT INTO DeviceConfigCategoryItem VALUES (4, 0, 'enableUnsolicitedMessages', 'true');
+INSERT INTO DeviceConfigCategoryItem VALUES (4, 0, 'enableUnsolicitedMessagesClass1', 'true');
+INSERT INTO DeviceConfigCategoryItem VALUES (5, 0, 'enableUnsolicitedMessagesClass2', 'true');
+INSERT INTO DeviceConfigCategoryItem VALUES (6, 0, 'enableUnsolicitedMessagesClass3', 'true');
 
 alter table DeviceConfigCategoryItem
    add constraint AK_DevConCatItem_CatIdItemName unique (DeviceConfigCategoryId, ItemName);
