@@ -157,7 +157,6 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
         lastRefresh = new Instant();
 
         weatherStationMap = newWeatherStationMap;
-        
         return weatherStationMap;
     }
 

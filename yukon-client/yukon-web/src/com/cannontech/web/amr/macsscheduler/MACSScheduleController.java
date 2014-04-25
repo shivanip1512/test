@@ -20,11 +20,6 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
-import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.UiFilterList;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -32,7 +27,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -148,33 +142,18 @@ public class MACSScheduleController extends MultiActionController {
     
     public ModelAndView innerView(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
-        final List<Schedule> list = service.getAll();
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        final int totalItems =  list.size();
         
-        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
-        filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, 
-                userContext.getYukonUser(),
-                Permission.LM_VISIBLE));
+        List<Schedule> filteredSchedules = new ArrayList<>();
+        List<Schedule> allSchedules = service.getAll();
         
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
-        SearchResults<DisplayablePao> searchResult =
-               service.filterScripts(filter, new DisplayablePaoComparator(), 0, totalItems,
-                                     userContext);
-       
-       List<Schedule> filteredSchedulelist = new ArrayList<Schedule>();
-  
-        for (int searchCount = 0; searchCount < searchResult.getHitCount(); searchCount++) {
-            String searchedSchedule = searchResult.getResultList().get(searchCount).getName();
-            for (final Schedule schedule : list) {
-                if ((schedule.getScheduleName()).equals(searchedSchedule)) {
-                    filteredSchedulelist.add(schedule);
-                    break;
-                }
-            }
+        if (rolePropertyDao.checkRole(YukonRole.LM_DIRECT_LOADCONTROL, user)) {
+            filteredSchedules = paoAuthorizationService.filterAuthorized(user, allSchedules, Permission.LM_VISIBLE);
+        } else {
+            // Without the LM_DIRECT_LOADCONTROL, we want them to be able to see all scripts.
+            filteredSchedules = allSchedules;
         }
-       
+
         String sortBy = ServletRequestUtils.getStringParameter(request, "sortBy");
         Boolean descending = ServletRequestUtils.getBooleanParameter(request, "descending");
        
@@ -182,9 +161,9 @@ public class MACSScheduleController extends MultiActionController {
         sortBy = sortBy.trim();
 
         if (descending == null) {descending = false;}
-        sort(filteredSchedulelist, sortBy, descending);
+        sort(filteredSchedules, sortBy, descending);
        
-        List<MACSScheduleInfo> infoList = createScheduleInfoList(filteredSchedulelist, isEditable(user));
+        List<MACSScheduleInfo> infoList = createScheduleInfoList(filteredSchedules, isEditable(user));
         
         mav.setViewName("schedulesView.jsp");
         mav.addObject("list", infoList);
