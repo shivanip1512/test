@@ -116,7 +116,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
         
         if (!(PaoUtils.isValidPaoName(name))) {
-            throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ , ' |");
+            throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ ,\" ' |");
         }
 
         // create
@@ -147,7 +147,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         newDevice.setDeviceID(newDeviceId);       
         
         if (StringUtils.isBlank(name) || !(PaoUtils.isValidPaoName(name))) {
-            throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ , ' |");
+            throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ ,\" ' |");
         }
         
         newDevice.setPAOName(name);
@@ -221,7 +221,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         newDevice.setDeviceID(newDeviceId);
         
         if (StringUtils.isBlank(newDeviceName) || !(PaoUtils.isValidPaoName(newDeviceName))) {
-            throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ , ' |");
+            throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ ,\" ' |");
         }
         
         newDevice.setPAOName(newDeviceName);

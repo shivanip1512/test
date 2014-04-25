@@ -95,7 +95,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
         if (!(PaoUtils.isValidPaoName(name))) {
             throw new CapControlCbcImportException("Import of "
                                                            + name
-                                                           + " failed. CBC name cannot include any of the following characters: / \\ , ' |",
+                                                           + " failed. CBC name cannot include any of the following characters: / \\ , \" ' |",
                                                    CbcImportResultType.ILLEGAL_CHARS);
         }
 		ImportAction importAction = ImportAction.getForDbString(line[headerColumnMap.get(CapControlImporterCbcField.IMPORT_ACTION)]);
@@ -188,7 +188,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
         if (!(PaoUtils.isValidPaoName(name))) {
             throw new CapControlHierarchyImportException("Import of "
                                                                  + name
-                                                                 + " failed. Hierarchy name cannot include any of the following characters: / \\ , ' |",
+                                                                 + " failed. Hierarchy name cannot include any of the following characters: / \\ , \" ' |",
                                                          HierarchyImportResultType.ILLEGAL_CHARS);
         }
         String ccType = line[headerColumnMap.get(CapControlImporterHierarchyField.TYPE)];   

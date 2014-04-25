@@ -2,9 +2,7 @@ package com.cannontech.dbeditor.wizard.point;
 
 import java.util.List;
 
-import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -136,7 +134,6 @@ private javax.swing.JTextField getNameTextField() {
 			ivjNameTextField.setColumns(12);
 			// user code begin {1}
 			ivjNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_POINT_NAME_LENGTH));
-			ivjNameTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_DEVICE_NAME_LENGTH, PaoUtils.ILLEGAL_NAME_CHARS));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
