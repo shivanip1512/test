@@ -78,6 +78,7 @@ public class EcobeeController {
                          "Indoor Temp", "Set Cool Temp", "Set Heat Temp", "Runtime Seconds", "Event Activity"));
         DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
 
+        // readDeviceData should only be sent 25 serial numbers at a time
         for (List<String> serialNumbers : Lists.partition(allSerialNumbers, 25)) {
             List<EcobeeDeviceReadings> allDeviceReadings = 
                     ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange, ecId);
