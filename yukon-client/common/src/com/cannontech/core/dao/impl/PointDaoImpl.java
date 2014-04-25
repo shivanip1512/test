@@ -84,7 +84,7 @@ public class PointDaoImpl implements PointDao {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    @Autowired private YukonJdbcTemplate template;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     private static final Logger log = YukonLogManager.getLogger(PointDaoImpl.class);
     private JdbcOperations jdbcOps;
@@ -93,9 +93,9 @@ public class PointDaoImpl implements PointDao {
     
     @PostConstruct
     public void init() {
-        chunkingTemplate = new ChunkingSqlTemplate(template);
-        chunkingMappedSqlTemplate = new ChunkingMappedSqlTemplate(template);
-        jdbcOps = template.getJdbcOperations();
+        chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+        chunkingMappedSqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        jdbcOps = jdbcTemplate.getJdbcOperations();
     }
     
     private final YukonRowMapper<LitePoint> litePointRowMapper = new YukonRowMapper<LitePoint>() {
@@ -122,7 +122,7 @@ public class PointDaoImpl implements PointDao {
             sql.append("WHERE PaobjectId").eq(pao.getPaoIdentifier().getPaoId());
             sql.append(  "AND UPPER(PointName)").eq(pointName.toUpperCase());
             
-            return template.queryForObject(sql, litePointRowMapper);
+            return jdbcTemplate.queryForObject(sql, litePointRowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -137,7 +137,7 @@ public class PointDaoImpl implements PointDao {
             sql.append(  "AND UPPER(PointName)").eq(pointName.toUpperCase());
             sql.append(  "AND PointType").eq(pointType);
             
-            return template.queryForObject(sql, litePointRowMapper);
+            return jdbcTemplate.queryForObject(sql, litePointRowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -149,7 +149,7 @@ public class PointDaoImpl implements PointDao {
             SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
             sql.append("WHERE P.POINTID").eq(pointId);
             
-            return template.queryForObject(sql, litePointRowMapper);
+            return jdbcTemplate.queryForObject(sql, litePointRowMapper);
             
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A point with id " + pointId + " cannot be found.");
@@ -165,7 +165,7 @@ public class PointDaoImpl implements PointDao {
         sql.append("join YukonPAObject pao on p.PAObjectId = pao.PAObjectId");
         sql.append("where p.PointId").eq(pointId);
         
-        PaoPointIdentifier result = template.queryForObject(sql, new YukonRowMapper<PaoPointIdentifier>() {
+        PaoPointIdentifier result = jdbcTemplate.queryForObject(sql, new YukonRowMapper<PaoPointIdentifier>() {
             @Override
             public PaoPointIdentifier mapRow(YukonResultSet rs) throws SQLException {
                 
@@ -285,7 +285,7 @@ public class PointDaoImpl implements PointDao {
         sql.append("group by StateGroupId having count(RawState)").eq(numberOfStates);
         sql.append(")");
         
-        List<LitePoint> points = template.query(sql, litePointRowMapper);
+        List<LitePoint> points = jdbcTemplate.query(sql, litePointRowMapper);
         
         return points;
     }
@@ -295,7 +295,7 @@ public class PointDaoImpl implements PointDao {
         
         SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
         sql.append("where PAObjectId").eq(paobjectId);
-        List<LitePoint> points = template.query(sql, litePointRowMapper);
+        List<LitePoint> points = jdbcTemplate.query(sql, litePointRowMapper);
         
         return points;
     }
@@ -344,7 +344,7 @@ public class PointDaoImpl implements PointDao {
         sql.append("where PointId").eq(pointId);
         
         try {  
-            LitePointUnit lpu = template.queryForObject(sql, new YukonRowMapper<LitePointUnit>() {
+            LitePointUnit lpu = jdbcTemplate.queryForObject(sql, new YukonRowMapper<LitePointUnit>() {
                 @Override
                 public LitePointUnit mapRow(YukonResultSet rs) throws SQLException {
                     
@@ -613,7 +613,7 @@ public class PointDaoImpl implements PointDao {
         sql.append("  AND PointType").eq_k(paoPointIdentifier.getPointIdentifier().getPointType());
 
         try {
-            int pointId = template.queryForInt(sql);
+            int pointId = jdbcTemplate.queryForInt(sql);
             return pointId;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("unable to find pointId for " + paoPointIdentifier, e);
@@ -721,7 +721,7 @@ public class PointDaoImpl implements PointDao {
         sql.append("and PointOffset").eq(pointOffset);
         sql.append("and PointType").eq(PointTypes.getType(pointType));
         try {
-            return template.queryForObject(sql, litePointRowMapper);
+            return jdbcTemplate.queryForObject(sql, litePointRowMapper);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unable to find point for deviceId=" + paobjectId + ", pointOffset=" + pointOffset + ", pointType=" + pointType);
         }
@@ -734,7 +734,7 @@ public class PointDaoImpl implements PointDao {
         sql.append("where PAObjectId").eq(paobjectId);
         sql.append("and PointType").eq(PointTypes.getType(pointType));
         try {
-            List<LitePoint> pointList = template.query(sql, litePointRowMapper);  
+            List<LitePoint> pointList = jdbcTemplate.query(sql, litePointRowMapper);  
             return pointList;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unable to find point for deviceId=" + paobjectId + ", pointType=" + pointType);
@@ -762,7 +762,7 @@ public class PointDaoImpl implements PointDao {
             log.info("Retrieve PointDate for ID: " + pointId + 
                            "  - START DATE > " + (startDate != null ? startDate:"---") +
                            "  -  STOP DATE <= " + (stopDate!= null ? stopDate:"---") );
-            List<LiteRawPointHistory> history = template.query(sql, new YukonRowMapper<LiteRawPointHistory>() {
+            List<LiteRawPointHistory> history = jdbcTemplate.query(sql, new YukonRowMapper<LiteRawPointHistory>() {
                 @Override
                 public LiteRawPointHistory mapRow(YukonResultSet rs) throws SQLException {
                     long changeID = rs.getLong("ChangeId");
@@ -829,7 +829,7 @@ public class PointDaoImpl implements PointDao {
         sql.append("where YPO.PAOClass").eq(paoClass);
         sql.append("and upper(PointName) like").appendArgument("%" + name.toUpperCase() + "%");
         
-        List<LitePoint> pointList = template.query(sql, litePointRowMapper);
+        List<LitePoint> pointList = jdbcTemplate.query(sql, litePointRowMapper);
         return pointList;
     }
     
