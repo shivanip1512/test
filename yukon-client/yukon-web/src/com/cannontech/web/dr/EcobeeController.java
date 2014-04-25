@@ -1,10 +1,19 @@
 package com.cannontech.web.dr;
 
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,11 +22,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
+import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
+import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
+import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
@@ -26,12 +43,58 @@ public class EcobeeController {
     private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
     private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
 
+    @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
+    @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
+    
     @RequestMapping(value="/ecobee/settings", method=RequestMethod.POST)
     public String saveSettings(@ModelAttribute("ecobeeSettings") EcobeeSettings settings, FlashScope flash) {
         log.info(settings);
         //flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "successful"));
         flash.setError(new YukonMessageSourceResolvable(homeKey + "failure"));
         return "redirect:/dr/home";
+    }
+    
+    // TODO: set requestMapping values
+    //@RequestMapping(value="/ecobeeCsv", method=RequestMethod.GET)
+    public void ecobeeDataReportCsv(HttpServletResponse response, LiteYukonUser user) throws Exception {
+        response.setContentType("text/csv");
+        // TODO: figure out good name for file
+        response.setHeader("Content-Disposition","filename=\"ecobee_data_report.csv\"");
+
+        int ecId = ecDao.getEnergyCompany(user).getId();
+
+        // TODO: get date range from request
+        Range<Instant> dateRange = Range.inclusive(Instant.now().minus(Duration.standardDays(7)), Instant.now());
+        // TODO: get loadGroupIds from request
+        List<Integer> loadGroupIds = new ArrayList<>();
+        List<String> allSerialNumbers = drGroupDeviceMappingDao.getInventorySerialNumbersForLoadGroups(loadGroupIds);
+
+        String headerFormat = "%s,%s,%s,%s,%s,%s,%s,%s\n";
+        String dataFormat = "%s,%s,%.1f,%.1f,%.1f,%.1f,%d,%s\n";
+
+        BufferedWriter output = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+        output.write(String.format(headerFormat, "Serial Number", "Date", "Outdoor Temp",
+                         "Indoor Temp", "Set Cool Temp", "Set Heat Temp", "Runtime Seconds", "Event Activity"));
+        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+
+        for (List<String> serialNumbers : Lists.partition(allSerialNumbers, 25)) {
+            List<EcobeeDeviceReadings> allDeviceReadings = 
+                    ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange, ecId);
+            for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
+                String serialNumber = deviceReadings.getSerialNumber();
+                for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
+                    String dateStr = timeFormatter.print(deviceReading.getDate());
+                    String line = String.format(dataFormat, serialNumber, dateStr,
+                        deviceReading.getOutdoorTempInF(), deviceReading.getIndoorTempInF(), 
+                        deviceReading.getSetCoolTempInF(), deviceReading.getSetHeatTempInF(),
+                        deviceReading.getRuntimeSeconds(), deviceReading.getEventActivity());
+                    output.write(line);
+                }
+            }
+        }
+
+        output.flush();
     }
     
     @RequestMapping(value="/ecobee", method=RequestMethod.GET)

@@ -1,5 +1,6 @@
 package com.cannontech.dr.ecobee.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,19 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
     
     @Override
-    public List<EcobeeDeviceReadings> readDeviceData(Iterable<Long> serialNumbers, Range<Instant> dateRange, 
+    public List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange, 
             int energyCompanyId) throws EcobeeAuthenticationException, EcobeeCommunicationException {
-        return null;
+//        List<EcobeeDeviceReadings> deviceReadings = new ArrayList<>();
+//        for (String serialNumber : serialNumbers) {
+//            List<EcobeeDeviceReading> readings = new ArrayList<>();
+//            for (int i=0;i<100;i++) {
+//                readings.add(new EcobeeDeviceReading(90.98465498798f, 60.298465498798f, 60.3459846534498798f, 
+//                                                     50.465498798f, 600, "not sure", Instant.now().plus(Duration.standardHours((long) (Math.random()*100)-50))));
+//            }
+//            deviceReadings.add(new EcobeeDeviceReadings(serialNumber, dateRange, readings));
+//        }
+//        return deviceReadings;
+        return new ArrayList<>();
     }
 
     @Override

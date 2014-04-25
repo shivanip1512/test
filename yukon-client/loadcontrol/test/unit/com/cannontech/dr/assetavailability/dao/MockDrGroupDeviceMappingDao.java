@@ -1,5 +1,6 @@
 package com.cannontech.dr.assetavailability.dao;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,6 +59,11 @@ public class MockDrGroupDeviceMappingDao implements DRGroupDeviceMappingDao {
 
     @Override
     public Map<Integer, SimpleDevice> getInventoryPaoMapForGrouping(YukonPao yukonPao) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<String> getInventorySerialNumbersForLoadGroups(Iterable<Integer> loadGroupIds) {
         throw new MethodNotImplementedException();
     }
 }

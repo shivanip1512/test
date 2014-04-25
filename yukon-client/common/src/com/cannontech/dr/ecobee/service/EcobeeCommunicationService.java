@@ -52,7 +52,7 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
-    public List<EcobeeDeviceReadings> readDeviceData(Iterable<Long> serialNumbers, Range<Instant> dateRange, 
+    public List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange, 
             int energyCompanyId) throws EcobeeAuthenticationException, EcobeeCommunicationException;
     
     /**
