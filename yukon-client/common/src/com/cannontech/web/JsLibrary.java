@@ -31,7 +31,7 @@ public enum JsLibrary {
     JQUERY_TREE_HELPERS("/JavaScript/lib/jQuery/plugins/dynatree/treeHelper.js"), //in-house
     JQUERY_CHOSEN("/resources/js/lib/chosen/chosen.jquery.min.js"), //https://github.com/harvesthq/chosen/releases
     
-    JQUERY_UI("/JavaScript/lib/jQueryUI/jquery-ui-1.10.4.custom.js"), //http://www.jqueryui.com
+    JQUERY_UI("/JavaScript/lib/jQueryUI/jquery-ui-1.11.0-beta.1.min.js"), //http://www.jqueryui.com
     JQUERY_UI_MIN("/JavaScript/lib/jQueryUI/jquery-ui-1.10.4.custom.min.js"), //http://www.jqueryui.com
     
     JQUERY_UI_DIALOG_HELPER("/JavaScript/lib/jQueryUI/plugins/dialog-helper.js"), //in-house

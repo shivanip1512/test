@@ -16,9 +16,15 @@
 }
 #filter-form .chosen-results {max-height: 100px;}
 </style>
-    
-    <div id="page-buttons"><cti:button icon="icon-filter" nameKey="filter" popup="#map-popup"/></div>
-    <div id="map-popup" dialog class="dn" data-title="<cti:msg2 key=".filter.title"/>" data-form data-width="500" data-height="250">
+
+    <input id="filtered-msg" type="hidden" value="<cti:msg2 key=".filtered"/>">
+    <input id="unfiltered-msg" type="hidden" value="<cti:msg2 key=".filter.label"/>">
+
+    <div id="page-buttons">
+        <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" popup="#map-popup"/>
+        <cti:button id="no-filter-btn" icon="icon-cross disabled cp" classes="right dn" renderMode="buttonImage"/>
+    </div>
+    <div id="map-popup" dialog class="dn" data-title="<cti:msg2 key=".filter.title"/>" data-event="yukon.map.filter" data-width="500" data-height="250">
         <cti:url value="/tools/map/filter" var="filterUrl"/>
         <form:form commandName="filter" id="filter-form" action="${filterUrl}">
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
@@ -51,7 +57,14 @@
     </div>
 
     <div id="map" class="clearfix map f-focus" tabindex="0"></div>
-    <div id="mouse-position" class="detail"></div>
+    <div class="buffered">
+        <div id="mouse-position" class="fl detail"></div>
+        <div id="map-tiles" class="fr button-group">
+            <cti:button nameKey="mq" data-layer="mqosm" icon="icon-mapquest"/>
+            <cti:button nameKey="mqsat" data-layer="mqsat" icon="icon-mapquest"/>
+            <cti:button nameKey="osm" data-layer="osm" classes="on" icon="icon-osm"/>
+        </div>
+    </div>
     
     <cti:url value="/tools/map/locations" var="locationsUrl">
         <c:forEach items="${deviceCollection.collectionParameters}" var="cp">

@@ -8,6 +8,8 @@ yukon.namespace('yukon.tools.map');
  */
 yukon.tools.map = (function() {
     
+    'use strict';
+    
     var
     _initialized = false,
     _destProjection = 'EPSG:3857', /** The projection code of our map tiles. */
@@ -19,6 +21,11 @@ yukon.tools.map = (function() {
         'gas': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-gas.png') }) }),
         'generic': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png') }) })
     },
+    _tiles = [
+        new ol.layer.Tile({ name: 'mqosm', source: new ol.source.MapQuest({ layer: 'osm' }), visible: false }),
+        new ol.layer.Tile({ name: 'mqsat', source: new ol.source.MapQuest({ layer: 'sat' }), visible: false }),
+        new ol.layer.Tile({ name: 'osm', source: new ol.source.OSM() })
+    ],
     
     /** 
      * Returns the first layer with name provided.
@@ -87,7 +94,7 @@ yukon.tools.map = (function() {
                 if ($('#attribute-select').val() !== '-1') {
                     $.getJSON(decodeURI($('#state-group-base-url').val()) + '&attribute=' + $('#attribute-select').val())
                     .done(function(groups) {
-                        var group, state, row;
+                        var group, state, row, select;
                         
                         $('#waiting-for-states').hide();
                         $('#no-states-for-attribute').toggle(groups.length === 0);
@@ -109,48 +116,95 @@ yukon.tools.map = (function() {
             });
             
             /* Handle submitting of filtering form. */
-            $('#filter-form').ajaxForm({
-                dataType: 'json',
-                success: function(data) {
-                    
-                    $('#map-popup').dialog('close');
-                    var
-                    start = new Date().getTime(),
-                    icons = _getLayer('icons').getSource().getFeatures(),
-                    filtered = _getLayer('filter').getSource().getFeatures(),
-                    
-                    keep = _icons.filter(function(feature) { return data.indexOf(feature.get('pao').paoId) !== -1; }),
-                    hide = _icons.filter(function(feature) { return data.indexOf(feature.get('pao').paoId) === -1; }),
-                    addToIcons = keep.filter(function(feature) { return icons.indexOf(feature) === -1; }),
-                    removeFromIcons = icons.filter(function(feature) { return hide.indexOf(feature) !== -1; }),
-                    addToFilter = hide.filter(function(feature) { return filtered.indexOf(feature) === -1; }),
-                    removeFromFilter = filtered.filter(function(feature) { return keep.indexOf(feature) !== -1; });
-                    
-                    debug.log('filtering arrays: '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                    start = new Date().getTime();
-                    
-                    _getLayer('icons').getSource().addFeatures(addToIcons);
-                    
-                    debug.log('adding to icon layer: '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                    start = new Date().getTime();
-                    
-                    for (var i in removeFromIcons) _getLayer('icons').getSource().removeFeature(removeFromIcons[i]);
-                    
-                    debug.log('removing from icon layer : '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                    start = new Date().getTime();
-                    
-                    _getLayer('filter').getSource().addFeatures(addToFilter);
-                    
-                    debug.log('adding to filter layer : '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                    start = new Date().getTime();
-                    
-                    for (var i in removeFromFilter) _getLayer('filter').getSource().removeFeature(removeFromFilter[i]);
-                    
-                    debug.log('removing from filter layer : '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                }, 
-                error: function(xhr, status, error, $form) {
-                    debug.log('error with ajax filter form submission: ' + error);
+            $(document).on('yukon.map.filter', function(ev) {
+                
+                $('#map-popup').dialog('close');
+                $('#no-filter-btn').show();
+                $('#filter-btn').addClass('left');
+                $('#filter-btn .b-label').text($('#filtered-msg').val() 
+                        + ' ' + $('#attribute-select option:selected').text());
+                
+                var start = new Date().getTime();
+                
+                $('#filter-form').ajaxSubmit({
+                    dataType: 'json',
+                    success: function(data) {
+                        
+                        debug.log('point data request: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        start = new Date().getTime();
+                        var 
+                        icons = _getLayer('icons').getSource().getFeatures(),
+                        filtered = _getLayer('filter').getSource().getFeatures();
+                        
+                        var keep = _icons.filter(function(feature) { return data.indexOf(feature.get('pao').paoId) !== -1; });
+                        debug.log('keep: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        start = new Date().getTime();
+                        var hide = _icons.filter(function(feature) { return data.indexOf(feature.get('pao').paoId) === -1; });
+                        debug.log('hide: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        start = new Date().getTime();
+                        var addToIcons = keep.filter(function(feature) { return icons.indexOf(feature) === -1; });
+                        debug.log('addToIcons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        start = new Date().getTime();
+                        var removeFromIcons = icons.filter(function(feature) { return hide.indexOf(feature) !== -1; });
+                        debug.log('removeFromIcons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        start = new Date().getTime();
+                        var addToFilter = hide.filter(function(feature) { return filtered.indexOf(feature) === -1; });
+                        debug.log('addToFilter: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        start = new Date().getTime();
+                        var removeFromFilter = filtered.filter(function(feature) { return keep.indexOf(feature) !== -1; });
+                        debug.log('removeFromFilter: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        start = new Date().getTime();
+                        
+                        _getLayer('icons').getSource().addFeatures(addToIcons);
+                        
+                        debug.log('adding to icons layer: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        start = new Date().getTime();
+                        
+                        for (var i in removeFromIcons) _getLayer('icons').getSource().removeFeature(removeFromIcons[i]);
+                        
+                        debug.log('removing from icons layer : '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        start = new Date().getTime();
+                        
+                        _getLayer('filter').getSource().addFeatures(addToFilter);
+                        
+                        debug.log('adding to filter layer : '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        start = new Date().getTime();
+                        
+                        for (var i in removeFromFilter) _getLayer('filter').getSource().removeFeature(removeFromFilter[i]);
+                        
+                        debug.log('removing from filter layer : '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                    }, 
+                    error: function(xhr, status, error, $form) {
+                        debug.log('error with ajax filter form submission: ' + error);
+                    }
+                });
+                
+            });
+            
+            /* Handle map tile buttons */
+            $('#map-tiles button').click(function(ev) {
+                $(this).siblings().removeClass('on');
+                $(this).addClass('on');
+                for (var i in _tiles) {
+                    var layer = $(this).data('layer');
+                    _tiles[i].set('visible', (_tiles[i].get('name') === layer));
                 }
+            });
+            
+            /* Handle submitting of filtering form. */
+            $('#no-filter-btn').click(function(ev) {
+                $('#no-filter-btn').hide();
+                $('#filter-btn').removeClass('left');
+                $('#filter-btn .b-label').text($('#unfiltered-msg').val());
+                var 
+                add = [],
+                source = _getLayer('filter').getSource(),
+                icons = source.getFeatures().slice(0);
+                for (var i in icons) {
+                    add.push(icons[i]);
+                    source.removeFeature(icons[i]);
+                }
+                _getLayer('icons').getSource().addFeatures(add);
             });
             
             // setup map
@@ -167,7 +221,7 @@ yukon.tools.map = (function() {
                         undefinedHTML: '&nbsp;'
                     })
                 ],
-                layers: [new ol.layer.Tile({ name: 'tiles', source: new ol.source.MapQuest({ layer: 'osm' }) })],
+                layers: _tiles,
                 target: 'map',
                 view: new ol.View2D({ center: ol.proj.transform([-97.734375, 40.529458], 'EPSG:4326', 'EPSG:3857'), zoom: 4 })
             });
