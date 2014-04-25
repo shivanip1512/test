@@ -37,7 +37,7 @@
 <script type="text/javascript">
 function refreshResults(kind, container) {
     if (container.is(':visible')) {
-        var url = '/group/groupMeterRead/' + kind;
+        var url = yukon.url('/group/groupMeterRead/') + kind;
         $(container).load(url, {'resultKey': '${resultWrapper.result.key}'});
     }
 }

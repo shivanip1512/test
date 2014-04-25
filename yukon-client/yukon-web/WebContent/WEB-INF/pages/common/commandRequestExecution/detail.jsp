@@ -35,13 +35,13 @@
             // failure stats report
             if (resultsFilterType == 'FAIL_STATS') {
 
-                url = '/common/commandRequestExecutionResults/failureStatsReport';
+                url = yukon.url('/common/commandRequestExecutionResults/failureStatsReport');
                 paramObj.commandRequestExecutionId = ${commandRequestExecutionId};
 
             // detail report (success/fail/all)
             } else {
 
-                url = '/common/commandRequestExecutionResults/detailsReport';
+                url = yukon.url('/common/commandRequestExecutionResults/detailsReport');
                 paramObj.commandRequestExecutionId = ${commandRequestExecutionId};
                 paramObj.resultsFilterType = resultsFilterType;
             }

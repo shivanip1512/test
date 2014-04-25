@@ -34,8 +34,8 @@
     }
 
 </script>
-
-<form id="processDevices_${id}" action="/common/commandRequestExecutionResults/processDevices" method="get">
+<cti:url var="processDevices" value="/common/commandRequestExecutionResults/processDevices"/>
+<form id="processDevices_${id}" action="${processDevices}" method="get">
     <input type="hidden" name="commandRequestExecutionId" value="${commandRequestExecutionId}">
     <input type="hidden" name="commandRequestExecutionUpdaterType" value="${commandRequestExecutionUpdaterType}">
 </form>
