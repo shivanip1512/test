@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public class ComposedGroupController {
     @Autowired private DeviceGroupComposedDao deviceGroupComposedDao;
     @Autowired private DeviceGroupComposedGroupDao deviceGroupComposedGroupDao;
     @Autowired private TransactionOperations transactionTemplate;
-
+   
     @RequestMapping("build")
     public String build(HttpServletRequest request, LiteYukonUser user, ModelMap model)
                 throws ServletException, JsonProcessingException {
@@ -149,9 +150,10 @@ public class ComposedGroupController {
         DeviceGroup parent = group;
         
         //This list contains the current group and its parents. Example:[/Billing/Billing Composed Group, /Billing]
+        List<String> deviceGroupToExcludeNodePath = new ArrayList<>();
         List<String> parentGroupNames = new ArrayList<>();
         while (!parent.getFullName().equals(DeviceGroupService.ROOT)){
-        	if(parent.getParent().getFullName().equals(DeviceGroupService.ROOT)){
+        	if(parent.getFullName().equals(DeviceGroupService.ROOT)){
 				/*
 				 * This predicate will remove top level parent of the current group from the picker.
 				 * Example: 
@@ -162,20 +164,24 @@ public class ComposedGroupController {
         		predicates.add(new NotEqualToOrDecendantOfGroupsPredicate(parent));
         	}
 			parentGroupNames.add(parent.getFullName());
+			deviceGroupToExcludeNodePath.add(parent.getFullName());
 			parent = parent.getParent();
 		} 
+      
         //Find composed groups the current group or one of its parents are part of
         List<DeviceGroupComposedGroup> composedGroups = deviceGroupComposedGroupDao.getByGroupNames(parentGroupNames);
 		for (DeviceGroupComposedGroup deviceGroup : composedGroups) {
 			DeviceGroupComposed deviceGroupComposed = deviceGroupComposedDao.getByComposedId(deviceGroup.getDeviceGroupComposedId());
 			//Find the group the current group is part of
 			DeviceGroup groupToExclude = deviceGroupEditorDao.getGroupById(deviceGroupComposed.getDeviceGroupId());
+			
 			//Find the top parent of that group. Example: /Alternate/Alternate Composed Group, "/Alternate" is a top level parent.
-			while (!groupToExclude.getParent().getFullName().equals(DeviceGroupService.ROOT)) {
-				groupToExclude = groupToExclude.getParent();
-			} 
+            while (!groupToExclude.getParent().getFullName().equals(DeviceGroupService.ROOT)) {
+                deviceGroupToExcludeNodePath.add(groupToExclude.getFullName());
+                groupToExclude = groupToExclude.getParent();
+            }
+            deviceGroupToExcludeNodePath.add(groupToExclude.getFullName());
 			//Create a predicate to exclude the top level parent
-			predicates.add(new NotEqualToOrDecendantOfGroupsPredicate(groupToExclude));
 		}
         
         AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
@@ -186,11 +192,36 @@ public class ComposedGroupController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, null);
-        
+        makeParentHierarchyUnselectable(groupExtRoot, deviceGroupToExcludeNodePath);          
         String chooseGroupTreeJson = JsonUtils.toJson(groupExtRoot.toMap());
         model.addAttribute("chooseGroupTreeJson", chooseGroupTreeJson);
         
         return "composedGroup/create.jsp";
+    }
+    
+    
+    /**
+     * In this method we are making the parent groups un-selectable and allowing the
+     * other children of those parents to be accessible.
+     * @param groupExtRoot -It contains all the node path information.
+     * @param deviceGroupToExcludeNodePath - It is node path of device group that need to be
+     * exclude.
+     */
+    
+    @SuppressWarnings("unchecked")
+    private void makeParentHierarchyUnselectable(JsTreeNode groupExtRoot, List<String> deviceGroupToExcludeNodePath) {
+        Map<String, String> info = new HashMap<String, String>();
+        List<JsTreeNode> children = groupExtRoot.getChildren();
+        for (JsTreeNode jsTreeNode : children) {
+            info = (Map<String, String>) jsTreeNode.getAttributes().get("info");
+            String deviceNodePath = info.get("groupName");
+            for (String nodePath : deviceGroupToExcludeNodePath) {
+                if (deviceNodePath.equals(nodePath)) {
+                    jsTreeNode.getAttributes().put("unselectable", true);
+                    makeParentHierarchyUnselectable(jsTreeNode, deviceGroupToExcludeNodePath);
+                }
+            }
+        }
     }
     
     private List<DisplayableComposedGroup> getGroupsFromPage(HttpServletRequest request) throws ServletRequestBindingException, NotFoundException {
