@@ -246,12 +246,12 @@ public interface AttributeService {
      * Returns the list of point ids that map to the attribute and pao type for each device.
      * Ignores devices that do not support the attribute.
      */
-    List<Integer> getPointIds(List<SimpleDevice> devices, BuiltInAttribute attribute);
+    List<Integer> getPointIds(Iterable<SimpleDevice> devices, BuiltInAttribute attribute);
 
     /**
      * Returns a map of {@link SimpleDevice} to {@link LitePoint} for the point that maps 
      * to the attribute and pao type for each device.
      * Ignores devices that do not support the attribute.
      */
-    BiMap<SimpleDevice, LitePoint> getPoints(List<SimpleDevice> devices, BuiltInAttribute attribute);
+    BiMap<SimpleDevice, LitePoint> getPoints(Iterable<SimpleDevice> devices, BuiltInAttribute attribute);
 }

@@ -13,7 +13,8 @@ yukon.tools.map = (function() {
     var
     _initialized = false,
     _destProjection = 'EPSG:3857', /** The projection code of our map tiles. */
-    _icons = [], /** The of {ol.Feature} device icon. */
+    _icons = {}, /** Map {pao id, {ol.Feature}} of all device icons. */
+    _visibility = {}, /** Map {pao id, boolean} to keep track of device icon visibility. */
     _map = {}, /** The openlayers map object. */
     _styles = { /** A cache of styles to avoid creating lots of objects using lots of memory. */
         'electric': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-electric.png'), anchor: [0.5, 1.0] }) }),
@@ -53,7 +54,7 @@ yukon.tools.map = (function() {
         $.getJSON(decodeURI($('#locations').val())).done(function(fc) {
             
             var 
-            icons = [], filtered = [],
+            icons = [],
             src_projection = fc.crs.properties.name, // Yukon currently storing coords as ESPG:4326 (WGS84)
             start = new Date().getTime();
             
@@ -70,15 +71,11 @@ yukon.tools.map = (function() {
                     icon.setGeometry(new ol.geom.Point(ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection)));
                 }
                 
-                _icons.push(icon);
-                if (feature.properties.filtered === true) {
-                    filtered.push(icon);
-                } else {
-                    icons.push(icon);
-                }
+                _icons[pao.paoId] = icon;
+                _visibility[pao.paoId] = true;
+                icons.push(icon);
             }
             _getLayer('icons').getSource().addFeatures(icons);
-            _getLayer('filter').getSource().addFeatures(filtered);
             
             _map.getView().fitExtent(_getLayer('icons').getSource().getExtent(), _map.getSize());
             
@@ -113,7 +110,6 @@ yukon.tools.map = (function() {
             });
             _destProjection = _map.getView().getProjection().getCode();
             _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
-            _map.addLayer(new ol.layer.Vector({ name: 'filter', source: new ol.source.Vector({ projection: _destProjection }), visible: false }));
             _loadIcons();
             
             /* Display popup on click */
@@ -177,51 +173,41 @@ yukon.tools.map = (function() {
                 
                 $('#filter-form').ajaxSubmit({
                     dataType: 'json',
-                    success: function(data) {
+                    success: function(results) {
                         
                         debug.log('point data request: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         start = new Date().getTime();
                         var 
-                        icons = _getLayer('icons').getSource().getFeatures(),
-                        filtered = _getLayer('filter').getSource().getFeatures();
+                        source = _getLayer('icons').getSource(),
+                        toAdd = [], toRemove = [];
                         
-                        var keep = _icons.filter(function(feature) { return data.indexOf(feature.get('pao').paoId) !== -1; });
-                        debug.log('keep: '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                        start = new Date().getTime();
-                        var hide = _icons.filter(function(feature) { return data.indexOf(feature.get('pao').paoId) === -1; });
-                        debug.log('hide: '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                        start = new Date().getTime();
-                        var addToIcons = keep.filter(function(feature) { return icons.indexOf(feature) === -1; });
-                        debug.log('addToIcons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                        start = new Date().getTime();
-                        var removeFromIcons = icons.filter(function(feature) { return hide.indexOf(feature) !== -1; });
-                        debug.log('removeFromIcons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                        start = new Date().getTime();
-                        var addToFilter = hide.filter(function(feature) { return filtered.indexOf(feature) === -1; });
-                        debug.log('addToFilter: '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                        start = new Date().getTime();
-                        var removeFromFilter = filtered.filter(function(feature) { return keep.indexOf(feature) !== -1; });
-                        debug.log('removeFromFilter: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        for (var paoId in results) {
+                            var show = results[paoId];
+                            var visible = _visibility[paoId];
+                            if (show && !visible) {
+                                toAdd.push(_icons[paoId]);
+                                _visibility[paoId] = true;
+                            } else if (!show && visible) {
+                                toRemove.push(_icons[paoId]);
+                                _visibility[paoId] = false;
+                            }
+                        }
+                        
+                        debug.log('building add/remove arrays: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         start = new Date().getTime();
                         
-                        _getLayer('icons').getSource().addFeatures(addToIcons);
+                        source.addFeatures(toAdd);
                         
-                        debug.log('adding to icons layer: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        debug.log('adding icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         start = new Date().getTime();
                         
-                        for (var i in removeFromIcons) _getLayer('icons').getSource().removeFeature(removeFromIcons[i]);
+                        for (var i = 0; i < toRemove.length; i++) {
+                            source.removeFeature(toRemove[i]);
+                        }
                         
-                        debug.log('removing from icons layer : '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                        debug.log('removing icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         start = new Date().getTime();
                         
-                        _getLayer('filter').getSource().addFeatures(addToFilter);
-                        
-                        debug.log('adding to filter layer : '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                        start = new Date().getTime();
-                        
-                        for (var i in removeFromFilter) _getLayer('filter').getSource().removeFeature(removeFromFilter[i]);
-                        
-                        debug.log('removing from filter layer : '+ ((new Date().getTime() - start) * .001) + ' seconds');
                     }, 
                     error: function(xhr, status, error, $form) {
                         debug.log('error with ajax filter form submission: ' + error);
@@ -245,15 +231,18 @@ yukon.tools.map = (function() {
                 $('#no-filter-btn').hide();
                 $('#filter-btn').removeClass('left');
                 $('#filter-btn .b-label').text($('#unfiltered-msg').val());
-                var 
-                add = [],
-                source = _getLayer('filter').getSource(),
-                icons = source.getFeatures().slice(0);
-                for (var i in icons) {
-                    add.push(icons[i]);
-                    source.removeFeature(icons[i]);
+                
+                var toAdd = [], start = new Date().getTime();
+                for (var paoId in _visibility) {
+                    if (!_visibility[paoId]) {
+                        toAdd.push(_icons[paoId]);
+                        _visibility[paoId] = true;
+                    }
                 }
-                _getLayer('icons').getSource().addFeatures(add);
+                _getLayer('icons').getSource().addFeatures(toAdd);
+                
+                debug.log('removing icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+                start = new Date().getTime();
             });
             
             /* Change mouse cursor when over marker.  There HAS to be a css way to do this! */

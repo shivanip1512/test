@@ -1,7 +1,6 @@
 package com.cannontech.web.tools.mapping.controller;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -114,13 +113,14 @@ public class MapController {
     }
     
     @RequestMapping("/map/filter")
-    public @ResponseBody List<Integer> filter(DeviceCollection deviceCollection, @ModelAttribute Filter filter) {
+    public @ResponseBody Map<Integer, Boolean> filter(DeviceCollection deviceCollection, @ModelAttribute Filter filter) {
         
-        List<Integer> paoIds = new ArrayList<>();
+        Map<Integer, Boolean> results = new HashMap<>();
         Map<Integer, Group> groups = Maps.uniqueIndex(filter.getGroups(), Group.ID_FUNCTION);
         
+        Set<SimpleDevice> devices = Sets.newHashSet(deviceCollection.getDeviceList());
         BiMap<LitePoint, SimpleDevice> points = 
-                attributeService.getPoints(deviceCollection.getDeviceList(), filter.getAttribute()).inverse();
+                attributeService.getPoints(devices, filter.getAttribute()).inverse();
         Map<Integer, LitePoint> pointIdToPoint = new HashMap<>();
         for (LitePoint point : points.keySet()) {
             pointIdToPoint.put(point.getLiteID(), point);
@@ -133,11 +133,18 @@ public class MapController {
             LitePoint lp = pointIdToPoint.get(pvqh.getId());
             Group group = groups.get(lp.getStateGroupID());
             if ((int)pvqh.getValue() == group.getState()) {
-                paoIds.add(points.get(lp).getDeviceId());
+                results.put(points.get(lp).getDeviceId(), true);
+            } else {
+                results.put(points.get(lp).getDeviceId(), false);
             }
         }
         
-        return paoIds;
+        Set<SimpleDevice> unsupported = Sets.difference(devices, points.values());
+        for (SimpleDevice device : unsupported) {
+            results.put(device.getDeviceId(), false);
+        }
+        
+        return results;
     }
         
     private FeatureCollection getFakeLocations(List<SimpleDevice> devices) {

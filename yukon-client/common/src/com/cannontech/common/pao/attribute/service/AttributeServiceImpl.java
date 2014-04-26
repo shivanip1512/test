@@ -382,7 +382,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public List<Integer> getPointIds(List<SimpleDevice> devices, BuiltInAttribute attribute) {
+    public List<Integer> getPointIds(Iterable<SimpleDevice> devices, BuiltInAttribute attribute) {
         
         ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
@@ -420,7 +420,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public BiMap<SimpleDevice, LitePoint> getPoints(List<SimpleDevice> devices, BuiltInAttribute attribute) {
+    public BiMap<SimpleDevice, LitePoint> getPoints(Iterable<SimpleDevice> devices, BuiltInAttribute attribute) {
         
         ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
