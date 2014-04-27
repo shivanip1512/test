@@ -13,8 +13,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public class PaoDetailUrlHelper {
+    
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    
     private static Map<PaoTag, Function<YukonPao, String>> supportDeviceUrlPatterns;
     private static Map<PaoTag, String> supportDevicePageNames;
+    
     static {
         // note that ImmutableMap preserves the order of its entries
 
@@ -37,21 +41,21 @@ public class PaoDetailUrlHelper {
 
         urlBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-            	return "/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId();
+                return "/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
         pageNameBuilder.put(PaoTag.LM_SCENARIO, "scenarioDetail");
 
         urlBuilder.put(PaoTag.LM_CONTROL_AREA, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-            	return "/dr/controlArea/detail?controlAreaId=" + pao.getPaoIdentifier().getPaoId();
+                return "/dr/controlArea/detail?controlAreaId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
         pageNameBuilder.put(PaoTag.LM_CONTROL_AREA, "controlAreaDetail");
 
         urlBuilder.put(PaoTag.LM_PROGRAM, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-            	return "/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
+                return "/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
         pageNameBuilder.put(PaoTag.LM_PROGRAM, "programDetail");
@@ -62,12 +66,17 @@ public class PaoDetailUrlHelper {
             }
         });
         pageNameBuilder.put(PaoTag.LM_GROUP, "loadGroupDetail");
+        
+        urlBuilder.put(PaoTag.ASSET_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+            public String apply(YukonPao pao) {
+                return "/stars/operator/inventory/view?deviceId=" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        pageNameBuilder.put(PaoTag.ASSET_DETAIL_DISPLAYABLE, "hardware.VIEW");
 
         supportDeviceUrlPatterns = urlBuilder.build();
         supportDevicePageNames = pageNameBuilder.build();
     }
-    
-    private PaoDefinitionDao paoDefinitionDao;
     
     /**
      * Returns a URL for the appropriate detail page (e.g. the Meter Detail page)
@@ -107,8 +116,4 @@ public class PaoDetailUrlHelper {
         return null;
     }
     
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
 }

@@ -4441,6 +4441,10 @@
         </points>
         <attributes>
         </attributes>
+        <tags>
+            <tag name="ASSET_DETAIL_DISPLAYABLE"></tag>
+            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS" />
+        </tags>
     </pao>
     <pao id="LCR6200_RFN" inherits="RF_LCR">
         <displayName>LCR-6200 RFN</displayName>
@@ -4555,12 +4559,9 @@
                 <basicLookup point="Total LUV Event Count" />
             </attribute>
         </attributes>
-        <tags>
-            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS" />
-        </tags>
     </pao>
 
-    <pao id="LCR6600_RFN" inherits="RF_LCR, LCR6200_RFN">
+    <pao id="LCR6600_RFN" inherits="LCR6200_RFN">
         <displayName>LCR-6600 RFN</displayName>
         <points>
             <point type="Analog" offset="20">
@@ -4651,6 +4652,9 @@
     <!-- TWO WAY LCRs -->
     <pao id="TWO_WAY_LCR_BASE" abstract="true">
         <displayGroup>Two Way LCR</displayGroup>
+        <tags>
+            <tag name="ASSET_DETAIL_DISPLAYABLE"></tag>
+        </tags>
     </pao>
 
     <pao id="LCR3102"
@@ -11066,6 +11070,7 @@
         </attributes>
         <tags>
             <tag name="DB_EDITOR_INCOMPATIBLE" />
+            <tag name="ASSET_DETAIL_DISPLAYABLE"></tag>
         </tags>
     </pao>
 
@@ -11090,6 +11095,7 @@
         </attributes>
         <tags>
             <tag name="DB_EDITOR_INCOMPATIBLE" />
+            <tag name="ASSET_DETAIL_DISPLAYABLE"></tag>
         </tags>
     </pao>
 

@@ -120,6 +120,7 @@ import com.google.common.collect.Sets;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 public class OperatorHardwareController {
+    
     @Autowired private AddressDao addressDao;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private ContactDao contactDao;

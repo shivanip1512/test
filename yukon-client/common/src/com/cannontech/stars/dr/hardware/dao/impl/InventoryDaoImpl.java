@@ -88,6 +88,7 @@ import com.google.common.collect.Maps;
  * Implementation class for InventoryDao
  */
 public class InventoryDaoImpl implements InventoryDao {
+    
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DefaultRouteService defaultRouteService;
