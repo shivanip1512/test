@@ -1,4 +1,5 @@
-package com.cannontech.dr.ecobee.service;
+package com.cannontech.dr.ecobee;
+
 
 public class EcobeeDeviceDoesNotExistException extends EcobeeException {
 

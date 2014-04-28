@@ -1,6 +1,11 @@
-package com.cannontech.dr.ecobee.service;
+package com.cannontech.dr.ecobee;
 
-public class EcobeeException extends Exception {
+/**
+ * Abstract base for Ecobee-specific exceptions.
+ */
+public abstract class EcobeeException extends Exception {
+    
+    public EcobeeException() { }
     
     public EcobeeException(String message) {
         super(message);
