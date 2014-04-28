@@ -48,23 +48,6 @@ CtiLMGroupMCT& CtiLMGroupMCT::operator=(const CtiLMGroupMCT& right)
 }
 
 /*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int CtiLMGroupMCT::operator==(const CtiLMGroupMCT& right) const
-{
-    return Inherited::operator==(right);
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int CtiLMGroupMCT::operator!=(const CtiLMGroupMCT& right) const
-{
-
-    return Inherited::operator!=(right);
-}
-
-/*---------------------------------------------------------------------------
     replicate
 
     Restores self's operation fields

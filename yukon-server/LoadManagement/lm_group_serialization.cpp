@@ -18,6 +18,7 @@ struct LMGroupFactoryRegister
     LMGroupFactoryRegister()
     {
         g_lmGroupFactory.registerSerializer <::LMGroupDigiSEP,       Thrift::LMGroupDigiSEP>    ( &populateThrift, NULL, "LMGroupDigiSEP" );
+        g_lmGroupFactory.registerSerializer <::LMGroupEcobee,        Thrift::LMGroupEcobee>     ( &populateThrift, NULL, "LMGroupEcobee" );
         g_lmGroupFactory.registerSerializer <::CtiLMGroupEmetcon,    Thrift::LMGroupEmetcon>    ( &populateThrift, NULL, "LMGroupEmetcon" );
         g_lmGroupFactory.registerSerializer <::CtiLMGroupExpresscom, Thrift::LMGroupExpresscom> ( &populateThrift, NULL, "LMGroupExpresscom" );
         g_lmGroupFactory.registerSerializer <::CtiLMGroupGolay,      Thrift::LMGroupGolay>      ( &populateThrift, NULL, "LMGroupGolay" );
@@ -83,6 +84,19 @@ MessagePtr<Thrift::LMGroupBase>::type populateThrift( const ::CtiLMGroupBase& im
 MessagePtr<Thrift::LMGroupDigiSEP>::type populateThrift( const ::LMGroupDigiSEP& imsg )
 {
     MessagePtr<Thrift::LMGroupDigiSEP>::type omsg( new Thrift::LMGroupDigiSEP );
+
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+
+    return omsg;
+}
+
+//=============================================================================
+//  LMGroupEcobee
+//=============================================================================
+
+MessagePtr<Thrift::LMGroupEcobee>::type populateThrift( const ::LMGroupEcobee& imsg )
+{
+    MessagePtr<Thrift::LMGroupEcobee>::type omsg( new Thrift::LMGroupEcobee );
 
     omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 

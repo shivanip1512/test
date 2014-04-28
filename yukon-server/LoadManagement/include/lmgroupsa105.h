@@ -23,9 +23,6 @@ DECLARE_COLLECTABLE( CtiLMGroupSA105 );
 
     CtiLMGroupSA105& operator=(const CtiLMGroupSA105& right);
 
-    int operator==(const CtiLMGroupSA105& right) const;
-    int operator!=(const CtiLMGroupSA105& right) const;
-
     /* Static Members */
 
 private:

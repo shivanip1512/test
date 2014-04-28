@@ -189,24 +189,6 @@ CtiLMGroupPoint& CtiLMGroupPoint::operator=(const CtiLMGroupPoint& right)
 }
 
 /*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int CtiLMGroupPoint::operator==(const CtiLMGroupPoint& right) const
-{
-
-    return CtiLMGroupBase::operator==(right);
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int CtiLMGroupPoint::operator!=(const CtiLMGroupPoint& right) const
-{
-
-    return CtiLMGroupBase::operator!=(right);
-}
-
-/*---------------------------------------------------------------------------
     replicate
 
     Restores self's operation fields

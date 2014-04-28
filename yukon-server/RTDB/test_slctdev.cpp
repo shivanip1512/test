@@ -191,6 +191,7 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceGroupRfnExpresscom")
         ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         //  130
+        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         ("class CtiDeviceGroupMCT")
         ("class CtiDeviceGroupGolay")
         ("class CtiDeviceGroupSADigital")
@@ -201,7 +202,7 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         .repeat(11, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         ("class CtiDeviceMacro")
         ("class CtiDeviceSystem")
-        .repeat(9850, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(9849, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
             ;
 
     std::vector<std::string> results;

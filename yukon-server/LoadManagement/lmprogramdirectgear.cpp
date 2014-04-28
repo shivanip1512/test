@@ -49,11 +49,6 @@ CtiLMProgramDirectGear::CtiLMProgramDirectGear(Cti::RowReader &rdr)
     restore(rdr);
 }
 
-CtiLMProgramDirectGear::CtiLMProgramDirectGear(const CtiLMProgramDirectGear& proggear)
-{
-    operator=(proggear);
-}
-
 /*---------------------------------------------------------------------------
     Destructor
 ---------------------------------------------------------------------------*/
@@ -625,24 +620,6 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setKWReduction(DOUBLE kw)
 }
 
 /*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int CtiLMProgramDirectGear::operator==(const CtiLMProgramDirectGear& right) const
-{
-
-    return getProgramPAOId() == right.getProgramPAOId();
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int CtiLMProgramDirectGear::operator!=(const CtiLMProgramDirectGear& right) const
-{
-
-    return getProgramPAOId() != right.getProgramPAOId();
-}
-
-/*---------------------------------------------------------------------------
     replicate
 
     Restores self's operation fields
@@ -704,6 +681,7 @@ const string CtiLMProgramDirectGear::TargetCycleMethod = "TargetCycle";
 const string CtiLMProgramDirectGear::MagnitudeCycleMethod = "MagnitudeCycle";
 const string CtiLMProgramDirectGear::SEPCycleMethod = "SEPCycle";
 const string CtiLMProgramDirectGear::SEPTempOffsetMethod = "SEPTemperatureOffset";
+const string CtiLMProgramDirectGear::EcobeeCycleMethod = "EcobeeCycle";
 const string CtiLMProgramDirectGear::BeatThePeakMethod = "BeatThePeak";
 const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";
 

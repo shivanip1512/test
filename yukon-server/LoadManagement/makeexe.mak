@@ -60,6 +60,7 @@ lmenergyexchangeofferrevision.obj \
 lmfactory.obj \
 lmgroupbase.obj \
 lmgroupdigisep.obj \
+lmgroupecobee.obj \
 lmgroupemetcon.obj \
 lmgroupexpresscom.obj \
 lmgroupmacro.obj \
@@ -86,6 +87,7 @@ lmutility.obj \
 main.obj \
 sepcyclegear.obj \
 septempoffsetgear.obj \
+ecobeeCycleGear.obj \
 lmprogrambeatthepeakgear.obj \
 lm_message_serialization.obj \
 lm_program_serialization.obj \
@@ -189,6 +191,22 @@ constraintviolation.obj:	precompiled.h ConstraintViolation.h ctitime.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		macro_offset.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h
+ecobeecyclegear.obj:	precompiled.h GroupControlInterface.h \
+		EcobeeControlInterface.h ecobeeCycleGear.h lmprogramdirect.h \
+		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h lmprogrambase.h dbmemobject.h \
+		msg_multi.h collectable.h msg_pdata.h yukon.h ctidbgmem.h \
+		pointdefs.h pointtypes.h message.h lmgroupbase.h \
+		msg_pcrequest.h dsm2.h cticonnect.h netports.h mutex.h \
+		guard.h dsm2err.h words.h optional.h macro_offset.h msg_cmd.h \
+		row_reader.h database_connection.h dbaccess.h dllbase.h \
+		lmcontrolareatrigger.h ctidate.h logger.h thread.h \
+		CtiPCPtrQueue.h lmprogramdirectgear.h lmcontrolarea.h \
+		connection.h exchange.h string_utility.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h rwutil.h database_reader.h \
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		critical_section.h connection_base.h worker_thread.h \
+		timing_util.h tbl_lmprogramhistory.h smartgearbase.h
 executor.obj:	precompiled.h msg_server_req.h dlldefs.h message.h \
 		ctitime.h ctidbgmem.h collectable.h msg_server_resp.h \
 		msg_signal.h yukon.h types.h executor.h lmmessage.h \
@@ -304,13 +322,14 @@ lmcontrolareastore.obj:	precompiled.h mgr_holiday.h ctidate.h \
 		lmgrouppoint.h lmgroupsa105.h lmgroupsa205.h lmgroupsa305.h \
 		lmgroupsadigital.h lmgroupgolay.h lmprogramcontrolwindow.h \
 		sepcyclegear.h smartgearbase.h septempoffsetgear.h \
-		resolvers.h db_entry_defines.h desolvers.h devicetypes.h \
-		database_util.h database_writer.h row_writer.h ctibase.h \
-		ctinexus.h socket_helper.h msg_dbchg.h loadmanager.h \
-		connection_client.h executor.h msg_server_req.h lmmessage.h \
-		ConstraintViolation.h lmfactory.h tbl_paoexclusion.h \
-		debug_timer.h clistener.h connection_server.h \
-		connection_listener.h lmprogrambeatthepeakgear.h
+		ecobeeCycleGear.h resolvers.h db_entry_defines.h desolvers.h \
+		devicetypes.h database_util.h database_writer.h row_writer.h \
+		ctibase.h ctinexus.h socket_helper.h msg_dbchg.h \
+		loadmanager.h connection_client.h executor.h msg_server_req.h \
+		lmmessage.h ConstraintViolation.h lmfactory.h \
+		tbl_paoexclusion.h debug_timer.h clistener.h \
+		connection_server.h connection_listener.h \
+		lmprogrambeatthepeakgear.h
 lmcontrolareatrigger.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -483,7 +502,8 @@ lmfactory.obj:	precompiled.h lmfactory.h lmgroupbase.h boostutil.h \
 		BeatThePeakControlInterface.h BeatThePeakAlertLevel.h \
 		lmgroupmct.h lmgroupripple.h lmgrouppoint.h lmgroupsa105.h \
 		lmgroupsa205.h lmgroupsa305.h lmgroupsadigital.h \
-		lmgroupgolay.h lmgroupmacro.h
+		lmgroupgolay.h lmgroupmacro.h lmgroupecobee.h \
+		ecobeeControlInterface.h
 lmgroupbase.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -517,6 +537,17 @@ lmgroupdigisep.obj:	precompiled.h lmgroupdigisep.h lmgroupbase.h \
 		StreamableMessage.h connection_base.h \
 		RfnBroadcastReplyMessage.h lmsepcontrolmessage.h \
 		lmseprestoremessage.h
+lmgroupecobee.obj:	precompiled.h lmid.h ctitime.h dlldefs.h logger.h \
+		thread.h mutex.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h amq_connection.h \
+		critical_section.h StreamableMessage.h connection_base.h \
+		RfnBroadcastReplyMessage.h LMGroupEcobee.h lmgroupbase.h \
+		boostutil.h dbmemobject.h msg_pcrequest.h message.h \
+		ctidbgmem.h collectable.h dsm2.h cticonnect.h yukon.h \
+		netports.h dsm2err.h words.h optional.h macro_offset.h \
+		msg_cmd.h row_reader.h database_connection.h dbaccess.h \
+		dllbase.h GroupControlInterface.h ecobeeControlInterface.h \
+		LMEcobeeMessages.h
 lmgroupemetcon.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -926,8 +957,8 @@ lm_group_serialization.obj:	precompiled.h lm_group_serialization.h \
 		cticonnect.h yukon.h netports.h mutex.h guard.h dsm2err.h \
 		words.h optional.h macro_offset.h msg_cmd.h row_reader.h \
 		database_connection.h dbaccess.h dllbase.h lmgroupdigisep.h \
-		GroupControlInterface.h SepControlInterface.h \
-		lmgroupemetcon.h lmgroupexpresscom.h \
+		GroupControlInterface.h SepControlInterface.h lmgroupecobee.h \
+		ecobeeControlInterface.h lmgroupemetcon.h lmgroupexpresscom.h \
 		BeatThePeakControlInterface.h logger.h thread.h \
 		CtiPCPtrQueue.h BeatThePeakAlertLevel.h lmgroupgolay.h \
 		lmgroupmacro.h lmgroupmct.h lmgrouppoint.h lmgroupripple.h \
@@ -962,8 +993,8 @@ lm_program_serialization.obj:	precompiled.h lm_group_serialization.h \
 		cticonnect.h yukon.h netports.h mutex.h guard.h dsm2err.h \
 		words.h optional.h macro_offset.h msg_cmd.h row_reader.h \
 		database_connection.h dbaccess.h dllbase.h lmgroupdigisep.h \
-		GroupControlInterface.h SepControlInterface.h \
-		lmgroupemetcon.h lmgroupexpresscom.h \
+		GroupControlInterface.h SepControlInterface.h lmgroupecobee.h \
+		ecobeeControlInterface.h lmgroupemetcon.h lmgroupexpresscom.h \
 		BeatThePeakControlInterface.h logger.h thread.h \
 		CtiPCPtrQueue.h BeatThePeakAlertLevel.h lmgroupgolay.h \
 		lmgroupmacro.h lmgroupmct.h lmgrouppoint.h lmgroupripple.h \
@@ -1095,6 +1126,23 @@ septempoffsetgear.obj:	precompiled.h septempoffsetgear.h \
 		worker_thread.h timing_util.h tbl_lmprogramhistory.h \
 		lmprogramthermostatgear.h smartgearbase.h \
 		GroupControlInterface.h SepControlInterface.h ctistring.h
+test_lmobjects.obj:	devicetypes.h lmutility.h CtiTime.h dlldefs.h \
+		ctidate.h logger.h thread.h mutex.h guard.h utility.h \
+		queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		CtiPCPtrQueue.h lmprogrambase.h dbmemobject.h msg_multi.h \
+		collectable.h msg_pdata.h yukon.h ctidbgmem.h pointdefs.h \
+		pointtypes.h message.h lmgroupbase.h boostutil.h \
+		msg_pcrequest.h dsm2.h cticonnect.h netports.h dsm2err.h \
+		words.h optional.h macro_offset.h msg_cmd.h row_reader.h \
+		database_connection.h dbaccess.h dllbase.h \
+		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
+		exchange.h string_utility.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
+		configval.h readers_writer_lock.h critical_section.h \
+		connection_base.h worker_thread.h timing_util.h test_reader.h \
+		lmgroupecobee.h GroupControlInterface.h \
+		ecobeeControlInterface.h ecobeeCycleGear.h lmprogramdirect.h \
+		lmprogramdirectgear.h tbl_lmprogramhistory.h smartgearbase.h
 test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		lmprogrambase.h dbmemobject.h msg_multi.h collectable.h \

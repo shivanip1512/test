@@ -180,22 +180,6 @@ CtiLMGroupSA105& CtiLMGroupSA105::operator=(const CtiLMGroupSA105& right)
 }
 
 /*---------------------------------------------------------------------------
-  operator==
-  ---------------------------------------------------------------------------*/
-int CtiLMGroupSA105::operator==(const CtiLMGroupSA105& right) const
-{
-    return CtiLMGroupBase::operator==(right);
-}
-
-/*---------------------------------------------------------------------------
-  operator!=
-  ---------------------------------------------------------------------------*/
-int CtiLMGroupSA105::operator!=(const CtiLMGroupSA105& right) const
-{
-    return CtiLMGroupBase::operator!=(right);
-}
-
-/*---------------------------------------------------------------------------
   replicate
 
   Restores self's operation fields

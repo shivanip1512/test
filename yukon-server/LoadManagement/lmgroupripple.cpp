@@ -225,24 +225,6 @@ CtiLMGroupRipple& CtiLMGroupRipple::operator=(const CtiLMGroupRipple& right)
 }
 
 /*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int CtiLMGroupRipple::operator==(const CtiLMGroupRipple& right) const
-{
-
-    return CtiLMGroupBase::operator==(right);
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int CtiLMGroupRipple::operator!=(const CtiLMGroupRipple& right) const
-{
-
-    return CtiLMGroupBase::operator!=(right);
-}
-
-/*---------------------------------------------------------------------------
     replicate
 
     Restores self's operation fields

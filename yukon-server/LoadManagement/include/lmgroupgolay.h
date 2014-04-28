@@ -26,9 +26,6 @@ DECLARE_COLLECTABLE( CtiLMGroupGolay );
 
     CtiLMGroupGolay& operator=(const CtiLMGroupGolay& right);
 
-    int operator==(const CtiLMGroupGolay& right) const;
-    int operator!=(const CtiLMGroupGolay& right) const;
-
     /* Static Members */
 
 private:

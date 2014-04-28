@@ -38,6 +38,7 @@ PointDataRequestFactory.obj \
 PorterResponseMessage.obj \
 LMSepControlMessage.obj \
 LMSepRestoreMessage.obj \
+LMEcobeeMessages.obj \
 RfnBroadcastMessage.obj \
 RfnBroadcastReplyMessage.obj \
 ControlHistoryAssociationResponse.obj \

@@ -41,6 +41,8 @@ struct IM_EX_MSG OutboundQueue
     static const OutboundQueue PorterResponses;
     static const OutboundQueue SmartEnergyProfileControl;
     static const OutboundQueue SmartEnergyProfileRestore;
+    static const OutboundQueue EcobeeCyclingControl;
+    static const OutboundQueue EcobeeRestore;
     static const OutboundQueue HistoryRowAssociationResponse;
     static const OutboundQueue IvvcAnalysisMessage;
     static const OutboundQueue CapControlOperationMessage;

@@ -145,6 +145,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("EXPRESSCOM GROUP")
         ("RFN EXPRESSCOM GROUP")
         ("DIGI SEP GROUP")
+        ("ECOBEE GROUP")
         ("MCT GROUP")
         ("GOLAY GROUP")
         ("SA-DIGITAL GROUP")
@@ -166,7 +167,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("MACRO GROUP")
         ("SYSTEM")
         ("VIRTUAL SYSTEM")
-            .repeat(9849, empty);
+            .repeat(9848, empty);
 
     std::vector<std::string> results;
 

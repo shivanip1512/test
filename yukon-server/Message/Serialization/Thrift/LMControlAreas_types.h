@@ -1179,6 +1179,43 @@ class LMGroupDigiSEP {
 void swap(LMGroupDigiSEP &a, LMGroupDigiSEP &b);
 
 
+class LMGroupEcobee {
+ public:
+
+  static const char* ascii_fingerprint; // = "87D2AAE9F82EF469E961C185946711F5";
+  static const uint8_t binary_fingerprint[16]; // = {0x87,0xD2,0xAA,0xE9,0xF8,0x2E,0xF4,0x69,0xE9,0x61,0xC1,0x85,0x94,0x67,0x11,0xF5};
+
+  LMGroupEcobee() {
+  }
+
+  virtual ~LMGroupEcobee() throw() {}
+
+  LMGroupBase _baseMessage;
+
+  void __set__baseMessage(const LMGroupBase& val) {
+    _baseMessage = val;
+  }
+
+  bool operator == (const LMGroupEcobee & rhs) const
+  {
+    if (!(_baseMessage == rhs._baseMessage))
+      return false;
+    return true;
+  }
+  bool operator != (const LMGroupEcobee &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const LMGroupEcobee & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(LMGroupEcobee &a, LMGroupEcobee &b);
+
+
 class LMGroupEmetcon {
  public:
 

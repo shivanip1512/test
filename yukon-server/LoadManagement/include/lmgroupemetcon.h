@@ -27,9 +27,6 @@ DECLARE_COLLECTABLE( CtiLMGroupEmetcon );
 
     CtiLMGroupEmetcon& operator=(const CtiLMGroupEmetcon& right);
 
-    int operator==(const CtiLMGroupEmetcon& right) const;
-    int operator!=(const CtiLMGroupEmetcon& right) const;
-
     /* Static Members */
 
 private:

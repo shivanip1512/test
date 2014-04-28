@@ -29,9 +29,6 @@ DECLARE_COLLECTABLE( CtiLMGroupRipple );
 
     CtiLMGroupRipple& operator=(const CtiLMGroupRipple& right);
 
-    int operator==(const CtiLMGroupRipple& right) const;
-    int operator!=(const CtiLMGroupRipple& right) const;
-
     /* Static Members */
 
 private:

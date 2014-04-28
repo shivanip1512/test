@@ -180,24 +180,6 @@ CtiLMGroupVersacom& CtiLMGroupVersacom::operator=(const CtiLMGroupVersacom& righ
 }
 
 /*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int CtiLMGroupVersacom::operator==(const CtiLMGroupVersacom& right) const
-{
-
-    return CtiLMGroupBase::operator==(right);
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int CtiLMGroupVersacom::operator!=(const CtiLMGroupVersacom& right) const
-{
-
-    return CtiLMGroupBase::operator!=(right);
-}
-
-/*---------------------------------------------------------------------------
     replicate
 
     Restores self's operation fields

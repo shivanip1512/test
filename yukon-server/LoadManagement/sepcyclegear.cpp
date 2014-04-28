@@ -8,44 +8,14 @@ using std::endl;
 using namespace Cti::LoadManagement;
 
 SEPCycleGear::SEPCycleGear(Cti::RowReader &rdr)
+    : CtiLMProgramDirectGear(rdr)
 {
-    restore(rdr);
-}
-
-SEPCycleGear::SEPCycleGear(const SEPCycleGear& gear)
-{
-    operator=(gear);
 }
 
 CtiLMProgramDirectGear * SEPCycleGear::replicate() const
 {
     return(CTIDBG_new SEPCycleGear(*this));
 }
-
-SEPCycleGear& SEPCycleGear::operator=(const SEPCycleGear& right)
-{
-    if( this != &right )
-    {
-        Inherited::operator=(right);
-    }
-
-    return *this;
-}
-
-int SEPCycleGear::operator==(const SEPCycleGear& right) const
-{
-    return Inherited::operator==(right);
-}
-int SEPCycleGear::operator!=(const SEPCycleGear& right) const
-{
-    return Inherited::operator!=(right);
-}
-
-void SEPCycleGear::restore(Cti::RowReader &rdr)
-{
-    Inherited::restore(rdr);
-}
-
 
 bool SEPCycleGear::attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeconds, DOUBLE &expectedLoadReduced)
 {

@@ -17,13 +17,9 @@ extern ULONG _LM_DEBUG;
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramThermoStatGear::CtiLMProgramThermoStatGear(Cti::RowReader &rdr)
+    : CtiLMProgramDirectGear(rdr)
 {
     restore(rdr);
-}
-
-CtiLMProgramThermoStatGear::CtiLMProgramThermoStatGear(const CtiLMProgramThermoStatGear& thermogear)
-{
-    operator=(thermogear);
 }
 
 /*---------------------------------------------------------------------------
@@ -91,52 +87,6 @@ float CtiLMProgramThermoStatGear::getRampRate() const
 }
 
 /*---------------------------------------------------------------------------
-    operator=
----------------------------------------------------------------------------*/
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::operator=(const CtiLMProgramThermoStatGear& right)
-{
-
-    if( this != &right )
-    {
-        CtiLMProgramDirectGear::operator=(right);
-        _settings = right._settings;
-        _minvalue = right._minvalue;
-        _maxvalue = right._maxvalue;
-        _valueb   = right._valueb  ;
-        _valued   = right._valued  ;
-        _valuef   = right._valuef  ;
-        _random   = right._random  ;
-        _valueta  = right._valueta ;
-        _valuetb  = right._valuetb ;
-        _valuetc  = right._valuetc ;
-        _valuetd  = right._valuetd ;
-        _valuete  = right._valuete ;
-        _valuetf  = right._valuetf ;
-        _rampRate = right._rampRate;
-    }
-
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int CtiLMProgramThermoStatGear::operator==(const CtiLMProgramThermoStatGear& right) const
-{
-
-    return CtiLMProgramDirectGear::operator==(right);
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int CtiLMProgramThermoStatGear::operator!=(const CtiLMProgramThermoStatGear& right) const
-{
-
-    return CtiLMProgramDirectGear::operator!=(right);
-}
-
-/*---------------------------------------------------------------------------
     replicate
 
     Restores self's operation fields
@@ -153,8 +103,6 @@ CtiLMProgramDirectGear* CtiLMProgramThermoStatGear::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramThermoStatGear::restore(Cti::RowReader &rdr)
 {
-    CtiLMProgramDirectGear::restore(rdr);
-
     rdr["settings"] >> _settings;
     rdr["minvalue"] >> _minvalue;
     rdr["maxvalue"] >> _maxvalue;
@@ -170,6 +118,4 @@ void CtiLMProgramThermoStatGear::restore(Cti::RowReader &rdr)
     rdr["valuetf"] >> _valuetf;
     rdr["ramprate"] >> _rampRate;
 }
-
-// Static Members
 

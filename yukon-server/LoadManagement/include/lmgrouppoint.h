@@ -32,9 +32,6 @@ DECLARE_COLLECTABLE( CtiLMGroupPoint );
 
     CtiLMGroupPoint& operator=(const CtiLMGroupPoint& right);
 
-    int operator==(const CtiLMGroupPoint& right) const;
-    int operator!=(const CtiLMGroupPoint& right) const;
-
     /* Static Members */
 
 private:

@@ -9,13 +9,8 @@
 using std::endl;
 using namespace Cti::LoadManagement;
 
-SEPTemperatureOffsetGear::SEPTemperatureOffsetGear(Cti::RowReader &rdr) :
-CtiLMProgramThermoStatGear(rdr)
-{
-}
-
-SEPTemperatureOffsetGear::SEPTemperatureOffsetGear(const SEPTemperatureOffsetGear& gear) :
-CtiLMProgramThermoStatGear(gear)
+SEPTemperatureOffsetGear::SEPTemperatureOffsetGear(Cti::RowReader &rdr)
+    : CtiLMProgramThermoStatGear(rdr)
 {
 }
 
@@ -23,31 +18,6 @@ CtiLMProgramDirectGear * SEPTemperatureOffsetGear::replicate() const
 {
     return(CTIDBG_new SEPTemperatureOffsetGear(*this));
 }
-
-SEPTemperatureOffsetGear& SEPTemperatureOffsetGear::operator=(const SEPTemperatureOffsetGear& right)
-{
-    if( this != &right )
-    {
-        Inherited::operator=(right);
-    }
-
-    return *this;
-}
-
-int SEPTemperatureOffsetGear::operator==(const SEPTemperatureOffsetGear& right) const
-{
-    return Inherited::operator==(right);
-}
-int SEPTemperatureOffsetGear::operator!=(const SEPTemperatureOffsetGear& right) const
-{
-    return Inherited::operator!=(right);
-}
-
-void SEPTemperatureOffsetGear::restore(Cti::RowReader &rdr)
-{
-    Inherited::restore(rdr);
-}
-
 
 bool SEPTemperatureOffsetGear::attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeconds, DOUBLE &expectedLoadReduced)
 {

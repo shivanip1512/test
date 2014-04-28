@@ -43,6 +43,7 @@ $(THRIFT_LIB)
 
 LOADMANAGEMENT_TEST_OBJS= \
 test_main.obj \
+test_lmobjects.obj \
 test_lmprogram.obj \
 test_lm_constraintviolations.obj
 
@@ -64,6 +65,7 @@ lmenergyexchangeoffer.obj \
 lmenergyexchangeofferrevision.obj \
 lmfactory.obj \
 lmgroupbase.obj \
+lmgroupecobee.obj \
 lmgroupemetcon.obj \
 lmgroupexpresscom.obj \
 lmgroupmacro.obj \
@@ -89,6 +91,7 @@ lmservice.obj \
 lmutility.obj \
 sepcyclegear.obj \
 septempoffsetgear.obj \
+ecobeeCycleGear.obj \
 loadmanager.obj \
 lmprogrambeatthepeakgear.obj \
 lm_message_serialization.obj \
@@ -160,6 +163,23 @@ deps:
 
 ######################################################################################
 #UPDATE#
+test_lmobjects.obj:	devicetypes.h lmutility.h CtiTime.h dlldefs.h \
+		ctidate.h logger.h thread.h mutex.h guard.h utility.h \
+		queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		CtiPCPtrQueue.h lmprogrambase.h dbmemobject.h msg_multi.h \
+		collectable.h msg_pdata.h yukon.h ctidbgmem.h pointdefs.h \
+		pointtypes.h message.h lmgroupbase.h boostutil.h \
+		msg_pcrequest.h dsm2.h cticonnect.h netports.h dsm2err.h \
+		words.h optional.h macro_offset.h msg_cmd.h row_reader.h \
+		database_connection.h dbaccess.h dllbase.h \
+		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
+		exchange.h string_utility.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
+		configval.h readers_writer_lock.h critical_section.h \
+		connection_base.h worker_thread.h timing_util.h test_reader.h \
+		lmgroupecobee.h GroupControlInterface.h \
+		ecobeeControlInterface.h ecobeeCycleGear.h lmprogramdirect.h \
+		lmprogramdirectgear.h tbl_lmprogramhistory.h smartgearbase.h
 test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		lmprogrambase.h dbmemobject.h msg_multi.h collectable.h \

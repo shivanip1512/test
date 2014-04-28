@@ -1,0 +1,181 @@
+#include "precompiled.h"
+
+#include "lmid.h"
+#include "logger.h"
+#include "amq_connection.h"
+#include "LMGroupEcobee.h"
+#include "LMEcobeeMessages.h"
+
+extern ULONG _LM_DEBUG;
+
+
+DEFINE_COLLECTABLE( LMGroupEcobee, LMGROUPECOBEE_ID )
+
+
+LMGroupEcobee::LMGroupEcobee( Cti::RowReader &rdr )
+    :   CtiLMGroupBase( rdr )
+{
+}
+
+
+LMGroupEcobee::~LMGroupEcobee()
+{
+}
+
+
+CtiLMGroupBase* LMGroupEcobee::replicate() const
+{
+    return new LMGroupEcobee( *this );
+}
+
+
+bool LMGroupEcobee::sendCycleControl( long dutyCycle,
+                                      long controlDurationSeconds,
+                                      bool rampInOption,
+                                      bool rampOutOption )
+{
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+
+    CtiTime now;
+    CtiTime utcNow( now - now.secondOffsetToGMT() );
+
+    StreamableMessage::auto_type msg(
+        new LMEcobeeCyclingControlMessage( getPAOId(),
+                                           dutyCycle,
+                                           utcNow.seconds(),
+                                           controlDurationSeconds,
+                                           rampInOption,
+                                           rampOutOption ) );
+
+    ActiveMQConnectionManager::enqueueMessage( OutboundQueue::EcobeeCyclingControl, msg );
+
+    if ( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending ecobee Cycle command, LM Group: " << getPAOName() << ", control minutes: "
+             << ( controlDurationSeconds / 60 ) << ", percent: " << dutyCycle << std::endl;
+    }
+
+    setLastControlSent( now );
+    setLastStopTimeSent( now + controlDurationSeconds );
+
+    if ( getGroupControlState() != CtiLMGroupBase::ActiveState )
+    {
+        setControlStartTime( now );
+        incrementDailyOps();
+        setIsRampingOut( false );
+    }
+
+    setIsRampingIn( false );
+    setGroupControlState( CtiLMGroupBase::ActiveState );
+
+    return true;
+}
+
+
+bool LMGroupEcobee::sendStopControl( bool stopImmediately /* unused */ )
+{
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+
+    CtiTime now;
+    CtiTime utcNow( now - now.secondOffsetToGMT() );
+
+    StreamableMessage::auto_type msg(
+        new LMEcobeeRestoreMessage( getPAOId(),
+                                    utcNow.seconds() ) );
+
+    ActiveMQConnectionManager::enqueueMessage( OutboundQueue::EcobeeRestore, msg );
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending ecobee Stop command, LM Group: " << getPAOName() << std::endl;
+    }
+
+    setLastControlSent( now );
+    setLastStopTimeSent( now );
+
+    return true;
+}
+
+
+bool LMGroupEcobee::sendShedControl( long controlMinutes )
+{
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+
+    // shed == cycle at 100% duty cycle with no ramp in/out
+
+    CtiTime now;
+    CtiTime utcNow( now - now.secondOffsetToGMT() );
+
+    StreamableMessage::auto_type msg(
+        new LMEcobeeCyclingControlMessage( getPAOId(),
+                                           100,
+                                           utcNow.seconds(),
+                                           controlMinutes * 60,
+                                           false,
+                                           false ) );
+
+    ActiveMQConnectionManager::enqueueMessage( OutboundQueue::EcobeeCyclingControl, msg );
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending ecobee Shed command, LM Group: " << getPAOName() << ", control minutes: " << CtiNumStr(controlMinutes) << std::endl;
+    }
+
+    setLastControlSent( now );
+    setLastStopTimeSent( now + ( controlMinutes * 60 ) );
+
+    return true;
+}
+
+
+// borrowed from SEP group...  ecobee devices also know how to stop themselves
+bool LMGroupEcobee::doesStopRequireCommandAt(const CtiTime &currentTime) const
+{
+    return getLastStopTimeSent() > currentTime + 30 || getLastStopTimeSent() == gInvalidCtiTime;
+}
+
+
+CtiRequestMsg* LMGroupEcobee::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
+{
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << CtiTime() << " - Can not Time Refresh an ecobee Group, in: " << __FILE__ << " at:" << __LINE__ << std::endl;
+
+    return 0;
+}
+
+
+CtiRequestMsg* LMGroupEcobee::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
+{
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << CtiTime() << " - Can not Smart Cycle an ecobee Group, in: " << __FILE__ << " at:" << __LINE__ << std::endl;
+
+    return 0;
+}
+
+
+CtiRequestMsg* LMGroupEcobee::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
+{
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << CtiTime() << " - Can not Rotation an ecobee Group, in: " << __FILE__ << " at:" << __LINE__ << std::endl;
+
+    return 0;
+}
+
+
+CtiRequestMsg* LMGroupEcobee::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
+{
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << CtiTime() << " - Can not Master Cycle an ecobee Group, in: " << __FILE__ << " at:" << __LINE__ << std::endl;
+
+    return 0;
+}
+

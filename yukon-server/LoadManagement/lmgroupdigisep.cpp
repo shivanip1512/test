@@ -51,22 +51,6 @@ LMGroupDigiSEP& LMGroupDigiSEP::operator=(const LMGroupDigiSEP& right)
 }
 
 /*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int LMGroupDigiSEP::operator==(const LMGroupDigiSEP& right) const
-{
-    return CtiLMGroupBase::operator==(right);
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int LMGroupDigiSEP::operator!=(const LMGroupDigiSEP& right) const
-{
-    return CtiLMGroupBase::operator!=(right);
-}
-
-/*---------------------------------------------------------------------------
     replicate
 
     Restores self's operation fields

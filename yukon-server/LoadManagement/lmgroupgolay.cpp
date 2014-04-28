@@ -178,22 +178,6 @@ CtiLMGroupGolay& CtiLMGroupGolay::operator=(const CtiLMGroupGolay& right)
 }
 
 /*---------------------------------------------------------------------------
-  operator==
-  ---------------------------------------------------------------------------*/
-int CtiLMGroupGolay::operator==(const CtiLMGroupGolay& right) const
-{
-    return CtiLMGroupBase::operator==(right);
-}
-
-/*---------------------------------------------------------------------------
-  operator!=
-  ---------------------------------------------------------------------------*/
-int CtiLMGroupGolay::operator!=(const CtiLMGroupGolay& right) const
-{
-    return CtiLMGroupBase::operator!=(right);
-}
-
-/*---------------------------------------------------------------------------
   replicate
 
   Restores self's operation fields

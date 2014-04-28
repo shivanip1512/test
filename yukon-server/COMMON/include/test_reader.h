@@ -80,7 +80,7 @@ public:
         {
             for( int i=0; i < _columnNames.size(); i++ )
             {
-                if( _columnNames[i] == columnName )
+                if( ciStringEqual(_columnNames[i], columnName) )
                 {
                     _currentColumn = i;
                     found = true;

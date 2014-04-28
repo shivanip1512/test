@@ -14,7 +14,6 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
 
     CtiLMProgramDirectGear();
     CtiLMProgramDirectGear(Cti::RowReader &rdr);
-    CtiLMProgramDirectGear(const CtiLMProgramDirectGear& proggear);
 
     virtual ~CtiLMProgramDirectGear();
 
@@ -71,9 +70,6 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
 
     virtual CtiLMProgramDirectGear* replicate() const;
 
-    int operator==(const CtiLMProgramDirectGear& right) const;
-    int operator!=(const CtiLMProgramDirectGear& right) const;
-
     /* Static Members */
 
     //Possible control methods
@@ -89,6 +85,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
     static const std::string SimpleThermostatRampingMethod;
     static const std::string SEPCycleMethod;
     static const std::string SEPTempOffsetMethod;
+    static const std::string EcobeeCycleMethod;
     static const std::string BeatThePeakMethod;
     static const std::string NoControlMethod;
 
@@ -157,3 +154,14 @@ private:
     LONG _back_ramp_time;
     DOUBLE _kw_reduction;
 };
+
+inline bool operator==( const CtiLMProgramDirectGear & lhs, const CtiLMProgramDirectGear & rhs )
+{
+    return lhs.getProgramPAOId() == rhs.getProgramPAOId();
+}
+
+inline bool operator!=( const CtiLMProgramDirectGear & lhs, const CtiLMProgramDirectGear & rhs )
+{
+    return ! ( lhs == rhs );
+}
+

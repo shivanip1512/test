@@ -27,8 +27,5 @@ DECLARE_COLLECTABLE( CtiLMGroupMCT );
 
     CtiLMGroupMCT& operator=(const CtiLMGroupMCT& right);
 
-    int operator==(const CtiLMGroupMCT& right) const;
-    int operator!=(const CtiLMGroupMCT& right) const;
-
     /* Static Members */
 };

@@ -9,6 +9,7 @@ using namespace Cti::LoadManagement;
 using Cti::LoadManagement::BeatThePeakControlInterface;
 
 CtiLMProgramBeatThePeakGear::CtiLMProgramBeatThePeakGear(Cti::RowReader &rdr)
+    : CtiLMProgramDirectGear(rdr)
 {
     restore(rdr);
 }
@@ -18,18 +19,8 @@ CtiLMProgramDirectGear * CtiLMProgramBeatThePeakGear::replicate() const
     return(CTIDBG_new CtiLMProgramBeatThePeakGear(*this));
 }
 
-int CtiLMProgramBeatThePeakGear::operator==(const CtiLMProgramBeatThePeakGear& right) const
-{
-    return Inherited::operator==(right) && _alertLevel == right._alertLevel;
-}
-int CtiLMProgramBeatThePeakGear::operator!=(const CtiLMProgramBeatThePeakGear& right) const
-{
-    return Inherited::operator!=(right) || _alertLevel != right._alertLevel;
-}
-
 void CtiLMProgramBeatThePeakGear::restore(Cti::RowReader &rdr)
 {
-    Inherited::restore(rdr);
     std::string temp;
     rdr["alertlevel"] >> temp;
     try

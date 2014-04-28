@@ -179,22 +179,6 @@ CtiLMGroupSADigital& CtiLMGroupSADigital::operator=(const CtiLMGroupSADigital& r
 }
 
 /*---------------------------------------------------------------------------
-  operator==
-  ---------------------------------------------------------------------------*/
-int CtiLMGroupSADigital::operator==(const CtiLMGroupSADigital& right) const
-{
-    return CtiLMGroupBase::operator==(right);
-}
-
-/*---------------------------------------------------------------------------
-  operator!=
-  ---------------------------------------------------------------------------*/
-int CtiLMGroupSADigital::operator!=(const CtiLMGroupSADigital& right) const
-{
-    return CtiLMGroupBase::operator!=(right);
-}
-
-/*---------------------------------------------------------------------------
   replicate
 
   Restores self's operation fields

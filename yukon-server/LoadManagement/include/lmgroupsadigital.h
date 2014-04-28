@@ -26,9 +26,6 @@ DECLARE_COLLECTABLE( CtiLMGroupSADigital );
 
     CtiLMGroupSADigital& operator=(const CtiLMGroupSADigital& right);
 
-    int operator==(const CtiLMGroupSADigital& right) const;
-    int operator!=(const CtiLMGroupSADigital& right) const;
-
     /* Static Members */
 
 private:

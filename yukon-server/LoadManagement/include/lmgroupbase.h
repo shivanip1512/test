@@ -133,9 +133,6 @@ public:
     std::string buildShedString(LONG shedTime) const;
     std::string buildPeriodString(LONG periodTime) const;
 
-    int operator==(const CtiLMGroupBase& right) const;
-    int operator!=(const CtiLMGroupBase& right) const;
-
     // Static Members
 
     // Possible group control states
@@ -200,4 +197,14 @@ typedef boost::shared_ptr<CtiLMGroupBase> CtiLMGroupPtr;
 typedef std::vector<CtiLMGroupPtr> CtiLMGroupVec;
 typedef CtiLMGroupVec::iterator CtiLMGroupIter;
 typedef CtiLMGroupVec::const_iterator CtiLMGroupConstIter;
+
+inline bool operator==( const CtiLMGroupBase & lhs, const CtiLMGroupBase & rhs )
+{
+    return lhs.getPAOId() == rhs.getPAOId();
+}
+
+inline bool operator!=( const CtiLMGroupBase & lhs, const CtiLMGroupBase & rhs )
+{
+    return ! ( lhs == rhs );
+}
 

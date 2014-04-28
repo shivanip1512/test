@@ -8,7 +8,6 @@ class CtiLMProgramThermoStatGear : public CtiLMProgramDirectGear
 public:
 
     CtiLMProgramThermoStatGear(Cti::RowReader &rdr);
-    CtiLMProgramThermoStatGear(const CtiLMProgramThermoStatGear& thermogear);
 
     virtual ~CtiLMProgramThermoStatGear();
 
@@ -28,11 +27,6 @@ public:
     float getRampRate() const;
 
     virtual CtiLMProgramDirectGear* replicate() const;
-
-    CtiLMProgramThermoStatGear& operator=(const CtiLMProgramThermoStatGear& right);
-
-    int operator==(const CtiLMProgramThermoStatGear& right) const;
-    int operator!=(const CtiLMProgramThermoStatGear& right) const;
 
 protected:
     void restore(Cti::RowReader &rdr);

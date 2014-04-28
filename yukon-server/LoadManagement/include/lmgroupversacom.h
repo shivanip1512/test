@@ -23,9 +23,6 @@ DECLARE_COLLECTABLE( CtiLMGroupVersacom );
 
     CtiLMGroupVersacom& operator=(const CtiLMGroupVersacom& right);
 
-    int operator==(const CtiLMGroupVersacom& right) const;
-    int operator!=(const CtiLMGroupVersacom& right) const;
-
     /* Static Members */
 
 private:

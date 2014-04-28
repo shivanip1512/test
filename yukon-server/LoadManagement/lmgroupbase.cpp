@@ -1028,23 +1028,6 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
     return *this;
 }
 
-/*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int CtiLMGroupBase::operator==(const CtiLMGroupBase& right) const
-{
-    return getPAOId() == right.getPAOId();
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int CtiLMGroupBase::operator!=(const CtiLMGroupBase& right) const
-{
-
-    return !operator==(right);
-}
-
 /*----------------------------------------------------------------------------
   operator<
 

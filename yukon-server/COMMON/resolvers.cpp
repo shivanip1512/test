@@ -427,6 +427,7 @@ static const std::map<std::string, int> device_lookups = boost::assign::map_list
     ("lm energy exchange", TYPE_LMPROGRAM_ENERGYEXCHANGE)
     ("lm sep program",     TYPE_LMPROGRAM_DIRECT)
     ("digi sep group",     TYPE_LMGROUP_DIGI_SEP)
+    ("ecobee group",       TYPE_LMGROUP_ECOBEE)
     ("emetcon group",      TYPE_LMGROUP_EMETCON)
     ("expresscom group",   TYPE_LMGROUP_EXPRESSCOM)
     ("rfn expresscom group",TYPE_LMGROUP_RFN_EXPRESSCOM)
@@ -946,6 +947,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_LMGROUP_EXPRESSCOM:
         case TYPE_LMGROUP_RFN_EXPRESSCOM:
         case TYPE_LMGROUP_DIGI_SEP:
+        case TYPE_LMGROUP_ECOBEE:
         case TYPE_LMGROUP_MCT:
         case TYPE_LMGROUP_GOLAY:
         case TYPE_LMGROUP_SADIGITAL:

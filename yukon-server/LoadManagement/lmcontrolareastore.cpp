@@ -38,6 +38,7 @@
 #include "lmprogramcontrolwindow.h"
 #include "sepcyclegear.h"
 #include "septempoffsetgear.h"
+#include "ecobeeCycleGear.h"
 #include "resolvers.h"
 #include "desolvers.h"
 #include "devicetypes.h"
@@ -374,10 +375,6 @@ void CtiLMControlAreaStore::reset()
 
                 while( rdr() )
                 {
-                    string category;
-                    string type;
-                    rdr["category"] >> category;
-                    rdr["type"] >> type;
                     CtiLMGroupPtr lm_group = lm_group_factory.createLMGroup(rdr);
                     temp_all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
                     attachControlStringData(lm_group);
@@ -590,7 +587,6 @@ void CtiLMControlAreaStore::reset()
                     long daily_ops;
                     bool constraint_override;
 
-                    string tempBoolString;
                     rdr["groupid"] >> group_id;
                     rdr["groupcontrolstate"] >> group_control_state;
                     rdr["currenthoursdaily"] >> cur_hours_daily;
@@ -1018,7 +1014,11 @@ void CtiLMControlAreaStore::reset()
                             newDirectGear = CTIDBG_new CtiLMProgramBeatThePeakGear(rdr);
                         }
                     }
-                    else if( rdr["settings"].isNull() )
+                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EcobeeCycleMethod) )
+                    {
+                        newDirectGear = CTIDBG_new EcobeeCycleGear(rdr);
+                    }
+                    else if (rdr["settings"].isNull()) 
                     {
                         newDirectGear = CTIDBG_new CtiLMProgramDirectGear(rdr);
                     }
@@ -1036,7 +1036,7 @@ void CtiLMControlAreaStore::reset()
                             lmProgramDirectGearList.push_back(newDirectGear);
                         }
                     }
-                    else // Currently this is only hit if the SEPTemperatureOffset gear or BeatThePeak gear is misconfigured.
+                    else // Currently this is only hit if the EcobeeThermostat gear, SEPTemperatureOffset gear or BeatThePeak gear is misconfigured.
                     {
                         string gearName;
                         int gearId;

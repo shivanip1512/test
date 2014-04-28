@@ -645,6 +645,12 @@ const IM_EX_MSG OutboundQueue
         OutboundQueue::SmartEnergyProfileRestore
                 ("yukon.notif.stream.dr.SmartEnergyProfileRestoreMessage");
 const IM_EX_MSG OutboundQueue
+        OutboundQueue::EcobeeCyclingControl
+                ("yukon.notif.stream.dr.EcobeeCyclingControlMessage");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::EcobeeRestore
+                ("yukon.notif.stream.dr.EcobeeRestoreMessage");
+const IM_EX_MSG OutboundQueue
         OutboundQueue::HistoryRowAssociationResponse
                 ("yukon.notif.stream.dr.HistoryRowAssociationResponse");
 const IM_EX_MSG OutboundQueue

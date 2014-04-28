@@ -37,9 +37,6 @@ DECLARE_COLLECTABLE( CtiLMGroupExpresscom );
 
     CtiLMGroupExpresscom& operator=(const CtiLMGroupExpresscom& right);
 
-    int operator==(const CtiLMGroupExpresscom& right) const;
-    int operator!=(const CtiLMGroupExpresscom& right) const;
-
     /* Static Members */
 
 private:

@@ -7,15 +7,12 @@
 class CtiLMProgramBeatThePeakGear : public SmartGearBase, public CtiLMProgramDirectGear
 {
 public:
-    typedef CtiLMProgramDirectGear Inherited;
+
     CtiLMProgramBeatThePeakGear(Cti::RowReader &rdr);
 
     virtual CtiLMProgramDirectGear * replicate() const;
 
-    int CtiLMProgramBeatThePeakGear::operator==(const CtiLMProgramBeatThePeakGear& right) const;
-    int CtiLMProgramBeatThePeakGear::operator!=(const CtiLMProgramBeatThePeakGear& right) const;
-
-    void CtiLMProgramBeatThePeakGear::restore(Cti::RowReader &rdr);
+    void restore(Cti::RowReader &rdr);
 
     virtual bool attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeconds, DOUBLE &expectedLoadReduced);
     virtual bool stopControl(CtiLMGroupPtr currentLMGroup);
@@ -26,3 +23,15 @@ public:
 private:
     Cti::BeatThePeak::AlertLevel _alertLevel;
 };
+
+inline bool operator==( const CtiLMProgramBeatThePeakGear & lhs, const CtiLMProgramBeatThePeakGear & rhs )
+{
+    return lhs.getProgramPAOId() == rhs.getProgramPAOId()
+        && lhs.getAlertLevel() == rhs.getAlertLevel();
+}
+
+inline bool operator!=( const CtiLMProgramBeatThePeakGear & lhs, const CtiLMProgramBeatThePeakGear & rhs )
+{
+    return ! ( lhs == rhs );
+}
+
