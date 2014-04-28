@@ -51,6 +51,8 @@ const MetricItem metricItems[] = {
         {  33, "VarRecCurrentDemand",      "Var received, current demand"          },
         {  34, "VarDelPeakDemand",         "Var delivered, peak demand"            },
         {  35, "VarRecPeakDemand",         "Var received, peak demand"             },
+        {  36, "VarDelPeakDemandCoinci",   "Var delivered, peak demand coincident" },
+        {  37, "VarRecPeakDemandCoinci",   "Var received, peak demand coincident"  },
 
         {  41, "VaHourDel",                "VA hour delivered"                     },
         {  42, "VaHourRec",                "VA hour received"                      },
@@ -65,18 +67,20 @@ const MetricItem metricItems[] = {
         {  51, "VaRecPeakDemand",          "VA received, peak demand"              },
         {  52, "VaDelPeakDemand",          "VA delivered, peak demand"             },
 
-        {  60, "QHourDel",                 "Q hour delivered"                      },
-        {  61, "QHourRec",                 "Q hour received"                       },
-        {  62, "QHourTotal",               "Q hour total/sum"                      },
-        {  63, "QHourNet",                 "Q hour net"                            },
-        {  64, "QDelCurrentDemand",        "Q delivered, current demand"           },
-        {  65, "QRecCurrentDemand",        "Q received, current demand"            },
-        {  66, "QDelPeakDemand",           "Q delivered, peak demand"              },
-        {  67, "QRecPeakDemand",           "Q received, peak demand"               },
+        {  61, "QHourDel",                 "Q hour delivered"                      },
+        {  62, "QHourRec",                 "Q hour received"                       },
+        {  63, "QHourTotal",               "Q hour total/sum"                      },
+        {  64, "QHourNet",                 "Q hour net"                            },
+        {  65, "QDelCurrentDemand",        "Q delivered, current demand"           },
+        {  66, "QRecCurrentDemand",        "Q received, current demand"            },
+        {  67, "QDelPeakDemand",           "Q delivered, peak demand"              },
+        {  68, "QRecPeakDemand",           "Q received, peak demand"               },
+        {  69, "QDelPeakDemandCoinci",     "Q delivered, peak demand coincident"   },
+        {  70, "QRecPeakDemandCoinci",     "Q received, peak demand coincident"    },
 
-        {  80, "PfKWhDel",                 "Power Factor kWh(del)/kVar(del)"       },
-        {  81, "PfKWhRec",                 "Power Factor kWh(rec)/kVar(rec)"       },
-        {  82, "PfKWhTotal",               "Power Factor kWh(total)/kVar(total)"   },
+        {  81, "PfKWhDel",                 "Power Factor kWh(del)/kVar(del)"       },
+        {  82, "PfKWhRec",                 "Power Factor kWh(rec)/kVar(rec)"       },
+        {  83, "PfKWhTotal",               "Power Factor kWh(total)/kVar(total)"   },
 
         { 100, "VoltagePhaseA",            "Voltage Phase A"                       },
         { 101, "VoltagePhaseB",            "Voltage Phase B"                       },
@@ -90,19 +94,39 @@ const MetricItem metricItems[] = {
         { 109, "CurrentAnglePhaseA",       "Current Angle Phase A"                 },
         { 110, "CurrentAnglePhaseB",       "Current Angle Phase B"                 },
         { 111, "CurrentAnglePhaseC",       "Current Angle Phase C"                 },
+        { 112, "VoltageMin",               "Voltage Min"                           },
+        { 113, "VoltageAvg",               "Voltage Average"                       },
+        { 114, "VoltageMax",               "Voltage Max"                           },
+        { 115, "Voltage",                  "Voltage"                               },
+        { 116, "VoltageMinPhaseA",         "Voltage Min Phase A"                   },
+        { 117, "VoltageMinPhaseB",         "Voltage Min Phase B"                   },
+        { 118, "VoltageMinPhaseC",         "Voltage Min Phase C"                   },
+        { 119, "VoltageAvgPhaseA",         "Voltage Average Phase A"               },
+        { 120, "VoltageAvgPhaseB",         "Voltage Average Phase B"               },
+        { 121, "VoltageAvgPhaseC",         "Voltage Average Phase C"               },
+        { 122, "VoltageMaxPhaseA",         "Voltage Max Phase A"                   },
+        { 123, "VoltageMaxPhaseB",         "Voltage Max Phase B"                   },
+        { 124, "VoltageMaxPhaseC",         "Voltage Max Phase C"                   },
 
-        { 120, "WattsPhaseA",              "Watts Phase A"                         },
-        { 121, "WattsPhaseB",              "Watts Phase B"                         },
-        { 122, "WattsPhaseC",              "Watts Phase C"                         },
-        { 123, "VarPhaseA",                "Var Phase A"                           },
-        { 124, "VarPhaseB",                "Var Phase B"                           },
-        { 125, "VarPhaseC",                "Var Phase C"                           },
-        { 126, "VaPhaseA",                 "VA Phase A"                            },
-        { 127, "VaPhaseB",                 "VA Phase B"                            },
-        { 128, "VaPhaseC",                 "VA Phase C"                            },
-        { 129, "PfPhaseA",                 "PF Phase A"                            },
-        { 130, "PfPhaseB",                 "PF Phase B"                            },
-        { 131, "PfPhaseC",                 "PF Phase C"                            }};
+        { 150, "WattsPhaseA",              "Watts Phase A"                         },
+        { 151, "WattsPhaseB",              "Watts Phase B"                         },
+        { 152, "WattsPhaseC",              "Watts Phase C"                         },
+        { 153, "VarPhaseA",                "Var Phase A"                           },
+        { 154, "VarPhaseB",                "Var Phase B"                           },
+        { 155, "VarPhaseC",                "Var Phase C"                           },
+        { 156, "VaPhaseA",                 "VA Phase A"                            },
+        { 157, "VaPhaseB",                 "VA Phase B"                            },
+        { 158, "VaPhaseC",                 "VA Phase C"                            },
+        { 159, "PfDegreePhaseA",           "PF degree Phase A"                     },
+        { 160, "PfDegreePhaseB",           "PF degree Phase A"                     },
+        { 161, "PfDegreePhaseC",           "PF degree Phase C"                     },
+        { 162, "PfPhaseA",                 "PF Phase A"                            },
+        { 163, "PfPhaseB",                 "PF Phase B"                            },
+        { 164, "PfPhaseC",                 "PF Phase C"                            },
+
+        { 256, "TimeSeconds",              "Time in Seconds"                       },
+        { 257, "TemperatureCentigrade",    "Temperature in Centigrade"             }};
+
 
 template <typename T,unsigned Size>
 unsigned arraySize(const T (&arr)[Size]) { return Size; }
@@ -194,14 +218,14 @@ const std::map<unsigned, std::string> metricQualifierResolver_CoincidentValue = 
         ( 7, "Coincident Value 7" );
 
 const std::map<unsigned, std::string> metricQualifierResolver_ScalingFactor = boost::assign::map_list_of
-        ( 3, "giga (10e9)" )       //  3 - 011
-        ( 2, "mega (10e6)" )       //  2 - 010
-        ( 1, "kilo (10e3)" )       //  1 - 001
-        ( 0, "(x1)" )              //  0 - 000
-        ( 7, "milli (10e-3)" )     // -1 - 111
-        ( 6, "micro (10e-6)" )     // -2 - 110
-        ( 5, "1/10ths (10e-1)" )   // -3 - 101
-        ( 4, "OVERFLOW" );         // -4 - 100
+        ( 3, "10e9 (giga)" )    //  3 - 011
+        ( 2, "10e6 (mega)" )    //  2 - 010
+        ( 1, "10e3 (kilo)" )    //  1 - 001
+        ( 0, "1" )              //  0 - 000
+        ( 7, "10e-3 (milli)" )  // -1 - 111
+        ( 6, "10e-6 (micro)" )  // -2 - 110
+        ( 5, "10e-1 (deci)" )   // -3 - 101
+        ( 4, "OVERFLOW" );      // -4 - 100
 
 unsigned getValueFromBytes_bEndian( const DeviceCommand::Bytes &data, unsigned offset, unsigned len )
 {
@@ -282,13 +306,13 @@ struct MetricQualifierFields
     {
         std::vector<std::string> descriptions;
 
-        descriptions.push_back( resolveField( fundHarmonic,         "Fund/Harmonic",         metricQualifierResolver_FundHarmonic         ));
-        descriptions.push_back( resolveField( primarySecondary,     "Primary/Secondary",     metricQualifierResolver_PrimarySecondary     ));
-        descriptions.push_back( resolveField( segmentation,         "Segmentation",          metricQualifierResolver_Segmentation         ));
-        descriptions.push_back( resolveField( continuousCumulative, "Continuous Cumulative", metricQualifierResolver_ContinuousCumulative ));
-        descriptions.push_back( resolveField( cumulative,           "Cumulative",            metricQualifierResolver_Cumulative           ));
-        descriptions.push_back( resolveField( coincidentValue,      "Coincident Value",      metricQualifierResolver_CoincidentValue      ));
-        descriptions.push_back( resolveField( scalingFactor,        "Scaling Factor",        metricQualifierResolver_ScalingFactor        ));
+        descriptions.push_back( resolveField( fundHarmonic,         "Fund/Harmonic",         metricQualifierResolver_FundHarmonic,          false ));
+        descriptions.push_back( resolveField( primarySecondary,     "Primary/Secondary",     metricQualifierResolver_PrimarySecondary,      false ));
+        descriptions.push_back( resolveField( segmentation,         "Segmentation",          metricQualifierResolver_Segmentation,          true  ));
+        descriptions.push_back( resolveField( continuousCumulative, "Continuous Cumulative", metricQualifierResolver_ContinuousCumulative,  false ));
+        descriptions.push_back( resolveField( cumulative,           "Cumulative",            metricQualifierResolver_Cumulative,            false ));
+        descriptions.push_back( resolveField( coincidentValue,      "Coincident Value",      metricQualifierResolver_CoincidentValue,       false ));
+        descriptions.push_back( resolveField( scalingFactor,        "Scaling Factor",        metricQualifierResolver_ScalingFactor,         true  ));
 
         std::string result;
         for each( const std::string &desc in descriptions )
@@ -307,7 +331,7 @@ struct MetricQualifierFields
         return result;
     }
 
-    std::string resolveField( unsigned val, const std::string &name, const std::map<unsigned, std::string> &resolverMap ) const
+    std::string resolveField( unsigned val, const std::string &name, const std::map<unsigned, std::string> &resolverMap, bool showName ) const
     {
         boost::optional<std::string> desc = mapFind( resolverMap, val );
 
@@ -319,7 +343,7 @@ struct MetricQualifierFields
             return ""; // return an empty string if not specified
         }
 
-        return name + ": " + *desc;
+        return showName ? (name + ": " + *desc) : *desc;
     }
 };
 
@@ -444,7 +468,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
         validate( Condition( metricsIdsReceived.insert( (*metric)->_id ).second, ErrorInvalidData )
                 << "Received unexpected duplicated metric: " << (*metric)->_description << " (" << metricId << ")" );
 
-        result.description += (*metric)->_description + " (" + CtiNumStr(metricId) + ")\n";
+        result.description += (*metric)->_description + " (" + CtiNumStr(metricId) + "): ";
 
         const unsigned metricQualifier = getValueFromBytes_bEndian( response, offset, 2 );
         offset += 2;
@@ -454,7 +478,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
         validate( Condition( ! metricQFields.extensionBit, ErrorInvalidData )
                 << "Metric qualifier expected extension bit to be zero" );
 
-        result.description += "Metric qualifier: " + metricQFields.resolve() + "\n";
+        result.description += metricQFields.resolve() + "\n";
     }
 }
 
