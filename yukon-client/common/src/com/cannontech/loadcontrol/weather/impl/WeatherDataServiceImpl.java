@@ -169,7 +169,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     
     @Override
     @Transactional
-    public void updatePointsforNewWeatherLocation(WeatherLocation weatherLocation) {
+    public void updatePointsForNewWeatherLocation(WeatherLocation weatherLocation) {
         List<LiteYukonPAObject> weatherLocations = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION.getDeviceTypeId());
         Map<String, WeatherStation> weatherStationMap = noaaWeatherDataService.getAllWeatherStations();
         Collections.sort(weatherLocations, Collections.reverseOrder());

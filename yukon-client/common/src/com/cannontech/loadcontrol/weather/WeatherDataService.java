@@ -35,5 +35,5 @@ public interface WeatherDataService {
     /**
      * This method update the weather points for new weather location
      */
-    void updatePointsforNewWeatherLocation(WeatherLocation weatherLocation);
+    void updatePointsForNewWeatherLocation(WeatherLocation weatherLocation);
 }
