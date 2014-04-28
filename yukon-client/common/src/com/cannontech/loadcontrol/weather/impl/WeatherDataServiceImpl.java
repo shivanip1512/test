@@ -2,7 +2,6 @@ package com.cannontech.loadcontrol.weather.impl;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -115,20 +114,27 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 
     @Override
     @Transactional
-    public void createWeatherLocation(WeatherLocation weatherLocation) {
+    public WeatherLocation createWeatherLocation(String name, String stationId, GeographicCoordinate geoCoordinate) {
 
         CompleteYukonPao weatherPao = new CompleteYukonPao();
-        weatherPao.setPaoName(weatherLocation.getName());
+        weatherPao.setPaoName(name);
 
         paoPersistenceService.createPaoWithDefaultPoints(weatherPao, PaoType.WEATHER_LOCATION);
 
-        String latitude = doubleFormat.format(weatherLocation.getGeoCoordinate().getLatitude());
-        String longitude = doubleFormat.format(weatherLocation.getGeoCoordinate().getLongitude());
+        String latitude = doubleFormat.format(geoCoordinate.getLatitude());
+        String longitude = doubleFormat.format(geoCoordinate.getLongitude());
         int paoId = weatherPao.getPaoIdentifier().getPaoId();
 
         staticPaoInfoDao.saveValue(PaoInfo.WEATHER_LOCATION_LATITUDE, paoId, latitude);
         staticPaoInfoDao.saveValue(PaoInfo.WEATHER_LOCATION_LONGITUDE, paoId, longitude);
-        staticPaoInfoDao.saveValue(PaoInfo.WEATHER_LOCATION_STATIONID, paoId, weatherLocation.getStationId());
+        staticPaoInfoDao.saveValue(PaoInfo.WEATHER_LOCATION_STATIONID, paoId, stationId);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION);
+        LitePoint temperaturePoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
+        LitePoint humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
+
+        WeatherLocation weatherLocation =
+            new WeatherLocation(paoIdentifier, temperaturePoint, humidityPoint, name, stationId, geoCoordinate);
+        return weatherLocation;
     }
 
     @Override
@@ -168,41 +174,33 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     }
     
     @Override
-    @Transactional
     public void updatePointsForNewWeatherLocation(WeatherLocation weatherLocation) {
-        List<LiteYukonPAObject> weatherLocations = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION.getDeviceTypeId());
+        
         Map<String, WeatherStation> weatherStationMap = noaaWeatherDataService.getAllWeatherStations();
-        Collections.sort(weatherLocations, Collections.reverseOrder());
-        for (LiteYukonPAObject weatherPao : weatherLocations) {
-            int weatherPaoId = weatherPao.getPaoIdentifier().getPaoId();
-            String weatherStationId = staticPaoInfoDao.getValue(PaoInfo.WEATHER_LOCATION_STATIONID, weatherPaoId);
-            if (weatherStationId.equals(weatherLocation.getStationId())) {
-                WeatherStation weatherStation = weatherStationMap.get(weatherStationId);
-                try {
-                    updatePointsForNewWeatherStation(weatherStation, weatherPaoId);
-                } catch (NoaaWeatherDataServiceException e) {
-                    log.warn("Unable to get points(humidity and temperature) for weather station: " + weatherStationId, e);
-                }
-                break;
-            }
+        int weatherPaoId = weatherLocation.getPaoIdentifier().getPaoId();
+        WeatherStation weatherStation = weatherStationMap.get(weatherLocation.getStationId());
+        try {
+            WeatherObservation weatherObservation = noaaWeatherDataService.getCurrentWeatherObservation(weatherStation);
+            updateWeatherPoints(weatherObservation, weatherPaoId);
+        } catch (NoaaWeatherDataServiceException e) {
+            log.warn("Unable to get points(humidity and temperature) for weather station: "
+                     + weatherLocation.getStationId(), e);
         }
     }
     
-    /**
-     * This method update the weather points (humidity and temperature) for new weather station.
-     */
-    private void updatePointsForNewWeatherStation(WeatherStation weatherStation, int paoId) throws NoaaWeatherDataServiceException {
-        WeatherObservation weatherObs = noaaWeatherDataService.getCurrentWeatherObservation(weatherStation);
-        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION);
+    @Override
+    @Transactional
+     public void updateWeatherPoints(WeatherObservation weatherObservation, int paoId) {
 
-        if (weatherObs.getHumidity() != null) {
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION);
+        if (weatherObservation.getHumidity() != null) {
             LitePoint humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
-            pointAccessDao.setPointValue(humidityPoint, weatherObs.getTimestamp(), weatherObs.getHumidity());
+            pointAccessDao.setPointValue(humidityPoint, weatherObservation.getTimestamp(), weatherObservation.getHumidity());
         }
 
-        if (weatherObs.getTemperature() != null) {
+        if (weatherObservation.getTemperature() != null) {
             LitePoint temperaturePoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
-            pointAccessDao.setPointValue(temperaturePoint, weatherObs.getTimestamp(), weatherObs.getTemperature());
+            pointAccessDao.setPointValue(temperaturePoint, weatherObservation.getTimestamp(), weatherObservation.getTemperature());
         }
     }
 }

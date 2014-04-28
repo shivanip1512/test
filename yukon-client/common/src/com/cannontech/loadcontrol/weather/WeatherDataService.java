@@ -11,7 +11,7 @@ public interface WeatherDataService {
      * 
      * This includes lat/lon and stationId information in StaticPaoInfo.
      */
-    void createWeatherLocation(WeatherLocation weatherLocation);
+    WeatherLocation createWeatherLocation(String name, String stationId, GeographicCoordinate geoCoordinate);
 
     void deleteWeatherLocation(int paoId);
 
@@ -36,4 +36,9 @@ public interface WeatherDataService {
      * This method update the weather points for new weather location
      */
     void updatePointsForNewWeatherLocation(WeatherLocation weatherLocation);
+    
+    /**
+     * This method update the weather points for any weather location
+     */
+    void updateWeatherPoints(WeatherObservation weatherObservation, int paoId);
 }

@@ -99,11 +99,11 @@ public class WeatherController {
             return "config/_weatherStations.jsp";
         }
 
-        WeatherLocation weatherLocation = new WeatherLocation(null, null, null,
-                                                              weatherLocationBean.getName(),
-                                                              weatherLocationBean.getStationId(),
-                                                              requestedCoordinate);
-        weatherDataService.createWeatherLocation(weatherLocation);
+
+        WeatherLocation weatherLocation =
+            weatherDataService.createWeatherLocation(weatherLocationBean.getName(),
+                                                     weatherLocationBean.getStationId(),
+                                                     requestedCoordinate);
         weatherDataService.updatePointsForNewWeatherLocation(weatherLocation);
         model.addAttribute("dialogState", "done");
         return "config/_weatherStations.jsp";

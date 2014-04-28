@@ -11,15 +11,10 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.SystemEventLogService;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoInfo;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.pao.dao.StaticPaoInfoDao;
 import com.cannontech.jobs.service.JobManager;
@@ -41,8 +36,6 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
     @Autowired private StaticPaoInfoDao staticPaoInfoDao;
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private SystemEventLogService systemEventLogService;
-    @Autowired private AttributeService attributeService;
-    @Autowired private SimplePointAccessDao pointAccessDao;
 
     private Duration oldWeatherDataDuration = Duration.standardMinutes(59);
 
@@ -93,7 +86,9 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
         Instant updateTime = weatherObs.getTimestamp().plus(oldWeatherDataDuration);
         return Instant.now().isAfter(updateTime);
     }
-
+    /**
+     * This method update the weather points for any weather location
+     */
     private void updateWeatherPoints(WeatherStation weatherStation, int paoId) throws NoaaWeatherDataServiceException {
         WeatherObservation updatedObservation = noaaWeatherService.getCurrentWeatherObservation(weatherStation);
 
@@ -101,17 +96,7 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
         WeatherObservation currentObservation = weatherDataService.getCurrentWeatherObservation(weatherLocation);
 
         if (!currentObservation.getTimestamp().isEqual(updatedObservation.getTimestamp())) {
-            PaoIdentifier weatherPao = new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION);
-
-            if (updatedObservation.getHumidity() != null) {
-                LitePoint humidityPoint = attributeService.getPointForAttribute(weatherPao, BuiltInAttribute.HUMIDITY);
-                pointAccessDao.setPointValue(humidityPoint, updatedObservation.getTimestamp(), updatedObservation.getHumidity());
-            }
-
-            if (updatedObservation.getTemperature() != null) {
-                LitePoint temperaturePoint = attributeService.getPointForAttribute(weatherPao, BuiltInAttribute.TEMPERATURE);
-                pointAccessDao.setPointValue(temperaturePoint, updatedObservation.getTimestamp(), updatedObservation.getTemperature());
-            }
+            weatherDataService.updateWeatherPoints(updatedObservation, paoId);
         }
     }
 }
