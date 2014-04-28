@@ -31,4 +31,9 @@ public interface WeatherDataService {
      * Returns null if this paoId doesn't represent a WeatherLocation
      */
     WeatherLocation findWeatherLocationForPao(int paoId);
+    
+    /**
+     * This method update the weather points for new weather location
+     */
+    void updatePointsforNewWeatherLocation(WeatherLocation weatherLocation);
 }

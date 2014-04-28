@@ -104,7 +104,7 @@ public class WeatherController {
                                                               weatherLocationBean.getStationId(),
                                                               requestedCoordinate);
         weatherDataService.createWeatherLocation(weatherLocation);
-
+        weatherDataService.updatePointsforNewWeatherLocation(weatherLocation);
         model.addAttribute("dialogState", "done");
         return "config/_weatherStations.jsp";
     }

@@ -2,7 +2,9 @@ package com.cannontech.loadcontrol.weather.impl;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
@@ -22,6 +24,7 @@ import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -29,19 +32,24 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.pao.dao.StaticPaoInfoDao;
 import com.cannontech.loadcontrol.weather.GeographicCoordinate;
+import com.cannontech.loadcontrol.weather.NoaaWeatherDataService;
+import com.cannontech.loadcontrol.weather.NoaaWeatherDataServiceException;
 import com.cannontech.loadcontrol.weather.WeatherDataService;
 import com.cannontech.loadcontrol.weather.WeatherLocation;
 import com.cannontech.loadcontrol.weather.WeatherObservation;
+import com.cannontech.loadcontrol.weather.WeatherStation;
 
 public class WeatherDataServiceImpl implements WeatherDataService {
 
     private Logger log = YukonLogManager.getLogger(WeatherDataServiceImpl.class);
-
+    
     @Autowired private PaoDao paoDao;
     @Autowired private StaticPaoInfoDao staticPaoInfoDao;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private AttributeService attributeService;
     @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private SimplePointAccessDao pointAccessDao;
+    @Autowired private NoaaWeatherDataService noaaWeatherDataService;
     private DecimalFormat doubleFormat = new DecimalFormat("#.#####");
 
     @Override
@@ -157,5 +165,44 @@ public class WeatherDataServiceImpl implements WeatherDataService {
             = new WeatherLocation(paoIdentifier, temperaturePoint, humidityPoint, name, stationId, coordinate);
 
         return weatherLocation;
+    }
+    
+    @Override
+    @Transactional
+    public void updatePointsforNewWeatherLocation(WeatherLocation weatherLocation) {
+        List<LiteYukonPAObject> weatherLocations = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION.getDeviceTypeId());
+        Map<String, WeatherStation> weatherStationMap = noaaWeatherDataService.getAllWeatherStations();
+        Collections.sort(weatherLocations, Collections.reverseOrder());
+        for (LiteYukonPAObject weatherPao : weatherLocations) {
+            int weatherPaoId = weatherPao.getPaoIdentifier().getPaoId();
+            String weatherStationId = staticPaoInfoDao.getValue(PaoInfo.WEATHER_LOCATION_STATIONID, weatherPaoId);
+            if (weatherStationId.equals(weatherLocation.getStationId())) {
+                WeatherStation weatherStation = weatherStationMap.get(weatherStationId);
+                try {
+                    updatePointsForNewWeatherStation(weatherStation, weatherPaoId);
+                } catch (NoaaWeatherDataServiceException e) {
+                    log.warn("Unable to get points(humidity and temperature) for weather station: " + weatherStationId, e);
+                }
+                break;
+            }
+        }
+    }
+    
+    /**
+     * This method update the weather points (humidity and temperature) for new weather station.
+     */
+    private void updatePointsForNewWeatherStation(WeatherStation weatherStation, int paoId) throws NoaaWeatherDataServiceException {
+        WeatherObservation weatherObs = noaaWeatherDataService.getCurrentWeatherObservation(weatherStation);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION);
+
+        if (weatherObs.getHumidity() != null) {
+            LitePoint humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
+            pointAccessDao.setPointValue(humidityPoint, weatherObs.getTimestamp(), weatherObs.getHumidity());
+        }
+
+        if (weatherObs.getTemperature() != null) {
+            LitePoint temperaturePoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
+            pointAccessDao.setPointValue(temperaturePoint, weatherObs.getTimestamp(), weatherObs.getTemperature());
+        }
     }
 }
