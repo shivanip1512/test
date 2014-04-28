@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jfree.report.JFreeReport;
@@ -101,6 +102,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
@@ -272,7 +274,9 @@ public class ReportFuncs
             });
             return mappingList;
         } else if( filter.equals(ReportFilter.ROUTE)){
-            return cache.getAllRoutes();
+            List<LiteYukonPAObject> allRoutes = cache.getAllRoutes();
+            Collections.sort(allRoutes, LiteComparators.liteStringComparator);
+            return allRoutes;
         } else if( filter.equals(ReportFilter.LMCONTROLAREA)){
         	
         	// don't load anything, the pickers handle available control area loading
@@ -293,6 +297,7 @@ public class ReportFuncs
                         trans.add(lPao);
                 }
             }
+            Collections.sort(trans, LiteComparators.liteStringComparator);
             return trans;
             
         } else if( filter.equals(ReportFilter.RECEIVER)) {
@@ -305,6 +310,7 @@ public class ReportFuncs
                         receivers.add(lPao);
                 }
             }
+            Collections.sort(receivers, LiteComparators.liteStringComparator);
             return receivers;
             
         } else if( filter.equals(ReportFilter.RTU)) {
@@ -319,14 +325,21 @@ public class ReportFuncs
                     }
                 }
             }
+            Collections.sort(rtus, LiteComparators.liteStringComparator);
             return rtus;
             
         } else if( filter.equals(ReportFilter.CAPCONTROLSUBBUS)) {
-            return cache.getAllCapControlSubBuses();
+            List<LiteYukonPAObject> capControlSubBuses = cache.getAllCapControlSubBuses();
+            Collections.sort(capControlSubBuses, LiteComparators.liteStringComparator);
+            return capControlSubBuses;
         } else if( filter.equals(ReportFilter.CAPCONTROLSUBSTATION)) {
-            return cache.getAllCapControlSubStations();
+            List<LiteYukonPAObject> capControlSubstations = cache.getAllCapControlSubStations();
+            Collections.sort(capControlSubstations, LiteComparators.liteStringComparator);
+            return capControlSubstations;
         } else if( filter.equals(ReportFilter.CAPCONTROLFEEDER)) {
-            return cache.getAllCapControlFeeders();
+            List<LiteYukonPAObject> capControlFeeders = cache.getAllCapControlFeeders();
+            Collections.sort(capControlFeeders, LiteComparators.liteStringComparator);
+            return capControlFeeders;
         } else if( filter.equals(ReportFilter.CAPBANK)) {
             List <LiteYukonPAObject> allPaos = cache.getAllYukonPAObjects();
             List <LiteYukonPAObject> caps = new ArrayList<LiteYukonPAObject>();
@@ -338,6 +351,7 @@ public class ReportFuncs
                     }
                 }
             }
+            Collections.sort(caps, LiteComparators.liteStringComparator);
             return caps;
             
         } else if (filter.equals(ReportFilter.AREA)) {
@@ -351,6 +365,7 @@ public class ReportFuncs
                     }
                 }
             }
+            Collections.sort(areas, LiteComparators.liteStringComparator);
             return areas;
         }
         else if( filter.equals(ReportFilter.SCHEDULE)) {
@@ -363,6 +378,7 @@ public class ReportFuncs
                         schedules.add(lPao);
                 }
             }
+            Collections.sort(schedules, LiteComparators.liteStringComparator);
             return schedules;   
 
         }
