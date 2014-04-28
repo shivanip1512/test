@@ -108,7 +108,7 @@ public class EnergyCompanyController {
         List<EnergyCompany> companies = Lists.newArrayList();
         if (ecDao.getOperatorUserIds(energyCompany).contains(user.getUserID())) {
             /* If they belong to an energy company and are an operator, show energy company and all descendants. */
-            companies.addAll(energyCompany.getDescendants(false));
+            companies.addAll(energyCompany.getDescendants(true));
         }
         
         setupHomeModelMap(modelMap, user, companies);
