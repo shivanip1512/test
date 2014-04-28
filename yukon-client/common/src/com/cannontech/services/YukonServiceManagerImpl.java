@@ -4,9 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
 import javax.annotation.PostConstruct;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jdbc.core.RowCallbackHandler;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -109,16 +106,19 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
             context.close();            
             log.debug("Closed Configurable Application Context: "+ context);
         }
-        shutdownLatch.countDown();
-        log.info("Service Manager has been shutdown successfully");
+        shutdownLatch.countDown();        
     }
     
     @Override
     public void waitForShutdown() {
         try {
             shutdownLatch.await();
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             shutdownServiceManager();
+        }
+        finally
+        {
+            log.info("Service Manager has been shutdown successfully");
         }
     }
     
