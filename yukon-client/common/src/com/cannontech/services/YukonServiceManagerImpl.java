@@ -117,7 +117,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
     public void waitForShutdown() {
         try {
             shutdownLatch.await();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             shutdownServiceManager();
         }
     }
