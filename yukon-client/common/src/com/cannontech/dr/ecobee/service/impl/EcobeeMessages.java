@@ -55,8 +55,7 @@ public final class EcobeeMessages {
         private String password;
         
         @JsonCreator
-        public AuthenticationRequest(@JsonProperty("userName") String userName, 
-                                     @JsonProperty("password") String password) {
+        public AuthenticationRequest(String userName, String password) {
             this.userName = userName;
             this.password = password;
         }
@@ -111,6 +110,7 @@ public final class EcobeeMessages {
     public static final class CreateSetResponse extends ResponseWithStatus {
         private Boolean success;
         
+        
         public CreateSetResponse(@JsonProperty("success") Boolean success, @JsonProperty("status") Status status) {
             this.success = success;
             this.status = status;
@@ -142,6 +142,7 @@ public final class EcobeeMessages {
     public static final class DeleteSetResponse extends ResponseWithStatus {
         private Boolean success;
         
+        @JsonCreator
         public DeleteSetResponse(@JsonProperty("success") Boolean success, @JsonProperty("status") Status status) {
             this.success = success;
             this.status = status;
@@ -179,6 +180,7 @@ public final class EcobeeMessages {
     public static final class MoveSetResponse extends ResponseWithStatus {
         private Boolean success;
         
+        @JsonCreator
         public MoveSetResponse(@JsonProperty("success") Boolean success, @JsonProperty("status") Status status) {
             this.success = success;
             this.status = status;
@@ -197,7 +199,7 @@ public final class EcobeeMessages {
         
         
         public MoveDeviceRequest(long serialNumber, String fromSetName, String toSetName) {
-            thermostats = new Long(serialNumber).toString();
+            thermostats = Long.toString(serialNumber);
             setPath = "/" + fromSetName;
             toPath = "/" + toSetName;
         }
@@ -223,6 +225,7 @@ public final class EcobeeMessages {
     public static final class MoveDeviceResponse extends ResponseWithStatus {
         private Boolean success;
         
+        @JsonCreator
         public MoveDeviceResponse(@JsonProperty("success") Boolean success, @JsonProperty("status") Status status) {
             this.success = success;
             this.status = status;
