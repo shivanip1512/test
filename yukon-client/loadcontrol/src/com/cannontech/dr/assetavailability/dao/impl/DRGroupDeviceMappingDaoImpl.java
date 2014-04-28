@@ -1,7 +1,6 @@
 package com.cannontech.dr.assetavailability.dao.impl;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -149,11 +148,11 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
             }
         };
 
-        final List<String> serialNumbers = new ArrayList<>();
-        chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowCallbackHandler() {
+        List<String> serialNumbers = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, 
+            new YukonRowMapper<String>() {
             @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                serialNumbers.add(rs.getString("ManufacturerSerialNumber"));
+            public String mapRow(YukonResultSet rs) throws SQLException {
+                return rs.getString("ManufacturerSerialNumber");
             }
         });
 
