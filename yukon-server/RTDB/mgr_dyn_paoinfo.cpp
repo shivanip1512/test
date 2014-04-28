@@ -168,7 +168,7 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
                         PaoInfoVec& paoInfoVec = paoInfoPerIdIndexed[dynInfo->getPaoID()][dynInfo->getKey()];
 
                         unsigned index = *dynInfo->getIndex();
-                        if( (index + 1) < paoInfoVec.size() )
+                        if( paoInfoVec.size() < index + 1 )
                         {
                             // resize shall create empty null DynInfoSPtr
                             // make sure we check this later when we retrieve indexed information

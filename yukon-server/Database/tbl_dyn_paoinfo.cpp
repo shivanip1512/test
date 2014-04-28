@@ -396,7 +396,7 @@ CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(Cti::RowReader& rdr) :
                     _index = index;
 
                     // only try to resolve the key if the index is valid
-                    resolvedKey = Cti::bimapFind<PaoInfoKeys>(KeyNames.right, tmp_keyString.substr(0, pos-1));
+                    resolvedKey = Cti::bimapFind<PaoInfoKeys>(KeyNames.right, tmp_keyString.substr(0, pos));
                 }
             }
             catch( boost::bad_lexical_cast& )
