@@ -110,7 +110,7 @@ public final class EcobeeMessages {
     public static final class CreateSetResponse extends ResponseWithStatus {
         private Boolean success;
         
-        
+        @JsonCreator
         public CreateSetResponse(@JsonProperty("success") Boolean success, @JsonProperty("status") Status status) {
             this.success = success;
             this.status = status;
