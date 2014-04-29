@@ -1,8 +1,9 @@
 yukon.namespace('yukon.tools.map');
 
 /**
- * Singleton that manages the Device Mapping feature
+ * Singleton that manages the device collection mapping feature.
  * 
+ * @module yukon.tools.map
  * @requires JQUERY
  * @requires OPEN_LAYERS
  */
@@ -12,17 +13,19 @@ yukon.tools.map = (function() {
     
     var
     _initialized = false,
-    _destProjection = 'EPSG:3857', /** The projection code of our map tiles. */
-    _icons = {}, /** Map {pao id, {ol.Feature}} of all device icons. */
-    _visibility = {}, /** Map {pao id, boolean} to keep track of device icon visibility. */
-    _map = {}, /** The openlayers map object. */
-    _styles = { /** A cache of styles to avoid creating lots of objects using lots of memory. */
+    _updater = -1, /** {number} - The setTimeout reference for periodic updating of device collection. */
+    _updateInterval = 4000, /** {number} - The ms interval to wait before updating the device collection. */
+    _destProjection = 'EPSG:3857', /** {string} - The default projection code of our map tiles. */
+    _icons = {}, /** {Object.<number, {ol.Feature}>} - Map of pao id to feature for all device icons. */
+    _visibility = {}, /** {Object.<number, boolean>} - Map of pao id to boolean to keep track of device icon visibility. */
+    _map = {}, /** {ol.Map} - The openlayers map object. */
+    _styles = { /** {Object.<string, {ol.style.Style}>} - A cache of styles to avoid creating lots of objects using lots of memory. */
         'electric': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-electric.png'), anchor: [0.5, 1.0] }) }),
         'water': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-water.png'), anchor: [0.5, 1.0] }) }),
         'gas': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-gas.png'), anchor: [0.5, 1.0] }) }),
         'generic': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png'), anchor: [0.5, 1.0] }) })
     },
-    _tiles = [
+    _tiles = [ /** {Array.<{ol.Layer.Tile|ol.layer.Group}>} - Array of tile layers for our map. */
         new ol.layer.Tile({ name: 'mqosm', source: new ol.source.MapQuest({ layer: 'osm' }) }),
         new ol.layer.Tile({ name: 'mqsat', source: new ol.source.MapQuest({ layer: 'sat' }), visible: false }),
         new ol.layer.Group({
@@ -45,6 +48,12 @@ yukon.tools.map = (function() {
         })[0];
     },
     
+    /** 
+     * Creates an {ol.Feature} icon from the geojson feature object.
+     * @param {Object} feature - the geojson feature to convert.
+     * @param {string} src_projection - The projection system of the tile layer.
+     * @returns {ol.Feature} icon - The openlayers feature icon.
+     */
     _createFeature = function(feature, src_projection) {
         var pao = feature.properties.paoIdentifier,
             icon = new ol.Feature({pao: pao});
@@ -73,17 +82,22 @@ yukon.tools.map = (function() {
         $.getJSON(decodeURI($('#locations').val())).done(function(fc) {
             
             var 
-            icon,
-            icons = [],
+            icon, icons = [],
+            source = _getLayer('icons').getSource(),
             start = new Date().getTime();
             
             for (var i in fc.features) {
                 icon = _createFeature(fc.features[i], fc.crs.properties.name);
                 icons.push(icon);
             }
-            _getLayer('icons').getSource().addFeatures(icons);
+            source.addFeatures(icons);
             
-            _map.getView().fitExtent(_getLayer('icons').getSource().getExtent(), _map.getSize());
+            if (icons.length > 1) {
+                _map.getView().fitExtent(source.getExtent(), _map.getSize());
+            } else if (icons.length === 1) {
+                _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
+                _map.getView().setZoom(9);
+            }
             $('.js-status-loading').hide();
             debug.log('loading icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
             
@@ -93,12 +107,13 @@ yukon.tools.map = (function() {
         });
     },
     
-    /** Fire update of device list on interval. */
+    /** Method to update device list with recursive setTimeout. */
     _update = function() {
         $.getJSON(decodeURI($('#locations').val())).done(function(fc) {
             
             var toAdd = [], toRemove = [], icons = {},
-                i, pao, feature;
+                i, pao, feature, diff,
+                source = _getLayer('icons').getSource();
             
             // add any features we don't have
             for (i = 0; i < fc.features.length; i++) {
@@ -113,7 +128,7 @@ yukon.tools.map = (function() {
                     toAdd.push(icon);
                 }
             }
-            _getLayer('icons').getSource().addFeatures(toAdd);
+            source.addFeatures(toAdd);
             debug.log('added ' + toAdd.length + ' features');
             
             // remove any features we don't want
@@ -125,15 +140,23 @@ yukon.tools.map = (function() {
             }
             for (i = 0; i < toRemove.length; i++) {
                 feature = toRemove[i];
-                _getLayer('icons').getSource().removeFeature(feature);
+                source.removeFeature(feature);
                 delete _icons[feature.get('pao').paoId];
                 delete _visibility[feature.get('pao').paoId];
             }
             debug.log('removed ' + toRemove.length + ' features');
+            
+            diff = toAdd.length - toRemove.length;
+            if (diff !== 0) {
+                var count = parseInt($('#device-collection .js-count').text(), 10);
+                $('#device-collection .js-count').text(count + diff);
+                $('#device-collection .js-count').addClass('animated flash');
+            }
+            
         }).fail(function(xhr, status, error) {
             debug.log('update failed:' + status + ': ' + error);
         }).always(function() {
-            setTimeout(_update, 4000);
+            _updater = setTimeout(_update, _updateInterval);
         });
     },
     
@@ -144,7 +167,7 @@ yukon.tools.map = (function() {
 
             if (_initialized) return;
             
-            /* Setup map */
+            /** Setup the openlayers map. */
             _map = new ol.Map({
                 controls: [
                     new ol.control.Attribution(),
@@ -166,7 +189,7 @@ yukon.tools.map = (function() {
             _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
             _loadIcons();
             
-            /* Display popup on click */
+            /** Display marker info popup on marker clicks. */
             var _overlay = new ol.Overlay({ element: document.getElementById('marker-info'), positioning: 'bottom-center', stopEvent: false });
             _map.addOverlay(_overlay);
             _map.on('click', function(ev) {
@@ -175,7 +198,7 @@ yukon.tools.map = (function() {
                     var 
                     geometry = feature.getGeometry(),
                     coord = geometry.getCoordinates(),
-                    url = 'map/device/' + feature.get('pao').paoId + '/info';
+                    url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
                     $('#marker-info').load(url, function() {
                         $('#marker-info').show();
                         _overlay.setPosition(coord);
@@ -185,7 +208,7 @@ yukon.tools.map = (function() {
                 }
             });
             
-            /* Init attribute select and handle change events. */
+            /** Initilize the attribute select and handle change events. */
             $('#attribute-select').chosen({width: '100%'}).on('change', function(ev) {
                 $('#filter-states').empty();
                 $('#waiting-for-states').show();
@@ -214,7 +237,7 @@ yukon.tools.map = (function() {
                 }
             });
             
-            /* Handle submitting of filtering form. */
+            /** Submit the filtering form when 'yukon.map.filter' event is fired, then process results. */
             $(document).on('yukon.map.filter', function(ev) {
                 
                 $('#map-popup').dialog('close');
@@ -272,7 +295,7 @@ yukon.tools.map = (function() {
                 
             });
             
-            /* Handle map tile buttons */
+            /** Change map tiles layer on tile button group clicks. */
             $('#map-tiles button').click(function(ev) {
                 $(this).siblings().removeClass('on');
                 $(this).addClass('on');
@@ -282,7 +305,7 @@ yukon.tools.map = (function() {
                 }
             });
             
-            /* Handle submitting of filtering form. */
+            /** Remove filtering when no filter button clicked. */
             $('#no-filter-btn').click(function(ev) {
                 $('#no-filter-btn').hide();
                 $('#filter-btn').removeClass('left');
@@ -301,11 +324,28 @@ yukon.tools.map = (function() {
                 start = new Date().getTime();
             });
             
-            /* Change mouse cursor when over marker.  There HAS to be a css way to do this! */
+            /** Change mouse cursor when over marker.  There HAS to be a css way to do this! */
             $(_map.getViewport()).on('mousemove', function(e) {
                 var pixel = _map.getEventPixel(e.originalEvent),
                     hit = _map.forEachFeatureAtPixel(pixel, function(feature, layer) { return true; });
                 $('#' + _map.getTarget()).css('cursor', hit ? 'pointer' : 'default');
+            });
+            
+            /** Remove animation classes when animation finishes. */
+            $('#device-collection .js-count')
+                .on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(ev) {
+                $('#device-collection .js-count').removeClass('animated flash'); 
+            });
+            
+            /** Pause/Resume updating on updater button clicks. */
+            $('#map-updater .button').on('click', function(ev) {
+                var pause = $('#map-updater .yes').is('.on');
+                if (pause) {
+                    clearTimeout(_updater);
+                } else {
+                    _updater = setTimeout(_update, _updateInterval);
+                }
+                $('#map-updater .button').toggleClass('on');
             });
             
             _initialized = true;

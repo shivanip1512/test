@@ -8,9 +8,9 @@
 <%@ attribute name="deviceCollection" required="true" type="java.lang.Object"%>
 
 <c:set value="${deviceCollection.deviceCount}" var="deviceCount"/>
-<div>
+<div id="${id}">
     <strong><cti:msg2 key="yukon.common.device.bulk.selectedDevicesPopup.linkLabel"/>:</strong>&nbsp;
-    <span class="badge">${deviceCount}</span>&nbsp;
+    <span class="badge js-count">${deviceCount}</span>&nbsp;
     <cti:msg2 key="${deviceCollection.description}"/>
     <c:if test="${deviceCount > 0}">
         <tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/>

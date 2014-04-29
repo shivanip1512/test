@@ -109,7 +109,7 @@
 
     <div class="column-19-5 clearfix stacked">
         <div class="column one">
-            <tags:selectedDevices deviceCollection="${deviceCollection}" id="selectedDevices"/>
+            <tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection"/>
         </div>
         <div id="status-info" class="column two nogutter">
             <div class="dn js-status-retrieving">
@@ -130,11 +130,20 @@
     <div class="buffered">
         <div id="mouse-position" class="fl detail"></div>
         <div id="scale-line" class="fl"></div>
+        
         <div id="map-tiles" class="fr button-group">
             <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
             <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
             <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
         </div>
+        
+        <c:if test="${dynamic}">
+            <div id="map-updater" class="button-group toggle-on-off fr">
+                <cti:button nameKey="on" classes="on yes"/>
+                <cti:button nameKey="off" classes="no"/>
+            </div>
+            <span class="fr form-control"><i:inline key=".liveUpdate"/></span>
+        </c:if>
     </div>
 
     <cti:url value="/tools/map/locations" var="locationsUrl">

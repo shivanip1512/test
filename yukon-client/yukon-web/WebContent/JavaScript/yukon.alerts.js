@@ -38,8 +38,7 @@ yukon.alerts = (function () {
                 button.show();
                 if (_countInitialized && _oldCount < count) {
                     if($('[data-alert-flash]').attr('data-alert-flash') === 'true') {
-                        button.addClass('flash');
-                        button.addClass('animated');
+                        button.addClass('animated flash');
                         setTimeout(function(){ 
                                 button.removeClass('flash animated'); 
                             }, 1000);
