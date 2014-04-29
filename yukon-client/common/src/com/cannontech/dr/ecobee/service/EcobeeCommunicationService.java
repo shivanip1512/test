@@ -27,6 +27,8 @@ public interface EcobeeCommunicationService {
     
     /**
      * Registers the specified device with Ecobee.
+     * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
+     * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
     public boolean registerDevice(String serialNumber, int energyCompanyId) throws EcobeeAuthenticationException, 
             EcobeeCommunicationException;

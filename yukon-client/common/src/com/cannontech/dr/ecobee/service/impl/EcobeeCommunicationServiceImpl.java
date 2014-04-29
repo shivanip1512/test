@@ -55,6 +55,11 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
             throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
         }
         
+        if (response.getStatus().getCode() == EcobeeStatusCode.VALIDATION_ERROR.getCode()) {
+            //device already exists
+            return true;
+        }
+        
         checkForAuthenticationError(response.getStatus(), energyCompanyId);
         ecobeeQueryCountDao.incrementQueryCount(EcobeeQueryType.SYSTEM, energyCompanyId);
         return response.getSuccess();
@@ -124,7 +129,12 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
             response = restTemplate.postForObject(url, requestEntity, EcobeeMessages.CreateSetResponse.class);
         } catch(RestClientException e) {
             throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
-        }        
+        }
+        
+        if (response.getStatus().getCode() == EcobeeStatusCode.VALIDATION_ERROR.getCode()) {
+            //set already exists
+            return true;
+        }
         
         checkForAuthenticationError(response.getStatus(), energyCompanyId);
         ecobeeQueryCountDao.incrementQueryCount(EcobeeQueryType.SYSTEM, energyCompanyId);
