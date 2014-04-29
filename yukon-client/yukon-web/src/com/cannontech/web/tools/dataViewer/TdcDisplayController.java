@@ -95,7 +95,7 @@ public class TdcDisplayController {
     @Autowired private PointDataRegistrationService registrationService;
     @Autowired private DateFormattingService dateFormattingService;
     
-    private final static int itemsPerPage = 10;
+    private final static int itemsPerPage = 50;
     
     private final Validator validator = new SimpleValidator<DisplayBackingBean>(DisplayBackingBean.class) {
         @Override
