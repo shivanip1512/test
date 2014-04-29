@@ -56,7 +56,7 @@ public class ImportController {
             public int compare(BulkImportMethod o1, BulkImportMethod o2) {
                 int cmp = o1.getType().name().compareTo(o2.getType().name());
                 if(cmp == 0) {
-                    cmp = o1.getName().compareTo(o2.getName());
+                    cmp = o2.getName().compareTo(o1.getName());
                 }
                 return cmp;
             }
