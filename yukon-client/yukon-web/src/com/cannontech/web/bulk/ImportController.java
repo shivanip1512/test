@@ -50,7 +50,7 @@ public class ImportController {
     
     @PostConstruct
     public void init() {
-        // Order import methods by type (MCT|RFN), then by name (TEMPLATE|DEVICE).
+        // Order import methods by type (MCT|RFN) alphabetically, then by name (TEMPLATE|DEVICE) reverse alphabetically.
         Collections.sort(importMethods, new Comparator<BulkImportMethod>() {
             @Override
             public int compare(BulkImportMethod o1, BulkImportMethod o2) {
