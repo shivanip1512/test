@@ -11,11 +11,11 @@
 <d:inline okEvent="none" nameKey="settings.helpDialog" on=".f-open_settings_help" options="{width: 550}">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".deviceGroup"><i:inline key=".deviceGroup.help"/></tags:nameValue2>
-        <tags:nameValue2 nameKey=".deviceGroupCount"><i:inline key=".deviceGroupCount.help"/></tags:nameValue2>
+        <tags:nameValue2 nameKey=".monitoring"><i:inline key=".deviceGroupCount.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".supportedDevices"><i:inline key=".supportedDevices.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".violationsGroup"><i:inline key=".violationsGroup.help"/></tags:nameValue2>
-        <tags:nameValue2 nameKey=".violationsCount"><i:inline key=".violationsCount.help"/></tags:nameValue2>
-        <tags:nameValue2 nameKey=".monitoring"><i:inline key=".monitoring.help"/></tags:nameValue2>
+        <tags:nameValue2 nameKey=".violations"><i:inline key=".violationsCount.help"/></tags:nameValue2>
+        <tags:nameValue2 nameKey=".status"><i:inline key=".monitoring.help"/></tags:nameValue2>
     </tags:nameValueContainer2>
 </d:inline>
 
@@ -83,25 +83,19 @@
     <a href="${deviceGroupUrl}">${fn:escapeXml(violationsDeviceGroupPath)}</a>
 </c:set>
 
-<c:set var="violationReportLinks">
-    <cti:url value="/amr/reports/groupDevicesReport" var="htmlReportUrl">
-        <cti:param name="groupName" value="${violationsDeviceGroupPath}" />
-    </cti:url>
-    (<a href="${htmlReportUrl}">
-        <cti:msg key="yukon.web.modules.amr.fileFormatHtml" />
-    </a>
-    |<cti:simpleReportLinkFromNameTag
+<cti:url value="/amr/reports/groupDevicesReport" var="htmlReportUrl">
+    <cti:param name="groupName" value="${violationsDeviceGroupPath}"/>
+</cti:url>
+<cti:msg var="htmlFormat" key="yukon.web.modules.amr.fileFormatHtml"/>
+<cti:msg var="csvFormat" key="yukon.web.modules.amr.fileFormatCsv"/>
+<cti:msg var="pdfFormat" key="yukon.web.modules.amr.fileFormatPdf"/>
+<c:set var="violationReportLinks">&nbsp;(<a href="${htmlReportUrl}">${htmlFormat}</a>&nbsp;|&nbsp;<cti:simpleReportLinkFromNameTag
         definitionName="deviceGroupDefinition"
         viewType="csvView"
-        deviceGroup="${violationsDeviceGroup}">
-        <cti:msg key="yukon.web.modules.amr.fileFormatCsv" />
-    </cti:simpleReportLinkFromNameTag>
-    |<cti:simpleReportLinkFromNameTag
+        deviceGroup="${violationsDeviceGroup}">${csvFormat}</cti:simpleReportLinkFromNameTag>&nbsp;|&nbsp;<cti:simpleReportLinkFromNameTag
         definitionName="deviceGroupDefinition"
         viewType="pdfView"
-        deviceGroup="${violationsDeviceGroup}">
-        <cti:msg key="yukon.web.modules.amr.fileFormatPdf" />
-    </cti:simpleReportLinkFromNameTag>)
+        deviceGroup="${violationsDeviceGroup}">${pdfFormat}</cti:simpleReportLinkFromNameTag>)
 </c:set>
 
 <span class="f-violation_report_links dn">&nbsp;${violationReportLinks}</span>
@@ -124,7 +118,5 @@
     </c:choose>
 </c:set>
 
-<c:set var="monitoringEnabled">
-    <i:inline key=".enabled${monitor.enabled}" />
-</c:set>
+<c:set var="monitoringEnabled"><i:inline key=".enabled${monitor.enabled}"/></c:set>
 </cti:displayForPageEditModes>

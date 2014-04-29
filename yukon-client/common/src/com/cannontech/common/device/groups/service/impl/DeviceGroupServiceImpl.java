@@ -73,8 +73,6 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     public Set<Integer> getDeviceIds(Collection<? extends DeviceGroup> groups) {
         if (groups.isEmpty()) {
             return Collections.emptySet();
-//        } else if (groups.size() == 1) {
-//            return deviceGroupDao.getDeviceIds(groups.iterator().next());
         } else {
             groups = removeDuplicates(groups); // doesn't touch passed in collection
             Set<Integer> deviceIds = new HashSet<Integer>();

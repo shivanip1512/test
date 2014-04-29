@@ -1,4 +1,7 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
@@ -10,13 +13,13 @@
         <div class="error">${param.processError}</div>
     </c:if>
     
-    <div class="column-12-12">
+    <div class="column-14-10">
         <div class="column one">
             <%-- MAIN DETAILS --%>
             <cti:msg2 var="mainDetailSectionHeaderText" key=".mainDetail.sectionHeader" />
             <tags:sectionContainer title="${mainDetailSectionHeaderText}">
             
-                <tags:nameValueContainer2>
+                <tags:nameValueContainer2 tableClass="has-actions" naturalWidth="false">
                     <tags:nameValue2 nameKey=".mainDetail.name">${fn:escapeXml(outageMonitor.outageMonitorName)}</tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".mainDetail.violations">
@@ -46,31 +49,45 @@
                             <cti:param name="groupName">${fn:escapeXml(outageMonitor.groupName)}</cti:param>
                         </cti:url>
                         <a href="${deviceGroupUrl}">${fn:escapeXml(outageMonitor.groupName)}</a>
+                        <cm:dropdown triggerClasses="fr">
+                            <cti:url var="outagesGroupReportUrl" value="/amr/reports/groupDevicesReport">
+                                <cti:param name="groupName" value="${outageMonitor.groupName}"/>
+                            </cti:url>
+                            <cm:dropdownOption icon="icon-folder-explore" key="yukon.web.components.button.view.label" href="${outagesGroupReportUrl}"/>
+                            <cti:url var="mapUrl" value="/tools/map/dynamic">
+                                <cti:param name="collectionType" value="group"/>
+                                <cti:param name="group.name" value="${outageMonitor.groupName}"/>
+                            </cti:url>
+                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
+                            <cti:url var="collectionActionUrl" value="/bulk/collectionActions">
+                                <cti:param name="collectionType" value="group"/>
+                                <cti:param name="group.name" value="${outageMonitor.groupName}"/>
+                            </cti:url>
+                            <cm:dropdownOption icon="icon-cog-go" key="yukon.web.components.button.collectionAction.label" href="${collectionActionUrl}"/>
+                        </cm:dropdown>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".mainDetail.outagesGroup">
                         <cti:url var="outageGroupUrl" value="/group/editor/home">
                             <cti:param name="groupName">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</cti:param>
                         </cti:url>
-                        <div class="stacked"><a href="${outageGroupUrl}">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</a></div>
-                        
-                        <div class="clearfix">
-                            
+                        <a href="${outageGroupUrl}">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</a>
+                        <cm:dropdown triggerClasses="fr">
                             <cti:url var="outagesGroupReportUrl" value="/amr/reports/groupDevicesReport">
                                 <cti:param name="groupName" value="${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}"/>
                             </cti:url>
-                            <cti:button nameKey="view" href="${outagesGroupReportUrl}" icon="icon-folder-explore" classes="left"/>
-                            
-                            <cti:url var="clearOutagesGroupUrl" value="/amr/outageProcessing/process/clearOutagesGroup">
-                                <cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}"/>
+                            <cm:dropdownOption icon="icon-folder-explore" key="yukon.web.components.button.view.label" href="${outagesGroupReportUrl}"/>
+                            <cti:url var="mapUrl" value="/tools/map/dynamic">
+                                <cti:param name="collectionType" value="group"/>
+                                <cti:param name="group.name" value="${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}"/>
                             </cti:url>
-                            <cti:button nameKey="clear" href="${clearOutagesGroupUrl}" icon="icon-folder-delete" classes="middle"/>
+                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
                             <cti:url var="collectionActionUrl" value="/bulk/collectionActions">
                                 <cti:param name="collectionType" value="group"/>
                                 <cti:param name="group.name" value="${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}"/>
                             </cti:url>
-                            <cti:button nameKey="collectionAction" href="${collectionActionUrl}" icon="icon-cog-go" classes="right"/>
-                        </div>
+                            <cm:dropdownOption icon="icon-cog-go" key="yukon.web.components.button.collectionAction.label" href="${collectionActionUrl}"/>
+                        </cm:dropdown>
                     </tags:nameValue2>
                     
                 </tags:nameValueContainer2>
@@ -111,7 +128,7 @@
                 
                     <%-- remove after read checkbox --%>
                     <div class="page-action-area stacked">
-                        <cti:button nameKey="readOutageLogs" busy="true" type="submit" icon="icon-bullet-go"/>
+                        <cti:button nameKey="readOutageLogs" busy="true" type="submit" icon="icon-read"/>
                         <label><input type="checkbox" name="removeFromOutageGroupAfterRead" checked><i:inline key=".removeAfterRead" /></label>
                     </div>
                     

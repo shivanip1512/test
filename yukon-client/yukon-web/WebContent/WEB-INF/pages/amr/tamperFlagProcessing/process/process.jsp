@@ -1,4 +1,7 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
@@ -11,11 +14,11 @@
     </c:if>
     
     <%-- MAIN DETAILS --%>
-    <div class="column-12-12">
+    <div class="column-14-10">
         <div class="column one">
             <tags:sectionContainer2 nameKey="section.mainDetail.sectionHeader">
             
-                <tags:nameValueContainer2>
+                <tags:nameValueContainer2 tableClass="has-actions" naturalWidth="false">
                     <tags:nameValue2 nameKey=".section.mainDetail.name">${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".section.mainDetail.violations">
@@ -33,31 +36,49 @@
                             <cti:param name="groupName">${tamperFlagMonitor.groupName}</cti:param>
                         </cti:url>
                         <a href="${deviceGroupUrl}">${fn:escapeXml(tamperFlagMonitor.groupName)}</a>
+                        <cm:dropdown triggerClasses="fr">
+                            <cti:url var="tamperFlagGroupReportUrl" value="/amr/reports/groupDevicesReport">
+                                <cti:param name="groupName" value="${tamperFlagMonitor.groupName}"/>
+                            </cti:url>
+                            <cm:dropdownOption icon="icon-folder-explore" key="yukon.web.components.button.view.label" href="${tamperFlagGroupReportUrl}"/>
+                            <cti:url var="mapUrl" value="/tools/map/dynamic">
+                                <cti:param name="collectionType" value="group"/>
+                                <cti:param name="group.name" value="${tamperFlagMonitor.groupName}"/>
+                            </cti:url>
+                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
+                            <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
+                                <cti:param name="collectionType" value="group"/>
+                                <cti:param name="group.name" value="${tamperFlagMonitor.groupName}"/>
+                            </cti:url>
+                            <cm:dropdownOption icon="icon-cog-go" key="yukon.web.components.button.collectionAction.label" href="${collectionActionUrl}"/>
+                        </cm:dropdown>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".section.mainDetail.tamperFlagGroup">
                         <cti:url var="tamperFlagGroupUrl" value="/group/editor/home">
                             <cti:param name="groupName">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</cti:param>
                         </cti:url>
-                        <div class="stacked"><a href="${tamperFlagGroupUrl}">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</a></div>
-                        
-                        <div class="clearfix button-group">
-                            
+                        <a href="${tamperFlagGroupUrl}">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</a>
+                        <cm:dropdown triggerClasses="fr">
                             <cti:url var="tamperFlagGroupReportUrl" value="/amr/reports/groupDevicesReport">
                                 <cti:param name="groupName" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}"/>
                             </cti:url>
-                            <cti:button nameKey="view" href="${tamperFlagGroupReportUrl}" icon="icon-folder-explore"/>
-                            
+                            <cm:dropdownOption icon="icon-folder-explore" key="yukon.web.components.button.view.label" href="${tamperFlagGroupReportUrl}"/>
                             <cti:url var="clearTamperFlagGroupUrl" value="/amr/tamperFlagProcessing/process/clearTamperFlagGroup">
                                 <cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}"/>
                             </cti:url>
-                            <cti:button nameKey="clear" href="${clearTamperFlagGroupUrl}" icon="icon-folder-delete"/>
+                            <cm:dropdownOption icon="icon-folder-delete" key="yukon.web.components.button.clear.label" href="${clearTamperFlagGroupUrl}"/>
+                            <cti:url var="mapUrl" value="/tools/map/dynamic">
+                                <cti:param name="collectionType" value="group"/>
+                                <cti:param name="group.name" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}"/>
+                            </cti:url>
+                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
                             <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
                                 <cti:param name="collectionType" value="group"/>
                                 <cti:param name="group.name" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}"/>
                             </cti:url>
-                            <cti:button nameKey="collectionAction" href="${collectionActionUrl}" icon="icon-cog-go"/>
-                        </div>
+                            <cm:dropdownOption icon="icon-cog-go" key="yukon.web.components.button.collectionAction.label" href="${collectionActionUrl}"/>
+                        </cm:dropdown>
                     </tags:nameValue2>
                     
                 </tags:nameValueContainer2>

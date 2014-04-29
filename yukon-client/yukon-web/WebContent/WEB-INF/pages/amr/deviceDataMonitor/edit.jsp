@@ -41,7 +41,20 @@
 
                 <%-- name --%>
                 <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="50" />
-
+                <cti:displayForPageEditModes modes="EDIT">
+                    <tags:nameValue2 nameKey=".violations">${violationsCount}</tags:nameValue2>
+                </cti:displayForPageEditModes>
+                <tags:nameValue2 nameKey=".monitoring">
+                    <span id="canonicalCalculatingSpan" class="dn"><cti:icon icon="icon-spinner"/><span class="b-label"><i:inline key=".calculating"/></span></span>
+                    <span class="f-device_group_count"><fmt:formatNumber type="number" value="${monitoringCount}" /></span>
+                </tags:nameValue2>
+                
+                <tags:nameValueGap2 gapHeight="20px"/>
+                
+                <tags:nameValue2 nameKey=".supportedDevices">${supportedDevices}</tags:nameValue2>
+                
+                <tags:nameValueGap2 gapHeight="20px"/>
+                
                 <%-- device group --%>
                 <tags:nameValue2 nameKey=".deviceGroup">
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
@@ -50,29 +63,11 @@
                         linkGroupName="true" submitCallback="yukon.DeviceDataMonitor.device_group_changed();"/>
                 </tags:nameValue2>
 
-                <tags:nameValue2 nameKey=".deviceGroupCount">
-                    <span id="canonicalCalculatingSpan" class="dn"><cti:icon icon="icon-spinner"/><span class="b-label"><i:inline key=".calculating"/></span></span>
-                    <span class="f-device_group_count"><fmt:formatNumber type="number" value="${monitoringCount}" /></span>
-                </tags:nameValue2>
-                
-                <tags:nameValue2 nameKey=".supportedDevices">
-                    ${supportedDevices}
-                </tags:nameValue2>
-                
                 <cti:displayForPageEditModes modes="EDIT">
-                    <tags:nameValue2 nameKey=".violationsGroup">
-                        ${violationsGroup}
-                    </tags:nameValue2>
-                    
-                    <tags:nameValue2 nameKey=".violationsCount">
-                        ${violationsCount}
-                    </tags:nameValue2>
-                    
+                    <tags:nameValue2 nameKey=".violationsGroup">${violationsGroup}</tags:nameValue2>
                     <c:if test="${monitor.enabled}"><c:set var="clazz" value="success"/></c:if>
                     <c:if test="${!monitor.enabled}"><c:set var="clazz" value="error"/></c:if>
-                    <tags:nameValue2 nameKey=".monitoring" valueClass="${clazz}">
-                        ${monitoringEnabled}
-                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".status" valueClass="${clazz}">${monitoringEnabled}</tags:nameValue2>
                 </cti:displayForPageEditModes>
                 
                 <tags:nameValue2 excludeColon="true">

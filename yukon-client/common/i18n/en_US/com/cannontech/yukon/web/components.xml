@@ -83,6 +83,7 @@
     <entry key="yukon.web.components.button.load.label">Load</entry>
     <entry key="yukon.web.components.button.login.label">Login</entry>
     <entry key="yukon.web.components.button.logout.label">Logout</entry>
+    <entry key="yukon.web.components.button.map.label">Map</entry>
     <entry key="yukon.web.components.button.meterDetail.label">Meter Detail</entry>
     <entry key="yukon.web.components.button.mute.hoverText">Mute</entry>
     <entry key="yukon.web.components.button.mute.label">Mute</entry>

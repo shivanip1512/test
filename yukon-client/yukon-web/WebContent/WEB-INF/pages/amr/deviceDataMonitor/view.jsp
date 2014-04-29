@@ -1,4 +1,7 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -11,31 +14,59 @@
 
     <tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}">
         <input type="hidden" id="monitorId" value="${monitor.id}"/>
-        <tags:nameValueContainer2>
+        <tags:nameValueContainer2 tableClass="has-actions">
             
-            <%-- monitor name --%>
             <tags:nameValue2 nameKey=".name">${fn:escapeXml(monitor.name)}</tags:nameValue2>
+            <tags:nameValue2 nameKey=".violations">${violationsCount}</tags:nameValue2>
+            <tags:nameValue2 nameKey=".monitoring">${monitoringCount}</tags:nameValue2>
+            
+            <tags:nameValueGap2 gapHeight="20px"/>
+            
+            <tags:nameValue2 nameKey=".supportedDevices">${supportedDevices}</tags:nameValue2>
+            
+            <tags:nameValueGap2 gapHeight="20px"/>
             
             <tags:nameValue2 nameKey=".deviceGroup">
-                <cti:url var="deviceGroupUrl" value="/group/editor/home">
+                <cti:url value="/group/editor/home" var="deviceGroupUrl">
+                    <cti:param name="groupName">${monitor.groupName}</cti:param>
+                </cti:url>
+                <cti:url value="/amr/reports/groupDevicesReport" var="deviceGrouphtmlReportUrl">
                     <cti:param name="groupName">${monitor.groupName}</cti:param>
                 </cti:url>
                 <a href="${deviceGroupUrl}">${fn:escapeXml(monitor.groupName)}</a>
-            </tags:nameValue2>
-
-            <tags:nameValue2 nameKey=".deviceGroupCount">${monitoringCount}</tags:nameValue2>
-            <tags:nameValue2 nameKey=".supportedDevices">
-                ${supportedDevices}
+                <cm:dropdown triggerClasses="fr">
+                    <cm:dropdownOption icon="icon-folder-explore" key="yukon.web.components.button.view.label" href="${deviceGrouphtmlReportUrl}"/>
+                    <cti:url var="mapUrl" value="/tools/map/dynamic">
+                        <cti:param name="collectionType" value="group"/>
+                        <cti:param name="group.name" value="${monitor.groupName}"/>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
+                    <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
+                        <cti:param name="collectionType" value="group"/>
+                        <cti:param name="group.name" value="${monitor.groupName}"/>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-cog-go" key="yukon.web.components.button.collectionAction.label" href="${collectionActionUrl}"/>
+                </cm:dropdown>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".violationsGroup">
                 ${violationsGroup}
+                <cm:dropdown triggerClasses="fr">
+                    <cm:dropdownOption icon="icon-folder-explore" key="yukon.web.components.button.view.label" href="${htmlReportUrl}"/>
+                    <cti:url var="mapUrl" value="/tools/map/dynamic">
+                        <cti:param name="collectionType" value="group"/>
+                        <cti:param name="group.name" value="${violationsDeviceGroupPath}"/>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
+                    <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
+                        <cti:param name="collectionType" value="group"/>
+                        <cti:param name="group.name" value="${violationsDeviceGroupPath}"/>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-cog-go" key="yukon.web.components.button.collectionAction.label" href="${collectionActionUrl}"/>
+                </cm:dropdown>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".violationsCount">
-                ${violationsCount}
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey=".monitoring">
-                ${monitoringEnabled}
-            </tags:nameValue2>
+            <c:if test="${monitor.enabled}"><c:set var="clazz" value="success"/></c:if>
+            <c:if test="${!monitor.enabled}"><c:set var="clazz" value="error"/></c:if>
+            <tags:nameValue2 nameKey=".status" valueClass="${clazz}">${monitoringEnabled}</tags:nameValue2>
         </tags:nameValueContainer2>
     </tags:sectionContainer2>
     
