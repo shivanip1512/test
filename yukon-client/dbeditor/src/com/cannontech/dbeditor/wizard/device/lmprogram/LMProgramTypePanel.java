@@ -12,6 +12,7 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
 	javax.swing.ButtonGroup buttonGroup = new javax.swing.ButtonGroup();
 	private javax.swing.JRadioButton ivjJRadioButtonDirectControl = null;
 	private javax.swing.JRadioButton ivjJRadioButtonSepControl = null;
+	private javax.swing.JRadioButton ivjJRadioButtonEcobeeControl = null;
 /**
  * Constructor
  */
@@ -65,6 +66,25 @@ private javax.swing.JRadioButton getJRadioButtonSepControl() {
 	}
 	return ivjJRadioButtonSepControl;
 }
+
+//ecobee program
+private javax.swing.JRadioButton getJRadioButtonEcobeeControl() {
+    if (ivjJRadioButtonEcobeeControl == null) {
+        try {
+            ivjJRadioButtonEcobeeControl = new javax.swing.JRadioButton();
+            ivjJRadioButtonEcobeeControl.setName("EcobeeControlButton");
+            ivjJRadioButtonEcobeeControl.setMnemonic('e');
+            ivjJRadioButtonEcobeeControl.setText("ecobee Control");
+            // user code begin {1}
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return ivjJRadioButtonEcobeeControl;
+}
 /**
  * Insert the method's description here.
  * Creation date: (2/5/2001 10:32:24 AM)
@@ -79,6 +99,10 @@ public PaoType getLMSelectedType()
  	{
 	 	return PaoType.LM_SEP_PROGRAM;
  	}
+ 	else if( getJRadioButtonEcobeeControl().isSelected() )
+    {
+        return PaoType.LM_ECOBEE_PROGRAM;
+    }
  	else
  		throw new Error(getClass() + "::getLMSelectedType() - No radio button is selected");
 }
@@ -121,11 +145,19 @@ private void initialize() {
 
 		
 		java.awt.GridBagConstraints constraintsJRadioButtonEnergyExchange = new java.awt.GridBagConstraints();
-		constraintsJRadioButtonEnergyExchange.gridx = 1; constraintsJRadioButtonEnergyExchange.gridy = 3;
+		constraintsJRadioButtonEnergyExchange.gridx = 1; constraintsJRadioButtonEnergyExchange.gridy = 2;
 		constraintsJRadioButtonEnergyExchange.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJRadioButtonEnergyExchange.ipadx = 21;
-		constraintsJRadioButtonEnergyExchange.insets = new java.awt.Insets(9, 105, 152, 101);
+		constraintsJRadioButtonEnergyExchange.insets = new java.awt.Insets(9, 105, 8, 101);
 		add(getJRadioButtonSepControl(), constraintsJRadioButtonEnergyExchange);
+
+		
+		java.awt.GridBagConstraints constraintsJRadioButtonEcobeeProgram = new java.awt.GridBagConstraints();
+		constraintsJRadioButtonEcobeeProgram.gridx = 1; constraintsJRadioButtonEcobeeProgram.gridy = 3;
+		constraintsJRadioButtonEcobeeProgram.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsJRadioButtonEcobeeProgram.ipadx = 1;
+		constraintsJRadioButtonEcobeeProgram.insets = new java.awt.Insets(9, 105, 151, 101);
+		add(getJRadioButtonEcobeeControl(), constraintsJRadioButtonEcobeeProgram);
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -133,6 +165,7 @@ private void initialize() {
 
 	buttonGroup.add( getJRadioButtonDirectControl() );
 	buttonGroup.add( getJRadioButtonSepControl() );
+	buttonGroup.add( getJRadioButtonEcobeeControl() );
 
 	// default selected button
 	getJRadioButtonDirectControl().setSelected(true);
@@ -151,7 +184,7 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aLMProgramBasePanel);
 		frame.setSize(aLMProgramBasePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});

@@ -169,6 +169,7 @@ public LMProgramTypePanel getLmProgramTypePanel()
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public java.awt.Dimension getMinimumSize() {
 	return getPreferredSize();
 }

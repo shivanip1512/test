@@ -398,6 +398,7 @@ public final static boolean isLMProgram(int deviceType)
 	{
 		case LM_DIRECT_PROGRAM:
 		case LM_SEP_PROGRAM:
+		case LM_ECOBEE_PROGRAM:
 		case LM_CURTAIL_PROGRAM:
 		case LM_ENERGY_EXCHANGE_PROGRAM:
 			return true;
@@ -413,6 +414,7 @@ public final static boolean isLMProgramDirect(int deviceType)
 	{
 		case LM_DIRECT_PROGRAM:
 		case LM_SEP_PROGRAM:
+		case LM_ECOBEE_PROGRAM:
 			return true;
 	
 		default:

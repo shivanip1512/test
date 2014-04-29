@@ -23,6 +23,7 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
     private SmartCycleGearPanel ivjSmartGearPanel1 = null;
     private SepCycleGearPanel sepCycleGearPanel = null;
     private SepTemperatureOffsetGearPanel sepTemperatureOffsetGearPanel = null;
+    private EcobeeCycleGearPanel ecobeeCycleGearPanel = null;
     private TimeRefreshGearPanel ivjTimeGearPanel1 = null;
     private RotationGearPanel ivjRotationGearPanel1= null;
     private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1 = null;
@@ -244,13 +245,16 @@ private javax.swing.JComboBox getJComboBoxGearType() {
                 ivjJComboBoxGearType.addItem(GearControlMethod.SepCycle);
                 ivjJComboBoxGearType.addItem(GearControlMethod.SepTemperatureOffset);
                 ivjJComboBoxGearType.addItem(GearControlMethod.NoControl);  
+            } else if(programType == PaoType.LM_ECOBEE_PROGRAM) {
+                ivjJComboBoxGearType.addItem(GearControlMethod.EcobeeCycle);
             } else {
-	            for(GearControlMethod gearControlMethod : GearControlMethod.values()) {
-	            	ivjJComboBoxGearType.addItem(gearControlMethod);
-	            }
-	            // Remove SepCycle and SepTempOffset from the combobox for non SEP programs.
-	            ivjJComboBoxGearType.removeItem(GearControlMethod.SepCycle);
-	            ivjJComboBoxGearType.removeItem(GearControlMethod.SepTemperatureOffset);
+                for(GearControlMethod gearControlMethod : GearControlMethod.values()) {
+                    ivjJComboBoxGearType.addItem(gearControlMethod);
+                }
+                // Remove SepCycle and SepTempOffset from the combobox for non SEP programs.
+                ivjJComboBoxGearType.removeItem(GearControlMethod.SepCycle);
+                ivjJComboBoxGearType.removeItem(GearControlMethod.SepTemperatureOffset);
+                ivjJComboBoxGearType.removeItem(GearControlMethod.EcobeeCycle);
             }
 	            
         } catch (java.lang.Throwable ivjExc) {
@@ -375,6 +379,9 @@ public Object getValue(Object o)
 	    	obj = getIvjSmartGearPanel1().getValue(gear);
 	    	break;
 	    }
+	    case EcobeeCycle:
+	        obj = getEcobeeCycleGearPanel().getValue(gear);
+	        break;
 	    case SepCycle:
 	        obj = getSepCycleGearPanel().getValue(gear);
 	        break;
@@ -402,8 +409,8 @@ public Object getValue(Object o)
 	    	break;
 	    }
 	    case SimpleThermostatRamping: {
-	    	obj = getIvjSimpleThermoSetbackGearPanel1().getValue(gear);
-	    	break;
+	        obj = getIvjSimpleThermoSetbackGearPanel1().getValue(gear);
+	        break;
 	    }
 	    case BeatThePeak: {
 	        obj = getIvjBeatThePeakGearPanel1().getValue(gear);
@@ -449,6 +456,7 @@ private void initConnections() throws java.lang.Exception {
     getIvjMasterGearPanel1().addDataInputPanelListener(this);
     getIvjRotationGearPanel1().addDataInputPanelListener(this);
     getIvjSmartGearPanel1().addDataInputPanelListener(this);
+    getEcobeeCycleGearPanel().addDataInputPanelListener(this);
     getSepCycleGearPanel().addDataInputPanelListener(this);
     getSepTemperatureOffsetGearPanel().addDataInputPanelListener(this);
     getIvjThermoSetbackGearPanel1().addDataInputPanelListener(this);
@@ -583,6 +591,9 @@ private void setGearType(GearControlMethod method)
         getIvjSmartGearPanel1().setTargetCycle(method == GearControlMethod.TargetCycle);
     	break;
     
+    case EcobeeCycle:
+        getJScrollPane1().setViewportView(getEcobeeCycleGearPanel());
+        break;
     case SepCycle:
         getJScrollPane1().setViewportView(getSepCycleGearPanel());
         break;
@@ -643,6 +654,10 @@ public void setValue(Object o)
     if( gear instanceof com.cannontech.database.data.device.lm.SmartCycleGear )
     {
         getIvjSmartGearPanel1().setValue(gear);         
+    }
+    else if( gear instanceof com.cannontech.database.data.device.lm.EcobeeCycleGear)
+    {
+        getEcobeeCycleGearPanel().setValue(gear);
     }
     else if( gear instanceof com.cannontech.database.data.device.lm.SepCycleGear)
     {
@@ -749,6 +764,12 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
         return ivjSmartGearPanel1;
     }
 
+    public EcobeeCycleGearPanel getEcobeeCycleGearPanel() {
+        if(ecobeeCycleGearPanel == null)
+            ecobeeCycleGearPanel = new EcobeeCycleGearPanel();
+        return ecobeeCycleGearPanel;
+    }
+    
     public SepCycleGearPanel getSepCycleGearPanel() {
         if(sepCycleGearPanel == null)
             sepCycleGearPanel = new SepCycleGearPanel();
@@ -835,6 +856,10 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
      */
     public void setIvjSmartGearPanel1(SmartCycleGearPanel ivjSmartGearPanel1) {
         this.ivjSmartGearPanel1 = ivjSmartGearPanel1;
+    }
+    
+    public void setEcobeeCycleGearPanel(EcobeeCycleGearPanel ecobeeCycleGearPanel) {
+        this.ecobeeCycleGearPanel = ecobeeCycleGearPanel;
     }
     
     public void setSepCycleGearPanel(SepCycleGearPanel sepCycleGearPanel) {

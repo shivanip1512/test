@@ -30,6 +30,7 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 		{ PAOGroups.LM_CURTAIL_PROGRAM, 
 			PAOGroups.LM_DIRECT_PROGRAM,
 			PAOGroups.LM_SEP_PROGRAM,
+			PAOGroups.LM_ECOBEE_PROGRAM,
 			PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM },
 
 		//LMProgramCurtailmentPanel
@@ -48,6 +49,19 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 		//LMProgramDirectMemberControlPanel
 		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_SEP_PROGRAM },
 		
+		//LMProgramDirectPanel
+		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_ECOBEE_PROGRAM },
+		//LMProgramControlWindowPanel
+		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_ECOBEE_PROGRAM },
+		//LMProgramListPanel
+		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_ECOBEE_PROGRAM },
+		//LMProgramDirectCustomerListPanel
+		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_ECOBEE_PROGRAM },
+		//LMProgramDirectMemberControlPanel
+		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_ECOBEE_PROGRAM },
+		
+		
+		
 		//LMProgramEnergyExchangePanel
 		{ PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM},
 		//LMProgramEnergyExchangePanel
@@ -58,7 +72,7 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 	private javax.swing.JTabbedPane ivjStateEditorTabbedPane = null;
 	
 	class IvjEventHandler implements java.awt.event.ActionListener {
-		public void actionPerformed(java.awt.event.ActionEvent e) {
+        public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == basePanel.getActionPasser())
 			{
 				if(basePanel.isTimedOperationalState())
@@ -141,13 +155,38 @@ public Object[] createNewPanel(int panelIndex)
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectMemberControlPanel();
 			objs[1] = "Member Control";
 			break;
-			
 		case 8:
+		    objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectPanel(getProgramType());
+		    objs[1] = "Gears";
+		    break;
+		    
+		case 9:
+		    controlWindowPanel = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramControlWindowPanel();
+		    objs[0] = controlWindowPanel;
+		    objs[1] = "Control Window";
+		    break;
+		    
+		case 10:
+		    objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramListPanel();
+		    objs[1] = "Groups";
+		    break;
+		    
+		case 11:
+		    objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectNotifGroupListPanel();
+		    objs[1] = "Notification";
+		    break;
+		    
+		case 12:
+		    objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectMemberControlPanel();
+		    objs[1] = "Member Control";
+		    break;
+			
+		case 13:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramEnergyExchangePanel();
 			objs[1] = "Energy Exchange";
 			break;
 
-		case 9:
+		case 14:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramEnergyExchangeCustomerListPanel();
 			objs[1] = "Exchange Customers";
 			break;
@@ -363,6 +402,7 @@ public void setValue(Object val)
  * This method was created in VisualAge.
  * @return java.lang.String
  */
+@Override
 public String toString() {
 	return "LMProgram Editor";
 }

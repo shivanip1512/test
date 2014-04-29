@@ -19,7 +19,9 @@
 <entry key="yukon.web.modules.dr.paoType.LM_CONTROL_AREA">Control Area</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_DIRECT_PROGRAM">Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_SEP_PROGRAM">SEP Program</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_ECOBEE_PROGRAM">ecobee Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_ECOBEE">ecobee Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_EMETCON">Emetcon Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_RFN_EXPRESSCOMM">RFN Expresscom Group</entry>
@@ -429,8 +431,8 @@
 <entry key="yukon.web.modules.dr.home.stateHeader.linkText">State</entry>
 
 <!-- Ecobees -->
-<entry key="yukon.web.modules.dr.home.ecobee.title">Ecobee Statistics</entry>
-<entry key="yukon.web.modules.dr.home.ecobee.configure.title">Ecobee Configuration</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.title">ecobee Statistics</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.title">ecobee Configuration</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.errorChecking">Error Checking</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dataCollection">Data Collection</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dailyErrorCheck">Daily Error Check</entry>
@@ -693,6 +695,7 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.gearControlMethod.TimeRefresh">Time Refresh</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SmartCycle">Smart Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SepCycle">SEP Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.EcobeeCycle">ecobee Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SepTemperatureOffset">SEP Temperature Offset</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.MasterCycle">Master Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.Rotation">Rotation</entry>

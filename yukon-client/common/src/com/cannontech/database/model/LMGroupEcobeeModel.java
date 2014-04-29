@@ -7,9 +7,9 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class LMGroupEcoBeeModel extends AbstractDeviceTreeModel {
+public class LMGroupEcobeeModel extends AbstractDeviceTreeModel {
 
-	public LMGroupEcoBeeModel() {
+	public LMGroupEcobeeModel() {
 		super(new DBTreeNode(PaoType.LM_GROUP_ECOBEE.getDbString()));
 	}
 

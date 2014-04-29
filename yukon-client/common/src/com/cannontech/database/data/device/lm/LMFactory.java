@@ -41,7 +41,7 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
             retLm.setPAOClass(type.getPaoClass().getDbString());
             break;
         case PAOGroups.LM_GROUP_ECOBEE:
-            retLm = new LMGroupEcoBee();
+            retLm = new LMGroupEcobee();
             retLm.setPAOCategory(PaoCategory.getPaoCategory(type.getPaoCategory().getPaoCategoryId()));
             retLm.setPAOClass(type.getPaoClass().getDbString());
             break;
@@ -106,6 +106,10 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
             break;
         case PAOGroups.LM_SEP_PROGRAM:
             retLm = new LmProgramSep();
+            retLm.setPAOClass(type.getPaoClass().getDbString());
+            break;
+        case PAOGroups.LM_ECOBEE_PROGRAM:
+            retLm = new LmProgramEcobee();
             retLm.setPAOClass(type.getPaoClass().getDbString());
             break;
         case PAOGroups.LM_CURTAIL_PROGRAM:

@@ -308,6 +308,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_EXPRESSCOMM_GROUP = {"EXPRESSCOM GROUP"};
     public static final String[] STRING_RFN_EXPRESSCOMM_GROUP = {"RFN EXPRESSCOM GROUP"};
     public static final String[] STRING_DIGI_SEP_GROUP = {"DIGI SEP GROUP"};
+    public static final String[] STRING_ECOBEE_GROUP = {"ECOBEE GROUP"};
     public static final String[] STRING_POINT_GROUP = {"POINT GROUP"};
     public static final String[] STRING_RIPPLE_GROUP = {"RIPPLE GROUP"};
     public static final String[] STRING_MACRO_GROUP = {"MACRO GROUP"};
@@ -318,6 +319,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_VIRTUAL_SYSTEM = {"VIRTUAL SYSTEM", "VIRTUALSYSTEM"};
     public static final String[] STRING_LM_DIRECT_PROGRAM = {"LM DIRECT PROGRAM"};
     public static final String[] STRING_LM_SEP_PROGRAM = {"LM SEP PROGRAM"};
+    public static final String[] STRING_LM_ECOBEE_PROGRAM = {"LM ECOBEE PROGRAM"};
     public static final String[] STRING_LM_CURTAIL_PROGRAM = {"LM CURTAIL PROGRAM"};
     public static final String[] STRING_LM_CONTROL_AREA = {"LM CONTROL AREA"};
     public static final String[] STRING_LM_SCENARIO = {"LMSCENARIO"};

@@ -154,6 +154,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     RTUWELCO(DeviceTypes.RTUWELCO, "RTU-WELCO", PaoCategory.DEVICE, PaoClass.RTU),
 
     LM_GROUP_DIGI_SEP(DeviceTypes.LM_GROUP_DIGI_SEP, "DIGI SEP GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_ECOBEE(DeviceTypes.LM_GROUP_ECOBEE, "ecobee Group", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EMETCON(DeviceTypes.LM_GROUP_EMETCON, "EMETCON GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EXPRESSCOMM(DeviceTypes.LM_GROUP_EXPRESSCOMM, "EXPRESSCOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_RFN_EXPRESSCOMM(DeviceTypes.LM_GROUP_RFN_EXPRESSCOMM, "RFN EXPRESSCOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
@@ -171,6 +172,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     LM_DIRECT_PROGRAM(DeviceTypes.LM_DIRECT_PROGRAM, "LM DIRECT PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_ENERGY_EXCHANGE_PROGRAM(DeviceTypes.LM_ENERGY_EXCHANGE_PROGRAM, "LM ENERGY EXCHANGE", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_SEP_PROGRAM(DeviceTypes.LM_SEP_PROGRAM, "LM SEP PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    LM_ECOBEE_PROGRAM(DeviceTypes.LM_ECOBEE_PROGRAM, "ecobee Program", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_CONTROL_AREA(DeviceTypes.LM_CONTROL_AREA, "LM CONTROL AREA", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_SCENARIO(DeviceTypes.LM_SCENARIO, "LMSCENARIO", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     
@@ -239,8 +241,6 @@ public enum PaoType implements DatabaseRepresentationSource {
     RF_DA(DeviceTypes.RF_DA, "RF-DA", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     ECOBEE_SMART_SI(DeviceTypes.ECOBEE_SMART_SI, "ecobee Smart Si", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
-    LM_ECOBEE_PROGRAM(DeviceTypes.LM_ECOBEE_PROGRAM, "EcoBee Program", PaoCategory.DEVICE, PaoClass.LOADMANAGEMENT),
-    LM_GROUP_ECOBEE(DeviceTypes.LM_GROUP_ECOBEE, "EcoBee Group", PaoCategory.DEVICE, PaoClass.GROUP),
     ;
     
     private final int deviceTypeId;

@@ -223,16 +223,24 @@ public void initLeftList( boolean hideLMGroupPoints, PaoType programType)
 		
 		for (LiteYukonPAObject group : groups) {
 			PaoType paoType = group.getPaoType();
-			if( DeviceTypesFuncs.isLmGroup(paoType.getDeviceTypeId() )
-				 &&
-				 ( hideLMGroupPoints ? paoType != PaoType.LM_GROUP_POINT : true) )
-			{
-				boolean isSepProgram =  programType == PaoType.LM_SEP_PROGRAM;
-			    // SEP compatible groups are shown for SEP programs and hidden for all others
-			    if ( (isSepProgram && isGroupSepCompatible(paoType)) ||
-			    	 (!isSepProgram && !isGroupSepCompatible(paoType))) {
-			        newList.addElement(group);
-			    }
+			if (DeviceTypesFuncs.isLmGroup(paoType.getDeviceTypeId())
+				 && (hideLMGroupPoints ? paoType != PaoType.LM_GROUP_POINT : true)) {
+			    
+				boolean isSepProgram = programType == PaoType.LM_SEP_PROGRAM;
+				boolean isEcobeeProgram = programType == PaoType.LM_ECOBEE_PROGRAM;
+				// SEP compatible groups are shown for SEP programs and hidden for all others
+				// ecobee compatible groups are shown for ecobee programs and hidden for all others
+				if (isSepProgram && isGroupSepCompatible(paoType)) {
+				    newList.addElement(group);
+				} else if ((!isSepProgram && !isGroupSepCompatible(paoType)) &&
+				        (!isEcobeeProgram && !isGroupEcobeeCompatible(paoType))) {
+				    newList.addElement(group);
+				} else if(isEcobeeProgram && isGroupEcobeeCompatible(paoType)) {
+				    newList.addElement(group);
+				} else if((!isEcobeeProgram && !isGroupEcobeeCompatible(paoType)) &&
+				        (!isSepProgram && !isGroupSepCompatible(paoType))) {
+				    newList.addElement(group);
+				}
 			}
 		}
 
@@ -246,6 +254,11 @@ public void initLeftList( boolean hideLMGroupPoints, PaoType programType)
 private boolean isGroupSepCompatible(PaoType groupType)
 {
     return groupType == PaoType.LM_GROUP_DIGI_SEP;
+}
+
+private boolean isGroupEcobeeCompatible(PaoType groupType)
+{
+    return groupType == PaoType.LM_GROUP_ECOBEE;
 }
 
 /**
@@ -343,7 +356,7 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aLMProgramBasePanel);
 		frame.setSize(aLMProgramBasePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});

@@ -323,7 +323,7 @@ public final class DeviceFactory {
             returnDevice.setDeviceClass( paoType.getPaoClass().getDbString() );
             break;
         case LM_GROUP_ECOBEE:
-            returnDevice = new com.cannontech.database.data.device.lm.LMGroupEcoBee();
+            returnDevice = new com.cannontech.database.data.device.lm.LMGroupEcobee();
             returnDevice.setDeviceClass( paoType.getPaoClass().getDbString() );
             break;
         case LM_GROUP_VERSACOM:

@@ -12,15 +12,15 @@ import javax.swing.event.CaretListener;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.database.data.device.lm.LMGroupEcoBee;
+import com.cannontech.database.data.device.lm.LMGroupEcobee;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 
-public class LMGroupEcoBeePanel extends DataInputPanel implements ActionListener, CaretListener {
+public class LMGroupEcobeePanel extends DataInputPanel implements ActionListener, CaretListener {
 
-    private static final long serialVersionUID = -2252114675970615944L;
+    private static final long serialVersionUID = 1L;
     private JPanel deviceClassPanel = null;
 
-    public LMGroupEcoBeePanel() {
+    public LMGroupEcobeePanel() {
         super();
         initialize();
     }
@@ -78,8 +78,8 @@ public class LMGroupEcoBeePanel extends DataInputPanel implements ActionListener
         } else {
             value = o;
         }
-        if (value instanceof LMGroupEcoBee) {
-            LMGroupEcoBee group = (LMGroupEcoBee) value;
+        if (value instanceof LMGroupEcobee) {
+            LMGroupEcobee group = (LMGroupEcobee) value;
         }
         return o;
     }
@@ -93,8 +93,8 @@ public class LMGroupEcoBeePanel extends DataInputPanel implements ActionListener
         } else {
             value = o;
         }
-        if (value instanceof LMGroupEcoBee) {
-            LMGroupEcoBee group = (LMGroupEcoBee) value;
+        if (value instanceof LMGroupEcobee) {
+            LMGroupEcobee group = (LMGroupEcobee) value;
 
         }
     }

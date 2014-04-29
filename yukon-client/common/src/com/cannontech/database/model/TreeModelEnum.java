@@ -32,7 +32,7 @@ public enum TreeModelEnum
 	LMGROUPSA205 (LMGroupSA205Model.class, "SA-205 Group"),
 	LMGROUPSADIGITAL (LMGroupSADigitalModel.class, "SA-Digital Group"),
 	LMGROUPDIGISEP (LMGroupDigiSepModel.class, "Digi SEP Group"),
-	LMGROUPECOBEE (LMGroupEcoBeeModel.class, "EcoBee Group"),
+	LMGROUPECOBEE (LMGroupEcobeeModel.class, "ecobee Group"),
 	LMGROUPMACRO (LMGroupMacroModel.class, "Macro Group"),
 	GOLAY (LMGroupGolayModel.class, "Golay Group"),
 	LMPROGRAM (LMProgramModel.class, "Load Program"),
