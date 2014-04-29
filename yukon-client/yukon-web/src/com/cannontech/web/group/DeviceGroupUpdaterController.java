@@ -45,119 +45,120 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("/updater/*")
 @CheckRoleProperty(YukonRoleProperty.BULK_UPDATE_OPERATION)
 public class DeviceGroupUpdaterController {
-	
-	private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory;
-	private BulkFieldService bulkFieldService;
-	private DeviceGroupEditorDao deviceGroupEditorDao;
-	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-	private TransactionOperations transactionTemplate;
-	
-	private Logger log = YukonLogManager.getLogger(DeviceGroupUpdaterController.class);
+    
+    @Autowired private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory;
+    @Autowired private BulkFieldService bulkFieldService;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private TransactionOperations transactionTemplate;
+    
+    private Logger log = YukonLogManager.getLogger(DeviceGroupUpdaterController.class);
 
-	@RequestMapping("upload")
+    @RequestMapping("upload")
     public void upload(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException {
 
-		String error = ServletRequestUtils.getStringParameter(request, "error", null);
-		boolean success = ServletRequestUtils.getBooleanParameter(request, "success", false);
-		int deviceCount = ServletRequestUtils.getIntParameter(request, "deviceCount", 0);
-		
-		model.addAttribute("error", error);
-		model.addAttribute("success", success);
-		model.addAttribute("deviceCount", deviceCount);
+        String error = ServletRequestUtils.getStringParameter(request, "error", null);
+        boolean success = ServletRequestUtils.getBooleanParameter(request, "success", false);
+        int deviceCount = ServletRequestUtils.getIntParameter(request, "deviceCount", 0);
+        
+        model.addAttribute("error", error);
+        model.addAttribute("success", success);
+        model.addAttribute("deviceCount", deviceCount);
     }
-	
-	@RequestMapping("parseUpload")
+    
+    @RequestMapping("parseUpload")
     public String parseUpload(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException, IOException {
 
-		boolean createGroups = ServletRequestUtils.getBooleanParameter(request, "createGroups", false);
-		
-		String error = null;
-		int deviceCount = 0;
-		
-		MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)request;
+        boolean createGroups = ServletRequestUtils.getBooleanParameter(request, "createGroups", false);
+        
+        String error = null;
+        int deviceCount = 0;
+        
+        MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)request;
         MultipartFile dataFile = mRequest.getFile("dataFile");
         
         // get file from request
         if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-        	error = "No file selected.";
+            error = "No file selected.";
         } else {
-        	
+            
             InputStream inputStream = dataFile.getInputStream();
             if (inputStream.available() <= 0) {
-            	error = "File is empty.";
+                error = "File is empty.";
             } else {
             
-	            // header row
-	            InputStreamReader inputStreamReader = new InputStreamReader(dataFile.getInputStream());
-	            CSVReader csvReader = new CSVReader(inputStreamReader);
-	            String[] headerRow = csvReader.readNext();
-	            
-	            if (headerRow.length < 2) {
-	            	error = "File header should contain an Identifier column and at least one action column.";
-	            } else {
-	            
-		            BulkField<?, SimpleDevice> identifierBulkField = null;
-		            String header = "";
-		            String columnType = "";
-		            
-	            	try {
-			            
-			            // identifier bulk field
-	            	    String identifier = "";
-	            	    BulkFieldColumnHeader identifierColunHeader;
-	            	    try {
-	                	    identifier = headerRow[0].trim();
-	    		            identifierColunHeader = BulkFieldColumnHeader.valueOf(identifier);
-	            	    } catch (IllegalArgumentException e) {
-	            	        throw new InvalidIndentifierException(identifier);
-	            	    }
-	            	    identifierBulkField = bulkYukonDeviceFieldFactory.getBulkField(identifierColunHeader.getFieldName());
-			            
-			            // processors
-			            DeviceGroupProcessorFactory deviceGroupProcessorFactory = new DeviceGroupProcessorFactory();
-			            
-			            List<BulkFieldProcessor<SimpleDevice, String>> processors = new ArrayList<BulkFieldProcessor<SimpleDevice, String>>();
-			            for (int columnIdx = 1; columnIdx < headerRow.length; columnIdx++) {
-			            	
-			            	header = headerRow[columnIdx].trim();
-		            		String[] columnTypeParts = header.split(":");
-		            		columnType = columnTypeParts[0];
-		            		String[] valueParts = columnTypeParts[1].split("=");
-		            		String dataName = valueParts[0];
-		            		String dataValue = valueParts[1];
-			            		
-		            		processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName, dataValue, createGroups));
-			            }
-			            
-			            // process rows
-			            ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, processors);
-			            error = processingResultInfo.getError();
-			            deviceCount = processingResultInfo.getDeviceCount();
-			            
-	            	} catch (InvalidIndentifierException e) {
-	            	    Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
-	            	    error = "Error (line 1): Invalid identifier type: " + e.getIdentifier() + ". Valid identifier types are: " + StringUtils.join(identifierFields, " ,");
-	                    log.error(error, e);
-	            	} catch (IllegalArgumentException e) {
-	                    error = "Error (line 1): Invalid header type: " + columnType + ". Valid header types: " + StringUtils.join(DeviceGroupUpdaterColumn.values(), " ,");
-	                    log.error(error, e);
-	            	} catch (IndexOutOfBoundsException e) {
-	                    error = "Error (line 1): Invalid header syntax.";
-	                    log.error(error, e);
-	                } catch (NotFoundException e) {
-	                    error = "Error (line 1): " + e.getMessage() + ". Please check the spelling, or if you would like groups to automatically be created if they do not exist, check the Create Groups option.";
-	                    log.error(error, e);
-	                } 
-	            }
+                // header row
+                InputStreamReader inputStreamReader = new InputStreamReader(dataFile.getInputStream());
+                CSVReader csvReader = new CSVReader(inputStreamReader);
+                String[] headerRow = csvReader.readNext();
+                
+                if (headerRow.length < 2) {
+                    error = "File header should contain an Identifier column and at least one action column.";
+                } else {
+                
+                    BulkField<?, SimpleDevice> identifierBulkField = null;
+                    String header = "";
+                    String columnType = "";
+                    
+                    try {
+                        
+                        // identifier bulk field
+                        String identifier = "";
+                        BulkFieldColumnHeader identifierColunHeader;
+                        try {
+                            identifier = headerRow[0].trim();
+                            identifierColunHeader = BulkFieldColumnHeader.valueOf(identifier);
+                        } catch (IllegalArgumentException e) {
+                            throw new InvalidIndentifierException(identifier);
+                        }
+                        identifierBulkField = bulkYukonDeviceFieldFactory.getBulkField(identifierColunHeader.getFieldName());
+                        
+                        // processors
+                        DeviceGroupProcessorFactory deviceGroupProcessorFactory = new DeviceGroupProcessorFactory();
+                        
+                        List<BulkFieldProcessor<SimpleDevice, String>> processors = new ArrayList<BulkFieldProcessor<SimpleDevice, String>>();
+                        for (int columnIdx = 1; columnIdx < headerRow.length; columnIdx++) {
+                            
+                            header = headerRow[columnIdx].trim();
+                            String[] columnTypeParts = header.split(":");
+                            columnType = columnTypeParts[0];
+                            String[] valueParts = columnTypeParts[1].split("=");
+                            String dataName = valueParts[0];
+                            String dataValue = valueParts[1];
+                                
+                            processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName, dataValue, createGroups));
+                        }
+                        
+                        // process rows
+                        ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, processors);
+                        error = processingResultInfo.getError();
+                        deviceCount = processingResultInfo.getDeviceCount();
+                        
+                    } catch (InvalidIndentifierException e) {
+                        Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
+                        error = "Error (line 1): Invalid identifier type: " + e.getIdentifier() + ". Valid identifier types are: " + StringUtils.join(identifierFields, " ,");
+                        log.error(error, e);
+                    } catch (IllegalArgumentException e) {
+                        error = "Error (line 1): Invalid header type: " + columnType + ". Valid header types: " + StringUtils.join(DeviceGroupUpdaterColumn.values(), " ,");
+                        log.error(error, e);
+                    } catch (IndexOutOfBoundsException e) {
+                        error = "Error (line 1): Invalid header syntax.";
+                        log.error(error, e);
+                    } catch (NotFoundException e) {
+                        error = "Error (line 1): " + e.getMessage() + ". Please check the spelling, or if you would like groups to automatically be created if they do not exist, check the Create Groups option.";
+                        log.error(error, e);
+                    } 
+                }
             }
         }
         
         model.addAttribute("error", error);
         model.addAttribute("success", error == null);
         model.addAttribute("deviceCount", deviceCount);
+        
         return "redirect:upload";
     }
-	
+    
     private class InvalidIndentifierException extends RuntimeException {
         private String identifier;
         public InvalidIndentifierException(String identifier) {
@@ -167,13 +168,11 @@ public class DeviceGroupUpdaterController {
             return identifier;
         }
     }
-
-	
-	
-	private ProcessingResultInfo runProcessing(final CSVReader csvReader, final BulkField<?, SimpleDevice> identifierBulkField, final List<BulkFieldProcessor<SimpleDevice, String>> processors) {
-	    
-	    ProcessingResultInfo processingResultInfo = (ProcessingResultInfo)transactionTemplate.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
+    
+    private ProcessingResultInfo runProcessing(final CSVReader csvReader, final BulkField<?, SimpleDevice> identifierBulkField, final List<BulkFieldProcessor<SimpleDevice, String>> processors) {
+        
+        ProcessingResultInfo processingResultInfo = transactionTemplate.execute(new TransactionCallback<ProcessingResultInfo>() {
+            public ProcessingResultInfo doInTransaction(TransactionStatus status) {
                 
                 String processError = null;
                 int currentLineNumber = 1;
@@ -229,133 +228,112 @@ public class DeviceGroupUpdaterController {
                 return new ProcessingResultInfo(processError, deviceCount);
             }
         });
-	    
-	    return processingResultInfo;
-	}
-	
-	private class ProcessingResultInfo {
-	    
-	    private String error = null;
-	    private int deviceCount = 0;
-	    
-	    ProcessingResultInfo(String error, int deviceCount) {
-	        this.error = error;
-	        this.deviceCount = deviceCount;
-	    }
-	    
-	    public String getError() {
+        
+        return processingResultInfo;
+    }
+    
+    private class ProcessingResultInfo {
+        
+        private String error = null;
+        private int deviceCount = 0;
+        
+        ProcessingResultInfo(String error, int deviceCount) {
+            this.error = error;
+            this.deviceCount = deviceCount;
+        }
+        
+        public String getError() {
             return error;
         }
-	    public int getDeviceCount() {
+        public int getDeviceCount() {
             return deviceCount;
         }
-	}
-	
-	// PREFIX PROCESSOR
-	private class DeviceGroupPrefixProcessor implements BulkFieldProcessor<SimpleDevice, String> {
-
-		private StoredDeviceGroup group;
-		private boolean createGroups;
-		
-		public DeviceGroupPrefixProcessor (String groupName, boolean createGroups) {
-			this.group = deviceGroupEditorDao.getStoredGroup(groupName, createGroups);
-			this.createGroups = createGroups;
-		}
-
-		@Override
-		public void updateField(SimpleDevice device, String subgroup) {
-		    
-		    if (StringUtils.isBlank(subgroup)) {
-		        log.debug("DeviceGroupPrefixProcessor - skipping blank subgroup, will not process device: " + device);
-		        return;
-		    }
-
-			// remove from all child groups
-			for (StoredDeviceGroup childGroup : deviceGroupEditorDao.getStaticGroups(this.group)) {
-				removeDeviceFromChildGroup(childGroup, device);
-			}
-			
-			// find subgroup, add device to it
-			StoredDeviceGroup subgroupGroup = deviceGroupEditorDao.getGroupByName(this.group, subgroup, this.createGroups);
-			deviceGroupMemberEditorDao.addDevices(subgroupGroup, device);
-		}
-		
-		private void removeDeviceFromChildGroup(StoredDeviceGroup removeFromGroup, SimpleDevice device) {
-			
-			deviceGroupMemberEditorDao.removeDevices(removeFromGroup, device);
-			
-			for (StoredDeviceGroup childGroup : deviceGroupEditorDao.getStaticGroups(removeFromGroup)) {
-				removeDeviceFromChildGroup(childGroup, device);
-			}
-		}
-		
-		@Override
-		public Set<BulkField<?, SimpleDevice>> getUpdatableFields() {
-			return null;
-		}
-	}
-	
-	// GROUP PROCESSOR
-	private class DeviceGroupGroupProcessor implements BulkFieldProcessor<SimpleDevice, String> {
-		
-		private StoredDeviceGroup group;
-		
-		public DeviceGroupGroupProcessor (String groupName, boolean createGroups) {
-			this.group = deviceGroupEditorDao.getStoredGroup(groupName, createGroups);
-		}
-
-		@Override
-		public void updateField(SimpleDevice device, String addStr) {
-
-			boolean add = Boolean.valueOf(addStr);
-			if (add) {
-				deviceGroupMemberEditorDao.addDevices(this.group, device);
-			} else {
-				deviceGroupMemberEditorDao.removeDevices(this.group, device);
-			}
-		}
-		
-		@Override
-		public Set<BulkField<?, SimpleDevice>> getUpdatableFields() {
-			return null;
-		}
-	}
-	
-	private class DeviceGroupProcessorFactory {
-		
-		public BulkFieldProcessor<SimpleDevice, String> getProcessor(String columnType, String dataName, String dataValue, boolean createGroups) throws IllegalArgumentException {
-			
-			DeviceGroupUpdaterColumn deviceGroupUpdaterColumn = DeviceGroupUpdaterColumn.valueOf(columnType);
-			
-			if (deviceGroupUpdaterColumn.equals(DeviceGroupUpdaterColumn.DEVICE_GROUP_PREFIX)) {
-				return new DeviceGroupPrefixProcessor(dataValue, createGroups); 
-			} else if (deviceGroupUpdaterColumn.equals(DeviceGroupUpdaterColumn.DEVICE_GROUP_SET)) {
-				return new DeviceGroupGroupProcessor(dataValue, createGroups);
-			} else {
-				throw new IllegalArgumentException("Invalid processorType");
-			}
-		}
-	}
-	
-	
-	@Autowired
-	public void setBulkYukonDeviceFieldFactory(BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory) {
-		this.bulkYukonDeviceFieldFactory = bulkYukonDeviceFieldFactory;
-	}
-	@Autowired
-	public void setBulkFieldService(BulkFieldService bulkFieldService) {
-		this.bulkFieldService = bulkFieldService;
-	}
-	@Autowired
-	public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-		this.deviceGroupEditorDao = deviceGroupEditorDao;
-	}
-	@Autowired
-	public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-	}
-	@Autowired
-	public void setTransactionTemplate(TransactionOperations transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
     }
+    
+    /** PREFIX PROCESSOR */
+    private class DeviceGroupPrefixProcessor implements BulkFieldProcessor<SimpleDevice, String> {
+
+        private StoredDeviceGroup group;
+        private boolean createGroups;
+        
+        public DeviceGroupPrefixProcessor (String groupName, boolean createGroups) {
+            this.group = deviceGroupEditorDao.getStoredGroup(groupName, createGroups);
+            this.createGroups = createGroups;
+        }
+
+        @Override
+        public void updateField(SimpleDevice device, String subgroup) {
+            
+            if (StringUtils.isBlank(subgroup)) {
+                log.debug("DeviceGroupPrefixProcessor - skipping blank subgroup, will not process device: " + device);
+                return;
+            }
+
+            // remove from all child groups
+            for (StoredDeviceGroup childGroup : deviceGroupEditorDao.getStaticGroups(this.group)) {
+                removeDeviceFromChildGroup(childGroup, device);
+            }
+            
+            // find subgroup, add device to it
+            StoredDeviceGroup subgroupGroup = deviceGroupEditorDao.getGroupByName(this.group, subgroup, this.createGroups);
+            deviceGroupMemberEditorDao.addDevices(subgroupGroup, device);
+        }
+        
+        private void removeDeviceFromChildGroup(StoredDeviceGroup removeFromGroup, SimpleDevice device) {
+            
+            deviceGroupMemberEditorDao.removeDevices(removeFromGroup, device);
+            
+            for (StoredDeviceGroup childGroup : deviceGroupEditorDao.getStaticGroups(removeFromGroup)) {
+                removeDeviceFromChildGroup(childGroup, device);
+            }
+        }
+        
+        @Override
+        public Set<BulkField<?, SimpleDevice>> getUpdatableFields() {
+            return null;
+        }
+    }
+    
+    /** GROUP PROCESSOR */
+    private class DeviceGroupGroupProcessor implements BulkFieldProcessor<SimpleDevice, String> {
+        
+        private StoredDeviceGroup group;
+        
+        public DeviceGroupGroupProcessor (String groupName, boolean createGroups) {
+            this.group = deviceGroupEditorDao.getStoredGroup(groupName, createGroups);
+        }
+
+        @Override
+        public void updateField(SimpleDevice device, String addStr) {
+
+            boolean add = Boolean.valueOf(addStr);
+            if (add) {
+                deviceGroupMemberEditorDao.addDevices(this.group, device);
+            } else {
+                deviceGroupMemberEditorDao.removeDevices(this.group, device);
+            }
+        }
+        
+        @Override
+        public Set<BulkField<?, SimpleDevice>> getUpdatableFields() {
+            return null;
+        }
+    }
+    
+    private class DeviceGroupProcessorFactory {
+        
+        public BulkFieldProcessor<SimpleDevice, String> getProcessor(String columnType, String dataName, String dataValue, boolean createGroups) throws IllegalArgumentException {
+            
+            DeviceGroupUpdaterColumn deviceGroupUpdaterColumn = DeviceGroupUpdaterColumn.valueOf(columnType);
+            
+            if (deviceGroupUpdaterColumn.equals(DeviceGroupUpdaterColumn.DEVICE_GROUP_PREFIX)) {
+                return new DeviceGroupPrefixProcessor(dataValue, createGroups); 
+            } else if (deviceGroupUpdaterColumn.equals(DeviceGroupUpdaterColumn.DEVICE_GROUP_SET)) {
+                return new DeviceGroupGroupProcessor(dataValue, createGroups);
+            } else {
+                throw new IllegalArgumentException("Invalid processorType");
+            }
+        }
+    }
+    
 }
