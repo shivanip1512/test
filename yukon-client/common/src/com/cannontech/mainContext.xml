@@ -397,36 +397,7 @@
 
     <bean class="com.cannontech.database.db.pao.dao.impl.StaticPaoInfoDaoImpl"/>
     
-    <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeQueryCountDaoImpl"/>
-    <bean class="com.cannontech.dr.ecobee.EcobeeAuthenticationCache"/>
+    <bean id="proxyAwareSimpleClientHttpRequestFactory" class="com.cannontech.common.util.ProxyAwareSimpleClientHttpRequestFactory"/>
     
-    <bean id="ecobeeCommunicationService" class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceImpl">
-        <qualifier value="doNotUse"/>
-    </bean>
-    <bean id="ecobeeCommunicationAopAuthenticator" class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationAopAuthenticator"/>
-    <bean class="org.springframework.aop.framework.ProxyFactoryBean">
-        <qualifier value="aopAuth"/>
-        <property name="target" ref="ecobeeCommunicationService"/>
-        <property name="interceptorNames">
-            <list>
-                <value>ecobeeCommunicationAopAuthenticator</value>
-            </list>
-        </property>
-    </bean>
-    
-    <bean class="org.springframework.web.client.RestTemplate">
-        <qualifier value="Ecobee"/>
-        <constructor-arg>
-            <bean class="com.cannontech.dr.ecobee.ProxyAwareSimpleClientHttpRequestFactory"/>
-        </constructor-arg>
-        <property name="messageConverters">
-            <list>
-                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
-            </list>
-        </property>
-        <property name="errorHandler">
-            <bean class="com.cannontech.dr.ecobee.service.EcobeeErrorHandler"/>
-        </property>
-    </bean>
-    
+    <bean id="jacksonHttpMessageConverter" class="com.cannontech.spring.JacksonHttpMessageConverter"/>
 </beans>

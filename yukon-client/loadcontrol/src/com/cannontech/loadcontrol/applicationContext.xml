@@ -88,4 +88,34 @@
     <bean class="com.cannontech.loadcontrol.weather.impl.WeatherDataServiceImpl"/>
     <bean class="com.cannontech.loadcontrol.weather.impl.NoaaWeatherDataServiceImpl"/>
     
+    <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeQueryCountDaoImpl"/>
+    <bean class="com.cannontech.dr.ecobee.EcobeeAuthenticationCache"/>
+    
+    <bean id="ecobeeCommunicationService" class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceImpl">
+        <qualifier value="doNotUse"/>
+    </bean>
+    <bean id="ecobeeCommunicationAopAuthenticator" class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationAopAuthenticator"/>
+    <bean class="org.springframework.aop.framework.ProxyFactoryBean">
+        <qualifier value="aopAuth"/>
+        <property name="target" ref="ecobeeCommunicationService"/>
+        <property name="interceptorNames">
+            <list>
+                <value>ecobeeCommunicationAopAuthenticator</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean class="org.springframework.web.client.RestTemplate">
+        <qualifier value="Ecobee"/>
+        <constructor-arg ref="proxyAwareSimpleClientHttpRequestFactory"/>
+        <property name="messageConverters">
+            <list>
+                <ref bean="jacksonHttpMessageConverter"/>
+            </list>
+        </property>
+        <property name="errorHandler">
+            <bean class="com.cannontech.dr.ecobee.service.EcobeeErrorHandler"/>
+        </property>
+    </bean>
+    
 </beans>

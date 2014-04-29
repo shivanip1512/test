@@ -25,7 +25,7 @@
             <bean class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentHandlerMethodArgumentResolver"/>
         </mvc:argument-resolvers>
         <mvc:message-converters>
-            <bean class="com.cannontech.web.spring.JacksonHttpMessageConverter"/>
+            <bean class="com.cannontech.spring.JacksonHttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
 

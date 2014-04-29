@@ -1,4 +1,4 @@
-package com.cannontech.web.spring;
+package com.cannontech.spring;
 
 import java.io.IOException;
 

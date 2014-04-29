@@ -16,6 +16,8 @@ import com.cannontech.dr.ecobee.EcobeeAuthenticationCache;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeNotAuthenticatedException;
+import com.cannontech.dr.ecobee.message.AuthenticationRequest;
+import com.cannontech.dr.ecobee.message.AuthenticationResponse;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 
@@ -59,17 +61,15 @@ public class EcobeeCommunicationAopAuthenticator implements MethodInterceptor {
             log.debug("Attempting login for energy company id " + ecId + " with userName " + userName + " URL: " 
                      + url);
             
-            EcobeeMessages.AuthenticationRequest authRequest = 
-                    new EcobeeMessages.AuthenticationRequest(userName, password);
-            EcobeeMessages.AuthenticationResponse authResponse;
+            AuthenticationRequest authRequest = new AuthenticationRequest(userName, password);
+            AuthenticationResponse authResponse;
             try {
-                authResponse = restTemplate.postForObject(url, authRequest, 
-                                                          EcobeeMessages.AuthenticationResponse.class);
+                authResponse = restTemplate.postForObject(url, authRequest, AuthenticationResponse.class);
             } catch (RestClientException e) {
                 throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
             }
             
-            if (authResponse.getStatus().getCode() == SUCCESS.getCode()) {
+            if (authResponse.hasCode(SUCCESS)) {
                 //Authentication was successful. Cache the token and try the request again.
                 authenticationCache.put(ecId, authResponse.getToken());
                 log.debug("Successfully logged in energy company id " + ecId);

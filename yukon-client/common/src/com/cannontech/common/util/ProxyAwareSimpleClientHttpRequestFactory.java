@@ -1,4 +1,4 @@
-package com.cannontech.dr.ecobee;
+package com.cannontech.common.util;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -18,7 +18,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
  * only updated when the bean is initialized, so a restart is required to pick up changes.
  */
 public class ProxyAwareSimpleClientHttpRequestFactory extends SimpleClientHttpRequestFactory {
-    @Autowired GlobalSettingDao globalSettingDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     private static final Logger log = YukonLogManager.getLogger(ProxyAwareSimpleClientHttpRequestFactory.class);
     
     @PostConstruct
@@ -31,11 +31,11 @@ public class ProxyAwareSimpleClientHttpRequestFactory extends SimpleClientHttpRe
                 log.error("GlobalSettingType = HTTP_PROXY has an invalid value: " + httpProxy
                          + ". Unable to setup proxy settings for ProxyAwareSimpleClientHttpRequestFactory.");
             } else {
-                String host = httpProxy.split(":")[0];
+                String host = hostAndPort[0];
                 try {
-                    int port = Integer.parseInt(httpProxy.split(":")[1]);
+                    int port = Integer.parseInt(hostAndPort[1]);
                     Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(host, port));
-                    this.setProxy(proxy);
+                    setProxy(proxy);
                 } catch(NumberFormatException e) {
                     log.error("GlobalSettingType = HTTP_PROXY has an invalid value: "+ hostAndPort
                             + ". Unable to setup proxy settings for ProxyAwareSimpleClientHttpRequestFactory", e);

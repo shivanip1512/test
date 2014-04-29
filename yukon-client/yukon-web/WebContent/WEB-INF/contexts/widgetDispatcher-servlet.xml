@@ -26,7 +26,7 @@
         <property name="order" value="1"/>
         <property name="messageConverters">
            <list>
-                <bean class="com.cannontech.web.spring.JacksonHttpMessageConverter"/>
+                <bean class="com.cannontech.spring.JacksonHttpMessageConverter"/>
             </list>
          </property>
     </bean>

@@ -1,9 +1,5 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Contains all the messaging classes used by EcobeeCommunicationService for serializing and de-serializing JSON
@@ -18,7 +14,7 @@ public final class EcobeeMessages {
      * @param message Additional error details.
      * @see EcobeeStatusCode
      */
-    @JsonIgnoreProperties(ignoreUnknown=true)
+    /*@JsonIgnoreProperties(ignoreUnknown=true)
     public static final class Status {
         private Integer code;
         private String message;
@@ -36,12 +32,12 @@ public final class EcobeeMessages {
         public String getMessage() {
             return message;
         }
-    }
+    }*/
     
     /**
      * Base class for all Ecobee responses that contain an EcobeeStatus.
      */
-    @JsonIgnoreProperties(ignoreUnknown=true)
+   /* @JsonIgnoreProperties(ignoreUnknown=true)
     public abstract static class ResponseWithStatus {
         protected Status status;
         
@@ -260,5 +256,5 @@ public final class EcobeeMessages {
         public Boolean getSuccess() {
             return success;
         }
-    }
+    }*/
 }
