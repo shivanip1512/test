@@ -1,6 +1,7 @@
 package com.cannontech.web.support.development;
 
 import java.beans.PropertyEditorSupport;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -21,11 +22,15 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.database.RowMapper;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -55,7 +60,9 @@ import com.google.common.collect.Maps;
 @RequestMapping("/development/setupDatabase/*")
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class SetupDevDbMethodController {
+    
     private static final Logger log = YukonLogManager.getLogger(SetupDevDbMethodController.class);
+    
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private PaoDao paoDao;
     @Autowired private YukonGroupDao yukonGroupDao;
@@ -66,6 +73,7 @@ public class SetupDevDbMethodController {
     @Autowired private DevEventLogCreationService devEventLogCreationService;
     @Autowired private RoleDao roleDao;
     @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     @RequestMapping("main")
     public void main(ModelMap model) {
@@ -234,6 +242,35 @@ public class SetupDevDbMethodController {
         model.addAttribute("allEnergyCompanies", allEnergyCompanies);
       
         return "development/setupDatabase/starsWidget.jsp";
+    }
+    
+    @RequestMapping("fake-locations")
+    public @ResponseBody void addFakePaoLocations() {
+        
+        DecimalFormat df = new DecimalFormat("##.######");
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select PAObjectId");
+        sql.append("from YukonPAObject");
+        sql.append("where category = 'DEVICE'");
+        sql.append("and  PAOClass in ('CARRIER', 'TRANSMITTER', 'CAPCONTROL', 'RFMESH')");
+        sql.append("and PAObjectId not in (select PAObjectId from PaoLocation)");
+        
+        List<Integer> paoIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        
+        for (Integer paoId : paoIds) {
+            
+            double latitude = Double.parseDouble(df.format((Math.random() * (45.3 - 45.0)) + 45.0));
+            double longitude = Double.parseDouble(df.format(((Math.random() * (93.5 - 93.0)) + 93.0) * -1));
+            
+            sql = new SqlStatementBuilder();
+            SqlParameterSink insertInto = sql.insertInto("PaoLocation");
+            insertInto.addValue("PAObjectId", paoId);
+            insertInto.addValue("Latitude", latitude);
+            insertInto.addValue("Longitude", longitude);
+            jdbcTemplate.update(sql);
+        }
+        
     }
 
     private final Validator capControlValidator =

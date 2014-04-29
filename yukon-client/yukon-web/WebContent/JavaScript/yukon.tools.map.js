@@ -45,41 +45,95 @@ yukon.tools.map = (function() {
         })[0];
     },
     
+    _createFeature = function(feature, src_projection) {
+        var pao = feature.properties.paoIdentifier,
+            icon = new ol.Feature({pao: pao});
+        
+        icon.setStyle(_styles['generic']);
+        if (src_projection === _destProjection) {
+            icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+        } else {
+            var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+            icon.setGeometry(new ol.geom.Point(coord));
+        }
+        
+        _icons[pao.paoId] = icon;
+        _visibility[pao.paoId] = true;
+        
+        return icon;
+    },
+    
     /** 
      * Gets pao locations for the device collection in geojson format and adds
      * an icon feature for each to a new vector layer for the map.
      * @param {string} dest_projection - The project that the icon vector layer will be in. 
      */
     _loadIcons = function() {
+        $('.js-status-loading').show();
         $.getJSON(decodeURI($('#locations').val())).done(function(fc) {
             
             var 
+            icon,
             icons = [],
-            src_projection = fc.crs.properties.name, // Yukon currently storing coords as ESPG:4326 (WGS84)
             start = new Date().getTime();
             
             for (var i in fc.features) {
-                var
-                feature = fc.features[i],
-                pao = feature.properties.paoIdentifier,
-                icon = new ol.Feature({pao: pao});
-                
-                icon.setStyle(_styles['generic']);
-                if (src_projection === _destProjection) {
-                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                } else {
-                    icon.setGeometry(new ol.geom.Point(ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection)));
-                }
-                
-                _icons[pao.paoId] = icon;
-                _visibility[pao.paoId] = true;
+                icon = _createFeature(fc.features[i], fc.crs.properties.name);
                 icons.push(icon);
             }
             _getLayer('icons').getSource().addFeatures(icons);
             
             _map.getView().fitExtent(_getLayer('icons').getSource().getExtent(), _map.getSize());
-            
+            $('.js-status-loading').hide();
             debug.log('loading icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+            
+            if ($('#map').is('[data-dynamic]')) {
+                _update();
+            }
+        });
+    },
+    
+    /** Fire update of device list on interval. */
+    _update = function() {
+        $.getJSON(decodeURI($('#locations').val())).done(function(fc) {
+            
+            var toAdd = [], toRemove = [], icons = {},
+                i, pao, feature;
+            
+            // add any features we don't have
+            for (i = 0; i < fc.features.length; i++) {
+                feature = fc.features[i],
+                pao = feature.properties.paoIdentifier;
+                
+                icons[pao.paoId] = feature;
+                
+                if (typeof _icons[pao.paoId] === 'undefined') {
+                    var
+                    icon = _createFeature(feature, fc.crs.properties.name);
+                    toAdd.push(icon);
+                }
+            }
+            _getLayer('icons').getSource().addFeatures(toAdd);
+            debug.log('added ' + toAdd.length + ' features');
+            
+            // remove any features we don't want
+            for (i in _icons) {
+                feature = _icons[i];
+                if (typeof icons[feature.get('pao').paoId] === 'undefined') {
+                    toRemove.push(feature);
+                }
+            }
+            for (i = 0; i < toRemove.length; i++) {
+                feature = toRemove[i];
+                _getLayer('icons').getSource().removeFeature(feature);
+                delete _icons[feature.get('pao').paoId];
+                delete _visibility[feature.get('pao').paoId];
+            }
+            debug.log('removed ' + toRemove.length + ' features');
+        }).fail(function(xhr, status, error) {
+            debug.log('update failed:' + status + ': ' + error);
+        }).always(function() {
+            setTimeout(_update, 4000);
         });
     },
     
@@ -165,6 +219,7 @@ yukon.tools.map = (function() {
                 
                 $('#map-popup').dialog('close');
                 $('#no-filter-btn').show();
+                $('.js-status-retrieving').show();
                 $('#filter-btn').addClass('left');
                 $('#filter-btn .b-label').text($('#filtered-msg').val() 
                         + ' ' + $('#attribute-select option:selected').text());
@@ -174,7 +229,8 @@ yukon.tools.map = (function() {
                 $('#filter-form').ajaxSubmit({
                     dataType: 'json',
                     success: function(results) {
-                        
+                        $('.js-status-retrieving').hide();
+                        $('.js-status-filtering').show();
                         debug.log('point data request: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         start = new Date().getTime();
                         var 
@@ -206,11 +262,11 @@ yukon.tools.map = (function() {
                         }
                         
                         debug.log('removing icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
-                        start = new Date().getTime();
-                        
+                        $('.js-status-filtering').hide();
                     }, 
                     error: function(xhr, status, error, $form) {
                         debug.log('error with ajax filter form submission: ' + error);
+                        $('.js-status-retrieving').hide();
                     }
                 });
                 
