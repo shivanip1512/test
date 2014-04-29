@@ -7,7 +7,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/jcpagelayout450K.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jaxm-runtime.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jruntags.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/struts.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jloox30.jar"/>

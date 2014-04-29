@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-runtime.jar"/>
 	<classpathentry kind="lib" path="/third-party/jruntags.jar"/>
-	<classpathentry kind="lib" path="/third-party/struts.jar"/>
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="src" path="/trending"/>
