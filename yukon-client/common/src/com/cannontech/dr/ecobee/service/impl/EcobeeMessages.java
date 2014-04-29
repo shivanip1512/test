@@ -192,28 +192,22 @@ public final class EcobeeMessages {
     }
     
     public static final class MoveDeviceRequest {
-        private String operation = "move";
+        private String operation = "assign";
         private String setPath;
-        private String toPath;
         private String thermostats;
         
-        
-        public MoveDeviceRequest(long serialNumber, String fromSetName, String toSetName) {
-            thermostats = Long.toString(serialNumber);
-            setPath = "/" + fromSetName;
-            toPath = "/" + toSetName;
+        public MoveDeviceRequest(String serialNumber, String setPath) {
+            thermostats = serialNumber;
+            this.setPath = setPath;
         }
         
         public String getOperation() {
             return operation;
         }
+
         
         public String getSetPath() {
             return setPath;
-        }
-        
-        public String getToPath() {
-            return toPath;
         }
         
         public String getThermostats() {
@@ -236,4 +230,35 @@ public final class EcobeeMessages {
         }
     }
     
+    public static final class RegisterDeviceRequest {
+        private String operation = "register";
+        private String thermostats;
+        
+        public RegisterDeviceRequest(String serialNumber) {
+            thermostats = serialNumber;
+        }
+        
+        public String getThermostats() {
+            return thermostats;
+        }
+        
+        public String getOperation() {
+            return operation;
+        }
+    }
+    
+    @JsonIgnoreProperties(ignoreUnknown=true)
+    public static final class RegisterDeviceResponse extends ResponseWithStatus {
+        private Boolean success;
+        
+        @JsonCreator
+        public RegisterDeviceResponse(@JsonProperty("success") Boolean success, @JsonProperty("status") Status status) {
+            this.success = success;
+            this.status = status;
+        }
+        
+        public Boolean getSuccess() {
+            return success;
+        }
+    }
 }

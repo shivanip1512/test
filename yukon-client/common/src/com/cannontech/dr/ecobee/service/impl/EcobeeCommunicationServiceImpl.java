@@ -17,7 +17,9 @@ import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationCache;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
+import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeNotAuthenticatedException;
+import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
@@ -37,14 +39,36 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     private static final String MODIFY_THERMOSTAT_URL_PART = "/hierarchy/thermostat?format=json";
     
     @Override
-    public boolean moveDeviceToSet(long serialNumber, String fromSetName, String toSetName, int energyCompanyId) 
+    public boolean registerDevice(String serialNumber, int energyCompanyId)
             throws EcobeeAuthenticationException, EcobeeCommunicationException {
         
         HttpHeaders headers = getHeadersWithAuthentication(energyCompanyId);
         String url = getUrlBase(energyCompanyId) + MODIFY_THERMOSTAT_URL_PART;
         
-        EcobeeMessages.MoveDeviceRequest request = new EcobeeMessages.MoveDeviceRequest(serialNumber, fromSetName, 
-                                                                                        toSetName);
+        EcobeeMessages.RegisterDeviceRequest request = new EcobeeMessages.RegisterDeviceRequest(serialNumber);
+        HttpEntity<EcobeeMessages.RegisterDeviceRequest> requestEntity = new HttpEntity<>(request, headers);
+        
+        EcobeeMessages.RegisterDeviceResponse response;
+        try {
+            response = restTemplate.postForObject(url, requestEntity, EcobeeMessages.RegisterDeviceResponse.class);
+        } catch (RestClientException e) {
+            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
+        }
+        
+        checkForAuthenticationError(response.getStatus(), energyCompanyId);
+        ecobeeQueryCountDao.incrementQueryCount(EcobeeQueryType.SYSTEM, energyCompanyId);
+        return response.getSuccess();
+    }
+    
+    @Override
+    public boolean moveDeviceToSet(String serialNumber, String setPath, int energyCompanyId) 
+            throws EcobeeAuthenticationException, EcobeeCommunicationException, EcobeeSetDoesNotExistException,
+            EcobeeDeviceDoesNotExistException {
+        
+        HttpHeaders headers = getHeadersWithAuthentication(energyCompanyId);
+        String url = getUrlBase(energyCompanyId) + MODIFY_THERMOSTAT_URL_PART;
+        
+        EcobeeMessages.MoveDeviceRequest request = new EcobeeMessages.MoveDeviceRequest(serialNumber, setPath);
         HttpEntity<EcobeeMessages.MoveDeviceRequest> requestEntity = new HttpEntity<>(request, headers);
         
         EcobeeMessages.MoveDeviceResponse response;
@@ -54,15 +78,16 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
             throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
         }
         
+        //Set doesn't exist, or we don't have permission
+        if (response.getStatus().getCode() == EcobeeStatusCode.NOT_AUTHORIZED.getCode()) {
+            throw new EcobeeSetDoesNotExistException(setPath);
+        } else if (response.getStatus().getCode() == EcobeeStatusCode.PROCESSING_ERROR.getCode()) {
+            throw new EcobeeDeviceDoesNotExistException(serialNumber);
+        }
+        
         checkForAuthenticationError(response.getStatus(), energyCompanyId);
         ecobeeQueryCountDao.incrementQueryCount(EcobeeQueryType.SYSTEM, energyCompanyId);
         return response.getSuccess();
-    }
-
-    @Override
-    public void removeDeviceFromSet(long serialNumber, int energyCompanyId) throws EcobeeAuthenticationException, 
-            EcobeeCommunicationException {
-        //TODO
     }
     
     @Override
@@ -150,13 +175,6 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         ecobeeQueryCountDao.incrementQueryCount(EcobeeQueryType.SYSTEM, energyCompanyId);
         return response.getSuccess();
     }
-
-    /* TODO: define what this returns
-    @Override
-    public EcobeeManagementHierarchy getHierarchy(int energyCompanyId) throws EcobeeAuthenticationException, 
-            EcobeeCommunicationException {
-        return null;
-    }*/
     
     /**
      * Build a HttpHeaders object with the specified energy company's authentication token in the Authorization header.

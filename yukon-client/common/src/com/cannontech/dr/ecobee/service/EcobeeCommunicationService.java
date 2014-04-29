@@ -7,6 +7,8 @@ import org.joda.time.Instant;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
+import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
+import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 
 /**
@@ -20,27 +22,28 @@ import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
  * This service is solely responsible for updating the Ecobee query counts via the EcobeeQueryCountDao.
  */
 public interface EcobeeCommunicationService {
+    public static final String OPT_OUT_SET = "/optout";
+    public static final String UNENROLLED_SET = "/unenrolled";
+    
+    /**
+     * Registers the specified device with Ecobee.
+     */
+    public boolean registerDevice(String serialNumber, int energyCompanyId) throws EcobeeAuthenticationException, 
+            EcobeeCommunicationException;
     
     /**
      * Removes the specified device from its management set, if it is in one, then moves the device into the specified 
-     * management set. Both sets are expected to be directly under the root set ("/").
+     * management set.
      * Management sets that correspond to load groups are named by the load group id.
-     * The management set for opted out devices is named "optout".
+     * The management set for opted out devices is EcobeeCommunicationService.OPT_OUT_SET.
+     * The management set for unenrolled devices is EcobeeCommunicationService.UNASSIGNED_SET.
      * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
-    public boolean moveDeviceToSet(long serialNumber, String fromSetName, String toSetName, int energyCompanyId) 
-            throws EcobeeAuthenticationException, EcobeeCommunicationException;
-    
-    /**
-     * Removes the specified device from its management set, if it is in one, and places it in the "default set", which
-     * does not correspond to any load group.
-     * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
-     * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
-     */
-    public void removeDeviceFromSet(long serialNumber, int energyCompanyId) throws EcobeeAuthenticationException, 
-            EcobeeCommunicationException;
-    
+    public boolean moveDeviceToSet(String serialNumber, String setPath, int energyCompanyId) 
+            throws EcobeeAuthenticationException, EcobeeCommunicationException, EcobeeSetDoesNotExistException,
+            EcobeeDeviceDoesNotExistException;
+
     /**
      * Requests device data for the specified devices over a limited date range.
      * @param serialNumbers Must contain no more than 25 serial numbers. Any devices specified that do not exist in the
@@ -80,15 +83,4 @@ public interface EcobeeCommunicationService {
      */
     public boolean moveManagementSet(String currentPath, String newPath, int energyCompanyId)
             throws EcobeeAuthenticationException, EcobeeCommunicationException;
-    
-    /**
-     * Retrieves the current hierarchy of management sets.
-     * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
-     * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
-     */
-    /*public EcobeeManagementHierarchy getHierarchy(int energyCompanyId) throws EcobeeAuthenticationException, 
-            EcobeeCommunicationException;
-    */
-    
-    //TODO: DR methods
 }
