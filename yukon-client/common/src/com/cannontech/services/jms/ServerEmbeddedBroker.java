@@ -16,7 +16,7 @@ import com.cannontech.clientutils.YukonLogManager;
 
 public class ServerEmbeddedBroker {
 
-    private static final long DEFAULT_MEMORY_USAGE_LIMIT = 67108864; // 2^26 (64 MB) 
+    private static final long DEFAULT_MEMORY_USAGE_LIMIT = 128 * 1024 * 1024; // 128 MB
     private static final long DEFAULT_TEMPQUEUE_MEMORY_USAGE_LIMIT = 8388608; // 2^23 (8 MB) 
     private static final long DEFAULT_WAIT_FOR_START_MILLIS = 120000; // 2 minutes
     
