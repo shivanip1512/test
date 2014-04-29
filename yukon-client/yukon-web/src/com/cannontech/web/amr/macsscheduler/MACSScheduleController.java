@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -153,18 +154,17 @@ public class MACSScheduleController extends MultiActionController {
             // Without the LM_DIRECT_LOADCONTROL, we want them to be able to see all scripts.
             filteredSchedules = allSchedules;
         }
-
-        String sortBy = ServletRequestUtils.getStringParameter(request, "sortBy");
-        Boolean descending = ServletRequestUtils.getBooleanParameter(request, "descending");
-       
-        if (sortBy == null || sortBy.equals("")) {sortBy = "Schedule Name";}
-        sortBy = sortBy.trim();
-
-        if (descending == null) {descending = false;}
-        sort(filteredSchedules, sortBy, descending);
-       
-        List<MACSScheduleInfo> infoList = createScheduleInfoList(filteredSchedules, isEditable(user));
         
+        String sortBy = ServletRequestUtils.getStringParameter(request, "sortBy");
+        if (StringUtils.isEmpty(sortBy)) {
+            sortBy = "Schedule Name";
+        }
+        boolean descending = ServletRequestUtils.getBooleanParameter(request, "descending", false);
+
+        sort(filteredSchedules, sortBy, descending);
+
+        List<MACSScheduleInfo> infoList = createScheduleInfoList(filteredSchedules, isEditable(user));
+
         mav.setViewName("schedulesView.jsp");
         mav.addObject("list", infoList);
         mav.addObject("sortBy", sortBy);
