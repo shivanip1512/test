@@ -49,8 +49,8 @@ public class VeeReviewController {
     
     private static Ordering<ReviewPoint> reviewPointingOrdering = Ordering.natural().onResultOf(new Function<ReviewPoint, Comparable<RphTag>>() {
         @Override
-        public Comparable<RphTag> apply(ReviewPoint arg0) {
-            return arg0.getRphTag();
+        public Comparable<RphTag> apply(ReviewPoint reviewPoint) {
+            return reviewPoint.getRphTag();
         }
     });
     

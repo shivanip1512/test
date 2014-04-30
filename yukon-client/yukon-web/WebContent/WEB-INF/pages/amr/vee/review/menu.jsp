@@ -35,7 +35,7 @@
                                     <label class="notes">
                                         <input type="checkbox" id="display-type-checkbox" name="${displayType.rphTag}">
                                         <cti:icon icon="${displayType.rphTag.iconClass}" classes="fn"/>
-                                        <cti:msg key="${displayType.rphTag.formatKey}"/>
+                                        <cti:msg2 key="${displayType.rphTag}"/>
                                         <cti:dataUpdaterValue type="VALIDATION_PROCESSING" identifier="${displayType.rphTag}_VIOLATIONS" styleClass="badge"/>
                                     </label>
                                 </li>
@@ -58,7 +58,7 @@
                                     <label class="notes">
                                         <input type="checkbox" id="display-type-checkbox" name="${displayType.rphTag}">
                                         <cti:icon icon="${displayType.rphTag.iconClass}" classes="fn"/>
-                                        <cti:msg key="${displayType.rphTag.formatKey}"/>
+                                        <cti:msg2 key="${displayType.rphTag}"/>
                                         <cti:dataUpdaterValue type="VALIDATION_PROCESSING" identifier="${displayType.rphTag}_VIOLATIONS" styleClass="badge"/>
                                     </label>
                                 </li>
