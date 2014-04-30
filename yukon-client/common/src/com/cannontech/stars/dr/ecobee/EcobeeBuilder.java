@@ -23,12 +23,12 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(Hardware hardware) {
-        CompleteDevice ecoBeePao = new CompleteDevice();
-        ecoBeePao.setPaoName(hardware.getSerialNumber());
-        paoPersistenceService.createPaoWithDefaultPoints(ecoBeePao, PaoType.ECOBEE_SMART_SI);
+        CompleteDevice ecobeePao = new CompleteDevice();
+        ecobeePao.setPaoName(hardware.getSerialNumber());
+        paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, PaoType.ECOBEE_SMART_SI);
 
         // Update the Stars table with the device id
-        inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), ecoBeePao.getPaObjectId());
+        inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), ecobeePao.getPaObjectId());
     }
 
     @Override
@@ -43,12 +43,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void updateDevice(Hardware hardware) {
-//        PaoIdentifier ecoBeeIdentifier = new PaoIdentifier(hardware.getDeviceId(), PaoType.ECOBEE_SMART_SI);
-//        CompleteDevice ecoBeePao = paoPersistenceService.retreivePao(ecoBeeIdentifier, CompleteDevice.class);
-//
-//        paoPersistenceService.updatePao(ecoBeePao);
-//
-//        inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), hardware.getDeviceId());
+        // Nothing extra to do
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.cannontech.common.pao.definition.model;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.longType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
 import com.cannontech.web.input.type.InputType;
 
@@ -55,7 +54,7 @@ public enum PaoTag {
     RFN_DEMAND_RESET("RFN Device Supporting Demand Reset"),
     PLC_DEMAND_RESET("PLC Device Supporting Demand Reset"),
     RFN_POINT_CALCULATION("RFN Point Calculation"), // This may need to be split into one tag per point and/or used for plc devices later
-    ECOBEE_PROGRAM_ENROLLMENT("Ecobee Program Enrollment"),
+    ECOBEE_PROGRAM_ENROLLMENT("ecobee Program Enrollment"),
     ASSET_DETAIL_DISPLAYABLE("Asset Detail Displayable"),
     ;
 
