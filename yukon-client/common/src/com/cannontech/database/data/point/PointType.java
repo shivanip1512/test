@@ -11,6 +11,7 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
+    
     Status(PointTypes.STATUS_POINT), // 0
     Analog(PointTypes.ANALOG_POINT), // 1
     PulseAccumulator(PointTypes.PULSE_ACCUMULATOR_POINT), // 2
@@ -20,9 +21,9 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
     AnalogOutput(PointTypes.ANALOG_OUTPUT_POINT), // 6
     System(PointTypes.SYSTEM_POINT), // 7
     CalcStatus(PointTypes.CALCULATED_STATUS_POINT), // 8
-	;
-	
-	private final int pointTypeId;
+    ;
+    
+    private final int pointTypeId;
     private final static ImmutableMap<Integer, PointType> lookupById;
     private final static Set<PointType> statusPoints = Sets.immutableEnumSet(Status, CalcStatus, StatusOutput);
     
@@ -34,31 +35,31 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
         lookupById = idBuilder.build();
     }
 
-	private PointType(int pointTypeId) {
-		this.pointTypeId = pointTypeId;
-		
-	}
-	
-	public int getPointTypeId() {
-		return pointTypeId;
-	}
-	
-	public String getPointTypeString() {
-		return PointTypes.getType(pointTypeId);
-	}
-	
-	public static PointType getForId(int pointType) {
-		PointType result = lookupById.get(pointType);
-		Validate.notNull(result, Integer.toString(pointType));
-		return result;
-	}
-	
-	public static PointType getForString(String pointType) {
-		int type = PointTypes.getType(pointType);
-		PointType result = lookupById.get(type);
-		Validate.notNull(result, pointType);
-		return result;
-	}
+    private PointType(int pointTypeId) {
+        this.pointTypeId = pointTypeId;
+        
+    }
+    
+    public int getPointTypeId() {
+        return pointTypeId;
+    }
+    
+    public String getPointTypeString() {
+        return PointTypes.getType(pointTypeId);
+    }
+    
+    public static PointType getForId(int pointType) {
+        PointType result = lookupById.get(pointType);
+        Validate.notNull(result, Integer.toString(pointType));
+        return result;
+    }
+    
+    public static PointType getForString(String pointType) {
+        int type = PointTypes.getType(pointType);
+        PointType result = lookupById.get(type);
+        Validate.notNull(result, pointType);
+        return result;
+    }
 
     @Override
     public String getFormatKey() {
@@ -73,4 +74,5 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
     public boolean isStatus() {
         return statusPoints.contains(this);
     }
+    
 }
