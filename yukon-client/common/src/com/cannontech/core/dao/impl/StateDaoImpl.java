@@ -5,7 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.clientutils.CTILogger;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -14,15 +17,14 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class StateDaoImpl implements StateDao {
-    private IDatabaseCache databaseCache;
-
-    public StateDaoImpl() {
-
-    }
+    
+    private static final Logger log = YukonLogManager.getLogger(StateDaoImpl.class);
+    
+    @Autowired private IDatabaseCache databaseCache;
 
     @Override
-    public LiteState findLiteState(int stateGroupID, int rawState) {
-        LiteStateGroup stateGroup = getLiteStateGroup( stateGroupID );
+    public LiteState findLiteState(int stateGroupId, int rawState) {
+        LiteStateGroup stateGroup = getLiteStateGroup(stateGroupId);
 
         List<LiteState> stateList = stateGroup.getStatesList();
         for (final LiteState state : stateList) {
@@ -30,8 +32,8 @@ public final class StateDaoImpl implements StateDao {
         }
 
         //this is a internal error
-        CTILogger.debug("Unable to find the state for StateGroupID=" + stateGroupID +
-                        " and rawState=" + rawState );
+        log.debug("Unable to find the state for StateGroupID = " + stateGroupId +
+                        " and rawState = " + rawState );
 
         return null;
     }

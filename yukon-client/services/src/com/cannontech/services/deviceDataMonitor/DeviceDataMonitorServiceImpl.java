@@ -360,7 +360,7 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
         // wait for dispatch to be available before asking it for point data
         waitForDispatch();
 
-        Set<? extends PointValueQualityHolder> matchingPointValues = dynamicDataSource.getPointValue(pointIdToLitePoint.keySet());
+        Set<? extends PointValueQualityHolder> matchingPointValues = dynamicDataSource.getPointValues(pointIdToLitePoint.keySet());
         
         // pull out the point ids
         Map<Integer, PointValueQualityHolder> pointIdToPVQH = Maps.newHashMap();

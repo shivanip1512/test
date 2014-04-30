@@ -320,7 +320,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 
     private long getLargestPointTime(Set<Integer> allGraphPoints) {
         long largestTime = 0;
-        Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValue(allGraphPoints);
+        Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValues(allGraphPoints);
 
         for (PointValueQualityHolder point : pointValues) {
             long pointTime = point.getPointDataTimeStamp().getTime();

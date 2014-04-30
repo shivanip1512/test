@@ -1,6 +1,5 @@
 package com.cannontech.web.tools.mapping.controller;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,17 +25,20 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -50,6 +52,8 @@ public class MapController {
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private PaoDao paoDao;
+    @Autowired private PointService pointService;
+    @Autowired private StateDao stateDao;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private AttributeService attributeService;
     
@@ -59,9 +63,8 @@ public class MapController {
      */
     @RequestMapping("/map/dynamic")
     public String dynamcic(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext) {
-        // TODO
+
         model.addAttribute("deviceCollection", deviceCollection);
-        
         model.addAttribute("dynamic", true);
         
         return "map/map.jsp";
@@ -117,24 +120,46 @@ public class MapController {
         Set<SimpleDevice> devices = Sets.newHashSet(deviceCollection.getDeviceList());
         BiMap<LitePoint, SimpleDevice> points = 
                 attributeService.getPoints(devices, filter.getAttribute()).inverse();
-        Map<Integer, LitePoint> pointIdToPoint = new HashMap<>();
+        
+        Map<Integer, LitePoint> statusPoints = new HashMap<>();
+        Map<Integer, LitePoint> nonStatusPoints = new HashMap<>();
         for (LitePoint point : points.keySet()) {
-            pointIdToPoint.put(point.getLiteID(), point);
+            if (point.getPointTypeEnum().isStatus()) {
+                statusPoints.put(point.getLiteID(), point);
+            } else {
+                nonStatusPoints.put(point.getLiteID(), point);
+            }
         }
         
-        Collection<Integer> pointIds = Collections2.transform(points.keySet(), LitePoint.ID_FUNCTION);
-        Set<? extends PointValueQualityHolder> values = dynamicDataSource.getPointValue(Sets.newHashSet(pointIds));
+        // Determine visibility for status points
+        Set<? extends PointValueQualityHolder> statusValues = dynamicDataSource.getPointValues(statusPoints.keySet());
         
-        for (PointValueQualityHolder pvqh : values) {
-            LitePoint lp = pointIdToPoint.get(pvqh.getId());
+        for (PointValueQualityHolder pvqh : statusValues) {
+            LitePoint lp = statusPoints.get(pvqh.getId());
             Group group = groups.get(lp.getStateGroupID());
-            if ((int)pvqh.getValue() == group.getState()) {
+            LiteState state = stateDao.findLiteState(lp.getStateGroupID(), (int) pvqh.getValue());
+            if (state.getStateRawState() == group.getState()) {
                 results.put(points.get(lp).getDeviceId(), true);
             } else {
                 results.put(points.get(lp).getDeviceId(), false);
             }
         }
         
+        // Determine visibility for NON status points
+        Map<Integer, Set<Signal>> signals = dynamicDataSource.getSignals(nonStatusPoints.keySet());
+        
+        for (Integer pointId : signals.keySet()) {
+            LitePoint lp = nonStatusPoints.get(pointId);
+            Group group = groups.get(lp.getStateGroupID());
+            LiteState state = pointService.getCurrentStateForNonStatusPoint(lp, signals.get(pointId));
+            if (state.getStateRawState() == group.getState()) {
+                results.put(points.get(lp).getDeviceId(), true);
+            } else {
+                results.put(points.get(lp).getDeviceId(), false);
+            }
+        }
+        
+        // Throw unsupported devices in as hidden
         Set<SimpleDevice> unsupported = Sets.difference(devices, points.values());
         for (SimpleDevice device : unsupported) {
             results.put(device.getDeviceId(), false);

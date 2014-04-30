@@ -68,7 +68,6 @@ window['open_${id}'] = function () {
     
     var defaults = {
             'title': '${titleMsg}',
-            'position': 'center',
             'width': 'auto',
             'height': 'auto',
             'modal': false,

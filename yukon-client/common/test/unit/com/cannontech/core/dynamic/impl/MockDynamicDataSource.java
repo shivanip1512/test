@@ -72,7 +72,7 @@ public class MockDynamicDataSource implements DynamicDataSource {
     }
     
     @Override
-    public Set<? extends PointValueQualityHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException {
+    public Set<? extends PointValueQualityHolder> getPointValues(Set<Integer> pointIds) throws DynamicDataAccessException {
         Map<Integer, PointValueQualityHolder> pointToPvqhMap = Maps.newHashMap();
         for(PointValueQualityHolder pvqh : pointValueQualityHolderData) {
             int pointId = pvqh.getId();

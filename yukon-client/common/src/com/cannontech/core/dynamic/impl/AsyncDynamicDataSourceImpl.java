@@ -137,7 +137,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     @Override
     public Set<? extends PointValueQualityHolder> getAndRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {
         registerForPointData(l, pointIds);
-        return dynamicDataSource.getPointValue(pointIds);
+        return dynamicDataSource.getPointValues(pointIds);
     }
 
     @Override

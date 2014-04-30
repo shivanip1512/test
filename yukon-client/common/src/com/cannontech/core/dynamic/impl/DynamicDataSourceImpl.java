@@ -83,18 +83,21 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
 
     @Override
     public Set<Signal> getSignals(int pointId) {
+        
         Set<Signal> signals = dynamicDataCache.getSignals(pointId);
         if (signals == null) {
             signals = dispatchProxy.getSignals(pointId);
             dynamicDataCache.handleSignals(signals, pointId);
         }
+        
         return new HashSet<Signal>(signals);
     }
 
     @Override
     public Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) {
+        
         Set<Integer> notCachedPointIds = new HashSet<Integer>(pointIds);
-        Map<Integer, Set<Signal>> signals = new HashMap<Integer, Set<Signal>>((int)(pointIds.size()/0.75f)+1);
+        Map<Integer, Set<Signal>> signals = new HashMap<Integer, Set<Signal>>((int)(pointIds.size() / 0.75f ) + 1);
         
         // Get whatever we can out of the cache first
         for (Integer id : pointIds) {
@@ -115,6 +118,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
                 dynamicDataCache.handleSignals(pointSignals, pointId);
             }
         }
+        
         return signals;
     }
     
@@ -152,7 +156,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
     }
     
     @Override
-    public Set<? extends PointValueQualityHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException {
+    public Set<? extends PointValueQualityHolder> getPointValues(Set<Integer> pointIds) throws DynamicDataAccessException {
         return getPointData(pointIds);
     }
     

@@ -19,8 +19,10 @@ import com.cannontech.message.dispatch.message.Signal;
 public interface DynamicDataSource {
     
     public void putValue(PointData pointData) throws DynamicDataAccessException;
-    public void putValues(Iterable<PointData> pointDatas) throws DynamicDataAccessException;
+    
     public void putValue(int pointId, double value) throws DynamicDataAccessException;
+    
+    public void putValues(Iterable<PointData> pointDatas) throws DynamicDataAccessException;
     
     /**
      * Please use getPointValue to avoid creating a dependency on the actual PointData message
@@ -42,13 +44,21 @@ public interface DynamicDataSource {
     public Set<PointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException;
     
     public PointValueQualityHolder getPointValue(int pointId) throws DynamicDataAccessException;
-    public Set<? extends PointValueQualityHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException;
+    
+    public Set<? extends PointValueQualityHolder> getPointValues(Set<Integer> pointIds) throws DynamicDataAccessException;
     
     public Set<Signal> getSignals(int pointId) throws DynamicDataAccessException;
+    
+    /**
+     * Returns a map of point id to set of signals.  If no signals exist the map value will be
+     * an empty set.
+     * @throws DynamicDataAccessException
+     */
     public Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) throws DynamicDataAccessException;
     
     public Set<Signal> getSignalsByCategory(int alarmCategoryId) throws DynamicDataAccessException;
     
     public Integer getTags(int pointId) throws DynamicDataAccessException;
+    
     public Set<Integer> getTags(Set<Integer> pointIds) throws DynamicDataAccessException;
 }

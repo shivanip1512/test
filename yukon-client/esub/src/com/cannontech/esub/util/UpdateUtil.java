@@ -67,7 +67,7 @@ public class UpdateUtil {
                 }else
                 {
                     PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
-                    LiteState ls = pointService.getCurrentState(lp.getPointID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp.getPointID());
                     if( ls != null ) {          
                         text += ls.getStateRawState();
                         prev = true;
@@ -262,7 +262,7 @@ public class UpdateUtil {
                 }else {
                     
                     PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
-                    LiteState ls = pointService.getCurrentState(lp.getLiteID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp.getLiteID());
                     if( ls != null ) {
                         text += ls.getStateText();
                         prev = true;
@@ -283,7 +283,7 @@ public class UpdateUtil {
                     }
                 } else {
                     PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
-                    LiteState ls = pointService.getCurrentState(lp.getPointID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp.getPointID());
                     if( ls != null ) {
                         text += ls.getStateRawState();
                         prev = true;
@@ -323,7 +323,7 @@ public class UpdateUtil {
             }else 
             {
                 PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
-                LiteState ls = pointService.getCurrentState(pointID);
+                LiteState ls = pointService.getCurrentStateForNonStatusPoint(pointID);
                 img = YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(ls.getImageID());
             }
     		return img.getImageName();

@@ -63,9 +63,7 @@
   <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl">
     <property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>
-  <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl">
-    <property name="databaseCache" ref="databaseCache"/>      
-  </bean>  
+  <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl"/>
   <bean id="tagDao" class="com.cannontech.core.dao.impl.TagDaoImpl">
     <property name="databaseCache" ref="databaseCache"/>      
   </bean>

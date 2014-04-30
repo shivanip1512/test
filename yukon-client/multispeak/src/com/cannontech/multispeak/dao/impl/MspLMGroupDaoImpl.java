@@ -113,7 +113,7 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 		int totalChecked = 0;
 		
 		Set<Integer> pointIds = getAllStatusPoints(mspLMGroupCommunications);
-		Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValue(pointIds);
+		Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValues(pointIds);
 		// Check status flag of port
 		for (PointValueQualityHolder pointValueQualityHolder : pointValues) {
 			
