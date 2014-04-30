@@ -12,12 +12,13 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 
 public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointMonitor> {
 
+    private String groupName;
+    private MonitorEvaluatorStatus evaluatorStatus;
+    
     private Integer statusPointMonitorId;
     private String statusPointMonitorName;
-    private String groupName;
     private Attribute attribute;
     private LiteStateGroup stateGroup;
-    private MonitorEvaluatorStatus evaluatorStatus;
     private List<StatusPointMonitorProcessor> processors = LazyList.ofInstance(StatusPointMonitorProcessor.class);
     
     public StatusPointMonitor() {

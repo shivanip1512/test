@@ -78,7 +78,7 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorView.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.stateGroup">State Group</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.monitoring">Monitoring</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.statusPointMonitoring">Status Point Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorView.status">Status</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.stateActionsTable.title">Message Processing Actions</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.stateActionsTable.header.prevState">Previous State</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.stateActionsTable.header.nextState">Next State</entry>

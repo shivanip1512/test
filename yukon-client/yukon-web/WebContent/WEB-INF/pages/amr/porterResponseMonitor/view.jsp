@@ -1,9 +1,12 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
@@ -71,23 +74,18 @@ $(function () {
     </i:simplePopup>
     
     <tags:sectionContainer2 nameKey="sectionHeader" styleClass="stacked">
-        <tags:nameValueContainer2>
-
+        <tags:nameValueContainer2 tableClass="has-actions">
+        
             <%-- monitor name --%>
             <tags:nameValue2 nameKey=".name">${fn:escapeXml(monitorDto.name)}</tags:nameValue2>
-
-            <tags:nameValue2 nameKey=".deviceGroup">
-                <cti:url var="deviceGroupUrl" value="/group/editor/home">
-                    <cti:param name="groupName">${fn:escapeXml(monitorDto.groupName)}</cti:param>
-                </cti:url>
-                <a href="${deviceGroupUrl}">${fn:escapeXml(monitorDto.groupName)}</a>
-            </tags:nameValue2>
-
+            
             <%-- Device Count --%>
-            <tags:nameValue2 nameKey=".deviceCount">
+            <tags:nameValue2 nameKey=".monitoring">
                 <span id="totalGroupCount"></span>
             </tags:nameValue2>
-
+            
+            <tags:nameValueGap2 gapHeight="20px"/>
+            
             <%-- Supported Devices --%>
             <tags:nameValue2 nameKey=".supportedDevices">
                 <span id="supportedDevicesMsg"></span>
@@ -102,11 +100,36 @@ $(function () {
                 </span>
                 <cti:icon id="supportedDevicesHelpIcon" nameKey="help" icon="icon-help" classes="fn cp vatt show-on-hover"/>
             </tags:nameValue2>
-
+            
+            <tags:nameValueGap2 gapHeight="20px"/>
+            
+            <tags:nameValue2 nameKey=".deviceGroup">
+                <cti:url var="deviceGroupUrl" value="/group/editor/home">
+                    <cti:param name="groupName">${fn:escapeXml(monitorDto.groupName)}</cti:param>
+                </cti:url>
+                <a href="${deviceGroupUrl}" class="fl" style="margin-right: 10px;">${fn:escapeXml(monitorDto.groupName)}</a>
+                <cm:dropdown triggerClasses="fl">
+                    <cti:url var="groupReportUrl" value="/amr/reports/groupDevicesReport">
+                        <cti:param name="groupName" value="${monitorDto.groupName}"/>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-folder-explore" key="yukon.web.components.button.view.label" href="${groupReportUrl}"/>
+                    <cti:url var="mapUrl" value="/tools/map/dynamic">
+                        <cti:param name="collectionType" value="group"/>
+                        <cti:param name="group.name" value="${monitorDto.groupName}"/>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
+                    <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
+                        <cti:param name="collectionType" value="group"/>
+                        <cti:param name="group.name" value="${monitorDto.groupName}"/>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-cog-go" key="yukon.web.components.button.collectionAction.label" href="${collectionActionUrl}"/>
+                </cm:dropdown>
+            </tags:nameValue2>
+            
             <%-- enable/disable monitoring --%>
             <c:if test="${monitorDto.enabled}"><c:set var="clazz" value="success"/></c:if>
             <c:if test="${!monitorDto.enabled}"><c:set var="clazz" value="error"/></c:if>
-            <tags:nameValue2 nameKey=".monitoring" valueClass="${clazz}">
+            <tags:nameValue2 nameKey=".status" valueClass="${clazz}">
                 <i:inline key="${monitorDto.evaluatorStatus}"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>

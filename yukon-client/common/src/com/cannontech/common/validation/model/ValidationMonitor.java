@@ -3,12 +3,15 @@
  */
 package com.cannontech.common.validation.model;
 
-import org.springframework.core.style.ToStringCreator;
-
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
 
 public class ValidationMonitor implements PointMonitor, Comparable<ValidationMonitor> {
+    
+    private String name;
+    private String deviceGroupName;
+    private MonitorEvaluatorStatus evaluatorStatus;
+    
     private Integer validationMonitorId;
     private double reasonableMaxKwhPerDay = 150.0;
     private double kwhReadingError = 0.1000001;
@@ -16,9 +19,6 @@ public class ValidationMonitor implements PointMonitor, Comparable<ValidationMon
     private double peakHeightMinimum = 1.0;
     private boolean reReadOnUnreasonable = false;
     private boolean setQuestionableOnPeak = false;
-    private String deviceGroupName;
-    private String name;
-    private MonitorEvaluatorStatus evaluatorStatus;
 
     public void setReasonableMaxKwhPerDay(double reasonableMaxKwhPerDay) {
         this.reasonableMaxKwhPerDay = reasonableMaxKwhPerDay;
@@ -102,22 +102,18 @@ public class ValidationMonitor implements PointMonitor, Comparable<ValidationMon
     }
 
     @Override
-    public String toString() {
-        ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("name", getName());
-        tsc.append("deviceGroupName", getDeviceGroupName());
-        tsc.append("reasonableMaxKwhPerDay", getReasonableMaxKwhPerDay());
-        tsc.append("reReadOnUnreasonable", isReReadOnUnreasonable());
-        tsc.append("kwhSlopeError", getKwhSlopeError());
-        tsc.append("kwhReadingError", getKwhReadingError());
-        tsc.append("peakHeightMinimum", getPeakHeightMinimum());
-        tsc.append("setQuestionableQuality", isSetQuestionableOnPeak());
-        tsc.append("evaluatorStatus", getEvaluatorStatus());
-        return tsc.toString();
-    }
-
-    @Override
     public int compareTo(ValidationMonitor validationMonitor) {
         return name.compareToIgnoreCase(validationMonitor.name);
     }
+
+    @Override
+    public String toString() {
+        return String
+                .format("ValidationMonitor [name=%s, deviceGroupName=%s, evaluatorStatus=%s, validationMonitorId=%s, reasonableMaxKwhPerDay=%s, kwhReadingError=%s, kwhSlopeError=%s, peakHeightMinimum=%s, reReadOnUnreasonable=%s, setQuestionableOnPeak=%s]",
+                        name, deviceGroupName, evaluatorStatus,
+                        validationMonitorId, reasonableMaxKwhPerDay,
+                        kwhReadingError, kwhSlopeError, peakHeightMinimum,
+                        reReadOnUnreasonable, setQuestionableOnPeak);
+    }
+    
 }

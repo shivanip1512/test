@@ -90,6 +90,11 @@
                         </cm:dropdown>
                     </tags:nameValue2>
                     
+                    <c:if test="${outageMonitor.enabled}"><c:set var="clazz" value="success"/></c:if>
+                    <c:if test="${!outageMonitor.enabled}"><c:set var="clazz" value="error"/></c:if>
+                    <tags:nameValue2 nameKey=".status" valueClass="${clazz}">
+                        <i:inline key="${outageMonitor.evaluatorStatus}"/>
+                    </tags:nameValue2>
                 </tags:nameValueContainer2>
                 
                 <div class="page-action-area">

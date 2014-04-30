@@ -14,11 +14,13 @@ import com.cannontech.common.pao.attribute.model.AttributeStateGroup;
 import com.cannontech.common.util.LazyList;
 
 public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable<DeviceDataMonitor> {
+    
     private final static long serialVersionUID = 1L;
 
+    private String groupName;
+    
     private Integer id;
     private String name;
-    private String groupName;
     private boolean enabled = true;
     private List<DeviceDataMonitorProcessor> processors = LazyList.ofInstance(DeviceDataMonitorProcessor.class);
 
@@ -157,15 +159,17 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         }
         return true;
     }
-
-    @Override
-    public String toString() {
-        return "DeviceDataMonitor [id=" + id + ", name=" + name + ", groupName=" + groupName + ", enabled=" + enabled
-            + "]";
-    }
-
+    
     @Override
     public int compareTo(DeviceDataMonitor deviceDataMonitor) {
         return name.compareToIgnoreCase(deviceDataMonitor.name);
     }
+
+    @Override
+    public String toString() {
+        return String
+                .format("DeviceDataMonitor [id=%s, name=%s, groupName=%s, enabled=%s, processors=%s]",
+                        id, name, groupName, enabled, processors);
+    }
+    
 }
