@@ -12,27 +12,28 @@ import com.cannontech.web.admin.userGroupEditor.RolePropertyController.GroupRole
 
 public class RolePropertyValidator extends
 		SimpleValidator<GroupRolePropertyEditorBean> {
-	private static String baseKey = "yukon.web.modules.adminSetup.config.error.";
+	private final static String baseKey = "yukon.web.modules.adminSetup.config.error.";
 
 	public RolePropertyValidator() {
 		super(GroupRolePropertyEditorBean.class);
 	}
 
 	@Override
-	protected void doValidation(GroupRolePropertyEditorBean groupRolePropertyEditorBean,Errors errors) {
+	protected void doValidation(GroupRolePropertyEditorBean groupRolePropertyEditorBean, Errors errors) {
 
 		Map<YukonRoleProperty, Object> rolePropertyValuesMap = groupRolePropertyEditorBean.getValues();
 
 		if (rolePropertyValuesMap.containsKey(YukonRoleProperty.DEFAULT_TIMEZONE)) {
 			String timeZoneId = (String) rolePropertyValuesMap.get(YukonRoleProperty.DEFAULT_TIMEZONE);
-			YukonValidationUtils.checkExceedsMaxLength(errors,"values[DEFAULT_TIMEZONE]", timeZoneId, 1000);
+			YukonValidationUtils.checkExceedsMaxLength(errors, "values[DEFAULT_TIMEZONE]", timeZoneId, 1000);
 			if (StringUtils.isNotBlank(timeZoneId)) {
 				try {
 					 CtiUtilities.getValidTimeZone(timeZoneId);
 				} catch (BadConfigurationException e) {
-					 errors.rejectValue("values[DEFAULT_TIMEZONE]", baseKey+ "invalidTimeZone", null, "");
+					 errors.rejectValue("values[DEFAULT_TIMEZONE]", baseKey + "invalidTimeZone");
 				}
 			}
 		}
+		
 	}
 }
