@@ -102,9 +102,9 @@
     <bean id="rfnReverseRotationEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnReverseRotationEventArchiveRequestProcessor"/>
 
     <!-- RFDA Event Processors -->
-    <bean id="rfnDNP3AddressChangedEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnDNP3AddressChangedEventArchiveRequestProcessor"/>
-    <bean id="rfnOutstationPortAlarmEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnOutstationPortAlarmEventArchiveRequestProcessor"/>
-    <bean id="rfnTimeSyncFailedEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnTimeSyncFailedEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnDNP3AddressChangedEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnOutstationPortAlarmEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnTimeSyncFailedEventArchiveRequestProcessor"/>
 
     <bean id="meterEventLookupService" class="com.cannontech.amr.meter.service.impl.MeterEventLookupService"/>
     

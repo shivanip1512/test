@@ -19,7 +19,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
 
-    private AtomicInteger newDeviceCreated = new AtomicInteger();
+    private final AtomicInteger newDeviceCreated = new AtomicInteger();
 
     @Override
     @Transactional

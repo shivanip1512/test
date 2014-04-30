@@ -11,10 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import com.cannontech.clientutils.LogHelper;
+import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
-import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfDaCreationService;
@@ -25,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 @ManagedResource
 public class RfDaArchiveRequestListener extends ArchiveRequestListenerBase<RfDaArchiveRequest> {
     
-    private static final Logger log = YukonLogManager.getLogger(ArchiveRequestListenerBase.class);
+    private static final Logger log = YukonLogManager.getLogger(RfDaArchiveRequestListener.class);
     
     @Autowired protected RfDaCreationService rfdaCreationService;
     
@@ -44,16 +42,11 @@ public class RfDaArchiveRequestListener extends ArchiveRequestListenerBase<RfDaA
             try {
                 RfnDevice device = rfdaCreationService.create(identifier);
                 rfdaCreationService.incrementNewDeviceCreated();
-                LogHelper.debug(log, "Created new device: %s", device);
+                log.debug("Created new device: " + device);
                 sendAcknowledgement(archiveRequest);
                 return device;
-            } catch (IgnoredTemplateException e) {
-                throw new RuntimeException("Unable to create device for " + identifier + " because template is ignored", e);
-            } catch (BadTemplateDeviceCreationException e) {
-                LogHelper.warn(log, "Creation failed for %s. Manufacture, Model and Serial Number combination do not match the template. This could be caused by an existing device with the same serial and manufacturer as the new device.  %s", identifier, e);
-                throw new RuntimeException("Creation failed for " + identifier, e);
             } catch (Exception e) {
-                LogHelper.warn(log, "Creation failed for %s: %s", identifier, e);
+                log.warn("Creation failed for " + identifier, e);
                 throw new RuntimeException("Creation failed for " + identifier, e);
             }
         }
