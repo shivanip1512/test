@@ -258,7 +258,7 @@ public enum BuiltInAttribute implements Attribute {
     REVERSED_PHASE_C("Reversed Phase C"),
     RFN_BLINK_COUNT("Rfn Blink Count"),
     RFN_BLINK_RESTORE_COUNT("Rfn Blink Restore Count"),
-    RFN_TEMPERATURE_ALARM("RFN High Temperature Threshold Exceeded"),
+    RFN_TEMPERATURE_ALARM("RFN High Temperature Alarm"),
     RFN_OUTAGE_COUNT("Rfn Outage Count"),
     RFN_OUTAGE_RESTORE_COUNT("Rfn Outage Restore Count"),
     ROM_ERROR("Rom Error"),

@@ -104,7 +104,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_SHED_TIME_DATA_LOG">Relay 4 Shed Time Data Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REPORTING_INTERVAL">Reporting Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_POWER_FLAG">Reverse Power Flag</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RFN_TEMPERATURE_ALARM">RFN High Temperature Threshold Exceeded</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RFN_TEMPERATURE_ALARM">RFN High Temperature Alarm</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_FLAG">Tamper Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.METER_BOX_COVER_REMOVAL_FLAG">Meter Box Cover Removal</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUT_OF_VOLTAGE_FLAG">Out of Voltage</entry>
