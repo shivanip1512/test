@@ -92,6 +92,12 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
         protected void processRequest(T request) {
             RfnIdentifier rfnIdentifier = request.getRfnIdentifier();
+            if ("_EMPTY_".equals(rfnIdentifier.getSensorSerialNumber())) {
+                if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
+                    sendAcknowledgement(request);
+                    return;
+                }
+            }
             RfnDevice rfnDevice;
             try {
                 rfnDeviceCreationService.incrementDeviceLookupAttempt();
