@@ -21,7 +21,7 @@ public class RfnDNP3AddressChangedEventArchiveRequestProcessor extends RfnEventC
     
     @Override
     public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointData> pointDatas) {
-        log.info(device.toString() + " changed address"
+        log.info(device + " changed address"
                 + " from: " + getEventDataWithType(event, RfnConditionDataType.OLD_DNP3_ADDRESS)
                 + " to: " + getEventDataWithType(event, RfnConditionDataType.NEW_DNP3_ADDRESS));
         

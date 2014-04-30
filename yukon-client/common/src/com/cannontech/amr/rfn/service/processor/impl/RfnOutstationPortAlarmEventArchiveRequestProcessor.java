@@ -21,7 +21,7 @@ public class RfnOutstationPortAlarmEventArchiveRequestProcessor extends RfnEvent
     
     @Override
     public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointData> pointDatas) {
-        log.info(device.toString() 
+        log.info(device 
                  + " port type: " + getEventDataWithType(event, RfnConditionDataType.PORT_TYPE)
                  + " locked for " + getEventDataWithType(event, RfnConditionDataType.PORT_LOCKED_MINUTES) + "minutes");
         
