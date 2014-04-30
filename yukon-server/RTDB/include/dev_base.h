@@ -45,7 +45,9 @@ namespace Devices {
 class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAOLite
 {
 public:
-    typedef CtiTableDynamicPaoInfo::PaoInfoKeys PaoInfoKeys;
+    typedef CtiTableDynamicPaoInfo::PaoInfoKeys               PaoInfoKeys;
+    typedef CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed PaoInfoKeysIndexed;
+
     enum PutConfigModifiers
     {
         PutConfigAssignForce = 0x00000001
@@ -237,7 +239,6 @@ public:
     void setDynamicInfo(PaoInfoKeys k, const unsigned long &value);
     void setDynamicInfo(PaoInfoKeys k, const double        &value);
     void setDynamicInfo(PaoInfoKeys k, const CtiTime       &value);
-    void setDynamicInfo(PaoInfoKeys k, const std::vector<std::string> &values);
 
     bool getDynamicInfo(PaoInfoKeys k, std::string   &destination) const;
     bool getDynamicInfo(PaoInfoKeys k, int           &destination) const;
@@ -261,6 +262,13 @@ public:
 
         return val;
     }
+
+	// set indexed dynamic info
+    void setDynamicInfo(PaoInfoKeysIndexed k, const std::vector<std::string> &values);
+
+	// get indexed dynamic info
+    template <typename T>
+    boost::optional<std::vector<T>> findDynamicInfo(PaoInfoKeysIndexed k) const;
 
     bool hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const;
     bool setStaticInfo(const CtiTableStaticPaoInfo &info);
@@ -340,9 +348,11 @@ public:
 
 };
 
-template<> IM_EX_DEVDB boost::optional<unsigned char>            CtiDeviceBase::findDynamicInfo<unsigned char>            (PaoInfoKeys k) const;
-template<> IM_EX_DEVDB boost::optional<bool>                     CtiDeviceBase::findDynamicInfo<bool>                     (PaoInfoKeys k) const;
-template<> IM_EX_DEVDB boost::optional<std::vector<std::string>> CtiDeviceBase::findDynamicInfo<std::vector<std::string>> (PaoInfoKeys k) const;
+template<> IM_EX_DEVDB boost::optional<unsigned char> CtiDeviceBase::findDynamicInfo<unsigned char> (PaoInfoKeys k) const;
+template<> IM_EX_DEVDB boost::optional<bool>          CtiDeviceBase::findDynamicInfo<bool>          (PaoInfoKeys k) const;
+
+// explicit instantiation
+template IM_EX_DEVDB boost::optional<std::vector<std::string>> CtiDeviceBase::findDynamicInfo<std::string> (PaoInfoKeysIndexed k) const;
 
 namespace Cti {
 namespace Devices {

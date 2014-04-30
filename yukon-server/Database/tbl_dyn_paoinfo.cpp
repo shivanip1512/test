@@ -351,96 +351,49 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
 
         (Dpi::Key_RF_DA_DnpSlaveAddress, "rf da dnp slave address")
 
-        (Dpi::Key_RFN_ChannelSelectionMetrics,         "rfn channel selection metrics")
-        (Dpi::Key_RFN_ChannelRecordingIntervalMetrics, "rfn channel recording interval metrics")
         (Dpi::Key_RFN_ChannelRecordingIntervalSeconds, "rfn channel recording interval seconds")
         (Dpi::Key_RFN_ChannelReportingIntervalSeconds, "rfn channel reporting interval seconds")
         ;
-}
 
-CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, int value)            : _fromDb(false), _pao_id(paoid), _key(k), _value(CtiNumStr(value)) { }
-CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, unsigned int value)   : _fromDb(false), _pao_id(paoid), _key(k), _value(CtiNumStr(value)) { }
-CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, long value)           : _fromDb(false), _pao_id(paoid), _key(k), _value(CtiNumStr(value)) { }
-CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, unsigned long value)  : _fromDb(false), _pao_id(paoid), _key(k), _value(CtiNumStr(value)) { }
-CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, double value)         : _fromDb(false), _pao_id(paoid), _key(k), _value(CtiNumStr(value)) { }
-CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, std::string value)    : _fromDb(false), _pao_id(paoid), _key(k), _value(value) { }
+typedef CtiTableDynamicPaoInfoIndexed DpiIndexed;
 
+//  !!!  Any changes to these strings will require a DB update - this is what the DB keys on  !!!
+typedef boost::bimap<CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed, std::string> PaoInfoKeyNamesIndexed;
 
-CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(Cti::RowReader& rdr) :
-        _fromDb(true)
+const PaoInfoKeyNamesIndexed KeyNamesIndexed = boost::assign::list_of<PaoInfoKeyNamesIndexed::relation>
+        (DpiIndexed::Key_RFN_ChannelSelectionMetrics,         "rfn channel selection metrics")
+        (DpiIndexed::Key_RFN_ChannelRecordingIntervalMetrics, "rfn channel recording interval metrics")
+        ;
+
+} // anonymous
+
+/*-----------------------------------------------------------------------------
+    CtiTableDynamicPaoInfoBase Class
+-----------------------------------------------------------------------------*/
+
+CtiTableDynamicPaoInfoBase::CtiTableDynamicPaoInfoBase()                                 : _fromDb(false), _pao_id(-1) {}
+CtiTableDynamicPaoInfoBase::CtiTableDynamicPaoInfoBase(long paoid, int value)            : _fromDb(false), _pao_id(paoid), _value(CtiNumStr(value)) {}
+CtiTableDynamicPaoInfoBase::CtiTableDynamicPaoInfoBase(long paoid, unsigned int value)   : _fromDb(false), _pao_id(paoid), _value(CtiNumStr(value)) {}
+CtiTableDynamicPaoInfoBase::CtiTableDynamicPaoInfoBase(long paoid, long value)           : _fromDb(false), _pao_id(paoid), _value(CtiNumStr(value)) {}
+CtiTableDynamicPaoInfoBase::CtiTableDynamicPaoInfoBase(long paoid, unsigned long value)  : _fromDb(false), _pao_id(paoid), _value(CtiNumStr(value)) {}
+CtiTableDynamicPaoInfoBase::CtiTableDynamicPaoInfoBase(long paoid, double value)         : _fromDb(false), _pao_id(paoid), _value(CtiNumStr(value)) {}
+CtiTableDynamicPaoInfoBase::CtiTableDynamicPaoInfoBase(long paoid, std::string value)    : _fromDb(false), _pao_id(paoid), _value(value) {}
+
+bool CtiTableDynamicPaoInfoBase::Insert(Cti::Database::DatabaseConnection &conn, const std::string &owner)
 {
-    std::string tmp_keyString;
+    std::string keyString = getKeyString();
 
-    rdr["paobjectid"] >> _pao_id;
-    rdr["value"]      >> _value;
-    rdr["infokey"]    >> tmp_keyString;
-
-    boost::optional<PaoInfoKeys> resolvedKey = Cti::bimapFind<PaoInfoKeys>(KeyNames.right, tmp_keyString);
-
-    if( ! resolvedKey )
+    if( owner.empty() || keyString.empty() || _value.empty() )
     {
-        // this could be an indexed key
-
-        // look for the last space character: space char precede digits
-        const unsigned pos = tmp_keyString.find_last_of(' ');
-
-        // make sure the position found is not the first nor the last character
-        if( pos != std::string::npos && pos > 0 && pos+1 < tmp_keyString.length() )
-        {
-            try
-            {
-                const int index = boost::lexical_cast<int>( tmp_keyString.substr(pos+1) );
-
-                if( index >= 0 )
-                {
-                    _index = index;
-
-                    // only try to resolve the key if the index is valid
-                    resolvedKey = Cti::bimapFind<PaoInfoKeys>(KeyNames.right, tmp_keyString.substr(0, pos));
-                }
-            }
-            catch( boost::bad_lexical_cast& )
-            {
-                // let it fall through,
-                // resolvedKey is expected to be boost::none
-            }
-        }
-
-        if( ! resolvedKey )
-        {
-            std::string tmp_OwnerString;
-
-            rdr["owner"] >> tmp_OwnerString;
-
-            throw BadKeyException(_pao_id, tmp_keyString, tmp_OwnerString);
-        }
-    }
-
-    _key = *resolvedKey;
-}
-
-
-bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn, const std::string &owner)
-{
-    boost::optional<std::string> keyString = Cti::bimapFind<std::string>(KeyNames.left, getKey());
-
-    if( owner.empty() || ! keyString || keyString->empty() || _value.empty() )
-    {
-        if( ! keyString )
+        if( keyString.empty() )
         {
             keyString = "boost::none";
         }
 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - invalid attempt to insert into DynamicPaoInfo - paoid = " << _pao_id << ", owner = \"" << owner << "\", and keyString = \"" << *keyString << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        dout << CtiTime() << " **** Checkpoint - invalid attempt to insert into DynamicPaoInfo - paoid = " << _pao_id << ", owner = \"" << owner << "\", and keyString = \"" << keyString << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
         return false;
-    }
-
-    if( _index )
-    {
-        // insert space character before digits
-        *keyString += " " + boost::lexical_cast<std::string>(*_index);
     }
 
     static const std::string sql = "insert into DynamicPaoInfo values (?, ?, ?, ?, ?)";
@@ -450,7 +403,7 @@ bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn, con
     inserter
         << getPaoID()
         << owner
-        << *keyString
+        << keyString
         << _value
         << CtiTime();
 
@@ -464,27 +417,21 @@ bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn, con
     return true; // No error occured!
 }
 
-bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, const std::string &owner)
+bool CtiTableDynamicPaoInfoBase::Update(Cti::Database::DatabaseConnection &conn, const std::string &owner)
 {
-    boost::optional<std::string> keyString = Cti::bimapFind<std::string>(KeyNames.left, getKey());
+    std::string keyString = getKeyString();
 
-    if( (getPaoID() <= 0) || owner.empty() || ! keyString || keyString->empty() || _value.empty() )
+    if( getPaoID() <= 0 || owner.empty() || keyString.empty() || _value.empty() )
     {
-        if( ! keyString )
+        if( keyString.empty() )
         {
             keyString = "boost::none";
         }
 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - invalid attempt to insert into DynamicPaoInfo - paoid = " << getPaoID() << ", owner = \"" << owner << "\", and keyString = \"" << *keyString << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        dout << CtiTime() << " **** Checkpoint - invalid attempt to insert into DynamicPaoInfo - paoid = " << getPaoID() << ", owner = \"" << owner << "\", and keyString = \"" << keyString << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
         return false;
-    }
-
-    if( _index )
-    {
-        // insert space character before digits
-        *keyString += " " + boost::lexical_cast<std::string>(*_index);
     }
 
     static const std::string sql =
@@ -504,8 +451,7 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, con
         << CtiTime::now()
         << getPaoID()
         << owner
-        << *keyString;
-
+        << keyString;
 
     if( ! Cti::Database::executeCommand(updater, __FILE__, __LINE__) )
     {
@@ -520,28 +466,106 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, con
     return true; // No error occured!
 }
 
-std::string CtiTableDynamicPaoInfo::getSQLCoreStatement()
+std::string CtiTableDynamicPaoInfoBase::getSQLCoreStatement()
 {
     static const std::string sql =
-            "SELECT DPI.paobjectid, DPI.infokey, DPI.value "
+            "SELECT DPI.owner, DPI.paobjectid, DPI.infokey, DPI.value "
             "FROM DynamicPaoInfo DPI ";
 
     return sql;
 }
 
-bool CtiTableDynamicPaoInfo::isFromDb() const
+long CtiTableDynamicPaoInfoBase::getPaoID() const
+{
+    return _pao_id;
+}
+
+std::string CtiTableDynamicPaoInfoBase::getValue() const
+{
+    return _value;
+}
+
+bool CtiTableDynamicPaoInfoBase::isFromDb() const
 {
     return _fromDb;
 }
 
-void CtiTableDynamicPaoInfo::setFromDb()
+void CtiTableDynamicPaoInfoBase::setFromDb()
 {
     _fromDb = true;
 }
 
-long CtiTableDynamicPaoInfo::getPaoID() const
+//  these may need to become individually named get functions, if the assignment idiom doesn't work out
+void CtiTableDynamicPaoInfoBase::getValue(int &destination) const
 {
-    return _pao_id;
+    destination = atoi(_value.c_str());
+}
+
+void CtiTableDynamicPaoInfoBase::getValue(unsigned int &destination) const
+{
+    double tmp;
+    getValue(tmp);
+
+    destination = std::max<unsigned>(tmp, 0U);
+}
+
+void CtiTableDynamicPaoInfoBase::getValue(long &destination) const
+{
+    destination = atol(_value.c_str());
+}
+
+void CtiTableDynamicPaoInfoBase::getValue(unsigned long &destination) const
+{
+    double tmp;
+    getValue(tmp);
+
+    destination = (tmp >= 0) ? static_cast<unsigned long>(tmp) : 0UL;
+}
+
+void CtiTableDynamicPaoInfoBase::getValue(double &destination) const
+{
+    destination = atof(_value.c_str());
+}
+
+void CtiTableDynamicPaoInfoBase::getValue(std::string &destination) const
+{
+    destination = _value;
+}
+
+/*-----------------------------------------------------------------------------
+    CtiTableDynamicPaoInfo Class
+-----------------------------------------------------------------------------*/
+
+CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, int value)            : CtiTableDynamicPaoInfoBase(paoid, value), _key(k) {}
+CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, unsigned int value)   : CtiTableDynamicPaoInfoBase(paoid, value), _key(k) {}
+CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, long value)           : CtiTableDynamicPaoInfoBase(paoid, value), _key(k) {}
+CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, unsigned long value)  : CtiTableDynamicPaoInfoBase(paoid, value), _key(k) {}
+CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, double value)         : CtiTableDynamicPaoInfoBase(paoid, value), _key(k) {}
+CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, std::string value)    : CtiTableDynamicPaoInfoBase(paoid, value), _key(k) {}
+
+CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(Cti::RowReader& rdr)
+    :   _key(Key_Invalid)
+{
+    setFromDb();
+
+    std::string tmp_keyString;
+
+    rdr["paobjectid"] >> _pao_id;
+    rdr["value"]      >> _value;
+    rdr["infokey"]    >> tmp_keyString;
+
+    boost::optional<PaoInfoKeys> resolvedKey = Cti::bimapFind<PaoInfoKeys>(KeyNames.right, tmp_keyString);
+
+    if( ! resolvedKey )
+    {
+        std::string tmp_OwnerString;
+
+        rdr["owner"] >> tmp_OwnerString;
+
+        throw BadKeyException(_pao_id, tmp_keyString, tmp_OwnerString);
+    }
+
+    _key = *resolvedKey;
 }
 
 CtiTableDynamicPaoInfo::PaoInfoKeys CtiTableDynamicPaoInfo::getKey() const
@@ -549,14 +573,9 @@ CtiTableDynamicPaoInfo::PaoInfoKeys CtiTableDynamicPaoInfo::getKey() const
     return _key;
 }
 
-boost::optional<unsigned> CtiTableDynamicPaoInfo::getIndex() const
+std::string CtiTableDynamicPaoInfo::getKeyString() const
 {
-    return _index;
-}
-
-void CtiTableDynamicPaoInfo::setIndex( unsigned index )
-{
-    _index = index;
+    return getKeyString(_key);
 }
 
 std::string CtiTableDynamicPaoInfo::getKeyString(const PaoInfoKeys key)
@@ -569,62 +588,132 @@ std::string CtiTableDynamicPaoInfo::getKeyString(const PaoInfoKeys key)
     return std::string();
 }
 
-std::string CtiTableDynamicPaoInfo::getValue() const
-{
-    return _value;
-}
-
-//  these may need to become individually named get functions, if the assignment idiom doesn't work out
-void CtiTableDynamicPaoInfo::getValue(std::string &destination) const
-{
-    destination = _value;
-}
-void CtiTableDynamicPaoInfo::getValue(int &destination) const
-{
-    destination = atoi(_value.c_str());
-}
-
-void CtiTableDynamicPaoInfo::getValue(unsigned int &destination) const
-{
-    double tmp;
-    getValue(tmp);
-
-    destination = std::max<unsigned>(tmp, 0U);
-}
-
-void CtiTableDynamicPaoInfo::getValue(long &destination) const
-{
-    destination = atol(_value.c_str());
-}
-void CtiTableDynamicPaoInfo::getValue(unsigned long &destination) const
-{
-    double tmp;
-    getValue(tmp);
-
-    if( tmp >= 0 )
-    {
-        destination = (unsigned long)tmp;
-    }
-    else
-    {
-        destination = 0UL;
-    }
-}
-void CtiTableDynamicPaoInfo::getValue(double &destination) const
-{
-    destination = atof(_value.c_str());
-}
-
-void CtiTableDynamicPaoInfo::dump()
+void CtiTableDynamicPaoInfo::dump() const
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-    dout << "getPaoID()   " << getPaoID() << std::endl;
-    dout << "getKey()     " << getKey() << std::endl;
-    dout << "getValue()   " << getValue() << std::endl;
+    dout << "getPaoID()     " << getPaoID() << std::endl;
+    dout << "getKeyString() " << getKeyString() << std::endl;
+    dout << "getKey()       " << getKey() << std::endl;
+    dout << "getValue()     " << getValue() << std::endl;
+}
+
+/*-----------------------------------------------------------------------------
+    CtiTableDynamicPaoInfoIndexed Class
+-----------------------------------------------------------------------------*/
+
+CtiTableDynamicPaoInfoIndexed::CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned long numberOfindex)          : CtiTableDynamicPaoInfoBase(paoid, numberOfindex), _key(k) {}
+CtiTableDynamicPaoInfoIndexed::CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, int value)            : CtiTableDynamicPaoInfoBase(paoid, value), _key(k), _index(index) {}
+CtiTableDynamicPaoInfoIndexed::CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, unsigned int value)   : CtiTableDynamicPaoInfoBase(paoid, value), _key(k), _index(index) {}
+CtiTableDynamicPaoInfoIndexed::CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, long value)           : CtiTableDynamicPaoInfoBase(paoid, value), _key(k), _index(index) {}
+CtiTableDynamicPaoInfoIndexed::CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, unsigned long value)  : CtiTableDynamicPaoInfoBase(paoid, value), _key(k), _index(index) {}
+CtiTableDynamicPaoInfoIndexed::CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, double value)         : CtiTableDynamicPaoInfoBase(paoid, value), _key(k), _index(index) {}
+CtiTableDynamicPaoInfoIndexed::CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, std::string value)    : CtiTableDynamicPaoInfoBase(paoid, value), _key(k), _index(index) {}
+
+CtiTableDynamicPaoInfoIndexed::CtiTableDynamicPaoInfoIndexed(Cti::RowReader& rdr)
+    :   _key(Key_Invalid)
+{
+    setFromDb();
+
+    std::string tmp_keyString;
+
+    rdr["paobjectid"] >> _pao_id;
+    rdr["value"]      >> _value;
+    rdr["infokey"]    >> tmp_keyString;
+
+    // try to resolve the indexed base key
+    boost::optional<PaoInfoKeysIndexed> resolvedKey = Cti::bimapFind<PaoInfoKeysIndexed>(KeyNamesIndexed.right, tmp_keyString);
+
+    if( ! resolvedKey )
+    {
+        // this could be an indexed value
+
+        // look for the last space character expected to precede digits
+        const unsigned pos = tmp_keyString.find_last_of(' ');
+
+        // make sure the position, if found, is not the first nor the last character
+        if( pos != std::string::npos && pos > 0 && pos+1 < tmp_keyString.length() )
+        {
+            try
+            {
+                const int index = boost::lexical_cast<int>( tmp_keyString.substr(pos+1) );
+
+                if( index >= 0 )
+                {
+                    _index = index;
+
+                    // only try to resolve the key if the index is valid
+                    resolvedKey = Cti::bimapFind<PaoInfoKeysIndexed>(KeyNamesIndexed.right, tmp_keyString.substr(0, pos));
+                }
+            }
+            catch( boost::bad_lexical_cast& )
+            {
+                // let it fall through: resolvedKey is expected to be boost::none
+            }
+        }
+
+        if( ! resolvedKey )
+        {
+            std::string tmp_OwnerString;
+
+            rdr["owner"] >> tmp_OwnerString;
+
+            throw CtiTableDynamicPaoInfo::BadKeyException(_pao_id, tmp_keyString, tmp_OwnerString);
+        }
+    }
+
+    _key = *resolvedKey;
+}
+
+CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed CtiTableDynamicPaoInfoIndexed::getKey() const
+{
+    return _key;
+}
+
+boost::optional<unsigned> CtiTableDynamicPaoInfoIndexed::getIndex() const
+{
+    return _index;
+}
+
+std::string CtiTableDynamicPaoInfoIndexed::getKeyString() const
+{
+    std::string keyString = getKeyString(_key);
+
+    if( ! keyString.empty() && _index )
+    {
+        // insert space character before digits
+        keyString += " " + boost::lexical_cast<std::string>(*_index);
+    }
+
+    return keyString;
+}
+
+std::string CtiTableDynamicPaoInfoIndexed::getKeyString(const PaoInfoKeysIndexed key)
+{
+    if( const boost::optional<std::string> keyString = Cti::bimapFind<std::string>(KeyNamesIndexed.left, key) )
+    {
+        return *keyString;
+    }
+
+    return std::string();
+}
+
+void CtiTableDynamicPaoInfoIndexed::dump() const
+{
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+    dout << "getPaoID()     " << getPaoID() << std::endl;
+    dout << "getKeyString() " << getKeyString() << std::endl;
+    dout << "getKey()       " << getKey() << std::endl;
+    dout << "getValue()     " << getValue() << std::endl;
+    dout << "getIndex()     ";
 
     if( getIndex() )
     {
-        dout << "getIndex()   " << *getIndex() << std::endl;
+        dout << *getIndex() << std::endl;
+    }
+    else
+    {
+        dout << "none" << std::endl;
     }
 }

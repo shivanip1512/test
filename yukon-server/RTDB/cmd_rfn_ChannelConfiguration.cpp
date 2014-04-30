@@ -426,7 +426,8 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
 
         result.description += (*metric)->_description + " (" + CtiNumStr(metricId) + ")\n";
 
-        validate( Condition( _metricsReceived.insert( (*metric)->_name ).second, ErrorInvalidData )
+        const bool isNewInsert = _metricsReceived.insert((*metric)->_name).second;
+        validate( Condition( isNewInsert, ErrorInvalidData )
                 << "Received unexpected duplicated metric: " << (*metric)->_description << " (" << metricId << ")" );
     }
 }
@@ -465,7 +466,8 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
         validate( Condition( metric, ErrorInvalidData )
                 << "Received unknown metric id (" << metricId << ")" );
 
-        validate( Condition( metricsIdsReceived.insert( (*metric)->_id ).second, ErrorInvalidData )
+        const bool isNewInsert = metricsIdsReceived.insert((*metric)->_id).second;
+        validate( Condition( isNewInsert, ErrorInvalidData )
                 << "Received unexpected duplicated metric: " << (*metric)->_description << " (" << metricId << ")" );
 
         result.description += (*metric)->_description + " (" + CtiNumStr(metricId) + "): ";
@@ -533,7 +535,8 @@ void RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResu
          validate( Condition( tlvs_expected.count(tlv.type), ErrorInvalidData )
                  << "Unexpected TLV of type (" << tlv.type << ")" );
 
-         validate( Condition( tlvs_received.insert(tlv.type).second, ErrorInvalidData )
+         const bool isNewInsert = tlvs_received.insert(tlv.type).second;
+         validate( Condition( isNewInsert, ErrorInvalidData )
                  << "Unexpected duplicated TLV of type (" << tlv.type << ")" );
 
          switch( tlv.type )
@@ -651,7 +654,8 @@ void RfnChannelIntervalRecordingCommand::decodeTlvs( const TlvList& tlvs, RfnCom
          validate( Condition( tlvs_expected.count(tlv.type), ErrorInvalidData )
                  << "Unexpected TLV of type (" << tlv.type << ")" );
 
-         validate( Condition( tlvs_received.insert(tlv.type).second, ErrorInvalidData )
+         const bool isNewInsert = tlvs_received.insert(tlv.type).second;
+         validate( Condition( isNewInsert, ErrorInvalidData )
                  << "Unexpected duplicated TLV of type (" << tlv.type << ")" );
 
          switch( tlv.type )

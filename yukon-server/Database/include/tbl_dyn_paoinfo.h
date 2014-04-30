@@ -8,7 +8,54 @@
 #include <string>
 #include <map>
 
-class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfo
+/**
+ *  Abstract base class CtiTableDynamicPaoInfoBase
+ */
+class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfoBase
+{
+protected:
+
+    long _pao_id;
+    std::string _value;
+    bool _fromDb;
+
+    CtiTableDynamicPaoInfoBase();
+    CtiTableDynamicPaoInfoBase(long paoid, int value);
+    CtiTableDynamicPaoInfoBase(long paoid, unsigned int value);
+    CtiTableDynamicPaoInfoBase(long paoid, long value);
+    CtiTableDynamicPaoInfoBase(long paoid, unsigned long value);
+    CtiTableDynamicPaoInfoBase(long paoid, double value);
+    CtiTableDynamicPaoInfoBase(long paoid, std::string value);
+
+    virtual std::string getKeyString() const = 0;
+
+public:
+
+    bool Insert(Cti::Database::DatabaseConnection &conn, const std::string &owner);
+    bool Update(Cti::Database::DatabaseConnection &conn, const std::string &owner);
+
+    static std::string getSQLCoreStatement();
+
+    long        getPaoID() const;
+    std::string getValue() const;
+
+    bool isFromDb() const;
+    void setFromDb();
+
+    void getValue(int           &destination) const;
+    void getValue(unsigned int  &destination) const;
+    void getValue(long          &destination) const;
+    void getValue(unsigned long &destination) const;
+    void getValue(double        &destination) const;
+    void getValue(std::string   &destination) const;
+
+    virtual void dump() const = 0;
+};
+
+/**
+ *  CtiTableDynamicPaoInfo
+ */
+class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfo : public CtiTableDynamicPaoInfoBase
 {
 public:
 
@@ -341,8 +388,6 @@ public:
         Key_RFN_TempAlarmRepeatCount,
         Key_RFN_TempAlarmHighTempThreshold,
 
-        Key_RFN_ChannelSelectionMetrics,
-        Key_RFN_ChannelRecordingIntervalMetrics,
         Key_RFN_ChannelRecordingIntervalSeconds,
         Key_RFN_ChannelReportingIntervalSeconds,
 
@@ -351,11 +396,9 @@ public:
 
 protected:
 
-    long _pao_id;
     PaoInfoKeys _key;
-    std::string _value;
-    bool _fromDb;
-    boost::optional<unsigned> _index;
+
+    virtual std::string getKeyString() const;
 
 public:
 
@@ -376,29 +419,49 @@ public:
         const std::string owner;
     };
 
-    bool Insert(Cti::Database::DatabaseConnection &conn, const std::string &owner);
-    bool Update(Cti::Database::DatabaseConnection &conn, const std::string &owner);
+    PaoInfoKeys getKey() const;
+    static std::string getKeyString(const PaoInfoKeys key);
 
-    static std::string getSQLCoreStatement();
-
-    bool isFromDb() const;
-    void setFromDb();
-
-    long                getPaoID()       const;
-    PaoInfoKeys         getKey()         const;
-    std::string         getValue()       const;
-    static std::string  getKeyString(const PaoInfoKeys key);
-
-    void setIndex( unsigned index );
-    boost::optional<unsigned> getIndex() const;
-
-    void getValue(int           &destination) const;
-    void getValue(long          &destination) const;
-    void getValue(unsigned long &destination) const;
-    void getValue(double        &destination) const;
-    void getValue(std::string   &destination) const;
-    void getValue(unsigned int  &destination) const;
-
-    void dump();
+    virtual void dump() const;
 };
 
+/**
+ *  CtiTableDynamicPaoInfoIndexed
+ */
+class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfoIndexed : public CtiTableDynamicPaoInfoBase
+{
+public:
+
+    enum PaoInfoKeysIndexed
+    {
+        Key_Invalid =  -1,
+
+        Key_RFN_ChannelSelectionMetrics,
+        Key_RFN_ChannelRecordingIntervalMetrics,
+    };
+
+protected:
+
+    PaoInfoKeysIndexed _key;
+    boost::optional<unsigned> _index;
+
+    virtual std::string getKeyString() const;
+
+public:
+
+    CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned long numberOfindex);
+    CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, int value);
+    CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, unsigned int value);
+    CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, long value);
+    CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, unsigned long value);
+    CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, double value);
+    CtiTableDynamicPaoInfoIndexed(long paoid, PaoInfoKeysIndexed k, unsigned index, std::string value);
+    CtiTableDynamicPaoInfoIndexed(Cti::RowReader& rdr);  //  throws BadKeyException
+
+    boost::optional<unsigned> getIndex() const;
+
+    PaoInfoKeysIndexed getKey() const;
+    static std::string getKeyString(const PaoInfoKeysIndexed key);
+
+    virtual void dump() const;
+};

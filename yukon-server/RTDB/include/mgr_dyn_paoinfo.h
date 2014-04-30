@@ -28,7 +28,8 @@ enum Applications
 class IM_EX_DYNPAOINFO DynamicPaoInfoManager
 {
 public:
-    typedef CtiTableDynamicPaoInfo::PaoInfoKeys PaoInfoKeys;
+    typedef CtiTableDynamicPaoInfo::PaoInfoKeys               PaoInfoKeys;
+    typedef CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed PaoInfoKeysIndexed;
 
     static void setOwner(const Applications owner);
 
@@ -57,13 +58,13 @@ public:
 
     static void writeInfo();
 
-    /// Set a vector values using indexes
+    // set a values using indexed dynamic info
     template <typename T>
-    static void setIndexedInfo(const long paoId, PaoInfoKeys k, const std::vector<T> &values);
+    static void setInfo(const long paoId, PaoInfoKeysIndexed k, const std::vector<T> &values);
 
-    /// Retrieve a vector of indexed values
+    // retrieve a vector of values from indexed dynamic info
     template <typename T>
-    static boost::optional<std::vector<T>> getIndexedInfo(const long paoId, PaoInfoKeys k);
+    static boost::optional<std::vector<T>> getInfo(const long paoId, PaoInfoKeysIndexed k);
 
 protected:
 
@@ -95,17 +96,30 @@ private:
 
     DynInfoRefSet dirtyInfo;
 
-    typedef std::vector<DynInfoSPtr> PaoInfoVec;
-    typedef std::map<PaoInfoKeys, PaoInfoVec> PaoInfoIndexedMap;
-    typedef std::map<long, PaoInfoIndexedMap> PaoIdToPaoInfoIndexedMap;
+    typedef boost::shared_ptr<CtiTableDynamicPaoInfoIndexed> DynInfoIndexSPtr;
+    typedef boost::weak_ptr<CtiTableDynamicPaoInfoIndexed>   DynInfoIndexWPtr;
 
-    // holds indexed values
+    // holds dynamic info related to indexed values
+    struct PaoInfoIndexed
+    {
+        DynInfoIndexSPtr              sizeInfo;
+        std::vector<DynInfoIndexSPtr> valuesInfo;
+    };
+
+    typedef std::map<PaoInfoKeysIndexed, PaoInfoIndexed> PaoInfoIndexedMap;
+    typedef std::map<long, PaoInfoIndexedMap>            PaoIdToPaoInfoIndexedMap;
+
+    // cached indexed values
     PaoIdToPaoInfoIndexedMap paoInfoPerIdIndexed;
 
-    typedef std::set<std::pair<long, PaoInfoKeys>> DynIndexedInfoSet;
+    typedef std::set<DynInfoIndexWPtr> DynInfoIndexRefSet;
+    typedef std::set<std::pair<long, PaoInfoKeysIndexed>> PaoIdAndIndexedKeySet;
     
-    // this set keeps track of indexed values to delete from the DB before re-insert
-    DynIndexedInfoSet dirtyIndexInfo;
+    // contains weak_ptr to insert into the DB
+    DynInfoIndexRefSet dirtyInfoIndexed;
+
+    // keeps track of indexed values to delete from the DB before re-inserting
+    PaoIdAndIndexedKeySet dirtyInfoIndexedToDelete;
 
     Applications owner;
 
@@ -115,7 +129,7 @@ private:
 extern IM_EX_DYNPAOINFO std::auto_ptr<DynamicPaoInfoManager> gDynamicPaoInfoManager;  //  auto_ptr so it can be overridden for unit tests
 
 // explicit instantiation
-template IM_EX_DYNPAOINFO void DynamicPaoInfoManager::setIndexedInfo<std::string> (const long paoId, PaoInfoKeys k, const std::vector<std::string> &values);
-template IM_EX_DYNPAOINFO boost::optional<std::vector<std::string>> DynamicPaoInfoManager::getIndexedInfo<std::string> (const long paoId, PaoInfoKeys k);
+template IM_EX_DYNPAOINFO void DynamicPaoInfoManager::setInfo<std::string> (const long paoId, PaoInfoKeysIndexed k, const std::vector<std::string> &values);
+template IM_EX_DYNPAOINFO boost::optional<std::vector<std::string>> DynamicPaoInfoManager::getInfo<std::string> (const long paoId, PaoInfoKeysIndexed k);
 
 }

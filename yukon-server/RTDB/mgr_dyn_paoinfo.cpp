@@ -40,20 +40,12 @@ const std::auto_ptr<DynamicPaoInfoManager> &instance = gDynamicPaoInfoManager;
 
 /**
  * Delete indexed infoKeys from DynamicPaoInfo
- * infokey format: <base key> <digits>
- *
- * Note(1) : does not delete the base key, index indexed.
- * Note(2) : expects a space character (' ') before the digits.
- *
- * @param ownerString
- * @param paoId
- * @param k
  *
  * @return true if the command was successfully executed (even if no rows are affected), false otherwise
  */
-bool deleteIndexed(const std::string& ownerString, const long paoId, CtiTableDynamicPaoInfo::PaoInfoKeys k)
+bool deleteIndexedInfo(const std::string& ownerString, const long paoId, CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed k)
 {
-    const std::string keyString = CtiTableDynamicPaoInfo::getKeyString(k);
+    const std::string keyString = CtiTableDynamicPaoInfoIndexed::getKeyString(k);
     if( keyString.empty() )
     {
         return false;
@@ -63,7 +55,7 @@ bool deleteIndexed(const std::string& ownerString, const long paoId, CtiTableDyn
             "DELETE "
             "FROM dynamicpaoinfo "
             "WHERE paobjectid = ? AND owner = ? "
-            "AND infokey LIKE '" + keyString + " _%' AND infokey NOT LIKE '" + keyString + " %[^0-9]%'";
+            "AND infokey LIKE '" + keyString + "%'";
 
     Cti::Database::DatabaseConnection   connection;
     Cti::Database::DatabaseWriter       deleter(connection, sqlDelete);
@@ -158,29 +150,45 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
         {
             while( rdr() )
             {
+                // try non-indexed key
                 try
                 {
                     DynInfoSPtr dynInfo = boost::make_shared<CtiTableDynamicPaoInfo>(boost::ref(rdr));
 
+                    paoInfoPerId[dynInfo->getPaoID()][dynInfo->getKey()] = dynInfo;
+
+                    continue;
+                }
+                catch( CtiTableDynamicPaoInfo::BadKeyException& )
+                {
+                    // we will re-try
+                }
+
+                // if the key was not recognize, retry with indexed key
+                try
+                {
+                    DynInfoIndexSPtr dynInfo = boost::make_shared<CtiTableDynamicPaoInfoIndexed>(boost::ref(rdr));
+
+                    PaoInfoIndexed& paoInfoIndexed = paoInfoPerIdIndexed[dynInfo->getPaoID()][dynInfo->getKey()];
+
                     if( dynInfo->getIndex() )
                     {
-                        // we use a seperated map for indexed values
-                        PaoInfoVec& paoInfoVec = paoInfoPerIdIndexed[dynInfo->getPaoID()][dynInfo->getKey()];
+                        const unsigned index = *dynInfo->getIndex();
 
-                        unsigned index = *dynInfo->getIndex();
-                        if( paoInfoVec.size() < index + 1 )
+                        if( paoInfoIndexed.valuesInfo.size() < index + 1 )
                         {
                             // resize shall create empty null DynInfoSPtr
                             // make sure we check this later when we retrieve indexed information
-                            paoInfoVec.resize(index + 1); 
+                            paoInfoIndexed.valuesInfo.resize(index + 1);
                         }
 
-                        paoInfoVec[index] = dynInfo;
+                        paoInfoIndexed.valuesInfo[index] = dynInfo;
                     }
                     else
                     {
-                        paoInfoPerId[dynInfo->getPaoID()][dynInfo->getKey()] = dynInfo;
+                        paoInfoIndexed.sizeInfo = dynInfo;
                     }
+
                 }
                 catch( CtiTableDynamicPaoInfo::BadKeyException &ex )
                 {
@@ -289,7 +297,6 @@ void DynamicPaoInfoManager::purgeInfo(long paoId, CtiTableDynamicPaoInfo::PaoInf
     Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
-
 void DynamicPaoInfoManager::writeInfo( void )
 {
     Cti::Database::DatabaseConnection conn;
@@ -316,42 +323,40 @@ void DynamicPaoInfoManager::writeInfo( void )
         return;
     }
 
-    //
-    // delete previous indexed data before writing new ones
-    //
-
-    DynIndexedInfoSet::iterator dirtyIndexedItr = instance->dirtyIndexInfo.begin();
-
-    while( dirtyIndexedItr != instance->dirtyIndexInfo.end() )
+    // insert/update CtiTableDynamicPaoInfo items
     {
-        const DynIndexedInfoSet::value_type val = *dirtyIndexedItr;
+        DynInfoRefSet::iterator dirtyItr = instance->dirtyInfo.begin();
 
-        if( ! deleteIndexed(*ownerString, val.first, val.second ) )
+        while( dirtyItr != instance->dirtyInfo.end() )
         {
-            //  bypass it, try again next time
-            dirtyIndexedItr++;
-
-            continue;
-        }
-
-        instance->dirtyIndexInfo.erase(dirtyIndexedItr++);
-    }
-
-    //
-    // write / update items
-    //
-
-    DynInfoRefSet::iterator dirtyItr = instance->dirtyInfo.begin();
-
-    while( dirtyItr != instance->dirtyInfo.end() )
-    {
-        if( DynInfoSPtr dirtyInfo = dirtyItr->lock() )
-        {
-            if( dirtyInfo->getIndex() )
+            if( DynInfoSPtr dirtyInfo = dirtyItr->lock() )
             {
-                // check that previous indexed items where successfully deleted before continuing
-                if( instance->dirtyIndexInfo.count( std::make_pair(dirtyInfo->getPaoID(), dirtyInfo->getKey()) ))
+
+                bool written = false;
+
+                if( dirtyInfo->isFromDb() )
                 {
+                    written = dirtyInfo->Update(conn, *ownerString);
+                }
+                else
+                {
+                    written = dirtyInfo->Insert(conn, *ownerString);
+
+                    if( ! written )
+                    {
+                        written = dirtyInfo->Update(conn, *ownerString);
+                    }
+                }
+
+                if( ! written )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - error inserting/updating DynamicPaoInfo **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    }
+
+                    dirtyInfo->dump();
+
                     //  bypass it, try again next time
                     dirtyItr++;
 
@@ -359,39 +364,58 @@ void DynamicPaoInfoManager::writeInfo( void )
                 }
             }
 
-            bool written = false;
+            instance->dirtyInfo.erase(dirtyItr++);
+        }
+    }
 
-            if( dirtyInfo->isFromDb() )
+    // delete old CtiTableDynamicPaoInfoIndexed before inserting new items
+    {
+        PaoIdAndIndexedKeySet::iterator dirtyItr = instance->dirtyInfoIndexedToDelete.begin();
+
+        while( dirtyItr != instance->dirtyInfoIndexedToDelete.end() )
+        {
+            const PaoIdAndIndexedKeySet::value_type val = *dirtyItr;
+
+            if( ! deleteIndexedInfo(*ownerString, val.first, val.second ) )
             {
-                written = dirtyInfo->Update(conn, *ownerString);
-            }
-            else
-            {
-                written = dirtyInfo->Insert(conn, *ownerString);
-
-                if( ! written )
-                {
-                    written = dirtyInfo->Update(conn, *ownerString);
-                }
-            }
-
-            if( ! written )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - error inserting/updating DynamicPaoInfo **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                }
-
-                dirtyInfo->dump();
-
                 //  bypass it, try again next time
                 dirtyItr++;
 
                 continue;
             }
-        }
 
-        instance->dirtyInfo.erase(dirtyItr++);
+            instance->dirtyInfoIndexedToDelete.erase(dirtyItr++);
+        }
+    }
+
+    // insert CtiTableDynamicPaoInfoIndexed items
+    {
+        DynInfoIndexRefSet::iterator dirtyItr = instance->dirtyInfoIndexed.begin();
+
+        while( dirtyItr != instance->dirtyInfoIndexed.end() )
+        {
+            if( DynInfoIndexSPtr dirtyInfo = dirtyItr->lock() )
+            {
+                // check that previous indexed items where successfully deleted before continuing
+                if( instance->dirtyInfoIndexedToDelete.count( std::make_pair(dirtyInfo->getPaoID(), dirtyInfo->getKey()) ))
+                {
+                    //  bypass it, try again next time
+                    dirtyItr++;
+
+                    continue;
+                }
+
+                if( ! dirtyInfo->Insert(conn, *ownerString) )
+                {
+                    //  bypass it, try again next time
+                    dirtyItr++;
+
+                    continue;
+                }
+
+                instance->dirtyInfoIndexed.erase(dirtyItr++);
+            }
+        }
     }
 }
 
@@ -504,7 +528,7 @@ bool DynamicPaoInfoManager::hasInfo(long paoId, PaoInfoKeys k)
 
 
 template <typename T>
-void DynamicPaoInfoManager::setIndexedInfo(const long paoId, PaoInfoKeys k, const std::vector<T> &values)
+void DynamicPaoInfoManager::setInfo(const long paoId, PaoInfoKeysIndexed k, const std::vector<T> &values)
 {
     instance->loadInfoIfNecessary(paoId);
 
@@ -513,62 +537,67 @@ void DynamicPaoInfoManager::setIndexedInfo(const long paoId, PaoInfoKeys k, cons
     {
         readers_writer_lock_t::writer_lock_guard_t guard(instance->mux);
 
-        PaoInfoIndexedMap &paoInfo = instance->paoInfoPerIdIndexed[paoId];
-        std::vector<DynInfoSPtr> &oldInfoVec = paoInfo[k];
+        PaoInfoIndexedMap &paoInfoIndexedMap = instance->paoInfoPerIdIndexed[paoId];
+        PaoInfoIndexed    &paoInfoIndexed    = paoInfoIndexedMap[k];
 
-        oldInfoVec.resize( numberOfIndex );
+        // number of indexed info
+        DynInfoIndexSPtr newSizeInfo = boost::make_shared<CtiTableDynamicPaoInfoIndexed>(paoId, k, numberOfIndex );
+
+        paoInfoIndexed.sizeInfo = newSizeInfo;
+
+        instance->dirtyInfoIndexed.insert(newSizeInfo);
+
+        // indexed values
+        paoInfoIndexed.valuesInfo.resize(numberOfIndex);
 
         for( unsigned index=0; index < numberOfIndex; index++ )
         {
-            DynInfoSPtr &oldInfo = oldInfoVec[index];
-            DynInfoSPtr newInfo = boost::make_shared<CtiTableDynamicPaoInfo>(paoId, k, values[index]);
-            newInfo->setIndex( index );
+            DynInfoIndexSPtr newValueInfo = boost::make_shared<CtiTableDynamicPaoInfoIndexed>(paoId, k, index, values[index]);
 
-            // NOTE: we do not use setFromDb() on the new value since previous values will be deleted, before re-inserted
-            oldInfo = newInfo;
+            paoInfoIndexed.valuesInfo[index] = newValueInfo; // copy over the old one, if it exist
 
-            // add the indexed value
-            instance->dirtyInfo.insert(newInfo);
+            instance->dirtyInfoIndexed.insert(newValueInfo);
         }
 
-        // insert/update an items that contains the number of indexes
-        instance->setInfo( boost::make_shared<CtiTableDynamicPaoInfo>(paoId, k, numberOfIndex) );
-        
         // indicate that we will delete previous values, before inserting new ones
-        instance->dirtyIndexInfo.insert( std::make_pair(paoId, k) );
+        instance->dirtyInfoIndexedToDelete.insert( std::make_pair(paoId, k) );
     }
 }
 
 template <typename T>
-boost::optional<std::vector<T>> DynamicPaoInfoManager::getIndexedInfo(const long paoId, PaoInfoKeys k)
+boost::optional<std::vector<T>> DynamicPaoInfoManager::getInfo(const long paoId, PaoInfoKeysIndexed k)
 {
     instance->loadInfoIfNecessary(paoId);
 
     {
         readers_writer_lock_t::reader_lock_guard_t guard(instance->mux);
 
-        unsigned long numberOfIndex;
-        if( ! getInfo(paoId, k, numberOfIndex) )
-        {
-            return boost::none;
-        }
-
-        boost::optional<PaoInfoIndexedMap &> paoInfoIndexedMap = mapFindRef(instance->paoInfoPerIdIndexed, paoId);
+        // Check that we have available info for the Pao ID
+        boost::optional<PaoInfoIndexedMap &> paoInfoIndexedMap = mapFindRef( instance->paoInfoPerIdIndexed, paoId );
         if( ! paoInfoIndexedMap )
         {
             return boost::none;
         }
 
-        boost::optional<PaoInfoVec &> dynInfoVec = mapFindRef(*paoInfoIndexedMap, k);
-        if( ! dynInfoVec || dynInfoVec->size() != numberOfIndex )
+        // check that PaoInfoIndexed exist for the key
+        boost::optional<PaoInfoIndexed &> paoInfoIndexed = mapFindRef(*paoInfoIndexedMap, k);
+        if( ! paoInfoIndexed || ! paoInfoIndexed->sizeInfo )
+        {
+            return boost::none;
+        }
+
+        // validate the size
+        unsigned long numberOfvalues;
+        paoInfoIndexed->sizeInfo->getValue(numberOfvalues);
+        if( paoInfoIndexed->valuesInfo.size() != numberOfvalues )
         {
             return boost::none;
         }
 
         std::vector<T> result;
-        for each(const DynInfoSPtr& info in *dynInfoVec)
+        for each( const DynInfoIndexSPtr& info in paoInfoIndexed->valuesInfo )
         {
-            // check that we have all indexed values
+            // make sure that we have all indexed values
             if( ! info )
             {
                 return boost::none;

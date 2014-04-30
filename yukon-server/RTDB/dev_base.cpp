@@ -916,10 +916,6 @@ void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const CtiTime &value)
 {
     Cti::DynamicPaoInfoManager::setInfo(getID(), k, (unsigned long) value.seconds());
 }
-void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const std::vector<std::string> &values)
-{
-    Cti::DynamicPaoInfoManager::setIndexedInfo(getID(), k, values);
-}
 
 bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,        string &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
 bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,           int &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
@@ -958,10 +954,16 @@ boost::optional<bool> CtiDeviceBase::findDynamicInfo<bool>(PaoInfoKeys k) const
     return static_cast<bool>(val);
 }
 
-template <>
-boost::optional<std::vector<std::string>> CtiDeviceBase::findDynamicInfo<std::vector<std::string>>(PaoInfoKeys k) const
+
+void CtiDeviceBase::setDynamicInfo(PaoInfoKeysIndexed k, const std::vector<std::string> &values)
 {
-    return Cti::DynamicPaoInfoManager::getIndexedInfo<std::string> (getID(), k);
+    Cti::DynamicPaoInfoManager::setInfo(getID(), k, values);
+}
+
+template <typename T>
+boost::optional<std::vector<T>> CtiDeviceBase::findDynamicInfo(PaoInfoKeysIndexed k) const
+{
+    return Cti::DynamicPaoInfoManager::getInfo<T> (getID(), k);
 }
 
 void CtiDeviceBase::setExpectedFreeze(int freeze)
