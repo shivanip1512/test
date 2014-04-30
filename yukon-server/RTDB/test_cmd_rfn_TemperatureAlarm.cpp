@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
     {
         true,       // alarmEnabled
         15,         // alarmRepeatInterval
-        2,          // alarmRepeatCount
+        3,          // alarmRepeatCount
         50          // alarmHighTempThreshold
     };
 
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
     {
         const std::vector< unsigned char > exp = list_of
             ( 0x88 )( 0x00 )( 0x01 )
-                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x02 );
+                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 );
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -93,12 +93,81 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_construction_exceptions )
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_construction_exceptions_repeat_interval )
 {
+    const std::vector< unsigned > inputs = boost::assign::list_of
+        ( 10 )
+        ( 20 );
 
-        // Input validation?
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Interval: (10) (fixed at: 15)" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Interval: (20) (fixed at: 15)" ) );
 
-    BOOST_CHECK( true );
+    std::vector< RfnCommand::CommandException > actual;
+
+    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration = 
+    {
+        true,       // alarmEnabled
+        0,          // alarmRepeatInterval
+        3,          // alarmRepeatCount
+        50          // alarmHighTempThreshold
+    };
+
+    for each ( const unsigned input in inputs )
+    {
+        try
+        {
+            configuration.alarmRepeatInterval = input;
+
+            RfnSetTemperatureAlarmConfigurationCommand  command( configuration );
+        }
+        catch ( const RfnCommand::CommandException & ex )
+        {
+            actual.push_back( ex );
+        }
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
+}
+
+
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_construction_exceptions_repeat_count )
+{
+    const std::vector< unsigned > inputs = boost::assign::list_of
+        ( 2 )
+        ( 4 );
+
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Count: (2) (fixed at: 3)" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Count: (4) (fixed at: 3)" ) );
+
+    std::vector< RfnCommand::CommandException > actual;
+
+    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration = 
+    {
+        true,       // alarmEnabled
+        15,         // alarmRepeatInterval
+        0,          // alarmRepeatCount
+        50          // alarmHighTempThreshold
+    };
+
+    for each ( const unsigned input in inputs )
+    {
+        try
+        {
+            configuration.alarmRepeatCount = input;
+
+            RfnSetTemperatureAlarmConfigurationCommand  command( configuration );
+        }
+        catch ( const RfnCommand::CommandException & ex )
+        {
+            actual.push_back( ex );
+        }
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
 }
 
 
@@ -122,7 +191,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_decode_exc
     {
         true,       // alarmEnabled
         15,         // alarmRepeatInterval
-        2,          // alarmRepeatCount
+        3,          // alarmRepeatCount
         50          // alarmHighTempThreshold
     };
 
@@ -167,7 +236,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
     {
         const std::vector< unsigned char > response = list_of
             ( 0x89 )( 0x01 )( 0x00 )( 0x01 )
-                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x02 );
+                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 );
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -175,7 +244,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
                                             "\nState: Alarm Enabled (1)"
                                             "\nHigh Temperature Threshold: 50 degree(s) (0x0032)"
                                             "\nAlarm Repeat Interval: 15 minute(s)"
-                                            "\nAlarm Repeat Count: 2 count(s)" );
+                                            "\nAlarm Repeat Count: 3 count(s)" );
 
         BOOST_CHECK_EQUAL( true, command.isSupported() );
 
@@ -184,13 +253,36 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
         BOOST_CHECK_EQUAL( true, configuration.alarmEnabled );
         BOOST_CHECK_EQUAL(   50, configuration.alarmHighTempThreshold );
         BOOST_CHECK_EQUAL(   15, configuration.alarmRepeatInterval );
-        BOOST_CHECK_EQUAL(    2, configuration.alarmRepeatCount );
+        BOOST_CHECK_EQUAL(    3, configuration.alarmRepeatCount );
+    }
+    // decode -- success response with negative threshold
+    {
+        const std::vector< unsigned char > response = list_of
+            ( 0x89 )( 0x01 )( 0x00 )( 0x01 )
+                ( 0x01 )( 0x07 )( 0x01 )( 0xff )( 0xf0 )( 0x00 )( 0x28 )( 0x0f )( 0x03 );
+
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
+
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
+                                            "\nState: Alarm Enabled (1)"
+                                            "\nHigh Temperature Threshold: -16 degree(s) (0xfff0)"
+                                            "\nAlarm Repeat Interval: 15 minute(s)"
+                                            "\nAlarm Repeat Count: 3 count(s)" );
+
+        BOOST_CHECK_EQUAL( true, command.isSupported() );
+
+        RfnTemperatureAlarmCommand::AlarmConfiguration configuration = command.getAlarmConfiguration();
+
+        BOOST_CHECK_EQUAL( true, configuration.alarmEnabled );
+        BOOST_CHECK_EQUAL(  -16, configuration.alarmHighTempThreshold );
+        BOOST_CHECK_EQUAL(   15, configuration.alarmRepeatInterval );
+        BOOST_CHECK_EQUAL(    3, configuration.alarmRepeatCount );
     }
     // decode -- unsupported response -- with TLV
     {
         const std::vector< unsigned char > response = list_of
             ( 0x89 )( 0x01 )( 0x02 )( 0x01 )
-                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x02 );
+                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 );
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -216,13 +308,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration_decode_exc
 {
     const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x8a )( 0x01 )( 0x00 )( 0x01 )
-                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x02 ) )
+                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
         ( list_of( 0x89 )( 0x00 )( 0x00 )( 0x01 )
-                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x02 ) )
+                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
         ( list_of( 0x89 )( 0x01 )( 0x03 )( 0x01 )
-                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x02 ) )
+                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
         ( list_of( 0x89 )( 0x01 )( 0x00 )( 0x02 )
-                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x02 ) )
+                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
         ( list_of( 0x89 )( 0x01 )( 0x00 )( 0x01 )
                     ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f ) );
 

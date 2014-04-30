@@ -7,7 +7,7 @@
 
 #include <boost/assign/list_of.hpp>
 #include <boost/optional.hpp>
-
+#include <boost/cstdint.hpp>
 
 namespace Cti        {
 namespace Devices    {
@@ -116,9 +116,11 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 RfnSetTemperatureAlarmConfigurationCommand::RfnSetTemperatureAlarmConfigurationCommand( const AlarmConfiguration & configuration )
     :   RfnTemperatureAlarmCommand( Operation_SetConfiguration, configuration )
 {
+    validate( Condition( configuration.alarmRepeatInterval == 15, BADPARAM )
+            << "Invalid Repeat Interval: (" << configuration.alarmRepeatInterval << ") (fixed at: 15)" );
 
-        // Input validation?
- 
+    validate( Condition( configuration.alarmRepeatCount == 3, BADPARAM )
+            << "Invalid Repeat Count: (" << configuration.alarmRepeatCount << ") (fixed at: 3)" );
 }
 
 
@@ -140,7 +142,7 @@ RfnCommand::Bytes RfnSetTemperatureAlarmConfigurationCommand::getCommandData()
     tlv.value.push_back( _configuration.alarmHighTempThreshold );
 
     // Low Temperature Alarm Threshold (degrees C) - always 10 degrees below the high threshold
-    const unsigned alarmLowThreshold = _configuration.alarmHighTempThreshold - 10;
+    const int alarmLowThreshold = _configuration.alarmHighTempThreshold - 10;
 
     tlv.value.push_back( alarmLowThreshold >> 8 );
     tlv.value.push_back( alarmLowThreshold );
@@ -241,12 +243,16 @@ RfnCommandResult RfnGetTemperatureAlarmConfigurationCommand::decodeCommand( cons
 
     result.description += "\nState: Alarm " + *enabledState + " (" + CtiNumStr(tlv.value[0]) + ")";
 
-    // Decode the rest of thte data
+    // Decode the rest of the data
 
-    _configuration.alarmHighTempThreshold = ( tlv.value[1] << 8 ) | tlv.value[2];
+    boost::int16_t highThreshold = ( tlv.value[1] << 8 ) | tlv.value[2];
+
+    _configuration.alarmHighTempThreshold = highThreshold;  // sign extend as necessary
 
     result.description += "\nHigh Temperature Threshold: " + CtiNumStr(_configuration.alarmHighTempThreshold) + " degree(s) ("
-                       + CtiNumStr(_configuration.alarmHighTempThreshold).xhex(4) + ")";
+                       + CtiNumStr(highThreshold).xhex(4) + ")";
+
+    // Ignore bytes 3 and 4 (low temp threshold)
 
     _configuration.alarmRepeatInterval = tlv.value[5];
 

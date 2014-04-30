@@ -1899,7 +1899,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  4 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  5 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 0 );
 
         std::vector<bool> expectMoreRcv;
@@ -1911,7 +1911,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         }
 
         const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(false); // 4 error messages, NOTE: last expectMore expected to be false
+                (true)(true)(true)(true)(false); // 5 error messages, NOTE: last expectMore expected to be false
 
         BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                        expectMoreExp.begin() , expectMoreExp.end() );
@@ -1929,7 +1929,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  4 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  5 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 1 );
 
         std::vector<bool> expectMoreRcv;
@@ -1941,7 +1941,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         }
 
         const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true); // 3 error messages + 1 message to notify that 1 config has been sent to the device
+                (true)(true)(true)(true)(true); // 4 error messages + 1 message to notify that 1 config has been sent to the device
 
         BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                        expectMoreExp.begin() , expectMoreExp.end() );
@@ -1964,7 +1964,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  3 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  4 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 7 );
 
         std::vector<bool> expectMoreRcv;
@@ -1976,7 +1976,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         }
 
         const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true); // 2 error messages + 1 message to notify that 2 config has been sent to the device
+                (true)(true)(true)(true); // 3 error messages + 1 message to notify that 2 config has been sent to the device
 
         BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                        expectMoreExp.begin() , expectMoreExp.end() );
@@ -2065,7 +2065,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  2 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  3 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 9 );
 
         std::vector<bool> expectMoreRcv;
@@ -2077,7 +2077,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         }
 
         const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true); // 1 error messages + 1 message to notify that 3 config has been sent to the device
+                (true)(true)(true); // 2 error messages + 1 message to notify that 3 config has been sent to the device
 
         BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                        expectMoreExp.begin() , expectMoreExp.end() );
@@ -2096,8 +2096,41 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  2 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 10 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true); // 1 error message + 1 message to notify that 4 config has been sent to the device
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add temperature alarming configuration
+    cfg.insertValue( RfnStrings::TemperatureAlarmEnabled,           "true" );
+    cfg.insertValue( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   );
+    cfg.insertValue( RfnStrings::TemperatureAlarmRepeatCount,       "3"    );
+    cfg.insertValue( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   );
+
+    {
+        ////// 5 valid configurations //////
+
+        resetTestState();
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 11 );
 
         std::vector<bool> expectMoreRcv;
         while( ! returnMsgs.empty() )
@@ -2129,7 +2162,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  5 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  6 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 0 );
 
         std::vector<bool> expectMoreRcv;
@@ -2141,7 +2174,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         }
 
         const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true)(false); // 4 error messages, NOTE: last expectMore expected to be false
+                (true)(true)(true)(true)(true)(false); // 5 error messages, NOTE: last expectMore expected to be false
 
         BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                        expectMoreExp.begin() , expectMoreExp.end() );
@@ -2161,7 +2194,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  5 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  6 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 1 );
 
         std::vector<bool> expectMoreRcv;
@@ -2173,7 +2206,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         }
 
         const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true)(true);
+                (true)(true)(true)(true)(true)(true);
 
         BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                        expectMoreExp.begin() , expectMoreExp.end() );
@@ -2191,7 +2224,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  4 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  5 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 2 );
 
         std::vector<bool> expectMoreRcv;
@@ -2203,7 +2236,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         }
 
         const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true); // 3 error messages + 1 message to notify that 1 config has been sent to the device
+                (true)(true)(true)(true)(true); // 4 error messages + 1 message to notify that 1 config has been sent to the device
 
         BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                        expectMoreExp.begin() , expectMoreExp.end() );
@@ -2226,7 +2259,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  3 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  4 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 8 );
 
         std::vector<bool> expectMoreRcv;
@@ -2238,7 +2271,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         }
 
         const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true); // 2 error messages + 1 message to notify that 2 config has been sent to the device
+                (true)(true)(true)(true); // 3 error messages + 1 message to notify that 2 config has been sent to the device
 
         BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                        expectMoreExp.begin() , expectMoreExp.end() );
@@ -2327,7 +2360,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  2 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  3 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 10 );
 
         std::vector<bool> expectMoreRcv;
@@ -2339,7 +2372,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         }
 
         const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true); // 1 error messages + 1 message to notify that 3 config has been sent to the device
+                (true)(true)(true); // 2 error messages + 1 message to notify that 3 config has been sent to the device
 
         BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                        expectMoreExp.begin() , expectMoreExp.end() );
@@ -2358,8 +2391,41 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  2 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 11 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true); // 1 error message + 1 message to notify that 4 config has been sent to the device
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add temperature alarming configuration
+    cfg.insertValue( RfnStrings::TemperatureAlarmEnabled,           "true" );
+    cfg.insertValue( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   );
+    cfg.insertValue( RfnStrings::TemperatureAlarmRepeatCount,       "3"    );
+    cfg.insertValue( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   );
+
+    {
+        ////// 5 valid configurations //////
+
+        resetTestState();
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 12 );
 
         std::vector<bool> expectMoreRcv;
         while( ! returnMsgs.empty() )

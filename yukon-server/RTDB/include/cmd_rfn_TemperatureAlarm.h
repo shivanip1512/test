@@ -20,8 +20,8 @@ public:
     {
         bool        alarmEnabled;
         unsigned    alarmRepeatInterval,
-                    alarmRepeatCount,
-                    alarmHighTempThreshold;
+                    alarmRepeatCount;
+        int         alarmHighTempThreshold;
     };
 
     bool isSupported() const;

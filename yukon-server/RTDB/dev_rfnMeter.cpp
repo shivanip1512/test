@@ -77,18 +77,18 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(bool readOnly)
 {
     ConfigMap m;
 
-//    if ( readOnly )
-//    {
-//        boost::assign::insert( m )
-//            ( ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executeGetConfigTemperatureAlarm,    this ) )
-//                ;
-//    }
-//    else
-//    {
-//        boost::assign::insert( m )
-//            ( ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executePutConfigTemperatureAlarm,    this ) )
-//                ;
-//    }
+    if ( readOnly )
+    {
+        boost::assign::insert( m )
+            ( ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executeGetConfigTemperatureAlarm,    this ) )
+                ;
+    }
+    else
+    {
+        boost::assign::insert( m )
+            ( ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executePutConfigTemperatureAlarm,    this ) )
+                ;
+    }
 
     return m;
 }
@@ -353,16 +353,16 @@ int RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiC
         configuration.alarmEnabled        = getConfigData<bool>( deviceConfig, Config::RfnStrings::TemperatureAlarmEnabled );
         configuration.alarmRepeatInterval = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::TemperatureAlarmRepeatInterval );
         configuration.alarmRepeatCount    = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::TemperatureAlarmRepeatCount );
-        unsigned threshold                = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::TemperatureAlarmHighTempThreshold );
+        long threshold                    = getConfigData<long>( deviceConfig, Config::RfnStrings::TemperatureAlarmHighTempThreshold );
 
         // Convert device configuration threshold value from degrees F to degrees C rounding down
 
-        configuration.alarmHighTempThreshold = static_cast<unsigned>( std::floor( ( threshold - 32 ) * 5 / 9.0 ) );
+        configuration.alarmHighTempThreshold = static_cast<int>( std::floor( ( threshold - 32 ) * 5 / 9.0 ) );
 
         const boost::optional<bool>     paoAlarmEnabled        = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsEnabled );
         const boost::optional<unsigned> paoAlarmRepeatInterval = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval );
         const boost::optional<unsigned> paoAlarmRepeatCount    = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount );
-        const boost::optional<unsigned> paoAlarmThreshold      = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold );
+        const boost::optional<int>      paoAlarmThreshold      = findDynamicInfo<int>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold );
 
 
         if (    configuration.alarmEnabled           != paoAlarmEnabled
