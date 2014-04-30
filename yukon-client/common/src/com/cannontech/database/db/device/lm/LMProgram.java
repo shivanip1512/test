@@ -1,19 +1,21 @@
 package com.cannontech.database.db.device.lm;
 
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlUtils;
+import java.util.List;
+import java.util.Vector;
 
-/**
- * This type was created in VisualAge.
- */
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.RowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.spring.YukonSpringHook;
 
 public class LMProgram extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer deviceID = null;
 	private String controlType = null;
 	private Integer constraintID = new Integer(CtiUtilities.NONE_ZERO_ID);
-
-
+	private static YukonJdbcTemplate jdbcTemplate;
+	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"ControlType", "ConstraintID"
@@ -23,112 +25,69 @@ public class LMProgram extends com.cannontech.database.db.DBPersistent
 
 	public static final String TABLE_NAME = "LMProgram";
 
-/**
- * LMGroupVersacomSerial constructor comment.
- */
 public LMProgram() {
 	super();
 }
-/**
- * add method comment.
- */
+
 public void add() throws java.sql.SQLException 
 {
 	Object addValues[] = { getDeviceID(), getControlType(), getConstraintID() };
 
 	add( TABLE_NAME, addValues );
 }
-/**
- * delete method comment.
- */
+
 public void delete() throws java.sql.SQLException 
 {
 	delete( TABLE_NAME, "DeviceID", getDeviceID() );
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:47:47 AM)
- * @return java.lang.String
- */
 public java.lang.String getControlType() {
 	return controlType;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
+
 public Integer getDeviceID() {
 	return deviceID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @return java.lang.Integer
- */
+
 public java.lang.Integer getConstraintID() {
 	return constraintID;
 }
 
 /**
- * This method was created in VisualAge.
- * @param
- * @return java.util.Vector of Integers
- *
- * This method returns all the LMProgram ID's that are not assgined
- *  to a Control Area.
+ * Checks to see if a given load management program has been assigned to an appliance category,
+ * making it a STARS assigned program.
+ * @param programId The LM program id to check.
  */
-public static java.util.Vector getUnassignedPrograms()
-{
-	java.util.Vector returnVector = null;
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-
-
-	String sql = "SELECT DeviceID FROM " + TABLE_NAME + " where " +
-					 " deviceid not in (select lmprogramdeviceid from " + LMControlAreaProgram.TABLE_NAME +
-					 ") ORDER BY deviceid";
-
-	try
-	{		
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-
-		if( conn == null )
-		{
-			throw new IllegalStateException("Error getting database connection.");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			
-			rset = pstmt.executeQuery();
-			returnVector = new java.util.Vector(5); //rset.getFetchSize()
-	
-			while( rset.next() )
-			{				
-				returnVector.addElement( 
-						new Integer(rset.getInt("DeviceID")) );
-			}
-					
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, pstmt, conn );
-	}
-
-
-	return returnVector;
+public static boolean isAssignedProgram(int programId) {
+    SqlStatementBuilder sql = new SqlStatementBuilder();
+    sql.append("SELECT COUNT(*) FROM LMProgramWebPublishing WHERE DeviceId").eq(programId);
+    return getYukonJdbcTemplate().queryForInt(sql) > 0;
 }
 
 /**
- * retrieve method comment.
+ * This method returns all the LMProgram ID's that are not assigned to a Control Area.
  */
+public static Vector getUnassignedPrograms() {
+    Vector returnVector = new Vector<>();
+    SqlStatementBuilder sql = new SqlStatementBuilder();
+    sql.append("SELECT DeviceID FROM " + TABLE_NAME + " WHERE "
+            + " DeviceId NOT IN (SELECT LmProgramDeviceId FROM " + LMControlAreaProgram.TABLE_NAME
+            + ") ORDER BY DeviceId");
+    List<Integer> unassignedProgramIds = getYukonJdbcTemplate().query(sql, RowMapper.INTEGER);
+    returnVector.addAll(unassignedProgramIds);
+    return returnVector;
+}
+
+/**
+ * Obtains a reference to YukonJdbcTemplate for use in unassigned program queries.
+ */
+private static YukonJdbcTemplate getYukonJdbcTemplate() {
+    if (jdbcTemplate == null) {
+        jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
+    }
+    return jdbcTemplate;
+}
+
 public void retrieve() throws java.sql.SQLException 
 {
 	Object constraintValues[] = { getDeviceID() };	
@@ -145,33 +104,18 @@ public void retrieve() throws java.sql.SQLException
 
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:47:47 AM)
- * @param newControlType java.lang.String
- */
 public void setControlType(java.lang.String newControlType) {
 	controlType = newControlType;
 }
-/**
- * This method was created in VisualAge.
- * @param newValue java.lang.Integer
- */
+
 public void setDeviceID(Integer newValue) {
 	this.deviceID = newValue;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @param newMaxHoursAnnually java.lang.Integer
- */
+
 public void setConstraintID(java.lang.Integer newID) {
 	constraintID = newID;
 }
 
-/**
- * update method comment.
- */
 public void update() throws java.sql.SQLException 
 {
 	Object setValues[] = { getControlType(), getConstraintID() };
@@ -180,6 +124,5 @@ public void update() throws java.sql.SQLException
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
-	
 
 }

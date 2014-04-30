@@ -1,5 +1,7 @@
 package com.cannontech.core.dao.impl;
 
+import java.sql.SQLException;
+
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
@@ -7,6 +9,7 @@ import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.MACScheduleDao;
 import com.cannontech.database.data.capcontrol.VoltageRegulator;
 import com.cannontech.database.data.config.ConfigTwoWay;
+import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.season.SeasonSchedule;
@@ -16,6 +19,7 @@ import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.baseline.Baseline;
 import com.cannontech.database.db.device.lm.LMGroup;
+import com.cannontech.database.db.device.lm.LMProgram;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
 
 /**
@@ -98,6 +102,16 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		//this device is deleteable
 		return STATUS_ALLOW;
 	}
+
+    private static byte createDeleteStringForLmProgram(final DBDeleteResult dbRes) throws SQLException {
+        int programId = dbRes.getItemID();
+        if (LMProgram.isAssignedProgram(programId)) {
+            dbRes.getDescriptionMsg().append(CR_LF + "because it is currently in use as a STARS assigned program."
+                            + CR_LF + "Unassign it from all appliance categories and try again.");
+            return STATUS_DISALLOW;
+        }
+        return STATUS_ALLOW;
+    }
 
     private static byte createDeleteStringForPaoType(final DBDeleteResult dbRes) throws java.sql.SQLException
     {
@@ -500,7 +514,17 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			delRes.getUnableDelMsg().append("You cannot delete the tag '" + nodeName + "'");
 			delRes.setItemID( ((com.cannontech.database.db.tags.Tag) toDelete).getTagID().intValue() );
 			delRes.setDelType( DBDeletionDaoImpl.TAG_TYPE );
-		}				
+		}
+		else if (toDelete instanceof LMProgramDirect) {
+		    delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + 
+		            "' and all of its points?" + CR_LF + CR_LF +
+		            "*The delete process will take extra time if several points are present." + CR_LF +
+		            "*All points history will also be deleted.");
+		    
+		    delRes.getUnableDelMsg().append("You cannot delete the load management program '" + nodeName + "'");
+		    delRes.setItemID( ((com.cannontech.database.data.pao.YukonPAObject) toDelete).getPAObjectID().intValue() );
+		    delRes.setDelType( DBDeletionDaoImpl.LM_PROGRAM);
+		}
 		else if( toDelete instanceof com.cannontech.database.data.pao.YukonPAObject )
 		{
 			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + 
@@ -634,6 +658,9 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		}
 		else if(dbRes.getDelType() == HOLIDAY_SCHEDULE)	{
 			return createDeleteStringForHolidaySchedule(dbRes);
+		}
+		else if(dbRes.getDelType() == LM_PROGRAM) {
+		    return createDeleteStringForLmProgram(dbRes);
 		}
         else if(dbRes.getDelType() == PAO_TYPE) {
             return createDeleteStringForPaoType(dbRes);
