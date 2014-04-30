@@ -1,13 +1,17 @@
 #include <boost/test/auto_unit_test.hpp>
+#include <boost/assign/list_of.hpp>
+#include <boost/multi_array.hpp>
 
 #include "tbl_dyn_paoinfo.h"
 #include "boostutil.h"
 
 BOOST_AUTO_TEST_SUITE( test_tbl_dyn_paoinfo )
 
-
 BOOST_AUTO_TEST_CASE(test_getKeyString)
 {
+    //
+    // verify non-indexed keys
+    //
     struct test_case
     {
         CtiTableDynamicPaoInfo::PaoInfoKeys key;
@@ -305,20 +309,110 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval,           "rfn temp alarm repeat interval" },
         { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount,              "rfn temp alarm repeat count" },
         { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold,        "rfn temp alarm high temp threshold" },
+        { CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds,   "rfn channel recording interval seconds" },
+        { CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds,   "rfn channel reporting interval seconds" },
         { CtiTableDynamicPaoInfo::Key_RF_DA_DnpSlaveAddress,                 "rf da dnp slave address" },
     };
 
-    std::vector<std::string> expected, results;
-
-    for each(test_case tc in test_cases)
     {
-        expected.push_back(tc.keyAsString);
+        std::vector<std::string> expected, results;
+        std::vector<bool> duplicateExpected, duplicateResults;
+        std::set<std::string> tmp_set;
 
-        results.push_back(CtiTableDynamicPaoInfo::getKeyString(tc.key));
+        for each(test_case tc in test_cases)
+        {
+            const std::string keyString = CtiTableDynamicPaoInfo::getKeyString(tc.key);
+
+            expected.push_back(tc.keyAsString);
+            results .push_back(keyString);
+
+            duplicateExpected.push_back(false);
+
+            if( ! keyString.empty() )
+            {
+                const bool isDuplicate = ! tmp_set.insert(keyString).second;
+                duplicateResults.push_back(isDuplicate);
+            }
+            else
+            {
+                // keep the index of the collection in sync with the key array under test
+                duplicateResults.push_back(false);
+            }
+        }
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(), results.begin(), results.end());
+        BOOST_CHECK_EQUAL_COLLECTIONS(duplicateExpected.begin(), duplicateExpected.end(), duplicateResults.begin(), duplicateResults.end());
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(), results.begin(), results.end());
-}
+    //
+    // test indexed keys
+    //
+    struct test_case_indexed
+    {
+        CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed key;
+        std::string keyAsString;
+    }
+    const test_cases_indexed[] =
+    {
+       { CtiTableDynamicPaoInfoIndexed::Key_Invalid,                               "" },
+       { CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelSelectionMetrics,           "rfn channel selection metrics" },
+       { CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelRecordingIntervalMetrics,   "rfn channel recording interval metrics" },
+    };
 
+    {
+        std::vector<std::string> expected, results;
+        std::vector<bool> duplicateExpected, duplicateResults;
+        std::set<std::string> tmp_set;
+
+        for each(test_case_indexed tc_indexed in test_cases_indexed)
+        {
+            const std::string keyStringIndexed = CtiTableDynamicPaoInfoIndexed::getKeyString(tc_indexed.key);
+
+            expected.push_back(tc_indexed.keyAsString);
+            results .push_back(keyStringIndexed);
+
+            duplicateExpected.push_back(false);
+
+            if( ! keyStringIndexed.empty() )
+            {
+                const bool isDuplicate = ! tmp_set.insert(keyStringIndexed).second;
+                duplicateResults.push_back(isDuplicate);
+            }
+            else
+            {
+                // keep the index of the collection in sync with the key array under test
+                duplicateResults.push_back(false);
+            }
+
+        }
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(), results.begin(), results.end());
+        BOOST_CHECK_EQUAL_COLLECTIONS(duplicateExpected.begin(), duplicateExpected.end(), duplicateResults.begin(), duplicateResults.end());
+    }
+
+    //
+    // test that no key string matches fully or partially (prefix) any indexed keys string
+    //
+    {
+        for each(test_case_indexed tc_indexed in test_cases_indexed)
+        {
+            const std::string keyStringIndexed = CtiTableDynamicPaoInfoIndexed::getKeyString(tc_indexed.key);
+
+            for each(test_case tc in test_cases)
+            {
+                const std::string keyString = CtiTableDynamicPaoInfo::getKeyString(tc.key);
+
+                if( ! keyStringIndexed.empty() && ! keyString.empty() )
+                {
+                    const bool matches = keyString.compare(0, std::min( keyString.length(), keyStringIndexed.length()), keyStringIndexed ) == 0;
+
+                    BOOST_CHECK_MESSAGE( ! matches,
+                            "keyStringIndexed (" << tc_indexed.key << "): \"" << keyStringIndexed << "\""
+                            " == prefix of keyString: (" << tc.key << "): \"" << keyString << "\"" );
+                }
+            }
+        }
+    }
+}
 
 BOOST_AUTO_TEST_SUITE_END()
