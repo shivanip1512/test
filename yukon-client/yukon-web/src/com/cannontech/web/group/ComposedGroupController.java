@@ -34,7 +34,6 @@ import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
-import com.cannontech.common.device.groups.service.NotEqualToOrDecendantOfGroupsPredicate;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
@@ -153,17 +152,7 @@ public class ComposedGroupController {
         List<String> deviceGroupToExcludeNodePath = new ArrayList<>();
         List<String> parentGroupNames = new ArrayList<>();
         while (!parent.getFullName().equals(DeviceGroupService.ROOT)){
-        	if(parent.getFullName().equals(DeviceGroupService.ROOT)){
-				/*
-				 * This predicate will remove top level parent of the current group from the picker.
-				 * Example: 
-				 * Composed device group setup for "Booted
-				 * Meters/Meters/Meters Composed", top parent "Booted Meters"
-				 * will be removed from the picker
-				 */
-        		predicates.add(new NotEqualToOrDecendantOfGroupsPredicate(parent));
-        	}
-			parentGroupNames.add(parent.getFullName());
+            parentGroupNames.add(parent.getFullName());
 			deviceGroupToExcludeNodePath.add(parent.getFullName());
 			parent = parent.getParent();
 		} 
@@ -175,13 +164,10 @@ public class ComposedGroupController {
 			//Find the group the current group is part of
 			DeviceGroup groupToExclude = deviceGroupEditorDao.getGroupById(deviceGroupComposed.getDeviceGroupId());
 			
-			//Find the top parent of that group. Example: /Alternate/Alternate Composed Group, "/Alternate" is a top level parent.
-            while (!groupToExclude.getParent().getFullName().equals(DeviceGroupService.ROOT)) {
+            while (!groupToExclude.getFullName().equals(DeviceGroupService.ROOT)) {
                 deviceGroupToExcludeNodePath.add(groupToExclude.getFullName());
                 groupToExclude = groupToExclude.getParent();
             }
-            deviceGroupToExcludeNodePath.add(groupToExclude.getFullName());
-			//Create a predicate to exclude the top level parent
 		}
         
         AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
