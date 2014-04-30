@@ -194,13 +194,11 @@ public class ComposedGroupController {
      * exclude.
      */
     
-    @SuppressWarnings("unchecked")
     private void makeParentHierarchyUnselectable(JsTreeNode groupExtRoot, List<String> deviceGroupToExcludeNodePath) {
-        Map<String, String> info = new HashMap<String, String>();
         List<JsTreeNode> children = groupExtRoot.getChildren();
         for (JsTreeNode jsTreeNode : children) {
-            info = (Map<String, String>) jsTreeNode.getAttributes().get("info");
-            String deviceNodePath = info.get("groupName");
+            Map<?, ?> info = (Map<?, ?>) jsTreeNode.getAttributes().get("info");
+            String deviceNodePath = (String) info.get("groupName");
             for (String nodePath : deviceGroupToExcludeNodePath) {
                 if (deviceNodePath.equals(nodePath)) {
                     jsTreeNode.getAttributes().put("unselectable", true);
