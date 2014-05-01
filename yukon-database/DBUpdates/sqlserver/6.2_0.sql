@@ -598,6 +598,12 @@ VALUES (-90045, -900, 'Allow Load Group Control','true',
         'In addition to Allow DR Control, controls access to shed and restore at group level');
 /* End YUK-13259 */
 
+/* Start YUK-13218 */
+UPDATE UserPage 
+SET PagePath = '/tools/data-exporter/view'
+WHERE PagePath =  '/amr/archivedValuesExporter/view';
+/* End YUK-13218 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
