@@ -32,6 +32,29 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
         <div id="picker_${id}_results" class="pickerResults"></div>
         <div id="picker_${id}_noResults" style="display: none" class="pickerResults"><i:inline key=".noResults"/></div>
     </div>
+    <c:if test="${multiSelectMode}">
+        <div class="action-area">
+            <input type="checkbox" id="picker_${id}_selectAll" onclick="javascript:${id}.selectAll.call(${id})">
+            <label for="picker_${id}_selectAll" class="simpleLink pointer"><i:inline key=".selectAll"/></label>
+            &nbsp;&nbsp;
+            <span style="display: none">
+                <i:inline key=".pageSelected"/>&nbsp;&nbsp;
+                <a id="picker_${id}_selectAllPages" href="javascript:${id}.selectAllPages.call(${id})">place holder</a>
+            </span>
+            <span style="display: none">
+                <i:inline key=".selectionCleared"/>&nbsp;&nbsp;
+                <a id="picker_${id}_clearEntireSelection"
+                    href="javascript:${id}.clearEntireSelection.call(${id})"><i:inline key=".clearEntireSelection"/></a>
+            </span>
+            <span style="display: none">
+                <span id="picker_${id}_allPagesSelected">place holder</span>&nbsp;&nbsp;
+                <a href="javascript:${id}.clearEntireSelection.call(${id})"><i:inline key=".clearEntireSelection"/></a>
+            </span>
+            <span id="picker_${id}_entireSelectionCleared" style="display: none">
+                <i:inline key=".entireSelectionCleared"/>
+            </span>
+        </div>
+    </c:if>
 </div>
 
 </cti:msgScope>
