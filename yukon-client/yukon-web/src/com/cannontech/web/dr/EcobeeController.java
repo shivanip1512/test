@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,16 +24,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.MonthYear;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
+import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
+import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
 import com.cannontech.dr.ecobee.EcobeeException;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
+import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -48,12 +54,14 @@ public class EcobeeController {
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
+    @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
+
     
     @RequestMapping(value="/ecobee/settings", method=RequestMethod.POST)
     public String saveSettings(@ModelAttribute("ecobeeSettings") EcobeeSettings settings, FlashScope flash) {
         log.info(settings);
         //flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "successful"));
-        flash.setError(new YukonMessageSourceResolvable(homeKey + "failure"));
+        flash.setError(new YukonMessageSourceResolvable(homeKey + "failed"));
         return "redirect:/dr/home";
     }
     
@@ -102,19 +110,9 @@ public class EcobeeController {
     }
     
     @RequestMapping(value="/ecobee", method=RequestMethod.GET)
-    public String details(ModelMap model) {
+    public String details(ModelMap model, YukonUserContext userContext) {
         
-        List<String> months = new ArrayList<>();
-        DateTime date = new DateTime();
-        String month = date.toString("MMMM (YYYY)");
-        months.add(month);
-        // need to add properties for each month as per spec
-        for (int i = 1; i <= 12; i++) {
-            months.add(date.minusMonths(i).toString("MMMM (YYYY)")); 
-        }
-        
-        model.addAttribute("months", months);
-        
+        // dummy data for issues until job created to generate issues
         List<EcobeeSyncIssue> issues = new ArrayList<>();
         
         EcobeeSyncIssue deviceNotInEcobee = new EcobeeSyncIssue();
@@ -149,6 +147,51 @@ public class EcobeeController {
 
         model.addAttribute("issues", issues);
         
+        LiteYukonUser user = userContext.getYukonUser();
+        int energyCoId = ecDao.getEnergyCompany(user).getId();
+
+        //get stats across a range of months
+        MonthYear currentMonth = MonthYear.now();
+        MonthYear yearAgoMonth = currentMonth.minus(0, 1);
+        Range<MonthYear> range = Range.inclusive(yearAgoMonth, currentMonth);
+
+        List<EcobeeQueryStatistics> rangeOfStatsList = ecobeeQueryCountDao.getCountsForRange(range, energyCoId);
+        List<EcobeeQueryStats> queryStatsList = new ArrayList<>();
+        for(EcobeeQueryStatistics stats : rangeOfStatsList) {
+            int statsMonth = stats.getMonth();
+            int statsYear = stats.getYear();
+            int demandResponseCount = stats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
+            int dataCollectionCount = stats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
+            int systemCount = stats.getQueryCountByType(EcobeeQueryType.SYSTEM);
+            EcobeeQueryStats queryStats =
+                new EcobeeQueryStats(statsMonth, statsYear, demandResponseCount, dataCollectionCount, systemCount);
+            queryStatsList.add(queryStats);
+        }
+        // begin unit test
+        if (0 == rangeOfStatsList.size()) {
+            // fake data for testing
+            Random rand = new Random();
+            DateTime dateTime = new DateTime();
+            int maxTestVal = 100000;
+            for(int i = 0; i < 11; i += 1) {
+                int demandResponseCount = rand.nextInt(maxTestVal);
+                int dataCollectionCount = rand.nextInt(maxTestVal-demandResponseCount);
+                int systemCount = rand.nextInt(maxTestVal-demandResponseCount-dataCollectionCount);
+                EcobeeQueryStats queryStats =
+                    new EcobeeQueryStats(dateTime.minusMonths(i).getMonthOfYear(), dateTime.minusMonths(i).getYear(),
+                        demandResponseCount, dataCollectionCount, systemCount);
+                queryStatsList.add(queryStats);
+            }
+        }
+        for(EcobeeQueryStats stats : queryStatsList){
+            log.debug("statsMonth: " + stats.statsMonth + " statsYear: " + stats.statsYear + " demandResponseCount: " +
+                stats.demandResponseCount +
+                " dataCollectionCount: " + stats.dataCollectionCount + " systemCount: " + stats.systemCount +
+                " monthYearStr: " + stats.monthYearStr);
+        }
+        // end unit test, debug logging
+        model.addAttribute("ecobeeStatsList", queryStatsList);
+
         return "dr/ecobee/details.jsp";
     }
     
@@ -157,6 +200,7 @@ public class EcobeeController {
         private EcobeeSyncIssueType type;
         private String serialNumber;
         private String loadGroupName;
+        private String issueName;
         
         public EcobeeSyncIssueType getType() {
             return type;
@@ -176,7 +220,12 @@ public class EcobeeController {
         public void setLoadGroupName(String loadGroupName) {
             this.loadGroupName = loadGroupName;
         }
-        
+        public String getIssueName() {
+            return issueName;
+        }
+        public void setIssueName(String issueName) {
+            this.issueName = issueName;
+        }
     }
     
     public enum EcobeeSyncIssueType implements DisplayableEnum {
@@ -203,8 +252,62 @@ public class EcobeeController {
 
         @Override
         public String getFormatKey() {
-            // TODO 
-            return null;
+            return "yukon.web.modules.dr.ecobee.details." + name();
+        }
+    }
+    
+    public class EcobeeQueryStats {
+        private int statsMonth;
+        private int statsYear;
+        private int demandResponseCount;
+        private int dataCollectionCount;
+        private int systemCount;
+        private String monthYearStr;
+        
+        public EcobeeQueryStats(int month, int year, int demandCount, int dataCount, int sysCount) {
+            statsMonth = month;
+            statsYear = year;
+            DateTime date = new DateTime(statsYear, statsMonth, 1, 0, 0);
+            monthYearStr = date.toString("MMMM (YYYY)");
+            demandResponseCount = demandCount;
+            dataCollectionCount = dataCount;
+            systemCount = sysCount;
+        }
+        public int getStatsMonth() {
+            return statsMonth;
+        }
+        public void setStatsMonth(int month ) {
+            statsMonth = month;
+        }
+        public int getStatsYear() {
+            return statsYear;
+        }
+        public void setStatsYear(int year) {
+            statsYear = year;
+        }
+        public int getDemandResponseCount() {
+            return demandResponseCount;
+        }
+        public void setDemandResponseCount(int count) {
+            demandResponseCount = count;
+        }
+        public int getDataCollectionCount() {
+            return dataCollectionCount;
+        }
+        public void setDataCollectionCount(int count) {
+            dataCollectionCount = count;
+        }
+        public int getSystemCount() {
+            return systemCount;
+        }
+        public void setSystemCount(int count) {
+            systemCount = count;
+        }
+        public String getMonthYearStr() {
+            return monthYearStr;
+        }
+        public void setMonthYearStr(String monthYear) {
+            monthYearStr = monthYear;
         }
     }
 }

@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -16,11 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.userpage.dao.UserPageDao;
+import com.cannontech.common.util.MonthYear;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
+import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
+import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 import com.cannontech.dr.model.PerformanceVerificationAverageReports;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
@@ -30,6 +35,7 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.OnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -59,6 +65,8 @@ public class HomeController {
         private YukonJobDefinition<RfnPerformanceVerificationTask> rfnVerificationJobDef;
     @Autowired @Qualifier("rfnPerformanceVerificationEmail")
         private YukonJobDefinition<RfnPerformanceVerificationEmailTask> rfnEmailJobDef;
+    @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
+    @Autowired private EnergyCompanyDao ecDao;
 
     @RequestMapping("/home")
     public String home(ModelMap model, 
@@ -147,7 +155,7 @@ public class HomeController {
 //        boolean showEcobeeStats = (ecobee == OnOff.ON);
         boolean showEcobeeStats = true;
         model.addAttribute("showEcobeeStats", showEcobeeStats);
-        model.addAttribute("month", new DateTime().toString("MMM"));
+        model.addAttribute("month", new DateTime().toString("MMM YYYY"));
         
         EcobeeSettings ecobeeSettings = new EcobeeSettings();
         ecobeeSettings.setCheckErrors(true);
@@ -155,6 +163,26 @@ public class HomeController {
         ecobeeSettings.setErrorCheckTime(42);
         model.addAttribute("ecobeeSettings", ecobeeSettings);
         
+        int energyCoId = ecDao.getEnergyCompany(user).getId();
+        EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now(), energyCoId);
+        int currentMonthDataCollectionQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
+        int currentMonthDemandResponseQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
+        int currentMonthSystemQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
+        // begin test
+        if(0 == currentMonthDataCollectionQueryCount && 0 == currentMonthDemandResponseQueryCount &&
+            0 == currentMonthSystemQueryCount) {
+            // generate fake data
+            Random rand = new Random();
+            int maxTestVal = 10000;
+            currentMonthDemandResponseQueryCount = rand.nextInt(maxTestVal);
+            currentMonthDataCollectionQueryCount = rand.nextInt(maxTestVal-currentMonthDemandResponseQueryCount);
+            currentMonthSystemQueryCount = rand.nextInt(maxTestVal-currentMonthDemandResponseQueryCount-
+                currentMonthDataCollectionQueryCount);
+        }
+        // end test
+        model.addAttribute("currentMonthDataCollectionCount", currentMonthDataCollectionQueryCount);
+        model.addAttribute("currentMonthDemandResponseCount", currentMonthDemandResponseQueryCount);
+        model.addAttribute("currentMonthSystemCount", currentMonthSystemQueryCount);
         return "dr/home.jsp";
     }
     

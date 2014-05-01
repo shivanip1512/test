@@ -5,6 +5,7 @@ public class EcobeeSettings {
     private boolean checkErrors;
     private int errorCheckTime;
     private boolean dataCollection;
+    private int downloadTime;
     
     public boolean isCheckErrors() {
         return checkErrors;
@@ -28,6 +29,14 @@ public class EcobeeSettings {
     
     public void setDataCollection(boolean dataCollection) {
         this.dataCollection = dataCollection;
+    }
+
+    public void setDownloadTime(int downloadTime) {
+        this.downloadTime = downloadTime;
+    }
+
+    public int getDownloadTime() {
+        return downloadTime;
     }
 
     @Override
@@ -55,14 +64,16 @@ public class EcobeeSettings {
             return false;
         if (errorCheckTime != other.errorCheckTime)
             return false;
+        if (downloadTime != other.downloadTime)
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
         return String
-                .format("EcobeeSettings [checkErrors=%s, errorCheckTime=%s, dataCollection=%s]",
-                        checkErrors, errorCheckTime, dataCollection);
+                .format("EcobeeSettings [checkErrors=%s, errorCheckTime=%s, dataCollection=%s, downloadTime=%s]",
+                        checkErrors, errorCheckTime, dataCollection, downloadTime);
     }
     
 }

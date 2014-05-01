@@ -195,6 +195,15 @@
         </property>
     </bean>
 
+    <bean name="ecobeeGroupPicker" class="com.cannontech.web.picker.PaoPermissionCheckingPicker">
+        <property name="permission" value="LM_VISIBLE"/>
+        <property name="sqlFilters">
+            <list>
+                <bean class="com.cannontech.common.search.pao.db.EcobeeGroupFilter"/>
+            </list>
+        </property>
+    </bean>
+
     <bean name="lmGroupPaoPermissionCheckingPicker" class="com.cannontech.web.picker.PaoPermissionCheckingPicker">
         <property name="permission" value="LM_VISIBLE"/>
         <property name="sqlFilters">

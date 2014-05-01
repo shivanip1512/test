@@ -438,12 +438,20 @@
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dailyErrorCheck">Daily Error Check</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dailyErrorCheck">Daily Error Check</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.successful">Successful</entry>
-<entry key="yukon.web.modules.dr.home.ecobee.configure.failure">Failure</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.failed">Failed</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.pageName">Ecobee Details</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.queryStats.title">Query Statistics</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.title">Issues ({0})</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.title">Data Downloads</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.loadGroupPicker">Select a Load Group</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.time">Daily Download Time</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.DEVICE_NOT_IN_ECOBEE">Device not in ecobee</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.DEVICE_NOT_IN_YUKON">Device not in Yukon</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_ENROLLMENT_INCORRECT">ecobee enrollment incorrect</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_SET_DOES_NOT_MATCH">ecobee set does not match</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_SET_IN_INCORRECT_LOCATION">ecobee set is in the incorrect location</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.LOAD_GROUP_NOT_IN_ECOBEE">Load group is not in ecobee</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.statistics.title">data collection / reports / reads</entry>
 
 <entry key="yukon.web.modules.dr.ecobee.queryType.DATA_COLLECTION">Data Collection</entry>
 <entry key="yukon.web.modules.dr.ecobee.queryType.DEMAND_RESPONSE">Demand Response</entry>

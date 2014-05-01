@@ -15,6 +15,7 @@
     <cti:includeScript link="YUKON_TIME_FORMATTER"/>
     <cti:includeScript link="/JavaScript/yukon.dr.dashboard.js"/>
     <cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.ecobee.js"/>
     <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
 
     <tags:simpleDialog id="drDialog"/>
@@ -155,20 +156,23 @@
                             <tr>
                                 <td class="name">Queries (${month}):</td>
                                 <td class="value full-width">
-                                    <div class="progress" style="width: 80px;float:left;">
+                                    <div class="progress query-statistics" style="width: 80px;float:left;"
+                                        data-query-counts='{ "currentMonthDataCollectionCount": "${currentMonthDataCollectionCount}",
+                                            "currentMonthDemandResponseCount": "${currentMonthDemandResponseCount}",
+                                            "currentMonthSystemCount": "${currentMonthSystemCount}" }'>
                                         <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 27.0%"></div>
-                                        <div class="progress-bar" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 50.0%"></div>
+                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 50.0%"></div>
                                         <div class="progress-bar progress-bar-default" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 23.0%"></div>
                                     </div>
-                                    <div class="fl" style="margin-left: 10px;" title="data collection / reports / reads">
-                                        <span style="margin-right: 10px;width:48px;display: inline-block;">15200</span>
+                                    <div class="fl query-counts" style="margin-left: 10px;" title="<cti:msg2 key=".ecobee.details.statistics.title"/>">
+                                        <span class="query-total" style="margin-right: 10px;width:48px;display: inline-block;">15200</span>
                                         <span class="label label-success">4104</span>
                                         <span class="label label-info">7600</span>
                                         <span class="label label-default">3496</span>
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr class="dn">
                                 <td class="name">Issues:</td>
                                 <td class="value full-width"><span class="label label-danger">6</span> devices, <span class="label label-danger">8</span> groups</td>
                             </tr>
@@ -182,8 +186,7 @@
                         <a href="<cti:url value="/dr/ecobee"/>"><i:inline key=".details"/></a>
                         <cti:button nameKey="configure" popup="#ecobee-config" icon="icon-cog-edit"/>
                         <div dialog data-form id="ecobee-config" data-width="500" data-title="<cti:msg2 key=".ecobee.configure.title"/>" class="dn">
-                            <cti:url var="settingsUrl" value="/dr/ecobee/settings"/>
-                            <form:form action="${settingsUrl}" method="POST" commandName="ecobeeSettings">
+                            <form:form action="ecobee/settings" method="POST" commandName="ecobeeSettings">
                                 <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                                     <tags:nameValue2 nameKey=".ecobee.configure.errorChecking" rowId="ecobee-error-checking-toggle" valueClass="full-width">
                                         <tags:hidden path="checkErrors" id="ecobee-check-errors"/>
