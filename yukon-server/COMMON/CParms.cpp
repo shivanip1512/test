@@ -47,6 +47,9 @@ string CtiConfigParameters::getYukonBase() const
 
 int CtiConfigParameters::RefreshConfigParameters()
 {
+    const unsigned MAX_CONFIG_BUFFER = 1024;
+    const unsigned MAX_CONFIG_KEY    = 256;
+    const unsigned MAX_CONFIG_VALUE  = MAX_CONFIG_BUFFER - MAX_CONFIG_KEY;
 
     int   i;
     char  key;
@@ -119,12 +122,6 @@ int CtiConfigParameters::RefreshConfigParameters()
                                         //delete Key;
                                         delete Val;
                                     }
-#ifdef DEBUGLEVEL100
-                                    else
-                                    {
-                                        cout << "Key/Value = " << Key->getKey() << " : " << Val->getValue() << endl;
-                                    }
-#endif
                                 }
                                 else
                                 {

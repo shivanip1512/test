@@ -8,15 +8,6 @@
 #include "configval.h"
 
 
-#define MAX_CONFIG_BUFFER  1024
-#define MAX_CONFIG_KEY     256
-#define MAX_CONFIG_VALUE   ((MAX_CONFIG_BUFFER) - (MAX_CONFIG_KEY))
-
-typedef std::map<std::string,CtiConfigValue*> ConfigValueMap;
-
-typedef ConfigValueMap::iterator mHash_itr2;
-typedef std::pair<mHash_itr2,bool> mHash_pair2;
-
 // Forward decls.
 class CtiConfigParameters;
 
@@ -93,6 +84,11 @@ private:
 class IM_EX_CTIBASE CtiConfigParameters
 {
 private:
+
+    typedef std::map<std::string,CtiConfigValue*> ConfigValueMap;
+
+    typedef ConfigValueMap::iterator mHash_itr2;
+    typedef std::pair<mHash_itr2,bool> mHash_pair2;
 
    int            RefreshRate;
    time_t         LastRefresh;
