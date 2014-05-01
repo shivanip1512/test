@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public final class AuthenticationResponse extends AbstractResponse {
+public final class AuthenticationResponse extends BaseResponse {
     private final String token;
     
     @JsonCreator

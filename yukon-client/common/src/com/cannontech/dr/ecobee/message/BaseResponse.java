@@ -9,11 +9,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Base class for all Ecobee responses that contain a Status.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public abstract class AbstractResponse {
+public class BaseResponse {
     protected final Status status;
     
     @JsonCreator
-    public AbstractResponse(@JsonProperty("status") Status status) {
+    public BaseResponse(@JsonProperty("status") Status status) {
         this.status = status;
     }
     

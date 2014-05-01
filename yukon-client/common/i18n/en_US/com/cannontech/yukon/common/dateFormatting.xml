@@ -20,6 +20,9 @@
 <entry key="yukon.common.dateFormatting.LONG_DATE">MMMM d, yyyy</entry>
 <entry key="yukon.common.dateFormatting.LONG_DATE_TIME">MMMM d, yyyy hh:mm a</entry>
 <entry key="yukon.common.dateFormatting.VERY_SHORT">MM/dd HH:mm</entry>
+<!-- DATE_DASHED and TIME24H_WITH_SECONDS are used to format ecobee DR messages and shouldn't be altered -->
+<entry key="yukon.common.dateFormatting.DATE_DASHED">yyyy-MM-dd</entry>
+<entry key="yukon.common.dateFormatting.TIME24H_WITH_SECONDS">HH:mm:ss</entry>
 
 <!-- 
      Please see http://keith-wood.name/datetimeEntryRef.html for the following formats

@@ -10,6 +10,7 @@ import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
+import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 
 /**
  * This service provides the communications layer with the Ecobee portal. It is responsible for converting requests into
@@ -85,4 +86,21 @@ public interface EcobeeCommunicationService {
      */
     boolean moveManagementSet(String currentPath, String newPath, int energyCompanyId)
             throws EcobeeAuthenticationException, EcobeeCommunicationException;
+    
+    /**
+     * Initiates a duty cycle demand response event in Ecobee.
+     * @return the Ecobee identifier for this DR event. This identifier can be used to cancel an event in progress.
+     * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
+     * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
+     */
+    String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters, int energyCompanyId) 
+            throws EcobeeAuthenticationException, EcobeeCommunicationException;
+    
+    /**
+     * Sends a message to cancel a DR event based on ecobee's event identifier.
+     * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
+     * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
+     */
+    boolean sendRestore(String drIdentifier, int energyCompanyId) throws EcobeeAuthenticationException, 
+            EcobeeCommunicationException;
 }

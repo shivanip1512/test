@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * This response is used for a variety of Ecobee operations.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public final class StandardResponse extends AbstractResponse {
+public final class StandardResponse extends BaseResponse {
     private final boolean success;
     
     @JsonCreator
