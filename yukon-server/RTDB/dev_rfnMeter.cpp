@@ -345,7 +345,7 @@ int RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiC
 
         if ( hasDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported ) )
         {
-            return ErrorUnsupportedFeature;
+            return ConfigCurrent;
         }
 
         RfnTemperatureAlarmCommand::AlarmConfiguration  configuration;

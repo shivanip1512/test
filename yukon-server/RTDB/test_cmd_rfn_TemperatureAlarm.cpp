@@ -95,13 +95,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_construction_exceptions_repeat_interval )
 {
+    // Currently there is no way to test underflow as we are data type limited to unsigned with a valid minimum of 0
+
     const std::vector< unsigned > inputs = boost::assign::list_of
-        ( 10 )
-        ( 20 );
+        ( 300 );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Interval: (10) (fixed at: 15)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Interval: (20) (fixed at: 15)" ) );
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Interval: (300) overflow (maximum: 255)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -134,13 +134,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_construction_exceptions_repeat_count )
 {
+    // Currently there is no way to test underflow as we are data type limited to unsigned with a valid minimum of 0
+
     const std::vector< unsigned > inputs = boost::assign::list_of
-        ( 2 )
-        ( 4 );
+        ( 400 );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Count: (2) (fixed at: 3)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Count: (4) (fixed at: 3)" ) );
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Count: (400) overflow (maximum: 255)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -157,6 +157,45 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
         try
         {
             configuration.alarmRepeatCount = input;
+
+            RfnSetTemperatureAlarmConfigurationCommand  command( configuration );
+        }
+        catch ( const RfnCommand::CommandException & ex )
+        {
+            actual.push_back( ex );
+        }
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
+}
+
+
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_construction_exceptions_threshold )
+{
+    const std::vector< unsigned > inputs = boost::assign::list_of
+        ( -50 )
+        ( 200 );
+
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( BADPARAM, "Invalid High Temperature Threshold: (-50) underflow (minimum: -40)" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid High Temperature Threshold: (200) overflow (maximum: 185)" ) );
+
+    std::vector< RfnCommand::CommandException > actual;
+
+    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration = 
+    {
+        true,       // alarmEnabled
+        15,         // alarmRepeatInterval
+        3,          // alarmRepeatCount
+        0           // alarmHighTempThreshold
+    };
+
+    for each ( const unsigned input in inputs )
+    {
+        try
+        {
+            configuration.alarmHighTempThreshold = input;
 
             RfnSetTemperatureAlarmConfigurationCommand  command( configuration );
         }
@@ -243,6 +282,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
                                             "\nState: Alarm Enabled (1)"
                                             "\nHigh Temperature Threshold: 50 degree(s) (0x0032)"
+                                            "\nLow Temperature Threshold: 40 degree(s) (0x0028)"
                                             "\nAlarm Repeat Interval: 15 minute(s)"
                                             "\nAlarm Repeat Count: 3 count(s)" );
 
@@ -259,13 +299,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
     {
         const std::vector< unsigned char > response = list_of
             ( 0x89 )( 0x01 )( 0x00 )( 0x01 )
-                ( 0x01 )( 0x07 )( 0x01 )( 0xff )( 0xf0 )( 0x00 )( 0x28 )( 0x0f )( 0x03 );
+                ( 0x01 )( 0x07 )( 0x01 )( 0xff )( 0xf0 )( 0xff )( 0xe6 )( 0x0f )( 0x03 );
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
                                             "\nState: Alarm Enabled (1)"
                                             "\nHigh Temperature Threshold: -16 degree(s) (0xfff0)"
+                                            "\nLow Temperature Threshold: -26 degree(s) (0xffe6)"
                                             "\nAlarm Repeat Interval: 15 minute(s)"
                                             "\nAlarm Repeat Count: 3 count(s)" );
 

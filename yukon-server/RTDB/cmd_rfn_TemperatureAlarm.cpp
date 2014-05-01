@@ -116,11 +116,29 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 RfnSetTemperatureAlarmConfigurationCommand::RfnSetTemperatureAlarmConfigurationCommand( const AlarmConfiguration & configuration )
     :   RfnTemperatureAlarmCommand( Operation_SetConfiguration, configuration )
 {
-    validate( Condition( configuration.alarmRepeatInterval == 15, BADPARAM )
-            << "Invalid Repeat Interval: (" << configuration.alarmRepeatInterval << ") (fixed at: 15)" );
+    validate( Condition( configuration.alarmHighTempThreshold >= Limit_HighTempThresholdMinimum, BADPARAM )
+            << "Invalid High Temperature Threshold: (" << configuration.alarmHighTempThreshold
+            << ") underflow (minimum: "<< Limit_HighTempThresholdMinimum << ")" );
 
-    validate( Condition( configuration.alarmRepeatCount == 3, BADPARAM )
-            << "Invalid Repeat Count: (" << configuration.alarmRepeatCount << ") (fixed at: 3)" );
+    validate( Condition( configuration.alarmHighTempThreshold <= Limit_HighTempThresholdMaximum, BADPARAM )
+            << "Invalid High Temperature Threshold: (" << configuration.alarmHighTempThreshold
+            << ") overflow (maximum: " << Limit_HighTempThresholdMaximum << ")" );
+
+    validate( Condition( configuration.alarmRepeatInterval >= Limit_RepeatIntervalMinimum, BADPARAM )
+            << "Invalid Repeat Interval: (" << configuration.alarmRepeatInterval
+            << ") underflow (minimum: "<< Limit_RepeatIntervalMinimum << ")" );
+
+    validate( Condition( configuration.alarmRepeatInterval <= Limit_RepeatIntervalMaximum, BADPARAM )
+            << "Invalid Repeat Interval: (" << configuration.alarmRepeatInterval
+            << ") overflow (maximum: " << Limit_RepeatIntervalMaximum << ")" );
+
+    validate( Condition( configuration.alarmRepeatCount >= Limit_RepeatCountMinimum, BADPARAM )
+            << "Invalid Repeat Count: (" << configuration.alarmRepeatCount
+            << ") underflow (minimum: "<< Limit_RepeatCountMinimum << ")" );
+
+    validate( Condition( configuration.alarmRepeatCount <= Limit_RepeatCountMaximum, BADPARAM )
+            << "Invalid Repeat Count: (" << configuration.alarmRepeatCount
+            << ") overflow (maximum: " << Limit_RepeatCountMaximum << ")" );
 }
 
 
@@ -252,7 +270,12 @@ RfnCommandResult RfnGetTemperatureAlarmConfigurationCommand::decodeCommand( cons
     result.description += "\nHigh Temperature Threshold: " + CtiNumStr(_configuration.alarmHighTempThreshold) + " degree(s) ("
                        + CtiNumStr(highThreshold).xhex(4) + ")";
 
-    // Ignore bytes 3 and 4 (low temp threshold)
+    boost::int16_t lowThreshold = ( tlv.value[3] << 8 ) | tlv.value[4];
+
+    int lowTempThreshold = lowThreshold;    // sign extend as necessary
+
+    result.description += "\nLow Temperature Threshold: " + CtiNumStr(lowTempThreshold) + " degree(s) ("
+                       + CtiNumStr(lowThreshold).xhex(4) + ")";
 
     _configuration.alarmRepeatInterval = tlv.value[5];
 

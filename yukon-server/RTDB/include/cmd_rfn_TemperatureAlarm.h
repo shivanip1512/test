@@ -92,6 +92,17 @@ public:
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
+protected:
+
+    enum ConfigurationLimits
+    {
+        Limit_HighTempThresholdMinimum  = -40,
+        Limit_HighTempThresholdMaximum  = 185,
+        Limit_RepeatIntervalMinimum     = 0,
+        Limit_RepeatIntervalMaximum     = 255,
+        Limit_RepeatCountMinimum        = 0,
+        Limit_RepeatCountMaximum        = 255
+    };
 };
 
 
