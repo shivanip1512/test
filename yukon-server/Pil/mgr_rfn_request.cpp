@@ -120,7 +120,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
         if( itr == _activeRequests.end() )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Indication received for inactive device " << indication.rfnIdentifier << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Indication message received for inactive device " << indication.rfnIdentifier << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             continue;
         }
@@ -129,7 +129,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Indication received for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Indication message received for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << indication.payload << std::endl;
         }
@@ -143,7 +143,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
         catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Indication payload too large (" << indication.payload.size() << ") for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Indication message payload too large (" << indication.payload.size() << ") for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             continue;
         }
@@ -151,7 +151,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
         if( ! optionalResponse )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Indication received with no payload for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Indication message received with no payload for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             continue;
         }
@@ -289,7 +289,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
         if( itr == _activeRequests.end() )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Confirm received for inactive device " << confirm.rfnIdentifier << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Confirm message received for inactive device " << confirm.rfnIdentifier << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             continue;
         }
@@ -298,7 +298,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
 
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Confirm received for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Confirm message received for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
         }
 
         if( ! confirm.error )
