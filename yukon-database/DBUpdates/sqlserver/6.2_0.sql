@@ -604,6 +604,63 @@ SET PagePath = '/tools/data-exporter/view'
 WHERE PagePath =  '/amr/archivedValuesExporter/view';
 /* End YUK-13218 */
 
+/* Start YUK-13244 */
+CREATE TABLE EcobeeQueryStatistics (
+   EnergyCompanyId      NUMERIC              NOT NULL,
+   MonthIndex           NUMERIC              NOT NULL,
+   YearIndex            NUMERIC              NOT NULL,
+   QueryType            VARCHAR(40)          NOT NULL,
+   QueryCount           NUMERIC              NOT NULL,
+   CONSTRAINT PK_EcobeeQueryStatistics PRIMARY KEY (EnergyCompanyId, MonthIndex, YearIndex, QueryType)
+);
+GO
+
+CREATE TABLE EcobeeReconReportError (
+   EcobeeReconReportErrorId NUMERIC          NOT NULL,
+   EcobeeReconReportId  NUMERIC              NOT NULL,
+   ErrorType            VARCHAR(40)          NOT NULL,
+   SerialNumber         NUMERIC              NULL,
+   CurrentLocation      VARCHAR(100)         NULL,
+   CorrectLocation      VARCHAR(100)         NULL,
+   CONSTRAINT PK_EcobeeReconReportError PRIMARY KEY (EcobeeReconReportErrorId)
+);
+GO
+
+CREATE TABLE EcobeeReconciliationReport (
+   EcobeeReconReportId  NUMERIC              NOT NULL,
+   EnergyCompanyId      NUMERIC              NOT NULL,
+   ReportDate           DATETIME             NOT NULL,
+   CONSTRAINT PK_EcobeeReconReport PRIMARY KEY (EcobeeReconReportId)
+);
+GO
+
+CREATE INDEX Indx_EcobeeReconReport_EC_UNQ ON EcobeeReconciliationReport (
+   EnergyCompanyId ASC
+);
+GO
+
+ALTER TABLE EcobeeQueryStatistics
+   ADD CONSTRAINT FK_EcobeeQueryStats_EnergyCo FOREIGN KEY (EnergyCompanyId)
+      REFERENCES EnergyCompany (EnergyCompanyID)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE EcobeeReconReportError
+   ADD CONSTRAINT FK_EcobeeRecRepErr_EcobeeRecRp FOREIGN KEY (EcobeeReconReportId)
+      REFERENCES EcobeeReconciliationReport (EcobeeReconReportId)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE EcobeeReconciliationReport
+   ADD CONSTRAINT FK_EcobeeReconReport_EnergyCo FOREIGN KEY (EnergyCompanyId)
+      REFERENCES EnergyCompany (EnergyCompanyID)
+         ON DELETE CASCADE;
+GO
+
+INSERT INTO YukonListEntry VALUES (2025, 1005, 0, 'Ecobee Smart SI', 1329);
+INSERT INTO YukonServices VALUES (21, 'EcobeeMessageListener', 'classpath:com/cannontech/services/ecobeeMessageListener/ecobeeMessageListenerContext.xml', 'ServiceManager');
+/* End YUK-13244 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

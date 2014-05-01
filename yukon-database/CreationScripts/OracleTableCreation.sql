@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/1/2014 3:14:25 PM                          */
+/* Created on:     5/1/2014 4:19:13 PM                          */
 /*==============================================================*/
 
 
@@ -4669,6 +4669,48 @@ create table ECToWorkOrderMapping  (
 );
 
 /*==============================================================*/
+/* Table: EcobeeQueryStatistics                                 */
+/*==============================================================*/
+create table EcobeeQueryStatistics  (
+   EnergyCompanyId      NUMBER                          not null,
+   MonthIndex           NUMBER                          not null,
+   YearIndex            NUMBER                          not null,
+   QueryType            VARCHAR2(40)                    not null,
+   QueryCount           NUMBER                          not null,
+   constraint PK_EcobeeQueryStatistics primary key (EnergyCompanyId, MonthIndex, YearIndex, QueryType)
+);
+
+/*==============================================================*/
+/* Table: EcobeeReconReportError                                */
+/*==============================================================*/
+create table EcobeeReconReportError  (
+   EcobeeReconReportErrorId NUMBER                          not null,
+   EcobeeReconReportId  NUMBER                          not null,
+   ErrorType            VARCHAR2(40)                    not null,
+   SerialNumber         NUMBER,
+   CurrentLocation      VARCHAR2(100),
+   CorrectLocation      VARCHAR2(100),
+   constraint PK_EcobeeReconReportError primary key (EcobeeReconReportErrorId)
+);
+
+/*==============================================================*/
+/* Table: EcobeeReconciliationReport                            */
+/*==============================================================*/
+create table EcobeeReconciliationReport  (
+   EcobeeReconReportId  NUMBER                          not null,
+   EnergyCompanyId      NUMBER                          not null,
+   ReportDate           DATE                            not null,
+   constraint PK_EcobeeReconReport primary key (EcobeeReconReportId)
+);
+
+/*==============================================================*/
+/* Index: Indx_EcobeeReconReport_EC_UNQ                         */
+/*==============================================================*/
+create index Indx_EcobeeReconReport_EC_UNQ on EcobeeReconciliationReport (
+   EnergyCompanyId ASC
+);
+
+/*==============================================================*/
 /* Table: EncryptionKey                                         */
 /*==============================================================*/
 create table EncryptionKey  (
@@ -8885,6 +8927,7 @@ INSERT INTO YukonListEntry VALUES (2021, 1005, 0, 'UtilityPRO ZigBee', 1316);
 INSERT INTO YukonListEntry VALUES (2022, 1005, 0, 'Digi Gateway', 1317);
 INSERT INTO YukonListEntry VALUES (2023, 1005, 0, 'UtilityPRO G2', 1318); 
 INSERT INTO YukonListEntry VALUES (2024, 1005, 0, 'UtilityPRO G3', 1319); 
+INSERT INTO YukonListEntry VALUES (2025, 1005, 0, 'Ecobee Smart SI', 1329);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
@@ -9511,6 +9554,7 @@ INSERT INTO YukonServices VALUES (16, 'SepMessageListener', 'classpath:com/canno
 INSERT INTO YukonServices VALUES (17, 'DigiPollingService', 'classpath:com/cannontech/services/digiPollingService/digiPollingService.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (18, 'CymDISTMessageListener', 'classpath:com/cannontech/services/cymDISTService/cymDISTServiceContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (20, 'OpcService','classpath:com/cannontech/services/opc/opcService.xml','ServiceManager');
+INSERT INTO YukonServices VALUES (21, 'EcobeeMessageListener', 'classpath:com/cannontech/services/ecobeeMessageListener/ecobeeMessageListenerContext.xml', 'ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
@@ -11220,6 +11264,21 @@ alter table ECToWorkOrderMapping
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc foreign key (WorkOrderID)
       references WorkOrderBase (OrderID);
+
+alter table EcobeeQueryStatistics
+   add constraint FK_EcobeeQueryStats_EnergyCo foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+      on delete cascade;
+
+alter table EcobeeReconReportError
+   add constraint FK_EcobeeRecRepErr_EcobeeRecRp foreign key (EcobeeReconReportId)
+      references EcobeeReconciliationReport (EcobeeReconReportId)
+      on delete cascade;
+
+alter table EcobeeReconciliationReport
+   add constraint FK_EcobeeReconReport_EnergyCo foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+      on delete cascade;
 
 alter table EnergyCompany
    add constraint FK_EnCm_Cnt foreign key (PrimaryContactID)
