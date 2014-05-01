@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.lm.LMGroupSep;
 
 public class LMGroupDigiSep extends LMGroup {
@@ -17,21 +16,25 @@ public class LMGroupDigiSep extends LMGroup {
         getYukonPAObject().setType(PaoType.LM_GROUP_DIGI_SEP.getDbString());
     }
 
+    @Override
     public void add() throws SQLException {
         super.add();
         getLmGroupSep().add();
     }
 
+    @Override
     public void addPartial() throws SQLException {
         super.addPartial();
         getLmGroupSepDefaults().add();
     }
 
+    @Override
     public void delete() throws SQLException {
         getLmGroupSep().delete();
         super.delete();
     }
 
+    @Override
     public void deletePartial() throws SQLException {
 
         super.deletePartial();
@@ -53,17 +56,20 @@ public class LMGroupDigiSep extends LMGroup {
         return getLmGroupSep();
     }
 
+    @Override
     public void retrieve() throws SQLException {
         super.retrieve();
         getLmGroupSep().retrieve();
     }
 
+    @Override
     public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
 
         getLmGroupSep().setDbConnection(conn);
     }
 
+    @Override
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
         getLmGroupSep().setDeviceId(deviceID);
@@ -73,6 +79,7 @@ public class LMGroupDigiSep extends LMGroup {
         this.lmGroupSep = newValue;
     }
 
+    @Override
     public void update() throws SQLException {
         super.update();
         getLmGroupSep().update();

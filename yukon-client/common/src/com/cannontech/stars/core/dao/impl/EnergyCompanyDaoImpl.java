@@ -98,7 +98,19 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
             }
         });
     }
+    
+    @Override
+    public List<Integer> getEnergyCompanyIdsByGroupEnrollment(int lmGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT EnergyCompanyId");
+        sql.append("FROM EcToInventoryMapping ecm");
+        sql.append("JOIN LmHardwareConfiguration lmhc ON ecm.InventoryId = lmhc.InventoryId");
+        sql.append("WHERE lmhc.AddressingGroupId").eq_k(lmGroupId);
+        List<Integer> energyCompanyIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
 
+        return energyCompanyIds;
+    }
+    
     @Override
     public EnergyCompany getEnergyCompanyByAccountId(int accountId) {
         int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);

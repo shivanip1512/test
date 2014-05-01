@@ -141,7 +141,13 @@
 		<constructor-arg value="LMGroupDigiSEP"/>
 		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
 	</bean>
-
+    
+    <bean id="messaging.thrift.load.GroupEcobeeSerializer" parent="messaging.thrift.ISerializer"
+        class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupEcobeeSerializer">
+        <constructor-arg value="LMGroupEcobee"/>
+        <constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+    </bean>
+    
 	<bean id="messaging.thrift.load.GroupEmetconSerializer" parent="messaging.thrift.ISerializer"
 		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupEmetconSerializer">
 		<constructor-arg value="LMGroupEmetcon"/>
@@ -298,6 +304,7 @@
 				<ref local="messaging.thrift.load.EnergyExchangeOfferRevisionSerializer"/>
 				<ref local="messaging.thrift.load.EnergyExchangeOfferSerializer"/>				
 				<ref local="messaging.thrift.load.GroupDigiSepSerializer"/>
+                <ref local="messaging.thrift.load.GroupEcobeeSerializer"/>
 				<ref local="messaging.thrift.load.GroupEmetconSerializer"/>
 				<ref local="messaging.thrift.load.GroupExpresscomSerializer"/>
 				<ref local="messaging.thrift.load.GroupGolaySerializer"/>

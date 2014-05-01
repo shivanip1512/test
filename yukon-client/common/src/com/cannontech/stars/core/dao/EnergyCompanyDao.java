@@ -19,7 +19,12 @@ public interface EnergyCompanyDao {
             return energyCompany.getEnergyCompanyId();
         }
     };
-
+    
+    /**
+     * Gets the ids of all energy companies that have inventory enrolled in the specified group.
+     */
+    List<Integer> getEnergyCompanyIdsByGroupEnrollment(int lmGroupId);
+    
     /**
      * Get energy company associated with this operator user.
      * 
