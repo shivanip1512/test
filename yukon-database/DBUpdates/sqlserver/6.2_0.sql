@@ -558,6 +558,46 @@ WHERE C.CategoryType = 'dnp'
   AND I.ItemName = 'enableUnsolicitedMessagesClass1';
 /* End YUK-13232 */
 
+/* Start YUK-13259 */
+UPDATE YukonRole 
+SET RoleName = 'Demand Response', 
+    Category = 'Demand Response', 
+    RoleDescription = 'Operator access to Demand Response'
+WHERE RoleId = -900;
+
+DELETE FROM YukonGroupRole 
+WHERE RoleId = -900 
+  AND RolePropertyId IN (-90001, -90002, -90003, -90020, -90022, -90023, -90025, -90027, -90028, 
+                         -90029, -90030, -90031, -90033, -90034, -90035, -90036, -90037, -90038);
+DELETE FROM YukonRoleProperty 
+WHERE RoleId = -900 
+  AND RolePropertyId IN (-90001, -90002, -90003, -90020, -90022, -90023, -90025, -90027, -90028, 
+                         -90029, -90030, -90031, -90033, -90034, -90035, -90036, -90037, -90038);
+UPDATE YukonRoleProperty 
+SET KeyName = 'Control Area Trigger Info', 
+    Description = 'Controls access to view Control Area Trigger realted information.'
+WHERE RoleId = -900 AND RolePropertyID = -90021;
+
+UPDATE YukonRoleProperty 
+SET KeyName = 'Priority', 
+    Description = 'Controls access to view Control Area, Program, and Group Priority.'
+WHERE RoleId = -900 AND RolePropertyID = -90024;
+
+UPDATE YukonRoleProperty 
+SET KeyName = 'Load Capacity', 
+    Description = 'Controls access to view Control Area, Program, and Group Load Capacity.'
+WHERE RoleId = -900 AND RolePropertyID = -90026;
+
+UPDATE YukonRoleProperty 
+SET KeyName = 'Reduction', 
+    Description = 'Controls access to view Program and Group Reduction.'
+WHERE RoleId = -900 AND RolePropertyID = -90032;
+
+INSERT INTO YukonRoleProperty 
+VALUES (-90045, -900, 'Allow Load Group Control','true',
+        'In addition to Allow DR Control, controls access to shed and restore at group level');
+/* End YUK-13259 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
