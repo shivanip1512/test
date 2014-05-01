@@ -118,8 +118,8 @@ public class EcobeeMessageListener {
         //Massage the data into the form we want
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
-        boolean rampIn = (rampingOptions & 1) == 1;
-        boolean rampOut = (rampingOptions & 2) == 2;
+        boolean rampIn = (rampingOptions & 2) == 2;
+        boolean rampOut = (rampingOptions & 1) == 1;
         
         return new EcobeeDutyCycleDrParameters(startTime, endTime, dutyCyclePercent, rampIn, rampOut, groupId);
     }
