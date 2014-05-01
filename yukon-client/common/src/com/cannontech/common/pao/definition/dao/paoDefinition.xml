@@ -11137,7 +11137,9 @@
             <tag name="DB_EDITOR_INCOMPATIBLE" />
         </tags>
     </pao>
-    <pao id="RF_DA" abstract="true" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, SUPPORTS_COMMANDER_REQUESTS_TAG">
+    <pao id="RF_DA" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, SUPPORTS_COMMANDER_REQUESTS_TAG">
+        <displayGroup>RFMESH</displayGroup>
+        <changeGroup>rfn</changeGroup>
         <points>
             <point type="Analog" offset="22">
                 <init>true</init>
@@ -11166,6 +11168,13 @@
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
                 <decimalplaces value="0" />
+            </point>
+            <point type="Analog" offset="100">
+                <init>true</init>
+                <name>Outages</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Seconds" />
+                <decimalplaces value="3" />
             </point>
             <point type="Status" offset="5">
                 <init>true</init>
@@ -11217,6 +11226,21 @@
             </attribute>
             <attribute name="TIME_SYNC_FAILED">
                 <basicLookup point="Time Sync Failed" />
+            </attribute>
+            <attribute name="OUTAGE_LOG">
+                <basicLookup point="Outages" />
+            </attribute>
+            <attribute name="RFN_BLINK_COUNT">
+                <basicLookup point="Blink Count" />
+            </attribute>
+            <attribute name="RFN_BLINK_RESTORE_COUNT">
+                <basicLookup point="Blink Restore Count" />
+            </attribute>
+            <attribute name="RFN_OUTAGE_COUNT">
+                <basicLookup point="Outage Count" />
+            </attribute>
+            <attribute name="RFN_OUTAGE_RESTORE_COUNT">
+                <basicLookup point="Outage Restore Count" />
             </attribute>
         </attributes>
     </pao>
