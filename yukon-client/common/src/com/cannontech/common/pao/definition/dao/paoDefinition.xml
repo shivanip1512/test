@@ -262,6 +262,12 @@
         </configuration>
     </pao>
 
+    <pao id="FOCUS_AL_DISPLAY_CONFIGURATION" abstract="true">
+        <configuration>
+            <category type="focusAlDisplay" />
+        </configuration>
+    </pao>
+
     <pao id="TIMEZONE_CONFIGURATION_CATEGORY" abstract="true"
         inherits="SUPPORTS_DEVICE_CONFIGURATION">
         <configuration>
@@ -8069,7 +8075,7 @@
         <displayName>RFN-410fD</displayName>
     </pao>
     <pao id="RFN420FL"
-        inherits="RFN_L3_FOCUS_420FL, RFN_CONFIGURATION, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS">
+        inherits="RFN_L3_FOCUS_420FL, FOCUS_AL_DISPLAY_CONFIGURATION, RFN_CONFIGURATION, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS">
         <displayName>RFN-420fL</displayName>
     </pao>
     <pao id="RFN420FX"

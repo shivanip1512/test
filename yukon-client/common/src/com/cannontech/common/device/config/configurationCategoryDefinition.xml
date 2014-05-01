@@ -15,32 +15,47 @@
     </category>
     
     <category type="centronDisplayItems">
-        <enum field="displayItem1" type="DisplayItem" default="0"/>
-        <enum field="displayItem2" type="DisplayItem" default="0"/>
-        <enum field="displayItem3" type="DisplayItem" default="0"/>
-        <enum field="displayItem4" type="DisplayItem" default="0"/>
-        <enum field="displayItem5" type="DisplayItem" default="0"/>
-        <enum field="displayItem6" type="DisplayItem" default="0"/>
-        <enum field="displayItem7" type="DisplayItem" default="0"/>
-        <enum field="displayItem8" type="DisplayItem" default="0"/>
-        <enum field="displayItem9" type="DisplayItem" default="0"/>
-        <enum field="displayItem10" type="DisplayItem" default="0"/>
-        <enum field="displayItem11" type="DisplayItem" default="0"/>
-        <enum field="displayItem12" type="DisplayItem" default="0"/>
-        <enum field="displayItem13" type="DisplayItem" default="0"/>
-        <enum field="displayItem14" type="DisplayItem" default="0"/>
-        <enum field="displayItem15" type="DisplayItem" default="0"/>
-        <enum field="displayItem16" type="DisplayItem" default="0"/>
-        <enum field="displayItem17" type="DisplayItem" default="0"/>
-        <enum field="displayItem18" type="DisplayItem" default="0"/>
-        <enum field="displayItem19" type="DisplayItem" default="0"/>
-        <enum field="displayItem20" type="DisplayItem" default="0"/>
-        <enum field="displayItem21" type="DisplayItem" default="0"/>
-        <enum field="displayItem22" type="DisplayItem" default="0"/>
-        <enum field="displayItem23" type="DisplayItem" default="0"/>
-        <enum field="displayItem24" type="DisplayItem" default="0"/>
-        <enum field="displayItem25" type="DisplayItem" default="0"/>
-        <enum field="displayItem26" type="DisplayItem" default="0"/>
+        <enum field="centronDisplayItem1" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem2" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem3" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem4" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem5" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem6" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem7" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem8" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem9" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem10" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem11" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem12" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem13" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem14" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem15" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem16" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem17" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem18" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem19" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem20" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem21" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem22" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem23" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem24" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem25" type="CentronDisplayItem" default="0"/>
+        <enum field="centronDisplayItem26" type="CentronDisplayItem" default="0"/>
+    </category>
+    
+    <category type="focusAlDisplay">
+        <integer field="lcdCycleTime" minValue="0" maxValue="15" default="8"/>
+        <integer field="displayDigits" minValue="4" maxValue="6" default="5"/>
+        <enum field="focusAlDisplayItem1" type="FocusAlDisplayItem" default="SLOT_DISABLED"/>
+        <enum field="focusAlDisplayItem2" type="FocusAlDisplayItem" default="SLOT_DISABLED"/>
+        <enum field="focusAlDisplayItem3" type="FocusAlDisplayItem" default="SLOT_DISABLED"/>
+        <enum field="focusAlDisplayItem4" type="FocusAlDisplayItem" default="SLOT_DISABLED"/>
+        <enum field="focusAlDisplayItem5" type="FocusAlDisplayItem" default="SLOT_DISABLED"/>
+        <enum field="focusAlDisplayItem6" type="FocusAlDisplayItem" default="SLOT_DISABLED"/>
+        <enum field="focusAlDisplayItem7" type="FocusAlDisplayItem" default="SLOT_DISABLED"/>
+        <enum field="focusAlDisplayItem8" type="FocusAlDisplayItem" default="SLOT_DISABLED"/>
+        <enum field="focusAlDisplayItem9" type="FocusAlDisplayItem" default="SLOT_DISABLED"/>
+        <enum field="focusAlDisplayItem10" type="FocusAlDisplayItem" default="SLOT_DISABLED"/>
     </category>
     
     <category type="mct440Configuration">

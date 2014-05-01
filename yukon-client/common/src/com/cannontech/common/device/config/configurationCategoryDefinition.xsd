@@ -71,7 +71,8 @@
             <!-- This list must contain exactly one of each of the simple type names from
                  deviceConfigurationEnum.xsd and the name must match exactly -->
             <xs:enumeration value="TimeZoneInput"/>
-            <xs:enumeration value="DisplayItem"/>
+            <xs:enumeration value="CentronDisplayItem"/>
+            <xs:enumeration value="FocusAlDisplayItem"/>
             <xs:enumeration value="Interval"/>
             <xs:enumeration value="Rate"/>
             <xs:enumeration value="Schedule"/>

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.ImmutableList.Builder;
 
 @Component
-public final class DisplayItemEnumeration implements DeviceConfigurationInputEnumeration {
+public final class CentronDisplayItemEnumeration implements DeviceConfigurationInputEnumeration {
     
     public enum Item {
         SLOT_DISABLED("0", ".slotDisabled"),
@@ -58,7 +58,7 @@ public final class DisplayItemEnumeration implements DeviceConfigurationInputEnu
         }
     }
     
-    private static final String baseKey = "yukon.web.modules.tools.configs.enum.displayItem";
+    private static final String baseKey = "yukon.web.modules.tools.configs.enum.centronDisplayItem";
     
     private static final List<DisplayableValue> displayItems;
     
@@ -79,6 +79,6 @@ public final class DisplayItemEnumeration implements DeviceConfigurationInputEnu
     
     @Override
     public String getEnumOptionName() {
-        return "DisplayItem";
+        return "CentronDisplayItem";
     }
 }
