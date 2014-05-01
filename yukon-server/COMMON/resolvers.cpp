@@ -426,6 +426,7 @@ static const std::map<std::string, int> device_lookups = boost::assign::map_list
     ("lm direct program",  TYPE_LMPROGRAM_DIRECT)
     ("lm energy exchange", TYPE_LMPROGRAM_ENERGYEXCHANGE)
     ("lm sep program",     TYPE_LMPROGRAM_DIRECT)
+    ("ecobee program",     TYPE_LMPROGRAM_DIRECT)
     ("digi sep group",     TYPE_LMGROUP_DIGI_SEP)
     ("ecobee group",       TYPE_LMGROUP_ECOBEE)
     ("emetcon group",      TYPE_LMGROUP_EMETCON)
@@ -572,7 +573,8 @@ INT resolveLoadManagementType(const string& _rwsTemp)
     in_place_trim(rwsTemp);
 
     if(rwsTemp == "lm direct program" ||
-       rwsTemp == "lm sep program")
+       rwsTemp == "lm sep program" ||
+       rwsTemp == "ecobee program")
     {
         nRet = TYPE_LMPROGRAM_DIRECT;
     }

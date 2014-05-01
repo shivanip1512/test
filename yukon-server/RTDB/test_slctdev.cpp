@@ -408,6 +408,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("snuffleupagus",                  "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
         //  160
         (std::make_pair("giraffe",                        "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("ecobee program",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("ecobee group",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
             ;
 
     std::vector<DeviceTypeRow> rowVec;
