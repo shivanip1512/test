@@ -56,7 +56,7 @@ cmd_rf_da_dnpAddress.obj \
 cmd_rfn.obj \
 cmd_rfn_helper.obj \
 cmd_rfn_centronLcdConfiguration.obj \
-cmd_rfn_FocusLcdConfiguration.obj \
+cmd_rfn_FocusAlLcdConfiguration.obj \
 cmd_rfn_DemandFreeze.obj \
 cmd_rfn_LoadProfile.obj \
 cmd_rfn_OvUvConfiguration.obj \
@@ -135,7 +135,7 @@ dev_rf_da.obj \
 dev_rfn.obj \
 dev_rfnMeter.obj \
 dev_rfn420centron.obj \
-dev_rfn420focus.obj \
+dev_rfn420focus_al.obj \
 dev_rfnResidential.obj \
 dev_rfnCommercial.obj \
 dev_rtc.obj \
@@ -629,9 +629,9 @@ cmd_rfn_demandfreeze.obj:	precompiled.h cmd_rfn_DemandFreeze.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h readers_writer_lock.h connection_base.h xfer.h \
 		rfn_asid.h std_helper.h cmd_rfn_helper.h
-cmd_rfn_focuslcdconfiguration.obj:	precompiled.h std_helper.h \
+cmd_rfn_focusallcdconfiguration.obj:	precompiled.h std_helper.h \
 		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
-		types.h numstr.h cmd_rfn_FocusLcdConfiguration.h cmd_rfn.h \
+		types.h numstr.h cmd_rfn_FocusAlLcdConfiguration.h cmd_rfn.h \
 		cmd_device.h dev_single.h dsm2.h cticonnect.h yukon.h \
 		ctidbgmem.h netports.h mutex.h guard.h dsm2err.h words.h \
 		optional.h macro_offset.h dev_base.h cmdparse.h \
@@ -2682,11 +2682,11 @@ dev_rfn420centron.obj:	precompiled.h dev_rfn420centron.h \
 		cmd_rfn_OvUvConfiguration.h cmd_rfn_RemoteDisconnect.h \
 		cmd_rfn_CentronLcdConfiguration.h config_data_rfn.h \
 		config_exceptions.h std_helper.h
-dev_rfn420focus.obj:	precompiled.h config_exceptions.h \
+dev_rfn420focus_al.obj:	precompiled.h config_exceptions.h \
 		config_data_rfn.h yukon.h types.h ctidbgmem.h dllbase.h \
 		dsm2.h cticonnect.h dlldefs.h netports.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dsm2err.h words.h optional.h macro_offset.h dev_rfn420focus.h \
+		dsm2err.h words.h optional.h macro_offset.h dev_rfn420focus_al.h \
 		dev_rfnResidential.h dev_rfnMeter.h dev_rfn.h \
 		rfn_identifier.h logger.h thread.h CtiPCPtrQueue.h cmd_rfn.h \
 		cmd_device.h dev_single.h dev_base.h cmdparse.h \
@@ -2707,7 +2707,7 @@ dev_rfn420focus.obj:	precompiled.h config_exceptions.h \
 		rfn_asid.h cmd_rfn_LoadProfile.h ctidate.h \
 		cmd_rfn_DemandFreeze.h cmd_rfn_TouConfiguration.h \
 		cmd_rfn_OvUvConfiguration.h cmd_rfn_RemoteDisconnect.h \
-		cmd_rfn_FocusLcdConfiguration.h
+		cmd_rfn_FocusAlLcdConfiguration.h
 dev_rfncommercial.obj:	precompiled.h std_helper.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		config_data_rfn.h yukon.h ctidbgmem.h dllbase.h dsm2.h \
@@ -3856,7 +3856,7 @@ slctdev.obj:	precompiled.h dev_710.h dev_idlc.h types.h os2_2w32.h \
 		cmd_rfn_LoadProfile.h cmd_rfn_DemandFreeze.h \
 		cmd_rfn_TouConfiguration.h cmd_rfn_OvUvConfiguration.h \
 		cmd_rfn_RemoteDisconnect.h cmd_rfn_CentronLcdConfiguration.h \
-		dev_rfn420focus.h cmd_rfn_FocusLcdConfiguration.h \
+		dev_rfn420focus_al.h cmd_rfn_FocusAlLcdConfiguration.h \
 		dev_rfnCommercial.h dev_rtc.h tbl_dv_rtc.h dev_sixnet.h \
 		prot_sixnet.h rte_macro.h tbl_rtmacro.h rte_ccu.h rte_xcu.h \
 		smartmap.h tbl_rtcarrier.h tbl_rtrepeater.h rte_versacom.h \
@@ -4091,10 +4091,10 @@ test_cmd_rfn_demandfreeze.obj:	ctidate.h dlldefs.h logger.h thread.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h readers_writer_lock.h connection_base.h xfer.h \
 		rfn_asid.h boost_test_helpers.h millisecond_timer.h
-test_cmd_rfn_focuslcdconfiguration.obj:	ctidate.h dlldefs.h logger.h \
+test_cmd_rfn_focusallcdconfiguration.obj:	ctidate.h dlldefs.h logger.h \
 		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
-		cmd_rfn_FocusLcdConfiguration.h cmd_rfn.h cmd_device.h \
+		cmd_rfn_FocusAlLcdConfiguration.h cmd_rfn.h cmd_device.h \
 		dev_single.h dsm2.h cticonnect.h yukon.h ctidbgmem.h \
 		netports.h dsm2err.h words.h optional.h macro_offset.h \
 		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \

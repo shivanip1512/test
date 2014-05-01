@@ -1,12 +1,12 @@
 #pragma once
 
 #include "dev_rfnResidential.h"
-#include "cmd_rfn_FocusLcdConfiguration.h"
+#include "cmd_rfn_FocusAlLcdConfiguration.h"
 
 namespace Cti {
 namespace Devices {
 
-class IM_EX_DEVDB Rfn420FocusDevice
+class IM_EX_DEVDB Rfn420FocusAlDevice
     :   public RfnResidentialDevice
 {
     virtual ConfigMap getConfigMethods(bool readOnly);
@@ -14,15 +14,18 @@ class IM_EX_DEVDB Rfn420FocusDevice
     int executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     int executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    void handleCommandResult(const Commands::RfnFocusLcdConfigurationCommand &cmd);
+    void handleCommandResult(const Commands::RfnFocusAlLcdConfigurationReadCommand &cmd);
+    void handleCommandResult(const Commands::RfnFocusAlLcdConfigurationWriteCommand &cmd);
+
+    void storeDisplayMetricInfo(const Commands::RfnFocusAlLcdConfigurationCommand::MetricVector &metrics);
 
     bool isDisplayConfigCurrent( const std::vector<std::string> &config_display_metrics,
-                                 const std::vector<std::string> &config_display_alphamerics,
-                                 const long config_display_duration );
+                                 const unsigned config_display_digits,
+                                 const unsigned char config_display_duration );
 };
 
 
-typedef RfnResidentialDevice Rfn420flDevice;
+typedef Rfn420FocusAlDevice  Rfn420flDevice;
 typedef RfnResidentialDevice Rfn420fxDevice;
 typedef RfnResidentialDevice Rfn420fdDevice;
 

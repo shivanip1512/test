@@ -240,19 +240,6 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
         (Dpi::Key_DisplayItem25, "display item 25")
         (Dpi::Key_DisplayItem26, "display item 26")
 
-        (Dpi::Key_DisplayAlphameric1,     "display alphameric 1")
-        (Dpi::Key_DisplayAlphameric2,     "display alphameric 2")
-        (Dpi::Key_DisplayAlphameric3,     "display alphameric 3")
-        (Dpi::Key_DisplayAlphameric4,     "display alphameric 4")
-        (Dpi::Key_DisplayAlphameric5,     "display alphameric 5")
-        (Dpi::Key_DisplayAlphameric6,     "display alphameric 6")
-        (Dpi::Key_DisplayAlphameric7,     "display alphameric 7")
-        (Dpi::Key_DisplayAlphameric8,     "display alphameric 8")
-        (Dpi::Key_DisplayAlphameric9,     "display alphameric 9")
-        (Dpi::Key_DisplayAlphameric10,    "display alphameric 10")
-
-        (Dpi::Key_DisplayItemDuration,    "display item duration")
-
         (Dpi::Key_RFN_TouEnabled,         "rfn tou enabled")
 
         (Dpi::Key_RFN_MondaySchedule,     "rfn monday schedule")

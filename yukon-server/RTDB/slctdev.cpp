@@ -78,7 +78,7 @@
 #include "dev_rfn.h"
 #include "dev_rf_da.h"
 #include "dev_rfn420centron.h"
-#include "dev_rfn420focus.h"
+#include "dev_rfn420focus_al.h"
 #include "dev_rfnCommercial.h"
 #include "dev_rtc.h"
 #include "dev_sixnet.h"

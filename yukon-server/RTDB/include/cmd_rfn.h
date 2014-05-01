@@ -14,6 +14,8 @@ namespace Commands {
 class RfDaReadDnpSlaveAddressCommand;
 class RfnCentronSetLcdConfigurationCommand;
 class RfnCentronGetLcdConfigurationCommand;
+class RfnFocusAlLcdConfigurationReadCommand;
+class RfnFocusAlLcdConfigurationWriteCommand;
 class RfnDemandFreezeConfigurationCommand;
 class RfnGetDemandFreezeInfoCommand;
 class RfnLoadProfileGetRecordingCommand;
@@ -60,9 +62,11 @@ public:
     struct ResultHandler
     {
         virtual void handleCommandResult(const RfnCommand &)                                          {}
-        virtual void handleCommandResult(const RfDaReadDnpSlaveAddressCommand &)                           {}
+        virtual void handleCommandResult(const RfDaReadDnpSlaveAddressCommand &)                      {}
         virtual void handleCommandResult(const RfnCentronSetLcdConfigurationCommand &)                {}
         virtual void handleCommandResult(const RfnCentronGetLcdConfigurationCommand &)                {}
+        virtual void handleCommandResult(const RfnFocusAlLcdConfigurationReadCommand &)               {}
+        virtual void handleCommandResult(const RfnFocusAlLcdConfigurationWriteCommand &)              {}
         virtual void handleCommandResult(const RfnDemandFreezeConfigurationCommand &)                 {}
         virtual void handleCommandResult(const RfnGetDemandFreezeInfoCommand &)                       {}
         virtual void handleCommandResult(const RfnLoadProfileGetRecordingCommand &)                   {}

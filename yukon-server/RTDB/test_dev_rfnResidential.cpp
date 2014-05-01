@@ -2416,7 +2416,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
     cfg.insertValue( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   );
 
     {
-        ////// 5 valid configurations //////
+        ////// 6 valid configurations //////
 
         resetTestState();
 
