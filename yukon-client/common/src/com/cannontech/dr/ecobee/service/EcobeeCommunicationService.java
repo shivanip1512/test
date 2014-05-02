@@ -7,8 +7,7 @@ import org.joda.time.Instant;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
-import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
-import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
+import com.cannontech.dr.ecobee.EcobeeException;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 
@@ -31,8 +30,7 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
-    boolean registerDevice(String serialNumber, int energyCompanyId) throws EcobeeAuthenticationException, 
-            EcobeeCommunicationException;
+    boolean registerDevice(String serialNumber, int energyCompanyId) throws EcobeeException;
     
     /**
      * Removes the specified device from its management set, if it is in one, then moves the device into the specified 
@@ -43,9 +41,7 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
-    boolean moveDeviceToSet(String serialNumber, String setPath, int energyCompanyId) 
-            throws EcobeeAuthenticationException, EcobeeCommunicationException, EcobeeSetDoesNotExistException,
-            EcobeeDeviceDoesNotExistException;
+    boolean moveDeviceToSet(String serialNumber, String setPath, int energyCompanyId) throws EcobeeException;
 
     /**
      * Requests device data for the specified devices over a limited date range.
@@ -56,7 +52,7 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
     List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange, 
-            int energyCompanyId) throws EcobeeAuthenticationException, EcobeeCommunicationException;
+            int energyCompanyId) throws EcobeeException;
     
     /**
      * Creates a new management hierarchy set with the specified name, directly beneath the root set ("/").
@@ -64,8 +60,7 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      * @return True if the management set was created.
      */
-    boolean createManagementSet(String managementSetName, int energyCompanyId) 
-            throws EcobeeAuthenticationException, EcobeeCommunicationException;
+    boolean createManagementSet(String managementSetName, int energyCompanyId) throws EcobeeException;
     
     /**
      * Deletes the specified management hierarchy set, assuming it is located directly beneath the root set ("/").
@@ -73,8 +68,7 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      * @return True if the management set was deleted.
      */
-    boolean deleteManagementSet(String managementSetName, int energyCompanyId) 
-            throws EcobeeAuthenticationException, EcobeeCommunicationException;
+    boolean deleteManagementSet(String managementSetName, int energyCompanyId) throws EcobeeException;
     
     /**
      * Moves the specified managementHierarchySet from one location to another.
@@ -84,8 +78,7 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      * @return True if the management set was successfully moved to the new path.
      */
-    boolean moveManagementSet(String currentPath, String newPath, int energyCompanyId)
-            throws EcobeeAuthenticationException, EcobeeCommunicationException;
+    boolean moveManagementSet(String currentPath, String newPath, int energyCompanyId) throws EcobeeException;
     
     /**
      * Initiates a duty cycle demand response event in Ecobee.
@@ -93,14 +86,12 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
-    String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters, int energyCompanyId) 
-            throws EcobeeAuthenticationException, EcobeeCommunicationException;
+    String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters, int energyCompanyId) throws EcobeeException;
     
     /**
      * Sends a message to cancel a DR event based on ecobee's event identifier.
      * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
-    boolean sendRestore(String drIdentifier, int energyCompanyId) throws EcobeeAuthenticationException, 
-            EcobeeCommunicationException;
+    boolean sendRestore(String drIdentifier, int energyCompanyId) throws EcobeeException;
 }

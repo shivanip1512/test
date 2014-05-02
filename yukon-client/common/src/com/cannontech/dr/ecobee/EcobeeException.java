@@ -3,7 +3,7 @@ package com.cannontech.dr.ecobee;
 /**
  * Abstract base for Ecobee-specific exceptions.
  */
-public abstract class EcobeeException extends Exception {
+public class EcobeeException extends Exception {
     
     public EcobeeException() { }
     

@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.hardware.builder;
 
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.YukonPao;
@@ -16,7 +17,7 @@ public interface HardwareTypeExtensionService {
      * Call to create any extra data the ExtensionService will then be responsible for.
      * @param hardware
      */
-    public void createDevice(Hardware hardware);
+    public void createDevice(Hardware hardware) throws DeviceCreationException;
     
     /**
      * Call to update any extra data the ExtensionService is responsible for. 

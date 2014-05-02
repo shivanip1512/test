@@ -90,7 +90,8 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                 break;
             }
         } catch (EcobeeException e) {
-            throw new CommandCompletionException("Unable to send command", e);
+            log.error("Unable to send command. " + e.getMessage(), e);
+            throw new CommandCompletionException("Unable to send command. " + e.getMessage(), e);
         }
     }
     

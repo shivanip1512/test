@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.ecobee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -36,7 +37,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
             // Update the Stars table with the device id
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), ecobeePao.getPaObjectId());
         } catch (EcobeeException e) {
-            throw new RuntimeException("Device creation failed", e);
+            throw new DeviceCreationException(e.getMessage(), e);
         }
     }
 

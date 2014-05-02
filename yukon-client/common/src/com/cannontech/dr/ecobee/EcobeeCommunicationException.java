@@ -5,6 +5,10 @@ package com.cannontech.dr.ecobee;
  */
 public class EcobeeCommunicationException extends EcobeeException {
     
+    public EcobeeCommunicationException(String message) {
+        super(message);
+    }
+    
     public EcobeeCommunicationException(String message, Throwable cause) {
         super(message, cause);
     }

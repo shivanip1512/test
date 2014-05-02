@@ -80,8 +80,8 @@ public class HardwareModelHelper {
                 int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
                 EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inventoryId);
             }
-        } catch (DeviceCreationException|IgnoredTemplateException e) {  //includes BadTemplateDeviceCreationException 
-            result.rejectValue( "serialNumber", "yukon.web.modules.operator.hardware.error.rfCreationError", new Object[]{e.getMessage()}, "");
+        } catch (DeviceCreationException| IgnoredTemplateException e) {  //includes BadTemplateDeviceCreationException 
+            result.rejectValue( "serialNumber", "yukon.web.modules.operator.hardware.error.deviceCreationError", new Object[]{e.getMessage()}, "");
         } catch (StarsDeviceSerialNumberAlreadyExistsException|ObjectInOtherEnergyCompanyException e) {
             result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
         } catch (Lcr3102YukonDeviceCreationException e) {

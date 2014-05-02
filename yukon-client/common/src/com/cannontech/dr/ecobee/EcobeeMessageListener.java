@@ -49,10 +49,8 @@ public class EcobeeMessageListener {
                     //store the most recent dr handle for each group, so we can cancel
                     groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
                 }
-            } catch (EcobeeCommunicationException e) {
-                log.error("Unable to send control messages due to communication error.", e);
-            } catch (EcobeeAuthenticationException e) {
-                log.error("Unable to send control messages due to authentication error.", e);
+            } catch (EcobeeException e) {
+                log.error("Unable to send control messages due to ecobee error.", e);
             }
         }
     }
@@ -76,10 +74,8 @@ public class EcobeeMessageListener {
                 for(Integer ecId : ecIds) {
                     ecobeeCommunicationService.sendRestore(drIdentifier, ecId);
                 }
-            } catch (EcobeeCommunicationException e) {
-                log.error("Unable to send restore messages due to communication error.", e);
-            } catch (EcobeeAuthenticationException e) {
-                log.error("Unable to send restore messages due to authentication error.", e);
+            } catch (EcobeeException e) {
+                log.error("Unable to send restore messages due to ecobee error.", e);
             }
         }
     }
