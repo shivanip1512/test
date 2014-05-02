@@ -23,8 +23,6 @@ public final class StarsOperation {
     private StarsProgramOptOutResponse starsProgramOptOutResponse;
     private StarsProgramReenable starsProgramReenable;
     private StarsProgramReenableResponse starsProgramReenableResponse;
-    private StarsYukonSwitchCommand starsYukonSwitchCommand;
-    private StarsYukonSwitchCommandResponse starsYukonSwitchCommandResponse;
     private StarsGetLMControlHistory starsGetLMControlHistory;
     private StarsGetLMControlHistoryResponse starsGetLMControlHistoryResponse;
     private StarsCreateCallReport starsCreateCallReport;
@@ -252,24 +250,7 @@ public final class StarsOperation {
         this.starsProgramReenableResponse = starsProgramReenableResponse;
     }
 
-    public StarsYukonSwitchCommand getStarsYukonSwitchCommand() {
-        return starsYukonSwitchCommand;
-    }
-
-    public void setStarsYukonSwitchCommand(
-            StarsYukonSwitchCommand starsYukonSwitchCommand) {
-        this.starsYukonSwitchCommand = starsYukonSwitchCommand;
-    }
-
-    public StarsYukonSwitchCommandResponse getStarsYukonSwitchCommandResponse() {
-        return starsYukonSwitchCommandResponse;
-    }
-
-    public void setStarsYukonSwitchCommandResponse(
-            StarsYukonSwitchCommandResponse starsYukonSwitchCommandResponse) {
-        this.starsYukonSwitchCommandResponse = starsYukonSwitchCommandResponse;
-    }
-
+    
     public StarsGetLMControlHistory getStarsGetLMControlHistory() {
         return starsGetLMControlHistory;
     }

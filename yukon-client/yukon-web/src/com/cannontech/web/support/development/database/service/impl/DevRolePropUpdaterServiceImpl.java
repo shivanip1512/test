@@ -200,7 +200,6 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                 }
 
                 if (canAddRole(group, YukonRole.DEMAND_RESPONSE)) {
-                    setRoleProperty(group, YukonRoleProperty.LM_INDIVIDUAL_SWITCH,true);
                     setRoleProperty(group, YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS,true);
                     setRoleProperty(group, YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS,true);
                     setRoleProperty(group, YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT,true);
