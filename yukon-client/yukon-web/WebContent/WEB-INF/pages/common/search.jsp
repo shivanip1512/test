@@ -37,26 +37,24 @@
     </div>
     <c:if test="${!empty results.resultList}">
         <hr>
-        <div class="stacked">
-            <c:forEach var="result" items="${results.resultList}">
-                <div class="stacked">
-                    <div>
-                        <a href="<cti:url value="${result.path}"/>">
-                            <cti:searchTerm term="${searchString}" asLuceneTerms="true">
-                                <c:if test="${result.legacyPage}">
-                                    <i:inline key="${result.title}"/>
-                                </c:if>
-                                <c:if test="${!result.legacyPage}">
-                                    <cti:pageName userPage="${result.userPage}"/>
-                                </c:if>
-                           </cti:searchTerm>
-                       </a>
-                    </div>
-                    <div><cti:msg2 key="${result.summary}" blankIfMissing="true"/></div>
+        <c:forEach var="result" items="${results.resultList}">
+            <div class="stacked-medium">
+                <div>
+                    <a href="<cti:url value="${result.path}"/>">
+                        <cti:searchTerm term="${searchString}" asLuceneTerms="true">
+                            <c:if test="${result.legacyPage}">
+                                <i:inline key="${result.title}"/>
+                            </c:if>
+                            <c:if test="${!result.legacyPage}">
+                                <cti:pageName userPage="${result.userPage}"/>
+                            </c:if>
+                       </cti:searchTerm>
+                   </a>
                 </div>
-            </c:forEach>
-            <cti:url value="/search" var="baseUrl"/>
-            <tags:pagingResultsControls baseUrl="${baseUrl}" result="${results}" adjustPageCount="true"/>
-        </div>
+                <div><cti:msg2 key="${result.summary}" blankIfMissing="true"/></div>
+            </div>
+        </c:forEach>
+        <cti:url value="/search" var="baseUrl"/>
+        <tags:pagingResultsControls baseUrl="${baseUrl}" result="${results}" adjustPageCount="true"/>
     </c:if>
 </cti:standardPage>
