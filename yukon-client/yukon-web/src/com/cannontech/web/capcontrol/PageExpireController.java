@@ -31,6 +31,6 @@ public class PageExpireController {
 
     @Autowired
     public void setCapControlCache(CapControlCache cache) {
-        webUpdatedDAO = cache.getUpdatedObjMap();
+        webUpdatedDAO = cache.getUpdatedObjects();
     }
 }

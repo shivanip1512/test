@@ -13,52 +13,53 @@ import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.spring.YukonSpringHook;
 
-public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
+public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer> {
+    
     private CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
     
-	public CBCWebUpdatedObjectMap() {
-	}
-	
-	public void handleCBCChangeEvent(Area area) {
-	    List<SubStation> subList = capControlCache.getSubstationsByArea(area.getPaoId());
-	    for (final SubStation substation : subList) {
-	        handleCBCChangeEvent(substation);
-	    }
-	    updateMap(area.getPaoId());
-	}
-	
-	public void handleCBCChangeEvent(SpecialArea specialArea) {
-	    List<SubStation> substationList = capControlCache.getSubstationsBySpecialArea(specialArea.getPaoId());
-	    for (final SubStation subStation : substationList) {
-	        handleCBCChangeEvent(subStation);
-	    }
-	    updateMap(specialArea.getPaoId());
-	}
-	
-	public void handleCBCChangeEvent(SubStation subStation) {
-	    List<SubBus> subBusList = capControlCache.getSubBusesBySubStation(subStation);
-	    for (final SubBus sub : subBusList) {
+    public CBCWebUpdatedObjectMap() {
+    }
+    
+    public void handleCBCChangeEvent(Area area) {
+        List<SubStation> subList = capControlCache.getSubstationsByArea(area.getPaoId());
+        for (final SubStation substation : subList) {
+            handleCBCChangeEvent(substation);
+        }
+        updateMap(area.getPaoId());
+    }
+    
+    public void handleCBCChangeEvent(SpecialArea specialArea) {
+        List<SubStation> substationList = capControlCache.getSubstationsBySpecialArea(specialArea.getPaoId());
+        for (final SubStation subStation : substationList) {
+            handleCBCChangeEvent(subStation);
+        }
+        updateMap(specialArea.getPaoId());
+    }
+    
+    public void handleCBCChangeEvent(SubStation subStation) {
+        List<SubBus> subBusList = capControlCache.getSubBusesBySubStation(subStation);
+        for (final SubBus sub : subBusList) {
             handleCBCChangeEvent(sub);
         }
-	    updateMap(subStation.getCcId());
-	}
-	
-	public void handleCBCChangeEvent(SubBus subBus) {
-	    List<Feeder> feederList = capControlCache.getFeedersBySubBus(subBus.getCcId());
-	    for (final Feeder feeder : feederList) {
-	        handleCBCChangeEvent(feeder);
-	    }
-	    updateMap(subBus.getCcId());
-	}
-	
-	public void handleCBCChangeEvent(Feeder feeder) {
-	    List<CapBankDevice> capList = capControlCache.getCapBanksByFeeder(feeder.getCcId());
-	    for (final CapBankDevice cap : capList) {
-	        handleCBCChangeEvent(cap);
-	    }
-	    updateMap(feeder.getCcId());
-	}
-	
+        updateMap(subStation.getCcId());
+    }
+    
+    public void handleCBCChangeEvent(SubBus subBus) {
+        List<Feeder> feederList = capControlCache.getFeedersBySubBus(subBus.getCcId());
+        for (final Feeder feeder : feederList) {
+            handleCBCChangeEvent(feeder);
+        }
+        updateMap(subBus.getCcId());
+    }
+    
+    public void handleCBCChangeEvent(Feeder feeder) {
+        List<CapBankDevice> capList = capControlCache.getCapBanksByFeeder(feeder.getCcId());
+        for (final CapBankDevice cap : capList) {
+            handleCBCChangeEvent(cap);
+        }
+        updateMap(feeder.getCcId());
+    }
+    
     public void handleCBCChangeEvent(CapBankDevice capBankDevice) {
         updateMap(capBankDevice.getCcId());
     }
@@ -68,4 +69,3 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
     }
 
 }
-

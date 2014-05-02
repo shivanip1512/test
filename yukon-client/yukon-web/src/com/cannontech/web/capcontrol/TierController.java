@@ -14,7 +14,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.model.Substation;
@@ -31,7 +30,6 @@ import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.SpecialArea;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
@@ -63,11 +61,11 @@ public class TierController {
 
         Map<AreaType, SearchResults<ViewableArea>> areasByType = new LinkedHashMap<>();
 
-        List<ViewableArea> viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getCbcAreas(), cache, false);
+        List<ViewableArea> viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getAreas(), cache, false);
         SearchResults<ViewableArea> results = SearchResults.pageBasedForWholeList(1, 10, viewableAreas);
         areasByType.put(AreaType.NORMAL, results);
 
-        List<ViewableArea> viewableSpecialAreas = capControlWebUtilsService.createViewableAreas(cache.getSpecialCbcAreas(), cache, true);
+        List<ViewableArea> viewableSpecialAreas = capControlWebUtilsService.createViewableAreas(cache.getSpecialAreas(), cache, true);
         SearchResults<ViewableArea> specialResults = SearchResults.pageBasedForWholeList(1, 10, viewableSpecialAreas);
         areasByType.put(AreaType.SPECIAL, specialResults);
 
@@ -89,9 +87,9 @@ public class TierController {
         SearchResults<ViewableArea> results = null;
         List<ViewableArea> viewableAreas = null;
         if (type == AreaType.SPECIAL) {
-            viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getSpecialCbcAreas(), cache, true);
+            viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getSpecialAreas(), cache, true);
         } else {
-            viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getCbcAreas(), cache, false);
+            viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getAreas(), cache, false);
         }
         results = SearchResults.pageBasedForWholeList(pagingParams, viewableAreas);
         model.addAttribute("searchResults", results);
@@ -113,6 +111,7 @@ public class TierController {
     }
 
     public enum AreaType {
+        
         NORMAL("normal", "CBCAREA", false),
         SPECIAL("special", "CBCSPECIALAREA", true);
 
@@ -130,87 +129,23 @@ public class TierController {
             return type;
         }
 
-        public String getUpdaterType(){
+        public String getUpdaterType() {
             return updaterType;
         }
 
-        public boolean isSpecialArea(){
+        public boolean isSpecialArea() {
             return isSpecialArea;
         }
     }
 
-    @RequestMapping("substations")
-    public String substations(HttpServletRequest request, ModelMap model, LiteYukonUser user,
-            @RequestParam("bc_areaId") int areaId, Boolean isSpecialArea) {
-        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-        
-        if (isSpecialArea == null) {
-            isSpecialArea = false;
-        }
-
-        boolean hasAreaControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user);
-        model.addAttribute("hasAreaControl", hasAreaControl);
-        
-        boolean hasSubstationControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS, user);
-        model.addAttribute("hasSubstationControl", hasSubstationControl);
-        
-        StreamableCapObject area = cache.getArea(areaId);
-        
-        String description = "";
-        if(area instanceof Area){
-            Area normalArea = (Area) area;
-            description = normalArea.getPaoDescription();
-            
-        } else if(area instanceof SpecialArea){
-            SpecialArea specialArea = (SpecialArea) area;
-            description = specialArea.getPaoDescription();
-        }
-        
-        model.addAttribute("description", description);
-        
-        List<SubStation> subStations = null;
-        if (isSpecialArea) {
-            subStations = cache.getSubstationsBySpecialArea(areaId);
-        } else {
-            subStations = cache.getSubstationsByArea(areaId);
-        }
-        
-        List<SubBus> subBusList = cache.getSubBusesByArea(areaId);
-        Collections.sort(subBusList, CapControlUtils.SUB_DISPLAY_COMPARATOR);
-        List<ViewableSubBus> viewableSubBusList = capControlWebUtilsService.createViewableSubBus(subBusList);
-        model.addAttribute("subBusList", viewableSubBusList);
-        
-        List<Feeder> feederList = cache.getFeedersByArea(areaId);
-        List<ViewableFeeder> viewableFeederList = capControlWebUtilsService.createViewableFeeder(feederList,cache);
-        model.addAttribute("feederList", viewableFeederList);
-
-        List<CapBankDevice> capBankList = cache.getCapBanksByArea(areaId);
-        List<ViewableCapBank> viewableCapBankList = capControlWebUtilsService.createViewableCapBank(capBankList);
-        model.addAttribute("capBankList", viewableCapBankList);
-        
-        boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
-        boolean hideGraphs = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_GRAPHS, user);
-        model.addAttribute("showAnalysis", !hideReports && !hideGraphs);
-        
-        model.addAttribute("bc_areaId", areaId);
-        model.addAttribute("bc_areaName", area.getCcName());
-        model.addAttribute("isSpecialArea", isSpecialArea);
-        model.addAttribute("subStations", subStations);
-        model.addAttribute("subStationParam", CCSessionInfo.STR_SUBID);
-        
-        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        model.addAttribute("hasEditingRole", hasEditingRole);
-        
-        String urlParams = request.getQueryString();
-        String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
-        CBCNavigationUtil.setNavigation(requestURI , request.getSession());
-        
-        return "tier/substationTier.jsp";
-    }
-    
     @RequestMapping("feeders")
-    public String feeders(HttpServletRequest request, FlashScope flashScope, ModelMap model,
-            YukonUserContext userContext, LiteYukonUser user, int substationId, Boolean isSpecialArea) {
+    public String feeders(HttpServletRequest request, 
+            FlashScope flashScope, 
+            ModelMap model,
+            YukonUserContext userContext, 
+            int substationId) {
+        
+        LiteYukonUser user = userContext.getYukonUser();
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         SubStation cachedSubstation = cache.getSubstation(substationId);
         Substation substation = substationDao.findSubstationById(substationId);
@@ -221,24 +156,14 @@ public class TierController {
         model.addAttribute("showAnalysis", !hideReports && !hideGraphs);
 
         // Name of the area in the breadcrumb, will be the name of the special area if they came from the special areas page.
-        String bc_areaName = "";
-        int bc_areaId;
-        if (isSpecialArea != null && isSpecialArea) {
-            SpecialArea specialArea = cache.getCBCSpecialArea(cachedSubstation.getSpecialAreaId());
-            bc_areaName = specialArea.getCcName();
-            bc_areaId = specialArea.getCcId();
-        } else {
-            Area area = cache.getCBCArea(cachedSubstation.getParentID());
-            bc_areaName = area.getCcName();
-            bc_areaId = area.getCcId();
-        }
-        model.addAttribute("bc_areaName", bc_areaName);
-        model.addAttribute("bc_areaId", bc_areaId);
+        Area area = cache.getArea(cachedSubstation.getParentID());
+        
+        model.addAttribute("bc_areaName", area.getCcName());
+        model.addAttribute("bc_areaId", area.getCcId());
         model.addAttribute("substationName", substation.getName());
         model.addAttribute("substationId", substationId);
         model.addAttribute("areaId", cachedSubstation.getParentID());
         model.addAttribute("specialAreaId", cachedSubstation.getSpecialAreaId());
-        model.addAttribute("isSpecialArea", isSpecialArea);
         
         List<SubBus> subBusList = cache.getSubBusesBySubStation(cachedSubstation);
         Collections.sort(subBusList, CapControlUtils.SUB_DISPLAY_COMPARATOR);
@@ -278,12 +203,12 @@ public class TierController {
                 if (subBusSubstation.getSpecialAreaEnabled()) {
                     parentAreaId = subBusSubstation.getSpecialAreaId();
                 } else {
-                    parentAreaId = cache.getParentAreaID(subbus.getSubBus().getCcId());
+                    parentAreaId = cache.getParentAreaId(subbus.getSubBus().getCcId());
                 }
-                StreamableCapObject area = cache.getArea(parentAreaId);
+                StreamableCapObject streamable = cache.getStreamableArea(parentAreaId);
 
                 String areaLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(request,
-                    area.getCcId(), userContext);
+                    streamable.getCcId(), userContext);
                 String subBusLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(request,
                     subbus.getSubBus().getCcId(), userContext);
                 areaLinkHtml = "<strong>" + areaLinkHtml + "</strong>";

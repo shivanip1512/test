@@ -41,16 +41,13 @@
             <c:set var="subbusId" value="${viewableSubBus.subBus.ccId}"/>
             <cti:url value="/capcontrol/ivvc/bus/detail" var="ivvcLink" htmlEscape="true">
                 <cti:param name="subBusId" value="${subbusId}"/>
-                <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
             </cti:url>
             <cti:url value="/capcontrol/tier/feeders" var="dualBusLink" htmlEscape="true">
-                <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                 <cti:param name="substationId" value="${viewableSubBus.alternateStationId}"/>
                 <cti:param name="areaId" value="${viewableSubBus.alternateAreaId}"/>
             </cti:url>
             <cti:url value="/capcontrol/capbank/capBankLocations" var="locationLink" htmlEscape="true">
                 <cti:param name="value" value="${subbusId}"/>
-                <cti:param name="specialArea" value="${isSpecialArea}"/>
             </cti:url>
             <tr id="tr_sub_${subbusId}" data-pao-id="${subbusId}" data-bus-id="${subbusId}">
                 <%-- Icons --%>

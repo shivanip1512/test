@@ -59,17 +59,17 @@ public class ResultsController {
     @Autowired private CapbankDao capbankDao;
     @Autowired private CapbankControllerDao cbcDao;
     @Autowired private PaoDao paoDao;
-    @Autowired private ParentStringPrinterFactory printerFactory;
+    @Autowired private CapControlUrlService capcontrolUrlService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private VoltageRegulatorDao voltageRegulatorDao; 
     @Autowired private CapControlDao capControlDao; 
     
     private enum SearchType {
-    	REGULATOR,
-    	CBC,
-    	CAPCONTROL,
-    	GENERAL,
-    	;
+        REGULATOR,
+        CBC,
+        CAPCONTROL,
+        GENERAL,
+        ;
     }
 
     @RequestMapping("searchResults")
@@ -81,7 +81,6 @@ public class ResultsController {
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         int startIndex = (page - 1) * itemsPerPage;
         
-        ParentStringPrinter psp = printerFactory.createParentStringPrinter(request);
         String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);
         if( srchCriteria == null ) {
             CCSessionInfo ccSession = (CCSessionInfo) request.getSession().getAttribute("ccSession");
@@ -100,45 +99,45 @@ public class ResultsController {
         SearchType searchType = null;
 
         if( CBCWebUtils.TYPE_ORPH_SUBSTATIONS.equals(srchCriteria) ) {
-        	searchType = SearchType.CAPCONTROL;
+            searchType = SearchType.CAPCONTROL;
             ccObjects = substationDao.getOrphans(startIndex, itemsPerPage);
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedSubs.pageName");
             model.addAttribute("pageName", "orphanedSubs");
         }
         else if( CBCWebUtils.TYPE_ORPH_SUBS.equals(srchCriteria) ) {
-        	searchType = SearchType.CAPCONTROL;
+            searchType = SearchType.CAPCONTROL;
             ccObjects = substationBusDao.getOrphans(startIndex, itemsPerPage);
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedBuses.pageName");
             model.addAttribute("pageName", "orphanedBuses");
         }
         else if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) ) {
-        	searchType = SearchType.CAPCONTROL;
+            searchType = SearchType.CAPCONTROL;
             ccObjects = feederDao.getOrphans(startIndex, itemsPerPage);
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedFeeders.pageName");
             model.addAttribute("pageName", "orphanedFeeders");
         }
         else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(srchCriteria) ) {
-        	searchType = SearchType.CAPCONTROL;
+            searchType = SearchType.CAPCONTROL;
             ccObjects = capbankDao.getOrphans(startIndex, itemsPerPage);
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedBanks.pageName");
             model.addAttribute("pageName", "orphanedBanks");
         }
         else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(srchCriteria) ) {
-        	searchType = SearchType.CBC;
+            searchType = SearchType.CBC;
             ccObjects = cbcDao.getOrphans(startIndex, itemsPerPage);
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedCbcs.pageName");
             model.addAttribute("pageName", "orphanedCbcs");
         }
         else if( CBCWebUtils.TYPE_ORPH_REGULATORS.equals(srchCriteria) ) {
-        	searchType = SearchType.REGULATOR;
+            searchType = SearchType.REGULATOR;
             ccObjects = voltageRegulatorDao.getOrphans(startIndex, itemsPerPage);
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedRegulators.pageName");
             model.addAttribute("pageName", "orphanedRegulators");
         }
         else {
             model.addAttribute("pageName", "general");
-        	searchType = SearchType.GENERAL;
-        	orphan = false;
+            searchType = SearchType.GENERAL;
+            orphan = false;
             LiteBaseResults lbr = new LiteBaseResults();
             lbr.searchLiteObjects( srchCriteria );
             items = lbr.getFoundItems(startIndex, itemsPerPage);
@@ -159,7 +158,7 @@ public class ResultsController {
                 row.setIsController(isController);
                 
                 boolean isPoint = item.getParentID() != CtiUtilities.NONE_ZERO_ID;
-                String parentString = (!isPoint) ? psp.printPAO(item.getItemID()) :  psp.printPoint(item.getItemID());
+                String parentString = (!isPoint) ? capcontrolUrlService.printPAO(request, item.getItemID()) :  capcontrolUrlService.printPoint(item.getItemID());
                 row.setParentString(parentString);
                 row.setParentId(item.getParentID());
                 row.setItemDescription(item.getDescription());
@@ -182,9 +181,9 @@ public class ResultsController {
                 boolean isController = CapControlUtils.checkControllerByType(paoType);
                 row.setIsController(isController);
                 
-                String parentString = ParentStringPrinter.ORPH_STRING;
+                String parentString = CapControlUrlService.ORPH_STRING;
                 if (!orphan) {
-                	parentString = psp.printPAO(item.getId());
+                    parentString = capcontrolUrlService.printPAO(request, item.getId());
                 }
                 row.setParentString(parentString);
                 row.setParentId(item.getParentId());
@@ -217,24 +216,24 @@ public class ResultsController {
     }
     
     private String getDisplayableType(SearchType searchType, String dbType) throws MissingSearchType {
-    	
-    	if (searchType == SearchType.REGULATOR) {
-    		PaoType regType = PaoType.getForDbString(dbType);
-			String returnValue = regType.getDbString();
-			return returnValue;
-    	} else if (searchType == SearchType.CAPCONTROL) {
-    		CapControlType ccType = CapControlType.getCapControlType(dbType);
-    		String returnValue = ccType.getDisplayValue();
-			return returnValue;
-    	} else if (searchType == SearchType.CBC) {
-    		PaoType cbcType = PaoType.getForDbString(dbType);
-    		String returnValue = cbcType.getDbString();
-			return returnValue;
-		} else if (searchType == SearchType.GENERAL) {
-			return dbType;
-		} else {
-			throw new MissingSearchType("No search type set.");
-		}
+        
+        if (searchType == SearchType.REGULATOR) {
+            PaoType regType = PaoType.getForDbString(dbType);
+            String returnValue = regType.getDbString();
+            return returnValue;
+        } else if (searchType == SearchType.CAPCONTROL) {
+            CapControlType ccType = CapControlType.getCapControlType(dbType);
+            String returnValue = ccType.getDisplayValue();
+            return returnValue;
+        } else if (searchType == SearchType.CBC) {
+            PaoType cbcType = PaoType.getForDbString(dbType);
+            String returnValue = cbcType.getDbString();
+            return returnValue;
+        } else if (searchType == SearchType.GENERAL) {
+            return dbType;
+        } else {
+            throw new MissingSearchType("No search type set.");
+        }
     }
     
     @RequestMapping("recentEvents")
@@ -250,7 +249,7 @@ public class ResultsController {
         List<ControlEventSet>  listOfEventSets = Lists.newArrayList();
         
         for (int id : paoIds) {
-            StreamableCapObject streamable = cache.getCapControlPAO(id);
+            StreamableCapObject streamable = cache.getCapControlPao(id);
             if (streamable != null) {
                 
                 List<CCEventLog> events= capControlDao.getEventsForPao(streamable, dayCnt);
@@ -269,6 +268,7 @@ public class ResultsController {
         model.addAttribute("MAX_DAYS_CNT", MAX_DAYS_CNT);
         model.addAttribute("paoIdString", value);
         model.addAttribute("listOfEventSets", listOfEventSets);
+        
         return "search/recentEvents.jsp";
     }
     

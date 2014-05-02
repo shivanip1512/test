@@ -31,7 +31,6 @@
 
                 <cti:url var="substationUrl" value="/capcontrol/tier/substations">
                     <cti:param name="bc_areaId" value="${thisAreaId}"/>
-                    <cti:param name="isSpecialArea" value="${areaType.specialArea}"/>
                 </cti:url>
                 <tr>
                     <td>

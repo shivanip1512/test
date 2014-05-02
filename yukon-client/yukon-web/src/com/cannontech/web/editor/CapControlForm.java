@@ -964,7 +964,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
                 try {
                     SubStation substation = capControlCache.getSubstation(data.getSubID());
                     if(substation.getSpecialAreaEnabled() && substation.getSpecialAreaId().intValue() != area.getPAObjectID().intValue()) {
-                        duplicates.add(capControlCache.getCBCSpecialArea(substation.getSpecialAreaId()).getCcName() + ": " + substation.getCcName());
+                        duplicates.add(capControlCache.getSpecialArea(substation.getSpecialAreaId()).getCcName() + ": " + substation.getCcName());
                     }
                 } catch(NotFoundException nfe) {
                     // if it's not in the cache then it's an orphan and there are no duplicates.
@@ -1180,7 +1180,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
                 parentID = 0;
             }
         } else if (getDbPersistent() instanceof ICapBankController) {
-    	    PaoIdentifier capbank = capbankDao.findCapBankIdByCBC(itemId);
+    	    PaoIdentifier capbank = capbankDao.findCapBankByCbc(itemId);
     	    parentID = (capbank != null) ? capbank.getPaoId() : 0;
         }
 		if (parentID == CtiUtilities.NONE_ZERO_ID) {

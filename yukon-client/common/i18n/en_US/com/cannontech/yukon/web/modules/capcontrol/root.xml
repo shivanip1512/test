@@ -266,7 +266,7 @@
     <entry key="yukon.web.modules.capcontrol.areas.banks">{0} {0,choice,0#Banks|1#Bank|1&lt;Banks}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.stationCount">{0} {0,choice,0#Substations|1#Substation|1&lt;Substations}</entry>
     
-    <!-- substationTier.jsp -->
+    <!-- area.jsp -->
     <entry key="yukon.web.modules.capcontrol.area.pageName">Area</entry>
     <entry key="yukon.web.modules.capcontrol.area.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.capcontrol.area.infoContainer.title">Info</entry>

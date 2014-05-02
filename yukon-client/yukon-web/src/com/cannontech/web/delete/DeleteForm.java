@@ -76,7 +76,7 @@ public abstract class DeleteForm extends DBEditorForm {
                         }
                         if(areaId > 0) {
                             try {
-                                area = capControlCache.getCBCArea(areaId);
+                                area = capControlCache.getArea(areaId);
                             }catch (NotFoundException nfe) {
                                 area = null;
                             }

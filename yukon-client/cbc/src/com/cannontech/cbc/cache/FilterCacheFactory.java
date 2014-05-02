@@ -5,11 +5,8 @@ import com.cannontech.cbc.cache.impl.FilterCapControlCacheImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class FilterCacheFactory {
-    private CapControlCache cache;
     
-    public FilterCacheFactory() {
-        
-    }
+    private CapControlCache cache;
     
     public void setCache(CapControlCache cache) {
         this.cache = cache;

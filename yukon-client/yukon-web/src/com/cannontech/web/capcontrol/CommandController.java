@@ -155,7 +155,7 @@ public class CommandController {
                 command = CommandHelper.buildVerifyBanks(user, commandType, itemId, false);
             } else if (commandId == CommandType.VERIFY_SELECTED_BANK.getCommandId()  ) {
                 int bankId = itemId;
-                int busId = cache.getParentSubBusID(bankId);
+                int busId = cache.getParentSubBusId(bankId);
                 command = CommandHelper.buildVerifySelectedBank(user, commandType, busId, bankId, false);
             } else {
                 command = CommandHelper.buildItemCommand(commandId, itemId, user);
@@ -236,7 +236,7 @@ public class CommandController {
         
         rolePropertyDao.verifyProperty(permissions.get(CapControlType.CAPBANK), user);
         model.addAttribute("substationId", substationId);
-        model.addAttribute("areaId", cache.getParentAreaID(substationId));
+        model.addAttribute("areaId", cache.getParentAreaId(substationId));
         
         CapBankDevice bank = cache.getCapBankDevice(bankMoveBean.getBankId());
         
@@ -340,7 +340,7 @@ public class CommandController {
         }
         
         model.addAttribute("substationId", cache.getParentSubStationId(bankId));
-        model.addAttribute("areaId", cache.getParentAreaID(bankId));
+        model.addAttribute("areaId", cache.getParentAreaId(bankId));
         return "redirect:/capcontrol/tier/feeders";
     }
     

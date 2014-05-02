@@ -9,9 +9,10 @@ import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.message.capcontrol.model.CapControlCommand;
 import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.message.util.ClientConnection;
 import com.google.common.collect.Sets;
 
-public class CapControlClientConnection extends com.cannontech.message.util.ClientConnection {
+public class CapControlClientConnection extends ClientConnection {
 
     private HashSet<MessageEventListener> messageEventListeners = Sets.newHashSet();
 

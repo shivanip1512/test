@@ -6,25 +6,13 @@
 
 <cti:standardPage module="tools" page="search">
 
-    <script type="text/javascript">
-        $(function() {
-            // Manually wire the submit button as it currently does... nothing.
-            $(document).on('click', '#manualSearchButton',
-            function(event) {
-                event.stopPropagation();
-                $("#formSiteSearch").submit();
-            });
-
-        });
-    </script>
-
     <div class="stacked">
         <form action="" method="get" id="formSiteSearch" class="clearfix yukon-search-form">
             <input id="searchString" name="q" value="${fn:escapeXml(searchString)}" size="50" type="text"
                 class="fl search-field" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>">
                <input type="hidden" name="itemsPerPage" value="${itemsPerPage}">
             <cti:msg2 key="yukon.common.search" var="searchLabel"/>
-            <cti:button label="${searchLabel}" id="manualSearchButton" classes="primary action"/>
+            <cti:button classes="primary action" type="submit" label="${searchLabel}"/>
         </form>
     </div>
 

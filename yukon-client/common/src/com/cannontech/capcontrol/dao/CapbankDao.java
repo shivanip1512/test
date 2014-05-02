@@ -18,7 +18,7 @@ public interface CapbankDao {
      * @param cbcId the paoId of the CBC whose CapBank we want the ID of.
      * @return a PaoIdentifier representing the cap bank.
      */
-    public PaoIdentifier findCapBankIdByCBC(int cbcId);
+    public PaoIdentifier findCapBankByCbc(int cbcId);
     
     /**
      * Returns the capbank additional information for a CapBank

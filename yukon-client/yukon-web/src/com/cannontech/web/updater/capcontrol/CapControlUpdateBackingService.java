@@ -15,12 +15,14 @@ import com.cannontech.web.updater.capcontrol.CapControlFormattingService.Format;
 import com.cannontech.web.updater.capcontrol.exception.CacheManagementException;
 
 public class CapControlUpdateBackingService implements UpdateBackingService {
+    
     private static final Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
     private CapControlCache capControlCache;
     private CapControlFormattingService<StreamableCapObject> formattingService;
     
     @Override
     public synchronized String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
+        
         Matcher m = idSplitter.matcher(identifier);
         if (m.matches() && m.groupCount() != 2) {
             throw new RuntimeException("identifier string isn't well formed: " + identifier);
@@ -36,10 +38,12 @@ public class CapControlUpdateBackingService implements UpdateBackingService {
         
         Format formatEnum = Format.valueOf(format);
         String valueString = formattingService.getValueString(latestValue, formatEnum, userContext);
+        
         return valueString;
     }
     
     private StreamableCapObject doGetLatestValue(int paoId, long afterDate) {
+        
         boolean updated = updatedInCache(paoId, afterDate);
         if (updated || afterDate == 0) {
             try {
@@ -53,17 +57,19 @@ public class CapControlUpdateBackingService implements UpdateBackingService {
                 throw new CacheManagementException();
             }
         }
-        return null;    
+        return null;
     }
     
     @Override
     public boolean isValueAvailableImmediately(String fullIdentifier,
-    		long afterDate, YukonUserContext userContext) {
-    	return true;
+            long afterDate, 
+            YukonUserContext userContext) {
+        return true;
     }
     
     private boolean updatedInCache(int areaId, long afterDate) {
-        WebUpdatedDAO<Integer> updatedObjMap = capControlCache.getUpdatedObjMap();
+        
+        WebUpdatedDAO<Integer> updatedObjMap = capControlCache.getUpdatedObjects();
         List<Integer> updatedIds = updatedObjMap.getUpdatedIdsSince(new Date(afterDate), areaId);
         
         boolean result = updatedIds.contains(areaId);

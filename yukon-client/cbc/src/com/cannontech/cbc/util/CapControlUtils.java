@@ -338,7 +338,7 @@ public final class CapControlUtils {
     	String ret = "(none)";
     	SubStation station  = ccCache.getSubstation(subID);
 		int areaId = station.getParentID();
-		Area area = ccCache.getCBCArea(areaId);
+		Area area = ccCache.getArea(areaId);
 		if( area != null ) {
 			ret = area.getPaoName();
 		}
@@ -766,9 +766,9 @@ public final class CapControlUtils {
         if (subBusSubstation.getSpecialAreaEnabled()) {
             parentAreaId = subBusSubstation.getSpecialAreaId();
         } else {
-            parentAreaId = ccCache.getParentAreaID(subBus.getCcId());
+            parentAreaId = ccCache.getParentAreaId(subBus.getCcId());
         }
-        StreamableCapObject area = ccCache.getArea(parentAreaId);
+        StreamableCapObject area = ccCache.getStreamableArea(parentAreaId);
         Map<Season, Integer> areaSeasonSchedule = seasonScheduleDao.getSeasonStrategyAssignments(area.getCcId());
         if (!isSeasonStrategyAssigned(areaSeasonSchedule)) {
             Map<Season, Integer> subBusSeasonSchedule = seasonScheduleDao.getSeasonStrategyAssignments(subBus.getCcId());

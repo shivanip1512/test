@@ -50,7 +50,6 @@ $(function() {
     <li class="divider" />
     <cti:url var="locationsUrl" value="/capcontrol/capbank/capBankLocations">
         <cti:param name="value" value="${substationId}" />
-        <cti:param name="specialArea" value="${isSpecialArea}" />
     </cti:url>
     <cm:dropdownOption key=".location.label" href="${locationsUrl}" icon="icon-interstate" />
 

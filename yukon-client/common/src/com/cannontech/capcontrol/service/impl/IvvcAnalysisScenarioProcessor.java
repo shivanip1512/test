@@ -219,7 +219,6 @@ public class IvvcAnalysisScenarioProcessor {
     private String getZoneLinkHtml(Zone zone) {
         Map<String, String> argMap = Maps.newHashMap();
         argMap.put("zoneId", String.valueOf(zone.getId()));
-        argMap.put("isSpecialArea", "false");
         
         String name = zone.getName();
         String html = getLinkHtml("/capcontrol/ivvc/zone/detail", name, argMap);

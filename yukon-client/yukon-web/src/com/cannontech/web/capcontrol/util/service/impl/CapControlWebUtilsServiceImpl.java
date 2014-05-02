@@ -195,7 +195,7 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
     @Override
     public List<NavigableArea> buildSimpleHierarchy(){
         List<NavigableArea> areas = new ArrayList<NavigableArea>();
-        for(Area area : capControlCache.getCbcAreas()) {
+        for(Area area : capControlCache.getAreas()) {
             NavigableArea navigableArea = new NavigableArea(getSimpleSubstations(area));
             navigableArea.setName(area.getCcName());
             navigableArea.setId(area.getCcId());

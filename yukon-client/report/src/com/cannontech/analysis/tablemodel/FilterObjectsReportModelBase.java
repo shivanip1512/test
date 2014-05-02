@@ -49,7 +49,7 @@ public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E>
             CapControlCache capControlCache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
             UserAccessCacheFilter cacheFilter = new UserAccessCacheFilter(liteUser);
             
-            List<Area> areaList = capControlCache.getCbcAreas();
+            List<Area> areaList = capControlCache.getAreas();
             List<Integer> areasToHide = new ArrayList<Integer>();
             
             for ( StreamableCapObject area : areaList ) {
@@ -79,7 +79,7 @@ public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E>
                     } else {
                         objId = ((LiteYukonPAObject)obj).getPaoIdentifier().getPaoId();
                         try {
-                            objId = capControlCache.getParentAreaID( objId );
+                            objId = capControlCache.getParentAreaId( objId );
                             if ( areasToHide.contains( objId ) ) {
                                 objectsToRemove.add((LiteYukonPAObject)obj);
                             }

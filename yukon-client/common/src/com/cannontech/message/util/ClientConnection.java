@@ -3,6 +3,7 @@ package com.cannontech.message.util;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -25,7 +26,7 @@ import com.cannontech.yukon.IServerConnection;
 import com.google.common.collect.Lists;
 
 @ManagedResource
-public abstract class ClientConnection extends java.util.Observable implements IServerConnection {
+public abstract class ClientConnection extends Observable implements IServerConnection {
 
     private Connection connection;
     private ConnectionFactory connectionFactory;

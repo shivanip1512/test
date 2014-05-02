@@ -7,6 +7,7 @@ import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.user.YukonUserContext;
 
 public abstract class AbstractFormattingService<E extends StreamableCapObject> implements CapControlFormattingService<E> {
+    
     protected FilterCacheFactory filterCacheFactory;
     protected YukonUserContextMessageSourceResolver resolver;
     protected UpdaterHelper updaterHelper;

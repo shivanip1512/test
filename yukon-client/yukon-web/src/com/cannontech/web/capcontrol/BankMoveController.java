@@ -65,7 +65,7 @@ public class BankMoveController {
         Feeder feeder = filterCapControlCache.getFeeder(capBank.getParentID()); 
         SubBus subBus = filterCapControlCache.getSubBus(feeder.getParentID());
         SubStation substation = filterCapControlCache.getSubstation(subBus.getParentID());
-        StreamableCapObject area = filterCapControlCache.getArea(substation.getParentID());
+        StreamableCapObject area = filterCapControlCache.getStreamableArea(substation.getParentID());
         
         model.addAttribute("substationId", substation.getCcId());
         
@@ -111,7 +111,7 @@ public class BankMoveController {
 
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(context.getYukonUser());
         
-        List<Area> areas = filterCapControlCache.getCbcAreas();
+        List<Area> areas = filterCapControlCache.getAreas();
         List<MovedBank> movedCaps = Lists.newArrayList();   
         for (Area area : areas) {
             List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksByArea(area.getPaoId());

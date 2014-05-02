@@ -50,16 +50,13 @@ public class BusViewController {
     @Autowired private FlotChartService flotChartService;
     
     @RequestMapping(value="detail", method = RequestMethod.GET)
-    public String detail(ModelMap model, YukonUserContext userContext, Boolean isSpecialArea, int subBusId) {
-        setupDetails(model, userContext, isSpecialArea, subBusId);
+    public String detail(ModelMap model, YukonUserContext userContext, int subBusId) {
+        setupDetails(model, userContext, subBusId);
         return "ivvc/busView.jsp";
     }
     
-    private void setupDetails(ModelMap model, YukonUserContext userContext, Boolean isSpecialArea, int subBusId) {
-        if(isSpecialArea == null) {
-            isSpecialArea = false;
-        }
-        model.addAttribute("isSpecialArea",isSpecialArea);
+    private void setupDetails(ModelMap model, YukonUserContext userContext, int subBusId) {
+        
         model.addAttribute("subBusId", subBusId);
         
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
@@ -73,7 +70,7 @@ public class BusViewController {
         
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(userContext.getYukonUser());
         
-        setupBreadCrumbs(model, cache, subBusId, isSpecialArea, userContext);
+        setupBreadCrumbs(model, cache, subBusId, userContext);
         setupZoneList(model,cache,subBusId);
         setupStrategyDetails(model,cache,subBusId);
 
@@ -123,17 +120,11 @@ public class BusViewController {
         model.addAttribute("strategySettings", strategyLimitsHolder.getStrategy().getTargetSettings());
     }
     
-    private void setupBreadCrumbs(ModelMap model, CapControlCache cache, int subBusId, boolean isSpecialArea, YukonUserContext userContext) {
+    private void setupBreadCrumbs(ModelMap model, CapControlCache cache, int subBusId, YukonUserContext userContext) {
         StreamableCapObject subBus = cache.getSubBus(subBusId);
         SubStation station = cache.getSubstation(subBus.getParentID());
         
-        StreamableCapObject area;
-        if(isSpecialArea) {
-            area = cache.getArea(station.getSpecialAreaId());
-        }
-        else {
-            area = cache.getArea(station.getParentID());
-        }
+        StreamableCapObject area = cache.getStreamableArea(station.getParentID());
         
         String areaName = area.getCcName();
         String substationName = station.getCcName();

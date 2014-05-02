@@ -58,13 +58,6 @@
 
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-    <c:if test="${isSpecialArea}">
-        <c:set var="updaterType" value="CBCSPECIALAREA" />
-    </c:if>
-    <c:if test="${not isSpecialArea}">
-        <c:set var="updaterType" value="CBCAREA" />
-    </c:if>
-
     <div class="column-12-12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="infoContainer" hideEnabled="true">
@@ -84,9 +77,9 @@
                             <tags:nameValue2 nameKey=".state" rowClass="wsnw">
                                 <a id="areaState_${bc_areaId}" href="javascript:void(0);" class="subtle-link">
                                     <span id="areaState_box_${bc_areaId}" class="box state-box">&nbsp;</span>
-                                    <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="STATE" />
+                                    <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="STATE" />
                                 </a>
-                                <cti:dataUpdaterCallback function="updateStateColorGenerator('areaState_box_${bc_areaId}')" initialize="true" value="${updaterType}/${bc_areaId}/STATE"/>
+                                <cti:dataUpdaterCallback function="updateStateColorGenerator('areaState_box_${bc_areaId}')" initialize="true" value="${type}/${bc_areaId}/STATE"/>
                              </tags:nameValue2>
                              <tags:nameValue2 nameKey=".substations">
                                 ${fn:length(subStations)}
@@ -94,7 +87,7 @@
                         </tags:nameValueContainer2>
                     </div>
                 </div>
-                <capTags:warningImg paoId="${bc_areaId}" type="${updaterType}" alertBox="true"/>
+                <capTags:warningImg paoId="${bc_areaId}" type="${type}" alertBox="true"/>
             </tags:sectionContainer2>
         </div>
 
@@ -104,20 +97,20 @@
                     <div class="column one">
                         <tags:nameValueContainer2 tableClass="name-collapse">
                             <tags:nameValue2 nameKey=".availableKvars">
-                                <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="KVARS_AVAILABLE"/>
+                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_AVAILABLE"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".unavailableKvars">
-                                <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="KVARS_UNAVAILABLE"/>
+                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_UNAVAILABLE"/>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </div>
                     <div class="column two nogutter">
                         <tags:nameValueContainer2 tableClass="name-collapse">
                             <tags:nameValue2 nameKey=".closedKvars">
-                                <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="KVARS_CLOSED"/>
+                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_CLOSED"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".trippedKvars">
-                                <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="KVARS_TRIPPED"/>
+                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_TRIPPED"/>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </div>
@@ -125,7 +118,7 @@
                 <div class="clear">
                     <tags:nameValueContainer2 tableClass="name-collapse">
                         <tags:nameValue2 nameKey=".pfactorEstimated" rowClass="powerFactor">
-                            <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="PFACTOR"/>
+                            <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="PFACTOR"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </div>
@@ -155,23 +148,22 @@
                 <c:set var="substationId" value="${subStation.ccId}"/>
                 <cti:url value="/capcontrol/tier/feeders" var="feederLink">
                     <cti:param name="substationId" value="${substationId}"/>
-                    <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                 </cti:url>
             
-    	        <tr data-pao-id="${substationId}">
+                <tr data-pao-id="${substationId}">
                     <td>
                         <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
                     </td>
-    				<td>
-    				    <a href="${feederLink}" id="anc_${substationId}">
+                    <td>
+                        <a href="${feederLink}" id="anc_${substationId}">
                             <spring:escapeBody>${subStation.ccName}</spring:escapeBody>
                         </a>
-    				    <span class="error textFieldLabel">
+                        <span class="error textFieldLabel">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED_MSG" />
                         </span>
-    				</td>
+                    </td>
 
-    				<td class="wsnw">
+                    <td class="wsnw">
                         <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" href="javascript:void(0);" class="subtle-link"></c:if>
                         <c:if test="${not hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
                             <span id="substationState_box_${substationId}" class="box state-box">&nbsp;</span>
@@ -179,16 +171,16 @@
                         <c:if test="${hasSubstationControl}"></a></c:if>
                         <c:if test="${not hasSubstationControl}"></span></c:if>
                         <cti:dataUpdaterCallback function="updateStateColorGenerator('substationState_box_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>
-                	</td>
+                    </td>
 
-    				<td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" /></td>
+                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" /></td>
                     <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" /></td>
                     <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" /></td>
                     <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_TRIPPED" /></td>
                     <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" /></td>
                 </tr>
             </c:forEach>
-    		
+            
         </table>
     
     </tags:boxContainer2>

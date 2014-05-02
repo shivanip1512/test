@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 public class DrPaoTypeHandler implements PaoTypeHandler {
+    
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired protected PaoAuthorizationService paoAuthorizationService;
 

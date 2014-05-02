@@ -128,9 +128,8 @@ public class ZoneDetailController {
     }
 
     @RequestMapping("detail")
-    public String detail(ModelMap model, HttpServletRequest request, YukonUserContext context,
-                         int zoneId, Boolean isSpecialArea) {
-        setupDetails(model, request, context, zoneId, isSpecialArea);
+    public String detail(ModelMap model, HttpServletRequest request, YukonUserContext userContext, int zoneId) {
+        setupDetails(model, request, userContext, zoneId);
 
         List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zoneId);
         ZoneVoltagePointsHolder zoneVoltagePointsHolder = new ZoneVoltagePointsHolder(zoneId, infos);
@@ -140,20 +139,23 @@ public class ZoneDetailController {
     }
 
     @RequestMapping("voltagePoints")
-    public String voltagePoints(ModelMap model, HttpServletRequest request,
-                                YukonUserContext context, int zoneId, Boolean isSpecialArea) {
+    public String voltagePoints(ModelMap model, LiteYukonUser user, int zoneId) {
         List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zoneId);
         ZoneVoltagePointsHolder zoneVoltagePointsHolder = new ZoneVoltagePointsHolder(zoneId, infos);
-        setupVoltagePointAttributes(zoneVoltagePointsHolder, model, context, zoneId, isSpecialArea);
+        setupVoltagePointAttributes(zoneVoltagePointsHolder, model, user, zoneId);
+        
         return "ivvc/voltagePointsEdit.jsp";
     }
     
     @RequestMapping("updateVoltagePoints")
     public String updateVoltagePoints(@ModelAttribute ZoneVoltagePointsHolder zoneVoltagePointsHolder,
                                       BindingResult bindingResult,
-                                      ModelMap model, YukonUserContext context, int zoneId,
-                                      Boolean isSpecialArea, FlashScope flashScope) {
-        setupVoltagePointAttributes(zoneVoltagePointsHolder, model, context, zoneId, isSpecialArea);
+                                      ModelMap model, 
+                                      LiteYukonUser user,
+                                      int zoneId,
+                                      FlashScope flashScope) {
+        
+        setupVoltagePointAttributes(zoneVoltagePointsHolder, model, user, zoneId);
         
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
@@ -162,7 +164,7 @@ public class ZoneDetailController {
         }
 
         try {
-            AbstractZone abstractZone = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, context.getYukonUser());
+            AbstractZone abstractZone = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
             zoneService.saveVoltagePointInfo(abstractZone, zoneVoltagePointsHolder.getPoints());
             MessageSourceResolvable successMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.voltagePoints.updateSuccess");
@@ -176,18 +178,19 @@ public class ZoneDetailController {
         return "redirect:/capcontrol/ivvc/zone/voltagePoints";
     }
 
-    private void setupVoltagePointAttributes(ZoneVoltagePointsHolder zoneVoltagePointsHolder, ModelMap model,
-                                             YukonUserContext context, int zoneId,
-                                             Boolean isSpecialArea) {
-        setupBreadCrumbs(model, context, zoneId, isSpecialArea);
+    private void setupVoltagePointAttributes(ZoneVoltagePointsHolder zoneVoltagePointsHolder, 
+                                             ModelMap model,
+                                             LiteYukonUser user,
+                                             int zoneId) {
+        
+        setupBreadCrumbs(model, user, zoneId);
         model.addAttribute("zoneId", zoneId);
         model.addAttribute("zoneVoltagePointsHolder", zoneVoltagePointsHolder);
 
-        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT,
-                                                               context.getYukonUser());
+        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole", hasEditingRole);
 
-        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(context.getYukonUser());
+        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         Zone zone = zoneDao.getZoneById(zoneId);
         int subBusId = zone.getSubstationBusId();
         int strategyId = cache.getSubBus(subBusId).getStrategyId();
@@ -207,37 +210,38 @@ public class ZoneDetailController {
     }
 
     @RequestMapping("voltageDeltas")
-    public String voltageDeltas(ModelMap model, HttpServletRequest request,
-                                YukonUserContext context, int zoneId, Boolean isSpecialArea) throws ServletRequestBindingException {
+    public String voltageDeltas(ModelMap model, 
+            HttpServletRequest request,
+            LiteYukonUser user, int zoneId) throws ServletRequestBindingException {
+        
         setupDeltas(model, request, zoneId);
-        setupBreadCrumbs(model, context, zoneId, isSpecialArea);
-        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT,
-                                          context.getYukonUser());
+        setupBreadCrumbs(model, user, zoneId);
+        
+        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole", hasEditingRole);
         model.addAttribute("zoneId", zoneId);
+        
         return "ivvc/zoneVoltageDeltas.jsp";
     }
     
     @RequestMapping("voltageDeltasTable")
-    public String voltageDeltasTable(ModelMap model, HttpServletRequest request,
-            YukonUserContext context, int zoneId, Boolean isSpecialArea) throws ServletRequestBindingException {
+    public String voltageDeltasTable(ModelMap model, HttpServletRequest request, LiteYukonUser user, int zoneId) 
+    throws ServletRequestBindingException {
+        
         setupDeltas(model, request, zoneId);
-        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT,
-                context.getYukonUser());
+        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole", hasEditingRole);
         model.addAttribute("zoneId", zoneId);
+        
         return "ivvc/zoneVoltageDeltasTable.jsp";
     }
 
     @RequestMapping("deltaUpdate")
     public String deltaUpdate(@ModelAttribute ZoneVoltageDeltas zoneVoltageDeltas,
-                              BindingResult bindingResult,
-                              ModelMap model,
-                              int zoneId,
-                              Boolean isSpecialArea,
-                              YukonUserContext context,
-                              HttpServletRequest request,
-                              FlashScope flashScope) {
+            ModelMap model,
+            int zoneId,
+            FlashScope flashScope) {
+        
         try {
             for (CapBankPointDelta pointDelta : zoneVoltageDeltas.getPointDeltas()) {
                 double deltaAsDbl = Double.valueOf(pointDelta.getDelta());
@@ -281,40 +285,34 @@ public class ZoneDetailController {
                     flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateSuccess"));
                 }
     
-                if (isSpecialArea == null) {
-                    isSpecialArea = false;
-                }
             }
         } catch (NumberFormatException e) {
             // The user entered something invalid into the delta field
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateFailureFormat"));
         }
 
-        model.addAttribute("isSpecialArea", isSpecialArea);
         model.addAttribute("zoneId", zoneId);
+        
         return "redirect:/capcontrol/ivvc/zone/voltageDeltas";
     }
     
     @RequestMapping("chart")
-    public @ResponseBody Map<String, Object> chart(YukonUserContext context, int zoneId) {
-        boolean zoneAttributesExist = voltageFlatnessGraphService
-                .zoneHasRequiredRegulatorPointMapping(zoneId,
+    public @ResponseBody Map<String, Object> chart(YukonUserContext userContext, int zoneId) {
+        boolean zoneAttributesExist = 
+                voltageFlatnessGraphService.zoneHasRequiredRegulatorPointMapping(zoneId,
                                                       RegulatorPointMapping.VOLTAGE_Y,
-                                                      context.getYukonUser());
+                                                      userContext.getYukonUser());
         if (zoneAttributesExist) {
-            VfGraph graph = voltageFlatnessGraphService.getZoneGraph(context, zoneId);
+            VfGraph graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
             Map<String, Object> graphAsJSON = flotChartService.getIVVCGraphData(graph, false);
             return graphAsJSON;
         }
         return Collections.emptyMap();
     }
     
-    private void setupDetails(ModelMap model, HttpServletRequest request, YukonUserContext context, int zoneId, Boolean isSpecialArea) {
-        LiteYukonUser user = context.getYukonUser();
-        if(isSpecialArea == null) {
-            isSpecialArea = false;
-        }
-        model.addAttribute("isSpecialArea",isSpecialArea);
+    private void setupDetails(ModelMap model, HttpServletRequest request, YukonUserContext userContext, int zoneId) {
+        
+        LiteYukonUser user = userContext.getYukonUser();
         
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole", hasEditingRole);
@@ -328,11 +326,11 @@ public class ZoneDetailController {
         setupZoneDetails(model, cache, zoneDto);
         setupIvvcEvents(model, zoneDto.getZoneId(), zoneDto.getSubstationBusId());
         setupCapBanks(model, cache, zoneDto);
-        setupBreadCrumbs(model, cache, zoneDto, isSpecialArea);
+        setupBreadCrumbs(model, cache, zoneDto);
         setupRegulatorPointMappings(model, zoneDto);
         setupRegulatorCommands(model, zoneDto);
         
-        setupChart(model, context, zoneId);
+        setupChart(model, userContext, zoneId);
         
         int strategyId = cache.getSubBus(zoneDto.getSubstationBusId()).getStrategyId();
         StrategyLimitsHolder strategyLimitsHolder = strategyDao.getStrategyLimitsHolder(strategyId);
@@ -344,6 +342,7 @@ public class ZoneDetailController {
     }
 
     private void setupZoneDetails(ModelMap model, CapControlCache cache, AbstractZone zoneDto) {
+        
         Map<Phase, Integer> regulatorIdMap = Maps.newHashMapWithExpectedSize(3);
         Map<Phase, String> regulatorNameMap = Maps.newHashMapWithExpectedSize(3);
         Map<Phase, RegulatorToZoneMapping> regulators = zoneDto.getRegulators();
@@ -387,6 +386,7 @@ public class ZoneDetailController {
     }
 
     private void setupRegulatorCommands(ModelMap model, AbstractZone abstractZone) {
+        
         Map<Phase, RegulatorToZoneMapping> regulators = abstractZone.getRegulators();
         Map<Phase, String> regulatorTypeMap = Maps.newHashMapWithExpectedSize(3);
         for (Entry<Phase, RegulatorToZoneMapping> entry : regulators.entrySet()) {
@@ -417,8 +417,12 @@ public class ZoneDetailController {
     }
 
     @RequestMapping("recentEvents")
-    public @ResponseBody Map<String, Object> recentEvents( int zoneId, int subBusId, String mostRecent, YukonUserContext context ) {
-        DateTime dt = new DateTime(mostRecent).toDateTime(context.getJodaTimeZone());
+    public @ResponseBody Map<String, Object> recentEvents(int zoneId, 
+            int subBusId, 
+            String mostRecent, 
+            YukonUserContext userContext) {
+        
+        DateTime dt = new DateTime(mostRecent).toDateTime(userContext.getJodaTimeZone());
 
         final int rowLimit = 20;
         DateTime nextTime = new DateTime();
@@ -426,7 +430,7 @@ public class ZoneDetailController {
 
         List<Map<String,String>> datas = new ArrayList<>();
         for (CcEvent event : events) {
-            String formattedTime = dateFormattingService.format(event.getDateTime(), DateFormatEnum.BOTH, context);
+            String formattedTime = dateFormattingService.format(event.getDateTime(), DateFormatEnum.BOTH, userContext);
 
             Map<String, String> eventJson = new HashMap<>();
             eventJson.put("deviceName", event.getDeviceName());
@@ -441,6 +445,7 @@ public class ZoneDetailController {
     }
 
     private void setupCapBanks(ModelMap model, CapControlCache cache, AbstractZone zoneDto) {
+        
         List<Integer> capBankIdList = zoneService.getCapBankIdsForZoneId(zoneDto.getZoneId());
         List<Integer> unassignedBankIds = zoneService.getUnassignedCapBankIdsForSubBusId(zoneDto.getSubstationBusId());
         
@@ -475,6 +480,7 @@ public class ZoneDetailController {
     }
     
     private void setupRegulatorPointMappings(ModelMap model, AbstractZone abstractZone) {
+        
         Map<Phase, RegulatorToZoneMapping> regulators = abstractZone.getRegulators();
         Map<Phase, List<VoltageRegulatorPointMapping>> pointMappingsMap = Maps.newHashMapWithExpectedSize(3);
         for (Entry<Phase, RegulatorToZoneMapping> entry: regulators.entrySet()) {
@@ -487,6 +493,7 @@ public class ZoneDetailController {
     }
     
     private void setupDeltas(ModelMap model, HttpServletRequest request, int zoneId) throws ServletRequestBindingException {
+        
         List<Integer> bankIds = zoneService.getCapBankIdsForZoneId(zoneId);
         
         List<CapBankPointDelta> pointDeltas = zoneService.getAllPointDeltasForBankIds(bankIds);
@@ -550,33 +557,20 @@ public class ZoneDetailController {
         model.addAttribute("searchResults", searchResults);
     }
 
-    private void setupBreadCrumbs(ModelMap model, YukonUserContext context, int zoneId,
-                                  Boolean isSpecialArea) {
-        LiteYukonUser user = context.getYukonUser();
-        if (isSpecialArea == null) {
-            isSpecialArea = false;
-        }
-        model.addAttribute("isSpecialArea", isSpecialArea);
-
+    private void setupBreadCrumbs(ModelMap model, LiteYukonUser user, int zoneId) {
+        
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
-        setupBreadCrumbs(model, cache, zoneDto, isSpecialArea);
+        setupBreadCrumbs(model, cache, zoneDto);
     }
 
-    private void setupBreadCrumbs(ModelMap model, CapControlCache cache, AbstractZone zoneDto,
-                                  boolean isSpecialArea) {
+    private void setupBreadCrumbs(ModelMap model, CapControlCache cache, AbstractZone zoneDto) {
 
         int subBusId = zoneDto.getSubstationBusId();
         StreamableCapObject subBus = cache.getSubBus(subBusId);
         SubStation station = cache.getSubstation(subBus.getParentID());
         
-        StreamableCapObject area;
-        if(isSpecialArea) {
-            area = cache.getArea(station.getSpecialAreaId());
-        }
-        else {
-            area = cache.getArea(station.getParentID());
-        }
+        StreamableCapObject area = cache.getStreamableArea(station.getParentID());
         
         String areaName = area.getCcName();
         String substationName = station.getCcName();

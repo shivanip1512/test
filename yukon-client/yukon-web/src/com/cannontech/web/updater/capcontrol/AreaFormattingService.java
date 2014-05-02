@@ -9,6 +9,7 @@ public class AreaFormattingService extends AbstractAreaFormatingService<Area> {
     
     @Override
     protected String getState(final Area latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        
         String prefix = "yukon.web.modules.capcontrol.";
         String key = "";
         if (latestValue.getDisableFlag()) {

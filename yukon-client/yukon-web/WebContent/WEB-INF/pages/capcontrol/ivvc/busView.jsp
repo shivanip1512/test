@@ -90,7 +90,6 @@
                         <cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
                             <cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">
                                 <cti:param name="zoneId" value="${zone.zoneId}"/>
-                                <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                             </cti:url>
                             <tr>
                                 <td class="zoneName">

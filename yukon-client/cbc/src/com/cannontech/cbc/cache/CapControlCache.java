@@ -18,173 +18,158 @@ import com.cannontech.yukon.conns.CapControlClientConnection;
 
 public interface CapControlCache {
 
-    public List<CapBankDevice> getCapBanksBySpecialArea(int areaID);
+    List<CapBankDevice> getCapBanksBySpecialArea(int areaId);
     
-    public List<SubStation> getSubstationsBySpecialArea(int areaId);
+    List<SubStation> getSubstationsBySpecialArea(int areaId);
     
-    public int getParentAreaID(int childID);
+    int getParentAreaId(int childId);
     
-    public StreamableCapObject getArea(int paoId) throws NotFoundException;
+    StreamableCapObject getStreamableArea(int areaId) throws NotFoundException;
     
-    public Area getCBCArea(int id);
+    Area getArea(int areaId);
     
-    public VoltageRegulatorFlags getVoltageRegulatorFlags(int id);
+    VoltageRegulatorFlags getVoltageRegulatorFlags(int regulatorId);
     
-    public SpecialArea getCBCSpecialArea(int id);
+    SpecialArea getSpecialArea(int specialAreaId);
     
-    public StreamableCapObject getObject(int id);
+    StreamableCapObject getObject(int id);
     
-    public List<SubBus> getSubBusesBySubStation(SubStation sub);
+    List<SubBus> getSubBusesBySubStation(SubStation substation);
     
-    public SubStation getSubstation( int subId);
+    SubStation getSubstation(int substationId);
     
-    public CapControlClientConnection getConnection();
+    CapControlClientConnection getConnection();
     
-    public Boolean getSystemStatusOn();
+    boolean getSystemStatusOn();
     
-    public CBCWebUpdatedObjectMap getUpdatedObjMap();
+    CBCWebUpdatedObjectMap getUpdatedObjects();
     
-	/**
-	 * 
-	 * @return SubBus
-	 */
-	public SubBus getSubBus(int subID);
+    SubBus getSubBus(int subbusId);
 
-	/**
-	 * Returns the base object type for a SubBus, Feeder or CapBankDevice
-	 * 
-	 */
-	public StreamableCapObject getCapControlPAO(int paoID);
+    /**
+     * Returns the base object type for a SubBus, Feeder or CapBankDevice.
+     */
+    StreamableCapObject getCapControlPao(int paoId);
 
-	/**
-	 * 
-	 * @return Feeder
-	 */
-	public Feeder getFeeder(int feederID);
+    Feeder getFeeder(int feederId);
 
-	/**
-	 * @return CapBankDevice
-	 */
-	public CapBankDevice getCapBankDevice(int capBankDeviceID);
+    CapBankDevice getCapBankDevice(int deviceId);
 
-	/**
-	 * @return List<Feeder>
-	 */
-	public List<Feeder> getFeedersBySubBus(int subBusID);
+    List<Feeder> getFeedersBySubBus(int subbusId);
+    
+    List<Feeder> getFeedersBySubStation(SubStation substation);
+
+    String getSubBusNameForFeeder(Feeder feeder);
+
+    List<CapBankDevice> getCapBanksByFeeder(int feederId);
+
+    List<CapBankDevice> getCapBanksByTypeAndId(CapControlType type, int id);
     
     /**
-     * @return List<Feeder>
+     * Instant lookup to check if this paoID is used by a SubBus.
      */
-    public List<Feeder> getFeedersBySubStation(SubStation sub);
-
-    public String getSubBusNameForFeeder(Feeder fdr);
-	/**
-	 * @return List<CapBankDevice>
-	 */
-	public List<CapBankDevice> getCapBanksByFeeder(int feederID);
-
-	public List<CapBankDevice> getCapBanksByTypeAndId(CapControlType type, int id);
-	
-	/**
-	 * Instant lookup to check if this paoID is used by a SubBus
-	 * 
-	 */
-	public abstract boolean isSubBus(int id);
+    boolean isSubBus(int subbusId);
     
     /**
-     * Instant lookup to check if this paoID is used by a SpecialCBCArea
-     * 
+     * Instant lookup to check if this paoID is used by a SpecialCBCArea.
      */
-    public abstract boolean isSpecialCBCArea(int id);
+    boolean isSpecialArea(int id);
     
     /**
-     * Instant lookup to check if this paoID is used by a CBCArea
-     * 
+     * Instant lookup to check if this paoID is used by a CBCArea.
      */
-    public abstract boolean isCBCArea(int id);
+    boolean isArea(int id);
 
-	/**
-	 * Instant lookup to check if this paoID is used by a Feeder
-	 * 
-	 */
-	public abstract boolean isFeeder(int id);
+    /**
+     * Instant lookup to check if this paoID is used by a Feeder.
+     */
+    boolean isFeeder(int id);
 
-	/**
-	 * Instant lookup to check if this paoID is used by a CapBankDevice
-	 * 
-	 */
-	public abstract boolean isCapBank(int id);
+    /**
+     * Instant lookup to check if this paoID is used by a CapBankDevice.
+     */
+    boolean isCapBank(int id);
 
-	/**
-	 * @return CapBankDevice[]
-	 * @param subBusID long
-	 */
-	public abstract List<CapBankDevice> getCapBanksBySubBus(int subBusID);
+    /**
+     * Can throw a not found exception if the subToBankMap is holding bad bank ID's.
+     */
+    List<CapBankDevice> getCapBanksBySubBus(int subbusId) throws NotFoundException;
+    
+    List<CapBankDevice> getCapBanksBySubStation(SubStation sub);
+
+    /**
+     * Returns all Substations for a given Area.
+     */
+    List<SubStation> getSubstationsByArea(int areaId);
     
     /**
-     * @return List<CapBankDevice>
-     * @param sub SubStation
+     * Returns a list of assigned subbuses for Areas or SpecialAreas.
      */
-    public abstract List<CapBankDevice> getCapBanksBySubStation(SubStation sub);
+    List<SubBus> getSubBusesByArea(int areaId);
 
-	/**
-	 * Returns all Substations for a given Area
-	 * 
-	 */
-	public abstract List<SubStation> getSubstationsByArea(int areaID);
+    /**
+     * Returns all CapBanks for a given Area.
+     */
+    List<CapBankDevice> getCapBanksByArea(int areaId);
+
+    /**
+     * Returns all Feeders for a given Area.
+     */
+    List<Feeder> getFeedersByArea(int areaId);
     
     /**
-     * Returns all SubBuses for a given Area
-     * 
+     * Returns distinct areas that are used by substations.
      */
-    public abstract List<SubBus> getSubBusesByArea(int areaID);
-
-	/**
-	 * Returns all CapBanks for a given Area
-	 * 
-	 */
-	public abstract List<CapBankDevice> getCapBanksByArea(int areaID);
-
-	/**
-	 * Returns all Feeders for a given Area
-	 * 
-	 */
-	public abstract List<Feeder> getFeedersByArea(int areaID);
-	
-	/**
-	 * Distinct area Strings that are used by substations
-	 * 
-	 * @return List
-	 */
-	public abstract List<Area> getCbcAreas();
+    List<Area> getAreas();
     
     /**
-     * Distinct special area Strings that are used by substations
-     * 
-     * @return List
+     * Returns distinct special areas that are used by substations.
      */
-    public abstract List<SpecialArea> getSpecialCbcAreas();
+    List<SpecialArea> getSpecialAreas();
 
-	/**
-	 * State group & states to use for CapBanks
-	 * 
-	 * @return LiteState
-	 */
-	public abstract LiteState getCapBankState(int rawState);
-	
-	/**
-	 * Returns the Parent SubBus ID for the given child id
-	 */
-	public abstract int getParentSubBusID(int childID);
-	
-	/**
-	 * Returns the Parent SubBus for the given child id
-	 */
-	public abstract SubBus getParentSubBus(int childID);
+    /**
+     * Returns the matching {@link LiteState} for the given raw state id.
+     */
+    LiteState getCapBankState(int rawState);
+    
+    /**
+     * Returns the parent SubBus ID for the given child id.
+     */
+    int getParentSubBusId(int childId);
+    
+    /**
+     * Returns the parent SubBus for the given child id.
+     */
+    SubBus getParentSubBus(int childId);
+    
+    /**
+     * Returns the parent Feeder for the given child id.
+     */
+    Feeder getParentFeeder(int childId) throws NotFoundException;
+    
+    /**
+     * Returns the parent substation for the given child id.
+     */
+    SubStation getParentSubstation(int childId) throws NotFoundException;
 
-	/**
-	 * Returns the parent substation id for the given child id
-	 */
-    public int getParentSubStationId(int childId);
+    /**
+     * Returns the parent substation id for the given child id.
+     */
+    int getParentSubStationId(int childId);
+    
+    /**
+     * Returns the parent feeder id for the given child id.
+     */
+    int getParentFeederId(int childId);
+
+    /**
+     * Returns true if the id represents a substation.
+     */
+    boolean isSubstation(int substationId);
+
+    /**
+     * Sends a command request to the capcontrol server to rebuild this cache completely.
+     */
+    boolean refresh();
 
 }

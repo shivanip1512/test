@@ -218,7 +218,7 @@ public class MenuController {
 
     @RequestMapping("localControl")
     public String localControl(ModelMap model, int id) {
-        StreamableCapObject capObject = cache.getCapControlPAO(id);
+        StreamableCapObject capObject = cache.getCapControlPao(id);
         
         Validate.notNull(capObject);
         

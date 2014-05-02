@@ -1,13 +1,13 @@
 package com.cannontech.web.search.lucene.index.site;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkState;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -27,20 +27,20 @@ public final class DocumentBuilder {
      * The maximum page arguments that are ever used.  This should be incremented if {@link #pageArgs(String...)}
      * is ever called with more than the number specified here.
      */
-    public final static int MAX_PAGE_ARGS = 1;
+    public final static int MAX_PAGE_ARGS = 2;
 
     /**
      * The maximum number of summary arguments are ever used.  This should be incremented if
      * {@link #summaryArgs(String...)} is ever called with more arguments than specified here.
      */
-    public final static int MAX_SUMMARY_ARGS = 5;
+    public final static int MAX_SUMMARY_ARGS = 6;
 
     private final static Joiner searchStringJoiner = Joiner.on(" ").skipNulls();
 
     private String pageKey;
     private PageType pageType = PageType.USER_PAGE;
     private Integer ecId;
-    private final List<String> primarySearchValues = new ArrayList<>();
+    private final Set<String> primarySearchValues = new HashSet<>();
     private String module;
     private String pageName;
     private String path;
@@ -162,4 +162,5 @@ public final class DocumentBuilder {
         }
         return document;
     }
+    
 }

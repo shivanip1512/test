@@ -537,29 +537,29 @@
         <link>/capcontrol/tier/areas</link>
         <pages>
           <page name="area" type="DETAIL">
-            <link>/capcontrol/tier/substations?isSpecialArea=${isSpecialArea}&amp;bc_areaId=${bc_areaId}</link>
+            <link>/capcontrol/tier/substations?bc_areaId=${bc_areaId}</link>
             <labelArgument>${bc_areaName}</labelArgument>
             <pages>
               <page name="substation" type="DETAIL">
-                <link>/capcontrol/tier/feeders?isSpecialArea=${isSpecialArea}&amp;substationId=${substationId}</link>
+                <link>/capcontrol/tier/feeders?substationId=${substationId}</link>
                 <labelArgument>${substationName}</labelArgument>
                 <pages>
                   <page name="capbankLocations" type="DETAIL_CHILD">
                     <labelArgument>${substationName}</labelArgument>
                   </page>
                   <page name="ivvc.busView" type="DETAIL">
-                    <link>/capcontrol/ivvc/bus/detail?subBusId=${subBusId}&amp;isSpecialArea=${isSpecialArea}</link>
+                    <link>/capcontrol/ivvc/bus/detail?subBusId=${subBusId}</link>
                     <labelArgument>${subBusName}</labelArgument>
                     <pages>
                       <page name="ivvc.zoneDetail" type="DETAIL">
-                        <link>/capcontrol/ivvc/zone/detail?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+                        <link>/capcontrol/ivvc/zone/detail?zoneId=${zoneId}</link>
                         <labelArgument>${zoneName}</labelArgument>
                         <pages>
                           <page name="ivvc.voltagePoints" type="DETAIL">
-                            <link>/capcontrol/ivvc/zone/voltagePoints?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+                            <link>/capcontrol/ivvc/zone/voltagePoints?zoneId=${zoneId}</link>
                           </page>
                           <page name="ivvc.zoneVoltageDeltas" type="DETAIL">
-                            <link>/capcontrol/ivvc/zone/voltageDeltas?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+                            <link>/capcontrol/ivvc/zone/voltageDeltas?zoneId=${zoneId}</link>
                           </page>
                         </pages>
                       </page>

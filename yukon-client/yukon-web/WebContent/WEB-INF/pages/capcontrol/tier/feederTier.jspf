@@ -177,7 +177,6 @@
                 <td>
                     <cti:url var="locationUrl" value="/capcontrol/capbank/capBankLocations">
                         <cti:param name="value" value="${feederId}"/>
-                        <cti:param name="specialArea" value="${isSpecialArea}"/>
                     </cti:url>
 
                     <span id="dailyMaxOps_${feederId}">

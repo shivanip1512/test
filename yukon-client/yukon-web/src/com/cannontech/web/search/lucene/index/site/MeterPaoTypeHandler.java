@@ -22,14 +22,18 @@ import com.cannontech.web.search.lucene.index.site.PaoPageIndexBuilder.PaoTypeHa
 import com.google.common.collect.ImmutableSet;
 
 public class MeterPaoTypeHandler implements PaoTypeHandler {
+    
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PaoLoadingService paoLoadingService;
 
     private final static Set<PaoType> allTypes = PaoType.getMeterTypes();
 
     // Any of these roles is sufficient to allow the user to see both electric and water meters.
-    private final static Set<YukonRole> allowedRoles = ImmutableSet.of(YukonRole.METERING,
-        YukonRole.APPLICATION_BILLING, YukonRole.SCHEDULER, YukonRole.DEVICE_ACTIONS);
+    private final static Set<YukonRole> allowedRoles = ImmutableSet.of(
+            YukonRole.METERING, 
+            YukonRole.APPLICATION_BILLING, 
+            YukonRole.SCHEDULER, 
+            YukonRole.DEVICE_ACTIONS);
 
     @Override
     public Set<PaoType> getTypesHandled() {

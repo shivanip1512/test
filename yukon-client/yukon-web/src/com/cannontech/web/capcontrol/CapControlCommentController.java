@@ -92,7 +92,7 @@ public class CapControlCommentController {
         
         CapControlCache filterCapControlCache = filterCacheFactory.createUserAccessFilteredCache(user);
 
-        StreamableCapObject capObject = filterCapControlCache.getCapControlPAO(paoId);
+        StreamableCapObject capObject = filterCapControlCache.getCapControlPao(paoId);
         if (capObject == null) {
             throw new RuntimeException(user.getUsername() + " not authorized to view comments for paoId: " + paoId);
         }
