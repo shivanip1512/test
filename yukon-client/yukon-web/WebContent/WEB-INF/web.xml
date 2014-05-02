@@ -1036,10 +1036,6 @@
         <url-pattern>/servlet/ScheduleController</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>SwitchCommand</servlet-name>
-        <url-pattern>/servlet/SwitchCommand</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>CommanderServlet</servlet-name>
         <url-pattern>/servlet/CommanderServlet</url-pattern>
     </servlet-mapping>
