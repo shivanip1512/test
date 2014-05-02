@@ -40,7 +40,7 @@ import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -150,15 +150,13 @@ public class OperatorEnrollmentController {
         model.addAttribute("assignedProgram", assignedProgram);
         List<LoadGroup> loadGroups = null;
         
-        YukonEnergyCompany yukonEnergyCompany = 
-            ecDao.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
-        model.addAttribute("energyCompanyId", yukonEnergyCompany.getEnergyCompanyId());
+        EnergyCompany ec = ecDao.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
+        model.addAttribute("energyCompanyId", ec.getId());
         boolean trackHardwareAddressingEnabled =
-                energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING,
-                                                   yukonEnergyCompany.getEnergyCompanyId());
+                energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ec.getId());
 
-      String batchedSwitchCommandToggle =
-      globalSettingDao.getString(GlobalSettingType.BATCHED_SWITCH_COMMAND_TOGGLE);
+        String batchedSwitchCommandToggle =
+            globalSettingDao.getString(GlobalSettingType.BATCHED_SWITCH_COMMAND_TOGGLE);
         boolean useStaticLoadGroups =
             StarsUtils.BATCH_SWITCH_COMMAND_MANUAL.equals(batchedSwitchCommandToggle)
                 && VersionTools.staticLoadGroupMappingExists();

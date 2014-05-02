@@ -90,14 +90,13 @@
     
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeQueryCountDaoImpl"/>
     <bean class="com.cannontech.dr.ecobee.EcobeeAuthenticationCache"/>
-    
-    <bean id="ecobeeCommunicationService" class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceImpl">
-        <qualifier value="doNotUse"/>
-    </bean>
+
     <bean id="ecobeeCommunicationAopAuthenticator" class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationAopAuthenticator"/>
+
     <bean class="org.springframework.aop.framework.ProxyFactoryBean">
-        <qualifier value="aopAuth"/>
-        <property name="target" ref="ecobeeCommunicationService"/>
+        <property name="target" >
+            <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceImpl"/>
+        </property>
         <property name="interceptorNames">
             <list>
                 <value>ecobeeCommunicationAopAuthenticator</value>

@@ -78,7 +78,6 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     private final static ImmutableSet<HardwareType> saTypes = ImmutableSet.of(SA_205, SA_305, SA_SIMPLE);
     private final static ImmutableSet<HardwareType> zigbeeTypes;
     private final static ImmutableSet<HardwareType> zigbeeEndpointTypes;
-    private final static ImmutableSet<HardwareType> ecobeeTypes;
     private final static ImmutableSet<HardwareType> utilityProTypes;
     private final static ImmutableSet<HardwareType> autoModeEnableTypes;
     
@@ -124,7 +123,6 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
         supportsTextMessages = ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE, DIGI_GATEWAY);
-        ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI);
         
         // PaoType map
         starsToPaoMap = ArrayListMultimap.create();
@@ -261,7 +259,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
      * Returns true if this hardware type is an Ecobee thermostat.
      */
     public boolean isEcobee() {
-        return ecobeeTypes.contains(this);
+        return this == ECOBEE_SMART_SI;
     }
     
     /**
@@ -325,7 +323,8 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     public int getNumRelays() {
-        return isExpressCom() ? 8 : 4;
+        return isEcobee() ? 0 :
+               isExpressCom() ? 8 : 4;
     }
 
     public boolean isHasTamperDetect() {
@@ -374,11 +373,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public static ImmutableSet<HardwareType> getZigbeeEndpointTypes() {
         return zigbeeEndpointTypes;
     }
-    
-    public static ImmutableSet<HardwareType> getEcobeeTypes() {
-        return ecobeeTypes;
-    }
-    
+
     /**
      * Checks if a device has the capability of having auto mode enabled.
      */
@@ -410,7 +405,9 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     public PaoType getForHardwareType() {
         for (PaoType paoType : starsToPaoMap.keySet()) {
-            if (starsToPaoMap.get(paoType).contains(this)) return paoType;
+            if (starsToPaoMap.get(paoType).contains(this)) {
+                return paoType;
+            }
         }
         throw new IllegalArgumentException("Unknown PaoType for HardwareType: " + this);
     }

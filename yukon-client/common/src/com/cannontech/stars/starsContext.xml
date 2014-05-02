@@ -271,9 +271,10 @@
     
     <bean id="lmHardwareCommandRequestExecutor" class="com.cannontech.stars.dr.hardware.service.impl.LmHardwareCommandRequestExecutorImpl"/>
     <bean id="lmHardwareCommandService" class="com.cannontech.stars.dr.hardware.service.impl.LmHardwareCommandServiceImpl"/>
-    <bean id="porterExpressComCommandStrategy" class="com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandStrategy"/>
-    <bean id="zigbeeCommandStrategy" class="com.cannontech.stars.dr.hardware.service.impl.ZigbeeCommandStrategy"/>
-    <bean id="rfCommandStrategy" class="com.cannontech.stars.dr.hardware.service.impl.RfCommandStrategy"/>
+    <bean class="com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandStrategy"/>
+    <bean class="com.cannontech.stars.dr.hardware.service.impl.ZigbeeCommandStrategy"/>
+    <bean class="com.cannontech.stars.dr.hardware.service.impl.EcobeeCommandStrategy"/>
+    <bean class="com.cannontech.stars.dr.hardware.service.impl.RfCommandStrategy"/>
     <bean id="porterExpressComCommandBuilder" class="com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder"/>
    
     <!-- OPERATOR GENERAL -->

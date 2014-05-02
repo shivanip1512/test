@@ -60,7 +60,9 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
             List<Program> programList = typeMap.get(applianceCategory);
             
             // Don't display ApplianceCategory's that have no programs for the user to enroll in.
-            if (programList == null || programList.isEmpty()) continue;
+            if (programList == null || programList.isEmpty()) {
+                continue;
+            }
             
             DisplayableEnrollment enrollment = enrollmentMap.get(applianceCategory);
             if (enrollment == null) {
@@ -68,7 +70,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                 
                 enrollment.setApplianceCategory(applianceCategory);
 
-                TreeSet<DisplayableEnrollmentProgram> enrollmentPrograms = new TreeSet<DisplayableEnrollmentProgram>(DisplayableEnrollment.enrollmentProgramComparator);
+                TreeSet<DisplayableEnrollmentProgram> enrollmentPrograms = new TreeSet<>(DisplayableEnrollment.enrollmentProgramComparator);
                 enrollment.setEnrollmentPrograms(enrollmentPrograms);
                 
                 enrollmentMap.put(applianceCategory, enrollment);
@@ -82,7 +84,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
             
         }
         
-        List<DisplayableEnrollment> resultList = new ArrayList<DisplayableEnrollment>(enrollmentMap.values());
+        List<DisplayableEnrollment> resultList = new ArrayList<>(enrollmentMap.values());
         Collections.sort(resultList, DisplayableEnrollment.byApplianceCategoryNameComparator);
         return resultList;
     }

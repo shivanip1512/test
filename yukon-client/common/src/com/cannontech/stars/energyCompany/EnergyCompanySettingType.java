@@ -32,7 +32,7 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
 
     ECOBEE_USERNAME(ECOBEE, false, true, stringType(), ""),
     ECOBEE_PASSWORD(ECOBEE, false, true, stringType(), ""),
-    ECOBEE_SERVER_URL(ECOBEE, stringType(), "https://api.ecobee.com/"),
+    ECOBEE_SERVER_URL(ECOBEE, stringType(), "https://api.ecobee.com/1/"),
 
     // MISC
     ADMIN_EMAIL_ADDRESS(MISC, stringType(), "info@cannontech.com"),

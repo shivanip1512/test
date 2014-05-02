@@ -55,12 +55,10 @@ public class ProgramEnrollment {
         inventoryEnrollments = LazyList.ofInstance(InventoryEnrollment.class);
     }
 
-    public ProgramEnrollment(
-            DisplayableEnrollmentProgram displayableEnrollmentProgram) {
+    public ProgramEnrollment(DisplayableEnrollmentProgram displayableEnrollmentProgram) {
         loadGroupId = displayableEnrollmentProgram.getLoadGroupId();
         inventoryEnrollments = Lists.newArrayList();
-        for (DisplayableEnrollmentInventory item
-                : displayableEnrollmentProgram.getInventory()) {
+        for (DisplayableEnrollmentInventory item : displayableEnrollmentProgram.getInventory()) {
             inventoryEnrollments.add(new InventoryEnrollment(item));
         }
     }

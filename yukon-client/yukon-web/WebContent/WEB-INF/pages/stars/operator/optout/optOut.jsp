@@ -18,7 +18,7 @@
 <c:if test="${!allOptedOut}">
     <cti:msg key="yukon.web.modules.operator.optOut.description"/><br><br>
 
-    <form action="/stars/operator/optout/optout2" method="POST">
+    <form action="<cti:url value="stars/operator/optout/optout2"/>" method="POST">
         <cti:csrfToken/>
         <table>
             <tr>
@@ -101,14 +101,14 @@
                             <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
                         </td>
                         <td>
-                            <form action="/stars/operator/optout/cancel" method="post">
+                            <form action="<cti:url value="/stars/operator/optout/cancel"/>" method="post">
                                 <cti:csrfToken/>
                                 <input type="hidden" name="eventId" value="${optOut.eventId}">
                                 <cti:msg var="cancel" key="yukon.web.modules.operator.optOut.cancel"/>
                                 <cti:button type="submit" name="submit" value="${cancel}" label="${cancel}"/>
                             </form>
                             <c:if test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                                <form action="/stars/operator/optout/repeat" method="post">
+                                <form action="<cti:url value="/stars/operator/optout/repeat"/>" method="post">
                                     <cti:csrfToken/>
                                     <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}">
                                     <cti:msg var="repeat" key="yukon.web.modules.operator.optOut.repeat"/>
@@ -152,7 +152,7 @@
                 <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
                 <c:if test="${!noOptOutLimits}">
                     <td>
-                        <form action="/stars/operator/optOut/allowAnother" method="post">
+                        <form action="<cti:url value="/stars/operator/optOut/allowAnother"/>" method="post">
                             <cti:csrfToken/>
                             <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
                             <cti:msg key="yukon.web.modules.operator.optOut.allowAnother" var="allowAnother"/>
@@ -177,7 +177,7 @@
                                <cti:msg key="yukon.web.modules.operator.optOut.atLimit"/>
                            </c:when>
                            <c:otherwise>
-                                <form action="/stars/operator/optOut/resetToLimit" method="post">
+                                <form action="<cti:url value="/stars/operator/optOut/resetToLimit"/>" method="post">
                                     <cti:csrfToken/>
                                     <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
                                     <cti:msg var="clear" key="yukon.web.modules.operator.optOut.clear"/>

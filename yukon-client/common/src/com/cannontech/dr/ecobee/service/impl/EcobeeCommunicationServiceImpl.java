@@ -116,18 +116,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     @Override
     public List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange, 
             int energyCompanyId) throws EcobeeAuthenticationException, EcobeeCommunicationException {
-//        List<EcobeeDeviceReadings> deviceReadings = new ArrayList<>();
-//        for (String serialNumber : serialNumbers) {
-//            List<EcobeeDeviceReading> readings = new ArrayList<>();
-//            for (int i=0;i<100;i++) {
-//                readings.add(new EcobeeDeviceReading(90.98465498798f, 60.298465498798f, 60.3459846534498798f, 
-//                                                     50.465498798f, 600, "not sure", Instant.now().plus(Duration.standardHours((long) (Math.random()*100)-50))));
-//            }
-//            deviceReadings.add(new EcobeeDeviceReadings(serialNumber, dateRange, readings));
-//        }
-//        return deviceReadings;
-        
-        //checkForAuthenticationError(response.getStatus(), energyCompanyId);
+        // TODO: implement this 
         ecobeeQueryCountDao.incrementQueryCount(EcobeeQueryType.DATA_COLLECTION, energyCompanyId);
         return new ArrayList<>();
     }

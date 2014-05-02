@@ -227,7 +227,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
 
     @Override
     public boolean canHandle(HardwareType type) {
-        return !type.isRf() && !type.isZigbee(); // Maybe this should be more specific
+        return !type.isRf() && !type.isZigbee() && !type.isEcobee(); // Maybe this should be more specific
     }
     
     @Override

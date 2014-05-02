@@ -10,6 +10,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteDevice;
 import com.cannontech.common.pao.service.PaoPersistenceService;
+import com.cannontech.dr.ecobee.EcobeeException;
+import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.google.common.collect.ImmutableSet;
@@ -18,17 +20,24 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
 
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
 
     private static final ImmutableSet<HardwareType> supportedType = ImmutableSet.of(HardwareType.ECOBEE_SMART_SI);
-    
+
     @Override
     public void createDevice(Hardware hardware) {
-        CompleteDevice ecobeePao = new CompleteDevice();
-        ecobeePao.setPaoName(hardware.getSerialNumber());
-        paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, PaoType.ECOBEE_SMART_SI);
+        try {
+            ecobeeCommunicationService.registerDevice(hardware.getSerialNumber(), hardware.getEnergyCompanyId());
 
-        // Update the Stars table with the device id
-        inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), ecobeePao.getPaObjectId());
+            CompleteDevice ecobeePao = new CompleteDevice();
+            ecobeePao.setPaoName(hardware.getSerialNumber());
+            paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, PaoType.ECOBEE_SMART_SI);
+
+            // Update the Stars table with the device id
+            inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), ecobeePao.getPaObjectId());
+        } catch (EcobeeException e) {
+            throw new RuntimeException("Device creation failed", e);
+        }
     }
 
     @Override

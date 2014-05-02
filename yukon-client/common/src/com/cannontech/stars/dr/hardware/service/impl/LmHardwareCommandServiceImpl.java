@@ -28,10 +28,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.event.LMHardwareEvent;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.event.LMCustomerEventBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -51,7 +49,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -61,7 +59,6 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     private static final LogHelper logHelper = LogHelper.getInstance(log);
     
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private StarsDatabaseCache cache;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DBPersistentDao dbPersistentDao;
@@ -115,11 +112,9 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         HardwareStrategyType strategy = getStrategy(type);
         final LmHardwareCommandStrategy impl = strategies.get(strategy);
         
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
-        int ecId = yec.getEnergyCompanyId();
-        LiteStarsEnergyCompany lsec = cache.getEnergyCompany(ecId);
+        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
         
-        boolean autoConfig = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ecId);
+        boolean autoConfig = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ec.getId());
         
         int inventoryId = device.getInventoryID();
         int unavailable = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
@@ -173,11 +168,11 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         }
     
         // Add "Config" to hardware events
-        int event = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
-        int config = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID();
-        addHardwareEvents(ecId, inventoryId, event, config);
+        int event = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
+        int config = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID();
+        addHardwareEvents(ec.getId(), inventoryId, event, config);
         
-        int available = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID();
+        int available = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID();
         inventoryBaseDao.updateCurrentState(inventoryId, available);
     }
     
@@ -190,19 +185,17 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         final LmHardwareCommandStrategy impl = strategies.get(strategy);
         
         int inventoryId = device.getInventoryID();
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
+        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
         
         impl.sendCommand(command);
         log.debug("In-Service command sent: " + command);
 
-        LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec.getEnergyCompanyId());
-        
         // Add "Activation Completed" to hardware events
-        int event = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
-        int complete = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID();
-        addHardwareEvents(yec.getEnergyCompanyId(), inventoryId, event, complete);
+        int event = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
+        int complete = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID();
+        addHardwareEvents(ec.getId(), inventoryId, event, complete);
 
-        int available = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID();
+        int available = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID();
         inventoryBaseDao.updateCurrentState(inventoryId, available);
     }
     
@@ -215,19 +208,17 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         final LmHardwareCommandStrategy impl = strategies.get(strategy);
         
         int inventoryId = device.getInventoryID();
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
-        int ecId = yec.getEnergyCompanyId();
-        LiteStarsEnergyCompany lsec = cache.getEnergyCompany(ecId);
+        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
 
         impl.sendCommand(command);
         log.debug("Out-of-Service command sent: " + command);
         
         // Add "Termination" to hardware events
-        int event = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
-        int termination = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID();
-        addHardwareEvents(ecId, inventoryId, event, termination);
+        int event = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
+        int termination = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID();
+        addHardwareEvents(ec.getId(), inventoryId, event, termination);
             
-        int unavailable = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID();
+        int unavailable = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID();
         inventoryBaseDao.updateCurrentState(inventoryId, unavailable);
     }
     
