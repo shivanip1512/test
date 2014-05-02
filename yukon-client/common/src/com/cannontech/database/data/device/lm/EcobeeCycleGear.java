@@ -7,11 +7,10 @@ public class EcobeeCycleGear extends com.cannontech.database.db.device.lm.LMProg
     private static final long serialVersionUID = 1L;
     
     public EcobeeCycleGear() {
-        super();
         setControlMethod(GearControlMethod.EcobeeCycle);
     }
 
-    public Integer getControlPercent() {
+    public Integer getDutyCyclePercent() {
         return getMethodRate();
     }
 
@@ -20,7 +19,7 @@ public class EcobeeCycleGear extends com.cannontech.database.db.device.lm.LMProg
     }
 
     public boolean isFrontRampEnabled() {
-        return getFrontRampOption().compareTo(RAMP_RANDOM) == 0;
+        return RAMP_RANDOM.equals(getBackRampOption());
     }
 
     public void setFrontRampEnabled(boolean doRamp) {
@@ -32,7 +31,7 @@ public class EcobeeCycleGear extends com.cannontech.database.db.device.lm.LMProg
     }
     
     public boolean isBackRampEnabled() {
-        return getBackRampOption().compareTo(RAMP_RANDOM) == 0;
+        return RAMP_RANDOM.equals(getBackRampOption());
     }
 
     public void setBackRampEnabled(boolean doRamp) {

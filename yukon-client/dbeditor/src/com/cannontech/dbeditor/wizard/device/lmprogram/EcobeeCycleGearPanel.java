@@ -10,22 +10,16 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.InputMismatchException;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerDateModel;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.CaretEvent;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.util.StringUtils;
@@ -35,45 +29,45 @@ import com.klg.jclass.field.DataProperties;
 import com.klg.jclass.field.JCInvalidInfo;
 import com.klg.jclass.field.JCSpinField;
 import com.klg.jclass.field.validate.JCIntegerValidator;
+import com.klg.jclass.util.value.JCValueEvent;
 import com.klg.jclass.util.value.MutableValueModel;
 
 public class EcobeeCycleGearPanel extends GenericGearPanel {
 
     private static final long serialVersionUID = 1L;
     
-    private JComboBox ivjJComboBoxHowToStop = null;
-    private JComboBox ivjJComboBoxWhenChange = null;
-    private JCSpinField changeDurationSpinField = null;
-    private JCSpinField changePrioritySpinField = null;
-    private JCSpinField changeTriggerNumberSpinField = null;
-    private JCSpinField dutyCyclePercentSpinField = null;
-    private JCSpinField percentReductionSpinField = null;
-    private JLabel changeDurationLabel = null;
-    private JLabel changePriorityLabel = null;
-    private JLabel changeTriggerNumberLabel = null;
-    private JLabel changeTriggerOffsetLabel = null;
-    private JLabel dutyCyclePercentLabel = null;
-    private JLabel howToStopLabel = null;
-    private JLabel minutesChangeDurationLabel = null;
-    private JLabel percentReductionLabel = null;
-    private JLabel whenToChangeLabel = null;
-    private JPanel changeMethodPanel = null;
-    private JTextField changeTriggerOffsetTextField = null;
-    private JTextField kwReductionTextField = null;
-    private JCheckBox checkBoxRampIn = null;
-    private JCheckBox checkBoxRampOut = null;
+    private JComboBox<String> ivjJComboBoxHowToStop;
+    private JComboBox<String> ivjJComboBoxWhenChange;
+    private JCSpinField changeDurationSpinField;
+    private JCSpinField changePrioritySpinField;
+    private JCSpinField changeTriggerNumberSpinField;
+    private JCSpinField dutyCyclePercentSpinField;
+    private JCSpinField percentReductionSpinField;
+    private JLabel changeDurationLabel;
+    private JLabel changePriorityLabel;
+    private JLabel changeTriggerNumberLabel;
+    private JLabel changeTriggerOffsetLabel;
+    private JLabel dutyCyclePercentLabel;
+    private JLabel howToStopLabel;
+    private JLabel minutesChangeDurationLabel;
+    private JLabel percentReductionLabel;
+    private JLabel whenToChangeLabel;
+    private JPanel changeMethodPanel;
+    private JTextField changeTriggerOffsetTextField;
+    private JTextField kwReductionTextField;
+    private JCheckBox checkBoxRampIn;
+    private JCheckBox checkBoxRampOut;
 
     public EcobeeCycleGearPanel() {
-        super();
         initialize();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == getJComboBoxWhenChange()) {
-            this.jComboBoxWhenChange_ActionPerformed(e);
+            jComboBoxWhenChange_ActionPerformed(e);
         } else {
-            this.fireInputUpdate();
+            fireInputUpdate();
         }
     }
 
@@ -102,10 +96,10 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         return checkBoxRampOut;
     }
 
-    private JComboBox getJComboBoxHowToStop() {
+    private JComboBox<String> getJComboBoxHowToStop() {
         if (ivjJComboBoxHowToStop == null) {
             try {
-                ivjJComboBoxHowToStop = new JComboBox();
+                ivjJComboBoxHowToStop = new JComboBox<String>();
                 ivjJComboBoxHowToStop.setName("JComboBoxHowToStop");
                 ivjJComboBoxHowToStop.setPreferredSize(new Dimension(95, 23));
                 ivjJComboBoxHowToStop.setAlignmentY(TOP_ALIGNMENT);
@@ -135,10 +129,10 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         return kwReductionTextField;
     }
 
-    private JComboBox getJComboBoxWhenChange() {
+    private JComboBox<String> getJComboBoxWhenChange() {
         if (ivjJComboBoxWhenChange == null) {
             try {
-                ivjJComboBoxWhenChange = new javax.swing.JComboBox();
+                ivjJComboBoxWhenChange = new JComboBox<String>();
                 ivjJComboBoxWhenChange.setName("JComboBoxWhenChange");
                 ivjJComboBoxWhenChange.setPreferredSize(new Dimension(205, 23));
                 ivjJComboBoxWhenChange.setAlignmentY(TOP_ALIGNMENT);
@@ -161,14 +155,11 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
                 changeDurationSpinField.setPreferredSize(new Dimension(35, 20));
                 changeDurationSpinField.setAlignmentY(TOP_ALIGNMENT);
                 changeDurationSpinField.setMaximumSize(new Dimension(40, 20));
-                changeDurationSpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(0),
-                                                                                                         new Integer(99999), null, true,
-                                                                                                         null, new Integer(1),
-                                                                                                         "#,##0.###;-#,##0.###", false,
-                                                                                                         false, false, null, new Integer(3)),
-                                                                                  new MutableValueModel(java.lang.Integer.class, new Integer(0)),
-                                                                                  new JCInvalidInfo(true, 2, new Color(0, 0, 0, 255),
-                                                                                                    new Color(255, 255, 255, 255))));
+                changeDurationSpinField.setDataProperties(new DataProperties(
+                        new JCIntegerValidator(null, 0, 99999, null, true, null, 1, "#,##0.###;-#,##0.###", false,
+                                false, false, null, 3),
+                        new MutableValueModel(Integer.class, 0),
+                        new JCInvalidInfo(true, 2, new Color(0, 0, 0, 255), new Color(255, 255, 255, 255))));
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -184,14 +175,11 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
                 changePrioritySpinField.setPreferredSize(new Dimension(30, 20));
                 changePrioritySpinField.setAlignmentY(TOP_ALIGNMENT);
                 changePrioritySpinField.setMaximumSize(new Dimension(40, 30));
-                changePrioritySpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(0),
-                                                                                                         new Integer(9999), null, true,
-                                                                                                         null, new Integer(1),
-                                                                                                         "#,##0.###;-#,##0.###", false,
-                                                                                                         false, false, null, new Integer(0)),
-                                                                                  new MutableValueModel(java.lang.Integer.class, new Integer(0)),
-                                                                                  new JCInvalidInfo(true, 2, new Color(0, 0, 0, 255),
-                                                                                                    new Color(255, 255, 255, 255))));
+                changePrioritySpinField.setDataProperties(new DataProperties(
+                        new JCIntegerValidator(null, 0, 9999, null, true, null, 1, "#,##0.###;-#,##0.###", false,
+                                false, false, null, 0),
+                        new MutableValueModel(Integer.class, 0),
+                        new JCInvalidInfo(true, 2, new Color(0, 0, 0, 255), new Color(255, 255, 255, 255))));
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -207,16 +195,11 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
                 changeTriggerNumberSpinField.setPreferredSize(new Dimension(35, 20));
                 changeTriggerNumberSpinField.setAlignmentY(TOP_ALIGNMENT);
                 changeTriggerNumberSpinField.setMaximumSize(new Dimension(40, 20));
-                changeTriggerNumberSpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(1),
-                                                                                                              new Integer(99999), null,
-                                                                                                              true, null, new Integer(1),
-                                                                                                              "#,##0.###;-#,##0.###",
-                                                                                                              false, false, false, null,
-                                                                                                              new Integer(1)),
-                                                                                       new MutableValueModel(java.lang.Integer.class, new Integer(0)),
-                                                                                       new JCInvalidInfo(true, 2,
-                                                                                                         new Color(0, 0, 0, 255),
-                                                                                                         new Color(255, 255, 255, 255))));
+                changeTriggerNumberSpinField.setDataProperties(new DataProperties(
+                        new JCIntegerValidator(null, 1, 99999, null, true, null, 1, "#,##0.###;-#,##0.###",
+                                false, false, false, null, 1),
+                        new MutableValueModel(Integer.class, 0),
+                        new JCInvalidInfo(true, 2, new Color(0, 0, 0, 255), new Color(255, 255, 255, 255))));
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -234,16 +217,11 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
                 dutyCyclePercentSpinField.setAlignmentY(TOP_ALIGNMENT);
                 dutyCyclePercentSpinField.setMaximumSize(new Dimension(50, 20));
                 dutyCyclePercentSpinField.setMinimumSize(new Dimension(48, 20));
-                dutyCyclePercentSpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(5),
-                                                                                                         new Integer(100), null, true,
-                                                                                                         null, new Integer(1),
-                                                                                                         "#,##0.###;-#,##0.###", false,
-                                                                                                         false, false, null,
-                                                                                                         new Integer(50)),
-                                                                                  new MutableValueModel(java.lang.Integer.class, new Integer(0)),
-                                                                                  new JCInvalidInfo(true, 2,
-                                                                                                    new Color(0, 0, 0,255),
-                                                                                                    new Color(255, 255, 255, 255))));
+                dutyCyclePercentSpinField.setDataProperties(new DataProperties(
+                        new JCIntegerValidator(null, 5, 100, null, true, null, 1, "#,##0.###;-#,##0.###", false,
+                                false, false, null, 50),
+                        new MutableValueModel(Integer.class, 0),
+                        new JCInvalidInfo(true, 2, new Color(0, 0, 0,255), new Color(255, 255, 255, 255))));
 
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
@@ -260,18 +238,13 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
                 percentReductionSpinField.setPreferredSize(new Dimension(49, 20));
                 percentReductionSpinField.setMaximumSize(new Dimension(50, 60));
                 percentReductionSpinField.setMinimumSize(new Dimension(40, 50));
-                percentReductionSpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(0),
-                                                                                                           new Integer(100), null, true,
-                                                                                                           null, new Integer(1),
-                                                                                                           "#,##0.###;-#,##0.###", false,
-                                                                                                           false, false, null,
-                                                                                                           new Integer(100)),
-                                                                                    new MutableValueModel(java.lang.Integer.class, new Integer(0)),
-                                                                                    new JCInvalidInfo(true,2,
-                                                                                                      new Color(0, 0, 0, 255),
-                                                                                                      new Color(255, 255, 255, 255))));
+                percentReductionSpinField.setDataProperties(new DataProperties(
+                        new JCIntegerValidator(null, 0, 100, null, true, null, 1, "#,##0.###;-#,##0.###", false,
+                                false, false, null,100),
+                        new MutableValueModel(Integer.class, 0),
+                        new JCInvalidInfo(true,2, new Color(0, 0, 0, 255), new Color(255, 255, 255, 255))));
 
-                percentReductionSpinField.setValue(new Integer(100));
+                percentReductionSpinField.setValue(100);
 
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
@@ -324,11 +297,11 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
                 changeTriggerNumberLabel.setAlignmentY(TOP_ALIGNMENT);
                 changeTriggerNumberLabel.setText("Trigger Number:");
                 changeTriggerNumberLabel.setMaximumSize(new Dimension(143, 14));
-                changeTriggerNumberLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+                changeTriggerNumberLabel.setHorizontalTextPosition(SwingConstants.LEFT);
                 changeTriggerNumberLabel.setPreferredSize(new Dimension(143, 14));
                 changeTriggerNumberLabel.setFont(new Font("dialog", 0, 12));
                 changeTriggerNumberLabel.setMinimumSize(new Dimension(143, 14));
-                changeTriggerNumberLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                changeTriggerNumberLabel.setHorizontalAlignment(SwingConstants.LEFT);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -344,11 +317,11 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
                 changeTriggerOffsetLabel.setAlignmentY(TOP_ALIGNMENT);
                 changeTriggerOffsetLabel.setText("Trigger Offset:");
                 changeTriggerOffsetLabel.setMaximumSize(new Dimension(143, 14));
-                changeTriggerOffsetLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+                changeTriggerOffsetLabel.setHorizontalTextPosition(SwingConstants.LEFT);
                 changeTriggerOffsetLabel.setPreferredSize(new Dimension(143, 14));
                 changeTriggerOffsetLabel.setFont(new Font("dialog", 0, 12));
                 changeTriggerOffsetLabel.setMinimumSize(new Dimension(143, 14));
-                changeTriggerOffsetLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                changeTriggerOffsetLabel.setHorizontalAlignment(SwingConstants.LEFT);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -574,10 +547,8 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
     }
 
     @Override
-    public Object getValue(Object o) {
-        EcobeeCycleGear gear = null;
-
-        gear = (EcobeeCycleGear) o;
+    public Object getValue(Object gearObj) {
+        EcobeeCycleGear gear = (EcobeeCycleGear) gearObj;
 
         if (getJComboBoxHowToStop().getSelectedItem() != null) {
             gear.setMethodStopType(removeChars(' ', getJComboBoxHowToStop().getSelectedItem().toString()));
@@ -716,7 +687,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
     }
 
     @Override
-    public void jComboBoxWhenChange_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+    public void jComboBoxWhenChange_ActionPerformed(ActionEvent actionEvent) {
         getJLabelChangeDuration().setVisible(false);
         getJCSpinFieldChangeDuration().setVisible(false);
         getJLabelMinutesChDur().setVisible(false);
@@ -778,13 +749,12 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
     }
 
     @Override
-    public void setValue(Object o) {
-        EcobeeCycleGear gear = null;
-
-        if (o == null) {
+    public void setValue(Object gearObj) {
+        if (gearObj == null) {
             return;
-        } else
-            gear = (EcobeeCycleGear) o;
+        }
+
+        EcobeeCycleGear gear = (EcobeeCycleGear) gearObj;
 
         getJComboBoxHowToStop().setSelectedItem(StringUtils.addCharBetweenWords(' ', gear.getMethodStopType()));
 
@@ -792,7 +762,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
 
         setChangeCondition(gear.getChangeCondition());
 
-        getJCSpinFieldChangeDuration().setValue(new Integer(gear.getChangeDuration().intValue() / 60));
+        getJCSpinFieldChangeDuration().setValue(gear.getChangeDuration() / 60);
         getJCSpinFieldChangePriority().setValue(gear.getChangePriority());
         getJCSpinFieldChangeTriggerNumber().setValue(gear.getChangeTriggerNumber());
         final DecimalFormat format = new DecimalFormat("#####.####");
@@ -803,8 +773,8 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
     }
 
     @Override
-    public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
-        this.fireInputUpdate();
+    public void valueChanged(JCValueEvent valueEvent) {
+        fireInputUpdate();
     }
 
 }

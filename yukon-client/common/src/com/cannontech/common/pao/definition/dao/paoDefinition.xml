@@ -9953,7 +9953,7 @@
         </tags>
     </pao>
     <pao id="LM_ECOBEE_PROGRAM" inherits="LM_PROGRAM_BASE">
-        <displayName>LM ECOBEE Program</displayName>
+        <displayName>LM ECOBEE PROGRAM</displayName>
         <tags>
             <tag name="ECOBEE_PROGRAM_ENROLLMENT" />
         </tags>

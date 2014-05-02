@@ -3,33 +3,58 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.event.CaretEvent;
+
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
+import com.cannontech.database.data.device.lm.BeatThePeakGear;
+import com.cannontech.database.data.device.lm.EcobeeCycleGear;
+import com.cannontech.database.data.device.lm.LatchingGear;
+import com.cannontech.database.data.device.lm.MasterCycleGear;
+import com.cannontech.database.data.device.lm.NoControlGear;
+import com.cannontech.database.data.device.lm.RotationGear;
+import com.cannontech.database.data.device.lm.SepCycleGear;
+import com.cannontech.database.data.device.lm.SepTemperatureOffsetGear;
+import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
+import com.cannontech.database.data.device.lm.SmartCycleGear;
+import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
+import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
 public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener, com.cannontech.common.gui.util.DataInputPanelListener {
-    private GearControlMethod gearControlMethod = null;
-    private javax.swing.JLabel ivjJLabelGearName = null;
-    private javax.swing.JTextField ivjJTextFieldGearName = null;
-    private javax.swing.JComboBox ivjJComboBoxGearType = null;
-    private javax.swing.JLabel ivjJLabelGearType = null;
-    private javax.swing.JScrollPane ivjJScrollPane1 = null;
-    private GenericGearPanel ivjGenericGearPanel1 = null;
-    private LatchingGearPanel ivjLatchingGearPanel1 = null;
-    private MasterCycleGearPanel ivjMasterGearPanel1 = null;
-    private SmartCycleGearPanel ivjSmartGearPanel1 = null;
-    private SepCycleGearPanel sepCycleGearPanel = null;
-    private SepTemperatureOffsetGearPanel sepTemperatureOffsetGearPanel = null;
-    private EcobeeCycleGearPanel ecobeeCycleGearPanel = null;
-    private TimeRefreshGearPanel ivjTimeGearPanel1 = null;
-    private RotationGearPanel ivjRotationGearPanel1= null;
-    private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1 = null;
+    private GearControlMethod gearControlMethod;
+    private JLabel ivjJLabelGearName;
+    private JTextField ivjJTextFieldGearName;
+    private JComboBox<GearControlMethod> ivjJComboBoxGearType;
+    private JLabel ivjJLabelGearType;
+    private JScrollPane ivjJScrollPane1;
+    private GenericGearPanel ivjGenericGearPanel1;
+    private LatchingGearPanel ivjLatchingGearPanel1;
+    private MasterCycleGearPanel ivjMasterGearPanel1;
+    private SmartCycleGearPanel ivjSmartGearPanel1;
+    private SepCycleGearPanel sepCycleGearPanel;
+    private SepTemperatureOffsetGearPanel sepTemperatureOffsetGearPanel;
+    private EcobeeCycleGearPanel ecobeeCycleGearPanel;
+    private TimeRefreshGearPanel ivjTimeGearPanel1;
+    private RotationGearPanel ivjRotationGearPanel1;
+    private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1;
     private SimpleThermostatSetbackGearPanel ivjSimpleThermoSetbackGearPanel1;
-    private BeatThePeakGearPanel ivjBeatThePeakGearPanel1 = null;
-    private NoControlGearPanel ivjNoControlGearPanel1 = null;
+    private BeatThePeakGearPanel ivjBeatThePeakGearPanel1;
+    private NoControlGearPanel ivjNoControlGearPanel1;
     
     private PaoType programType;
 /**
@@ -45,7 +70,7 @@ public DirectModifyGearPanel(PaoType programType) {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
-public void actionPerformed(java.awt.event.ActionEvent e) {
+public void actionPerformed(ActionEvent e) {
     if (e.getSource() == getJComboBoxGearType()) 
         connEtoC2(e);
 }
@@ -54,7 +79,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * Method to handle events for the CaretListener interface.
  * @param e javax.swing.event.CaretEvent
  */
-public void caretUpdate(javax.swing.event.CaretEvent e) {
+public void caretUpdate(CaretEvent e) {
     if (e.getSource() == getJTextFieldGearName()) 
         connEtoC3(e);
 }
@@ -63,7 +88,7 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
  * connEtoC10:  (JComboBoxHowToStop.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC10(java.awt.event.ActionEvent arg1) {
+private void connEtoC10(ActionEvent arg1) {
     try {
         this.fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
@@ -76,7 +101,7 @@ private void connEtoC10(java.awt.event.ActionEvent arg1) {
  * connEtoC11:  (JComboBoxCycleCountSndType.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC11(java.awt.event.ActionEvent arg1) {
+private void connEtoC11(ActionEvent arg1) {
     try {
         this.fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
@@ -89,7 +114,7 @@ private void connEtoC11(java.awt.event.ActionEvent arg1) {
  * connEtoC12:  (JComboBoxCycleCountSndType1.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC12(java.awt.event.ActionEvent arg1) {
+private void connEtoC12(ActionEvent arg1) {
     try {
         this.fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
@@ -102,7 +127,7 @@ private void connEtoC12(java.awt.event.ActionEvent arg1) {
  * connEtoC13:  (JTextFieldChangeTriggerOffset.caret.caretUpdate(javax.swing.event.CaretEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 javax.swing.event.CaretEvent
  */
-private void connEtoC13(javax.swing.event.CaretEvent arg1) {
+private void connEtoC13(CaretEvent arg1) {
     try {
         this.fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
@@ -115,7 +140,7 @@ private void connEtoC13(javax.swing.event.CaretEvent arg1) {
  * connEtoC2:  (JComboBoxGearType.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.jComboBoxGearType_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC2(java.awt.event.ActionEvent arg1) {
+private void connEtoC2(ActionEvent arg1) {
     try {
         this.jComboBoxGearType_ActionPerformed(arg1);
     } catch (java.lang.Throwable ivjExc) {
@@ -128,7 +153,7 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
  * connEtoC3:  (JTextFieldGearName.caret.caretUpdate(javax.swing.event.CaretEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 javax.swing.event.CaretEvent
  */
-private void connEtoC3(javax.swing.event.CaretEvent arg1) {
+private void connEtoC3(CaretEvent arg1) {
     try {
         this.fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
@@ -141,7 +166,7 @@ private void connEtoC3(javax.swing.event.CaretEvent arg1) {
  * connEtoC4:  (JComboBoxShedTime.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC4(java.awt.event.ActionEvent arg1) {
+private void connEtoC4(ActionEvent arg1) {
     try {
         this.fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
@@ -154,7 +179,7 @@ private void connEtoC4(java.awt.event.ActionEvent arg1) {
  * connEtoC5:  (JComboBoxNumGroups.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC5(java.awt.event.ActionEvent arg1) {
+private void connEtoC5(ActionEvent arg1) {
     try {
         this.fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
@@ -167,7 +192,7 @@ private void connEtoC5(java.awt.event.ActionEvent arg1) {
  * connEtoC6:  (JComboBoxPeriodCount.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC6(java.awt.event.ActionEvent arg1) {
+private void connEtoC6(ActionEvent arg1) {
     try {
         this.fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
@@ -180,7 +205,7 @@ private void connEtoC6(java.awt.event.ActionEvent arg1) {
  * connEtoC7:  (JComboBoxSendRate.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC7(java.awt.event.ActionEvent arg1) {
+private void connEtoC7(ActionEvent arg1) {
     try {
         this.fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
@@ -193,7 +218,7 @@ private void connEtoC7(java.awt.event.ActionEvent arg1) {
  * connEtoC8:  (JComboBoxGroupSelection.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC8(java.awt.event.ActionEvent arg1) {
+private void connEtoC8(ActionEvent arg1) {
     try {
         this.fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
@@ -233,13 +258,13 @@ private GenericGearPanel getGenericGearPanel1() {
  * Return the JComboBoxGearType property value.
  * @return javax.swing.JComboBox
  */
-private javax.swing.JComboBox getJComboBoxGearType() {
+private JComboBox<GearControlMethod> getJComboBoxGearType() {
     if (ivjJComboBoxGearType == null) {
         try {
-            ivjJComboBoxGearType = new javax.swing.JComboBox();
+            ivjJComboBoxGearType = new JComboBox<GearControlMethod>();
             ivjJComboBoxGearType.setName("JComboBoxGearType");
-            ivjJComboBoxGearType.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-            ivjJComboBoxGearType.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+            ivjJComboBoxGearType.setAlignmentX(LEFT_ALIGNMENT);
+            ivjJComboBoxGearType.setAlignmentY(TOP_ALIGNMENT);
 
             if(programType == PaoType.LM_SEP_PROGRAM) {
                 ivjJComboBoxGearType.addItem(GearControlMethod.SepCycle);
@@ -268,15 +293,15 @@ private javax.swing.JComboBox getJComboBoxGearType() {
  * Return the JLabelGearName property value.
  * @return javax.swing.JLabel
  */
-private javax.swing.JLabel getJLabelGearName() {
+private JLabel getJLabelGearName() {
     if (ivjJLabelGearName == null) {
         try {
             ivjJLabelGearName = new javax.swing.JLabel();
             ivjJLabelGearName.setName("JLabelGearName");
-            ivjJLabelGearName.setFont(new java.awt.Font("dialog", 0, 12));
-            ivjJLabelGearName.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+            ivjJLabelGearName.setFont(new Font("dialog", 0, 12));
+            ivjJLabelGearName.setAlignmentX(LEFT_ALIGNMENT);
             ivjJLabelGearName.setText("Gear Name:");
-            ivjJLabelGearName.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+            ivjJLabelGearName.setAlignmentY(TOP_ALIGNMENT);
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -294,10 +319,10 @@ private javax.swing.JLabel getJLabelGearType() {
         try {
             ivjJLabelGearType = new javax.swing.JLabel();
             ivjJLabelGearType.setName("JLabelGearType");
-            ivjJLabelGearType.setFont(new java.awt.Font("dialog", 0, 12));
-            ivjJLabelGearType.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+            ivjJLabelGearType.setFont(new Font("dialog", 0, 12));
+            ivjJLabelGearType.setAlignmentX(LEFT_ALIGNMENT);
             ivjJLabelGearType.setText("Gear Type:");
-            ivjJLabelGearType.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+            ivjJLabelGearType.setAlignmentY(TOP_ALIGNMENT);
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -316,8 +341,8 @@ private javax.swing.JScrollPane getJScrollPane1() {
             ivjJScrollPane1 = new javax.swing.JScrollPane();
             ivjJScrollPane1.setName("JScrollPane1");
             ivjJScrollPane1.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            ivjJScrollPane1.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-            ivjJScrollPane1.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+            ivjJScrollPane1.setAlignmentX(LEFT_ALIGNMENT);
+            ivjJScrollPane1.setAlignmentY(TOP_ALIGNMENT);
             ivjJScrollPane1.getVerticalScrollBar().setUnitIncrement(10);
 
             // Set the gear type so that the correct panel can be displayed.
@@ -338,8 +363,8 @@ private javax.swing.JTextField getJTextFieldGearName() {
         try {
             ivjJTextFieldGearName = new javax.swing.JTextField();
             ivjJTextFieldGearName.setName("JTextFieldGearName");
-            ivjJTextFieldGearName.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-            ivjJTextFieldGearName.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+            ivjJTextFieldGearName.setAlignmentX(LEFT_ALIGNMENT);
+            ivjJTextFieldGearName.setAlignmentY(TOP_ALIGNMENT);
             ivjJTextFieldGearName.setDocument(
                     new TextFieldDocument(
                         TextFieldDocument.MAX_BASELINE_NAME_LENGTH,
@@ -355,6 +380,7 @@ private javax.swing.JTextField getJTextFieldGearName() {
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	Object obj = null;
@@ -474,50 +500,50 @@ private void initialize() {
     try {
         setName("DirectGearPanel");
         setToolTipText("");
-        setLayout(new java.awt.GridBagLayout());
-        setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-        setPreferredSize(new java.awt.Dimension(303, 194));
-        setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+        setLayout(new GridBagLayout());
+        setAlignmentY(TOP_ALIGNMENT);
+        setPreferredSize(new Dimension(303, 194));
+        setAlignmentX(LEFT_ALIGNMENT);
         setSize(426, 496);
-        setMinimumSize(new java.awt.Dimension(10, 10));
+        setMinimumSize(new Dimension(10, 10));
 
         java.awt.GridBagConstraints constraintsJLabelGearName = new java.awt.GridBagConstraints();
         constraintsJLabelGearName.gridx = 1; constraintsJLabelGearName.gridy = 1;
         constraintsJLabelGearName.ipadx = 9;
-        constraintsJLabelGearName.insets = new java.awt.Insets(3, 6, 3, 0);
+        constraintsJLabelGearName.insets = new Insets(3, 6, 3, 0);
         add(getJLabelGearName(), constraintsJLabelGearName);
 
         java.awt.GridBagConstraints constraintsJTextFieldGearName = new java.awt.GridBagConstraints();
         constraintsJTextFieldGearName.gridx = 2; constraintsJTextFieldGearName.gridy = 1;
-        constraintsJTextFieldGearName.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        constraintsJTextFieldGearName.fill = GridBagConstraints.HORIZONTAL;
         constraintsJTextFieldGearName.weightx = 1.0;
         constraintsJTextFieldGearName.ipadx = 210;
-        constraintsJTextFieldGearName.insets = new java.awt.Insets(1, 0, 1, 130);
+        constraintsJTextFieldGearName.insets = new Insets(1, 0, 1, 130);
         add(getJTextFieldGearName(), constraintsJTextFieldGearName);
 
         java.awt.GridBagConstraints constraintsJLabelGearType = new java.awt.GridBagConstraints();
         constraintsJLabelGearType.gridx = 1; constraintsJLabelGearType.gridy = 2;
         constraintsJLabelGearType.ipadx = 17;
-        constraintsJLabelGearType.insets = new java.awt.Insets(5, 6, 6, 0);
+        constraintsJLabelGearType.insets = new Insets(5, 6, 6, 0);
         add(getJLabelGearType(), constraintsJLabelGearType);
 
         java.awt.GridBagConstraints constraintsJComboBoxGearType = new java.awt.GridBagConstraints();
         constraintsJComboBoxGearType.gridx = 2; constraintsJComboBoxGearType.gridy = 2;
-        constraintsJComboBoxGearType.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        constraintsJComboBoxGearType.fill = GridBagConstraints.HORIZONTAL;
         constraintsJComboBoxGearType.weightx = 1.0;
         constraintsJComboBoxGearType.ipadx = 88;
-        constraintsJComboBoxGearType.insets = new java.awt.Insets(2, 0, 2, 130);
+        constraintsJComboBoxGearType.insets = new Insets(2, 0, 2, 130);
         add(getJComboBoxGearType(), constraintsJComboBoxGearType);
 
         java.awt.GridBagConstraints constraintsJScrollPane1 = new java.awt.GridBagConstraints();
         constraintsJScrollPane1.gridx = 1; constraintsJScrollPane1.gridy = 3;
         constraintsJScrollPane1.gridwidth = 2;
-        constraintsJScrollPane1.fill = java.awt.GridBagConstraints.BOTH;
+        constraintsJScrollPane1.fill = GridBagConstraints.BOTH;
         constraintsJScrollPane1.weightx = 1.0;
         constraintsJScrollPane1.weighty = 1.0;
         constraintsJScrollPane1.ipadx = 398;
         constraintsJScrollPane1.ipady = 419;
-        constraintsJScrollPane1.insets = new java.awt.Insets(2, 0, 4, 6);
+        constraintsJScrollPane1.insets = new Insets(2, 0, 4, 6);
         add(getJScrollPane1(), constraintsJScrollPane1);
         initConnections();
     } catch (java.lang.Throwable ivjExc) {
@@ -545,7 +571,7 @@ public boolean isInputValid()
 /**
  * Comment
  */
-public void jComboBoxGearType_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+public void jComboBoxGearType_ActionPerformed(ActionEvent actionEvent) 
 {
 
     if( getJComboBoxGearType().getSelectedItem() != null )
@@ -637,71 +663,45 @@ public void setIvjGenericGearPanel1(GenericGearPanel newIvjGenericGearPanel1) {
 /**
  * setValue method comment.
  */
-public void setValue(Object o) 
-{
+public void setValue(Object o) {
     LMProgramDirectGear gear = null;
     
-    if( o == null )
-    {
+    if (o == null) {
         return;
-    }
-    else
+    } else {
         gear = (LMProgramDirectGear)o;
+    }
 
     getJComboBoxGearType().setSelectedItem(gear.getControlMethod());
     getJTextFieldGearName().setText( gear.getGearName() );
 
-    if( gear instanceof com.cannontech.database.data.device.lm.SmartCycleGear )
-    {
-        getIvjSmartGearPanel1().setValue(gear);         
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.EcobeeCycleGear)
-    {
+    if (gear instanceof SmartCycleGear) {
+        getIvjSmartGearPanel1().setValue(gear);
+    } else if(gear instanceof EcobeeCycleGear) {
         getEcobeeCycleGearPanel().setValue(gear);
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.SepCycleGear)
-    {
+    } else if(gear instanceof SepCycleGear) {
         getSepCycleGearPanel().setValue(gear);
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.SepTemperatureOffsetGear)
-    {
+    } else if(gear instanceof SepTemperatureOffsetGear) {
         getSepTemperatureOffsetGearPanel().setValue(gear);
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.MasterCycleGear )
-    {
+    } else if(gear instanceof MasterCycleGear) {
         getIvjMasterGearPanel1().setValue(gear);    
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.TimeRefreshGear )
-    {
+    } else if(gear instanceof TimeRefreshGear) {
         getIvjTimeGearPanel1().setValue(gear);
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.RotationGear )
-    {
+    } else if(gear instanceof RotationGear) {
         getIvjRotationGearPanel1().setValue(gear);
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.LatchingGear )
-    {
-        getIvjLatchingGearPanel1().setValue(gear);      
-    }
-
-    else if( gear instanceof com.cannontech.database.data.device.lm.ThermostatSetbackGear )
-    {
+    } else if(gear instanceof LatchingGear) {
+        getIvjLatchingGearPanel1().setValue(gear);
+    } else if(gear instanceof ThermostatSetbackGear) {
         getIvjThermoSetbackGearPanel1().setValue(gear); 
-    }
-    else if (gear instanceof com.cannontech.database.data.device.lm.SimpleThermostatRampingGear)
-    {
+    } else if (gear instanceof SimpleThermostatRampingGear) {
         getIvjSimpleThermoSetbackGearPanel1().setValue(gear);
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.BeatThePeakGear )
-    {
+    } else if(gear instanceof BeatThePeakGear) {
         getIvjBeatThePeakGearPanel1().setValue(gear);
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.NoControlGear )
-    {
+    } else if(gear instanceof NoControlGear) {
         getNoControlGearPanel().setValue(gear); 
-    }
-    else
+    } else {
         return;
+    }
     
 }
 
@@ -712,7 +712,6 @@ public void setValue(Object o)
  */
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
-    //fire this event for all JCSpinFields!!
     this.fireInputUpdate();
 }
 
@@ -765,8 +764,9 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
     }
 
     public EcobeeCycleGearPanel getEcobeeCycleGearPanel() {
-        if(ecobeeCycleGearPanel == null)
+        if (ecobeeCycleGearPanel == null) {
             ecobeeCycleGearPanel = new EcobeeCycleGearPanel();
+        }
         return ecobeeCycleGearPanel;
     }
     

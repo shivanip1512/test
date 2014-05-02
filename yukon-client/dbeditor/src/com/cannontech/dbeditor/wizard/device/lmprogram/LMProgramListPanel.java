@@ -256,8 +256,7 @@ private boolean isGroupSepCompatible(PaoType groupType)
     return groupType == PaoType.LM_GROUP_DIGI_SEP;
 }
 
-private boolean isGroupEcobeeCompatible(PaoType groupType)
-{
+private boolean isGroupEcobeeCompatible(PaoType groupType) {
     return groupType == PaoType.LM_GROUP_ECOBEE;
 }
 
