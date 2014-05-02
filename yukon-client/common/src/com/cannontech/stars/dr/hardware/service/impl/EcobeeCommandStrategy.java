@@ -53,7 +53,6 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
         String serialNumber = device.getManufacturerSerialNumber();
 
         try {
-            log.info(command.getType());
             int groupId;
             switch(command.getType()) {
             case IN_SERVICE:
