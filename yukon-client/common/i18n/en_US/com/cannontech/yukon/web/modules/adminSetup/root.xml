@@ -33,6 +33,7 @@
     
     <entry key="yukon.web.modules.adminSetup.config.error.invalidTimeZone">Invalid TimeZone</entry>
     <entry key="yukon.web.modules.adminSetup.config.error.invalidProxy">Invalid Proxy Setting</entry>
+    <entry key="yukon.web.modules.adminSetup.config.error.invalidURL">Invalid URL </entry>
     
     <entry key="yukon.web.modules.adminSetup.config.themes.pageName">Themes</entry>
     <entry key="yukon.web.modules.adminSetup.config.themes.primaryColors">Primary Colors:</entry>

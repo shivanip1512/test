@@ -33,7 +33,30 @@ public class RolePropertyValidator extends
 					 errors.rejectValue("values[DEFAULT_TIMEZONE]", baseKey + "invalidTimeZone");
 				}
 			}
+		} 
+		if(rolePropertyValuesMap.containsKey(YukonRoleProperty.HOME_URL)){
+			String homeURl = (String) rolePropertyValuesMap.get(YukonRoleProperty.HOME_URL);
+			Boolean isValid = YukonValidationUtils.isUrlPath(homeURl);
+			if(!isValid)
+			{
+				errors.rejectValue("values[HOME_URL]", baseKey + "invalidURL");
+			}
 		}
-		
+		if(rolePropertyValuesMap.containsKey(YukonRoleProperty.LOG_IN_URL)){
+			String loginURl = (String) rolePropertyValuesMap.get(YukonRoleProperty.LOG_IN_URL);
+			Boolean isValid = YukonValidationUtils.isUrlPath(loginURl);
+			if(!isValid)
+			{
+				errors.rejectValue("values[LOG_IN_URL]", baseKey + "invalidURL");
+			}
+		}
 	}
-}
+	
+	  
+	}
+
+	
+		
+		
+	
+
