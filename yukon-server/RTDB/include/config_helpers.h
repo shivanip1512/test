@@ -87,9 +87,13 @@ std::vector<T> getConfigData( Config::DeviceConfigSPtr &deviceConfig, const std:
     unsigned index = 0;
     std::vector<T> result;
 
-    std::vector<Config::DeviceConfigSPtr> indexedConfig = deviceConfig->getIndexedConfig( prefix );
+    boost::optional<std::vector<Config::DeviceConfigSPtr>> indexedConfig = deviceConfig->getIndexedConfig( prefix );
+    if( ! indexedConfig )
+    {
+        throw MissingConfigDataException( prefix );
+    }
 
-    for each( const Config::DeviceConfigSPtr& config in indexedConfig )
+    for each( const Config::DeviceConfigSPtr& config in *indexedConfig )
     {
         if( ! config )
         {

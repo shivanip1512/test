@@ -46,6 +46,7 @@ namespace std {
 
     //  defined in rtdb/test_main.cpp
     ostream& operator<<(ostream& out, const vector<unsigned char> &v);
+    ostream& operator<<(ostream& out, const vector<bool> &v);
 }
 
 
@@ -1885,564 +1886,484 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_freezeday )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_channel_configuration )
 {
     test_RfnResidentialDevice dut;
-    dut._type = TYPE_RFN410FX;
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     {
-        ////// empty configuration (no valid configuration) //////
-
-        CtiCommandParser parse("putconfig install all");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
-
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  5 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 0 );
-
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
-        }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true)(false); // 5 error messages, NOTE: last expectMore expected to be false
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
-    }
-
-    // add demand freeze day config
-    cfg.insertValue( RfnStrings::demandFreezeDay, "7" );
-
-    {
-        ////// 1 valid configuration //////
-
         resetTestState();
 
-        CtiCommandParser parse("putconfig install all");
+        cfg.insertValue( RfnStrings::ChannelSelectionPrefix, "5" );
+        cfg.insertValue( RfnStrings::ChannelSelectionPrefix + ".0." + RfnStrings::ChannelSelectionMetric, "WattHourDel" );
+        cfg.insertValue( RfnStrings::ChannelSelectionPrefix + ".1." + RfnStrings::ChannelSelectionMetric, "WattHourRec" );
+        cfg.insertValue( RfnStrings::ChannelSelectionPrefix + ".2." + RfnStrings::ChannelSelectionMetric, "WattHourTotal" );
+        cfg.insertValue( RfnStrings::ChannelSelectionPrefix + ".3." + RfnStrings::ChannelSelectionMetric, "WattHourNet" );
+        cfg.insertValue( RfnStrings::ChannelSelectionPrefix + ".4." + RfnStrings::ChannelSelectionMetric, "WattsDelCurrentDemand" );
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+        cfg.insertValue( RfnStrings::ChannelRecordingIntervalPrefix, "3" );
+        cfg.insertValue( RfnStrings::ChannelRecordingIntervalPrefix + ".0." + RfnStrings::ChannelRecordingIntervalMetric, "WattsPhaseA" );
+        cfg.insertValue( RfnStrings::ChannelRecordingIntervalPrefix + ".1." + RfnStrings::ChannelRecordingIntervalMetric, "PfPhaseA" );
+        cfg.insertValue( RfnStrings::ChannelRecordingIntervalPrefix + ".2." + RfnStrings::ChannelRecordingIntervalMetric, "CurrentAnglePhaseB" );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  5 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 1 );
+        cfg.insertValue( RfnStrings::ChannelRecordingIntervalSeconds, "123" );
+        cfg.insertValue( RfnStrings::ChannelReportingIntervalSeconds, "2147483647" );
 
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
+            CtiCommandParser parse("putconfig install channelconfig");
+
+            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+
+            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+            {
+                const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+                BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "2 commands queued for device" );
+            }
+
+            BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
+            RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+            {
+                Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+                Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+                std::vector<unsigned char> exp = boost::assign::list_of
+                        (0x78)(0x00)(0x01)
+                        (0x01)(0x00)(0x0b)(0x05)(0x00)(0x01)(0x00)(0x02)(0x00)(0x03)(0x00)(0x04)(0x00)(0x05);
+
+                BOOST_CHECK_EQUAL( rcv, exp );
+
+                std::vector<unsigned char> response = boost::assign::list_of
+                        (0x79)(0x00)(0x00)(0x02)
+                        (0x01)(0x00)(0x0b)(0x05)(0x00)(0x01)(0x00)(0x02)(0x00)(0x03)(0x00)(0x04)(0x00)(0x05)
+                        (0x02)(0x00)(0x01)(0x00);
+
+                command->decodeCommand( CtiTime::now(), response );
+
+                dut.extractCommandResult( *command );
+
+                const std::set<std::string> dynMetricsExpSet = boost::assign::list_of
+                        ( "WattHourDel" )
+                        ( "WattHourRec" )
+                        ( "WattHourTotal" )
+                        ( "WattHourNet" )
+                        ( "WattsDelCurrentDemand" );
+
+                // use the order provided by the set
+                const std::vector<std::string> dynMetricsExp( dynMetricsExpSet.begin(), dynMetricsExpSet.end());
+
+                const boost::optional<std::vector<std::string>> dynMetricsRcv = dut.findDynamicInfo<std::string>( CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelSelectionMetrics );
+
+                BOOST_REQUIRE( dynMetricsRcv );
+                BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
+            }
+            {
+                Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+                Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+                std::vector<unsigned char> exp = boost::assign::list_of
+                        (0x7a)(0x00)(0x01)(0x01)(0x0f)(0x00)(0x00)(0x00)(0x7b)(0x7f)(0xff)(0xff)(0xff)(0x03)(0x00)(0x6e)(0x00)(0x96)(0x00)(0xa2);
+
+                BOOST_CHECK_EQUAL( rcv, exp );
+
+                std::vector<unsigned char> response = boost::assign::list_of
+                        (0x7b)(0x00)(0x00)(0x02)
+                        (0x01)(0x0f)(0x00)(0x00)(0x00)(0x7b)(0x7f)(0xff)(0xff)(0xff)(0x03)(0x00)(0x6e)(0x00)(0x96)(0x00)(0xa2)
+                        (0x02)(0x01)(0x00);
+
+                command->decodeCommand( CtiTime::now(), response );
+
+                dut.extractCommandResult( *command );
+
+                const std::set<std::string> dynMetricsExpSet = boost::assign::list_of
+                        ( "WattsPhaseA" )
+                        ( "PfPhaseA" )
+                        ( "CurrentAnglePhaseB" );
+
+                // use the order provided by the set
+                const std::vector<std::string> dynMetricsExp( dynMetricsExpSet.begin(), dynMetricsExpSet.end());
+
+                const boost::optional<std::vector<std::string>> dynMetricsRcv = dut.findDynamicInfo<std::string>( CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelRecordingIntervalMetrics );
+
+                BOOST_REQUIRE( dynMetricsRcv );
+                BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
+
+                BOOST_CHECK_EQUAL( unsigned(123),        dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds ));
+                BOOST_CHECK_EQUAL( unsigned(2147483647), dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds ));
+            }
         }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true)(true); // 4 error messages + 1 message to notify that 1 config has been sent to the device
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
     }
+}
 
-    // add OVUV config
-    cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
-    cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
-    cfg.insertValue( RfnStrings::OvUvAlarmRepeatInterval,    "60" );
-    cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
-    cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
-    cfg.insertValue( RfnStrings::UvThreshold,                "78.901" );
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
+{
+    using boost::assign::list_of;
 
+    test_RfnResidentialDevice dut;
+    dut._type = TYPE_RFN410FX;
+
+    typedef std::pair<std::string, std::string> ConfigItem;
+    typedef std::vector<ConfigItem>             ConfigInstallItems;
+
+    const std::vector<ConfigInstallItems> configurations = list_of<ConfigInstallItems>
+
+            ( list_of<ConfigItem> // demand freeze day config
+                    ( ConfigItem( RfnStrings::demandFreezeDay, "7" )))
+
+            ( list_of<ConfigItem> // OVUV config
+                    ( ConfigItem( RfnStrings::OvUvEnabled,                "true"    ))
+                    ( ConfigItem( RfnStrings::OvUvAlarmReportingInterval, "5"       ))
+                    ( ConfigItem( RfnStrings::OvUvAlarmRepeatInterval,    "60"      ))
+                    ( ConfigItem( RfnStrings::OvUvRepeatCount,            "2"       ))
+                    ( ConfigItem( RfnStrings::OvThreshold,                "123.456" ))
+                    ( ConfigItem( RfnStrings::UvThreshold,                "78.901"  )))
+
+            ( list_of<ConfigItem> // TOU config
+                    // Schedule 1
+                    ( ConfigItem( RfnStrings::Schedule1Time1, "00:01" ))
+                    ( ConfigItem( RfnStrings::Schedule1Time2, "10:06" ))
+                    ( ConfigItem( RfnStrings::Schedule1Time3, "12:22" ))
+                    ( ConfigItem( RfnStrings::Schedule1Time4, "23:33" ))
+                    ( ConfigItem( RfnStrings::Schedule1Time5, "23:44" ))
+
+                    ( ConfigItem( RfnStrings::Schedule1Rate0, "A" ))
+                    ( ConfigItem( RfnStrings::Schedule1Rate1, "B" ))
+                    ( ConfigItem( RfnStrings::Schedule1Rate2, "C" ))
+                    ( ConfigItem( RfnStrings::Schedule1Rate3, "D" ))
+                    ( ConfigItem( RfnStrings::Schedule1Rate4, "A" ))
+                    ( ConfigItem( RfnStrings::Schedule1Rate5, "B" ))
+
+                    // Schedule 2
+                    ( ConfigItem( RfnStrings::Schedule2Time1, "01:23" ))
+                    ( ConfigItem( RfnStrings::Schedule2Time2, "03:12" ))
+                    ( ConfigItem( RfnStrings::Schedule2Time3, "04:01" ))
+                    ( ConfigItem( RfnStrings::Schedule2Time4, "05:23" ))
+                    ( ConfigItem( RfnStrings::Schedule2Time5, "16:28" ))
+
+                    ( ConfigItem( RfnStrings::Schedule2Rate0, "D" ))
+                    ( ConfigItem( RfnStrings::Schedule2Rate1, "A" ))
+                    ( ConfigItem( RfnStrings::Schedule2Rate2, "B" ))
+                    ( ConfigItem( RfnStrings::Schedule2Rate3, "C" ))
+                    ( ConfigItem( RfnStrings::Schedule2Rate4, "D" ))
+                    ( ConfigItem( RfnStrings::Schedule2Rate5, "A" ))
+
+                    // Schedule 3
+                    ( ConfigItem( RfnStrings::Schedule3Time1, "01:02" ))
+                    ( ConfigItem( RfnStrings::Schedule3Time2, "02:03" ))
+                    ( ConfigItem( RfnStrings::Schedule3Time3, "04:05" ))
+                    ( ConfigItem( RfnStrings::Schedule3Time4, "05:06" ))
+                    ( ConfigItem( RfnStrings::Schedule3Time5, "06:07" ))
+
+                    ( ConfigItem( RfnStrings::Schedule3Rate0, "C" ))
+                    ( ConfigItem( RfnStrings::Schedule3Rate1, "D" ))
+                    ( ConfigItem( RfnStrings::Schedule3Rate2, "A" ))
+                    ( ConfigItem( RfnStrings::Schedule3Rate3, "B" ))
+                    ( ConfigItem( RfnStrings::Schedule3Rate4, "C" ))
+                    ( ConfigItem( RfnStrings::Schedule3Rate5, "D" ))
+
+                    // Schedule 4
+                    ( ConfigItem( RfnStrings::Schedule4Time1, "00:01" ))
+                    ( ConfigItem( RfnStrings::Schedule4Time2, "08:59" ))
+                    ( ConfigItem( RfnStrings::Schedule4Time3, "12:12" ))
+                    ( ConfigItem( RfnStrings::Schedule4Time4, "23:01" ))
+                    ( ConfigItem( RfnStrings::Schedule4Time5, "23:55" ))
+
+                    ( ConfigItem( RfnStrings::Schedule4Rate0, "B" ))
+                    ( ConfigItem( RfnStrings::Schedule4Rate1, "C" ))
+                    ( ConfigItem( RfnStrings::Schedule4Rate2, "D" ))
+                    ( ConfigItem( RfnStrings::Schedule4Rate3, "A" ))
+                    ( ConfigItem( RfnStrings::Schedule4Rate4, "B" ))
+                    ( ConfigItem( RfnStrings::Schedule4Rate5, "C" ))
+
+                    // day table
+                    ( ConfigItem( RfnStrings::SundaySchedule,    "Schedule 1" ))
+                    ( ConfigItem( RfnStrings::MondaySchedule,    "Schedule 1" ))
+                    ( ConfigItem( RfnStrings::TuesdaySchedule,   "Schedule 3" ))
+                    ( ConfigItem( RfnStrings::WednesdaySchedule, "Schedule 2" ))
+                    ( ConfigItem( RfnStrings::ThursdaySchedule,  "Schedule 4" ))
+                    ( ConfigItem( RfnStrings::FridaySchedule,    "Schedule 2" ))
+                    ( ConfigItem( RfnStrings::SaturdaySchedule,  "Schedule 3" ))
+                    ( ConfigItem( RfnStrings::HolidaySchedule,   "Schedule 3" ))
+
+                    // default rate
+                    ( ConfigItem( RfnStrings::DefaultTouRate, "B" ))
+
+                    // set TOU enabled
+                    ( ConfigItem( RfnStrings::touEnabled, "true" )))
+
+            ( list_of<ConfigItem> // voltage averaging config
+                    ( ConfigItem( RfnStrings::demandInterval,  "1" ))
+                    ( ConfigItem( RfnStrings::profileInterval, "2" )))
+
+            ( list_of<ConfigItem> // temperature alarming config
+                    ( ConfigItem( RfnStrings::TemperatureAlarmEnabled,           "true" ))
+                    ( ConfigItem( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   ))
+                    ( ConfigItem( RfnStrings::TemperatureAlarmRepeatCount,       "3"    ))
+                    ( ConfigItem( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   )))
+
+            ( list_of<ConfigItem> // channel config
+                    ( ConfigItem( RfnStrings::ChannelSelectionPrefix,          "0"   ))
+                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalPrefix,  "0"   ))
+                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalSeconds, "123" ))
+                    ( ConfigItem( RfnStrings::ChannelReportingIntervalSeconds, "456" )))
+            ;
+
+    const std::vector<int> requestMsgsExp = list_of
+            ( 0 )   // no config data                   -> no request
+            ( 1 )   // add demand freeze day config     -> +1 request
+            ( 7 )   // add OVUV config                  -> +6 request
+            ( 9 )   // add TOU config                   -> +1 request
+            ( 10 )  // add voltage averaging config     -> +1 request
+            ( 11 )  // add temperature alarming config  -> +1 request
+            ( 13 )  // add channel config               -> +2 request
+            ;
+
+    const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
+            ( list_of<bool>(true)(true)(true)(true)(true)(false) )  // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true)(true)(true) )   // add demand freeze day config     -> 5 error messages + 1 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(true) )         // add OVUV config                  -> 4 error messages + 2 config sent message
+            ( list_of<bool>(true)(true)(true)(true) )               // add TOU config                   -> 3 error messages + 3 config sent message
+            ( list_of<bool>(true)(true)(true) )                     // add voltage averaging config     -> 2 error messages + 4 config sent message
+            ( list_of<bool>(true)(true) )                           // add temperature alarming config  -> 1 error messages + 5 config sent message
+            ( list_of<bool>(true) )                                 // add channel config               -> 6 config sent message
+            ;
+
+    std::vector<int> requestMsgsRcv;
+    std::vector< std::vector<bool> > returnExpectMoreRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    std::vector<bool> expectMoreRcv;
+    for each( const CtiReturnMsg &m in returnMsgs )
     {
-        ////// 2 valid configurations //////
-
-        resetTestState();
-
-        CtiCommandParser parse("putconfig install all");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
-
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  4 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 7 );
-
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
-        }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true); // 3 error messages + 1 message to notify that 2 config has been sent to the device
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
+        expectMoreRcv.push_back( m.ExpectMore() );
     }
+    returnExpectMoreRcv.push_back( expectMoreRcv );
 
-    // add TOU config
+    ////// add each configuration //////
 
-    // Schedule 1
-    cfg.insertValue( RfnStrings::Schedule1Time1, "00:01" );
-    cfg.insertValue( RfnStrings::Schedule1Time2, "10:06" );
-    cfg.insertValue( RfnStrings::Schedule1Time3, "12:22" );
-    cfg.insertValue( RfnStrings::Schedule1Time4, "23:33" );
-    cfg.insertValue( RfnStrings::Schedule1Time5, "23:44" );
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-    cfg.insertValue( RfnStrings::Schedule1Rate0, "A" );
-    cfg.insertValue( RfnStrings::Schedule1Rate1, "B" );
-    cfg.insertValue( RfnStrings::Schedule1Rate2, "C" );
-    cfg.insertValue( RfnStrings::Schedule1Rate3, "D" );
-    cfg.insertValue( RfnStrings::Schedule1Rate4, "A" );
-    cfg.insertValue( RfnStrings::Schedule1Rate5, "B" );
-
-    // Schedule 2
-    cfg.insertValue( RfnStrings::Schedule2Time1, "01:23" );
-    cfg.insertValue( RfnStrings::Schedule2Time2, "03:12" );
-    cfg.insertValue( RfnStrings::Schedule2Time3, "04:01" );
-    cfg.insertValue( RfnStrings::Schedule2Time4, "05:23" );
-    cfg.insertValue( RfnStrings::Schedule2Time5, "16:28" );
-
-    cfg.insertValue( RfnStrings::Schedule2Rate0, "D" );
-    cfg.insertValue( RfnStrings::Schedule2Rate1, "A" );
-    cfg.insertValue( RfnStrings::Schedule2Rate2, "B" );
-    cfg.insertValue( RfnStrings::Schedule2Rate3, "C" );
-    cfg.insertValue( RfnStrings::Schedule2Rate4, "D" );
-    cfg.insertValue( RfnStrings::Schedule2Rate5, "A" );
-
-    // Schedule 3
-    cfg.insertValue( RfnStrings::Schedule3Time1, "01:02" );
-    cfg.insertValue( RfnStrings::Schedule3Time2, "02:03" );
-    cfg.insertValue( RfnStrings::Schedule3Time3, "04:05" );
-    cfg.insertValue( RfnStrings::Schedule3Time4, "05:06" );
-    cfg.insertValue( RfnStrings::Schedule3Time5, "06:07" );
-
-    cfg.insertValue( RfnStrings::Schedule3Rate0, "C" );
-    cfg.insertValue( RfnStrings::Schedule3Rate1, "D" );
-    cfg.insertValue( RfnStrings::Schedule3Rate2, "A" );
-    cfg.insertValue( RfnStrings::Schedule3Rate3, "B" );
-    cfg.insertValue( RfnStrings::Schedule3Rate4, "C" );
-    cfg.insertValue( RfnStrings::Schedule3Rate5, "D" );
-
-    // Schedule 4
-    cfg.insertValue( RfnStrings::Schedule4Time1, "00:01" );
-    cfg.insertValue( RfnStrings::Schedule4Time2, "08:59" );
-    cfg.insertValue( RfnStrings::Schedule4Time3, "12:12" );
-    cfg.insertValue( RfnStrings::Schedule4Time4, "23:01" );
-    cfg.insertValue( RfnStrings::Schedule4Time5, "23:55" );
-
-    cfg.insertValue( RfnStrings::Schedule4Rate0, "B" );
-    cfg.insertValue( RfnStrings::Schedule4Rate1, "C" );
-    cfg.insertValue( RfnStrings::Schedule4Rate2, "D" );
-    cfg.insertValue( RfnStrings::Schedule4Rate3, "A" );
-    cfg.insertValue( RfnStrings::Schedule4Rate4, "B" );
-    cfg.insertValue( RfnStrings::Schedule4Rate5, "C" );
-
-    // day table
-    cfg.insertValue( RfnStrings::SundaySchedule,    "Schedule 1" );
-    cfg.insertValue( RfnStrings::MondaySchedule,    "Schedule 1" );
-    cfg.insertValue( RfnStrings::TuesdaySchedule,   "Schedule 3" );
-    cfg.insertValue( RfnStrings::WednesdaySchedule, "Schedule 2" );
-    cfg.insertValue( RfnStrings::ThursdaySchedule,  "Schedule 4" );
-    cfg.insertValue( RfnStrings::FridaySchedule,    "Schedule 2" );
-    cfg.insertValue( RfnStrings::SaturdaySchedule,  "Schedule 3" );
-    cfg.insertValue( RfnStrings::HolidaySchedule,   "Schedule 3" );
-
-    // default rate
-    cfg.insertValue( RfnStrings::DefaultTouRate, "B" );
-
-    // set TOU enabled
-    cfg.insertValue( RfnStrings::touEnabled, "true" );
-
+    for each( const ConfigInstallItems& config in configurations )
     {
-        ////// 3 valid configurations //////
+        resetTestState(); // note: reset test state does not erase the current configuration
 
-        resetTestState();
-
-        CtiCommandParser parse("putconfig install all");
+        for each( const ConfigItem& item in config )
+        {
+            cfg.insertValue( item.first, item.second );
+        }
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  3 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 9 );
+        requestMsgsRcv.push_back( rfnRequests.size() );
 
         std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
+        for each( const CtiReturnMsg &m in returnMsgs )
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
+            expectMoreRcv.push_back( m.ExpectMore() );
         }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true); // 2 error messages + 1 message to notify that 3 config has been sent to the device
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
+        returnExpectMoreRcv.push_back( expectMoreRcv );
     }
 
-    // add voltage averaging config
-    cfg.insertValue( RfnStrings::demandInterval, "1" );
-    cfg.insertValue( RfnStrings::profileInterval,"2" );
-
-    {
-        ////// 4 valid configurations //////
-
-        resetTestState();
-
-        CtiCommandParser parse("putconfig install all");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
-
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  2 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 10 );
-
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
-        }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true); // 1 error message + 1 message to notify that 4 config has been sent to the device
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
-    }
-
-    // add temperature alarming configuration
-    cfg.insertValue( RfnStrings::TemperatureAlarmEnabled,           "true" );
-    cfg.insertValue( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   );
-    cfg.insertValue( RfnStrings::TemperatureAlarmRepeatCount,       "3"    );
-    cfg.insertValue( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   );
-
-    {
-        ////// 5 valid configurations //////
-
-        resetTestState();
-
-        CtiCommandParser parse("putconfig install all");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
-
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 11 );
-
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
-        }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true); // 1 message to notify that all config has been sent to the device
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
-    }
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+    BOOST_CHECK_EQUAL_COLLECTIONS( returnExpectMoreRcv.begin(), returnExpectMoreRcv.end(), returnExpectMoreExp.begin(), returnExpectMoreExp.end() );
 }
 
 BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 {
+    using boost::assign::list_of;
+
     test_RfnResidentialDevice dut;
     dut._type = TYPE_RFN420CD;
 
+    typedef std::pair<std::string, std::string> ConfigItem;
+    typedef std::vector<ConfigItem>             ConfigInstallItems;
+
+    const std::vector<ConfigInstallItems> configurations = list_of<ConfigInstallItems>
+
+            ( list_of<ConfigItem> // remote disconnect config
+                    ( ConfigItem( RfnStrings::DisconnectMode, "CYCLING" ))
+                    ( ConfigItem( RfnStrings::ConnectMinutes, "100" ))
+                    ( ConfigItem( RfnStrings::DisconnectMinutes, "60" )))
+
+            ( list_of<ConfigItem> // demand freeze day config
+                    ( ConfigItem( RfnStrings::demandFreezeDay, "7" )))
+
+            ( list_of<ConfigItem> // OVUV config
+                    ( ConfigItem( RfnStrings::OvUvEnabled,                "true"    ))
+                    ( ConfigItem( RfnStrings::OvUvAlarmReportingInterval, "5"       ))
+                    ( ConfigItem( RfnStrings::OvUvAlarmRepeatInterval,    "60"      ))
+                    ( ConfigItem( RfnStrings::OvUvRepeatCount,            "2"       ))
+                    ( ConfigItem( RfnStrings::OvThreshold,                "123.456" ))
+                    ( ConfigItem( RfnStrings::UvThreshold,                "78.901"  )))
+
+            ( list_of<ConfigItem> // TOU config
+                    // Schedule 1
+                    ( ConfigItem( RfnStrings::Schedule1Time1, "00:01" ))
+                    ( ConfigItem( RfnStrings::Schedule1Time2, "10:06" ))
+                    ( ConfigItem( RfnStrings::Schedule1Time3, "12:22" ))
+                    ( ConfigItem( RfnStrings::Schedule1Time4, "23:33" ))
+                    ( ConfigItem( RfnStrings::Schedule1Time5, "23:44" ))
+
+                    ( ConfigItem( RfnStrings::Schedule1Rate0, "A" ))
+                    ( ConfigItem( RfnStrings::Schedule1Rate1, "B" ))
+                    ( ConfigItem( RfnStrings::Schedule1Rate2, "C" ))
+                    ( ConfigItem( RfnStrings::Schedule1Rate3, "D" ))
+                    ( ConfigItem( RfnStrings::Schedule1Rate4, "A" ))
+                    ( ConfigItem( RfnStrings::Schedule1Rate5, "B" ))
+
+                    // Schedule 2
+                    ( ConfigItem( RfnStrings::Schedule2Time1, "01:23" ))
+                    ( ConfigItem( RfnStrings::Schedule2Time2, "03:12" ))
+                    ( ConfigItem( RfnStrings::Schedule2Time3, "04:01" ))
+                    ( ConfigItem( RfnStrings::Schedule2Time4, "05:23" ))
+                    ( ConfigItem( RfnStrings::Schedule2Time5, "16:28" ))
+
+                    ( ConfigItem( RfnStrings::Schedule2Rate0, "D" ))
+                    ( ConfigItem( RfnStrings::Schedule2Rate1, "A" ))
+                    ( ConfigItem( RfnStrings::Schedule2Rate2, "B" ))
+                    ( ConfigItem( RfnStrings::Schedule2Rate3, "C" ))
+                    ( ConfigItem( RfnStrings::Schedule2Rate4, "D" ))
+                    ( ConfigItem( RfnStrings::Schedule2Rate5, "A" ))
+
+                    // Schedule 3
+                    ( ConfigItem( RfnStrings::Schedule3Time1, "01:02" ))
+                    ( ConfigItem( RfnStrings::Schedule3Time2, "02:03" ))
+                    ( ConfigItem( RfnStrings::Schedule3Time3, "04:05" ))
+                    ( ConfigItem( RfnStrings::Schedule3Time4, "05:06" ))
+                    ( ConfigItem( RfnStrings::Schedule3Time5, "06:07" ))
+
+                    ( ConfigItem( RfnStrings::Schedule3Rate0, "C" ))
+                    ( ConfigItem( RfnStrings::Schedule3Rate1, "D" ))
+                    ( ConfigItem( RfnStrings::Schedule3Rate2, "A" ))
+                    ( ConfigItem( RfnStrings::Schedule3Rate3, "B" ))
+                    ( ConfigItem( RfnStrings::Schedule3Rate4, "C" ))
+                    ( ConfigItem( RfnStrings::Schedule3Rate5, "D" ))
+
+                    // Schedule 4
+                    ( ConfigItem( RfnStrings::Schedule4Time1, "00:01" ))
+                    ( ConfigItem( RfnStrings::Schedule4Time2, "08:59" ))
+                    ( ConfigItem( RfnStrings::Schedule4Time3, "12:12" ))
+                    ( ConfigItem( RfnStrings::Schedule4Time4, "23:01" ))
+                    ( ConfigItem( RfnStrings::Schedule4Time5, "23:55" ))
+
+                    ( ConfigItem( RfnStrings::Schedule4Rate0, "B" ))
+                    ( ConfigItem( RfnStrings::Schedule4Rate1, "C" ))
+                    ( ConfigItem( RfnStrings::Schedule4Rate2, "D" ))
+                    ( ConfigItem( RfnStrings::Schedule4Rate3, "A" ))
+                    ( ConfigItem( RfnStrings::Schedule4Rate4, "B" ))
+                    ( ConfigItem( RfnStrings::Schedule4Rate5, "C" ))
+
+                    // day table
+                    ( ConfigItem( RfnStrings::SundaySchedule,    "Schedule 1" ))
+                    ( ConfigItem( RfnStrings::MondaySchedule,    "Schedule 1" ))
+                    ( ConfigItem( RfnStrings::TuesdaySchedule,   "Schedule 3" ))
+                    ( ConfigItem( RfnStrings::WednesdaySchedule, "Schedule 2" ))
+                    ( ConfigItem( RfnStrings::ThursdaySchedule,  "Schedule 4" ))
+                    ( ConfigItem( RfnStrings::FridaySchedule,    "Schedule 2" ))
+                    ( ConfigItem( RfnStrings::SaturdaySchedule,  "Schedule 3" ))
+                    ( ConfigItem( RfnStrings::HolidaySchedule,   "Schedule 3" ))
+
+                    // default rate
+                    ( ConfigItem( RfnStrings::DefaultTouRate, "B" ))
+
+                    // set TOU enabled
+                    ( ConfigItem( RfnStrings::touEnabled, "true" )))
+
+            ( list_of<ConfigItem> // voltage averaging config
+                    ( ConfigItem( RfnStrings::demandInterval,  "1" ))
+                    ( ConfigItem( RfnStrings::profileInterval, "2" )))
+
+            ( list_of<ConfigItem> // temperature alarming config
+                    ( ConfigItem( RfnStrings::TemperatureAlarmEnabled,           "true" ))
+                    ( ConfigItem( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   ))
+                    ( ConfigItem( RfnStrings::TemperatureAlarmRepeatCount,       "3"    ))
+                    ( ConfigItem( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   )))
+
+            ( list_of<ConfigItem> // channel config
+                    ( ConfigItem( RfnStrings::ChannelSelectionPrefix,          "0"   ))
+                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalPrefix,  "0"   ))
+                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalSeconds, "123" ))
+                    ( ConfigItem( RfnStrings::ChannelReportingIntervalSeconds, "456" )))
+            ;
+
+    const std::vector<int> requestMsgsExp = list_of
+            ( 0 )   // no config data                   -> no request
+            ( 1 )   // add remote disconnect config     -> +1 request
+            ( 2 )   // add demand freeze day config     -> +1 request
+            ( 8 )   // add OVUV config                  -> +6 request
+            ( 10 )  // add TOU config                   -> +1 request
+            ( 11 )  // add voltage averaging config     -> +1 request
+            ( 12 )  // add temperature alarming config  -> +1 request
+            ( 14 )  // add channel config               -> +2 request
+            ;
+
+    const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
+            ( list_of<bool>(true)(true)(true)(true)(true)(true)(false) )    // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true) )     // add remote disconnect config     -> 6 error messages + 1 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(true)(true) )           // add demand freeze day config     -> 5 error messages + 2 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add OVUV config                  -> 4 error messages + 3 config sent message
+            ( list_of<bool>(true)(true)(true)(true) )                       // add TOU config                   -> 3 error messages + 4 config sent message
+            ( list_of<bool>(true)(true)(true) )                             // add voltage averaging config     -> 2 error messages + 5 config sent message
+            ( list_of<bool>(true)(true) )                                   // add temperature alarming config  -> 1 error messages + 6 config sent message
+            ( list_of<bool>(true) )                                         // add channel config               -> 7 config sent message
+            ;
+
+    std::vector<int> requestMsgsRcv;
+    std::vector< std::vector<bool> > returnExpectMoreRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    std::vector<bool> expectMoreRcv;
+    for each( const CtiReturnMsg &m in returnMsgs )
+    {
+        expectMoreRcv.push_back( m.ExpectMore() );
+    }
+    returnExpectMoreRcv.push_back( expectMoreRcv );
+
+    ////// add each configuration //////
+
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
+    for each( const ConfigInstallItems& config in configurations )
     {
-        ////// empty configuration (no valid configuration) //////
+        resetTestState(); // note: reset test state does not erase the current configuration
 
-        CtiCommandParser parse("putconfig install all");
+        for each( const ConfigItem& item in config )
+        {
+            cfg.insertValue( item.first, item.second );
+        }
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  6 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 0 );
+        requestMsgsRcv.push_back( rfnRequests.size() );
 
         std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
+        for each( const CtiReturnMsg &m in returnMsgs )
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
+            expectMoreRcv.push_back( m.ExpectMore() );
         }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true)(true)(false); // 5 error messages, NOTE: last expectMore expected to be false
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
+        returnExpectMoreRcv.push_back( expectMoreRcv );
     }
 
-    // add remote disconnect config
-    cfg.insertValue( RfnStrings::DisconnectMode, "CYCLING" );
-    cfg.insertValue( RfnStrings::ConnectMinutes, "100" );
-    cfg.insertValue( RfnStrings::DisconnectMinutes, "60" );
-
-    {
-        ////// 1 valid configuration //////
-
-        resetTestState();
-
-        CtiCommandParser parse("putconfig install all");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
-
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  6 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 1 );
-
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
-        }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true)(true)(true);
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
-    }
-
-    // add demand freeze day config
-    cfg.insertValue( RfnStrings::demandFreezeDay, "7" );
-
-    {
-        ////// 2 valid configurations //////
-
-        resetTestState();
-
-        CtiCommandParser parse("putconfig install all");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
-
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  5 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 2 );
-
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
-        }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true)(true); // 4 error messages + 1 message to notify that 1 config has been sent to the device
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
-    }
-
-    // add OVUV config
-    cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
-    cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
-    cfg.insertValue( RfnStrings::OvUvAlarmRepeatInterval,    "60" );
-    cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
-    cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
-    cfg.insertValue( RfnStrings::UvThreshold,                "78.901" );
-
-    {
-        ////// 3 valid configurations //////
-
-        resetTestState();
-
-        CtiCommandParser parse("putconfig install all");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
-
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  4 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 8 );
-
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
-        }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true)(true); // 3 error messages + 1 message to notify that 2 config has been sent to the device
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
-    }
-
-    // add TOU config
-
-    // Schedule 1
-    cfg.insertValue( RfnStrings::Schedule1Time1, "00:01" );
-    cfg.insertValue( RfnStrings::Schedule1Time2, "10:06" );
-    cfg.insertValue( RfnStrings::Schedule1Time3, "12:22" );
-    cfg.insertValue( RfnStrings::Schedule1Time4, "23:33" );
-    cfg.insertValue( RfnStrings::Schedule1Time5, "23:44" );
-
-    cfg.insertValue( RfnStrings::Schedule1Rate0, "A" );
-    cfg.insertValue( RfnStrings::Schedule1Rate1, "B" );
-    cfg.insertValue( RfnStrings::Schedule1Rate2, "C" );
-    cfg.insertValue( RfnStrings::Schedule1Rate3, "D" );
-    cfg.insertValue( RfnStrings::Schedule1Rate4, "A" );
-    cfg.insertValue( RfnStrings::Schedule1Rate5, "B" );
-
-    // Schedule 2
-    cfg.insertValue( RfnStrings::Schedule2Time1, "01:23" );
-    cfg.insertValue( RfnStrings::Schedule2Time2, "03:12" );
-    cfg.insertValue( RfnStrings::Schedule2Time3, "04:01" );
-    cfg.insertValue( RfnStrings::Schedule2Time4, "05:23" );
-    cfg.insertValue( RfnStrings::Schedule2Time5, "16:28" );
-
-    cfg.insertValue( RfnStrings::Schedule2Rate0, "D" );
-    cfg.insertValue( RfnStrings::Schedule2Rate1, "A" );
-    cfg.insertValue( RfnStrings::Schedule2Rate2, "B" );
-    cfg.insertValue( RfnStrings::Schedule2Rate3, "C" );
-    cfg.insertValue( RfnStrings::Schedule2Rate4, "D" );
-    cfg.insertValue( RfnStrings::Schedule2Rate5, "A" );
-
-    // Schedule 3
-    cfg.insertValue( RfnStrings::Schedule3Time1, "01:02" );
-    cfg.insertValue( RfnStrings::Schedule3Time2, "02:03" );
-    cfg.insertValue( RfnStrings::Schedule3Time3, "04:05" );
-    cfg.insertValue( RfnStrings::Schedule3Time4, "05:06" );
-    cfg.insertValue( RfnStrings::Schedule3Time5, "06:07" );
-
-    cfg.insertValue( RfnStrings::Schedule3Rate0, "C" );
-    cfg.insertValue( RfnStrings::Schedule3Rate1, "D" );
-    cfg.insertValue( RfnStrings::Schedule3Rate2, "A" );
-    cfg.insertValue( RfnStrings::Schedule3Rate3, "B" );
-    cfg.insertValue( RfnStrings::Schedule3Rate4, "C" );
-    cfg.insertValue( RfnStrings::Schedule3Rate5, "D" );
-
-    // Schedule 4
-    cfg.insertValue( RfnStrings::Schedule4Time1, "00:01" );
-    cfg.insertValue( RfnStrings::Schedule4Time2, "08:59" );
-    cfg.insertValue( RfnStrings::Schedule4Time3, "12:12" );
-    cfg.insertValue( RfnStrings::Schedule4Time4, "23:01" );
-    cfg.insertValue( RfnStrings::Schedule4Time5, "23:55" );
-
-    cfg.insertValue( RfnStrings::Schedule4Rate0, "B" );
-    cfg.insertValue( RfnStrings::Schedule4Rate1, "C" );
-    cfg.insertValue( RfnStrings::Schedule4Rate2, "D" );
-    cfg.insertValue( RfnStrings::Schedule4Rate3, "A" );
-    cfg.insertValue( RfnStrings::Schedule4Rate4, "B" );
-    cfg.insertValue( RfnStrings::Schedule4Rate5, "C" );
-
-    // day table
-    cfg.insertValue( RfnStrings::SundaySchedule,    "Schedule 1" );
-    cfg.insertValue( RfnStrings::MondaySchedule,    "Schedule 1" );
-    cfg.insertValue( RfnStrings::TuesdaySchedule,   "Schedule 3" );
-    cfg.insertValue( RfnStrings::WednesdaySchedule, "Schedule 2" );
-    cfg.insertValue( RfnStrings::ThursdaySchedule,  "Schedule 4" );
-    cfg.insertValue( RfnStrings::FridaySchedule,    "Schedule 2" );
-    cfg.insertValue( RfnStrings::SaturdaySchedule,  "Schedule 3" );
-    cfg.insertValue( RfnStrings::HolidaySchedule,   "Schedule 3" );
-
-    // default rate
-    cfg.insertValue( RfnStrings::DefaultTouRate, "B" );
-
-    // set TOU enabled
-    cfg.insertValue( RfnStrings::touEnabled, "true" );
-
-    {
-        ////// 4 valid configurations //////
-
-        resetTestState();
-
-        CtiCommandParser parse("putconfig install all");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
-
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  3 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 10 );
-
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
-        }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true)(true); // 2 error messages + 1 message to notify that 3 config has been sent to the device
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
-    }
-
-    // add voltage averaging config
-    cfg.insertValue( RfnStrings::demandInterval, "1" );
-    cfg.insertValue( RfnStrings::profileInterval,"2" );
-
-    {
-        ////// 5 valid configurations //////
-
-        resetTestState();
-
-        CtiCommandParser parse("putconfig install all");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
-
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  2 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 11 );
-
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
-        }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true)(true); // 1 error message + 1 message to notify that 4 config has been sent to the device
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
-    }
-
-    // add temperature alarming configuration
-    cfg.insertValue( RfnStrings::TemperatureAlarmEnabled,           "true" );
-    cfg.insertValue( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   );
-    cfg.insertValue( RfnStrings::TemperatureAlarmRepeatCount,       "3"    );
-    cfg.insertValue( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   );
-
-    {
-        ////// 6 valid configurations //////
-
-        resetTestState();
-
-        CtiCommandParser parse("putconfig install all");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
-
-        BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 12 );
-
-        std::vector<bool> expectMoreRcv;
-        while( ! returnMsgs.empty() )
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            expectMoreRcv.push_back( returnMsg.ExpectMore() );
-            returnMsgs.pop_front();
-        }
-
-        const std::vector<bool> expectMoreExp = boost::assign::list_of
-                (true); // 1 message to notify that all config has been sent to the device
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
-                                       expectMoreExp.begin() , expectMoreExp.end() );
-    }
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+    BOOST_CHECK_EQUAL_COLLECTIONS( returnExpectMoreRcv.begin(), returnExpectMoreRcv.end(), returnExpectMoreExp.begin(), returnExpectMoreExp.end() );
 }
 
-
 BOOST_AUTO_TEST_SUITE_END()
-

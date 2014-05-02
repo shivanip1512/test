@@ -39,7 +39,7 @@ public:
     typedef std::vector<boost::shared_ptr<DeviceConfig>> IndexedConfig;
 
 private:
-    typedef std::map<std::string, IndexedConfig> IndexedConfigMap;
+    typedef std::map<std::string, boost::optional<IndexedConfig>> IndexedConfigMap;
     IndexedConfigMap _cashedIndexedConfig;
 
 public:
@@ -54,7 +54,7 @@ public:
     long        getLongValueFromKey( const std::string & key ) const;
     double      getFloatValueFromKey( const std::string & key ) const;
 
-    IndexedConfig getIndexedConfig( const std::string & prefix );
+    boost::optional<IndexedConfig> getIndexedConfig( const std::string & prefix );
 };
 
 typedef boost::shared_ptr< DeviceConfig > DeviceConfigSPtr;

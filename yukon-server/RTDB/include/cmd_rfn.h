@@ -38,6 +38,8 @@ class RfnRemoteDisconnectSetOnDemandConfigurationCommand;
 class RfnRemoteDisconnectSetThresholdConfigurationCommand;
 class RfnRemoteDisconnectSetCyclingConfigurationCommand;
 class RfnRemoteDisconnectGetConfigurationCommand;
+class RfnChannelSelectionCommand;
+class RfnChannelIntervalRecordingCommand;
 
 struct RfnCommandResult
 {
@@ -89,6 +91,8 @@ public:
         virtual void handleCommandResult(const RfnRemoteDisconnectSetThresholdConfigurationCommand &) {}
         virtual void handleCommandResult(const RfnRemoteDisconnectSetCyclingConfigurationCommand &)   {}
         virtual void handleCommandResult(const RfnRemoteDisconnectGetConfigurationCommand &)          {}
+        virtual void handleCommandResult(const RfnChannelSelectionCommand &)                          {}
+        virtual void handleCommandResult(const RfnChannelIntervalRecordingCommand &)                  {}
     };
 
     //  to be overridden by children that require a result handler

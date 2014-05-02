@@ -43,6 +43,20 @@ ostream &operator<<(ostream &o, const std::vector<unsigned char> &bytes)
     return o;
 }
 
+ostream &operator<<(ostream &o, const std::vector<bool> &v)
+{
+    o << "(";
+
+    for each( bool b in v )
+    {
+        o << "(" << b << ")";
+    }
+
+    o << ")";
+
+    return o;
+}
+
 ostream& operator<<( ostream& out, const vector<boost::tuples::tuple<unsigned, unsigned, int>> &rd)
 {
     out << "{" << rd.size();
