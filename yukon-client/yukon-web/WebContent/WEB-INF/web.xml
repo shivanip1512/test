@@ -598,15 +598,7 @@
         <servlet-class>
             com.cannontech.servlet.ScheduleController
         </servlet-class>
-    </servlet>
-    <servlet>
-        <description>Handles commands by serial number.</description>
-        <display-name>SwitchCommand</display-name>
-        <servlet-name>SwitchCommand</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.YukonSwitchCommand
-        </servlet-class>
-    </servlet>
+    </servlet>    
     <servlet>
         <description>Send operation commmands to deviceID.</description>
         <display-name>CommanderServlet</display-name>
