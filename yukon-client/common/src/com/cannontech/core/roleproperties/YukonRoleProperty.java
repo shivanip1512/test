@@ -192,8 +192,7 @@ public enum YukonRoleProperty {
     SHOW_ASSET_AVAILABILITY(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 44, booleanType()),
     
     DR_VIEW_CONTROL_AREA_TRIGGER_INFO(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 21, booleanType()),
-    DR_VIEW_PRIORITY(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 24, booleanType()),
-    DR_VIEW_LOAD_CAPACITY(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 26, booleanType()),
+    DR_VIEW_PRIORITY(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 24, booleanType()),    
     DR_VIEW_REDUCTION(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 32, booleanType()),
     
     
