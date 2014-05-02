@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -148,14 +149,14 @@ public class ComposedGroupController {
 		 */ 
         DeviceGroup parent = group;
         
+        final Set<String> deviceGroupToExcludeNodePath = new HashSet<>();
         //This list contains the current group and its parents. Example:[/Billing/Billing Composed Group, /Billing]
-        List<String> deviceGroupToExcludeNodePath = new ArrayList<>();
         List<String> parentGroupNames = new ArrayList<>();
-        while (!parent.getFullName().equals(DeviceGroupService.ROOT)){
+        while (!parent.getFullName().equals(DeviceGroupService.ROOT)) {
             parentGroupNames.add(parent.getFullName());
-			deviceGroupToExcludeNodePath.add(parent.getFullName());
-			parent = parent.getParent();
-		} 
+            deviceGroupToExcludeNodePath.add(parent.getFullName());
+            parent = parent.getParent();
+        }
       
         //Find composed groups the current group or one of its parents are part of
         List<DeviceGroupComposedGroup> composedGroups = deviceGroupComposedGroupDao.getByGroupNames(parentGroupNames);
@@ -177,37 +178,21 @@ public class ComposedGroupController {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
-        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, null);
-        makeParentHierarchyUnselectable(groupExtRoot, deviceGroupToExcludeNodePath);          
+        NodeAttributeSettingCallback<DeviceGroup> nodeCallback = new NodeAttributeSettingCallback<DeviceGroup>() {
+                @Override
+                public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
+                    if (deviceGroupToExcludeNodePath.contains(deviceGroup.getFullName())) {
+                        node.getAttributes().put("unselectable", true);
+                    }
+                }
+            };
+        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, nodeCallback);         
         String chooseGroupTreeJson = JsonUtils.toJson(groupExtRoot.toMap());
         model.addAttribute("chooseGroupTreeJson", chooseGroupTreeJson);
         
         return "composedGroup/create.jsp";
     }
-    
-    
-    /**
-     * In this method we are making the parent groups un-selectable and allowing the
-     * other children of those parents to be accessible.
-     * @param groupExtRoot -It contains all the node path information.
-     * @param deviceGroupToExcludeNodePath - It is node path of device group that need to be
-     * exclude.
-     */
-    
-    private void makeParentHierarchyUnselectable(JsTreeNode groupExtRoot, List<String> deviceGroupToExcludeNodePath) {
-        List<JsTreeNode> children = groupExtRoot.getChildren();
-        for (JsTreeNode jsTreeNode : children) {
-            Map<?, ?> info = (Map<?, ?>) jsTreeNode.getAttributes().get("info");
-            String deviceNodePath = (String) info.get("groupName");
-            for (String nodePath : deviceGroupToExcludeNodePath) {
-                if (deviceNodePath.equals(nodePath)) {
-                    jsTreeNode.getAttributes().put("unselectable", true);
-                    makeParentHierarchyUnselectable(jsTreeNode, deviceGroupToExcludeNodePath);
-                }
-            }
-        }
-    }
-    
+      
     private List<DisplayableComposedGroup> getGroupsFromPage(HttpServletRequest request) throws ServletRequestBindingException, NotFoundException {
         
         List<DisplayableComposedGroup> newDisplayableComposedGroups = new ArrayList<DisplayableComposedGroup>(2);
