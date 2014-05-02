@@ -652,7 +652,7 @@ ALTER TABLE EcobeeReconciliationReport
          ON DELETE CASCADE;
 GO
 
-INSERT INTO YukonListEntry VALUES (2025, 1005, 0, 'Ecobee Smart SI', 1329);
+INSERT INTO YukonListEntry VALUES (2025, 1005, 0, 'ecobee Smart SI', 1329);
 INSERT INTO YukonServices VALUES (21, 'EcobeeMessageListener', 'classpath:com/cannontech/services/ecobeeMessageListener/ecobeeMessageListenerContext.xml', 'ServiceManager');
 /* End YUK-13244 */
 
