@@ -4,7 +4,7 @@ import static com.cannontech.core.roleproperties.YukonRoleCategory.Application;
 import static com.cannontech.core.roleproperties.YukonRoleCategory.CapControl;
 import static com.cannontech.core.roleproperties.YukonRoleCategory.Cbc_Oneline;
 import static com.cannontech.core.roleproperties.YukonRoleCategory.Consumer;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.LoadControl;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.DemandResponse;
 import static com.cannontech.core.roleproperties.YukonRoleCategory.Notifications;
 import static com.cannontech.core.roleproperties.YukonRoleCategory.Operator;
 
@@ -44,7 +44,7 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
     
     RESIDENTIAL_CUSTOMER(Consumer, Consumer.baseRoleId, Consumer.basePropertyId),
     
-    LM_DIRECT_LOADCONTROL(LoadControl, LoadControl.baseRoleId, LoadControl.basePropertyId),
+    DEMAND_RESPONSE(DemandResponse, DemandResponse.baseRoleId, DemandResponse.basePropertyId),
     
     IVR(Notifications, Notifications.baseRoleId, Notifications.basePropertyId),
     NOTIFICATION_CONFIGURATION(Notifications, Notifications.baseRoleId - 1, Notifications.basePropertyId - 100),

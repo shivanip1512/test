@@ -33,23 +33,21 @@
         <div class="column one">
             <tags:sectionContainer2 nameKey="heading.info">
                 <tags:nameValueContainer2 tableClass="stacked">
-                    <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
                         <tags:nameValue2 nameKey=".info.state">
                             <dr:controlAreaState controlAreaId="${controlAreaId}"/>
                         </tags:nameValue2>
-                    </cti:checkRolesAndProperties>
-                    <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
+                    <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
                         <tags:nameValue2 nameKey=".info.priority">
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/PRIORITY"/>
                         </tags:nameValue2>
                     </cti:checkRolesAndProperties>
-                    <cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
+                    
                         <tags:nameValue2 nameKey=".info.startStop">
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
                             <i:inline key=".info.separator"/>
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
                         </tags:nameValue2>
-                    </cti:checkRolesAndProperties>
+                    
                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                         <cti:dataUpdaterCallback
                             function="yukon.dr.estimatedLoad.displaySummaryValue"
@@ -90,25 +88,23 @@
                     </c:if>
                     <c:if test="${!empty controlArea.triggers}">
                         <c:forEach var="trigger" items="${controlArea.triggers}">
-                            <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD,CONTROL_AREA_PEAK_PROJECTION,CONTROL_AREA_ATKU">
+                            <cti:checkRolesAndProperties value="DR_VIEW_CONTROL_AREA_TRIGGER_INFO">
                                 <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>
                                 <tags:nameValue2 rowClass="strong-label-small" nameKey=".info.trigger" argument="${triggerNumber}"></tags:nameValue2>
                                 <tags:nameValue2 nameKey=".info.loadCapacity">
-                                    <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
+                                    
                                         <tags:nameValue2 nameKey=".info.valueThreshold">
                                             <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE_THRESHOLD"/>
                                         </tags:nameValue2>
-                                    </cti:checkRolesAndProperties>
-                                    <cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
+                                                                        
                                         <tags:nameValue2 nameKey=".info.peakProjection">
                                             <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK_PROJECTION"/>
                                         </tags:nameValue2>
-                                    </cti:checkRolesAndProperties>
-                                    <cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
+                                    
                                         <tags:nameValue2 nameKey=".info.atku">
                                             <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
                                         </tags:nameValue2>
-                                    </cti:checkRolesAndProperties>
+                                    
                                 </tags:nameValue2>
                             </cti:checkRolesAndProperties>
                         </c:forEach>

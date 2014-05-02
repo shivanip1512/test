@@ -7,9 +7,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletResponse;
-
+import com.cannontech.core.roleproperties.YukonRole;
 import org.joda.time.Duration;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
@@ -38,12 +36,12 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.JsonUtils;
 import com.google.common.collect.Maps;
 
 @Controller
-@CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
+@CheckRole(YukonRole.DEMAND_RESPONSE)
 @RequestMapping("/program/stop/*")
 public class StopProgramController extends ProgramControllerBase {
 	

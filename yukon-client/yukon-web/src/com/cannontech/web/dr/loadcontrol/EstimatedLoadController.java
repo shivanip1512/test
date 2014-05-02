@@ -67,7 +67,7 @@ import com.google.common.collect.Ordering;
 @Controller
 @RequestMapping("/estimatedLoad/*")
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD)
-@CheckRole(YukonRole.LM_DIRECT_LOADCONTROL)
+@CheckRole(YukonRole.DEMAND_RESPONSE)
 public class EstimatedLoadController {
 
     @Autowired private FormulaDao formulaDao;

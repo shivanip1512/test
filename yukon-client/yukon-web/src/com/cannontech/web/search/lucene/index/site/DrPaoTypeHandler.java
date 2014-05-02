@@ -2,13 +2,11 @@ package com.cannontech.web.search.lucene.index.site;
 
 import java.sql.SQLException;
 import java.util.Set;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -16,7 +14,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -25,7 +23,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 public class DrPaoTypeHandler implements PaoTypeHandler {
-    
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired protected PaoAuthorizationService paoAuthorizationService;
 
@@ -87,7 +84,7 @@ public class DrPaoTypeHandler implements PaoTypeHandler {
 
     @Override
     public Query userLimitingQuery(LiteYukonUser user) {
-        if (!rolePropertyDao.checkProperty(YukonRoleProperty.DEMAND_RESPONSE, user)) {
+        if (!rolePropertyDao.checkRole(YukonRole.DEMAND_RESPONSE, user)) {
             return new TermQuery(new Term("module", SiteModule.DR.getName()));
         }
         return null;

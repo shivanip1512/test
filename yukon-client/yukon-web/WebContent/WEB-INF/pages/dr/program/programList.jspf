@@ -63,8 +63,7 @@
                     <form:input path="name" size="40" />
                 </tags:nameValue>
  
-                <cti:checkRolesAndProperties value="PROGRAM_STATE">
-                    <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.state" />
+                   <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.state" />
                     <tags:nameValue name="${fieldName}">
                         <form:select path="state">
                             <form:option value="ALL">
@@ -83,37 +82,29 @@
                             </form:option>
                         </form:select>
                     </tags:nameValue>
-                </cti:checkRolesAndProperties>
- 
-                <cti:checkRolesAndProperties value="PROGRAM_START,PROGRAM_PRIORITY">
-                    <cti:checkRolesAndProperties value="PROGRAM_START">
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.start" />
+                               
+                    <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.start" />
                         <tags:nameValue name="${fieldName}">
                             <dt:dateRange startPath="start.min" endPath="start.max">
                                 <span class="fl" style="margin-right: 5px;">${toStr}</span>
                             </dt:dateRange>
                         </tags:nameValue>
-                    </cti:checkRolesAndProperties>
-                    <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
+                        
+                <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
                         <cti:msg var="fieldName"
                             key="yukon.web.modules.dr.programList.filter.priority" />
                         <tags:nameValue name="${fieldName}">
                             <tags:input path="priority.min" size="5" />&nbsp;${minStr}
                        <tags:input path="priority.max" size="5" />&nbsp;${maxStr}
-                    </tags:nameValue>
-                    </cti:checkRolesAndProperties>
+                    </tags:nameValue>                    
                 </cti:checkRolesAndProperties>
 
-                <cti:checkRolesAndProperties value="PROGRAM_STOP,PROGRAM_LOAD_CAPACITY">
-                    <cti:checkRolesAndProperties value="PROGRAM_STOP">
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.stop" />
-                        <tags:nameValue name="${fieldName}">
-                            <dt:dateRange startPath="stop.min" endPath="stop.max">
-                                <span class="fl" style="margin-right: 5px;">${toStr}</span>
-                            </dt:dateRange>
-                        </tags:nameValue>
-                    </cti:checkRolesAndProperties>
-                </cti:checkRolesAndProperties>
+                            <tags:nameValue name="${fieldName}">
+                                <dt:dateRange startPath="stop.min" endPath="stop.max">
+                                    <span class="fl" style="margin-right: 5px;">${toStr}</span>
+                                </dt:dateRange>
+                            </tags:nameValue>               
             </tags:nameValueContainer>
 
             <div class="action-area">
@@ -139,28 +130,16 @@
                     <thead>
                         <tr>
                             <th><tags:sortLink nameKey="heading.name" baseUrl="${baseUrl}" fieldName="NAME" /></th>
-
-                            <cti:checkRolesAndProperties value="PROGRAM_STATE">
-                                <th><tags:sortLink nameKey="heading.state" baseUrl="${baseUrl}" fieldName="STATE" /></th>
-                            </cti:checkRolesAndProperties>
-
-                            <cti:checkRolesAndProperties value="PROGRAM_START">
-                                <th><tags:sortLink nameKey="heading.start" baseUrl="${baseUrl}" fieldName="START" /></th>
-                            </cti:checkRolesAndProperties>
-
-                            <cti:checkRolesAndProperties value="PROGRAM_STOP">
-                                <th><tags:sortLink nameKey="heading.stop" baseUrl="${baseUrl}" fieldName="STOP" /></th>
-                            </cti:checkRolesAndProperties>
-
-                            <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
-                                <th><tags:sortLink nameKey="heading.currentGear" baseUrl="${baseUrl}" fieldName="CURRENT_GEAR" /></th>
-                            </cti:checkRolesAndProperties>
-
-                            <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
+                            <th><tags:sortLink nameKey="heading.state" baseUrl="${baseUrl}" fieldName="STATE" /></th>
+                            <th><tags:sortLink nameKey="heading.start" baseUrl="${baseUrl}" fieldName="START" /></th>
+                            <th><tags:sortLink nameKey="heading.stop" baseUrl="${baseUrl}" fieldName="STOP" /></th>
+                            <th><tags:sortLink nameKey="heading.currentGear" baseUrl="${baseUrl}" fieldName="CURRENT_GEAR" /></th>
+                            
+                            <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
                                 <th><tags:sortLink nameKey="heading.priority" baseUrl="${baseUrl}" fieldName="PRIORITY" /></th>
                             </cti:checkRolesAndProperties>
 
-                            <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
+                            <cti:checkRolesAndProperties value="DR_VIEW_REDUCTION">
                                 <th><tags:sortLink nameKey="heading.reduction" baseUrl="${baseUrl}" fieldName="REDUCTION" /></th>
                             </cti:checkRolesAndProperties>
 
@@ -182,22 +161,15 @@
                                     <%-- TODO:  in phase 3, update cti:classUpdater to be able to update the class of the row instead --%> 
                                     <a href="${programURL}">${fn:escapeXml(program.name)}</a>
                                 </td>
-                                <cti:checkRolesAndProperties value="PROGRAM_STATE">
-                                    <td><dr:programState programId="${programId}" /></td>
-                                </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="PROGRAM_START">
-                                    <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM" /></td>
-                                </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="PROGRAM_STOP">
-                                    <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM" /></td>
-                                </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
-                                    <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM" /></td>
-                                </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
+                                <td><dr:programState programId="${programId}" /></td>
+                                <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM" /></td>
+                                <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM" /></td>
+                                <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM" /></td>
+                                
+                                <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
                                     <td><cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM" /></td>
                                 </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
+                                <cti:checkRolesAndProperties value="DR_VIEW_REDUCTION">
                                     <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM" /></td>
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">

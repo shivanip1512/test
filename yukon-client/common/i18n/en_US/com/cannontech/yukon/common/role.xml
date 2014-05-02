@@ -31,7 +31,8 @@
     <entry key="yukon.common.role.RESIDENTIAL_CUSTOMER">Residential Customer</entry>
     
     <!-- LoadControl Role Category -->
-    <entry key="yukon.common.role.LM_DIRECT_LOADCONTROL">Direct Loadcontrol</entry>
+    <!-- Now is changed to Demand Response Role Category -->
+    <entry key="yukon.common.role.DEMAND_RESPONSE">Demand Response</entry>
     
     <!-- Notifications Role Category -->
     <entry key="yukon.common.role.NOTIFICATION_CONFIGURATION">Configuration</entry>

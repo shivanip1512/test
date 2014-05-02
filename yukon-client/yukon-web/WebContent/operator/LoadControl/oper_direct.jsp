@@ -15,7 +15,7 @@
 %>
 
 <%@ include file="include/oper_header.jspf" %>  
-<cti:verifyRolesAndProperties value="LM_DIRECT_LOADCONTROL"/>
+<cti:verifyRolesAndProperties value="DEMAND_RESPONSE"/>
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
@@ -29,7 +29,7 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.Collections" %>
 
-<cti:verifyRolesAndProperties value="DIRECT_CONTROL"/>
+<cti:verifyRolesAndProperties value="DEMAND_RESPONSE"/>
 <%
    String pending = request.getParameter("pending");
       

@@ -67,8 +67,8 @@
     <entry key="yukon.web.modules.dev.webServices.eimTest.formatResponse">Format Response</entry>
     <entry key="yukon.web.modules.dev.webServices.eimTest.submitRequest">Submit Request</entry>
     <entry key="yukon.web.modules.dev.webServices.eimTest.noRequestMade">No request has been made yet.</entry>
-    <entry key="yukon.web.modules.dev.webServices.loadControl.pageName">Load Control Services Test</entry>
-    <entry key="yukon.web.modules.dev.webServices.loadControl.pageDescription">Load Control Services</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.pageName">Demand Response Services Test</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.pageDescription">Demand Response Services</entry>
     <entry key="yukon.web.modules.dev.webServices.loadControl.functionality">Functionality</entry>
     <entry key="yukon.web.modules.dev.webServices.loadControl.inputTest">Input Test</entry>
     <entry key="yukon.web.modules.dev.webServices.loadControl.programStatusByName">Program Status By Program Name</entry>

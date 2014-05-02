@@ -33,33 +33,30 @@
                 <%-- Program Info section --%>
                 <tags:sectionContainer2 nameKey="heading.info">
                     <tags:nameValueContainer2>
-                        <cti:checkRolesAndProperties value="PROGRAM_STATE">
+                        
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.state"
                                     nameColumnWidth="175px">
                                 <dr:programState programId="${programId}"/>
                             </tags:nameValue2>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="PROGRAM_START">
+                        
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.start">
                                 <cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/>
                             </tags:nameValue2>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="PROGRAM_STOP">
+                        
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.stop">
                                 <cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/>
                             </tags:nameValue2>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
+                        
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.currentGear">
                                 <cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/>
                             </tags:nameValue2>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
+                        
+                        <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.priority">
                                 <cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/>
                             </tags:nameValue2>
                         </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
+                        <cti:checkRolesAndProperties value="DR_VIEW_REDUCTION">
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.reduction">
                                 <cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/>
                             </tags:nameValue2>

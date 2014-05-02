@@ -31,24 +31,21 @@
                 <tags:sectionContainer2 nameKey="heading.info">
                     <tags:nameValueContainer>
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.state"/>
-                        <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
-                            <tags:nameValue name="${fieldName}">
+                           <tags:nameValue name="${fieldName}">
                                 <dr:loadGroupState loadGroupId="${loadGroupId}"/>
                             </tags:nameValue>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
+                        
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.lastAction"/>
                             <tags:nameValue name="${fieldName}">
                                 <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION"/>
                             </tags:nameValue>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
+                        
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.controlStatistics"/>
                             <tags:nameValue name="${fieldName}">
                                 <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS"/>
                             </tags:nameValue>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
+                       
+                        <cti:checkRolesAndProperties value="DR_VIEW_REDUCTION">
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.reduction"/>
                             <tags:nameValue name="${fieldName}">
                                 <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/>

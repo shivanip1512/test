@@ -199,10 +199,8 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     log.info("Failed due to role conflict for group " + group.getGroupName() + " with YukonRole " + YukonRole.CBC_SETTINGS);
                 }
 
-                if (canAddRole(group, YukonRole.LM_DIRECT_LOADCONTROL)) {
-                    setRoleProperty(group, YukonRoleProperty.DEMAND_RESPONSE,true);
+                if (canAddRole(group, YukonRole.DEMAND_RESPONSE)) {
                     setRoleProperty(group, YukonRoleProperty.LM_INDIVIDUAL_SWITCH,true);
-                    setRoleProperty(group, YukonRoleProperty.DIRECT_CONTROL,true);
                     setRoleProperty(group, YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS,true);
                     setRoleProperty(group, YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS,true);
                     setRoleProperty(group, YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT,true);
@@ -210,30 +208,15 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     setRoleProperty(group, YukonRoleProperty.SHOW_CONTROL_AREAS,true);
                     setRoleProperty(group, YukonRoleProperty.SHOW_SCENARIOS,true);
                     setRoleProperty(group, YukonRoleProperty.SHOW_ASSET_AVAILABILITY,true);
-                    setRoleProperty(group, YukonRoleProperty.CONTROL_AREA_STATE,true);
-                    setRoleProperty(group, YukonRoleProperty.CONTROL_AREA_VALUE_THRESHOLD,true);
-                    setRoleProperty(group, YukonRoleProperty.CONTROL_AREA_PEAK_PROJECTION,true);
-                    setRoleProperty(group, YukonRoleProperty.CONTROL_AREA_ATKU,true);
-                    setRoleProperty(group, YukonRoleProperty.CONTROL_AREA_PRIORITY,true);
-                    setRoleProperty(group, YukonRoleProperty.CONTROL_AREA_TIME_WINDOW,true);
-                    setRoleProperty(group, YukonRoleProperty.CONTROL_AREA_LOAD_CAPACITY,true);
-                    setRoleProperty(group, YukonRoleProperty.PROGRAM_STATE,true);
-                    setRoleProperty(group, YukonRoleProperty.PROGRAM_START,true);
-                    setRoleProperty(group, YukonRoleProperty.PROGRAM_STOP,true);
-                    setRoleProperty(group, YukonRoleProperty.PROGRAM_CURRENT_GEAR,true);
-                    setRoleProperty(group, YukonRoleProperty.PROGRAM_PRIORITY,true);
-                    setRoleProperty(group, YukonRoleProperty.PROGRAM_REDUCTION,true);
-                    setRoleProperty(group, YukonRoleProperty.PROGRAM_LOAD_CAPACITY,true);
-                    setRoleProperty(group, YukonRoleProperty.LOAD_GROUP_STATE,true);
-                    setRoleProperty(group, YukonRoleProperty.LOAD_GROUP_LAST_ACTION,true);
-                    setRoleProperty(group, YukonRoleProperty.LOAD_GROUP_CONTROL_STATISTICS,true);
-                    setRoleProperty(group, YukonRoleProperty.LOAD_GROUP_REDUCTION,true);
-                    setRoleProperty(group, YukonRoleProperty.LOAD_GROUP_LOAD_CAPACITY,true);
+                    setRoleProperty(group, YukonRoleProperty.DR_VIEW_CONTROL_AREA_TRIGGER_INFO, true);
+                    setRoleProperty(group, YukonRoleProperty.DR_VIEW_LOAD_CAPACITY, true);
+                    setRoleProperty(group, YukonRoleProperty.DR_VIEW_PRIORITY, true);
+                    setRoleProperty(group, YukonRoleProperty.DR_VIEW_REDUCTION, true);
                     setRoleProperty(group, YukonRoleProperty.IGNORE_PER_PAO_PERMISSIONS, true);
-                    results.put(YukonRole.LM_DIRECT_LOADCONTROL, true);
+                    results.put(YukonRole.DEMAND_RESPONSE, true);
                 } else {
-                    results.put(YukonRole.LM_DIRECT_LOADCONTROL, false);
-                    log.info("Failed due to role conflict for group " + group.getGroupName() + " with YukonRole " + YukonRole.LM_DIRECT_LOADCONTROL);
+                    results.put(YukonRole.DEMAND_RESPONSE, false);
+                    log.info("Failed due to role conflict for group " + group.getGroupName() + " with YukonRole " + YukonRole.DEMAND_RESPONSE);
                 }
 
 

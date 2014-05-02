@@ -56,7 +56,6 @@
                     <td>${fieldName}</td>
                     <td><form:input path="name" size="40" /></td>
 
-                    <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
                         <cti:msg var="fieldName"
                             key="yukon.web.modules.dr.controlAreaList.filter.state" />
                         <td>${fieldName}</td>
@@ -73,14 +72,11 @@
                                 <cti:msg
                                     key="yukon.web.modules.dr.controlAreaList.filter.state.inactive" />
                             </form:option>
-                        </form:select></td>
-                    </cti:checkRolesAndProperties>
+                        </form:select></td>                    
                 </tr>
 
-                <cti:checkRolesAndProperties
-                    value="CONTROL_AREA_PRIORITY,CONTROL_AREA_LOAD_CAPACITY">
-                    <tr>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
+                <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
+                    <tr>                        
                             <cti:msg var="fieldName"
                                 key="yukon.web.modules.dr.controlAreaList.filter.priority" />
                             <td>${fieldName}</td>
@@ -91,8 +87,7 @@
                                   <td><tags:input path="priority.max" size="5"/>&nbsp;${maxStr}</td>
                                 </tr>
                               </table>
-                            </td>
-                        </cti:checkRolesAndProperties>
+                            </td>                        
                     </tr>
                 </cti:checkRolesAndProperties>
             </table>
@@ -123,30 +118,25 @@
                             <%-- Table headers - columns are hidden/shown based on role props --%>
                             <th><tags:sortLink nameKey="heading.name"
                                 baseUrl="${baseUrl}" fieldName="CA_NAME" isDefault="true"/></th>
-                            <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
-                                <th><tags:sortLink nameKey="heading.state"
+                            <th><tags:sortLink nameKey="heading.state"
                                     baseUrl="${baseUrl}" fieldName="CA_STATE" /></th>
-                            </cti:checkRolesAndProperties>
-                            <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
+                            
+                            <cti:checkRolesAndProperties value="DR_VIEW_CONTROL_AREA_TRIGGER_INFO">
                                 <th><tags:sortLink nameKey="heading.valueThreshold"
                                     baseUrl="${baseUrl}" fieldName="TR_VALUE_THRESHOLD"/></th>
-                            </cti:checkRolesAndProperties>
-                            <cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
                                 <th><tags:sortLink nameKey="heading.peakProjection"
                                     baseUrl="${baseUrl}" fieldName="TR_PEAK_PROJECTION"/></th>
-                            </cti:checkRolesAndProperties>
-                            <cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
                                 <th><tags:sortLink nameKey="heading.atku"
                                     baseUrl="${baseUrl}" fieldName="TR_ATKU"/></th>
                             </cti:checkRolesAndProperties>
-                            <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
+                            <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
                                 <th><tags:sortLink nameKey="heading.priority"
                                     baseUrl="${baseUrl}" fieldName="CA_PRIORITY"/></th>
                             </cti:checkRolesAndProperties>
-                            <cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
+                            
                                 <th><tags:sortLink nameKey="heading.timeWindow"
                                     baseUrl="${baseUrl}" fieldName="CA_START"/></th>
-                            </cti:checkRolesAndProperties>
+                            
                             <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                 <th><i:inline key=".heading.kwSavings"/></th>
                             </cti:checkRolesAndProperties>
@@ -166,11 +156,11 @@
                             </c:url>
                             <tr>
                                 <td><a href="${controlAreaUrl}">${fn:escapeXml(controlArea.name)}</a></td>
-                                <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
+                                
                                     <td><dr:controlAreaState controlAreaId="${controlAreaId}" />
                                     </td>
-                                </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
+                                
+                                <cti:checkRolesAndProperties value="DR_VIEW_CONTROL_AREA_TRIGGER_INFO">
                                     <td><c:if test="${empty controlArea.triggers}">
                                         <cti:msg
                                             key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers" />
@@ -179,8 +169,6 @@
                                             identifier="${controlAreaId}/${trigger.triggerNumber}/VALUE_THRESHOLD" />
                                         <br />
                                     </c:forEach></td>
-                                </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
                                     <td><c:forEach var="trigger"
                                         items="${controlArea.triggers}">
                                         <c:if test="${trigger.thresholdType}">
@@ -189,8 +177,6 @@
                                         </c:if>
                                         <br />
                                     </c:forEach></td>
-                                </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
                                     <td><c:forEach var="trigger"
                                         items="${controlArea.triggers}">
                                         <c:if test="${trigger.thresholdType}">
@@ -200,17 +186,17 @@
                                         <br />
                                     </c:forEach></td>
                                 </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
+                                <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
                                     <td><cti:dataUpdaterValue type="DR_CONTROLAREA"
                                         identifier="${controlAreaId}/PRIORITY" /></td>
                                 </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
+                                
                                     <td><cti:dataUpdaterValue type="DR_CONTROLAREA"
                                         identifier="${controlAreaId}/START" /> <cti:msg
                                         key="yukon.web.modules.dr.controlAreaDetail.info.separator" />
                                     <cti:dataUpdaterValue type="DR_CONTROLAREA"
                                         identifier="${controlAreaId}/STOP" /></td>
-                                </cti:checkRolesAndProperties>
+                                
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                     <td data-pao="${controlAreaId}">
                                         <cti:icon icon="icon-error" classes="dn"/>

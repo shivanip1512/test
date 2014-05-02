@@ -54,9 +54,8 @@
             <tags:nameValue2 nameKey=".filter.name">
                 <form:input path="name" size="40" />
             </tags:nameValue2>
-
-            <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
-                <tags:nameValue2 nameKey=".filter.state">
+          
+            <tags:nameValue2 nameKey=".filter.state">
                     <form:select path="state">
                         <form:option value="all">
                             <cti:msg2 key=".filter.state.all" />
@@ -68,16 +67,12 @@
                             <cti:msg2 key=".filter.state.inactive" />
                         </form:option>
                     </form:select>
-                </tags:nameValue2>
-            </cti:checkRolesAndProperties>
-
-            <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION,LOAD_GROUP_LOAD_CAPACITY">
-                <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
-                    <tags:nameValue2 nameKey=".filter.lastAction">
-                           <dt:dateRange startPath="lastAction.min" endPath="lastAction.max"><span class="fl" style="margin-right: 5px;">${toStr}</span></dt:dateRange>
-                    </tags:nameValue2>
-                </cti:checkRolesAndProperties>
-            </cti:checkRolesAndProperties>
+            </tags:nameValue2>
+               
+            <tags:nameValue2 nameKey=".filter.lastAction">
+                <dt:dateRange startPath="lastAction.min" endPath="lastAction.max"><span class="fl" style="margin-right: 5px;">${toStr}</span></dt:dateRange>
+            </tags:nameValue2>                
+            
         </tags:nameValueContainer2>
 
         <div class="action-area">
@@ -102,22 +97,13 @@
                 <thead>
                     <tr>
                         <th><tags:sortLink nameKey="heading.name" baseUrl="${baseUrl}" fieldName="NAME"/></th>
-
-                        <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
-                            <th><tags:sortLink nameKey="heading.state" baseUrl="${baseUrl}" fieldName="STATE"/></th>
-                        </cti:checkRolesAndProperties>
-
-                        <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
-                            <th><tags:sortLink nameKey="heading.lastAction" 
+                        <th><tags:sortLink nameKey="heading.state" baseUrl="${baseUrl}" fieldName="STATE"/></th>
+                        <th><tags:sortLink nameKey="heading.lastAction" 
                                 baseUrl="${baseUrl}" fieldName="LAST_ACTION"/></th>
-                        </cti:checkRolesAndProperties>
-
-                        <cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
-                            <th><tags:sortLink nameKey="heading.controlStatistics"
+                        <th><tags:sortLink nameKey="heading.controlStatistics"
                                 baseUrl="${baseUrl}" fieldName="CONTROL_STATISTICS"/></th>
-                        </cti:checkRolesAndProperties>
-
-                        <cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
+                   
+                        <cti:checkRolesAndProperties value="DR_VIEW_REDUCTION">
                             <th><tags:sortLink nameKey="heading.reduction"
                                 baseUrl="${baseUrl}" fieldName="REDUCTION"/></th>
                         </cti:checkRolesAndProperties>
@@ -136,25 +122,12 @@
                             <td><a href="${loadGroupURL}">${fn:escapeXml(loadGroup.name)}</a></td>
                             <%-- TODO:  in phase 3, update cti:classUpdater to be able to
                                  update the class of the row instead --%>
-
-                            <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
-                                <td><dr:loadGroupState
-                                    loadGroupId="${loadGroupId}" /></td>
-                            </cti:checkRolesAndProperties>
-
-
-                            <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
-                                <td><cti:dataUpdaterValue
-                                    type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION" /></td>
-                            </cti:checkRolesAndProperties>
-
-                            <cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
-                                <td><cti:dataUpdaterValue
-                                    type="DR_LOADGROUP"
-                                    identifier="${loadGroupId}/CONTROL_STATISTICS" /></td>
-                            </cti:checkRolesAndProperties>
-
-                            <cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
+                         
+                            <td><dr:loadGroupState loadGroupId="${loadGroupId}" /></td>                            
+                            <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION" /></td>
+                            <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS" /></td>
+                            
+                            <cti:checkRolesAndProperties value="DR_VIEW_REDUCTION">
                                 <td><cti:dataUpdaterValue
                                     type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION" /></td>
                             </cti:checkRolesAndProperties>

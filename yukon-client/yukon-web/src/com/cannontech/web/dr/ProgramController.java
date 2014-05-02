@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
@@ -56,12 +54,12 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.dr.LoadGroupControllerHelper.LoadGroupListBackingBean;
 import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
+@CheckRole(YukonRole.DEMAND_RESPONSE)
 public class ProgramController extends ProgramControllerBase {
 
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;

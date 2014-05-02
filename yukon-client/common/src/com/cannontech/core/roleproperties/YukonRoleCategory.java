@@ -10,7 +10,7 @@ public enum YukonRoleCategory implements DisplayableEnum {
     CapControl(-700,-70000), 
     @Deprecated Cbc_Oneline(-1000,-100000),
     Consumer(-400,-40000), 
-    LoadControl(-900,-90000), 
+    DemandResponse(-900,-90000), 
     Notifications(-800,-80000), 
     Operator(-200,-20000), 
     ;

@@ -9,17 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
-
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -148,13 +145,13 @@ public class MACSScheduleController extends MultiActionController {
         List<Schedule> filteredSchedules = new ArrayList<>();
         List<Schedule> allSchedules = service.getAll();
         
-        if (rolePropertyDao.checkRole(YukonRole.LM_DIRECT_LOADCONTROL, user)) {
+        if (rolePropertyDao.checkRole(YukonRole.DEMAND_RESPONSE, user)) {
             filteredSchedules = paoAuthorizationService.filterAuthorized(user, allSchedules, Permission.LM_VISIBLE);
         } else {
-            // Without the LM_DIRECT_LOADCONTROL, we want them to be able to see all scripts.
+            // Without the DEMAND_RESPONSE, we want them to be able to see all scripts.
             filteredSchedules = allSchedules;
         }
-        
+
         String sortBy = ServletRequestUtils.getStringParameter(request, "sortBy");
         if (StringUtils.isEmpty(sortBy)) {
             sortBy = "Schedule Name";

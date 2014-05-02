@@ -49,7 +49,7 @@
   </menu>
   <menu name="dr">
     <permissions>
-      <roleProperty name="DEMAND_RESPONSE" />
+      <role name="DEMAND_RESPONSE" />
     </permissions>
     <link>/dr/home</link>
     <options>
@@ -76,10 +76,7 @@
       </option>
       <option name="estimatedLoad">
         <permissions>
-            <and>
-              <masterConfig name="ENABLE_ESTIMATED_LOAD" />
-              <role name="LM_DIRECT_LOADCONTROL" />
-            </and>
+            <masterConfig name="ENABLE_ESTIMATED_LOAD" />              
         </permissions>
         <link>/dr/estimatedLoad/home</link>
       </option>
