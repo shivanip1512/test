@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/1/2014 4:18:33 PM                          */
+/* Created on:     5/2/2014 10:09:29 AM                         */
 /*==============================================================*/
 
 
@@ -9938,7 +9938,6 @@ INSERT INTO YukonRoleProperty VALUES (-90011,-900,'Scenarios','true','Controls a
 
 INSERT INTO YukonRoleProperty VALUES (-90021,-900,'Control Area Trigger Info','true','Controls access to view Control Area Trigger realted information.');
 INSERT INTO YukonRoleProperty VALUES (-90024,-900,'Priority','true','Controls access to view Control Area, Program, and Group Priority.');
-INSERT INTO YukonRoleProperty VALUES (-90026,-900,'Load Capacity','true','Controls access to view Control Area, Program, and Group Load Capacity.');
 INSERT INTO YukonRoleProperty VALUES (-90032,-900,'Reduction','true','Controls access to view Program and Group Reduction.');
 INSERT INTO YukonRoleProperty VALUES (-90039,-900,'Start Now Checked By Default','true', 'Controls whether the start now checkbox is checked by default in demand response.');
 INSERT INTO YukonRoleProperty VALUES (-90040,-900,'Control Duration Default','240', 'Specifies the default duration for a control event in minutes for demand response');
