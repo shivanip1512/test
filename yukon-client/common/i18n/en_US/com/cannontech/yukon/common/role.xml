@@ -32,7 +32,7 @@
     
     <!-- LoadControl Role Category -->
     <!-- Now is changed to Demand Response Role Category -->
-    <entry key="yukon.common.role.DEMAND_RESPONSE">Demand Response</entry>
+    <entry key="yukon.common.role.DemandResponse">Demand Response</entry>
     
     <!-- Notifications Role Category -->
     <entry key="yukon.common.role.NOTIFICATION_CONFIGURATION">Configuration</entry>
