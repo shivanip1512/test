@@ -8,9 +8,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
+<c:set var="browser" value="${header['User-Agent']}" scope="session"/>
+<c:set var="isIE" value="${fn:contains(browser, 'MSIE') ? 'ie' : 'no-ie'}"/>
 <!DOCTYPE html>
-<html dir="ltr" class="${module.moduleName}-module no-js">
-
+<html dir="ltr" class="${module.moduleName}-module ${isIE} no-js">
 <head>
 
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -31,7 +32,6 @@
 <link rel="stylesheet" href="<cti:url value="/JavaScript/lib/jQuery/plugins/spectrum/spectrum.css"/>">
 <link rel="stylesheet" href="<cti:url value="/resources/js/lib/chosen/chosen.min.css"/>">
 
-<c:set var="browser" value="${header['User-Agent']}" scope="session"/>
 
 <!-- Module CSS files from module_config.xml -->
 <c:forEach items="${moduleConfigCss}" var="file">

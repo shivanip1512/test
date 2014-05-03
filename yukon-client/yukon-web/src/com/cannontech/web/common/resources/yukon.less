@@ -71,10 +71,10 @@ a.show-visited:visited {color: @visited-color;}
 /* COLORS */
 a, .primary-color, .vertical-menu li.selected a, .vertical-menu a:hover, .ui-widget-content a, #subMenu a:visited, .perPageArea a:visited {color:@primary-color;}
 .primary-background {background-color:@primary-color; color:white;}
-::-moz-selection, ::selection {background-color:@primary-color; color:white;} /* IE 9 does not support pseudo element selector '::selection' and will ignore the entire rule, therefore it must be in it's own rule */
+::-moz-selection, ::selection {background-color:@primary-color; color:white;} /* I E 9 does not support pseudo element selector '::selection' and will ignore the entire rule, therefore it must be in it's own rule */
 .primary-background a, .primary-background a:visited {color:white}
 .highlight, .primary-background .highlight {color: @orange;}
-.alert {background-color: #FFE6E6 !important;}
+.alert {background-color: #ffcccc !important;}
 
 /* FORM FIELDS */
 input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url], select {
@@ -393,12 +393,11 @@ ol.error{list-style-type: none;}
 input.error {background: pink;border-color: @red;}
 
 .state-box {
-    border: 1px solid white;
     display: inline-block !important;
     height: 1em;
-    margin: 1px 0 0 0;
-    outline: 1px solid #bbb;
     width: 1em;
+    border: 1px solid white;
+    margin: 1px 0 0 0;
     
     &.green {background-color: @green;}
     &.red {background-color: @red;}
@@ -412,6 +411,8 @@ input.error {background: pink;border-color: @red;}
     &.gray {background-color: gray;}
     &.pink {background-color: pink;}
 }
+.ie .state-box { outline: 1px solid #bbb; }
+.no-ie .state-box { box-shadow: 0px 0px 0px 1px #bbb; }
 
 /* DIALOGS */
 .old-popup {
