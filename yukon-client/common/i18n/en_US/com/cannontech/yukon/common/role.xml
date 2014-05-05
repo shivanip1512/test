@@ -6,7 +6,7 @@
     <entry key="yukon.common.role.category.Application">Application</entry>
     <entry key="yukon.common.role.category.CapControl">Cap Control</entry>
     <entry key="yukon.common.role.category.Consumer">Consumer</entry>
-    <entry key="yukon.common.role.category.LoadControl">Demand Response</entry>
+    <entry key="yukon.common.role.category.DemandResponse">Demand Response</entry>
     <entry key="yukon.common.role.category.Notifications">Notifications</entry>
     <entry key="yukon.common.role.category.Operator">Operator</entry>
 
@@ -32,7 +32,7 @@
     
     <!-- LoadControl Role Category -->
     <!-- Now is changed to Demand Response Role Category -->
-    <entry key="yukon.common.role.DemandResponse">Demand Response</entry>
+    <entry key="yukon.common.role.DEMAND_RESPONSE">Demand Response</entry>
     
     <!-- Notifications Role Category -->
     <entry key="yukon.common.role.NOTIFICATION_CONFIGURATION">Configuration</entry>
