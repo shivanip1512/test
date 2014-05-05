@@ -119,15 +119,17 @@ public class StrategyDaoImpl implements StrategyDao {
     @Transactional
     public boolean delete(int strategyId) {
         deleteStrategyAssignmentsByStrategyId(strategyId);
-        String deleteStrategy = "DELETE FROM CapControlStrategy WHERE StrategyId";
-        int rowsAffected = yukonJdbcTemplate.update(deleteStrategy, strategyId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CapControlStrategy WHERE StrategyId").eq(strategyId);
+        int rowsAffected = yukonJdbcTemplate.update(sql);
 
         return rowsAffected == 1;
     }
 
     private boolean deleteStrategyAssignmentsByStrategyId(int strategyId){
-        String deleteStrategyAssignments = "DELETE FROM CCSeasonStrategyAssignment WHERE StrategyId = ?";
-        int rowsAffected = yukonJdbcTemplate.update(deleteStrategyAssignments, strategyId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CCSeasonStrategyAssignment WHERE StrategyId").eq(strategyId);
+        int rowsAffected = yukonJdbcTemplate.update(sql);
 
         return rowsAffected == 1;
     }
