@@ -370,28 +370,28 @@ public void setValue(Object o)
 public boolean isInputValid() 
 {
     String addressText = getJTextFieldDisconnectAddress().getText();
-	if( getJCheckBoxEnableDisconnect().isSelected() && StringUtils.isBlank(addressText))
-	{
-		setErrorString("You have enabled disconnect.  Please specify an address.");
-		return false;
-	}
-	
-    List<String> devices = MCT400SeriesBase.isDiscAddressUnique(Integer.valueOf(addressText), mct400.getPAObjectID());
-    if (!CollectionUtils.isEmpty(devices)) {
-        String message = "The disconnect address '" + addressText
-            + "' is already used by the following devices,\n"
-            + "are you sure you want to use it again?\n";
-        
-        int res = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
-                                                                        message,
-                                                                        "Address Already Used",
-                                                                        devices);
-        if (res == JOptionPane.NO_OPTION) {
-            setErrorString(null);
+    if (getJCheckBoxEnableDisconnect().isSelected()) {
+        if (StringUtils.isBlank(addressText)) {
+            setErrorString("You have enabled disconnect.  Please specify an address.");
             return false;
         }
+        
+        List<String> devices = MCT400SeriesBase.isDiscAddressUnique(Integer.valueOf(addressText), mct400.getPAObjectID());
+        if (!CollectionUtils.isEmpty(devices)) {
+            String message = "The disconnect address '" + addressText
+                + "' is already used by the following devices,\n"
+                + "are you sure you want to use it again?\n";
+            
+            int res = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
+                                                                            message,
+                                                                            "Address Already Used",
+                                                                            devices);
+            if (res == JOptionPane.NO_OPTION) {
+                setErrorString(null);
+                return false;
+            }
+    	}
 	}
-	
 	return true;
 }
 
