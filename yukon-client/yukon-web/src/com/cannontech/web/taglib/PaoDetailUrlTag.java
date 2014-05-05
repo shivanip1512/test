@@ -13,7 +13,6 @@ import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 
 @Configurable("paoDetailUrlTagPrototype")
 public class PaoDetailUrlTag extends YukonTagSupport {
-    
     private PaoDetailUrlHelper paoDetailUrlHelper;
 
     private YukonPao yukonPao;
@@ -35,24 +34,27 @@ public class PaoDetailUrlTag extends YukonTagSupport {
                 out.print("<a title=\"" + yukonPao.getPaoIdentifier() + "\" href=\"");
                 out.print(getRequest().getContextPath() + urlForPaoDetailPage);
                 out.print("\"");
-                if (newTab) out.print(" target=\"_blank\" ");
+                if (newTab) {
+                    out.print(" target=\"_blank\" ");
+                }
                 out.print(">");
                 getJspBody().invoke(out);
                 out.print("</a>");
             }
         } else {
-            getJspContext().setAttribute(var, getRequest().getContextPath() + urlForPaoDetailPage, TagUtils.getScope(scope));
+            getJspContext().setAttribute(var, getRequest().getContextPath() + urlForPaoDetailPage,
+                TagUtils.getScope(scope));
         }
     }
-    
+
     public void setVar(String var) {
         this.var = var;
     }
-    
+
     public void setNewTab(boolean newTab) {
         this.newTab = newTab;
     }
-    
+
     public void setScope(String scope) {
         this.scope = scope;
     }
@@ -64,5 +66,4 @@ public class PaoDetailUrlTag extends YukonTagSupport {
     public void setPaoDetailUrlHelper(PaoDetailUrlHelper paoDetailUrlHelper) {
         this.paoDetailUrlHelper = paoDetailUrlHelper;
     }
-    
 }
