@@ -49,6 +49,13 @@ RfnTemperatureAlarmCommand::RfnTemperatureAlarmCommand( const Operation operatio
 }
 
 
+// Event manager message
+const Messaging::Rfn::ApplicationServiceIdentifiers &RfnTemperatureAlarmCommand::getApplicationServiceId() const
+{
+    return ApplicationServiceIdentifiers::EventManager;
+}
+
+
 unsigned char RfnTemperatureAlarmCommand::getCommandCode() const
 {
     return CommandCode_Request;

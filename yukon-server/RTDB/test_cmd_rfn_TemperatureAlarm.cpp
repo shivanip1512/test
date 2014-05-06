@@ -34,9 +34,23 @@ BOOST_AUTO_TEST_SUITE( test_cmd_rfn_TemperatureAlarm )
 const CtiTime execute_time( CtiDate( 25, 3, 2014 ) , 15 );
 
 
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetApplicationServiceIdentifier )
+{
+    struct test : RfnGetTemperatureAlarmConfigurationCommand
+    {
+        using RfnTemperatureAlarmCommand::getApplicationServiceId;
+    }
+    cmd;
+
+    BOOST_CHECK_EQUAL(
+            cmd.getApplicationServiceId().value,
+            RfnCommand::ApplicationServiceIdentifiers::EventManager.value);
+}
+
+
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
 {
-    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration = 
+    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration =
     {
         true,       // alarmEnabled
         15,         // alarmRepeatInterval
@@ -105,7 +119,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
 
     std::vector< RfnCommand::CommandException > actual;
 
-    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration = 
+    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration =
     {
         true,       // alarmEnabled
         0,          // alarmRepeatInterval
@@ -144,7 +158,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
 
     std::vector< RfnCommand::CommandException > actual;
 
-    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration = 
+    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration =
     {
         true,       // alarmEnabled
         15,         // alarmRepeatInterval
@@ -226,7 +240,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_decode_exc
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (6)" ) );
 
-    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration = 
+    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration =
     {
         true,       // alarmEnabled
         15,         // alarmRepeatInterval
