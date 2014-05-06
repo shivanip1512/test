@@ -112,6 +112,8 @@ ManagedConnection::~ManagedConnection()
 // to remain unaware that the ActiveMQConnection object has been destroyed - causing the
 // application crash
 //
+// activemq-cpp 3.8.2 - this issue may be fixed with AMQCPP-520 (this needs to be determined)
+//
 // has a workaround, closing the ActiveMQConnection is retried a few times (until successful), if unsuccessful
 // a small delay is added after each close attempt. Only after trying to close it that the connection object is
 // destroy/reset

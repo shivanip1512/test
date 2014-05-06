@@ -115,15 +115,15 @@ protected:
 
     boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
 
-    std::auto_ptr<cms::Session> _sessionIn;
-    std::auto_ptr<cms::Session> _sessionOut;
+    boost::scoped_ptr<cms::Session> _sessionIn;
+    boost::scoped_ptr<cms::Session> _sessionOut;
 
-    std::auto_ptr<Cti::Messaging::ActiveMQ::DestinationProducer> _producer;
-    std::auto_ptr<Cti::Messaging::ActiveMQ::TempQueueConsumer>   _consumer;
-    std::auto_ptr<cms::MessageListener>                          _messageListener;
+    boost::scoped_ptr<Cti::Messaging::ActiveMQ::DestinationProducer> _producer;
+    boost::scoped_ptr<Cti::Messaging::ActiveMQ::TempQueueConsumer>   _consumer;
+    boost::scoped_ptr<cms::MessageListener>                          _messageListener;
 
-    std::auto_ptr<Cti::Messaging::ActiveMQ::TopicConsumer> _advisoryConsumer;
-    std::auto_ptr<cms::MessageListener>                    _advisoryListener;
+    boost::scoped_ptr<Cti::Messaging::ActiveMQ::TopicConsumer> _advisoryConsumer;
+    boost::scoped_ptr<cms::MessageListener>                    _advisoryListener;
 
     void onMessage         ( const cms::Message* message );
     void onAdvisoryMessage ( const cms::Message* message );
