@@ -48,24 +48,24 @@ public class LMControlAreaTriggerPanel extends DataInputPanel implements DataInp
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == getJButtonDeleteTrigger()) {
-            connEtoC1(e);
+            connEtoC1();
         }
         if (e.getSource() == getJButtonNewTrigger()) {
-            connEtoC2(e);
+            connEtoC2();
         }
     }
 
-    private void connEtoC1(ActionEvent arg1) {
+    private void connEtoC1() {
         try {
-            this.jButtonDeleteTrigger_ActionPerformed(arg1);
+            this.jButtonDeleteTrigger_ActionPerformed();
         } catch (Throwable ivjExc) {
             handleException(ivjExc);
         }
     }
 
-    private void connEtoC2(ActionEvent arg1) {
+    private void connEtoC2() {
         try {
-            this.jButtonNewTrigger_ActionPerformed(arg1);
+            this.jButtonNewTrigger_ActionPerformed();
         } catch (Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -320,7 +320,7 @@ public class LMControlAreaTriggerPanel extends DataInputPanel implements DataInp
         }
     }
 
-    public void jButtonDeleteTrigger_ActionPerformed(ActionEvent actionEvent) {
+    private void jButtonDeleteTrigger_ActionPerformed() {
         if (getJComboBoxTrigger().getSelectedItem() != null) {
             getJComboBoxTrigger().removeItemAt(getJComboBoxTrigger().getSelectedIndex());
 
@@ -334,7 +334,7 @@ public class LMControlAreaTriggerPanel extends DataInputPanel implements DataInp
         }
     }
 
-    public void jButtonNewTrigger_ActionPerformed(ActionEvent actionEvent) {
+    private void jButtonNewTrigger_ActionPerformed() {
         // only allow the user to define at most MAX_TRIGGER_COUNT Triggers
         if (getJComboBoxTrigger().getItemCount() >= MAX_TRIGGER_COUNT) {
             JOptionPane.showMessageDialog(this, "A control area is only allowed " + MAX_TRIGGER_COUNT
@@ -343,16 +343,15 @@ public class LMControlAreaTriggerPanel extends DataInputPanel implements DataInp
             return;
         }
 
-        LMControlAreaTriggerModifyPanel p = new LMControlAreaTriggerModifyPanel();
-        OkCancelDialog d = new OkCancelDialog(SwingUtil.getParentFrame(this), "Trigger Creation", true, p);
+        LMControlAreaTriggerModifyPanel panel = new LMControlAreaTriggerModifyPanel();
+        OkCancelDialog dialog = new OkCancelDialog(SwingUtil.getParentFrame(this), "Trigger Creation", true, panel);
 
-        d.setSize((int) p.getSize().getWidth(), (int) p.getSize().getHeight());
-        // d.pack();
-        d.setLocationRelativeTo(this);
-        d.setVisible(true);
+        dialog.setSize((int) panel.getSize().getWidth(), (int) panel.getSize().getHeight());
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
 
-        if (d.getButtonPressed() == d.OK_PRESSED) {
-            LMControlAreaTrigger t = (LMControlAreaTrigger) p.getValue(null);
+        if (dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED) {
+            LMControlAreaTrigger t = (LMControlAreaTrigger) panel.getValue(null);
             getJComboBoxTrigger().addItem(t);
             getJComboBoxTrigger().setSelectedItem(t);
 
@@ -362,17 +361,17 @@ public class LMControlAreaTriggerPanel extends DataInputPanel implements DataInp
             getLMControlAreaTriggerModifyPanel().setVisible(getJComboBoxTrigger().getItemCount() > 0);
         }
 
-        d.dispose();
+        dialog.dispose();
         return;
     }
 
     public void jComboBoxTrigger_ItemStateChanged(ItemEvent itemEvent) {
         if (itemEvent != null) {
-            if (itemEvent.getStateChange() == itemEvent.DESELECTED && isInputValid()) {
+            if (itemEvent.getStateChange() == ItemEvent.DESELECTED && isInputValid()) {
                 getLMControlAreaTriggerModifyPanel().getValue(itemEvent.getItem());
             }
 
-            if (itemEvent.getStateChange() == itemEvent.SELECTED) {
+            if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
                 getLMControlAreaTriggerModifyPanel().setValue(itemEvent.getItem());
             }
 

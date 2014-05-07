@@ -9,53 +9,44 @@ import javax.swing.JComboBox;
 import javax.swing.JTable;
 
 /**
- * @author rneuharth
- * 
- * Allows all JComboBoxes to have something diferent selected
- *
+ * Allows all JComboBoxes to have something different selected.
  */
-public class MultiJComboCellEditor extends DefaultCellEditor 
-{
-    private Vector comboModels;
-    
-    public MultiJComboCellEditor( DefaultComboBoxModel[] defModels )
-    {
-        super( new JComboBox() );
-        
-        //DefaultComboBoxModel
-        comboModels = new Vector(defModels.length);
-        for(int r = 0; r < defModels.length; r++)
-        {
-        	comboModels.addElement(defModels[r]);
+public class MultiJComboCellEditor<T> extends DefaultCellEditor {
+    private Vector<DefaultComboBoxModel<T>> comboModels;
+
+    public MultiJComboCellEditor(DefaultComboBoxModel<T>[] defModels) {
+        super(new JComboBox<T>());
+
+        // DefaultComboBoxModel
+        comboModels = new Vector<>(defModels.length);
+        for (int r = 0; r < defModels.length; r++) {
+            comboModels.addElement(defModels[r]);
         }
     }
 
-	public MultiJComboCellEditor( Vector defModels )
-	{
-		super( new JComboBox() );
-		
-		//DefaultComboBoxModel
-		comboModels = defModels;
-	}
+    public MultiJComboCellEditor(Vector<DefaultComboBoxModel<T>> defModels) {
+        super(new JComboBox<T>());
 
-    public Component getTableCellEditorComponent(JTable table,
-            Object value, boolean isSelected, int row, int column)
-    {
-        //just checking which row here and set the model ??? you like
-        ((JComboBox)editorComponent).setModel( (DefaultComboBoxModel)comboModels.elementAt(row) );
+        // DefaultComboBoxModel
+        comboModels = defModels;
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        @SuppressWarnings("unchecked")
+        JComboBox<T> editorComponentComboBox = (JComboBox<T>) editorComponent;
+        // just checking which row here and set the model ??? you like
+        editorComponentComboBox.setModel(comboModels.elementAt(row));
 
         delegate.setValue(value);
         return editorComponent;
     }
-    
-    public void addModel(DefaultComboBoxModel model)
-    {
-    	comboModels.addElement(model);
-    }
-    
-    public void removeModel(int row)
-	{
-		comboModels.removeElementAt(row);
-	}
 
+    public void addModel(DefaultComboBoxModel<T> model) {
+        comboModels.addElement(model);
+    }
+
+    public void removeModel(int row) {
+        comboModels.removeElementAt(row);
+    }
 }

@@ -1,5 +1,7 @@
 package com.cannontech.database.data.device.lm;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Vector;
 
 import com.cannontech.common.pao.PaoType;
@@ -10,211 +12,192 @@ import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 
 public class LMProgramDirect extends LMProgramBase {
+    private com.cannontech.database.db.device.lm.LMProgramDirect directProgram = null;
+    private Vector<LMProgramDirectGear> lmProgramDirectGearVector = null;
+    private Vector<LMDirectNotificationGroupList> lmProgramDirectNotifyGroupVector = null;
 
-	private com.cannontech.database.db.device.lm.LMProgramDirect directProgram = null;
-	private Vector<LMProgramDirectGear> lmProgramDirectGearVector = null;
-	private Vector<LMDirectNotificationGroupList> lmProgramDirectNotifyGroupVector = null;
+    @Override
+    protected PaoType getProgramPaoType() {
+        return PaoType.LM_DIRECT_PROGRAM;
+    }
 
-	/**
-	 * LMProgramBase constructor comment.
-	 */
-	public LMProgramDirect() {
-		super();
-	}
+    @Override
+    public void add() throws SQLException {
+        super.add();
+        getDirectProgram().add();
 
-	@Override
-	protected PaoType getProgramPaoType() {
-		return PaoType.LM_DIRECT_PROGRAM;
-	}
-	
-	/**
-	 * This method was created in VisualAge.
-	 */
-	public void add() throws java.sql.SQLException {
-		super.add();
-		getDirectProgram().add();
+        // add the gears
+        for (LMProgramDirectGear lmProgramDirectGear : getLmProgramDirectGearVector()) {
+            lmProgramDirectGear.add();
+        }
 
-		// delete all the current gears from the DB
-		// LMProgramDirectGear.deleteAllDirectGears( getDevice().getDeviceID()
-		// );
+        // add all the Groups for this DirectProgram
+        for (DeviceListItem deviceListItem : getLmProgramStorageVector()) {
+            if (deviceListItem instanceof LMProgramDirectGroup) {
+                LMProgramDirectGroup lmProgramDirectGroup = (LMProgramDirectGroup) deviceListItem;
+                lmProgramDirectGroup.setDeviceID(getPAObjectID());
+                lmProgramDirectGroup.setDbConnection(getDbConnection());
+                lmProgramDirectGroup.add();
+            }
+        }
 
-		// add the gears
-		for (LMProgramDirectGear lmProgramDirectGear : getLmProgramDirectGearVector()) {
-			lmProgramDirectGear.add();
-		}
+        // add the customers
+        for (LMDirectNotificationGroupList lmDirectNotificationGroupList : getLmProgramDirectNotifyGroupVector()) {
+            lmDirectNotificationGroupList.add();
+        }
+    }
 
-		// add all the Groups for this DirectProgram
-		for (DeviceListItem deviceListItem : getLmProgramStorageVector()) {
-			if (deviceListItem instanceof LMProgramDirectGroup) {
-				LMProgramDirectGroup lmProgramDirectGroup = (LMProgramDirectGroup) deviceListItem;
-				lmProgramDirectGroup.setDeviceID(getPAObjectID());
-				lmProgramDirectGroup.setDbConnection(getDbConnection());
-				lmProgramDirectGroup.add();
-			}
-		}
+    @Override
+    public void delete() throws SQLException {
+        // delete all of our direct customers first
+        delete(LMDirectNotificationGroupList.TABLE_NAME, LMDirectNotificationGroupList.CONSTRAINT_COLUMNS[0],
+            getPAObjectID());
 
-		// add the customers
-		for (LMDirectNotificationGroupList lmDirectNotificationGroupList : getLmProgramDirectNotifyGroupVector()) {
-			lmDirectNotificationGroupList.add();
-		}
-	}
+        LMProgramDirectGear.deleteAllDirectGears(getPAObjectID(), getDbConnection());
 
-	/**
-	 * This method was created in VisualAge.
-	 */
-	public void delete() throws java.sql.SQLException {
+        LMProgramDirectGroup.deleteAllDirectGroups(getPAObjectID(), getDbConnection());
 
-		// delete all of our direct customers first
-		delete(LMDirectNotificationGroupList.TABLE_NAME,
-				LMDirectNotificationGroupList.CONSTRAINT_COLUMNS[0],
-				getPAObjectID());
+        deleteFromDynamicTables();
 
-		LMProgramDirectGear.deleteAllDirectGears(getPAObjectID(),
-				getDbConnection());
+        getDirectProgram().delete();
+        super.delete();
+    }
 
-		com.cannontech.database.db.device.lm.LMProgramDirectGroup
-				.deleteAllDirectGroups(getPAObjectID(), getDbConnection());
+    private void deleteFromDynamicTables() throws SQLException {
+        delete("DynamicLMProgramDirect", "deviceID", getPAObjectID());
+        // delete("DynamicLMGroup", "LMProgramID", getPAObjectID() );
+    }
 
-		deleteFromDynamicTables();
+    public com.cannontech.database.db.device.lm.LMProgramDirect getDirectProgram() {
+        if (directProgram == null) {
+            directProgram = new com.cannontech.database.db.device.lm.LMProgramDirect();
+        }
 
-		getDirectProgram().delete();
-		super.delete();
-	}
+        return directProgram;
+    }
 
-	private void deleteFromDynamicTables() throws java.sql.SQLException {
-		delete("DynamicLMProgramDirect", "deviceID", getPAObjectID());
-		// delete("DynamicLMGroup", "LMProgramID", getPAObjectID() );
-	}
+    public Vector<LMProgramDirectGear> getLmProgramDirectGearVector() {
+        if (lmProgramDirectGearVector == null) {
+            lmProgramDirectGearVector = new Vector<LMProgramDirectGear>(10);
+        }
 
-	public com.cannontech.database.db.device.lm.LMProgramDirect getDirectProgram() {
-		if (directProgram == null) {
-			directProgram = new com.cannontech.database.db.device.lm.LMProgramDirect();
-		}
+        return lmProgramDirectGearVector;
+    }
 
-		return directProgram;
-	}
+    public Vector<LMDirectNotificationGroupList> getLmProgramDirectNotifyGroupVector() {
+        if (lmProgramDirectNotifyGroupVector == null) {
+            lmProgramDirectNotifyGroupVector = new Vector<LMDirectNotificationGroupList>();
+        }
 
-	public Vector<LMProgramDirectGear> getLmProgramDirectGearVector() {
-		if (lmProgramDirectGearVector == null) {
-			lmProgramDirectGearVector = new Vector<LMProgramDirectGear>(10);
-		}
+        return lmProgramDirectNotifyGroupVector;
+    }
 
-		return lmProgramDirectGearVector;
-	}
+    @Override
+    public void retrieve() throws SQLException {
+        super.retrieve();
+        getDirectProgram().retrieve();
 
-	public Vector<LMDirectNotificationGroupList> getLmProgramDirectNotifyGroupVector() {
-		if (lmProgramDirectNotifyGroupVector == null) {
-			lmProgramDirectNotifyGroupVector = new Vector<LMDirectNotificationGroupList>();
-		}
+        // retrieve all the gears for this Program
+        Vector<LMProgramDirectGear> gears = LMProgramDirectGear.getAllDirectGears(getPAObjectID(), getDbConnection());
+        getLmProgramDirectGearVector().clear();
+        for (LMProgramDirectGear gear : gears) {
+            getLmProgramDirectGearVector().add(gear);
+        }
 
-		return lmProgramDirectNotifyGroupVector;
-	}
+        // retrieve all the Groups for this Program
+        LMProgramDirectGroup[] groups = LMProgramDirectGroup.getAllDirectGroups(getPAObjectID());
+        getLmProgramStorageVector().clear();
+        for (int i = 0; i < groups.length; i++) {
+            getLmProgramStorageVector().add(groups[i]);
+        }
 
-	public void retrieve() throws java.sql.SQLException {
-		super.retrieve();
-		getDirectProgram().retrieve();
+        LMDirectNotificationGroupList[] customers =
+            com.cannontech.database.db.device.lm.LMProgramDirect.getAllNotificationGroupsList(getPAObjectID(),
+                getDbConnection());
+        getLmProgramDirectNotifyGroupVector().clear();
+        for (LMDirectNotificationGroupList customer : customers) {
+            getLmProgramDirectNotifyGroupVector().add(customer);
+        }
+    }
 
-		// retrieve all the gears for this Program
-		Vector<LMProgramDirectGear> gears = LMProgramDirectGear.getAllDirectGears(getPAObjectID(), getDbConnection());
-		getLmProgramDirectGearVector().clear();
-		for (LMProgramDirectGear gear : gears) {
-			getLmProgramDirectGearVector().add(gear);
-		}
+    @Override
+    public void setDbConnection(Connection conn) {
+        super.setDbConnection(conn);
+        getDirectProgram().setDbConnection(conn);
 
-		// retrieve all the Groups for this Program
-		com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups = 
-			com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups(getPAObjectID());
-		getLmProgramStorageVector().clear();
-		for (int i = 0; i < groups.length; i++) {
-			getLmProgramStorageVector().add(groups[i]);
-		}
+        for (LMProgramDirectGear lmProgramDirectGear : getLmProgramDirectGearVector()) {
+            lmProgramDirectGear.setDbConnection(conn);
+        }
 
-		LMDirectNotificationGroupList[] customers = 
-			com.cannontech.database.db.device.lm.LMProgramDirect.getAllNotificationGroupsList(
-					getPAObjectID(),getDbConnection());
-		getLmProgramDirectNotifyGroupVector().clear();
-		for (LMDirectNotificationGroupList customer: customers) {
-			getLmProgramDirectNotifyGroupVector().add(customer);
-		}
-	}
+        for (LMDirectNotificationGroupList lmDirectNotificationGroupList : getLmProgramDirectNotifyGroupVector()) {
+            lmDirectNotificationGroupList.setDbConnection(conn);
+        }
+    }
 
-	public void setDbConnection(java.sql.Connection conn) {
-		super.setDbConnection(conn);
-		getDirectProgram().setDbConnection(conn);
+    public void setDirectProgram(com.cannontech.database.db.device.lm.LMProgramDirect directProgram) {
+        this.directProgram = directProgram;
+    }
 
-		for (LMProgramDirectGear lmProgramDirectGear : getLmProgramDirectGearVector()) {
-			lmProgramDirectGear.setDbConnection(conn);
-		}
-		
-		for (LMDirectNotificationGroupList lmDirectNotificationGroupList: getLmProgramDirectNotifyGroupVector()) {
-			lmDirectNotificationGroupList.setDbConnection(conn);
-		}
-	}
+    public void setLmProgramDirectGearVector(Vector<LMProgramDirectGear> lmProgramDirectGearVector) {
+        this.lmProgramDirectGearVector = lmProgramDirectGearVector;
+    }
 
-	public void setDirectProgram(com.cannontech.database.db.device.lm.LMProgramDirect newDirectProgram) {
-		directProgram = newDirectProgram;
-	}
+    @Override
+    public void setPAObjectID(Integer paoID) {
+        super.setPAObjectID(paoID);
+        getDirectProgram().setDeviceID(paoID);
 
-	public void setLmProgramDirectGearVector(Vector<LMProgramDirectGear> newLmProgramDirectGearVector) {
-		lmProgramDirectGearVector = newLmProgramDirectGearVector;
-	}
+        for (LMProgramDirectGear lmProgramDirectGear : getLmProgramDirectGearVector()) {
+            lmProgramDirectGear.setDeviceID(paoID);
+        }
 
-	public void setPAObjectID(Integer paoID) {
-		super.setPAObjectID(paoID);
-		getDirectProgram().setDeviceID(paoID);
+        for (LMDirectNotificationGroupList lmDirectNotificationGroupList : getLmProgramDirectNotifyGroupVector()) {
+            lmDirectNotificationGroupList.setDeviceID(paoID);
+        }
+    }
 
-		for (LMProgramDirectGear lmProgramDirectGear : getLmProgramDirectGearVector()) {
-			lmProgramDirectGear.setDeviceID(paoID);
-		}
-		
-		for (LMDirectNotificationGroupList lmDirectNotificationGroupList: getLmProgramDirectNotifyGroupVector()) {
-			lmDirectNotificationGroupList.setDeviceID(paoID);
-		}
-	}
+    @Override
+    public void update() throws SQLException {
+        super.update();
+        getDirectProgram().update();
+        Vector<LMProgramDirectGear> gearVector = new Vector<LMProgramDirectGear>();
 
-	public void update() throws java.sql.SQLException {
-		super.update();
-		getDirectProgram().update();
-		Vector<LMProgramDirectGear> gearVector = new Vector<LMProgramDirectGear>();
+        // grab all the previous gear entries for this program
+        Vector<LMProgramDirectGear> oldGears =
+            LMProgramDirectGear.getAllDirectGears(getPAObjectID(), getDbConnection());
 
-		// grab all the previous gear entries for this program
-		Vector<LMProgramDirectGear> oldGears = LMProgramDirectGear.getAllDirectGears(
-				getPAObjectID(), getDbConnection());
+        // unleash the power of the NestedDBPersistent
+        gearVector =
+            NestedDBPersistentComparators.NestedDBPersistentCompare(oldGears, getLmProgramDirectGearVector(),
+                NestedDBPersistentComparators.lmDirectGearComparator);
 
-		// unleash the power of the NestedDBPersistent
-		gearVector = NestedDBPersistentComparators.NestedDBPersistentCompare(
-				oldGears, getLmProgramDirectGearVector(),
-				NestedDBPersistentComparators.lmDirectGearComparator);
+        // throw the gears into the Db
+        for (LMProgramDirectGear lmProgramDirectGear : gearVector) {
+            lmProgramDirectGear.setDeviceID(getPAObjectID());
+            lmProgramDirectGear.executeNestedOp();
 
-		// throw the gears into the Db
-		for (LMProgramDirectGear lmProgramDirectGear : gearVector) {
-			lmProgramDirectGear.setDeviceID(getPAObjectID());
-			lmProgramDirectGear.executeNestedOp();
+        }
 
-		}
+        // delete all the current associated groups from the DB
+        LMProgramDirectGroup.deleteAllDirectGroups(getPAObjectID(), getDbConnection());
 
-		// delete all the current associated groups from the DB
-		com.cannontech.database.db.device.lm.LMProgramDirectGroup
-				.deleteAllDirectGroups(getPAObjectID(), getDbConnection());
+        // add the groups
+        for (DeviceListItem deviceListItem : getLmProgramStorageVector()) {
+            if (deviceListItem instanceof LMProgramDirectGroup) {
+                LMProgramDirectGroup lmProgramDirectGroup = (LMProgramDirectGroup) deviceListItem;
+                lmProgramDirectGroup.setDeviceID(getPAObjectID());
+                lmProgramDirectGroup.setDbConnection(getDbConnection());
+                lmProgramDirectGroup.add();
+            }
+        }
 
-		// add the groups
-		for (DeviceListItem deviceListItem : getLmProgramStorageVector()) {
-			if (deviceListItem instanceof LMProgramDirectGroup) {
-				LMProgramDirectGroup lmProgramDirectGroup = (LMProgramDirectGroup)deviceListItem;
-				lmProgramDirectGroup.setDeviceID(getPAObjectID());
-				lmProgramDirectGroup.setDbConnection(getDbConnection());
-				lmProgramDirectGroup.add();
-			}
-		}
+        // delete all of our energy exchange customers first
+        delete(LMDirectNotificationGroupList.TABLE_NAME, LMDirectNotificationGroupList.CONSTRAINT_COLUMNS[0],
+            getPAObjectID());
 
-		// delete all of our energy exchange customers first
-		delete(LMDirectNotificationGroupList.TABLE_NAME,
-				LMDirectNotificationGroupList.CONSTRAINT_COLUMNS[0],
-				getPAObjectID());
-
-		for (LMDirectNotificationGroupList lmDirectNotificationGroupList : getLmProgramDirectNotifyGroupVector()) {
-			lmDirectNotificationGroupList.setDeviceID(getDirectProgram().getDeviceID());
-			lmDirectNotificationGroupList.add();
-		}
-	}
+        for (LMDirectNotificationGroupList lmDirectNotificationGroupList : getLmProgramDirectNotifyGroupVector()) {
+            lmDirectNotificationGroupList.setDeviceID(getDirectProgram().getDeviceID());
+            lmDirectNotificationGroupList.add();
+        }
+    }
 }

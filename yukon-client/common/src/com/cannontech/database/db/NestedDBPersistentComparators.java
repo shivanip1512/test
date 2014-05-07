@@ -22,15 +22,15 @@ public final class NestedDBPersistentComparators {
     public static Comparator<LMControlAreaTrigger> lmControlAreaTriggerComparator =
         new Comparator<LMControlAreaTrigger>() {
             @Override
-            public int compare(LMControlAreaTrigger o1, LMControlAreaTrigger o2) {
+            public int compare(LMControlAreaTrigger trigger1, LMControlAreaTrigger trigger2) {
                 // if the ID is null, then one can safely assume it is new
-                Integer thisVal = o1.getTriggerID();
+                Integer thisVal = trigger1.getTriggerID();
                 if (thisVal == null) {
-                    thisVal = new Integer(-2);
+                    thisVal = -2;
                 }
-                Integer anotherVal = o2.getTriggerID();
+                Integer anotherVal = trigger2.getTriggerID();
                 if (anotherVal == null) {
-                    anotherVal = new Integer(-3);
+                    anotherVal = -3;
                 }
                 return (thisVal.intValue() < anotherVal.intValue() ? -1 : (thisVal.intValue() == anotherVal.intValue()
                     ? 0 : 1));
@@ -42,17 +42,17 @@ public final class NestedDBPersistentComparators {
             }
         };
 
-    public static Comparator lmDirectGearComparator = new Comparator() {
+    public static Comparator<LMProgramDirectGear> lmDirectGearComparator = new Comparator<LMProgramDirectGear>() {
         @Override
-        public int compare(Object o1, Object o2) {
+        public int compare(LMProgramDirectGear gear1, LMProgramDirectGear gear2) {
             // if the ID is null, then one can safely assume it is new
-            Integer thisVal = ((LMProgramDirectGear) o1).getGearID();
+            Integer thisVal = gear1.getGearID();
             if (thisVal == null) {
-                thisVal = new Integer(-2);
+                thisVal = -2;
             }
-            Integer anotherVal = ((LMProgramDirectGear) o2).getGearID();
+            Integer anotherVal = gear2.getGearID();
             if (anotherVal == null) {
-                anotherVal = new Integer(-1);
+                anotherVal = -1;
             }
             return (thisVal.intValue() < anotherVal.intValue() ? -1 : (thisVal.intValue() == anotherVal.intValue() ? 0
                 : 1));
@@ -67,9 +67,9 @@ public final class NestedDBPersistentComparators {
     public static Comparator<LMControlAreaProgram> lmControlAreaProgramComparator =
         new Comparator<LMControlAreaProgram>() {
             @Override
-            public int compare(LMControlAreaProgram o1, LMControlAreaProgram o2) {
-                int thisVal = o1.getLmProgramDeviceID().intValue();
-                int anotherVal = o2.getLmProgramDeviceID().intValue();
+            public int compare(LMControlAreaProgram program1, LMControlAreaProgram program2) {
+                int thisVal = program1.getLmProgramDeviceID().intValue();
+                int anotherVal = program2.getLmProgramDeviceID().intValue();
                 return (thisVal < anotherVal ? -1 : (thisVal == anotherVal ? 0 : 1));
             }
 
@@ -79,27 +79,28 @@ public final class NestedDBPersistentComparators {
             }
         };
 
-    public static Comparator lmControlScenarioProgramComparator = new Comparator() {
-        @Override
-        public int compare(Object o1, Object o2) {
-            int thisVal = ((LMControlScenarioProgram) o1).getProgramID().intValue();
-            int anotherVal = ((LMControlScenarioProgram) o2).getProgramID().intValue();
-            return (thisVal < anotherVal ? -1 : (thisVal == anotherVal ? 0 : 1));
-        }
+    public static Comparator<LMControlScenarioProgram> lmControlScenarioProgramComparator =
+        new Comparator<LMControlScenarioProgram>() {
+            @Override
+            public int compare(LMControlScenarioProgram program1, LMControlScenarioProgram program2) {
+                int thisVal = program1.getProgramID().intValue();
+                int anotherVal = program2.getProgramID().intValue();
+                return (thisVal < anotherVal ? -1 : (thisVal == anotherVal ? 0 : 1));
+            }
 
-        @Override
-        public boolean equals(Object obj) {
-            return false;
-        }
-    };
+            @Override
+            public boolean equals(Object obj) {
+                return false;
+            }
+        };
 
-    public static Comparator deviceVerificationComparator = new Comparator() {
+    public static Comparator<DeviceVerification> deviceVerificationComparator = new Comparator<DeviceVerification>() {
         @Override
-        public int compare(Object o1, Object o2) {
-            int thisTransID = ((DeviceVerification) o1).getTransmitterID().intValue();
-            int anotherTransID = ((DeviceVerification) o2).getTransmitterID().intValue();
-            int thisReceiverID = ((DeviceVerification) o1).getReceiverID().intValue();
-            int anotherReceiverID = ((DeviceVerification) o2).getReceiverID().intValue();
+        public int compare(DeviceVerification deviceVerification1, DeviceVerification deviceVerification2) {
+            int thisTransID = deviceVerification1.getTransmitterID().intValue();
+            int anotherTransID = deviceVerification2.getTransmitterID().intValue();
+            int thisReceiverID = deviceVerification1.getReceiverID().intValue();
+            int anotherReceiverID = deviceVerification2.getReceiverID().intValue();
             return (thisTransID == anotherTransID ? (thisReceiverID == anotherReceiverID ? 0 : 1) : -1);
         }
 
@@ -109,17 +110,17 @@ public final class NestedDBPersistentComparators {
         }
     };
 
-    public static Comparator paoExclusionComparator = new Comparator() {
+    public static Comparator<PAOExclusion> paoExclusionComparator = new Comparator<PAOExclusion>() {
         @Override
-        public int compare(Object o1, Object o2) {
+        public int compare(PAOExclusion paoExclusion1, PAOExclusion paoExclusion2) {
             // if the ID is null, then one can safely assume it is new
-            Integer thisVal = ((PAOExclusion) o1).getExclusionID();
+            Integer thisVal = paoExclusion1.getExclusionID();
             if (thisVal == null) {
-                thisVal = new Integer(-1);
+                thisVal = -1;
             }
-            Integer anotherVal = ((PAOExclusion) o2).getExclusionID();
+            Integer anotherVal = paoExclusion2.getExclusionID();
             if (anotherVal == null) {
-                anotherVal = new Integer(-1);
+                anotherVal = -1;
             }
             return (thisVal.intValue() < anotherVal.intValue() ? -1 : (thisVal.intValue() == anotherVal.intValue() ? 0
                 : 1));
@@ -131,17 +132,17 @@ public final class NestedDBPersistentComparators {
         }
     };
 
-    public static Comparator contactNotificationComparator = new Comparator() {
+    public static Comparator<ContactNotification> contactNotificationComparator = new Comparator<ContactNotification>() {
         @Override
-        public int compare(Object o1, Object o2) {
+        public int compare(ContactNotification notification1, ContactNotification notification2) {
             // if the ID is null, then one can safely assume it is new
-            Integer thisVal = ((ContactNotification) o1).getContactNotifID();
+            Integer thisVal = notification1.getContactNotifID();
             if (thisVal == null) {
-                thisVal = new Integer(-1);
+                thisVal = -1;
             }
-            Integer anotherVal = ((ContactNotification) o2).getContactNotifID();
+            Integer anotherVal = notification2.getContactNotifID();
             if (anotherVal == null) {
-                anotherVal = new Integer(-2);
+                anotherVal = -2;
             }
             return (thisVal.intValue() < anotherVal.intValue() ? -1 : (thisVal.intValue() == anotherVal.intValue() ? 0
                 : 1));
@@ -153,7 +154,7 @@ public final class NestedDBPersistentComparators {
         }
     };
 
-    public static boolean areNestedObjectsEqual(Object obj1, Object obj2, Comparator comparator) {
+    public static <T> boolean areNestedObjectsEqual(T obj1, T obj2, Comparator<? super T> comparator) {
         return comparator.compare(obj1, obj2) == 0;
     }
 

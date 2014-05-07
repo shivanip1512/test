@@ -59,7 +59,6 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.spring.YukonSpringHook;
@@ -116,7 +115,7 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
         @Override
         public void mousePressed(MouseEvent e) {
             if (e.getSource() == getProgramsTable()) {
-                connEtoC1(e);
+                connEtoC1();
             }
         };
 
@@ -132,9 +131,9 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
         initialize();
     }
 
-    private void connEtoC1(MouseEvent arg1) {
+    private void connEtoC1() {
         try {
-            programsTable_MousePressed(arg1);
+            programsTable_MousePressed();
         } catch (Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -642,7 +641,10 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
             // add the new row
             getTableModel().addRowValue(thePAO, "0:00", "0:00", startingGear);
 
-            ((MultiJComboCellEditor) getProgramsTable().getCellEditor(getTableModel().getRowCount() + 1, 3)).addModel(comboModel);
+            @SuppressWarnings("unchecked")
+            MultiJComboCellEditor<LiteGear> cellEditor =
+                (MultiJComboCellEditor<LiteGear>) getProgramsTable().getCellEditor(getTableModel().getRowCount() + 1, 3);
+            cellEditor.addModel(comboModel);
 
             // autoscroll to show new additions
             getProgramsTable().scrollRectToVisible(
@@ -672,13 +674,14 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
             allAvailable.add(getAvailableList().getModel().getElementAt(i));
         }
 
-        for (int u = selectedRows.length - 1; u >= 0; u--) {
-            LiteYukonPAObject thePAO = getTableModel().getProgramLitePAOAt(selectedRows[u]);
+        for (int index = selectedRows.length - 1; index >= 0; index--) {
+            LiteYukonPAObject thePAO = getTableModel().getProgramLitePAOAt(selectedRows[index]);
 
             allAvailable.addElement(thePAO);
             // renderer is also automatically updated since it uses the same vector of combo box models
-            ((MultiJComboCellEditor) getProgramsTable().getCellEditor(u, 3)).removeModel(selectedRows[u]);
-            getTableModel().removeRowValue(selectedRows[u]);
+            MultiJComboCellEditor<?> cellEditor = (MultiJComboCellEditor<?>) getProgramsTable().getCellEditor(index, 3);
+            cellEditor.removeModel(selectedRows[index]);
+            getTableModel().removeRowValue(selectedRows[index]);
         }
 
         getAvailableList().setListData(allAvailable);
@@ -744,42 +747,42 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
 
     }
 
-    public void programsTable_MousePressed(MouseEvent mouseEvent) {
+    private void programsTable_MousePressed() {
         fireInputUpdate();
     }
 
     @Override
-    public void setValue(Object o) {
-        LMScenario scen = (LMScenario) o;
+    public void setValue(Object obj) {
+        LMScenario scenario = (LMScenario) obj;
 
-        if (scen == null) {
-            scen = (LMScenario) LMFactory.createLoadManagement(PAOGroups.LM_SCENARIO);
+        if (scenario == null) {
+            scenario = (LMScenario) LMFactory.createLoadManagement(PaoType.LM_SCENARIO.getDeviceTypeId());
         }
 
-        getNameJTextField().setText(scen.getScenarioName());
+        getNameJTextField().setText(scenario.getScenarioName());
 
         populateAvailableList();
 
-        Vector assignedPrograms = scen.getAllThePrograms();
+        Vector<LMControlScenarioProgram> assignedPrograms = scenario.getAllThePrograms();
         TableColumn startGearColumn =
             getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
         startGearColumn.setPreferredWidth(100);
-        Vector models = new Vector();
+        Vector<DefaultComboBoxModel<LiteGear>> models = new Vector<>();
 
         // also need to update the available programs list
-        Vector allAvailable = new Vector(getAvailableList().getModel().getSize());
+        Vector<LiteYukonPAObject> allAvailable = new Vector<>(getAvailableList().getModel().getSize());
         for (int i = 0; i < getAvailableList().getModel().getSize(); i++) {
             allAvailable.add(getAvailableList().getModel().getElementAt(i));
         }
 
         for (int j = 0; j < assignedPrograms.size(); j++) {
-            LMControlScenarioProgram lightProgram = (LMControlScenarioProgram) assignedPrograms.elementAt(j);
+            LMControlScenarioProgram lightProgram = assignedPrograms.elementAt(j);
             int progID = lightProgram.getProgramID();
             LiteYukonPAObject thePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(progID);
             LiteGear startingGear = null;
 
             // do the gears, man
-            DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
+            DefaultComboBoxModel<LiteGear> comboModel = new DefaultComboBoxModel<>();
             for (int y = 0; y < allGears.size(); y++) {
                 if (allGears.elementAt(y).getOwnerID() == progID) {
                     // add gear to the combobox model for the table
@@ -800,7 +803,7 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
 
             // make sure that the available programs list is not showing these assigned programs
             for (int y = 0; y < allAvailable.size(); y++) {
-                if (progID == (((LiteYukonPAObject) allAvailable.elementAt(y)).getLiteID())) {
+                if (progID == (allAvailable.elementAt(y).getLiteID())) {
                     allAvailable.removeElementAt(y);
                 }
             }
@@ -809,7 +812,7 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
         getAvailableList().setListData(allAvailable);
 
         // set up the combo box renderers and editors for the gear column
-        startGearColumn.setCellEditor(new MultiJComboCellEditor(models));
+        startGearColumn.setCellEditor(new MultiJComboCellEditor<LiteGear>(models));
         startGearColumn.setCellRenderer(new MultiJComboCellRenderer(models));
     }
 }

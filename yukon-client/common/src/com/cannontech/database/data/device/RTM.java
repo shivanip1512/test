@@ -1,116 +1,100 @@
-/*
- * Created on May 10, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.database.data.device;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Vector;
 
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.device.DeviceVerification;
 
-/**
- * @author jdayton
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class RTM extends IEDBase {
+    private Vector<DeviceVerification> deviceVerificationVector;
 
-	private Vector deviceVerificationVector = null;
+    @Override
+    public void add() throws SQLException {
+        super.add();
 
-/**
- * RTM constructor comment.
- */
-public RTM() {
-	super();
-}
+        // add the RTCs to be verified
+        for (int i = 0; i < getDeviceVerificationVector().size(); i++) {
+            getDeviceVerificationVector().elementAt(i).add();
+        }
+    }
 
-public void add() throws java.sql.SQLException 
-{
-	super.add();
-	
-	//add the RTCs to be verified
-	for( int i = 0; i < getDeviceVerificationVector().size(); i++ )
-		((DeviceVerification)getDeviceVerificationVector().elementAt(i)).add();
-}
+    @Override
+    public void delete() throws SQLException {
+        // get all those pesky RTCs assigned to this RTM
+        DeviceVerification.deleteAllVerifications(getPAObjectID(), getDbConnection());
 
-public void delete() throws java.sql.SQLException
-{
-	//get all those pesky RTCs assigned to this RTM
-	DeviceVerification.deleteAllVerifications(getPAObjectID(), getDbConnection());
-	
-	//nuke the dynamic entries
-	deleteFromDynamicTables();
-	
-	super.delete();
-	
-}
+        // nuke the dynamic entries
+        deleteFromDynamicTables();
 
-private void deleteFromDynamicTables() throws java.sql.SQLException
-{
-	delete("DynamicVerification", "receiverID", getPAObjectID() );
-}	
-	
-public Vector getDeviceVerificationVector() 
-{
-	if( deviceVerificationVector == null )
-		deviceVerificationVector = new java.util.Vector();
+        super.delete();
+    }
 
-	return deviceVerificationVector;
-}	
-	
-public void retrieve() throws java.sql.SQLException
-{
-	super.retrieve();
+    private void deleteFromDynamicTables() throws SQLException {
+        delete("DynamicVerification", "receiverID", getPAObjectID());
+    }
 
-	//retrieve all the RTCs for this RTM
-	java.util.Vector veries = DeviceVerification.getAllVerifications( getPAObjectID(), getDbConnection() );
-	for( int i = 0; i < veries.size(); i++ )
-		getDeviceVerificationVector().add( veries.elementAt(i) );
-}
+    public Vector<DeviceVerification> getDeviceVerificationVector() {
+        if (deviceVerificationVector == null) {
+            deviceVerificationVector = new Vector<>();
+        }
 
-public void setDbConnection(java.sql.Connection conn) 
-{
-	super.setDbConnection(conn);
+        return deviceVerificationVector;
+    }
 
-	for( int i = 0; i < getDeviceVerificationVector().size(); i++ )
-		((DeviceVerification)getDeviceVerificationVector().elementAt(i)).setDbConnection(conn);
+    @Override
+    public void retrieve() throws SQLException {
+        super.retrieve();
 
-}
+        // retrieve all the RTCs for this RTM
+        Vector<DeviceVerification> veries = DeviceVerification.getAllVerifications(getPAObjectID(), getDbConnection());
+        for (int index = 0; index < veries.size(); index++) {
+            getDeviceVerificationVector().add(veries.elementAt(index));
+        }
+    }
 
-public void setDeviceID(Integer deviceID) {
-	super.setDeviceID(deviceID);
-	
-	for( int i = 0; i < getDeviceVerificationVector().size(); i++ )
-		((DeviceVerification)getDeviceVerificationVector().elementAt(i)).setReceiverID( deviceID );
-}
+    @Override
+    public void setDbConnection(Connection conn) {
+        super.setDbConnection(conn);
 
-public void setDeviceVerificationVector(Vector newDeviceVerificationVector) {
-	deviceVerificationVector = newDeviceVerificationVector;
-}
+        for (int index = 0; index < getDeviceVerificationVector().size(); index++) {
+            getDeviceVerificationVector().elementAt(index).setDbConnection(conn);
+        }
+    }
 
-public void update() throws java.sql.SQLException
-{
-	super.update();
+    @Override
+    public void setDeviceID(Integer deviceID) {
+        super.setDeviceID(deviceID);
 
-	java.util.Vector veriesVector = new java.util.Vector();
+        for (int i = 0; i < getDeviceVerificationVector().size(); i++) {
+            getDeviceVerificationVector().elementAt(i).setReceiverID(deviceID);
+        }
+    }
 
-	//grab all the previous gear entries for this program
-	java.util.Vector oldVeries = DeviceVerification.getAllVerifications(getPAObjectID(), getDbConnection());
-	
-	//unleash the power of the NestedDBPersistent
-	veriesVector = NestedDBPersistentComparators.NestedDBPersistentCompare(oldVeries, getDeviceVerificationVector(), NestedDBPersistentComparators.deviceVerificationComparator);
+    public void setDeviceVerificationVector(Vector<DeviceVerification> deviceVerificationVector) {
+        this.deviceVerificationVector = deviceVerificationVector;
+    }
 
-	//throw the gears into the Db
-	for( int i = 0; i < veriesVector.size(); i++ )
-	{
-		((DeviceVerification)veriesVector.elementAt(i)).setReceiverID( getPAObjectID() );
-		((NestedDBPersistent)veriesVector.elementAt(i)).executeNestedOp();
-	}
-}
+    @Override
+    public void update() throws SQLException {
+        super.update();
 
+        Vector<DeviceVerification> veriesVector = new Vector<>();
+
+        // grab all the previous gear entries for this program
+        Vector<DeviceVerification> oldVeries =
+            DeviceVerification.getAllVerifications(getPAObjectID(), getDbConnection());
+
+        // unleash the power of the NestedDBPersistent
+        veriesVector = NestedDBPersistentComparators.NestedDBPersistentCompare(oldVeries, getDeviceVerificationVector(),
+                NestedDBPersistentComparators.deviceVerificationComparator);
+
+        // throw the gears into the Db
+        for (int i = 0; i < veriesVector.size(); i++) {
+            veriesVector.elementAt(i).setReceiverID(getPAObjectID());
+            ((NestedDBPersistent) veriesVector.elementAt(i)).executeNestedOp();
+        }
+    }
 }
