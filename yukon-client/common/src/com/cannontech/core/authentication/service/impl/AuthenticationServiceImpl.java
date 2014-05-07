@@ -87,7 +87,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         
         UserAuthenticationInfo authenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
         AuthType authType = authenticationInfo.getAuthType();
-        AuthType supportingAuthType = AuthenticationCategory.ENCRYPTED.getSupportingAuthType();
+        AuthenticationCategory authenticationCategory=authenticationInfo.getAuthenticationCategory();
+        AuthType supportingAuthType = AuthenticationCategory.getByAuthType(authType).getSupportingAuthType();
         if (authType == AuthType.PLAIN) {
             // This is an old plain text password.   Service manager will eventually encrypt this if we leave it
             // alone unless someone updated the database manually like this (which we want to support):
@@ -95,7 +96,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             encryptPlainTextPassword(user);
             authenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
             authType = authenticationInfo.getAuthType();
-        } else if (authType != supportingAuthType) {
+        } else if (authType != supportingAuthType && authenticationCategory == AuthenticationCategory.ENCRYPTED) {
             isPasswordMatchedWithOldAuthType = verifyPasswordWithOldAuthType(user, password, authType);
             if (!isPasswordMatchedWithOldAuthType) {
                 log.info("Authentication failed (auth failed): username=" + username + ", id=" + user.getUserID());
