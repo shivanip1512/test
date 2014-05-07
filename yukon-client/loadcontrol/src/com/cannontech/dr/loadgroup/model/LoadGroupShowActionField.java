@@ -1,10 +1,16 @@
 package com.cannontech.dr.loadgroup.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 
 public class LoadGroupShowActionField extends LoadGroupBackingFieldBase {
 
+    @Autowired
+    private RolePropertyDao rolePropertyDao;
+    
     @Override
     public String getFieldName() {
         return "SHOW_ACTION";
@@ -22,7 +28,12 @@ public class LoadGroupShowActionField extends LoadGroupBackingFieldBase {
         if (group.getDisableFlag()) {
             return "disabled";
         } else {
-            return "enabled";
+            if(rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_LOAD_GROUP_CONTROL, userContext.getYukonUser())) {
+                return "enabled";
+            }
+            else {
+                return "disabled";
+            }            
         }
     }
     
