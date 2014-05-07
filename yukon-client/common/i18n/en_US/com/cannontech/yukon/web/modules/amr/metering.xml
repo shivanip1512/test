@@ -18,6 +18,7 @@
     <entry key="yukon.web.widgets.meterInformationWidget.ping.labelBusy">Pinging</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.disabled">Disabled</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.enabled">Enabled</entry>
+    <entry key="yukon.web.widgetClasses.MeterInformationWidget.notApplicable">Not Applicable</entry>
     <!-- meterReadingsResult.tag -->
     <entry key="yukon.web.widgets.meterInformationWidget.successReading">Successful Read</entry>  
     <entry key="yukon.web.widgets.meterInformationWidget.errorReading">There was an error reading the meter:</entry>
