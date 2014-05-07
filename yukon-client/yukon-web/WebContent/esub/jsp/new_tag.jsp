@@ -3,7 +3,7 @@
 <%@page import="com.cannontech.user.YukonUserContext"%>
 <%@ page import="com.cannontech.spring.YukonSpringHook"%> 
 <%@ page import="com.cannontech.core.dao.PointDao" %>
-<%@ page import="com.cannontech.core.dao.DeviceDao" %>
+<%@ page import="com.cannontech.core.dao.PaoDao" %>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
@@ -25,7 +25,7 @@
 	String actionStr = request.getParameter("action");
 	
 	LitePoint litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);
-	LiteYukonPAObject liteDevice = YukonSpringHook.getBean(DeviceDao.class).getLiteDevice(litePoint.getPaobjectID());
+	LiteYukonPAObject liteDevice = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(litePoint.getPaobjectID());
 	
 	if(actionStr != null && actionStr.equalsIgnoreCase("SUBMITTAG")) {
 		TagManager.getInstance().createTag(pointID, Integer.parseInt(tagIDStr), YUKON_USER.getUsername(), descriptionStr, "-", "-");
