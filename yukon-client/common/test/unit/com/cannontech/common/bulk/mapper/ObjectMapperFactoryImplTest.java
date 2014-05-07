@@ -383,11 +383,6 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         @Override
-        public LiteYukonPAObject getLiteDevice(int deviceID) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
         public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID) {
             throw new UnsupportedOperationException("Method not implemented");
         }

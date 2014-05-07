@@ -12,12 +12,6 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public class MockDeviceDao implements DeviceDao {
-
-    @Override
-    public LiteYukonPAObject getLiteDevice(int deviceID) {
-        throw new MethodNotImplementedException();
-    }
-
     @Override
     public SimpleDevice getYukonDevice(int paoId) {
         throw new MethodNotImplementedException();

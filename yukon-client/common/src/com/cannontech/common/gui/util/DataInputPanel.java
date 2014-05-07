@@ -3,7 +3,6 @@ package com.cannontech.common.gui.util;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import com.cannontech.clientutils.CTILogger;
@@ -21,15 +20,11 @@ public abstract class DataInputPanel extends JPanel {
     // and it will print to the screen.
     private String errorString = " ";
 
-    public DataInputPanel() {
-        super();
-        initialize();
-    }
-
     /**
      * Override this to set the cursor or focus on a specific element of the UI.
      */
     public void setFirstFocus() {
+        // Default empty implementation.
     }
 
     public void addDataInputPanelListener(DataInputPanelListener listener) {
@@ -56,14 +51,12 @@ public abstract class DataInputPanel extends JPanel {
 
     public abstract Object getValue(Object o) throws EditorInputValidationException;
 
-    private void initialize() {
-    }
-
     /**
      * This method must be implemented if a notion of data validity needs to be supported.
+     * 
+     * This method should be overridden all the time.
+     * IN THE FUTURE THIS METHOD WILL BE MADE abstract.
      */
-    /* This method should be overridden all the time */
-    /* IN THE FUTURE THIS METHOD WILL BE MADE abstract */
     public boolean isInputValid() {
         return true;
     }
@@ -84,7 +77,10 @@ public abstract class DataInputPanel extends JPanel {
         // nothing by default, used to clean up large pieces of memory
     }
 
-    public void postSave(DBPersistent o) {
+    /**
+     * @param dbPersistent The dbPersistent that was just saved.
+     */
+    public void postSave(DBPersistent dbPersistent) {
         // default nothing
     }
 
@@ -93,7 +89,8 @@ public abstract class DataInputPanel extends JPanel {
      * If thisPaobjectId is the same as a paobjectId, then still considered unique.
      */
     protected boolean isUniquePao(String paoName, String category, String paoClass, int thisPaobjectId) {
-        LiteYukonPAObject liteYukonPAObject = YukonSpringHook.getBean(PaoDao.class).findUnique(paoName, category, paoClass);
+        LiteYukonPAObject liteYukonPAObject =
+            YukonSpringHook.getBean(PaoDao.class).findUnique(paoName, category, paoClass);
 
         // if one is found, compare it to deviceBase to see if its this.
         if (liteYukonPAObject != null) {
@@ -108,25 +105,21 @@ public abstract class DataInputPanel extends JPanel {
         return isUniquePao(paoName, category, paoClass, -1);
     }
 
-    public final static Integer getIntervalComboBoxSecondsValue(JComboBox comboBox) {
-        return getIntervalSecondsValue((String) comboBox.getSelectedItem());
-    }
-
     public final static Integer getIntervalSecondsValue(String selectedString) {
         Integer generic = null;
         Integer retVal = null;
         int multiplier = 1;
 
         if (selectedString == null) {
-            retVal = new Integer(0); // we have no idea, just use zero
+            retVal = 0; // we have no idea, just use zero
         } else if (selectedString.toLowerCase().compareTo("daily") == 0) {
-            generic = new Integer(86400);
+            generic = 86400;
             return generic;
         } else if (selectedString.toLowerCase().compareTo("weekly") == 0) {
-            generic = new Integer(604800);
+            generic = 604800;
             return generic;
         } else if (selectedString.toLowerCase().compareTo("monthly") == 0) {
-            generic = new Integer(2592000);
+            generic = 2592000;
             return generic;
         } else if (selectedString.toLowerCase().indexOf("second") != -1) {
             multiplier = 1;
@@ -143,12 +136,10 @@ public abstract class DataInputPanel extends JPanel {
         try {
             int loc = selectedString.toLowerCase().indexOf(" ");
 
-            retVal = new Integer(
-                                 multiplier * Integer.parseInt(
-                                     selectedString.toLowerCase().substring(0, loc)));
+            retVal = multiplier * Integer.parseInt(selectedString.toLowerCase().substring(0, loc));
         } catch (Exception e) {
             CTILogger.error("Unable to parse combo box text string into seconds, using ZERO", e);
-            retVal = new Integer(0);
+            retVal = 0;
         }
 
         return retVal;

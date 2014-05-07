@@ -1,597 +1,422 @@
 package com.cannontech.database.db.device.lm;
 
-import com.cannontech.core.dao.DeviceDao;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * This type was created in VisualAge.
- */
-public class LMControlAreaTrigger extends com.cannontech.database.db.NestedDBPersistent 
-{
-	private Integer deviceID = null;
-	private Integer triggerNumber = new Integer(0);
-	private String triggerType = IlmDefines.TYPE_THRESHOLD;
-	private Integer pointID = new Integer( PointTypes.SYS_PID_SYSTEM );
-	private Integer normalState = new Integer(0);
-	private Double threshold = null;
-	private String projectionType = com.cannontech.common.util.CtiUtilities.STRING_NONE;
-	private Integer projectionPoints = new Integer(0);
-	private Integer projectAheadDuration = new Integer(0);
-	private Integer thresholdKickPercent = new Integer(0);
-	private Double minRestoreOffset = new Double(0.0);
-	private Integer peakPointID = new Integer(0);
-	private Integer triggerID = null;
-	private Integer thresholdPointID = new Integer(0);
+public class LMControlAreaTrigger extends NestedDBPersistent {
+    private Integer deviceID = null;
+    private Integer triggerNumber = 0;
+    private String triggerType = IlmDefines.TYPE_THRESHOLD;
+    private Integer pointID = PointTypes.SYS_PID_SYSTEM;
+    private Integer normalState = 0;
+    private Double threshold = null;
+    private String projectionType = CtiUtilities.STRING_NONE;
+    private Integer projectionPoints = 0;
+    private Integer projectAheadDuration = 0;
+    private Integer thresholdKickPercent = 0;
+    private Double minRestoreOffset = 0.0;
+    private Integer peakPointID = 0;
+    private Integer triggerID = null;
+    private Integer thresholdPointID = 0;
 
-	
-	public static final String SETTER_COLUMNS[] = 
-	{ 
-		"TriggerNumber", "TriggerType", "PointID", "NormalState",
-		"Threshold", "ProjectionType", "ProjectionPoints",
-		"ProjectAheadDuration", "ThresholdKickPercent", "MinRestoreOffset",
-		"PeakPointID", "DeviceID", "ThresholdPointID"
-	};
+    public static final String SETTER_COLUMNS[] = { "TriggerNumber", "TriggerType", "PointID", "NormalState",
+        "Threshold", "ProjectionType", "ProjectionPoints", "ProjectAheadDuration", "ThresholdKickPercent",
+        "MinRestoreOffset", "PeakPointID", "DeviceID", "ThresholdPointID" };
 
-	public static final String CONSTRAINT_COLUMNS[] = { "TriggerID" };
+    public static final String CONSTRAINT_COLUMNS[] = { "TriggerID" };
 
+    public static final String TABLE_NAME = "LMControlAreaTrigger";
 
-	public static final String TABLE_NAME = "LMControlAreaTrigger";
+    private transient LiteYukonPAObject liteDev = null;
+    private transient LitePoint litePt = null;
 
-	private transient LiteYukonPAObject liteDev = null;
-	private transient LitePoint litePt = null;
+    @Override
+    public void add() throws SQLException {
+        if (getTriggerID() == null) {
+            setTriggerID(new Integer(getNextTriggerID(getDbConnection())));
+        }
 
-/**
- * LMGroupEmetcon constructor comment.
- */
-public LMControlAreaTrigger() {
-	super();
-}
-/**
- * add method comment.
- */
-public void add() throws java.sql.SQLException 
-{
-	if (getTriggerID() == null)
-		setTriggerID( new Integer(getNextTriggerID(getDbConnection())) );
-	
-	Object addValues[] = { getDeviceID(), getTriggerNumber(), getTriggerType(),
-				getPointID(), getNormalState(), getThreshold(), getProjectionType(),
-				getProjectionPoints(), getProjectAheadDuration(),
-				getThresholdKickPercent(), getMinRestoreOffset(), getPeakPointID(), getTriggerID(), getThresholdPointID() };
+        Object addValues[] =
+            { getDeviceID(), getTriggerNumber(), getTriggerType(), getPointID(), getNormalState(), getThreshold(),
+                getProjectionType(), getProjectionPoints(), getProjectAheadDuration(), getThresholdKickPercent(),
+                getMinRestoreOffset(), getPeakPointID(), getTriggerID(), getThresholdPointID() };
 
-	add( TABLE_NAME, addValues );
-}
-/**
- * delete method comment.
- */
-public void delete() throws java.sql.SQLException {
-	delete("DynamicLMControlAreaTrigger", "DeviceID", getDeviceID() );
-	delete( TABLE_NAME, "TriggerID", getTriggerID() );
-}
-/**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param deviceID java.lang.Integer
- */
-public static boolean deleteAllControlAreaTriggers(Integer ctrlAreaDeviceID, java.sql.Connection conn)
-{
-	//com.cannontech.database.SqlStatement sql = 
-		//new com.cannontech.database.SqlStatement( databaseAlias );
-	java.sql.PreparedStatement pstmt = null;		
-	String sql = "DELETE FROM " + TABLE_NAME + " WHERE deviceID=" + ctrlAreaDeviceID;
+        add(TABLE_NAME, addValues);
+    }
 
-	try
-	{		
-		if( conn == null )
-		{
-			throw new IllegalStateException("Database connection should not be (null)");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.executeUpdate();
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( pstmt != null ) 
-				pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
-	}
+    @Override
+    public void delete() throws SQLException {
+        delete("DynamicLMControlAreaTrigger", "DeviceID", getDeviceID());
+        delete(TABLE_NAME, "TriggerID", getTriggerID());
+    }
 
-	return true;
-}
-/**
- * This method was created in VisualAge.
- * @return LMControlAreaTrigger[]
- * @param stateGroup java.lang.Integer
- */
-public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctrlAreaDeviceID) throws java.sql.SQLException 
-{
-	return getAllControlAreaTriggers(ctrlAreaDeviceID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());												
-}
-/**
- * This method was created in VisualAge.
- * @return LMControlAreaTrigger[]
- * @param stateGroup java.lang.Integer
- */
-public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctrlAreaDeviceID, String databaseAlias) throws java.sql.SQLException
-{
-	java.util.ArrayList tmpList = new java.util.ArrayList(30);
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
+    public static boolean deleteAllControlAreaTriggers(Integer ctrlAreaDeviceID, Connection conn) {
+        PreparedStatement pstmt = null;
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE deviceID=" + ctrlAreaDeviceID;
 
-	String sql = "SELECT MinRestoreOffset,NormalState,PeakPointID,PointID,ProjectAheadDuration, " +
-		"ProjectionPoints,ProjectionType,Threshold,ThresholdKickPercent, "+
-		"TriggerNumber,TriggerType,DeviceID,TriggerID,ThresholdPointID " + 
-		"FROM " + TABLE_NAME + " WHERE DEVICEID= ?";
+        try {
+            if (conn == null) {
+                throw new IllegalStateException("Database connection should not be (null)");
+            }
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException e2) {
+                CTILogger.error(e2.getMessage(), e2);// something is up
+            }
+        }
 
-	try
-	{		
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(databaseAlias);
+        return true;
+    }
 
-		if( conn == null )
-		{
-			throw new IllegalStateException("Error getting database connection.");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.setInt( 1, ctrlAreaDeviceID.intValue() );
-			
-			rset = pstmt.executeQuery();							
-	
-			while( rset.next() )
-			{
-				LMControlAreaTrigger item = new LMControlAreaTrigger();
+    public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctrlAreaDeviceID)
+            throws SQLException {
+        return getAllControlAreaTriggers(ctrlAreaDeviceID, CtiUtilities.getDatabaseAlias());
+    }
 
-				item.setDbConnection(conn);
-				item.setMinRestoreOffset( new Double(rset.getDouble("MinRestoreOffset")) );
-				item.setNormalState( new Integer(rset.getInt("NormalState")) );
-				item.setPeakPointID( new Integer(rset.getInt("PeakPointID")) );
-				item.setPointID( new Integer(rset.getInt("PointID")) );
-				item.setProjectAheadDuration( new Integer(rset.getInt("ProjectAheadDuration")) );
-				item.setProjectionPoints( new Integer(rset.getInt("ProjectionPoints")) );
-				item.setProjectionType( rset.getString("ProjectionType") );
-				item.setThreshold( new Double(rset.getDouble("Threshold")) );
-				item.setThresholdKickPercent( new Integer(rset.getInt("ThresholdKickPercent")) );
-				item.setTriggerNumber( new Integer(rset.getInt("TriggerNumber")) );
-				item.setTriggerType( rset.getString("TriggerType") );
-				item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
-				item.setTriggerID( new Integer(rset.getInt("TriggerID")) );
-				item.setThresholdPointID(new Integer(rset.getInt("ThresholdPointID")));
+    public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctrlAreaDeviceID,
+            String databaseAlias) throws SQLException {
+        List<LMControlAreaTrigger> tmpList = new ArrayList<>(30);
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
 
-				tmpList.add( item );
-			}
-					
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, pstmt, conn );
-	}
+        String sql =
+            "SELECT MinRestoreOffset,NormalState,PeakPointID,PointID,ProjectAheadDuration, "
+                + "ProjectionPoints,ProjectionType,Threshold,ThresholdKickPercent, "
+                + "TriggerNumber,TriggerType,DeviceID,TriggerID,ThresholdPointID " + "FROM " + TABLE_NAME
+                + " WHERE DEVICEID= ?";
 
+        try {
+            conn = PoolManager.getInstance().getConnection(databaseAlias);
 
-	LMControlAreaTrigger retVal[] = new LMControlAreaTrigger[ tmpList.size() ];
-	tmpList.toArray( retVal );
-	
-	return retVal;
-}
+            if (conn == null) {
+                throw new IllegalStateException("Error getting database connection.");
+            }
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setInt(1, ctrlAreaDeviceID.intValue());
 
-public static final java.util.Vector getAllTriggersForAnArea( Integer ctrlAreaDeviceID, java.sql.Connection conn)
-{
-	java.util.Vector tmpList = new java.util.Vector(5);
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
+            rset = pstmt.executeQuery();
 
-	String sql = "SELECT MinRestoreOffset,NormalState,PeakPointID,PointID,ProjectAheadDuration, " +
-		"ProjectionPoints,ProjectionType,Threshold,ThresholdKickPercent, "+
-		"TriggerNumber,TriggerType,DeviceID,TriggerID,ThresholdPointID " + 
-		"FROM " + TABLE_NAME + " WHERE DEVICEID= ?";
+            while (rset.next()) {
+                LMControlAreaTrigger item = new LMControlAreaTrigger();
 
-	try
-	{		
-		if (conn == null)
-					throw new IllegalArgumentException("Received a (null) database connection");
-		
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.setInt( 1, ctrlAreaDeviceID.intValue() );
-			
-			rset = pstmt.executeQuery();							
-	
-			while( rset.next() )
-			{
-				LMControlAreaTrigger item = new LMControlAreaTrigger();
+                item.setDbConnection(conn);
+                item.setMinRestoreOffset(new Double(rset.getDouble("MinRestoreOffset")));
+                item.setNormalState(new Integer(rset.getInt("NormalState")));
+                item.setPeakPointID(new Integer(rset.getInt("PeakPointID")));
+                item.setPointID(new Integer(rset.getInt("PointID")));
+                item.setProjectAheadDuration(new Integer(rset.getInt("ProjectAheadDuration")));
+                item.setProjectionPoints(new Integer(rset.getInt("ProjectionPoints")));
+                item.setProjectionType(rset.getString("ProjectionType"));
+                item.setThreshold(new Double(rset.getDouble("Threshold")));
+                item.setThresholdKickPercent(new Integer(rset.getInt("ThresholdKickPercent")));
+                item.setTriggerNumber(new Integer(rset.getInt("TriggerNumber")));
+                item.setTriggerType(rset.getString("TriggerType"));
+                item.setDeviceID(new Integer(rset.getInt("DeviceID")));
+                item.setTriggerID(new Integer(rset.getInt("TriggerID")));
+                item.setThresholdPointID(new Integer(rset.getInt("ThresholdPointID")));
 
-				item.setDbConnection(conn);
-				item.setMinRestoreOffset( new Double(rset.getDouble("MinRestoreOffset")) );
-				item.setNormalState( new Integer(rset.getInt("NormalState")) );
-				item.setPeakPointID( new Integer(rset.getInt("PeakPointID")) );
-				item.setPointID( new Integer(rset.getInt("PointID")) );
-				item.setProjectAheadDuration( new Integer(rset.getInt("ProjectAheadDuration")) );
-				item.setProjectionPoints( new Integer(rset.getInt("ProjectionPoints")) );
-				item.setProjectionType( rset.getString("ProjectionType") );
-				item.setThreshold( new Double(rset.getDouble("Threshold")) );
-				item.setThresholdKickPercent( new Integer(rset.getInt("ThresholdKickPercent")) );
-				item.setTriggerNumber( new Integer(rset.getInt("TriggerNumber")) );
-				item.setTriggerType( rset.getString("TriggerType") );
-				item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
-				item.setTriggerID( new Integer(rset.getInt("TriggerID")) );
-				item.setThresholdPointID( new Integer(rset.getInt("ThresholdPointID")));
+                tmpList.add(item);
+            }
+        } catch (SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            SqlUtils.close(rset, pstmt, conn);
+        }
 
-				tmpList.add( item );
-			}
-					
-		}		
-	}
-	
-	catch (java.sql.SQLException e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, pstmt);
-	}
+        LMControlAreaTrigger retVal[] = new LMControlAreaTrigger[tmpList.size()];
+        tmpList.toArray(retVal);
 
-	return tmpList;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/21/2001 2:00:45 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getDeviceID() {
-	return deviceID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/29/2001 11:00:50 AM)
- * @return java.lang.Double
- */
-public java.lang.Double getMinRestoreOffset() {
-	return minRestoreOffset;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getNormalState() {
-	return normalState;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getPeakPointID() {
-	return peakPointID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getPointID() {
-	return pointID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getProjectAheadDuration() {
-	return projectAheadDuration;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getProjectionPoints() {
-	return projectionPoints;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @return java.lang.String
- */
-public java.lang.String getProjectionType() {
-	return projectionType;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/29/2001 11:00:50 AM)
- * @return java.lang.Double
- */
-public java.lang.Double getThreshold() {
-	return threshold;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getThresholdKickPercent() {
-	return thresholdKickPercent;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getTriggerNumber() {
-	return triggerNumber;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @return java.lang.String
- */
-public java.lang.String getTriggerType() {
-	return triggerType;
-}
+        return retVal;
+    }
 
-public java.lang.Integer getTriggerID() {
-	return triggerID;
-}
+    public static final Vector<LMControlAreaTrigger> getAllTriggersForAnArea(Integer ctrlAreaDeviceID, Connection conn) {
+        Vector<LMControlAreaTrigger> tmpList = new Vector<>(5);
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
 
-public static final int getNextTriggerID( java.sql.Connection conn ) throws java.sql.SQLException
-{
-   	java.sql.PreparedStatement pstmt = null;
-   	java.sql.ResultSet rset = null;
+        String sql =
+            "SELECT MinRestoreOffset,NormalState,PeakPointID,PointID,ProjectAheadDuration, "
+                + "ProjectionPoints,ProjectionType,Threshold,ThresholdKickPercent, "
+                + "TriggerNumber,TriggerType,DeviceID,TriggerID,ThresholdPointID " + "FROM " + TABLE_NAME
+                + " WHERE DEVICEID= ?";
 
-   	String sql = "select MAX(TriggerID) + 1 from " + TABLE_NAME;
-      
-   	try
-   	{
-	  	if (conn == null)
-			throw new IllegalArgumentException("Received a (null) database connection");
+        try {
+            if (conn == null) {
+                throw new IllegalArgumentException("Received a (null) database connection");
+            }
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setInt(1, ctrlAreaDeviceID.intValue());
 
-	  	pstmt = conn.prepareStatement(sql.toString());
+            rset = pstmt.executeQuery();
 
-	  	rset = pstmt.executeQuery();
+            while (rset.next()) {
+                LMControlAreaTrigger item = new LMControlAreaTrigger();
 
-	  	while( rset.next() )
-	  	{
-			return rset.getInt(1);
-	  	}
-   	}
-   	catch (java.sql.SQLException e)
-   	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-   	}
-   	finally
-   	{
-	  	try
-	  	{
-			if (pstmt != null)
-				pstmt.close();
-	  	}
-	  	catch (java.sql.SQLException e2)
-	  	{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
-	  	}
-   	}
+                item.setDbConnection(conn);
+                item.setMinRestoreOffset(new Double(rset.getDouble("MinRestoreOffset")));
+                item.setNormalState(new Integer(rset.getInt("NormalState")));
+                item.setPeakPointID(new Integer(rset.getInt("PeakPointID")));
+                item.setPointID(new Integer(rset.getInt("PointID")));
+                item.setProjectAheadDuration(new Integer(rset.getInt("ProjectAheadDuration")));
+                item.setProjectionPoints(new Integer(rset.getInt("ProjectionPoints")));
+                item.setProjectionType(rset.getString("ProjectionType"));
+                item.setThreshold(new Double(rset.getDouble("Threshold")));
+                item.setThresholdKickPercent(new Integer(rset.getInt("ThresholdKickPercent")));
+                item.setTriggerNumber(new Integer(rset.getInt("TriggerNumber")));
+                item.setTriggerType(rset.getString("TriggerType"));
+                item.setDeviceID(new Integer(rset.getInt("DeviceID")));
+                item.setTriggerID(new Integer(rset.getInt("TriggerID")));
+                item.setThresholdPointID(new Integer(rset.getInt("ThresholdPointID")));
 
-   	throw new java.sql.SQLException("Unable to retrieve the next TriggerID");
-}
+                tmpList.add(item);
+            }
+        }
 
-/**
- * retrieve method comment.
- */
-public void retrieve() throws java.sql.SQLException 
-{
-	Object constraintValues[] = { getTriggerID() };
+        catch (SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            SqlUtils.close(rset, pstmt);
+        }
 
-	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+        return tmpList;
+    }
 
-	if( results.length == SETTER_COLUMNS.length )
-	{
-		setTriggerNumber( (Integer) results[0] );
-		setTriggerType( (String) results[1] );
-		setPointID( (Integer) results[2] );
-		setNormalState( (Integer) results[3] );
-		setThreshold( (Double) results[4] );
-		setProjectionType( (String) results[5] );
-		setProjectionPoints( (Integer) results[6] );
-		setProjectAheadDuration( (Integer) results[7] );
-		setThresholdKickPercent( (Integer) results[8] );
-		setMinRestoreOffset( (Double) results[9] );
-		setPeakPointID( (Integer) results[10] );
-		setDeviceID( (Integer) results[11] );
-		setThresholdPointID( (Integer) results[12] );
-	}
-	else
-		throw new Error(getClass() + " - Incorrect Number of results retrieved");
+    public Integer getDeviceID() {
+        return deviceID;
+    }
 
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/21/2001 2:00:46 PM)
- * @param newCtrlAreaDeviceID java.lang.Integer
- */
-public void setDeviceID(java.lang.Integer newDeviceID) 
-{
-	deviceID = newDeviceID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/29/2001 11:00:50 AM)
- * @param newMinRestoreOffset java.lang.Double
- */
-public void setMinRestoreOffset(java.lang.Double newMinRestoreOffset) {
-	minRestoreOffset = newMinRestoreOffset;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @param newNormalState java.lang.Integer
- */
-public void setNormalState(java.lang.Integer newNormalState) {
-	normalState = newNormalState;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @param newPeakPointID java.lang.Integer
- */
-public void setPeakPointID(java.lang.Integer newPeakPointID) {
-	peakPointID = newPeakPointID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @param newPointID java.lang.Integer
- */
-public void setPointID(java.lang.Integer newPointID) {
-	pointID = newPointID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @param newProjectAheadDuration java.lang.Integer
- */
-public void setProjectAheadDuration(java.lang.Integer newProjectAheadDuration) {
-	projectAheadDuration = newProjectAheadDuration;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @param newProjectionPoints java.lang.Integer
- */
-public void setProjectionPoints(java.lang.Integer newProjectionPoints) {
-	projectionPoints = newProjectionPoints;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @param newProjectionType java.lang.String
- */
-public void setProjectionType(java.lang.String newProjectionType) {
-	projectionType = newProjectionType;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/29/2001 11:00:50 AM)
- * @param newThreshold java.lang.Double
- */
-public void setThreshold(java.lang.Double newThreshold) {
-	threshold = newThreshold;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @param newThresholdKickPercent java.lang.Integer
- */
-public void setThresholdKickPercent(java.lang.Integer newThresholdKickPercent) {
-	thresholdKickPercent = newThresholdKickPercent;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @param newTriggerNumber java.lang.Integer
- */
-public void setTriggerNumber(java.lang.Integer newTriggerNumber) {
-	triggerNumber = newTriggerNumber;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/19/2001 10:16:14 AM)
- * @param newTriggerType java.lang.String
- */
-public void setTriggerType(java.lang.String newTriggerType) {
-	triggerType = newTriggerType;
-}
+    public Double getMinRestoreOffset() {
+        return minRestoreOffset;
+    }
 
-public void setTriggerID(java.lang.Integer newTriggerID) 
-{
-	triggerID = newTriggerID;
-}
+    public Integer getNormalState() {
+        return normalState;
+    }
 
-private LitePoint getLtPoint()
-{
-	if( getPointID().intValue() == PointTypes.SYS_PID_SYSTEM )
-	{
-		litePt = null;
-	}
-	else if( litePt == null )	
-		litePt = YukonSpringHook.getBean(PointDao.class).getLitePoint( getPointID().intValue() );
-		
-	return litePt;
-}
+    public Integer getPeakPointID() {
+        return peakPointID;
+    }
 
-public void clearNames()
-{
-	litePt = null;
-	liteDev = null;
-}
+    public Integer getPointID() {
+        return pointID;
+    }
 
-private LiteYukonPAObject getLtPao()
-{
-	if( getPointID().intValue() == PointTypes.SYS_PID_SYSTEM )
-	{
-		liteDev = null;
-	}
-	else if( liteDev == null )
-	{		
-		liteDev = YukonSpringHook.getBean(DeviceDao.class).getLiteDevice( getLtPoint().getPaobjectID() );
-	}
-		
-	return liteDev;
-}
+    public Integer getProjectAheadDuration() {
+        return projectAheadDuration;
+    }
 
-/**
- * 
- */
-public String toString()
-{
-	return getTriggerType() +
-		( getLtPoint() != null 
-		  ? " (" + getLtPao().getPaoName() + " / " + getLtPoint().getPointName() + ")" 
-		  : " (PointID: " + getPointID() + ")" );
-}
-/**
- * update method comment.
- */
-public void update() throws java.sql.SQLException 
-{
-	Object setValues[] = { getTriggerNumber(), getTriggerType(),
-				getPointID(), getNormalState(), getThreshold(), getProjectionType(),
-				getProjectionPoints(), getProjectAheadDuration(),
-				getThresholdKickPercent(), getMinRestoreOffset(), getPeakPointID(), getDeviceID(), getThresholdPointID() };
+    public Integer getProjectionPoints() {
+        return projectionPoints;
+    }
 
-	Object constraintValues[] = { getTriggerID() };
+    public String getProjectionType() {
+        return projectionType;
+    }
 
-	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-}
-public void setThresholdPointID(Integer thresholdPointID) {
-	this.thresholdPointID = thresholdPointID;
-}
-public Integer getThresholdPointID() {
-	return thresholdPointID;
-}
+    public Double getThreshold() {
+        return threshold;
+    }
+
+    public Integer getThresholdKickPercent() {
+        return thresholdKickPercent;
+    }
+
+    public Integer getTriggerNumber() {
+        return triggerNumber;
+    }
+
+    public String getTriggerType() {
+        return triggerType;
+    }
+
+    public Integer getTriggerID() {
+        return triggerID;
+    }
+
+    public static final int getNextTriggerID(Connection conn) throws SQLException {
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        String sql = "select MAX(TriggerID) + 1 from " + TABLE_NAME;
+
+        try {
+            if (conn == null) {
+                throw new IllegalArgumentException("Received a (null) database connection");
+            }
+
+            pstmt = conn.prepareStatement(sql.toString());
+
+            rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                return rset.getInt(1);
+            }
+        } catch (SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException e2) {
+                CTILogger.error(e2.getMessage(), e2); // something is up
+            }
+        }
+
+        throw new SQLException("Unable to retrieve the next TriggerID");
+    }
+
+    @Override
+    public void retrieve() throws SQLException {
+        Object constraintValues[] = { getTriggerID() };
+
+        Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
+
+        if (results.length == SETTER_COLUMNS.length) {
+            setTriggerNumber((Integer) results[0]);
+            setTriggerType((String) results[1]);
+            setPointID((Integer) results[2]);
+            setNormalState((Integer) results[3]);
+            setThreshold((Double) results[4]);
+            setProjectionType((String) results[5]);
+            setProjectionPoints((Integer) results[6]);
+            setProjectAheadDuration((Integer) results[7]);
+            setThresholdKickPercent((Integer) results[8]);
+            setMinRestoreOffset((Double) results[9]);
+            setPeakPointID((Integer) results[10]);
+            setDeviceID((Integer) results[11]);
+            setThresholdPointID((Integer) results[12]);
+        } else {
+            throw new Error(getClass() + " - Incorrect Number of results retrieved");
+        }
+    }
+
+    public void setDeviceID(Integer newDeviceID) {
+        deviceID = newDeviceID;
+    }
+
+    public void setMinRestoreOffset(Double newMinRestoreOffset) {
+        minRestoreOffset = newMinRestoreOffset;
+    }
+
+    public void setNormalState(Integer newNormalState) {
+        normalState = newNormalState;
+    }
+
+    public void setPeakPointID(Integer newPeakPointID) {
+        peakPointID = newPeakPointID;
+    }
+
+    public void setPointID(Integer newPointID) {
+        pointID = newPointID;
+    }
+
+    public void setProjectAheadDuration(Integer newProjectAheadDuration) {
+        projectAheadDuration = newProjectAheadDuration;
+    }
+
+    public void setProjectionPoints(Integer newProjectionPoints) {
+        projectionPoints = newProjectionPoints;
+    }
+
+    public void setProjectionType(String newProjectionType) {
+        projectionType = newProjectionType;
+    }
+
+    public void setThreshold(Double newThreshold) {
+        threshold = newThreshold;
+    }
+
+    public void setThresholdKickPercent(Integer newThresholdKickPercent) {
+        thresholdKickPercent = newThresholdKickPercent;
+    }
+
+    public void setTriggerNumber(Integer newTriggerNumber) {
+        triggerNumber = newTriggerNumber;
+    }
+
+    public void setTriggerType(String newTriggerType) {
+        triggerType = newTriggerType;
+    }
+
+    public void setTriggerID(Integer newTriggerID) {
+        triggerID = newTriggerID;
+    }
+
+    private LitePoint getLtPoint() {
+        if (getPointID().intValue() == PointTypes.SYS_PID_SYSTEM) {
+            litePt = null;
+        } else if (litePt == null) {
+            litePt = YukonSpringHook.getBean(PointDao.class).getLitePoint(getPointID().intValue());
+        }
+
+        return litePt;
+    }
+
+    public void clearNames() {
+        litePt = null;
+        liteDev = null;
+    }
+
+    private LiteYukonPAObject getLtPao() {
+        if (getPointID().intValue() == PointTypes.SYS_PID_SYSTEM) {
+            liteDev = null;
+        } else if (liteDev == null) {
+            liteDev = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(getLtPoint().getPaobjectID());
+        }
+
+        return liteDev;
+    }
+
+    @Override
+    public String toString() {
+        return getTriggerType()
+            + (getLtPoint() != null ? " (" + getLtPao().getPaoName() + " / " + getLtPoint().getPointName() + ")"
+                : " (PointID: " + getPointID() + ")");
+    }
+
+    @Override
+    public void update() throws SQLException {
+        Object setValues[] =
+            { getTriggerNumber(), getTriggerType(), getPointID(), getNormalState(), getThreshold(),
+                getProjectionType(), getProjectionPoints(), getProjectAheadDuration(), getThresholdKickPercent(),
+                getMinRestoreOffset(), getPeakPointID(), getDeviceID(), getThresholdPointID() };
+
+        Object constraintValues[] = { getTriggerID() };
+
+        update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
+    }
+
+    public void setThresholdPointID(Integer thresholdPointID) {
+        this.thresholdPointID = thresholdPointID;
+    }
+
+    public Integer getThresholdPointID() {
+        return thresholdPointID;
+    }
 }

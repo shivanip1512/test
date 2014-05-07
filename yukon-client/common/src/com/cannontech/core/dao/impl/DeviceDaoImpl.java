@@ -49,59 +49,43 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
-/**
- * Insert the type's description here.
- * Creation date: (3/26/2001 9:40:33 AM)
- * @author: 
- */
 public final class DeviceDaoImpl implements DeviceDao {
-
-    private YukonDeviceRowMapper yukonDeviceRowMapper = null;
+    private YukonDeviceRowMapper deviceRowMapper;
 
     @Autowired private JdbcOperations jdbcOps;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private MeterDao meterDao;
-    
+
     public static final YukonRowMapper<SimpleDevice> SIMPLE_DEVICE_MAPPER = new YukonRowMapper<SimpleDevice>() {
         @Override
         public SimpleDevice mapRow(YukonResultSet rs) throws SQLException {
-            int deviceId = rs.getInt("paobjectid");
-            String typeStr = rs.getString("type");
-            PaoType paoType = PaoType.getForDbString(typeStr);
+            int deviceId = rs.getInt("paobjectId");
+            PaoType paoType = rs.getEnum("type", PaoType.class);
             return new SimpleDevice(deviceId, paoType);
         }
-        
     };
-
-    /**
-     * PointFuncs constructor comment.
-     */
-    public DeviceDaoImpl() {
-        super();
-    }
 
     @PostConstruct
     public void init() {
-
-        this.yukonDeviceRowMapper = new YukonDeviceRowMapper();
+        deviceRowMapper = new YukonDeviceRowMapper();
     }
 
     @Override
     public void disableDevice(YukonDevice device) {
-        this.enableDisableDevice(device, "Y");
+        enableDisableDevice(device, "Y");
 
     }
+
     @Override
     public void enableDevice(YukonDevice device) {
-        this.enableDisableDevice(device, "N");
+        enableDisableDevice(device, "N");
     }
 
     private void enableDisableDevice(YukonDevice device, String disableFlag) {
-
         String sql = "UPDATE yukonpaobject SET disableflag = ? WHERE paobjectid = ?";
         jdbcOps.update(sql, new Object[] { disableFlag, device.getPaoIdentifier().getPaoId() });
 
@@ -110,17 +94,9 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public void removeDevice(YukonDevice device) {
-        LiteYukonPAObject liteDevice = this.getLiteDevice(device.getPaoIdentifier().getPaoId());
+        LiteYukonPAObject liteDevice = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
         DBPersistent persistent = dbPersistentDao.retrieveDBPersistent(liteDevice);
         dbPersistentDao.performDBChange(persistent, TransactionType.DELETE);
-    }
-
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DeviceDao#getLiteDevice(int)
-     */
-    @Override
-    public LiteYukonPAObject getLiteDevice(final int deviceID) {
-        return paoDao.getLiteYukonPAO( deviceID );
     }
 
     @Override
@@ -136,9 +112,8 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids) {
-        
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -146,60 +121,59 @@ public final class DeviceDaoImpl implements DeviceDao {
                 sql.append("SELECT ypo.PAObjectID, ypo.Type");
                 sql.append("FROM YukonPaObject ypo");
                 sql.append("WHERE ypo.PAObjectID").in(subList);
-               return sql;
+                return sql;
             }
         };
-        
+
         List<SimpleDevice> devices = template.query(sqlGenerator, ids, SIMPLE_DEVICE_MAPPER);
         return devices;
     }
-    
+
     /**
      * A leaner version of getYukonDevice()
      */
     @Override
     public SimpleDevice getYukonDeviceObjectById(int deviceId) {
-
         String sql = "SELECT ypo.PAObjectID, ypo.Type FROM YukonPaObject ypo WHERE ypo.PAObjectID = ?";
-        SimpleDevice device = jdbcOps.queryForObject(sql, new Object[] {deviceId}, this.yukonDeviceRowMapper);
+        SimpleDevice device = jdbcOps.queryForObject(sql, new Object[] { deviceId }, deviceRowMapper);
         return device;
     }
 
     @Override
     public SimpleDevice getYukonDeviceObjectByName(String name) {
-        ImmutableSet<PaoClass> allowedClasses = ImmutableSet.of(PaoClass.CARRIER, PaoClass.METER, PaoClass.IED, PaoClass.RFMESH);
+        ImmutableSet<PaoClass> allowedClasses =
+            ImmutableSet.of(PaoClass.CARRIER, PaoClass.METER, PaoClass.IED, PaoClass.RFMESH);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAO.PAObjectId, PAO.Type");
         sql.append("FROM YukonPAObject PAO");
         sql.append("WHERE PAO.Category").eq(PaoCategory.DEVICE);
-        sql.append(  "AND PAO.PAOClass").in(allowedClasses);
-        sql.append(  "AND UPPER(PAO.PAOName) = UPPER(").appendArgument(name).append(")");
-        
-        SimpleDevice device = yukonJdbcTemplate.queryForObject(sql, this.yukonDeviceRowMapper);
+        sql.append("AND PAO.PAOClass").in(allowedClasses);
+        sql.append("AND UPPER(PAO.PAOName) = UPPER(").appendArgument(name).append(")");
+
+        SimpleDevice device = jdbcTemplate.queryForObject(sql, deviceRowMapper);
         return device;
     }
-    
+
     public SimpleDevice getYukonDeviceObjectByNameAndClass(String name, PaoClass paoClass) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAO.PAObjectId, PAO.Type");
         sql.append("FROM YukonPAObject PAO");
         sql.append("WHERE PAO.Category").eq(PaoCategory.DEVICE);
-        sql.append(  "AND PAO.PAOClass").eq(paoClass);
-        sql.append(  "AND UPPER(PAO.PAOName) = UPPER(").appendArgument(name).append(")");
-        
-        SimpleDevice device = yukonJdbcTemplate.queryForObject(sql, this.yukonDeviceRowMapper);
-        
+        sql.append("AND PAO.PAOClass").eq(paoClass);
+        sql.append("AND UPPER(PAO.PAOName) = UPPER(").appendArgument(name).append(")");
+
+        SimpleDevice device = jdbcTemplate.queryForObject(sql, deviceRowMapper);
+
         return device;
     }
 
     @Override
     public SimpleDevice findYukonDeviceObjectByName(String name) {
-
         SimpleDevice device = null;
         try {
             device = getYukonDeviceObjectByName(name);
-        } catch(EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
         return device;
@@ -207,59 +181,47 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public SimpleDevice getYukonDeviceObjectByMeterNumber(String meterNumber) {
-
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT PAO.PAObjectID, PAO.Type "); 
+        sqlBuilder.append("SELECT PAO.PAObjectID, PAO.Type ");
         sqlBuilder.append("FROM YukonPAObject PAO ");
         sqlBuilder.append("INNER JOIN DeviceMeterGroup DMG ON PAO.PAObjectID = DMG.DeviceID ");
         sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(?) ");
-        SimpleDevice device = jdbcOps.queryForObject(sqlBuilder.getSql(), new Object[] {meterNumber}, this.yukonDeviceRowMapper);
+        SimpleDevice device =
+            jdbcOps.queryForObject(sqlBuilder.getSql(), new Object[] { meterNumber }, deviceRowMapper);
         return device;
     }
 
     @Override
     public SimpleDevice getYukonDeviceObjectByAddress(Long address) {
-
-        String sql = "SELECT ypo.PAObjectID, ypo.Type " + 
-                     " FROM YukonPaObject ypo " +
-                     " INNER JOIN DeviceCarrierSettings dcs ON ypo.PAObjectID = dcs.DeviceID " +
-                     " WHERE dcs.ADDRESS = ? ";
-        SimpleDevice device = jdbcOps.queryForObject(sql, new Object[] {address}, this.yukonDeviceRowMapper);
+        String sql =
+            "SELECT ypo.PAObjectID, ypo.Type " + " FROM YukonPaObject ypo "
+                + " INNER JOIN DeviceCarrierSettings dcs ON ypo.PAObjectID = dcs.DeviceID " + " WHERE dcs.ADDRESS = ? ";
+        SimpleDevice device = jdbcOps.queryForObject(sql, new Object[] { address }, deviceRowMapper);
         return device;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DeviceDao#getLiteDeviceMeterNumber(int)
-     */
     @Override
-    public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID)
-    {
+    public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID) {
         List<LiteDeviceMeterNumber> allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
 
         LiteDeviceMeterNumber ldmn = null;
-        for (int i = 0; i < allDevMtrGrps.size(); i++)
-        {
+        for (int i = 0; i < allDevMtrGrps.size(); i++) {
             ldmn = allDevMtrGrps.get(i);
-            if (ldmn.getDeviceID() == deviceID)
+            if (ldmn.getDeviceID() == deviceID) {
                 return ldmn;
+            }
         }
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DeviceDao#getLiteYukonPaobjectByMeterNumber(java.lang.String)
-     */
     @Override
-    public LiteYukonPAObject getLiteYukonPaobjectByMeterNumber(String meterNumber)
-    {
+    public LiteYukonPAObject getLiteYukonPaobjectByMeterNumber(String meterNumber) {
         List<LiteDeviceMeterNumber> allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
 
         LiteDeviceMeterNumber ldmn = null;
-        for (int i = 0; i < allDevMtrGrps.size(); i++)
-        {
+        for (int i = 0; i < allDevMtrGrps.size(); i++) {
             ldmn = allDevMtrGrps.get(i);
-            if (ldmn.getMeterNumber().equalsIgnoreCase(meterNumber))
-            {
+            if (ldmn.getMeterNumber().equalsIgnoreCase(meterNumber)) {
                 LiteYukonPAObject lPao = databaseCache.getAllPAOsMap().get(new Integer(ldmn.getDeviceID()));
                 return lPao;
             }
@@ -267,9 +229,6 @@ public final class DeviceDaoImpl implements DeviceDao {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DeviceDao#getLiteYukonPaobjectByMeterNumber(java.lang.String)
-     */
     @Override
     public List<LiteYukonPAObject> getLiteYukonPaobjectListByMeterNumber(String meterNumber) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
@@ -282,35 +241,27 @@ public final class DeviceDaoImpl implements DeviceDao {
         sqlBuilder.append("   LEFT JOIN DeviceMeterGroup DMG ON y.PAObjectId = DMG.DeviceId");
         sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(").appendArgument(meterNumber).append(")");
 
-        List<LiteYukonPAObject> paos = yukonJdbcTemplate.query(sqlBuilder, new LitePaoRowMapper());
+        List<LiteYukonPAObject> paos = jdbcTemplate.query(sqlBuilder, new LitePaoRowMapper());
 
         return paos;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DeviceDao#getLiteYukonPaobjectByDeviceName(java.lang.String)
-     */
     @Override
-    public LiteYukonPAObject getLiteYukonPaobjectByDeviceName(String deviceName)
-    {
+    public LiteYukonPAObject getLiteYukonPaobjectByDeviceName(String deviceName) {
         List<LiteYukonPAObject> allDevices = databaseCache.getAllDevices();
 
         LiteYukonPAObject lPao = null;
-        for (int i = 0; i < allDevices.size(); i++)
-        {
+        for (int i = 0; i < allDevices.size(); i++) {
             lPao = allDevices.get(i);
-            if (lPao.getPaoName().equalsIgnoreCase(deviceName))
+            if (lPao.getPaoName().equalsIgnoreCase(deviceName)) {
                 return lPao;
+            }
         }
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DeviceDao#getLiteYukonPAObject(java.lang.String, int, int, int)
-     */
     @Override
-    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, int category, int paoClass, int type)
-    {
+    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, int category, int paoClass, int type) {
         List<LiteYukonPAObject> allDevices = databaseCache.getAllDevices();
         for (Object obj : allDevices) {
             LiteYukonPAObject lPao = (LiteYukonPAObject) obj;
@@ -326,31 +277,20 @@ public final class DeviceDaoImpl implements DeviceDao {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DeviceDao#getLiteYukonPAObject(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
-    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category, String paoClass, String type)
-    {
+    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category, String paoClass, String type) {
         int categoryInt = PaoCategory.getPaoCategory(category);
         int paoClassInt = PaoClass.getPaoClass(paoClass);
         int typeInt = PaoType.getPaoTypeId(type);
         return getLiteYukonPAObject(deviceName, categoryInt, paoClassInt, typeInt);
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DeviceDao#getDevicesByPort(int)
-     */
     @Override
-    public List<Integer> getDevicesByPort(int portId)
-    {
+    public List<Integer> getDevicesByPort(int portId) {
         List<Integer> devices = databaseCache.getDevicesByCommPort(portId);
         return devices;
     }
-    
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DeviceDao#getDevicesByDeviceAddress(java.lang.Integer, java.lang.Integer)
-     */
+
     @Override
     public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
         List<Integer> devicesByAddress = databaseCache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
@@ -358,64 +298,57 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
 
     @Override
-    public List<SimpleDevice> getDevicesForRouteId(int routeId){
-        String sql = "SELECT yp.PAObjectId, yp.Type FROM YukonPAObject yp "
-                        + "JOIN Device d ON yp.PAObjectId = d.DeviceId "
-                        + "JOIN DeviceRoutes dr ON d.DeviceId = dr.DeviceId "
-                        + "WHERE dr.RouteId = ?";
-        List<SimpleDevice> devices = jdbcOps.query(sql, new Integer[] {routeId}, new YukonDeviceRowMapper());
+    public List<SimpleDevice> getDevicesForRouteId(int routeId) {
+        String sql =
+            "SELECT yp.PAObjectId, yp.Type FROM YukonPAObject yp " + "JOIN Device d ON yp.PAObjectId = d.DeviceId "
+                + "JOIN DeviceRoutes dr ON d.DeviceId = dr.DeviceId " + "WHERE dr.RouteId = ?";
+        List<SimpleDevice> devices = jdbcOps.query(sql, new Integer[] { routeId }, new YukonDeviceRowMapper());
         return devices;
     }
-    
+
     @Override
-    public int getRouteDeviceCount(int routeId){
+    public int getRouteDeviceCount(int routeId) {
         String sql = "SELECT COUNT(*) FROM DeviceRoutes WHERE RouteId = ?";
-        return jdbcOps.queryForInt(sql, new Object[]{routeId});
+        return jdbcOps.queryForInt(sql, new Object[] { routeId });
     }
-    
+
     @Override
     public void changeRoute(YukonDevice device, int newRouteId) {
-
         // Updates the meter's meter number
         String sql = " UPDATE DeviceRoutes SET RouteID = ? WHERE DeviceID = ?";
-        jdbcOps.update(sql, new Object[] {newRouteId, device.getPaoIdentifier().getPaoId()});
+        jdbcOps.update(sql, new Object[] { newRouteId, device.getPaoIdentifier().getPaoId() });
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
 
     @Override
     public void changeName(YukonDevice device, String newName) {
-
         String sql = " UPDATE YukonPAObject SET PAOName = ? WHERE PAObjectID = ?";
-        jdbcOps.update(sql, new Object[] {newName, device.getPaoIdentifier().getPaoId()});
+        jdbcOps.update(sql, new Object[] { newName, device.getPaoIdentifier().getPaoId() });
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
 
     @Override
     public void changeAddress(YukonDevice device, int newAddress) {
-
-        String sql = " UPDATE " + DeviceCarrierSettings.TABLE_NAME +
-                     " SET ADDRESS = ? WHERE DeviceID = ?";
-        jdbcOps.update(sql, new Object[] {newAddress, device.getPaoIdentifier().getPaoId()});
+        String sql = " UPDATE " + DeviceCarrierSettings.TABLE_NAME + " SET ADDRESS = ? WHERE DeviceID = ?";
+        jdbcOps.update(sql, new Object[] { newAddress, device.getPaoIdentifier().getPaoId() });
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
 
     @Override
     public void changeMeterNumber(YukonDevice device, String newMeterNumber) {
-
         String sql = " UPDATE DEVICEMETERGROUP SET METERNUMBER = ? WHERE DeviceID = ?";
-        jdbcOps.update(sql, new Object[] {newMeterNumber, device.getPaoIdentifier().getPaoId()});
+        jdbcOps.update(sql, new Object[] { newMeterNumber, device.getPaoIdentifier().getPaoId() });
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
 
     @Override
     public String getFormattedName(YukonDevice device) {
-
         if (device instanceof YukonMeter) {
-            return meterDao.getFormattedDeviceName((YukonMeter)device);
+            return meterDao.getFormattedDeviceName((YukonMeter) device);
         }
 
         LiteYukonPAObject paoObj = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
@@ -424,13 +357,10 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public String getFormattedName(int deviceId) {
-
         try {
             YukonMeter meter = meterDao.getForId(deviceId);
             return meterDao.getFormattedDeviceName(meter);
-
         } catch (NotFoundException e) {
-
             LiteYukonPAObject paoObj = paoDao.getLiteYukonPAO(deviceId);
             return paoObj.getPaoName();
         }
@@ -442,10 +372,12 @@ public final class DeviceDaoImpl implements DeviceDao {
             @Override
             public Map<PaoIdentifier, DeviceCollectionReportDevice> getForPaos(Iterable<PaoIdentifier> identifiers) {
                 Map<PaoIdentifier, String> namesForYukonDevices = getNamesForYukonDevices(identifiers);
-                Map<PaoIdentifier, DeviceCollectionReportDevice> result = Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
+                Map<PaoIdentifier, DeviceCollectionReportDevice> result =
+                    Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
 
                 for (Entry<PaoIdentifier, String> entry : namesForYukonDevices.entrySet()) {
-                    DeviceCollectionReportDevice dcrd = new DeviceCollectionReportDevice(entry.getKey().getPaoIdentifier());
+                    DeviceCollectionReportDevice dcrd =
+                        new DeviceCollectionReportDevice(entry.getKey().getPaoIdentifier());
                     dcrd.setName(entry.getValue());
                     result.put(entry.getKey(), dcrd);
                 }
@@ -456,35 +388,34 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
 
     public Map<PaoIdentifier, String> getNamesForYukonDevices(Iterable<PaoIdentifier> identifiers) {
-    	
-    	ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
-		
-		SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
-		    @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
-		        SqlStatementBuilder sql = new SqlStatementBuilder();
-		        sql.append("select ypo.paoname, d.deviceid");
-		        sql.append("from yukonpaobject ypo");
-		        sql.append("join device d on ypo.paobjectid = d.deviceid");
-		        sql.append("where ypo.paObjectId").in(subList);
-		        return sql;
-		    }
-		};
-        
-        Function<PaoIdentifier, Integer> inputTypeToSqlGeneratorTypeMapper = new Function<PaoIdentifier, Integer>() {
-			@Override
-            public Integer apply(PaoIdentifier from) {
-				return from.getPaoId();
-			}
-		};
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
-        ParameterizedRowMapper<Entry<Integer, String>> rowMapper = new ParameterizedRowMapper<Entry<Integer, String>>() {
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
-            public Entry<Integer, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return Maps.immutableEntry(rs.getInt("deviceid"), rs.getString("paoname"));
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("select ypo.paoname, d.deviceid");
+                sql.append("from yukonpaobject ypo");
+                sql.append("join device d on ypo.paobjectid = d.deviceid");
+                sql.append("where ypo.paObjectId").in(subList);
+                return sql;
             }
         };
-        
+
+        Function<PaoIdentifier, Integer> inputTypeToSqlGeneratorTypeMapper = new Function<PaoIdentifier, Integer>() {
+            @Override
+            public Integer apply(PaoIdentifier from) {
+                return from.getPaoId();
+            }
+        };
+
+        ParameterizedRowMapper<Entry<Integer, String>> rowMapper =
+            new ParameterizedRowMapper<Entry<Integer, String>>() {
+                @Override
+                public Entry<Integer, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return Maps.immutableEntry(rs.getInt("deviceid"), rs.getString("paoname"));
+                }
+            };
 
         return template.mappedQuery(sqlGenerator, identifiers, rowMapper, inputTypeToSqlGeneratorTypeMapper);
     }
@@ -493,7 +424,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
         String typeStr = oldDevice.getPAOType();
         PaoType paoType = PaoType.getForDbString(typeStr);
-    	PaoIdentifier paoIdentifier = new PaoIdentifier(oldDevice.getPAObjectID(), paoType);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(oldDevice.getPAObjectID(), paoType);
         SimpleDevice device = new SimpleDevice(paoIdentifier);
 
         return device;
