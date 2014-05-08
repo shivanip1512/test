@@ -105,7 +105,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("SELECT DISTINCT EnergyCompanyId");
         sql.append("FROM EcToInventoryMapping ecm");
         sql.append("JOIN LmHardwareConfiguration lmhc ON ecm.InventoryId = lmhc.InventoryId");
-        sql.append("WHERE lmhc.AddressingGroupId").eq_k(lmGroupId);
+        sql.append("WHERE lmhc.AddressingGroupId").eq(lmGroupId);
         List<Integer> energyCompanyIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
 
         return energyCompanyIds;

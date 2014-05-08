@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -41,7 +43,6 @@ import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
-import com.cannontech.user.YukonUserContext;
 
 public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationService {
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
@@ -54,6 +55,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     private static final String modifySetUrlPart = "hierarchy/set?format=json";
     private static final String modifyThermostatUrlPart = "hierarchy/thermostat?format=json";
     private static final String demandResponseUrlPart = "demandResponse?format=json";
+    private static final DateTimeFormatter drDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter drTimeFormatter = DateTimeFormat.forPattern("HH:mm:ss");
     
     @Override
     public boolean registerDevice(String serialNumber, int energyCompanyId) throws EcobeeException {
@@ -195,18 +198,11 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         HttpHeaders headers = getHeadersWithAuthentication(energyCompanyId);
         String url = getUrlBase(energyCompanyId) + demandResponseUrlPart;
         
-        String startDateString = dateFormattingService.format(parameters.getStartTime(), 
-                                                              DateFormattingService.DateFormatEnum.DATE_DASHED, 
-                                                              YukonUserContext.system);
-        String startTimeString = dateFormattingService.format(parameters.getStartTime(), 
-                                                              DateFormattingService.DateFormatEnum.TIME24H_WITH_SECONDS, 
-                                                              YukonUserContext.system);
-        String endDateString = dateFormattingService.format(parameters.getEndTime(), 
-                                                              DateFormattingService.DateFormatEnum.DATE_DASHED, 
-                                                              YukonUserContext.system);
-        String endTimeString = dateFormattingService.format(parameters.getEndTime(), 
-                                                              DateFormattingService.DateFormatEnum.TIME24H_WITH_SECONDS, 
-                                                              YukonUserContext.system);
+        String startDateString = drDateFormatter.print(parameters.getStartTime());
+        String startTimeString = drTimeFormatter.print(parameters.getStartTime());
+        String endDateString = drDateFormatter.print(parameters.getEndTime());
+        String endTimeString = drTimeFormatter.print(parameters.getEndTime());
+        
         String groupIdString = Integer.toString(parameters.getGroupId());
         DutyCycleDrRequest request = new DutyCycleDrRequest(groupIdString, "yukonDutyCycleDr", 
                                                             parameters.getDutyCyclePercent(), startDateString,
