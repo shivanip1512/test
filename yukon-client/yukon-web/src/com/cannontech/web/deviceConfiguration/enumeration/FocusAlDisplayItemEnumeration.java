@@ -28,7 +28,7 @@ public final class FocusAlDisplayItemEnumeration implements DeviceConfigurationI
         }
     }
     
-    private static final String baseKey = "yukon.web.modules.tools.configs.enum.focusAlDisplayItem";
+    private static final String baseKey = "yukon.web.modules.tools.configs.enum.focusAlDisplayItem.";
     
     private static final List<DisplayableValue> focusAlDisplayItems;
     
