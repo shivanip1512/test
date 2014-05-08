@@ -18,23 +18,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.UUID;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
@@ -53,7 +46,6 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
@@ -667,18 +659,6 @@ public final class CtiUtilities {
     }
 
     /**
-     * @deprecated Use Guava's {@link ImmutableSet#of}
-     */
-    @Deprecated
-    public static <T> Set<T> asSet(T... a) {
-        Set<T> s = new HashSet<T>((int) (a.length / 0.75f + 1), 0.75f);
-        for (T t : a) {
-            s.add(t);
-        }
-        return s;
-    }
-
-    /**
      * Gets the IP address for the client
      * @return The IP address of the client's computer
      */
@@ -740,51 +720,6 @@ public final class CtiUtilities {
         out.println("JAVA_VM_INPUT_ARGS: " + CtiUtilities.getJvmInputArgs());
 
         return sw.toString();
-    }
-
-    public static Collection<String> getAllJars(File base, String jarName)
-            throws IOException {
-        Collection<String> helper = new LinkedHashSet<String>();
-        collectAllJars(base, jarName, helper);
-        return helper;
-    }
-
-    private static void collectAllJars(File base, String jarName,
-                                       Collection<String> jarList) throws IOException {
-        File mainJarFile = new File(base, jarName);
-        JarFile jar = null;
-        try {
-            jar = new JarFile(mainJarFile);
-            Manifest manifest = jar.getManifest();
-            if (manifest == null) {
-                return;
-            }
-            Attributes mainAttributes = manifest.getMainAttributes();
-            String classPath = mainAttributes.getValue(Attributes.Name.CLASS_PATH);
-            if (classPath == null || StringUtils.isBlank(classPath)) {
-                return;
-            }
-            String[] allJarNames = classPath.split("\\s+");
-            for (int i = 0; i < allJarNames.length; i++) {
-                String string = allJarNames[i];
-                if (!string.toLowerCase().endsWith(".jar") || jarList.contains(string)) {
-                    continue;
-                }
-                try {
-                    jarList.add(string);
-                    collectAllJars(base, string, jarList);
-
-                } catch (IOException e) {
-                    jarList.remove(string);
-                }
-            }
-
-            return;
-        } finally {
-            if (jar != null) {
-                jar.close();
-            }
-        }
     }
 
     public static String getJREInstaller() {

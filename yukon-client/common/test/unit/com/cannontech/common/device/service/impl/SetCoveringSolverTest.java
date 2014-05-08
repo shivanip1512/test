@@ -1,6 +1,7 @@
 package com.cannontech.common.device.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,7 +10,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import com.cannontech.amr.deviceread.dao.impl.SetCoveringSolver;
-import com.cannontech.common.util.CtiUtilities;
+import com.google.common.collect.ImmutableSet;
 
 public class SetCoveringSolverTest {
 
@@ -21,8 +22,8 @@ public class SetCoveringSolverTest {
         SomeCommandObj cmdD = new SomeCommandObj(8f, 4);
         SomeCommandObj cmdE = new SomeCommandObj(1f, 1);
         
-        Set<SomeCommandObj> allPossible = CtiUtilities.asSet(cmdA, cmdB, cmdC, cmdD, cmdE);
-        Set<Integer> needed = CtiUtilities.asSet(2,3,4);
+        Set<SomeCommandObj> allPossible = ImmutableSet.of(cmdA, cmdB, cmdC, cmdD, cmdE);
+        Set<Integer> needed = ImmutableSet.of(2,3,4);
         
         Set<SomeCommandObj> minimalSet = SetCoveringSolver.getMinimalSet(allPossible, needed);
         
