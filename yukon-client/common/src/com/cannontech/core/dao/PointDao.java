@@ -1,7 +1,6 @@
 package com.cannontech.core.dao;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -16,12 +15,10 @@ import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
-import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
-import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.Multimap;
 
 public interface PointDao {
@@ -66,19 +63,9 @@ public interface PointDao {
     List<PointBase> getPointsForPao(int paoId);
     
     /**
-     * Retrieves point ids for every point attached to the specified paos.
-     */
-    Map<Integer, Integer> getPointIdsForPaos(Iterable<Integer> paoIds);
-    
-    /**
      * Retrieves point ids for every point attached to the specified paos, in the form of a multimap of pao to points.
      */
     Multimap<Integer, Integer> getPaoPointMultimap(Iterable<Integer> paoIds);
-    
-    /**
-     * Retrieves point ids for the points matching the attribute on the specified paos. 
-     */
-    Map<Integer, Integer> getPointIdsForPaosAndAttribute(Attribute attribute, Iterable<Integer> paoIds);
     
     /**
      * Returns the next available point id.
@@ -193,12 +180,6 @@ public interface PointDao {
     List<LitePoint> getLitePointIdByDeviceId_PointType(int deviceId, int pointType)
             throws NotFoundException;
 
-    /**
-     * Queries RawPointHistory for the entries for pointId between startDate and stopDate.
-     * If either of the dates are null, the timestamp query is open on that end.
-     */
-    List<LiteRawPointHistory> getPointData(int pointId, Date startDate, Date stopDate);
-
     List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank);
 
     List<LitePoint> searchByName(String name, String paoClass);
@@ -209,13 +190,6 @@ public interface PointDao {
      * @return LitePoint or null
      */
     LitePoint findPointByName(YukonPao pao, String pointName);
-    
-    /**
-     * Returns the point on the given PAO with the name and type specified.  Case is ignored.  No trimming
-     * is done.  If no point with that name exists on the PAO null is returned.
-     * @return LitePoint or null
-     */
-    LitePoint findPointByNameAndType(YukonPao pao, String pointName, PointType pointType);
     
     /**
      * Returns the Sql that gives you the paObjectId and pointId based on a

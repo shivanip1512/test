@@ -2,8 +2,6 @@ package com.cannontech.common.mock;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,14 +18,11 @@ import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
-import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 /**
@@ -35,35 +30,8 @@ import com.google.common.collect.Multimap;
  * static value expected for unit testing
  */
 public class MockPointDao implements PointDao {
-    private Map<Integer, Map<Attribute, Integer>> paoToAttributeAndPointMap = Maps.newHashMap();
     
     public MockPointDao() {}
-    
-    public MockPointDao(Map<Integer, Map<Attribute, Integer>> paoToAttributeAndPointMap) {
-        this.paoToAttributeAndPointMap = paoToAttributeAndPointMap;
-    }
-    
-    @Override
-    public Map<Integer, Integer> getPointIdsForPaos(Iterable<Integer> paoIds) {
-        Map<Integer, Integer> pointsToPaosMap = Maps.newHashMap();
-        for(Integer paoId : paoIds) {
-            Collection<Integer> pointIds = paoToAttributeAndPointMap.get(paoId).values();
-            for(Integer pointId : pointIds) {
-                pointsToPaosMap.put(pointId, paoId);
-            }
-        }
-        return pointsToPaosMap;
-    }
-
-    @Override
-    public Map<Integer, Integer> getPointIdsForPaosAndAttribute(Attribute attribute, Iterable<Integer> paoIds) {
-        Map<Integer, Integer> pointsToPaosMap = Maps.newHashMap();
-        for(Integer paoId : paoIds) {
-            Integer pointId = paoToAttributeAndPointMap.get(paoId).get(attribute);
-            pointsToPaosMap.put(pointId, paoId);
-        }
-        return pointsToPaosMap;
-    }
     
     /**
      * This method will return a point based on a fake id (ids 1 thru 4 are
@@ -192,11 +160,6 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public List<LiteRawPointHistory> getPointData(int pointID, Date startDate, Date stopDate) {
-        return null;
-    }
-
-    @Override
     public List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank) {
         return null;
     }
@@ -252,11 +215,6 @@ public class MockPointDao implements PointDao {
 
     @Override
     public LitePoint findPointByName(YukonPao pao, String pointName) {
-        return null;
-    }
-
-    @Override
-    public LitePoint findPointByNameAndType(YukonPao pao, String pointName, PointType pointType) {
         return null;
     }
 

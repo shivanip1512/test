@@ -3,7 +3,6 @@ package com.cannontech.core.dao.impl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,6 @@ import java.util.Map.Entry;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -51,7 +49,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
-import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
@@ -121,21 +118,6 @@ public class PointDaoImpl implements PointDao {
             SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
             sql.append("WHERE PaobjectId").eq(pao.getPaoIdentifier().getPaoId());
             sql.append(  "AND UPPER(PointName)").eq(pointName.toUpperCase());
-            
-            return jdbcTemplate.queryForObject(sql, litePointRowMapper);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-    
-
-    @Override
-    public LitePoint findPointByNameAndType(YukonPao pao, String pointName, PointType pointType) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
-            sql.append("WHERE PaobjectId").eq(pao.getPaoIdentifier().getPaoId());
-            sql.append(  "AND UPPER(PointName)").eq(pointName.toUpperCase());
-            sql.append(  "AND PointType").eq(pointType);
             
             return jdbcTemplate.queryForObject(sql, litePointRowMapper);
         } catch (EmptyResultDataAccessException e) {
@@ -621,36 +603,6 @@ public class PointDaoImpl implements PointDao {
     }
     
     @Override
-    public Map<Integer, Integer> getPointIdsForPaosAndAttribute(Attribute attribute, Iterable<Integer> paoIds) {
-        
-        final SqlFragmentSource attributeLookupSql = getAttributeLookupSql(attribute);
-        
-        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.appendFragment(attributeLookupSql);
-                sql.append("AND YPO.paObjectId").in(subList);
-                return sql;
-            }
-        };
-        
-        List<int[]> pointPaoPairs = chunkingTemplate.query(sqlFragmentGenerator, paoIds, new YukonRowMapper<int[]>() {
-            public int[] mapRow(YukonResultSet rs) throws SQLException {
-                
-                int paObjectId = rs.getInt("PaObjectId");
-                int pointId = rs.getInt("PointId");
-                
-                return new int[] {pointId, paObjectId};
-            }
-        });
-        Map<Integer, Integer> pointsToPao = Maps.newHashMap();
-        for (int[] pair : pointPaoPairs) {
-            pointsToPao.put(pair[0], pair[1]);
-        }
-        return pointsToPao;
-    }
-    
-    @Override
     public Multimap<Integer, Integer> getPaoPointMultimap(Iterable<Integer> paoIds) {
         List<int[]> paoPointPairs = chunkingTemplate.query(paoPointFragmentGenerator, paoIds, new YukonRowMapper<int[]>() {
             public int[] mapRow(YukonResultSet rs) throws SQLException {
@@ -664,22 +616,6 @@ public class PointDaoImpl implements PointDao {
             paoToPoints.put(pair[0], pair[1]);
         }
         return paoToPoints;
-    }
-    
-    @Override
-    public Map<Integer, Integer> getPointIdsForPaos(Iterable<Integer> paoIds) {
-        List<int[]> pointPaoPairs = chunkingTemplate.query(paoPointFragmentGenerator, paoIds, new YukonRowMapper<int[]>() {
-            public int[] mapRow(YukonResultSet rs) throws SQLException {
-                int paObjectId = rs.getInt("PaObjectId");
-                int pointId = rs.getInt("PointId");
-                return new int[] {pointId, paObjectId};
-            }
-        });
-        Map<Integer, Integer> pointsToPao = Maps.newHashMap();
-        for (int[] pair : pointPaoPairs) {
-            pointsToPao.put(pair[0], pair[1]);
-        }
-        return pointsToPao;
     }
     
     @Override
@@ -741,48 +677,6 @@ public class PointDaoImpl implements PointDao {
         }
     }
     
-    @Override
-    public List<LiteRawPointHistory> getPointData(int pointId, Date startDate, Date stopDate) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ChangeId, PointId, Timestamp, Quality, Value");
-        sql.append("from RawPointHistory");
-        sql.append("where PointId").eq(pointId);
-        
-        if (startDate != null) {
-            sql.append("and Timestamp").gt(startDate);
-        }
-        
-        if (stopDate != null) {
-            sql.append("and Timestamp").lte(stopDate);
-        }
-        sql.append("order by Timestamp");
-        
-        try {
-            log.info("Retrieve PointDate for ID: " + pointId + 
-                           "  - START DATE > " + (startDate != null ? startDate:"---") +
-                           "  -  STOP DATE <= " + (stopDate!= null ? stopDate:"---") );
-            List<LiteRawPointHistory> history = jdbcTemplate.query(sql, new YukonRowMapper<LiteRawPointHistory>() {
-                @Override
-                public LiteRawPointHistory mapRow(YukonResultSet rs) throws SQLException {
-                    long changeID = rs.getLong("ChangeId");
-                    int pointID = rs.getInt("PointId");
-                    Instant timestamp = rs.getInstant("Timestamp");
-                    int quality = rs.getInt("Quality");
-                    double value = rs.getDouble("Value");
-                    
-                    LiteRawPointHistory lrph = new LiteRawPointHistory( changeID, pointID, timestamp.getMillis(), quality, value);
-                    return lrph;
-                }
-                
-            });
-            
-            return history;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("No pointdata retrieved for pointID: " + pointId);
-        }
-    }
-
     @Override
     public List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank) {
         
