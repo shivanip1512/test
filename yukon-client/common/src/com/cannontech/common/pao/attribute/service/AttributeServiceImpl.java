@@ -625,24 +625,4 @@ public class AttributeServiceImpl implements AttributeService {
         return pis;
     }
 
-    @Override
-    public <T extends YukonPao> Iterable<T> filterPaosForAttribute(Iterable<T> paos, final BuiltInAttribute attribute) {
-        return Iterables.filter(paos, new Predicate<YukonPao>() {
-            @Override
-            public boolean apply(YukonPao pao) {
-                return isAttributeSupported(pao, attribute);
-            }
-        });
-    }
-
-    @Override
-    public <T extends YukonPao> Set<T> filterPaosForAttribute(Set<T> paos, final BuiltInAttribute attribute) {
-        return Sets.filter(paos, new Predicate<YukonPao>() {
-            @Override
-            public boolean apply(YukonPao pao) {
-                return isAttributeSupported(pao, attribute);
-            }
-        });
-    }
-    
 }

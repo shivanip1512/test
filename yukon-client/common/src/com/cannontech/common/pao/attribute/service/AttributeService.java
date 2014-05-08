@@ -231,18 +231,6 @@ public interface AttributeService {
     List<LiteStateGroup> findStateGroups(List<SimpleDevice> devices, BuiltInAttribute attribute);
     
     /**
-     * Takes an iterable of type T and returns a new Iterable of items that support
-     * the provided Attribute.
-     */
-    <T extends YukonPao> Iterable<T> filterPaosForAttribute(Iterable<T> paos, BuiltInAttribute attribute);
-
-    /**
-     * Takes an Set of type T and returns a new Set of items that support
-     * the provided Attribute.
-     */
-    <T extends YukonPao> Set<T> filterPaosForAttribute(Set<T> paos, BuiltInAttribute attribute);
-
-    /**
      * Returns the list of point ids that map to the attribute and pao type for each device.
      * Ignores devices that do not support the attribute.
      */
