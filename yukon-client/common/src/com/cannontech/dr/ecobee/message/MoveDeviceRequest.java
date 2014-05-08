@@ -5,6 +5,9 @@ public final class MoveDeviceRequest {
     private final String setPath;
     private final String thermostats;
     
+    /**
+     * @param setPath A full management set path (not just the set name). Should begin with the root "/".
+     */
     public MoveDeviceRequest(String serialNumber, String setPath) {
         thermostats = serialNumber;
         this.setPath = setPath;

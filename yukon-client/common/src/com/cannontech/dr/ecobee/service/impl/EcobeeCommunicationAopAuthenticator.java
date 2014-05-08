@@ -52,7 +52,7 @@ public class EcobeeCommunicationAopAuthenticator implements MethodInterceptor {
             String userName = ecSettingDao.getString(EnergyCompanySettingType.ECOBEE_USERNAME, ecId);
             
             //Sanity-check configuration values
-            if(StringUtils.isEmpty(userName) || StringUtils.isEmpty(password)) {
+            if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password)) {
                 throw new EcobeeAuthenticationException("One or more ecobee authentication settings is empty. "
                                                         + "Energy company id: " + ecId);
             }

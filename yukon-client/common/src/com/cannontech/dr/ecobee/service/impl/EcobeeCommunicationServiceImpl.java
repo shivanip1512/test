@@ -274,7 +274,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
      * @throws EcobeeException 
      */
     private void checkForEcobeeError(BaseResponse response, int energyCompanyId) throws EcobeeException {
-        if(response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
+        if (response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
             //throw exception - EcobeeCommunicationAopAuthenticator will log us in and try again
             throw new EcobeeNotAuthenticatedException(energyCompanyId);
         }
