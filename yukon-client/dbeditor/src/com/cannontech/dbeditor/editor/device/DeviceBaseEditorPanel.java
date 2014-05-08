@@ -2930,6 +2930,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     {
         deviceBase = (DeviceBase) val;
 
+        deviceType = PaoType.getPaoTypeId(deviceBase.getPAOType());
         PaoType paoType = PaoType.getForDbString(deviceBase.getPAOType());
 
         String typeStr = deviceBase.getPAOType();
