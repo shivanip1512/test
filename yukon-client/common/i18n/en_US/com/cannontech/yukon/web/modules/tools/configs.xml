@@ -146,7 +146,7 @@
     <entry key="yukon.web.modules.tools.configs.category.centronDisplayItems.displayItem25">Display Item 25</entry>
     <entry key="yukon.web.modules.tools.configs.category.centronDisplayItems.displayItem26">Display Item 26</entry>
     
-    <entry key="yukon.web.modules.tools.configs.category.focusAlDisplay.title">Focus Display</entry>
+    <entry key="yukon.web.modules.tools.configs.category.focusAlDisplay.title">RFN Focus AL Display</entry>
     <entry key="yukon.web.modules.tools.configs.category.focusAlDisplay.definition">Items displayed on the front panel LCD of Focus AL RFN devices.</entry>
     <entry key="yukon.web.modules.tools.configs.category.focusAlDisplay.lcdCycleTime">LCD Cycle Time</entry>
     <entry key="yukon.web.modules.tools.configs.category.focusAlDisplay.lcdCycleTime.description">The number of seconds the LCD displays an item before cycling.</entry>
