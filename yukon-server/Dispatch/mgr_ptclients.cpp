@@ -749,16 +749,18 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiDynamicPointDispatchSPtr> &
     {
         CtiTablePointDispatch& dispatch = pdyn->getDispatch();
 
-        if(( dispatch.getUpdatedFlag() ?
-                dispatch.Update(conn) :
-                dispatch.Insert(conn) ))
+        if( ! dispatch.writeToDB(conn) )
         {
-            // reset flags if success. Otherwise Update() or Insert() should log the error
-            dispatch.resetDirty();
-            dispatch.setUpdatedFlag();
+            if( dispatch.isPointIdInvalid() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** WARNING **** removing record for invalid point ID " << dispatch.getPointID() << ". " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                }
+                erase( dispatch.getPointID() );
+            }
         }
-
-        if(++listCount % 1000 == 0)
+        else if(++listCount % 1000 == 0)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written. " << endl;

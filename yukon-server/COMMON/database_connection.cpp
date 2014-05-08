@@ -110,8 +110,8 @@ const ErrorCodes *DatabaseConnection::resolveErrorCode(const SAConnection *conn,
     {
         switch( conn->Client() )
         {
-            SA_Oracle_Client:       ec = Cti::mapFind(oracleErrors,    x.ErrNativeCode());  break;
-            SA_SQLServer_Client:    ec = Cti::mapFind(sqlServerErrors, x.ErrNativeCode());  break;
+            case SA_Oracle_Client:       ec = Cti::mapFind(oracleErrors,    x.ErrNativeCode());  break;
+            case SA_SQLServer_Client:    ec = Cti::mapFind(sqlServerErrors, x.ErrNativeCode());  break;
         }
     }
 

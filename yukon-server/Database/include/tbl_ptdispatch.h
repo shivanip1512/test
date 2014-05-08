@@ -29,7 +29,12 @@ protected:
 
 private:
 
-    public:
+    bool _pointIdInvalid;
+
+    void initInserter (Cti::Database::DatabaseWriter &inserter) const;
+    void initUpdater  (Cti::Database::DatabaseWriter &updater) const;
+
+public:
 
     typedef CtiMemDBObject Inherited;
 
@@ -50,8 +55,9 @@ private:
 
     static std::string getTableName();
 
-    bool Insert(Cti::Database::DatabaseConnection &conn);
-    bool Update(Cti::Database::DatabaseConnection &conn);
+    bool writeToDB(Cti::Database::DatabaseConnection &conn);
+
+    bool isPointIdInvalid() const;
 
     virtual bool Restore();
 

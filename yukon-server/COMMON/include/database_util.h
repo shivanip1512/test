@@ -15,7 +15,8 @@ namespace Detail {
 enum CommandParamEnum
 {
     LogDebug,
-    LogNoRowsAffected
+    LogNoRowsAffected,
+    TryInsertFirst
 };
 
 /**
@@ -65,6 +66,7 @@ private:
 
 typedef Detail::CommandParam <Detail::LogDebug>          LogDebug;
 typedef Detail::CommandParam <Detail::LogNoRowsAffected> LogNoRowsAffected;
+typedef Detail::CommandParam <Detail::TryInsertFirst>    TryInsertFirst;
 
 /**
  * Execute a read or a write command
@@ -108,6 +110,17 @@ IM_EX_CTIBASE const ErrorCodes *executeInserter( DatabaseWriter &inserter, const
  * "table.column in ()"
  */
 std::string IM_EX_CTIBASE createIdSqlClause(const id_set &paoids, const std::string &table, const std::string &column);
+
+
+typedef boost::function<void (DatabaseWriter &)> InitWriterFunc;
+
+/**
+ * Execute an Upsert operation
+ */
+IM_EX_CTIBASE const ErrorCodes *executeUpsert(
+        DatabaseConnection &conn,
+        const InitWriterFunc& initInserter, const InitWriterFunc& initUpdater,
+        const char* file, const int line, const TryInsertFirst::Options tryInsertFirst, const LogDebug::Options logDebug );
 
 } // namespace Database
 } // namespace Cti

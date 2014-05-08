@@ -95,6 +95,8 @@ public:
     virtual void erase  (long pid);
     virtual void refresh(long pid);
 
+    virtual void erasePao( long paoId );
+
     spiterator begin();
     spiterator end();
 

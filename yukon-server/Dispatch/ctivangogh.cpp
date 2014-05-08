@@ -4414,6 +4414,9 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                         }
 
                         _deviceLiteSet.erase(pChg->getId());
+                        
+                        // erase all associated points for the pao id
+                        PointMgr.erasePao(pChg->getId());
                     }
                     else if(pChg && pChg->getTypeOfChange() == ChangeTypeUpdate)
                     {

@@ -21,7 +21,8 @@ _value(0),
 _tags(0),
 //_staleCount(0),
 //_lastAlarmLogID(0),
-_nextArchiveTime(CtiTime(YUKONEOT+86400))
+_nextArchiveTime(CtiTime(YUKONEOT+86400)),
+_pointIdInvalid(false)
 {
     setTimeStampMillis(0);
 }
@@ -38,7 +39,8 @@ _value(value),
 _tags(0),
 //_staleCount(0),
 //_lastAlarmLogID(0),
-_nextArchiveTime(CtiTime(YUKONEOT - 86400))
+_nextArchiveTime(CtiTime(YUKONEOT - 86400)),
+_pointIdInvalid(false)
 {
     setTimeStampMillis(millis);
 
@@ -46,7 +48,8 @@ _nextArchiveTime(CtiTime(YUKONEOT - 86400))
 }
 
 CtiTablePointDispatch::CtiTablePointDispatch(const CtiTablePointDispatch& ref) :
-_tags(0)
+_tags(0),
+_pointIdInvalid(false)
 {
     *this = ref;
 }
@@ -151,7 +154,36 @@ void CtiTablePointDispatch::DecodeDatabaseReader(Cti::RowReader& rdr )
     resetDirty(FALSE);
 }
 
-bool CtiTablePointDispatch::Update(Cti::Database::DatabaseConnection &conn)
+bool CtiTablePointDispatch::writeToDB(Cti::Database::DatabaseConnection &conn)
+{
+    using namespace Cti::Database;
+
+    const TryInsertFirst tryInsertFirst = ! getUpdatedFlag();
+
+    const ErrorCodes* ec = executeUpsert(
+            conn,
+            boost::bind(&CtiTablePointDispatch::initInserter, this, _1),
+            boost::bind(&CtiTablePointDispatch::initUpdater,  this, _1),
+            __FILE__, __LINE__, tryInsertFirst, LogDebug::Disable );
+
+    if( ec )
+    {
+        if( ec == &ErrorCodes::ErrorCode_PrimaryKeyViolated || ec == &ErrorCodes::ErrorCode_ForeignKeyViolated )
+        {
+            _pointIdInvalid = true;
+        }
+
+        return false;
+    }
+
+    setUpdatedFlag(true);
+    setDirty(false);
+
+    return true;
+}
+
+
+void CtiTablePointDispatch::initUpdater(Cti::Database::DatabaseWriter &updater) const
 {
     static const std::string sql = "update " + getTableName() +
                                    " set "
@@ -165,7 +197,7 @@ bool CtiTablePointDispatch::Update(Cti::Database::DatabaseConnection &conn)
                                    " where "
                                         "pointid = ?";
 
-    Cti::Database::DatabaseWriter   updater(conn, sql);
+    updater.setCommandText(sql);
 
     updater
         << getTimeStamp()
@@ -176,24 +208,14 @@ bool CtiTablePointDispatch::Update(Cti::Database::DatabaseConnection &conn)
         << getStaleCount()
         << getTimeStampMillis()
         << getPointID();
-
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
-    {
-        return false;
-    }
-
-    setDirty(false);
-    
-    return true; // No error occured!
 }
 
-
-bool CtiTablePointDispatch::Insert(Cti::Database::DatabaseConnection &conn)
+void CtiTablePointDispatch::initInserter(Cti::Database::DatabaseWriter &inserter) const
 {
     static const std::string sql = "insert into " + getTableName() +
-                                   " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                       " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    Cti::Database::DatabaseWriter   inserter(conn, sql);
+    inserter.setCommandText(sql);
 
     inserter
         << getPointID()
@@ -205,15 +227,11 @@ bool CtiTablePointDispatch::Insert(Cti::Database::DatabaseConnection &conn)
         << getStaleCount()
         << getLastAlarmLogID()
         << getTimeStampMillis();
+}
 
-    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
-    {
-        return false;
-    }
-
-    setDirty(false);
-    
-    return true; // No error occured!
+bool CtiTablePointDispatch::isPointIdInvalid() const
+{
+    return _pointIdInvalid;
 }
 
 LONG CtiTablePointDispatch::getPointID() const
