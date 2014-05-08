@@ -517,15 +517,15 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(const INMESS *InMessage)
    {
       if((PointRecord = getDevicePointOffsetTypeEqual(i + 16, StatusPointType)))
       {
-         PValue = ((TCUStatus >> (i - 1)) & 0x0001) ? CLOSED : OPENED;
+         PValue = ((TCUStatus >> (i - 1)) & 0x0001) ? STATE_CLOSED : STATE_OPENED;
 
          if(getType() == TYPE_TCU5000)
          {
-            sprintf(temp,"Offset %2d: %s is %s", i + 16, StatusPointNames50[i - 1], (PValue == CLOSED ? "CLOSED" : "OPENED"));
+            sprintf(temp,"Offset %2d: %s is %s", i + 16, StatusPointNames50[i - 1], (PValue == STATE_CLOSED ? "CLOSED" : "OPENED"));
          }
          else if(getType() == TYPE_TCU5500)
          {
-            sprintf(temp,"Offset %2d: %s is %s", i + 16, StatusPointNames55[i - 1], (PValue == CLOSED ? "CLOSED" : "OPENED"));
+            sprintf(temp,"Offset %2d: %s is %s", i + 16, StatusPointNames55[i - 1], (PValue == STATE_CLOSED ? "CLOSED" : "OPENED"));
          }
          else
          {

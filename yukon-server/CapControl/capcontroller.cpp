@@ -318,7 +318,7 @@ void CtiCapController::messageSender()
             }
 
             if (store->getLinkStatusPointId() > 0 &&
-                 (store->getLinkStatusFlag() == CLOSED) &&
+                 (store->getLinkStatusFlag() == STATE_CLOSED) &&
                  store->getLinkDropOutTime().seconds() + (60* _LINK_STATUS_TIMEOUT) < currentDateTime.seconds())
             {
                  updateAllPointQualities(NonUpdatedQuality);
@@ -2627,11 +2627,11 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
                 if (store->getLinkStatusFlag() != newLinkStatusFlag)
                 {
                     store->setLinkStatusFlag(value);
-                    if (value == CLOSED)
+                    if (value == STATE_CLOSED)
                     {
                         store->setLinkDropOutTime(timestamp);
                     }
-                    if (value == OPENED)
+                    if (value == STATE_OPENED)
                     {
                         store->setReregisterForPoints(true);
                     }

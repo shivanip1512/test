@@ -901,10 +901,10 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
             {
                 if(PointRecord = getDevicePointOffsetTypeEqual(i, StatusPointType))
                 {
-                    PValue = ((lcuDigital >> (i - 1)) & 0x0001) ? CLOSED : OPENED;
+                    PValue = ((lcuDigital >> (i - 1)) & 0x0001) ? STATE_CLOSED : STATE_OPENED;
 
                     resultString = getName() + " / " + PointRecord->getName() + " is ";
-                    if(PValue == CLOSED)
+                    if(PValue == STATE_CLOSED)
                         resultString += "ACTIVE";
                     else
                         resultString += "INACTIVE";
@@ -975,12 +975,12 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
         {
             if(PointRecord = getDevicePointOffsetTypeEqual(i, StatusPointType))
             {
-                PValue = ((lcuDigital >> (i - 1)) & 0x0001) ? CLOSED : OPENED;
+                PValue = ((lcuDigital >> (i - 1)) & 0x0001) ? STATE_CLOSED : STATE_OPENED;
 
                 if(isLCU(getType()))
                 {
                     resultString = getName() + " / " + PointRecord->getName() + " is ";
-                    if(PValue == CLOSED)
+                    if(PValue == STATE_CLOSED)
                         resultString += "ACTIVE";
                     else
                         resultString += "INACTIVE";
@@ -1058,12 +1058,12 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS *InMessage)
             {
                 if(PointRecord = getDevicePointOffsetTypeEqual(i + 16, StatusPointType))
                 {
-                    PValue = ((_lcuStatus >> (i - 1)) & 0x0001) ? CLOSED : OPENED;
+                    PValue = ((_lcuStatus >> (i - 1)) & 0x0001) ? STATE_CLOSED : STATE_OPENED;
 
                     if(isLCU(getType()))
                     {
                         resultString = getName() + " / " + PointRecord->getName() + " is ";
-                        if(PValue == CLOSED)
+                        if(PValue == STATE_CLOSED)
                             resultString += "ACTIVE";
                         else
                             resultString += "INACTIVE";

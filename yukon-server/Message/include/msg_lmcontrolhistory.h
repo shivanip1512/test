@@ -34,7 +34,7 @@ public:
 
    CtiLMControlHistoryMsg(long       paoid      = 0,
                           long       pointid    = 0,
-                          int        raw        = INVALID,
+                          int        raw        = STATE_INVALID,
                           CtiTime     start      = CtiTime(),
                           int        dur        = 0,
                           int        redrat     = 100,

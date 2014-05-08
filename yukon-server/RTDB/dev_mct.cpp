@@ -3012,7 +3012,7 @@ INT MctDevice::decodeGetStatusDisconnect(const INMESS *InMessage, CtiTime &TimeN
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-    Value = CLOSED;
+    Value = STATE_CLOSED;
 
     switch( getType() )
     {
@@ -3020,8 +3020,8 @@ INT MctDevice::decodeGetStatusDisconnect(const INMESS *InMessage, CtiTime &TimeN
         {
             switch( DSt.Message[0] & 0xc0 )
             {
-                case Mct210Device::MCT210_StatusConnected:     Value = CLOSED;  defaultStateName = "Connected";      break;
-                case Mct210Device::MCT210_StatusDisconnected:  Value = OPENED;  defaultStateName = "Disconnected";   break;
+                case Mct210Device::MCT210_StatusConnected:     Value = STATE_CLOSED;  defaultStateName = "Connected";      break;
+                case Mct210Device::MCT210_StatusDisconnected:  Value = STATE_OPENED;  defaultStateName = "Disconnected";   break;
                 default:  Value = -1;
             }
 
@@ -3032,10 +3032,10 @@ INT MctDevice::decodeGetStatusDisconnect(const INMESS *InMessage, CtiTime &TimeN
         {
             switch( DSt.Message[0] & 0xc0 )
             {
-                case Mct310Device::MCT310_StatusConnected:           Value = CLOSED;         defaultStateName = "Connected";             break;
-                case Mct310Device::MCT310_StatusConnectArmed:        Value = INDETERMINATE;  defaultStateName = "Connect armed";         break;
-                case Mct310Device::MCT310_StatusConnectInProgress:   Value = INDETERMINATE;  defaultStateName = "Connect in progress";   break;
-                case Mct310Device::MCT310_StatusDisconnected:        Value = OPENED;         defaultStateName = "Disconnected";          break;
+                case Mct310Device::MCT310_StatusConnected:           Value = STATE_CLOSED;         defaultStateName = "Connected";             break;
+                case Mct310Device::MCT310_StatusConnectArmed:        Value = STATE_INDETERMINATE;  defaultStateName = "Connect armed";         break;
+                case Mct310Device::MCT310_StatusConnectInProgress:   Value = STATE_INDETERMINATE;  defaultStateName = "Connect in progress";   break;
+                case Mct310Device::MCT310_StatusDisconnected:        Value = STATE_OPENED;         defaultStateName = "Disconnected";          break;
             }
 
             break;
@@ -3078,7 +3078,7 @@ INT MctDevice::decodeGetStatusDisconnect(const INMESS *InMessage, CtiTime &TimeN
         }
         default:
         {
-            Value = INDETERMINATE;
+            Value = STATE_INDETERMINATE;
             defaultStateName = "Not a disconnect meter";
         }
     }

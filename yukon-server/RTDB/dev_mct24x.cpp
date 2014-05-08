@@ -606,16 +606,16 @@ INT Mct24xDevice::decodeScanStatus(const INMESS *InMessage, CtiTime &TimeNow, li
         {
             pPoint = getDevicePointOffsetTypeEqual( i + 1, StatusPointType );
 
-            Value = CLOSED;
+            Value = STATE_CLOSED;
 
             if( statuses[i] )
             {
-                Value = CLOSED;
+                Value = STATE_CLOSED;
                 disc = " CLOSED";
             }
             else
             {
-                Value = OPENED;
+                Value = STATE_OPENED;
                 disc = " OPEN";
             }
 
@@ -656,25 +656,25 @@ INT Mct24xDevice::decodeScanStatus(const INMESS *InMessage, CtiTime &TimeNow, li
     {
         pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
 
-        Value = CLOSED;
+        Value = STATE_CLOSED;
 
         switch(InMessage->Buffer.DSt.Message[0])
         {
             case MCT24X_Status_Closed:
             {
-                Value  = CLOSED;
+                Value  = STATE_CLOSED;
                 disc   = " SERVICE CONNECT ENABLED";
                 break;
             }
             case MCT24X_Status_Open:
             {
-                Value  = OPENED;
+                Value  = STATE_OPENED;
                 disc   = " SERVICE DISCONNECTED";
                 break;
             }
             default:
             {
-                Value  = INVALID;
+                Value  = STATE_INVALID;
                 disc   = " UNKNOWN / No Disconnect Status";
                 break;
             }

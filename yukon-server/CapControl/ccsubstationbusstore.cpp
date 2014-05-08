@@ -90,7 +90,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() :
     _ccSpecialAreas = new CtiCCSpArea_vec;
 
     _linkStatusPointId = 0;
-    _linkStatusFlag = OPENED;
+    _linkStatusFlag = STATE_OPENED;
     _linkDropOutTime = CtiTime();
 
     _voltReductionSystemDisabled = false;
@@ -7356,7 +7356,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                             dout << CtiTime() << " FDR Link Status POINT FOUND: "<<pointID << endl;
                         }
                         _linkStatusPointId = pointID;
-                        _linkStatusFlag = OPENED;
+                        _linkStatusFlag = STATE_OPENED;
                         break;
                     }
                 }

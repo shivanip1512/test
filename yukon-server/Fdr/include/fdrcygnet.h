@@ -80,7 +80,7 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
         enum {Cygnet_Open = 0, Cygnet_Closed = 1};
 
         // this should be from the base Yukon but there are problems...
-        enum {Yukon_Open = OPENED,  Yukon_Closed = CLOSED};
+        enum {Yukon_Open = STATE_OPENED,  Yukon_Closed = STATE_CLOSED};
 
     private:
         ULONG               iScanRateSeconds;

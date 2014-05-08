@@ -934,11 +934,11 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                 // make sure the value is valid
                 if (data->msgUnion.value.Value == Inet_Open)
                 {
-                    controlState = OPENED;
+                    controlState = STATE_OPENED;
                 }
                 else if (data->msgUnion.value.Value == Inet_Closed)
                 {
-                    controlState = CLOSED;
+                    controlState = STATE_CLOSED;
                 }
                 else
                 {
@@ -963,7 +963,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Control point " << translationName;
-                        if (controlState == OPENED)
+                        if (controlState == STATE_OPENED)
                         {
                             dout << " control: Open " ;
                         }

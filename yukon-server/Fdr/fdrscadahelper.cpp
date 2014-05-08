@@ -62,7 +62,7 @@ template<typename T>
 bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value,
                                               int quality, CtiTime timestamp) const
 {
-    if (value == INVALID)
+    if (value == STATE_INVALID)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -165,7 +165,7 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
             << " with controlstate=" << controlState << endl;;
     }
 
-    if (controlState == INVALID)
+    if (controlState == STATE_INVALID)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -240,7 +240,7 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
         if (_parent->getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            _parent->logNow() << "Control message of " << (controlState == OPENED ? "OPENED" : "CLOSED")
+            _parent->logNow() << "Control message of " << (controlState == STATE_OPENED ? "OPENED" : "CLOSED")
                 << " sent to " << dest << " for " << id << endl;
         }
         sentAControl = true;

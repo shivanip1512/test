@@ -271,7 +271,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, list< CtiMessage* >  &vgList )
             }
 
             reportControlStart( _isShed, shedtime, controlpercent, vgList, getLastCommand() );
-            setShed( INVALID );   // This keeps me from sending this multiple times for a single control.
+            setShed( STATE_INVALID );   // This keeps me from sending this multiple times for a single control.
         }
         else if( erdb )
         {

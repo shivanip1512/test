@@ -411,7 +411,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
                                           ptr->Control.PointNumber);
 
                         // check for validity of the status, we only have open or closed for ACS
-                        if ((aPoint.getValue() != OPENED) && (aPoint.getValue() != CLOSED))
+                        if ((aPoint.getValue() != STATE_OPENED) && (aPoint.getValue() != STATE_CLOSED))
                         {
                             delete [] acs;
                             acs = NULL;
@@ -434,7 +434,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
                                 dout << " Category: " << ptr->Status.CategoryCode;
                                 dout << " Point: " << ntohs(ptr->Status.PointNumber);
 
-                                if (aPoint.getValue() == OPENED)
+                                if (aPoint.getValue() == STATE_OPENED)
                                 {
                                     dout << " state of Open " << ptr->Control.Value << " " << aPoint.getValue();
                                 }
@@ -457,7 +457,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
                         ptr->Status.Quality = YukonToForeignQuality (aPoint.getQuality());
 
                         // check for validity of the status, we only have open or closed for ACS
-                        if ((aPoint.getValue() != OPENED) && (aPoint.getValue() != CLOSED))
+                        if ((aPoint.getValue() != STATE_OPENED) && (aPoint.getValue() != STATE_CLOSED))
                         {
                             delete [] acs;
                             acs = NULL;
@@ -480,7 +480,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
                                 dout << " Category: " << ptr->Status.CategoryCode;
                                 dout << " Point: " << ntohs(ptr->Status.PointNumber);
 
-                                if (aPoint.getValue() == OPENED)
+                                if (aPoint.getValue() == STATE_OPENED)
                                 {
                                     dout << " state of Open ";
                                 }
@@ -692,7 +692,7 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
 
         value = ForeignToYukonStatus (data->Status.Value);
 
-        if (value == INVALID)
+        if (value == STATE_INVALID)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -752,7 +752,7 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
                     dout << CtiTime() << " Status point Remote: " << ntohs(data->Status.RemoteNumber);
                     dout << " Category: " << data->Status.CategoryCode;
                     dout << " Point: " << ntohs(data->Status.PointNumber);
-                    if (value == OPENED)
+                    if (value == STATE_OPENED)
                     {
                         dout << " New state: Open " ;
                     }
@@ -836,12 +836,12 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
 
     if ((flag == true) && (point.getPointType() == StatusPointType) && (point.isControllable()))
     {
-        int controlState=INVALID;
+        int controlState=STATE_INVALID;
 
         controlState = ForeignToYukonStatus (data->Control.Value);
 
         // make sure the value is valid
-        if (controlState == INVALID)
+        if (controlState == STATE_INVALID)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -862,7 +862,7 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
             logEvent (desc,string (action));
             retVal = !NORMAL;
         }
-        else if (controlState == OPENED || controlState == CLOSED)
+        else if (controlState == STATE_OPENED || controlState == STATE_CLOSED)
         {
             // build the command message and send the control
             CtiCommandMsg *cmdMsg;
@@ -880,7 +880,7 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
                 dout << CtiTime() << " Control point Remote: " << ntohs(data->Control.RemoteNumber);
                 dout << " Category: " << data->Control.CategoryCode;
                 dout << " Point: " << ntohs(data->Control.PointNumber);
-                if (controlState == OPENED)
+                if (controlState == STATE_OPENED)
                 {
                     dout << " Control: Open " ;
                 }
@@ -1165,15 +1165,15 @@ USHORT CtiFDR_ACS::YukonToForeignQuality (USHORT aQuality)
 // Convert ACS status to CTI Status
 int CtiFDR_ACS::ForeignToYukonStatus (USHORT aStatus)
 {
-    int tmpstatus=INVALID;
+    int tmpstatus=STATE_INVALID;
 
     switch (ntohs (aStatus))
     {
         case ACS_Open:
-            tmpstatus = OPENED;
+            tmpstatus = STATE_OPENED;
             break;
         case ACS_Closed:
-            tmpstatus = CLOSED;
+            tmpstatus = STATE_CLOSED;
             break;
     }
     return(tmpstatus);
@@ -1186,10 +1186,10 @@ USHORT CtiFDR_ACS::YukonToForeignStatus (int aStatus)
 
     switch (aStatus)
     {
-        case OPENED:
+        case STATE_OPENED:
             tmpstatus = ACS_Open;
             break;
-        case CLOSED:
+        case STATE_CLOSED:
             tmpstatus = ACS_Closed;
             break;
     }

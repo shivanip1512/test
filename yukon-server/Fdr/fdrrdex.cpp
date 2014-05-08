@@ -275,7 +275,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                             strcpy (ptr->value.translation,translationName.c_str());
 
                             // check for validity of the status, we only have open or closed for rdex
-                            if ((aPoint.getValue() != OPENED) && (aPoint.getValue() != CLOSED))
+                            if ((aPoint.getValue() != STATE_OPENED) && (aPoint.getValue() != STATE_CLOSED))
                             {
                                 delete [] buffer;
                                 buffer = NULL;
@@ -295,7 +295,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                                      CtiLockGuard<CtiLogger> doubt_guard(dout);
                                      dout << CtiTime() << " Control point " << aPoint.getPointID();
                                      dout << " queued as " << aPoint.getTranslateName(getLayer()->getName());
-                                     if (aPoint.getValue() == OPENED)
+                                     if (aPoint.getValue() == STATE_OPENED)
                                      {
                                          dout << " state of Open ";
                                      }
@@ -315,7 +315,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                             ptr->status.quality = YukonToForeignQuality (aPoint.getQuality());
 
                             // check for validity of the status, we only have open or closed for rdex
-                            if ((aPoint.getValue() != OPENED) && (aPoint.getValue() != CLOSED))
+                            if ((aPoint.getValue() != STATE_OPENED) && (aPoint.getValue() != STATE_CLOSED))
                             {
                                 delete [] buffer;
                                 buffer = NULL;
@@ -335,7 +335,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                                      CtiLockGuard<CtiLogger> doubt_guard(dout);
                                      dout << CtiTime() << " Status point " << aPoint.getPointID();
                                      dout << " queued as " << aPoint.getTranslateName(getLayer()->getName());
-                                     if (aPoint.getValue() == OPENED)
+                                     if (aPoint.getValue() == STATE_OPENED)
                                      {
                                          dout << " state of Open ";
                                      }
@@ -710,7 +710,7 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Status point " << translationName;
-                    if (value == OPENED)
+                    if (value == STATE_OPENED)
                     {
                         dout << " new state: Open " ;
                     }
@@ -803,7 +803,7 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                 logEvent (desc,string (action));
                 retVal = !NORMAL;
             }
-            else if ((controlState == OPENED || controlState == CLOSED))
+            else if ((controlState == STATE_OPENED || controlState == STATE_CLOSED))
             {
                 // build the command message and send the control
                 CtiCommandMsg *cmdMsg;
@@ -819,7 +819,7 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Control point " << translationName;
-                    if (controlState == OPENED)
+                    if (controlState == STATE_OPENED)
                     {
                         dout << " control: Open " ;
                     }
@@ -929,10 +929,10 @@ ULONG CtiFDR_Rdex::ForeignToYukonStatus (ULONG aStatus)
     switch (ntohl (aStatus))
     {
         case Rdex_Open:
-            tmpstatus = OPENED;
+            tmpstatus = STATE_OPENED;
             break;
         case Rdex_Closed:
-            tmpstatus = CLOSED;
+            tmpstatus = STATE_CLOSED;
             break;
     }
     return(tmpstatus);
@@ -945,10 +945,10 @@ ULONG CtiFDR_Rdex::YukonToForeignStatus (ULONG aStatus)
 
    switch (aStatus)
    {
-      case OPENED:
+      case STATE_OPENED:
          tmpstatus = Rdex_Open;
          break;
-      case CLOSED:
+      case STATE_CLOSED:
          tmpstatus = Rdex_Closed;
          break;
    }

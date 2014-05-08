@@ -5870,6 +5870,10 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
     string text;
     CtiPointClientManager::ReasonabilityLimitStruct limits = PointMgr.getReasonabilityLimits(pointNumeric);
 
+    // Relatively arbitrary, but should be ok.
+    #define MAX_HIGH_REASONABILITY          (1e30)
+    #define MIN_LOW_REASONABILITY           (-1e30)
+
     try
     {
 

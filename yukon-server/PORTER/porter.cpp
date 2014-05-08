@@ -2214,7 +2214,7 @@ void commFail(const CtiDeviceSPtr &Device)
     if( 0 != (pointid = GetCommFailPointID(Device->getID())) )
     {
         sprintf(temp, "Communication status %s", state ? "FAILED" : "GOOD");
-        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pointid, (double)(state ? CLOSED : OPENED), NormalQuality, StatusPointType, temp, TAG_POINT_MAY_BE_EXEMPTED);
+        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pointid, (double)(state ? STATE_CLOSED : STATE_OPENED), NormalQuality, StatusPointType, temp, TAG_POINT_MAY_BE_EXEMPTED);
 
         if(pData != NULL)
         {

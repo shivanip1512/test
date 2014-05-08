@@ -178,11 +178,11 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
 
             if(pPoint)
             {
-                double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
+                double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)STATE_OPENED : (double)STATE_CLOSED;
 
                 resultString = "CBC Control ";
 
-                if( val == ((double)OPENED) )
+                if( val == ((double)STATE_OPENED) )
                     resultString += "OPENED";
                 else
                     resultString += "CLOSED";
@@ -306,10 +306,10 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
             if(pPoint)
             {
                 string controlState;
-                double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
+                double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)STATE_OPENED : (double)STATE_CLOSED;
 
                 controlState = "CBC Control ";
-                if( val == ((double)OPENED) )
+                if( val == ((double)STATE_OPENED) )
                     controlState += "OPENED";
                 else
                     controlState += "CLOSED";
@@ -334,18 +334,18 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
          *  Form up the reply here since the ExecuteRequest funciton will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), 
-                                                     string(OutMessage->Request.CommandStr), 
-                                                     Route->getName(), 
-                                                     nRet, 
-                                                     OutMessage->Request.RouteID, 
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                                     string(OutMessage->Request.CommandStr),
+                                                     Route->getName(),
+                                                     nRet,
+                                                     OutMessage->Request.RouteID,
                                                      OutMessage->Request.RetryMacroOffset,
-                                                     OutMessage->Request.Attempt, 
-                                                     OutMessage->Request.GrpMsgID, 
-                                                     OutMessage->Request.UserID, 
-                                                     OutMessage->Request.SOE, 
+                                                     OutMessage->Request.Attempt,
+                                                     OutMessage->Request.GrpMsgID,
+                                                     OutMessage->Request.UserID,
+                                                     OutMessage->Request.SOE,
                                                      CtiMultiMsg_vec());
-                                                     
+
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
@@ -508,10 +508,10 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
             if( parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_CLOSE) )
             {
                 string controlState;
-                double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
+                double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)STATE_OPENED : (double)STATE_CLOSED;
 
                 controlState = "CBC Control ";
-                if( val == ((double)OPENED) ) controlState += "OPENED";
+                if( val == ((double)STATE_OPENED) ) controlState += "OPENED";
                 else controlState += "CLOSED";
 
                 vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, StatusPointType, controlState));

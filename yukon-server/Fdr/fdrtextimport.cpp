@@ -421,13 +421,13 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
             if (aPoint.isControllable())
             {
                 // make sure the value is valid
-                if ((aValue == OPENED) || (aValue == CLOSED))
+                if ((aValue == STATE_OPENED) || (aValue == STATE_CLOSED))
                 {
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Control point " << aTranslationName;
-                        if (aValue == OPENED)
+                        if (aValue == STATE_OPENED)
                         {
                             dout << " control: Open " ;
                         } else
@@ -464,10 +464,10 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
                 }
             } else
             {
-                if ((aValue == OPENED) || (aValue == CLOSED))
+                if ((aValue == STATE_OPENED) || (aValue == STATE_CLOSED))
                 {
                     string tracestate;
-                    if (aValue == OPENED)
+                    if (aValue == STATE_OPENED)
                     {
                         tracestate = string ("Open");
                     } else

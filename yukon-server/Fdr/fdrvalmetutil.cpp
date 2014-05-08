@@ -83,18 +83,18 @@ USHORT YukonToForeignQuality (const CtiFDRPoint &p)
 // Convert Valmet status to CTI Status
 int ForeignToYukonStatus (USHORT aStatus)
 {
-    int tmpstatus=INVALID;
+    int tmpstatus=STATE_INVALID;
 
     switch (ntohs (aStatus))
     {
         case Valmet_Open:
-            tmpstatus = OPENED;
+            tmpstatus = STATE_OPENED;
             break;
         case Valmet_Closed:
-            tmpstatus = CLOSED;
+            tmpstatus = STATE_CLOSED;
             break;
         case Valmet_Indeterminate:
-            tmpstatus = INDETERMINATE;
+            tmpstatus = STATE_INDETERMINATE;
             break;
 
     }
@@ -107,13 +107,13 @@ USHORT YukonToForeignStatus (int aStatus)
 
     switch (aStatus)
     {
-        case OPENED:
+        case STATE_OPENED:
             tmpstatus = Valmet_Open;
             break;
-        case CLOSED:
+        case STATE_CLOSED:
             tmpstatus = Valmet_Closed;
             break;
-        case INDETERMINATE:
+        case STATE_INDETERMINATE:
             tmpstatus = Valmet_Indeterminate;
             break;
     }

@@ -613,7 +613,7 @@ INT Mct31xDevice::decodeStatus(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
         {
             Value = translateStatusValue(pPoint->getPointOffset(), pPoint->getType(), getType(), InMessage->Buffer.DSt.Message);
 
-            if( Value == INVALID )
+            if( Value == STATE_INVALID )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -1852,7 +1852,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (const INMESS *InMessage,
         if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(10, StatusPointType)))
         {
             // set pvalue
-            PValue = (FLOAT) (DUPRep->Status & ALPHA_POWER_FAIL ? CLOSED : OPENED);
+            PValue = (FLOAT) (DUPRep->Status & ALPHA_POWER_FAIL ? STATE_CLOSED : STATE_OPENED);
 
             // add new message with plugged
             pData = CTIDBG_new CtiPointDataMsg(pNumericPoint->getPointID(),

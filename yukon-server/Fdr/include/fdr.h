@@ -14,13 +14,13 @@
 #define  FDR_INTERFACE_RECEIVE_FOR_ANALOG_OUTPUT "Receive for Analog Output"
 #define  FDR_INTERFACE_LINK_STATUS "Link Status"
 
-#define FDR_CONNECTED       OPENED
-#define FDR_NOT_CONNECTED   CLOSED
+#define FDR_CONNECTED       STATE_OPENED
+#define FDR_NOT_CONNECTED   STATE_CLOSED
 
 #define FDR_NOT_CONNECTED_TO_DISPATCH 1
 #define FDR_CLIENT_NOT_REGISTERED 2
 
-// global just makes it that much easier   
+// global just makes it that much easier
 typedef enum {
      NotReloaded=0,
      DbChange,

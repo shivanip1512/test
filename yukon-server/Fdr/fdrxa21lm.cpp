@@ -184,11 +184,11 @@ CurrentControl CurrentControl::createCurrentControl(XA21LMMESS* lm_msg)
         USHORT intended_state = ntohs(lm_msg->Message.MPC.Group[i].State) ;
         if(intended_state & MPCSHED)
         {
-            intended_state = CLOSED;
+            intended_state = STATE_CLOSED;
         }
         else if(intended_state & MPCRESTORE)
         {
-            intended_state = OPENED;
+            intended_state = STATE_OPENED;
         }
         ctrl._pending_groups.push_back(make_pair(trimmed_name, intended_state));
     }
@@ -647,11 +647,11 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
 
             if(control_state & MPCSHED)
             {
-                cmdMsg->insert(CLOSED);
+                cmdMsg->insert(STATE_CLOSED);
             }
             else if(control_state & MPCRESTORE)
             {
-                cmdMsg->insert(OPENED);
+                cmdMsg->insert(STATE_OPENED);
             }
             else
             {
@@ -808,7 +808,7 @@ CHAR* CtiFDR_XA21LM::buildMPCStatus(const CurrentControl& ctrl, const string& gr
 
     lm_msg->Message.MPC.Group[0].State = htons(MPCFINISHED);//?
 
-    if(ctrl.getCommandedState(group_name) == CLOSED)
+    if(ctrl.getCommandedState(group_name) == STATE_CLOSED)
     {
         lm_msg->Message.MPC.Group[0].State |= htons(MPCSHED);
     }
@@ -844,7 +844,7 @@ CHAR* CtiFDR_XA21LM::buildMPCUnsolicited(const string& group_name, unsigned stat
     }
     lm_msg->Message.MPC.Group[0].State = 0;
     lm_msg->Message.MPC.Group[0].State = htons(MPCFINISHED);
-    if(state == CLOSED)
+    if(state == STATE_CLOSED)
     {
         lm_msg->Message.MPC.Group[0].State |= htons(MPCSHED);
     }

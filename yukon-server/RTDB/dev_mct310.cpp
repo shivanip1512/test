@@ -376,11 +376,11 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
         {
             if(DataValueArray[0] & STATUS1_BIT_MCT3XX)
             {
-               return((DOUBLE) CLOSED);
+               return((DOUBLE) STATE_CLOSED);
             }
             else
             {
-               return((DOUBLE) OPENED);
+               return((DOUBLE) STATE_OPENED);
             }
 
             break;
@@ -390,11 +390,11 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
         {
             if(DataValueArray[0] & STATUS2_BIT_MCT3XX)
             {
-                return((DOUBLE) CLOSED);
+                return((DOUBLE) STATE_CLOSED);
             }
             else
             {
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
 
             break;
@@ -404,11 +404,11 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
         {
             if(DataValueArray[0] & STATUS3_BIT_MCT3XX)
             {
-                return((DOUBLE) CLOSED);
+                return((DOUBLE) STATE_CLOSED);
             }
             else
             {
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
 
             break;
@@ -418,11 +418,11 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
         {
             if(DataValueArray[0] & STATUS4_BIT_MCT3XX)
             {
-                return((DOUBLE) CLOSED);
+                return((DOUBLE) STATE_CLOSED);
             }
             else
             {
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
 
             break;
@@ -432,11 +432,11 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
         {
             if(DataValueArray[0] & STATUS5_BIT_MCT3XX)
             {
-                return((DOUBLE) CLOSED);
+                return((DOUBLE) STATE_CLOSED);
             }
             else
             {
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
 
             break;
@@ -446,11 +446,11 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
         {
             if(DataValueArray[0] & STATUS6_BIT_MCT3XX)
             {
-                return((DOUBLE) CLOSED);
+                return((DOUBLE) STATE_CLOSED);
             }
             else
             {
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
 
             break;
@@ -460,11 +460,11 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
         {
             if(DataValueArray[0] & STATUS7_BIT_MCT3XX)
             {
-                return((DOUBLE) CLOSED);
+                return((DOUBLE) STATE_CLOSED);
             }
             else
             {
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
 
             break;
@@ -474,11 +474,11 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
         {
             if(DataValueArray[0] & STATUS8_BIT_MCT3XX)
             {
-                return((DOUBLE) CLOSED);
+                return((DOUBLE) STATE_CLOSED);
             }
             else
             {
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
 
             break;
@@ -492,19 +492,19 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
                 /* special bit for mct310 */
                 if(DataValueArray[4] & S_PWRFAIL310_BIT)
                 {
-                   return((DOUBLE) CLOSED);
+                   return((DOUBLE) STATE_CLOSED);
                 }
 
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
             else
             {
                 if(DataValueArray[4] & S_PWRFAIL_BIT)
                 {
-                    return((DOUBLE) CLOSED);
+                    return((DOUBLE) STATE_CLOSED);
                 }
 
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
 
             break;
@@ -518,19 +518,19 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
                 /* special bit for mct310 */
                 if(DataValueArray[4] & OVERFLOW310_BIT)
                 {
-                    return((DOUBLE) CLOSED);
+                    return((DOUBLE) STATE_CLOSED);
                 }
 
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
             else
             {
                 if(DataValueArray[4] & OVERFLOW_BIT)
                 {
-                    return((DOUBLE) CLOSED);
+                    return((DOUBLE) STATE_CLOSED);
                 }
 
-                return((DOUBLE) OPENED);
+                return((DOUBLE) STATE_OPENED);
             }
 
             break;
@@ -541,7 +541,7 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        return((DOUBLE) INVALID);
+        return((DOUBLE) STATE_INVALID);
     }
 
     //  We shouldn't even ever get here...

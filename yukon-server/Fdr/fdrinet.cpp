@@ -1660,11 +1660,11 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                         // make sure the value is valid
                         if (data->msgUnion.value.Value == Inet_Open)
                         {
-                            controlState = OPENED;
+                            controlState = STATE_OPENED;
                         }
                         else if (data->msgUnion.value.Value == Inet_Closed)
                         {
-                            controlState = CLOSED;
+                            controlState = STATE_CLOSED;
                         }
                         else
                         {
@@ -1689,7 +1689,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " Control point " << translationName;
-                                if (controlState == OPENED)
+                                if (controlState == STATE_OPENED)
                                 {
                                     dout << " control: Open " ;
                                 }
@@ -1719,15 +1719,15 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                         switch ((int)data->msgUnion.value.Value)
                         {
                             case Inet_Open:
-                                value = OPENED;
+                                value = STATE_OPENED;
                                 traceState = string("Opened");
                                 break;
                             case Inet_Closed:
-                                value = CLOSED;
+                                value = STATE_CLOSED;
                                 traceState = string("Closed");
                                 break;
                             case Inet_Indeterminate:
-                                value = INDETERMINATE;
+                                value = STATE_INDETERMINATE;
                                 traceState = string("Indeterminate");
                                 break;
                             case Inet_State_Four:
@@ -1745,11 +1745,11 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                             case Inet_Invalid:
                             default:
                                 {
-                                    value = INVALID;
+                                    value = STATE_INVALID;
                                 }
                         }
 
-                        if (value == INVALID)
+                        if (value == STATE_INVALID)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Status point " << translationName;

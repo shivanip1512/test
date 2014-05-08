@@ -451,7 +451,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                     strcpy (ptr->Control.Name,valmetPortId.PointName.c_str());
 
                     // check for validity of the status, we only have open or closed in controls
-                    if ((point.getValue() != OPENED) && (point.getValue() != CLOSED))
+                    if ((point.getValue() != STATE_OPENED) && (point.getValue() != STATE_CLOSED))
                     {
                         delete [] valmet;
                         valmet = NULL;
@@ -471,7 +471,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                              CtiLockGuard<CtiLogger> doubt_guard(dout);
                              dout << CtiTime() << " Control point " << point.getPointID();
                              dout << " queued as " << ptr->Control.Name;
-                             if (point.getValue() == OPENED)
+                             if (point.getValue() == STATE_OPENED)
                              {
                                  dout << " state of Open ";
                              }
@@ -490,7 +490,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                     ptr->Status.Quality = YukonToForeignQuality (point);
 
                     // check for validity of the status, we only have open or closed for Valmet
-                    if ((point.getValue() != OPENED) && (point.getValue() != CLOSED))
+                    if ((point.getValue() != STATE_OPENED) && (point.getValue() != STATE_CLOSED))
                     {
                         delete [] valmet;
                         valmet = NULL;
@@ -510,7 +510,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                              CtiLockGuard<CtiLogger> doubt_guard(dout);
                              dout << CtiTime() << " Status point " << point.getPointID();
                              dout << " queued as " << point.getTranslateName(string (FDR_VALMETMULTI));
-                             if (point.getValue() == OPENED)
+                             if (point.getValue() == STATE_OPENED)
                              {
                                  dout << " state of Open ";
                              }
@@ -879,15 +879,15 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Status point " << translationName;
-                    if (value == OPENED)
+                    if (value == STATE_OPENED)
                     {
                         dout << " new state: Open " ;
                     }
-                    else if (value == CLOSED)
+                    else if (value == STATE_CLOSED)
                     {
                         dout << " new state: Closed " ;
                     }
-                    else if (value == INDETERMINATE)
+                    else if (value == STATE_INDETERMINATE)
                     {
                         dout << " new state: Indeterminate " ;
                     }
@@ -1021,10 +1021,10 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
     {
         if (point->getPointType() == StatusPointType)
         {
-            int controlState=INVALID;
+            int controlState=STATE_INVALID;
             controlState = ForeignToYukonStatus (data->Control.Value);
 
-            if ((controlState != OPENED) && (controlState != CLOSED))
+            if ((controlState != STATE_OPENED) && (controlState != STATE_CLOSED))
             {
                 if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
                 {
@@ -1046,7 +1046,7 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
                 CtiCommandMsg *cmdMsg = NULL;
                 if (stringContainsIgnoreCase(translationName, _scanDevicePointName))
                 {
-                    if (controlState == CLOSED)
+                    if (controlState == STATE_CLOSED)
                     {
                         cmdMsg = createScanDeviceMessage(point->getPaoID(), translationName);
                     }
@@ -1068,7 +1068,7 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Control point " << translationName;
-                    string controlString = (controlState == OPENED ? " control: Open " : " control: Closed ");
+                    string controlString = (controlState == STATE_OPENED ? " control: Open " : " control: Closed ");
                     dout << controlString <<" from " << getInterfaceName() << " and processed for point " << point->getPointID() << endl;;
                 }
             }
@@ -1078,7 +1078,7 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
             double dValue = CtiFDRSocketInterface::ntohieeef(data->Control.LongValue);
             if (point->getPointOffset() == 10001)
             {
-                int controlState=INVALID;
+                int controlState=STATE_INVALID;
                 controlState = ForeignToYukonStatus (data->Control.Value);
                 dValue = ForeignToYukonStatus (data->Control.Value);
                 if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_DEBUGLEVEL)

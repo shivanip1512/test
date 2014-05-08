@@ -276,11 +276,11 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                         // make sure the value is valid
                                         if (value == Dsm2_Open)
                                         {
-                                            controlState = OPENED;
+                                            controlState = STATE_OPENED;
                                         }
                                         else if (value == Dsm2_Closed)
                                         {
-                                            controlState = CLOSED;
+                                            controlState = STATE_CLOSED;
                                         }
                                         else
                                         {
@@ -304,7 +304,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                 dout << CtiTime() << " Control point " << translationName;
-                                                if (controlState == OPENED)
+                                                if (controlState == STATE_OPENED)
                                                 {
                                                     dout << " control: Open " ;
                                                 }
@@ -334,15 +334,15 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                         switch ((int)value)
                                         {
                                             case Dsm2_Open:
-                                                yukonValue = OPENED;
+                                                yukonValue = STATE_OPENED;
                                                 traceState = string("Opened");
                                                 break;
                                             case Dsm2_Closed:
-                                                yukonValue = CLOSED;
+                                                yukonValue = STATE_CLOSED;
                                                 traceState = string("Closed");
                                                 break;
                                             case Dsm2_Indeterminate:
-                                                yukonValue = INDETERMINATE;
+                                                yukonValue = STATE_INDETERMINATE;
                                                 traceState = string("Indeterminate");
                                                 break;
                                             case Dsm2_State_Four:
@@ -360,11 +360,11 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                             case Dsm2_Invalid:
                                             default:
                                                 {
-                                                    yukonValue = INVALID;
+                                                    yukonValue = STATE_INVALID;
                                                 }
                                         }
 
-                                        if (yukonValue == INVALID)
+                                        if (yukonValue == STATE_INVALID)
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                                             dout << CtiTime() << " Status point " << translationName;

@@ -891,11 +891,11 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                         /* Apply offset */
                         if((MyInMessage[4 + 2 * ((PointOffset - StartPoint) / 8)] >> ((PointOffset - StartPoint) % 8)) & 0x01)
                         {
-                            PValue = CLOSED;
+                            PValue = STATE_CLOSED;
                         }
                         else
                         {
-                            PValue = OPENED;
+                            PValue = STATE_OPENED;
                         }
 
 #if (DEBUG_PRINT_DECODE > 0)
@@ -917,7 +917,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                         /* Check if this is "changed" */
                         if((MyInMessage[4 + 2 * ((PointOffset - StartPoint) / 8) + 1] >> ((PointOffset - StartPoint) % 8)) & 0x01)
                         {
-                            PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
+                            PValue = ( (PValue == STATE_CLOSED) ? STATE_OPENED : STATE_CLOSED );
 #if (DEBUG_PRINT_DECODE > 0)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -938,7 +938,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                         /* Check if the "Changed Flag is high and toggle it back to the current status" */
                         if((MyInMessage[4 + 2 * ((PointOffset - StartPoint) / 8) + 1] >> ((PointOffset - StartPoint) % 8)) & 0x01)
                         {
-                            PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
+                            PValue = ( (PValue == STATE_CLOSED) ? STATE_OPENED : STATE_CLOSED );
                             str = string(getName() + " point " + PointRecord->getName() + " = " + ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)));
                             pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, str);
 
@@ -971,11 +971,11 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                         /* get the present value */
                         if(MyInMessage[(StartPoint * 2) + 3]  & 0x80)
                         {
-                            PValue = CLOSED;
+                            PValue = STATE_CLOSED;
                         }
                         else
                         {
-                            PValue = OPENED;
+                            PValue = STATE_OPENED;
                         }
 
 #if (DEBUG_PRINT_DECODE > 0)
@@ -988,7 +988,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                         /* Check if this is "changed" */
                         if(MyInMessage[(StartPoint * 2) + 3] & 0x40)
                         {
-                            PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
+                            PValue = ( (PValue == STATE_CLOSED) ? STATE_OPENED : STATE_CLOSED );
 #if (DEBUG_PRINT_DECODE > 0)
                             { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl; }
 #endif
@@ -1005,7 +1005,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                         /* Check if this is "changed" */
                         if(MyInMessage[(StartPoint * 2) + 3] & 0x40)
                         {
-                            PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
+                            PValue = ( (PValue == STATE_CLOSED) ? STATE_OPENED : STATE_CLOSED );
                             str = string(getName() + " point " + PointRecord->getName() + " = " + ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)));
                             pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, str);
                             if(pData != NULL)

@@ -381,7 +381,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                     ptr->Function = htons (SINGLE_SOCKET_CONTROL);
 
                     // check for validity of the status, we only have open or closed for ACS
-                    if ((point.getValue() != OPENED) && (point.getValue() != CLOSED))
+                    if ((point.getValue() != STATE_OPENED) && (point.getValue() != STATE_CLOSED))
                     {
                         delete [] acs;
                         acs = NULL;
@@ -401,7 +401,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             logNow() << "New Control State "
-                                << (point.getValue() == OPENED ? "OPEN" : "CLOSE")
+                                << (point.getValue() == STATE_OPENED ? "OPEN" : "CLOSE")
                                 << " (" << ptr->Control.Value << ") from "
                                 << point << " queued to " << acsId << endl;
                         }
@@ -414,7 +414,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                     ptr->Status.Quality = YukonToForeignQuality (point.getQuality());
 
                     // check for validity of the status, we only have open or closed for ACS
-                    if ((point.getValue() != OPENED) && (point.getValue() != CLOSED))
+                    if ((point.getValue() != STATE_OPENED) && (point.getValue() != STATE_CLOSED))
                     {
                         delete [] acs;
                         acs = NULL;
@@ -434,7 +434,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             logNow() << "New Status Value "
-                                << (point.getValue() == OPENED ? "OPEN" : "CLOSE")
+                                << (point.getValue() == STATE_OPENED ? "OPEN" : "CLOSE")
                                 << " (" << ptr->Control.Value << ") from "
                                 << point << " queued to " << acsId << endl;
                         }
@@ -713,15 +713,15 @@ USHORT CtiFDRAcsMulti::YukonToForeignQuality (USHORT aQuality)
 // Convert ACS status to CTI Status
 int CtiFDRAcsMulti::ForeignToYukonStatus (USHORT aStatus)
 {
-    int tmpstatus=INVALID;
+    int tmpstatus=STATE_INVALID;
 
     switch (ntohs (aStatus))
     {
         case ACS_Open:
-            tmpstatus = OPENED;
+            tmpstatus = STATE_OPENED;
             break;
         case ACS_Closed:
-            tmpstatus = CLOSED;
+            tmpstatus = STATE_CLOSED;
             break;
     }
     return(tmpstatus);
@@ -734,10 +734,10 @@ USHORT CtiFDRAcsMulti::YukonToForeignStatus (int aStatus)
 
     switch (aStatus)
     {
-        case OPENED:
+        case STATE_OPENED:
             tmpstatus = ACS_Open;
             break;
-        case CLOSED:
+        case STATE_CLOSED:
             tmpstatus = ACS_Closed;
             break;
     }

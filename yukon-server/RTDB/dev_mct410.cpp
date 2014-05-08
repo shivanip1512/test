@@ -1800,7 +1800,7 @@ int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiComma
             }
         }
 
-        if( *configFreezeDay == *paoFreezeDay )  // both exist and are equal
+        if( configFreezeDay == paoFreezeDay )  // both exist and are equal
         {
             if( ! parse.isKeyValid("force") )
             {

@@ -440,13 +440,13 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                                 /* Update the records */
 
                                 if(State1)
-                                    Value = CLOSED;
+                                    Value = STATE_CLOSED;
                                 else
-                                    Value = OPENED;
+                                    Value = STATE_OPENED;
 
                                 PValue = (FLOAT) Value;
 
-                                _snprintf(tStr, 127, "%s point %s = %s", getName().c_str(), PointRecord->getName().c_str(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+                                _snprintf(tStr, 127, "%s point %s = %s", getName().c_str(), PointRecord->getName().c_str(), ((PValue == STATE_OPENED) ? "OPENED" : "CLOSED") );
 
                                 pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
 
