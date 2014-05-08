@@ -319,7 +319,6 @@
             <category type="rfnOvUv" />
             <category type="demandProfile" />
             <category type="tou" />
-            <category type="rfnTempAlarm" />
         </configuration>
     </pao>
 
@@ -6940,6 +6939,9 @@
             <tag name="NETWORK_MANAGER_ATTRIBUTE_READS" />
             <tag name="USES_METER_NUMBER_FOR_MSP" />
         </tags>
+        <configuration>
+            <category type="rfnTempAlarm" />
+        </configuration>
     </pao>
 
     <pao id="RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE" abstract="true">
