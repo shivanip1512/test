@@ -37,16 +37,7 @@
                         <capTags:warningImg paoId="${thisAreaId}" type="${areaType.updaterType}"/>
                     </td>
                     <td>
-                        <div class="f-tooltip dn">
-                            <c:forEach var="station" items="${viewableArea.subStations}">
-                                    <div class="detail fwb">${fn:escapeXml(station.name)}</div>
-                                    <div class="detail wsnw">
-                                        &nbsp;&nbsp;<i:inline key=".feeders" arguments="${station.feederCount}"/>
-                                        &nbsp;&nbsp;<i:inline key=".banks" arguments="${station.capBankCount}"/>
-                                    </div>
-                            </c:forEach>
-                        </div>
-                        <a href="${substationUrl}" class="f-has-tooltip">${fn:escapeXml(viewableArea.area.ccName)}</a>
+                        <a href="${substationUrl}">${fn:escapeXml(viewableArea.area.ccName)}</a>
                     </td>
                     <td>
                         <c:if test="${hasAreaControl}"><a id="areaState_${thisAreaId}" href="javascript:void(0);" class="subtle-link"></c:if>
