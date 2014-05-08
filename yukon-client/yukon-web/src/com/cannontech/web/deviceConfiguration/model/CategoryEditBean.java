@@ -96,7 +96,7 @@ public class CategoryEditBean {
             !fieldName.toLowerCase().equals("displayItem1".toLowerCase())) {
             String val = categoryInputs.get(fieldName);
         
-            if (val.equals("0")) {
+            if ("0".equals(val) || "SLOT_DISABLED".equals(val) ) {
                 // This is a display item whose value is "Slot Disabled." Hide it since it isn't the first display item.
                 return true;
             }

@@ -80,7 +80,8 @@
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
                 <div class="page-action-area clear">
                     <cti:button nameKey="create" type="submit" classes="primary action"/>
-                    <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
+                    <cti:url var="homeUrl" value="/deviceConfiguration/home" />
+                    <cti:button nameKey="cancel" href="${homeUrl}"/>
                 </div>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
