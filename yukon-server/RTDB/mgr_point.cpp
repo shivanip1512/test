@@ -1214,17 +1214,13 @@ void CtiPointManager::removePoint(ptr_type pTempCtiPoint)
 
 void CtiPointManager::erasePao(long paoId)
 {
-    typedef std::multimap<long, long>::iterator Iterator;
-
-    Iterator itr         = _pao_pointids.lower_bound(paoId);
-    Iterator upper_bound = _pao_pointids.upper_bound(paoId);
-
-	// we use a seperate vector because the multimap will have items removed
+    // we use a seperate vector because the multimap will have items removed
     std::vector<long> point_ids;
-    for(; itr != upper_bound; itr++ )
-    {
-        point_ids.push_back(itr->second);
-    }
+
+    std::transform( _pao_pointids.lower_bound(paoId),
+                    _pao_pointids.upper_bound(paoId),
+                    std::back_inserter(point_ids),
+                    boost::bind(&std::multimap<long,long>::value_type::second,_1) ); // does a select2nd
 
     for each( long pid in point_ids )
     {
