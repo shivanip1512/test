@@ -30,9 +30,7 @@
   <bean id="demandResponseDao" class="com.cannontech.core.dao.impl.DemandResponseDaoImpl"/>
   <bean id="deviceCustomerListDao" class="com.cannontech.core.dao.impl.DeviceCustomerListDaoImpl"/>
   <bean id="graphCustomerListDao" class="com.cannontech.core.dao.impl.GraphCustomerListDaoImpl"/>
-  <bean id="dbDeletionDao" class="com.cannontech.core.dao.impl.DBDeletionDaoImpl">
-    <property name="macScheduleDao" ref="macScheduleDao"/>
-  </bean>
+  <bean id="dbDeletionDao" class="com.cannontech.core.dao.impl.DBDeletionDaoImpl"/>
   <bean id="dbPersistentDao" class="com.cannontech.core.dao.impl.DBPersistentDaoImpl"/>	
   <bean id="deviceDao" class="com.cannontech.core.dao.impl.DeviceDaoImpl"/>
   <bean id="dynamicBillingFileDao" class="com.cannontech.common.dynamicBilling.dao.impl.DynamicBillingFileDaoImpl">

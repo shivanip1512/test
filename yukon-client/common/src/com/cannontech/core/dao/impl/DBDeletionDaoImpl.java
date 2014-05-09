@@ -1,8 +1,10 @@
 package com.cannontech.core.dao.impl;
 
 import java.sql.SQLException;
+import java.util.Collections;
 
-import com.cannontech.capcontrol.dao.ZoneDao;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
@@ -19,8 +21,8 @@ import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.baseline.Baseline;
 import com.cannontech.database.db.device.lm.LMGroup;
-import com.cannontech.database.db.device.lm.LMProgram;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 
 /**
  * Insert the type's description here.
@@ -30,9 +32,9 @@ import com.cannontech.database.db.device.lm.LMProgramConstraint;
 public class DBDeletionDaoImpl implements DBDeletionDao 
 {
 	private static final String CR_LF = System.getProperty("line.separator");
-	private static MACScheduleDao macScheduleDao;
-	private ZoneDao zoneDao; 
-      
+	@Autowired private MACScheduleDao macScheduleDao;
+	@Autowired private ProgramDao programDao;
+	
 	/**
 	 * DBDeletionWarn constructor comment.
 	 */
@@ -45,7 +47,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	 * @return java.lang.String
 	 * @param pointID int
 	 */
-	private static byte createDeleteStringForCommPort(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForCommPort(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -65,7 +67,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	 * @return java.lang.String
 	 * @param pointID int
 	 */
-	private static byte createDeleteStringForDevice(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForDevice(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
 	   	String str = null;   
@@ -103,9 +105,9 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}
 
-    private static byte createDeleteStringForLmProgram(final DBDeleteResult dbRes) throws SQLException {
+    private byte createDeleteStringForLmProgram(final DBDeleteResult dbRes) throws SQLException {
         int programId = dbRes.getItemID();
-        if (LMProgram.isAssignedProgram(programId)) {
+        if(programDao.getByProgramIds(Collections.singletonList(programId)).size() > 0) {
             dbRes.getDescriptionMsg().append(CR_LF + "because it is currently in use as a STARS assigned program."
                             + CR_LF + "Unassign it from all appliance categories and try again.");
             return STATUS_DISALLOW;
@@ -113,7 +115,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
         return STATUS_ALLOW;
     }
 
-    private static byte createDeleteStringForPaoType(final DBDeleteResult dbRes) throws java.sql.SQLException
+    private byte createDeleteStringForPaoType(final DBDeleteResult dbRes) throws java.sql.SQLException
     {
         Integer theID = Integer.valueOf(dbRes.getItemID());
         String str = null;   
@@ -128,7 +130,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
         return STATUS_ALLOW;
     }
 
-	private static byte createDeleteStringForRoute(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForRoute(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
 	   	String str = null;   
@@ -172,7 +174,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	 * @return java.lang.String
 	 * @param pointID int
 	 */
-	private static byte createDeleteStringForNotifGroup(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForNotifGroup(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -201,7 +203,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	 * @return java.lang.String
 	 * @param pointID int
 	 */
-	private static byte createDeleteStringForContact(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForContact(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -216,7 +218,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}
 	
-	private static byte createDeleteStringForBaseline(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForBaseline(final DBDeleteResult dbRes) throws java.sql.SQLException
 		{
 			Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -231,7 +233,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			return STATUS_ALLOW;
 		}
 		
-	private static byte createDeleteStringForConfig(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForConfig(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -246,7 +248,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}	
 	
-	private static byte createDeleteStringForTOU(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForTOU(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		/*Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -261,7 +263,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}
 	
-	private static byte createDeleteStringForLMProgConst(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForLMProgConst(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		if( LMProgramConstraint.inUseByProgram(dbRes.getItemID(), CtiUtilities.getDatabaseAlias()) )
 		{
@@ -273,7 +275,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}
 	
-	private static byte createDeleteStringForSeasonSchedule(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForSeasonSchedule(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		if( LMProgramConstraint.usesSeasonSchedule(dbRes.getItemID(), CtiUtilities.getDatabaseAlias()) )
 		{
@@ -295,7 +297,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}
 	
-	private static byte createDeleteStringForHolidaySchedule(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForHolidaySchedule(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		if( LMProgramConstraint.usesHolidaySchedule(dbRes.getItemID(), CtiUtilities.getDatabaseAlias()) )
 		{
@@ -307,7 +309,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}
 
-	private static byte createDeleteStringForTag(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForTag(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "This tag and ALL references to it in the system will be removed.") );
 		return STATUS_CONFIRM;
@@ -320,7 +322,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	 * @return java.lang.String
 	 * @param pointID int
 	 */
-	private static byte createDeleteStringForPoints(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForPoints(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		Integer ptID = new Integer( dbRes.getItemID() );
 	   	      
@@ -373,7 +375,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	 * @return java.lang.String
 	 * @param pointID int
 	 */
-	private static byte createDeleteStringForStateGroup(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForStateGroup(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -396,7 +398,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	 * @return java.lang.String
 	 * @param pointID int
 	 */
-	private static byte createDeleteStringForLogin(final DBDeleteResult dbRes) throws java.sql.SQLException
+	private byte createDeleteStringForLogin(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 /*
 		if( loginID == UserUtils.USER_YUKON_ID ) //this id is the default
@@ -672,10 +674,5 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			return DBDeletionDao.STATUS_DISALLOW;
 		}
 	}
-	
-	@SuppressWarnings("static-access")
-    public void setMacScheduleDao(MACScheduleDao macScheduleDao) {
-        this.macScheduleDao = macScheduleDao;
-    }
-	
+
 }
