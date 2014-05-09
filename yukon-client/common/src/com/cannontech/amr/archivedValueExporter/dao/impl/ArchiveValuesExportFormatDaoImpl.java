@@ -31,8 +31,34 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
 
     public static final String TABLE_NAME = "ArchiveValuesExportFormat";
    
-    private final YukonRowMapper<ExportFormat> rowMapper = createRowMapper();
-    private final YukonRowMapper<ExportFormat> formatIdAndFormatNameRowMapper = createFormatIdAndFormatNameRowMapper();
+    private final YukonRowMapper<ExportFormat> rowMapper = new YukonRowMapper<ExportFormat>() {
+        @Override
+        public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
+            
+            final ExportFormat format = new ExportFormat();
+            format.setFormatId(rs.getInt("FormatID"));
+            format.setFormatName(rs.getStringSafe("FormatName"));
+            format.setDelimiter((rs.getString("Delimiter") == null) ? "" : rs.getString("Delimiter"));
+            format.setHeader(SqlUtils.convertDbValueToString(rs.getString("Header")));
+            format.setFooter(SqlUtils.convertDbValueToString(rs.getString("Footer")));
+            format.setFormatType(rs.getEnum("FormatType", ArchivedValuesExportFormatType.class));
+            format.setAttributes(archiveValuesExportAttributeDao.getByFormatId(format.getFormatId()));
+            format.setFields(archiveValuesExportFieldDao.getByFormatId(format.getFormatId()));
+            format.setDateTimeZoneFormat(rs.getEnum("TimeZoneFormat", TimeZoneFormat.class));
+            format.setExcludeAbnormal(rs.getBoolean("ExcludeAbnormal"));
+            
+            return format;
+        }
+    };
+    private final YukonRowMapper<ExportFormat> formatIdAndFormatNameRowMapper = new YukonRowMapper<ExportFormat>() {
+        @Override
+        public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
+            final ExportFormat format = new ExportFormat();
+            format.setFormatId(rs.getInt("FormatID"));
+            format.setFormatName(rs.getStringSafe("FormatName"));
+            return format ;
+        }
+    };
    
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -149,42 +175,6 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         return yukonJdbcTemplate.query(sql,  formatIdAndFormatNameRowMapper);
     }
     
-    private YukonRowMapper<ExportFormat> createRowMapper() {
-        final YukonRowMapper<ExportFormat> mapper = new YukonRowMapper<ExportFormat>() {
-            @Override
-            public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
-                
-                final ExportFormat format = new ExportFormat();
-                format.setFormatId(rs.getInt("FormatID"));
-                format.setFormatName(rs.getStringSafe("FormatName"));
-                format.setDelimiter((rs.getString("Delimiter") == null) ? "" : rs.getString("Delimiter"));
-                format.setHeader(SqlUtils.convertDbValueToString(rs.getString("Header")));
-                format.setFooter(SqlUtils.convertDbValueToString(rs.getString("Footer")));
-                format.setFormatType(rs.getEnum("FormatType", ArchivedValuesExportFormatType.class));
-                format.setAttributes(archiveValuesExportAttributeDao.getByFormatId(format.getFormatId()));
-                format.setFields(archiveValuesExportFieldDao.getByFormatId(format.getFormatId()));
-                format.setDateTimeZoneFormat(rs.getEnum("TimeZoneFormat", TimeZoneFormat.class));
-                format.setExcludeAbnormal(rs.getBoolean("ExcludeAbnormal"));
-                
-                return format;
-            }
-        };
-        return mapper;
-    }
-    
-    private YukonRowMapper<ExportFormat> createFormatIdAndFormatNameRowMapper() {
-        final YukonRowMapper<ExportFormat> mapper = new YukonRowMapper<ExportFormat>() {
-            @Override
-            public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
-                final ExportFormat format = new ExportFormat();
-                format.setFormatId(rs.getInt("FormatID"));
-                format.setFormatName(rs.getStringSafe("FormatName"));
-                return format ;
-            }
-        };
-        return mapper;
-    }
-     
     /**
      * Creates attributes and fields.
      *
@@ -194,67 +184,46 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         
         archiveValuesExportFieldDao.deleteByFormatId(format.getFormatId());
         archiveValuesExportAttributeDao.deleteByFormatId(format.getFormatId());
-        updateAttributesWithFormatId(format);
-        updateFieldsWithFormatId(format);
+        
+        // set format id
+        for (ExportAttribute attribute: format.getAttributes()) {
+            attribute.setFormatId(format.getFormatId());
+        }
+        for (ExportField field : format.getFields()) {
+            field.setFormatId(format.getFormatId());
+        }
+        
         for (ExportAttribute attribute : format.getAttributes()) {
-            List<ExportField> exportFields = getExportFieldsByAttributeId(format, attribute);
+            
+            List<ExportField> exportFields = getExportFieldsForExportAttribute(format, attribute);
             ExportAttribute newAttribute = archiveValuesExportAttributeDao.create(attribute);
-            updateFieldsWithAttributeId(exportFields,newAttribute);
+            
+            // set attribute id
+            for (ExportField field : exportFields) {
+                field.getField().setAttribute(newAttribute);
+            }
         }
         
         archiveValuesExportFieldDao.create(format.getFields());
     }
     
     /**
-     * Gets all attributes by formatId
-     *
-     * @param format
-     * @param attribute
+     * Gets all fields used by an export attribute
      */
-    private List<ExportField> getExportFieldsByAttributeId(ExportFormat format, ExportAttribute attribute){
+    private List<ExportField> getExportFieldsForExportAttribute(ExportFormat format, ExportAttribute attribute){
+        
         List<ExportField> exportFields = new ArrayList<ExportField>();
-        for(ExportField field:format.getFields()){
-            if(field.getField().getType().equals(FieldType.ATTRIBUTE) && field.getField().getAttribute().getAttributeId() == attribute.getAttributeId()){
+        
+        for (ExportField field:format.getFields()) {
+            
+            if (field.getField().getType().equals(FieldType.ATTRIBUTE) 
+                    && field.getField().getAttribute().getAttribute() == attribute.getAttribute()
+                    && field.getField().getAttribute().getDataSelection() == attribute.getDataSelection()
+                    && field.getField().getAttribute().getDaysPrevious() == attribute.getDaysPrevious()) {
                 exportFields.add(field);
             }
         }
         return exportFields;
     }
     
-    /**
-     * Updates attributes with formatId
-     *
-     * @param format
-     */
-    private void updateAttributesWithFormatId(ExportFormat format){
-        if(!format.getAttributes().isEmpty()){
-            for(ExportAttribute attribute: format.getAttributes()){
-                attribute.setFormatId(format.getFormatId());
-            }
-        }
-    }
-    
-    /**
-     * Updates fields with formatId
-     *
-     * @param format
-     */
-    private void updateFieldsWithFormatId(ExportFormat format){
-        for (ExportField field : format.getFields()) {
-            field.setFormatId(format.getFormatId());
-        }
-    }
-    
-    /**
-     * Updates fields with attributeId
-     * 
-     * @param exportField
-     * @param newAttribute
-     */
-    private void updateFieldsWithAttributeId(List<ExportField> exportFields, ExportAttribute newAttribute){
-        for (ExportField field : exportFields) {
-            field.getField().setAttribute(newAttribute);
-        }
-    }
-
 }
