@@ -4,7 +4,7 @@ import org.joda.time.Instant;
 
 
 
-public class EcobeeDeviceReading {
+public final class EcobeeDeviceReading {
     private final Float outdoorTempInF;
     private final Float indoorTempInF;
     private final Float setCoolTempInF;
