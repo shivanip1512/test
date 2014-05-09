@@ -100,6 +100,7 @@ public class DataExporterFormatController {
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(id);
         
         model.addAttribute("format", format);
+        model.addAttribute("formatName", format.getFormatName());
         
         setupModel(model, userContext, format);
         
