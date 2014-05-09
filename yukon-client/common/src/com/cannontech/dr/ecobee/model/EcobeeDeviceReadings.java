@@ -7,10 +7,10 @@ import org.joda.time.Instant;
 import com.cannontech.common.util.Range;
 import com.google.common.collect.ImmutableList;
 
-public class EcobeeDeviceReadings {
-    private String serialNumber;
-    private Range<Instant> dateRange;
-    private List<EcobeeDeviceReading> readings;
+public final class EcobeeDeviceReadings {
+    private final String serialNumber;
+    private final Range<Instant> dateRange;
+    private final List<EcobeeDeviceReading> readings;
 
     public EcobeeDeviceReadings(String serialNumber, Range<Instant> dateRange,
                                 List<EcobeeDeviceReading> readings) {
