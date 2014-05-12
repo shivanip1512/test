@@ -1885,7 +1885,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_freezeday )
         }
     }
 }
-
+/*
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_channel_configuration )
 {
     test_RfnResidentialDevice dut;
@@ -1998,7 +1998,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_channel_configur
         }
     }
 }
-
+*/
 BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 {
     using boost::assign::list_of;
@@ -2105,11 +2105,11 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
                     ( ConfigItem( RfnStrings::TemperatureAlarmRepeatCount,       "3"    ))
                     ( ConfigItem( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   )))
 
-            ( list_of<ConfigItem> // channel config
-                    ( ConfigItem( RfnStrings::ChannelSelectionPrefix,          "0"   ))
-                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalPrefix,  "0"   ))
-                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalSeconds, "123" ))
-                    ( ConfigItem( RfnStrings::ChannelReportingIntervalSeconds, "456" )))
+//            ( list_of<ConfigItem> // channel config
+//                    ( ConfigItem( RfnStrings::ChannelSelectionPrefix,          "0"   ))
+//                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalPrefix,  "0"   ))
+//                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalSeconds, "123" ))
+//                    ( ConfigItem( RfnStrings::ChannelReportingIntervalSeconds, "456" )))
             ;
 
     const std::vector<int> requestMsgsExp = list_of
@@ -2119,18 +2119,28 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
             ( 9 )   // add TOU config                   -> +1 request
             ( 10 )  // add voltage averaging config     -> +1 request
             ( 11 )  // add temperature alarming config  -> +1 request
-            ( 13 )  // add channel config               -> +2 request
+//            ( 13 )  // add channel config               -> +2 request
             ;
 
+//    const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
+//            ( list_of<bool>(true)(true)(true)(true)(true)(false) )  // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
+//            ( list_of<bool>(true)(true)(true)(true)(true)(true) )   // add demand freeze day config     -> 5 error messages + 1 config sent message
+//            ( list_of<bool>(true)(true)(true)(true)(true) )         // add OVUV config                  -> 4 error messages + 2 config sent message
+//            ( list_of<bool>(true)(true)(true)(true) )               // add TOU config                   -> 3 error messages + 3 config sent message
+//            ( list_of<bool>(true)(true)(true) )                     // add voltage averaging config     -> 2 error messages + 4 config sent message
+//            ( list_of<bool>(true)(true) )                           // add temperature alarming config  -> 1 error messages + 5 config sent message
+//            ( list_of<bool>(true) )                                 // add channel config               -> 6 config sent message
+//            ;
+
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(true)(true)(true)(true)(false) )  // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true)(true)(true)(true)(true) )   // add demand freeze day config     -> 5 error messages + 1 config sent message
-            ( list_of<bool>(true)(true)(true)(true)(true) )         // add OVUV config                  -> 4 error messages + 2 config sent message
-            ( list_of<bool>(true)(true)(true)(true) )               // add TOU config                   -> 3 error messages + 3 config sent message
-            ( list_of<bool>(true)(true)(true) )                     // add voltage averaging config     -> 2 error messages + 4 config sent message
-            ( list_of<bool>(true)(true) )                           // add temperature alarming config  -> 1 error messages + 5 config sent message
-            ( list_of<bool>(true) )                                 // add channel config               -> 6 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(false) )  // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true)(true) )   // add demand freeze day config     -> 5 error messages + 1 config sent message
+            ( list_of<bool>(true)(true)(true)(true) )         // add OVUV config                  -> 4 error messages + 2 config sent message
+            ( list_of<bool>(true)(true)(true) )               // add TOU config                   -> 3 error messages + 3 config sent message
+            ( list_of<bool>(true)(true) )                     // add voltage averaging config     -> 2 error messages + 4 config sent message
+            ( list_of<bool>(true) )                           // add temperature alarming config  -> 1 error messages + 5 config sent message
             ;
+
 
     std::vector<int> requestMsgsRcv;
     std::vector< std::vector<bool> > returnExpectMoreRcv;
@@ -2290,11 +2300,11 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                     ( ConfigItem( RfnStrings::TemperatureAlarmRepeatCount,       "3"    ))
                     ( ConfigItem( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   )))
 
-            ( list_of<ConfigItem> // channel config
-                    ( ConfigItem( RfnStrings::ChannelSelectionPrefix,          "0"   ))
-                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalPrefix,  "0"   ))
-                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalSeconds, "123" ))
-                    ( ConfigItem( RfnStrings::ChannelReportingIntervalSeconds, "456" )))
+//            ( list_of<ConfigItem> // channel config
+//                    ( ConfigItem( RfnStrings::ChannelSelectionPrefix,          "0"   ))
+//                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalPrefix,  "0"   ))
+//                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalSeconds, "123" ))
+//                    ( ConfigItem( RfnStrings::ChannelReportingIntervalSeconds, "456" )))
             ;
 
     const std::vector<int> requestMsgsExp = list_of
@@ -2305,18 +2315,28 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
             ( 10 )  // add TOU config                   -> +1 request
             ( 11 )  // add voltage averaging config     -> +1 request
             ( 12 )  // add temperature alarming config  -> +1 request
-            ( 14 )  // add channel config               -> +2 request
+//            ( 14 )  // add channel config               -> +2 request
             ;
 
+//    const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
+//            ( list_of<bool>(true)(true)(true)(true)(true)(true)(false) )    // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
+//            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true) )     // add remote disconnect config     -> 6 error messages + 1 config sent message
+//            ( list_of<bool>(true)(true)(true)(true)(true)(true) )           // add demand freeze day config     -> 5 error messages + 2 config sent message
+//            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add OVUV config                  -> 4 error messages + 3 config sent message
+//            ( list_of<bool>(true)(true)(true)(true) )                       // add TOU config                   -> 3 error messages + 4 config sent message
+//            ( list_of<bool>(true)(true)(true) )                             // add voltage averaging config     -> 2 error messages + 5 config sent message
+//            ( list_of<bool>(true)(true) )                                   // add temperature alarming config  -> 1 error messages + 6 config sent message
+//            ( list_of<bool>(true) )                                         // add channel config               -> 7 config sent message
+//            ;
+
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(true)(true)(true)(true)(true)(false) )    // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true) )     // add remote disconnect config     -> 6 error messages + 1 config sent message
-            ( list_of<bool>(true)(true)(true)(true)(true)(true) )           // add demand freeze day config     -> 5 error messages + 2 config sent message
-            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add OVUV config                  -> 4 error messages + 3 config sent message
-            ( list_of<bool>(true)(true)(true)(true) )                       // add TOU config                   -> 3 error messages + 4 config sent message
-            ( list_of<bool>(true)(true)(true) )                             // add voltage averaging config     -> 2 error messages + 5 config sent message
-            ( list_of<bool>(true)(true) )                                   // add temperature alarming config  -> 1 error messages + 6 config sent message
-            ( list_of<bool>(true) )                                         // add channel config               -> 7 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(true)(false) )    // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true)(true)(true) )     // add remote disconnect config     -> 6 error messages + 1 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(true) )           // add demand freeze day config     -> 5 error messages + 2 config sent message
+            ( list_of<bool>(true)(true)(true)(true) )                 // add OVUV config                  -> 4 error messages + 3 config sent message
+            ( list_of<bool>(true)(true)(true) )                       // add TOU config                   -> 3 error messages + 4 config sent message
+            ( list_of<bool>(true)(true) )                             // add voltage averaging config     -> 2 error messages + 5 config sent message
+            ( list_of<bool>(true) )                                   // add temperature alarming config  -> 1 error messages + 6 config sent message
             ;
 
     std::vector<int> requestMsgsRcv;
