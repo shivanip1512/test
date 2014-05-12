@@ -33,12 +33,10 @@
                     <tags:nameValueGap2 gapHeight="20px"/>
                     
                     <tags:nameValue2 nameKey=".mainDetail.numberOfOutages">
-                        ${outageMonitor.numberOfOutages}
                         <i:inline key=".mainDetail.numberOfOutages.outages" arguments="${outageMonitor.numberOfOutages}"/> 
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".mainDetail.timePeriod">
-                        ${outageMonitor.timePeriodDays} 
                         <i:inline key=".mainDetail.timePeriod.days" arguments="${outageMonitor.timePeriodDays}"/>
                     </tags:nameValue2>
                     
