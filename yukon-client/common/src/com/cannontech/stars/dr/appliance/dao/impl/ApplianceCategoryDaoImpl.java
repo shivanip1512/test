@@ -40,10 +40,10 @@ import com.google.common.collect.Maps;
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WebConfigurationDao webConfigurationDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private EnergyCompanySettingDao ecSettingDao;
 
     private static class ApplianceCategoryRowMapper extends AbstractRowMapperWithBaseQuery<ApplianceCategory> {
         private final Map<Integer, WebConfiguration> webConfigurations;
@@ -166,7 +166,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<ApplianceCategory> getByApplianceCategoryName(String applianceCategoryName,
-                                                              Set<Integer> energyCompanyIds) {
+            Set<Integer> energyCompanyIds) {
         ApplianceCategoryRowMapper rowMapper = new ApplianceCategoryRowMapper();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
@@ -234,7 +234,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
             ecSettingDao.getBoolean(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS,
                                     energyCompany.getId());
         if (inheritParentAppCats) {
-            List<Integer> parentIds = Lists.transform(energyCompany.getParents(true), EnergyCompanyDao.TO_ID_FUNCTION);
+            List<Integer> parentIds = Lists.transform(energyCompany.getAncestors(true), EnergyCompanyDao.TO_ID_FUNCTION);
             return new HashSet<>(parentIds);
         }
         return Collections.singleton(energyCompany.getId());

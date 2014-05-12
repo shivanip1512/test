@@ -1,17 +1,16 @@
 package com.cannontech.common.pao;
 
+import static com.google.common.base.Preconditions.*;
+
 import java.io.Serializable;
 import java.util.Comparator;
-
-import org.apache.commons.lang3.Validate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
 public final class PaoIdentifier implements YukonPao, Serializable {
-
-    private static final long serialVersionUID = -592760481960580100L;
+    private static final long serialVersionUID = 1L;
 
     public static final Comparator<PaoIdentifier> COMPARATOR;
 
@@ -19,8 +18,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
     private PaoType paoType;
 
     public PaoIdentifier(int paoId, PaoType paoType) {
-        super();
-        Validate.notNull(paoType, "paoType must not be null");
+        checkNotNull(paoType, "paoType must not be null");
         this.paoId = paoId;
         this.paoType = paoType;
     }
@@ -73,17 +71,22 @@ public final class PaoIdentifier implements YukonPao, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         PaoIdentifier other = (PaoIdentifier) obj;
-        if (paoId != other.paoId)
+        if (paoId != other.paoId) {
             return false;
-        if (!paoType.equals(other.paoType))
+        }
+        if (!paoType.equals(other.paoType)) {
             return false;
+        }
         return true;
     }
 }

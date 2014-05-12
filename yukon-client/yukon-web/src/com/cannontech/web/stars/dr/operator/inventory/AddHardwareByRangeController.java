@@ -51,30 +51,28 @@ import com.google.common.collect.Lists;
 @CheckRole(YukonRole.INVENTORY)
 @RequestMapping("/operator/inventory/abr/*")
 public class AddHardwareByRangeController {
-    
-    @Autowired private InventoryDao InventoryDao;
-    @Autowired private YukonListDao yukonListDao;
+    @Autowired private AddByRangeHelper addByRangeHelper;
+    @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private InventoryDao InventoryDao;
+    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private PaoDao paoDao;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
-    @Autowired private AddByRangeHelper helper;
-    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
-    @Autowired private DefaultRouteService defaultRouteService;
-    
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonListDao listDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
     private AbrValidator validator = new AbrValidator();
     
     private class AbrValidator extends SimpleValidator<AddByRange> {
-        
         public AbrValidator() {
             super(AddByRange.class);
         }
 
         @Override
         public void doValidation(AddByRange abr, Errors errors) {
-            YukonListEntry entry = yukonListDao.getYukonListEntry(abr.getHardwareTypeId());
+            YukonListEntry entry = listDao.getYukonListEntry(abr.getHardwareTypeId());
             HardwareType type = HardwareType.valueOf(entry.getYukonDefID());
             validateSN(errors, abr.getFrom(), "from", type);
             validateSN(errors, abr.getTo(), "to", type);
@@ -90,8 +88,8 @@ public class AddHardwareByRangeController {
                 if (!StringUtils.isNumeric(sn)) {
                     errors.rejectValue(path, "yukon.web.modules.operator.abr.error."+path+".nonNumericSerialNumber");
                 }
-                /* For LCR 3102's the serial number must be a valid integer since it has to match the 
-                 * address in DeviceCarrierSettings which is a varchar(18) */
+                // For LCR 3102's the serial number must be a valid integer since it has to match the
+                // address in DeviceCarrierSettings which is a varchar(18)
                 if (type == HardwareType.LCR_3102) {
                    try {
                        Integer.parseInt(sn);
@@ -106,8 +104,8 @@ public class AddHardwareByRangeController {
     }
 
     @RequestMapping("view")
-    public String view(ModelMap model, YukonUserContext context, int hardwareTypeId, String taskId) {
-        YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeId); 
+    public String view(ModelMap model, YukonUserContext userContext, int hardwareTypeId, String taskId) {
+        YukonListEntry entry = listDao.getYukonListEntry(hardwareTypeId); 
         
         if (taskId != null) {
             model.addAttribute("mode", PageEditMode.VIEW);
@@ -115,23 +113,24 @@ public class AddHardwareByRangeController {
             AddByRangeTask task = (AddByRangeTask) resultsCache.getResult(taskId);
             model.addAttribute("task", task);
             model.addAttribute("abr", task.getAbr());
-            setupModel(model, task.getAbr(), context, entry);
+            setupModel(model, task.getAbr(), userContext, entry);
         } else {
             model.addAttribute("mode", PageEditMode.CREATE);
             
             AddByRange abr = new AddByRange();
             abr.setHardwareTypeId(hardwareTypeId);
             model.addAttribute("abr", abr);
-            setupModel(model, abr, context, entry);
+            setupModel(model, abr, userContext, entry);
         }
         
         return "operator/inventory/abr/setup.jsp";
     }
     
-    private void setupModel(ModelMap model, AddByRange abr, YukonUserContext context, YukonListEntry hardwareTypeEntry) {
-        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(context.getYukonUser());
+    private void setupModel(ModelMap model, AddByRange abr, YukonUserContext userContext,
+            YukonListEntry hardwareTypeEntry) {
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         String defaultRoute;
         try {
@@ -150,7 +149,7 @@ public class AddHardwareByRangeController {
         boolean showVoltage = !hardwareType.isZigbee() && !hardwareClass.isGateway() && !hardwareClass.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
         
-        List<Integer> energyCompanyIds = Lists.transform(energyCompany.getParents(true), EnergyCompanyDao.TO_ID_FUNCTION);
+        List<Integer> energyCompanyIds = Lists.transform(energyCompany.getAncestors(true), EnergyCompanyDao.TO_ID_FUNCTION);
         
         model.addAttribute("hardwareTypeId", hardwareTypeEntry.getEntryID());
         model.addAttribute("type", hardwareTypeEntry.getEntryText());
@@ -162,56 +161,55 @@ public class AddHardwareByRangeController {
     }
     
     @RequestMapping(value="do", params="start")
-    public String startTask(ModelMap model, YukonUserContext context, 
-                        @ModelAttribute("abr") AddByRange abr, 
-                        BindingResult result,
-                        FlashScope flash) {
-        
-        validator.validate(abr, result);
-        YukonListEntry typeEntry = yukonListDao.getYukonListEntry(abr.getHardwareTypeId());
+    public String startTask(ModelMap model, YukonUserContext userContext, @ModelAttribute("abr") AddByRange abr,
+            BindingResult bindingResult, FlashScope flashScope) {
+        validator.validate(abr, bindingResult);
+        YukonListEntry typeEntry = listDao.getYukonListEntry(abr.getHardwareTypeId());
         HardwareType type = HardwareType.valueOf(typeEntry.getYukonDefID());
-        if (result.hasErrors()) {
-            /* Add errors to flash scope */
+        if (bindingResult.hasErrors()) {
+            // Add errors to flash scope
             model.addAttribute("mode", PageEditMode.CREATE);
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
-            flash.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupModel(model, abr, context, typeEntry);
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            setupModel(model, abr, userContext, typeEntry);
             return "operator/inventory/abr/setup.jsp";
         }
         
         model.addAttribute("mode", PageEditMode.VIEW);
-        setupModel(model, abr, context, typeEntry);
+        setupModel(model, abr, userContext, typeEntry);
         
-        AddByRangeTask task = helper.new AddByRangeTask(context, type, abr);
-        String taskId = helper.startTask(task);
+        AddByRangeTask task = addByRangeHelper.new AddByRangeTask(userContext, type, abr);
+        String taskId = addByRangeHelper.startTask(task);
         model.addAttribute("taskId", taskId);
         
         return "redirect:view";
     }
     
     @RequestMapping(value="do", params="cancel")
-    public String cancel(ModelMap model, FlashScope flash, String taskId) {
+    public String cancel(FlashScope flashScope, String taskId) {
         if (StringUtils.isNotBlank(taskId)) {
             AbstractInventoryTask task = resultsCache.getResult(taskId);
             task.cancel();
             int processed = task.getCompletedItems(); 
-            flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.operator.abr.canceled", processed));
+            flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.operator.abr.canceled", processed));
         }
         return "redirect:../home";
     }
-    
+
     @RequestMapping("newOperation")
-    public String newOperation(ModelMap model, String taskId, YukonUserContext context) {
+    public String newOperation(ModelMap model, String taskId, YukonUserContext userContext) {
         AddByRangeTask task = (AddByRangeTask) resultsCache.getResult(taskId);
-        String description = resolver.getMessageSourceAccessor(context).getMessage("yukon.web.modules.operator.abr.successCollectionDescription");
-        InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(task.getSuccessful().iterator(), description);
+        String description = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(
+            "yukon.web.modules.operator.abr.successCollectionDescription");
+        InventoryCollection temporaryCollection =
+                memoryCollectionProducer.createCollection(task.getSuccessful().iterator(), description);
         model.addAttribute("inventoryCollection", temporaryCollection);
         model.addAllAttributes(temporaryCollection.getCollectionParameters());
         return "redirect:../inventoryActions";
     }
     
     @RequestMapping("viewFailed")
-    public String viewFailed(ModelMap model, String taskId, YukonUserContext context) {
+    public String viewFailed(ModelMap model, String taskId) {
         AddByRangeTask task = (AddByRangeTask) resultsCache.getResult(taskId);
         model.addAttribute("failed", task.getFailed());
         return "operator/inventory/abr/failed.jsp";
@@ -221,5 +219,4 @@ public class AddHardwareByRangeController {
     public void setResultsCache(RecentResultsCache<AbstractInventoryTask> resultsCache) {
         this.resultsCache = resultsCache;
     }
-    
 }

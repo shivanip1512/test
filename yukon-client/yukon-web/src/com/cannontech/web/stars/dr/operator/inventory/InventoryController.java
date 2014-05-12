@@ -68,26 +68,24 @@ import com.google.common.collect.Sets;
 @CheckRole({YukonRole.CONSUMER_INFO, YukonRole.INVENTORY})
 @RequestMapping("/operator/inventory/*")
 public class InventoryController {
-    
-    @Autowired private HardwareUiService hardwareUiService;
-    @Autowired private HardwareService hardwareService;
-    @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private PaoDao paoDao;
-    @Autowired private ServiceCompanyDao serviceCompanyDao;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
-    @Autowired private InventoryDao inventoryDao;
-    @Autowired private HardwareEventLogService hardwareEventLogService;
-    @Autowired private HardwareValidator hardwareValidator;
-    @Autowired private YukonListDao yukonListDao;
-    @Autowired private HardwareModelHelper helper;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DefaultRouteService defaultRouteService;
+    @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private HardwareModelHelper hardwareModelHelper;
+    @Autowired private HardwareService hardwareService;
+    @Autowired private HardwareUiService hardwareUiService;
+    @Autowired private HardwareValidator hardwareValidator;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ServiceCompanyDao serviceCompanyDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonListDao listDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping(value = "view", params = {"deviceId"})
     public String viewByDeviceId(ModelMap model, YukonUserContext context, int deviceId) {
-        
         model.addAttribute("mode", PageEditMode.VIEW);
         InventoryIdentifier inventory = inventoryDao.getYukonInventoryForDeviceId(deviceId);
         int inventoryId = inventory.getInventoryId();
@@ -106,7 +104,6 @@ public class InventoryController {
     
     @RequestMapping(value = "view", params = {"inventoryId"})
     public String viewByInventoryId(ModelMap model, YukonUserContext context, int inventoryId) {
-        
         model.addAttribute("mode", PageEditMode.VIEW);
         int accountId = inventoryDao.getAccountIdForInventory(inventoryId);
         if (accountId > 0) {
@@ -137,7 +134,7 @@ public class InventoryController {
         Hardware hardware = new Hardware();
         hardware.setHardwareTypeEntryId(hardwareTypeId);
         hardware.setFieldInstallDate(new Date());
-        YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeId);
+        YukonListEntry entry = listDao.getYukonListEntry(hardwareTypeId);
         HardwareType type = HardwareType.valueOf(entry.getYukonDefID());
         hardware.setHardwareType(type);
         hardware.setDisplayType(entry.getEntryText());
@@ -158,30 +155,31 @@ public class InventoryController {
         }
         
         model.addAttribute("editingRoleProperty", YukonRoleProperty.INVENTORY_CREATE_HARDWARE.name());
-        EnergyCompany energyCompany = energyCompanyDao.getEnergyCompanyByOperator(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         model.addAttribute("energyCompanyId", energyCompany.getId());
         
-        MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
         
         String defaultRoute;
         try {
             int defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
             defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
-            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
+            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute")
+                    + defaultRoute;
         } catch(NotFoundException e) {
             defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = energyCompanyDao.getAllRoutes(energyCompany);
+        List<LiteYukonPAObject> routes = ecDao.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 
-                Lists.transform(energyCompanyDao.getEnergyCompany(energyCompany.getId()).getParents(true), 
+                Lists.transform(ecDao.getEnergyCompany(energyCompany.getId()).getAncestors(true), 
                                 EnergyCompanyDao.TO_ID_FUNCTION);
         model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
-        /* Setup elements to hide/show based on device type/class */
+        // Setup elements to hide/show based on device type/class
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
         if (type.isZigbee()) {
@@ -196,12 +194,12 @@ public class InventoryController {
         boolean showVoltage = !type.isZigbee() && !clazz.isGateway() && !clazz.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
         
-        /* Hide route for meters, zigbee devices, and RF devices */
+        // Hide route for meters, zigbee devices, and RF devices
         if (!clazz.isMeter() && !type.isZigbee() && !type.isRf()) {
             model.addAttribute("showRoute", true);
         }
         
-        /* Show two way device row for non-zigbee two way lcr's */
+        // Show two way device row for non-zigbee two way lcr's
         if (type == HardwareType.LCR_3102) {
             model.addAttribute("showTwoWay", true);
         }
@@ -210,22 +208,20 @@ public class InventoryController {
     }
     
     @RequestMapping("create")
-    public String create(@ModelAttribute Hardware hardware, BindingResult result,
-                                 ModelMap model, 
-                                 YukonUserContext context,
-                                 HttpServletRequest request,
-                                 String cancel,
-                                 FlashScope flash) throws ServletRequestBindingException {
-        
-        if (cancel != null) { /* Cancel Create */
+    public String create(@ModelAttribute Hardware hardware, BindingResult result, ModelMap model,
+            YukonUserContext context, HttpServletRequest request, String cancel, FlashScope flash)
+            throws ServletRequestBindingException {
+        if (cancel != null) {
+            // Cancel Create
             return "redirect:home";
         }
         
         LiteYukonUser user = context.getYukonUser();
-        helper.creationAttempted(user, null, hardware, Sets.newHashSet(YukonRoleProperty.INVENTORY_CREATE_HARDWARE), result);
+        hardwareModelHelper.creationAttempted(user, null, hardware,
+            Sets.newHashSet(YukonRoleProperty.INVENTORY_CREATE_HARDWARE), result);
         
         if (!result.hasErrors()) {
-            int inventoryId = helper.create(user, hardware, result, request.getSession());
+            int inventoryId = hardwareModelHelper.create(user, hardware, result, request.getSession());
             
             if (result.hasErrors()) {
                 return returnToCreateWithErrors(model, hardware, context, flash, result);
@@ -235,12 +231,13 @@ public class InventoryController {
             model.addAttribute("inventoryId", inventoryId);
             return "redirect:view";
             
-        } else {
-            return returnToCreateWithErrors(model, hardware, context, flash, result);
         }
+
+        return returnToCreateWithErrors(model, hardware, context, flash, result);
     }
-    
-    private String returnToCreateWithErrors(ModelMap model, Hardware hardware, YukonUserContext context, FlashScope flash, BindingResult result) {
+
+    private String returnToCreateWithErrors(ModelMap model, Hardware hardware, YukonUserContext context,
+            FlashScope flash, BindingResult result) {
         model.addAttribute("mode", PageEditMode.CREATE);
         List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
         flash.setMessage(messages, FlashScopeMessageType.ERROR);
@@ -249,15 +246,10 @@ public class InventoryController {
     }
     
     @RequestMapping("update")
-    public String update(@ModelAttribute Hardware hardware, BindingResult result,
-                         ModelMap model, 
-                         YukonUserContext context,
-                         HttpServletRequest request,
-                         FlashScope flash,
-                         String cancel,
-                         int inventoryId) {
-        
-        if (cancel != null) { /* Cancel Update */
+    public String update(@ModelAttribute Hardware hardware, BindingResult result, ModelMap model,
+            YukonUserContext context, FlashScope flash, String cancel, int inventoryId) {
+        if (cancel != null) {
+            // Cancel Update
             model.addAttribute("inventoryId", inventoryId);
             model.clear();
             return "redirect:view";
@@ -265,17 +257,18 @@ public class InventoryController {
         
         LiteYukonUser user = context.getYukonUser();
         CustomerAccount custAccount = customerAccountDao.getById(hardware.getAccountId());
-        hardwareEventLogService.hardwareUpdateAttempted(user, custAccount.getAccountNumber(), hardware.getSerialNumber(), EventSource.OPERATOR);
+        hardwareEventLogService.hardwareUpdateAttempted(user, custAccount.getAccountNumber(),
+            hardware.getSerialNumber(), EventSource.OPERATOR);
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user);
         
-        /* Validate and Update*/
+        // Validate and Update
         hardwareValidator.validate(hardware, result);
         if (result.hasErrors()) {
             return returnToEditWithErrors(context, model, flash, hardware, result);
         }
         
-        /* Update */
+        // Update
         try {
             hardwareUiService.updateHardware(user, hardware);
         } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
@@ -302,25 +295,21 @@ public class InventoryController {
             return returnToEditWithErrors(context, model, flash, hardware, result);
         }
         
-        /* Flash hardware updated */
+        // Flash hardware updated
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareUpdated"));
         model.addAttribute("inventoryId", inventoryId);
         
         return "redirect:view";
     }
-    
-    private String returnToEditWithErrors(YukonUserContext context, 
-                                          ModelMap model, 
-                                          FlashScope flash, 
-                                          Hardware hardware, 
-                                          BindingResult result) {
-        
+
+    private String returnToEditWithErrors(YukonUserContext context, ModelMap model, FlashScope flash,
+            Hardware hardware, BindingResult result) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        /* Return back to the jsp with the errors */
+        // Return back to the jsp with the errors
         setupModel(model, context, hardware);
         model.addAttribute("displayName", hardware.getDisplayName());
         
-        /* Add errors to flash scope */
+        // Add errors to flash scope
         List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
         flash.setMessage(messages, FlashScopeMessageType.ERROR);
         
@@ -334,9 +323,8 @@ public class InventoryController {
     }
     
     @RequestMapping("delete")
-    public String delete(ModelMap model, YukonUserContext context, FlashScope flash, int inventoryId) 
-    throws NotFoundException, PersistenceException, CommandCompletionException, SQLException {
-        
+    public String delete(YukonUserContext context, FlashScope flash, int inventoryId) throws NotFoundException,
+            PersistenceException, CommandCompletionException, SQLException {
         Hardware hardwareToDelete = hardwareUiService.getHardware(inventoryId);
         LiteYukonUser user = context.getYukonUser();
         hardwareEventLogService.hardwareDeletionAttempted(user, hardwareToDelete.getDisplayName(), EventSource.OPERATOR);
@@ -349,8 +337,9 @@ public class InventoryController {
     }
     
     public void setupModel(ModelMap model, YukonUserContext context, Hardware hardware) {
-        boolean inventoryChecking = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, context.getYukonUser());
-        
+        boolean inventoryChecking =
+                rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, context.getYukonUser());
+
         int inventoryId = hardware.getInventoryId();
         model.addAttribute("hardware", hardware);
         model.addAttribute("inventoryId", inventoryId);
@@ -362,48 +351,49 @@ public class InventoryController {
         
         model.addAttribute("editingRoleProperty", YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES.name());
         
-        /* Hardware History */
+        // Hardware History
         model.addAttribute("hardwareHistory", hardwareUiService.getHardwareHistory(inventoryId));
         
-        /* Warehouses */
+        // Warehouses
         LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(hardware.getEnergyCompanyId());
-        EnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(lsec.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(lsec.getEnergyCompanyId());
         
         model.addAttribute("energyCompanyId", lsec.getEnergyCompanyId());
         
         List<Warehouse> warehouses = lsec.getWarehouses();
         model.addAttribute("warehouses", warehouses);
 
-        /* For switches and tstats, if they have inventory checking turned off they can edit the serial number. */
+        // For switches and tstats, if they have inventory checking turned off they can edit the serial number.
         if (!inventoryChecking && !clazz.isMeter()) {
             model.addAttribute("serialNumberEditable", true);
         }
         
-        /* For switches and tstats, show serial number instead of device name */
+        // For switches and tstats, show serial number instead of device name
         if (!clazz.isMeter()) {
             model.addAttribute("showSerialNumber", true);
         }
         
-        MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
         
         String defaultRoute;
         try {
             int defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
             defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
-            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
+            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute")
+                    + defaultRoute;
         } catch(NotFoundException e) {
             defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = energyCompanyDao.getAllRoutes(energyCompany);
+        List<LiteYukonPAObject> routes = ecDao.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 
-                Lists.transform(energyCompany.getParents(true), EnergyCompanyDao.TO_ID_FUNCTION);
+                Lists.transform(energyCompany.getAncestors(true), EnergyCompanyDao.TO_ID_FUNCTION);
         model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
-        /* Setup elements to hide/show based on device type/class */
+        // Setup elements to hide/show based on device type/class
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
         if (type.isZigbee()) {
@@ -418,12 +408,12 @@ public class InventoryController {
         boolean showVoltage = !type.isZigbee() && !clazz.isGateway() && !clazz.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
 
-        /* Hide route for meters and zigbee devices */
+        // Hide route for meters and zigbee devices
         if (!clazz.isMeter() && !type.isZigbee() && !type.isRf() && type != HardwareType.LCR_3102) {
             model.addAttribute("showRoute", true);
         }
         
-        /* Show two way device row for non-zigbee two way lcr's */
+        // Show two way device row for non-zigbee two way lcr's
         if (type == HardwareType.LCR_3102) {
             model.addAttribute("showTwoWay", true);
         }
@@ -431,12 +421,9 @@ public class InventoryController {
     
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        
         DateType dateValidationType = new DateType();
         binder.registerCustomEditor(Date.class, "fieldInstallDate", dateValidationType.getPropertyEditor());
         binder.registerCustomEditor(Date.class, "fieldReceiveDate", dateValidationType.getPropertyEditor());
         binder.registerCustomEditor(Date.class, "fieldRemoveDate", dateValidationType.getPropertyEditor());
-        
     }
-    
 }

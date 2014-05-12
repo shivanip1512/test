@@ -18,21 +18,19 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class AvailableMctPicker extends DatabasePaoPicker {
-
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private EnergyCompanyDao ecDao;
 
     @Override
     protected void updateFilters(List<SqlFilter> sqlFilters,
-            List<PostProcessingFilter<UltraLightPao>> postProcessingFilters,
-            String extraArgs, YukonUserContext userContext) {
+            List<PostProcessingFilter<UltraLightPao>> postProcessingFilters, String extraArgs,
+            YukonUserContext userContext) {
         if (extraArgs != null) {
-            
             int energyCompanyId = NumberUtils.toInt(extraArgs);
             
             // gather parents energyCompanyIds
             EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
-            Set<Integer> parentIds = new HashSet<>(Lists.transform(energyCompany.getParents(true),
+            Set<Integer> parentIds = new HashSet<>(Lists.transform(energyCompany.getAncestors(true),
                                                                    EnergyCompanyDao.TO_ID_FUNCTION));
             
             AvailableMctFilter energyCompanyIdsFilter = new AvailableMctFilter(parentIds, paoDefinitionDao);

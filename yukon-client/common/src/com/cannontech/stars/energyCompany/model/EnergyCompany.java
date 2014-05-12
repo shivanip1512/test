@@ -118,19 +118,19 @@ public final class EnergyCompany implements YukonEnergyCompany {
     }
 
     /**
-     * Get all descendants of this energy company (children, children of children, etc.).
+     * Get all ancestors of this energy company (parent, parent of parent, etc.).
      */
-    public List<EnergyCompany> getParents(boolean addSelf) {
+    public List<EnergyCompany> getAncestors(boolean addSelf) {
         ImmutableList.Builder<EnergyCompany> builder = ImmutableList.builder();
         if (parent != null) {
-            builder.addAll(parent.getParents(true));
+            builder.addAll(parent.getAncestors(true));
         }
         if (addSelf) {
             builder.add(this);
         }
         return builder.build();
     }
-    
+
     /**
      * Get all descendants of this energy company (children, children of children, etc.).
      */

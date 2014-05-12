@@ -19,9 +19,8 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardware> {
-    
-    @Autowired private ECMappingDao ecMappingDao;
     @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private ECMappingDao ecMappingDao;
 
     private HardwareClass hardwareClass;
     
@@ -42,16 +41,15 @@ public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardw
     }
 
     @Override
-    protected void updateFilters(
-            List<SqlFilter> sqlFilters,
-            List<PostProcessingFilter<DisplayableLmHardware>> postProcessingFilters,
-            String extraArgs, YukonUserContext userContext) {
+    protected void updateFilters(List<SqlFilter> sqlFilters,
+            List<PostProcessingFilter<DisplayableLmHardware>> postProcessingFilters, String extraArgs,
+            YukonUserContext userContext) {
         if (extraArgs != null) {
             int energyCompanyId = NumberUtils.toInt(extraArgs);
             
             // gather parents energyCompanyIds
             EnergyCompany energyCompany = ecDao.getEnergyCompany(energyCompanyId);
-            List<Integer> parentIds = Lists.transform(energyCompany.getParents(true), EnergyCompanyDao.TO_ID_FUNCTION);
+            List<Integer> parentIds = Lists.transform(energyCompany.getAncestors(true), EnergyCompanyDao.TO_ID_FUNCTION);
             AvailableLmHardwareFilter energyCompanyIdsFilter = new AvailableLmHardwareFilter(parentIds, hardwareClass);
             sqlFilters.add(energyCompanyIdsFilter);
         }
@@ -70,5 +68,4 @@ public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardw
     public void setHardwareClass(HardwareClass hardwareClass) {
         this.hardwareClass = hardwareClass;
     }
-
 }

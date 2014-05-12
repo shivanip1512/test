@@ -28,9 +28,9 @@ public class EnergyCompanyTest {
         {100, "We Pretend Power & Light", "wpop", 300, null},
         {101, "Don't You Dare Pizza!", "pizza", 301, 100},
 
-        {200, "Bobs grandson's grandson", "",   301, 201},
-        {201, "Bobs grandson", "",              301, 202},
-        {202, "Bobs child", "",                 301, 203},
+        {200, "Bob's grandson's grandson", "",   301, 201},
+        {201, "Bob's grandson", "",              301, 202},
+        {202, "Bob's child", "",                 301, 203},
         {203, "Bob", "",                        301, null},
     };
 
@@ -65,10 +65,10 @@ public class EnergyCompanyTest {
 
     private void verifyParents(boolean assertion, EnergyCompany ec, EnergyCompany... parents) {
         List<EnergyCompany> expectedParents = Lists.newArrayList(parents);
-        List<EnergyCompany> returnedParents = ec.getParents(false);
+        List<EnergyCompany> returnedParents = ec.getAncestors(false);
         List<EnergyCompany> expectedParentsAndSelf = Lists.newArrayList(parents);
         expectedParentsAndSelf.add(ec);
-        List<EnergyCompany> returnedParentsAndSelf = ec.getParents(true);
+        List<EnergyCompany> returnedParentsAndSelf = ec.getAncestors(true);
 
         boolean gotExpected = expectedParents.containsAll(returnedParents)
                     && expectedParentsAndSelf.containsAll(returnedParentsAndSelf)
