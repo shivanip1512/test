@@ -3718,7 +3718,6 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
-    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
     const vector<tuple<unsigned, unsigned, int>> empty;
@@ -3857,7 +3856,6 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
-    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
 
@@ -4006,7 +4004,6 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
-    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
 
@@ -4166,7 +4163,6 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_1Dword)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
-    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
 
@@ -4205,7 +4201,6 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
-    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
 
@@ -4264,7 +4259,6 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
-    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
 
