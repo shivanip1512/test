@@ -87,7 +87,7 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
         return Instant.now().isAfter(updateTime);
     }
     /**
-     * This method update the weather points for any weather location
+     * Update weather points for any weather location
      */
     private void updateWeatherPoints(WeatherStation weatherStation, int paoId) throws NoaaWeatherDataServiceException {
         WeatherObservation updatedObservation = noaaWeatherService.getCurrentWeatherObservation(weatherStation);

@@ -33,12 +33,12 @@ public interface WeatherDataService {
     WeatherLocation findWeatherLocationForPao(int paoId);
     
     /**
-     * This method update the weather points for new weather location
+     * Update weather points for new weather location
      */
     void updatePointsForNewWeatherLocation(WeatherLocation weatherLocation);
     
     /**
-     * This method update the weather points for any weather location
+     * Update weather points for any weather location
      */
     void updateWeatherPoints(WeatherObservation weatherObservation, int paoId);
 }
