@@ -280,7 +280,8 @@ yukon.tools.map = (function() {
                         debug.log('adding icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         start = new Date().getTime();
                         
-                        for (var i = 0; i < toRemove.length; i++) {
+                        var toRemoveLength = toRemove.length;
+                        for (var i = 0; i < toRemoveLength; i++) {
                             source.removeFeature(toRemove[i]);
                         }
                         
