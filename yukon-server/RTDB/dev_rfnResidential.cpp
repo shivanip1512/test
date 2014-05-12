@@ -187,7 +187,8 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
             ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ) )
             ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executePutConfigVoltageAveragingInterval, this ) )
             ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executePutConfigOvUv,                     this ) )
-            ( ConfigPart::channelconfig,    bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallChannels,          this ) )
+//            TODO: YUK-12131 uncomment when Java support for this command is completed            
+//            ( ConfigPart::channelconfig,    bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallChannels,          this ) )
                 ;
 
         if( disconnectConfigSupported() )
