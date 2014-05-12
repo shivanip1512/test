@@ -14,8 +14,8 @@ public final class PaoIdentifier implements YukonPao, Serializable {
 
     public static final Comparator<PaoIdentifier> COMPARATOR;
 
-    private int paoId;
-    private PaoType paoType;
+    private final int paoId;
+    private final PaoType paoType;
 
     public PaoIdentifier(int paoId, PaoType paoType) {
         checkNotNull(paoType, "paoType must not be null");
