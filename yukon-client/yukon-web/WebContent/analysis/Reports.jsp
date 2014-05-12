@@ -403,13 +403,19 @@ function makeFirstSelectedFilterValueVisible () {
             <SCRIPT>
 
         function changeFilter(filterBy) {
-        <%
-        //Create a local instance of the map.
-        Map<ReportFilter,List<? extends Object>> filterObjectsMap = REPORT_BEAN.getFilterObjectsMap();
-        for (ReportFilter filter : filterObjectsMap.keySet()) {%>
-                document.getElementById('Div<%=filter.getFilterTitle()%>').style.display = (filterBy == '<%=filter%>')? "block" : "none";
-        <% } %>
-        
+            <% //Create a local instance of the map.
+            Map<ReportFilter,List<? extends Object>> filterObjectsMap = REPORT_BEAN.getFilterObjectsMap();
+            for (ReportFilter filter : filterObjectsMap.keySet()) {%>
+                var container = $('#Div<%=filter.getFilterTitle()%>');
+                var show = filterBy == '<%=filter%>';
+                if (show) {
+                    container.show();
+                    container.find(':input').prop('disabled', false);
+                } else {
+                    container.hide();
+                    container.find(':input').prop('disabled', true);
+                }
+            <%}%>
         }
     
         </SCRIPT>
