@@ -54,6 +54,7 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask,                    "mct meter alarm mask" },
         { CtiTableDynamicPaoInfo::Key_MCT_Options,                           "mct options" },
         { CtiTableDynamicPaoInfo::Key_MCT_OutageCycles,                      "mct outage cycles" },
+        { CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode,                    "mct disconnect mode" },
         { CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold,                   "mct demand limit" },
         { CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay,                      "mct connect delay" },
         { CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes,                 "mct disconnect minutes" },

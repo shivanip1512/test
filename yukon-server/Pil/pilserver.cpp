@@ -169,7 +169,7 @@ void PilServer::mainThread()
 
     if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
     {
-        systemDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RfnE2eRequestId, _rfnRequestId);
+        systemDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, _rfnRequestId);
     }
 
     /*
@@ -316,7 +316,7 @@ void PilServer::mainThread()
 
                 if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
                 {
-                    systemDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RfnE2eRequestId, _rfnRequestId);
+                    systemDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, _rfnRequestId);
                 }
 
                 // Force the inherited Listener socket to close!

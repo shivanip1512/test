@@ -163,6 +163,7 @@ const string MCTStrings::LcdCycleTime = "lcdCycleTime";
 const string MCTStrings::DisconnectDisplayDisabled = "disconnectDisplayDisabled";
 const string MCTStrings::DisplayDigits = "displayDigits";
 
+const string MCTStrings::DisconnectMode = "disconnectMode";
 const string MCTStrings::DisconnectDemandThreshold = "disconnectDemandThreshold";
 const string MCTStrings::DisconnectLoadLimitConnectDelay = "disconnectLoadLimitConnectDelay";
 const string MCTStrings::DisconnectMinutes = "disconnectMinutes";

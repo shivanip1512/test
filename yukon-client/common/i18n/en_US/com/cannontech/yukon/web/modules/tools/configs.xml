@@ -405,6 +405,8 @@
 
     <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.title">MCT Remote Disconnect Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.definition">Configuration parameters for the remote disconnect feature of MCT devices.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectMode">Disconnect Mode</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectMode.description">The disconnect mode the MCT device is configured to use.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectDemandThreshold">Disconnect Demand Threshold</entry>
     <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectDemandThreshold.description">Demand threshold at which a disconnect will be triggered.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectLoadLimitConnectDelay">Disconnect Load Limit Connect Delay</entry>

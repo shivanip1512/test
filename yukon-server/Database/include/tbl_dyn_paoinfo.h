@@ -96,6 +96,7 @@ public:
         Key_MCT_MeterAlarmMask,
         Key_MCT_Options,
         Key_MCT_OutageCycles,
+        Key_MCT_DisconnectMode,
         Key_MCT_DemandThreshold,
         Key_MCT_ConnectDelay,
         Key_MCT_DisconnectMinutes,
@@ -181,7 +182,6 @@ public:
         Key_FreezeCounter,
         Key_FreezeExpected,
         Key_VerificationSequence,
-        Key_RfnE2eRequestId,
 
         Key_FrozenRateAPeakTimestamp,
         Key_FrozenRateBPeakTimestamp,
@@ -278,6 +278,8 @@ public:
         Key_MCT_TouEnabled,
 
         // RFN keys
+
+        Key_RFN_E2eRequestId,
 
         Key_RFN_TouEnabled,
 

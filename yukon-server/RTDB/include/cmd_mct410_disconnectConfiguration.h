@@ -12,16 +12,23 @@ class IM_EX_DEVDB Mct410DisconnectConfigurationCommand : public Mct410Command
 {
 public:
 
+    enum DisconnectMode
+    {
+        OnDemand,
+        DemandThreshold,
+        Cycling
+    };
+
     enum ReconnectButtonRequired
     {
-        Yes,
-        No,
+        ButtonRequired,
+        ButtonNotRequired,
     };
 
     // Write constructor
-    Mct410DisconnectConfigurationCommand(const unsigned disconnectAddress, const float disconnectDemandThreshold, const unsigned connectDelay,
-                            const unsigned disconnectMinutes, const unsigned connectMinutes, ReconnectButtonRequired reconnectButtonRequired,
-                            const long demandInterval);
+    Mct410DisconnectConfigurationCommand(const DisconnectMode mode, const unsigned disconnectAddress, const float disconnectDemandThreshold,
+                            const unsigned connectDelay, const unsigned disconnectMinutes, const unsigned connectMinutes,
+                            ReconnectButtonRequired reconnectButtonRequired, const long demandInterval);
 
     // Read constructor
     Mct410DisconnectConfigurationCommand();
@@ -40,6 +47,7 @@ public:
 
 private:
 
+    DisconnectMode _disconnectMode;
     unsigned _disconnectAddress;
     float _disconnectDemandThreshold;
     unsigned _connectDelay;

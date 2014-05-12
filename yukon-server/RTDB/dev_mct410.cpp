@@ -6,6 +6,7 @@
 #include "date_utility.h"
 #include "utility.h"
 #include "config_data_mct.h"
+#include "config_helpers.h"
 
 #include "dev_mct410.h"
 #include "dev_mct410_commands.h"
@@ -33,6 +34,16 @@ const Mct410Device::ConfigPartsList  Mct410Device::_config_parts = Mct410Device:
 
 const Mct410Device::ValueMapping              Mct410Device::_memoryMap             = Mct410Device::initMemoryMap();
 const Mct410Device::FunctionReadValueMappings Mct410Device::_functionReadValueMaps = Mct410Device::initFunctionReadValueMaps();
+
+namespace {
+
+typedef Commands::Mct410DisconnectConfigurationCommand Disc;
+
+const std::map<std::string, Disc::DisconnectMode> DisconnectModeLookup = boost::assign::map_list_of
+    ("ON_DEMAND",        Disc::OnDemand)
+    ("DEMAND_THRESHOLD", Disc::DemandThreshold)
+    ("CYCLING",          Disc::Cycling);
+}
 
 
 Mct410Device::Mct410Device( ) :
@@ -1586,154 +1597,133 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
 
     if( ! readsOnly )
     {
-        float disconnectDemandThreshold = deviceConfig->getFloatValueFromKey(MCTStrings::DisconnectDemandThreshold);
-        if( disconnectDemandThreshold == std::numeric_limits<double>::min() )
+        try
+        {
+            const std::string disconnectModeStr = getConfigData<std::string>(deviceConfig, MCTStrings::DisconnectMode);
+            const Commands::Mct410DisconnectConfigurationCommand::DisconnectMode disconnectMode = resolveConfigData( DisconnectModeLookup, disconnectModeStr, MCTStrings::DisconnectMode);
+
+            const float disconnectDemandThreshold = getConfigData<double>(deviceConfig, MCTStrings::DisconnectDemandThreshold);
+
+            const long disconnectLoadLimitDelay = getConfigData<long>(deviceConfig, MCTStrings::DisconnectLoadLimitConnectDelay);
+            if( disconnectLoadLimitDelay < 0 )
+            {
+                throw InvalidConfigDataException(MCTStrings::DisconnectLoadLimitConnectDelay, "disconnectLoadLimitDelay < 0");
+            }
+
+            const long disconnectMinutes = getConfigData<long>(deviceConfig, MCTStrings::DisconnectMinutes);
+            if( disconnectMinutes < 0 )
+            {
+                throw InvalidConfigDataException(MCTStrings::DisconnectMinutes, "disconnectMinutes < 0");
+            }
+
+            const long connectMinutes = getConfigData<long>(deviceConfig, MCTStrings::ConnectMinutes);
+            if( connectMinutes < 0 )
+            {
+                throw InvalidConfigDataException(MCTStrings::ConnectMinutes, "connectMinutes < 0");
+            }
+
+            const bool reconnectButtonRequired = getConfigData<bool>(deviceConfig, MCTStrings::ReconnectButton);
+
+            std::string dpi_disconnectModeStr;
+            double dpi_demandThreshold;
+            unsigned dpi_connectDelay, dpi_disconnectMinutes, dpi_connectMinutes, dpi_configurationByte;
+
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode,    dpi_disconnectModeStr);
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold,   dpi_demandThreshold);
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay,      dpi_connectDelay);
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes, dpi_disconnectMinutes);
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes,    dpi_connectMinutes);
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration,     dpi_configurationByte);
+
+            // Bit CLEARED = button must be pressed for reconnect.
+            // Bit ACTIVE  = button doesn't need to be pressed for reconnect.
+            // So if the database value is true, we expect bit two to be clear.
+            const bool dpi_reconnectButtonRequired = ! ((dpi_configurationByte >> 2) & 0x01);
+
+            bool matches = dpi_disconnectModeStr == disconnectModeStr;
+
+            if( matches )
+            {
+                switch( disconnectMode )
+                {
+                    case Commands::Mct410DisconnectConfigurationCommand::DemandThreshold:
+                    {
+                        matches &= fabs(dpi_demandThreshold - disconnectDemandThreshold) < 1e-2;
+                        matches &= (dpi_connectDelay == disconnectLoadLimitDelay);
+                    }  //  fall through
+                    case Commands::Mct410DisconnectConfigurationCommand::OnDemand:
+                    {
+                        matches &= (dpi_reconnectButtonRequired == reconnectButtonRequired);
+                        break;
+                    }
+                    case Commands::Mct410DisconnectConfigurationCommand::Cycling:
+                    {
+                        matches &= (dpi_disconnectMinutes == disconnectMinutes);
+                        matches &= (dpi_connectMinutes == connectMinutes);
+                    }
+                }
+            }
+
+            if( matches )
+            {
+                if( ! parse.isKeyValid("force") )
+                {
+                    return ConfigCurrent;
+                }
+            }
+            else
+            {
+                if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+            }
+
+            Mct410DisconnectConfigurationCommand::ReconnectButtonRequired buttonRequired =
+                    reconnectButtonRequired
+                        ? Mct410DisconnectConfigurationCommand::ButtonRequired
+                        : Mct410DisconnectConfigurationCommand::ButtonNotRequired;
+
+            disconnectCommand.reset(
+               new Mct410DisconnectConfigurationCommand(
+                       disconnectMode,
+                       _disconnectAddress,
+                       disconnectDemandThreshold,
+                       static_cast<unsigned>(disconnectLoadLimitDelay),
+                       static_cast<unsigned>(disconnectMinutes),
+                       static_cast<unsigned>(connectMinutes),
+                       buttonRequired,
+                       getDemandInterval()));
+
+            std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
+
+            if( ! tryExecuteCommand(*om, disconnectCommand) )
+            {
+                return NoMethod;
+            }
+
+            outList.push_back(om.release());
+        }
+        catch( InvalidConfigDataException &ex )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
-                     << MCTStrings::DisconnectDemandThreshold << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Device \"" << getName() << "\" - " << ex.message << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            return NoConfigData;
+            return ErrorInvalidConfigData;
         }
-
-        boost::optional<long> disconnectLoadLimitDelay = deviceConfig->findValue<long>(MCTStrings::DisconnectLoadLimitConnectDelay);
-        if( !disconnectLoadLimitDelay )
+        catch( MissingConfigDataException &ex )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
-                     << MCTStrings::DisconnectLoadLimitConnectDelay << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Device \"" << getName() << "\" - " << ex.message << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             return NoConfigData;
         }
-        else if( *disconnectLoadLimitDelay < 0 )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << *disconnectLoadLimitDelay << ") found for config key \""
-                 << MCTStrings::DisconnectLoadLimitConnectDelay << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-            return BADPARAM;
-        }
-
-        boost::optional<long> disconnectMinutes = deviceConfig->findValue<long>(MCTStrings::DisconnectMinutes);
-        if( !disconnectMinutes )
-        {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
-                     << MCTStrings::DisconnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            return NoConfigData;
-        }
-        else if( *disconnectMinutes < 0 )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << *disconnectMinutes << ") found for config key \""
-                 << MCTStrings::DisconnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-            return BADPARAM;
-        }
-
-        boost::optional<long> connectMinutes = deviceConfig->findValue<long>(MCTStrings::ConnectMinutes);
-        if( !connectMinutes )
-        {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
-                     << MCTStrings::ConnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            return NoConfigData;
-        }
-        else if( *connectMinutes < 0 )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << *connectMinutes << ") found for config key \""
-                 << MCTStrings::ConnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-            return BADPARAM;
-        }
-
-        const boost::optional<bool> reconnectButtonRequired = deviceConfig->findValue<bool>(MCTStrings::ReconnectButton);
-        if( ! reconnectButtonRequired )
-        {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
-                     << MCTStrings::ReconnectButton << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            return NoConfigData;
-        }
-
-        double dpi_demandThreshold;
-        unsigned dpi_connectDelay, dpi_disconnectMinutes, dpi_connectMinutes, dpi_configurationByte;
-
-        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold,   dpi_demandThreshold);
-        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay,      dpi_connectDelay);
-        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes, dpi_disconnectMinutes);
-        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes,    dpi_connectMinutes);
-        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration,     dpi_configurationByte);
-
-        const bool thresholdMatches = fabs(dpi_demandThreshold - disconnectDemandThreshold) < 1e-2;
-
-        // Bit CLEARED = button must be pressed for reconnect.
-        // Bit ACTIVE  = button doesn't need to be pressed for reconnect.
-        // So if the database value is true, we expect bit two to be clear.
-        const bool bitActive = (dpi_configurationByte >> 2) & 0x01;
-        const bool reconnectButtonMatches = bitActive == ! *reconnectButtonRequired;
-
-        if( thresholdMatches &&
-            reconnectButtonMatches &&
-            dpi_connectDelay == *disconnectLoadLimitDelay &&
-            dpi_disconnectMinutes == *disconnectMinutes &&
-            dpi_connectMinutes == *connectMinutes )
-        {
-            if( ! parse.isKeyValid("force") )
-            {
-                return ConfigCurrent;
-            }
-        }
-        else
-        {
-            if( parse.isKeyValid("verify") )
-            {
-                return ConfigNotCurrent;
-            }
-        }
-
-        Mct410DisconnectConfigurationCommand::ReconnectButtonRequired buttonRequired =
-            *reconnectButtonRequired ?
-                Mct410DisconnectConfigurationCommand::Yes :
-                Mct410DisconnectConfigurationCommand::No;
-
-        disconnectCommand.reset(
-           new Mct410DisconnectConfigurationCommand(
-              _disconnectAddress,
-              disconnectDemandThreshold,
-              static_cast<unsigned>(*disconnectLoadLimitDelay),
-              static_cast<unsigned>(*disconnectMinutes),
-              static_cast<unsigned>(*connectMinutes),
-              buttonRequired,
-              getDemandInterval()));
-
-        std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
-
-        if( ! tryExecuteCommand(*om, disconnectCommand) )
-        {
-            return NoMethod;
-        }
-
-        outList.push_back(om.release());
     }
 
     // This is a read

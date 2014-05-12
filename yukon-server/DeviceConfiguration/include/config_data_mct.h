@@ -163,6 +163,7 @@ public:
     static const std::string DisconnectDisplayDisabled;
     static const std::string DisplayDigits;
 
+    static const std::string DisconnectMode;
     static const std::string DisconnectDemandThreshold;
     static const std::string DisconnectLoadLimitConnectDelay;
     static const std::string DisconnectMinutes;

@@ -3,15 +3,18 @@
 #include "numstr.h"
 
 #include "cmd_mct410_disconnectConfiguration.h"
+#include "cmd_rfn_helper.h"
 #include "dev_mct410.h"
 
 namespace Cti {
 namespace Devices {
 namespace Commands {
 
-Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand(const unsigned disconnectAddress, const float disconnectDemandThreshold, const unsigned connectDelay,
+Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand(const DisconnectMode mode, const unsigned disconnectAddress,
+                                                 const float disconnectDemandThreshold, const unsigned connectDelay,
                                                  const unsigned disconnectMinutes, const unsigned connectMinutes, ReconnectButtonRequired reconnectButtonRequired,
                                                  const long demandInterval) :
+    _disconnectMode(mode),
     _disconnectAddress(disconnectAddress),
     _disconnectDemandThreshold(disconnectDemandThreshold),
     _connectDelay(connectDelay),
@@ -21,30 +24,40 @@ Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand(const
     _demandInterval(demandInterval),
     _executionState(&Mct410DisconnectConfigurationCommand::write)
 {
-    if( _disconnectAddress >> 22 )
+    //  Clear out the irrelevant/overriding parameters.
+    //  Load limit takes precedence, then cycling, then on-demand.
+    //  So if the mode is on-demand, clear both cycling and load-limit.
+    //  If the mode is cycling, clear load-limit.
+    switch( _disconnectMode )
     {
-        throw CommandException(BADPARAM, "Invalid disconnect address (" + CtiNumStr(_disconnectAddress) + "), must be 0-4194303");
+        case OnDemand:
+        {
+            _connectMinutes    = 0;
+            _disconnectMinutes = 0;
+        }  //  fall through
+        case Cycling:
+        {
+            _disconnectDemandThreshold = 0.0;
+        }
     }
-    if( _disconnectDemandThreshold < 0.0 || _disconnectDemandThreshold > 400.0 )
-    {
-        throw CommandException(BADPARAM, "Invalid disconnect demand threshold (" + CtiNumStr(_disconnectDemandThreshold, 1) + "), must be 0.0-400.0");
-    }
-    if( _connectDelay > 10 )
-    {
-        throw CommandException(BADPARAM, "Invalid connect delay (" + CtiNumStr(_connectDelay) + "), must be 0-10");
-    }
-    if( _disconnectMinutes < 5 || _disconnectMinutes > 60 )
-    {
-        throw CommandException(BADPARAM, "Invalid number of disconnect minutes (" + CtiNumStr(_disconnectMinutes) + "), must be 5-60");
-    }
-    if( _connectMinutes < 5 || _connectMinutes > 60 )
-    {
-        throw CommandException(BADPARAM, "Invalid number of connect minutes (" + CtiNumStr(_connectMinutes) + "), must be 5-60");
-    }
-    if( _demandInterval <= 0 )
-    {
-        throw CommandException(BADPARAM, "Invalid demand interval (" + CtiNumStr(_demandInterval) + "), must be a positive integer");
-    }
+
+    validate(Condition(_disconnectAddress < (1 << 22), BADPARAM)
+             << "Invalid disconnect address (" << _disconnectAddress << "), must be 0-4194303");
+
+    validate(Condition(_disconnectDemandThreshold >= 0.0 && _disconnectDemandThreshold <= 400.0, BADPARAM)
+             << "Invalid disconnect demand threshold (" << _disconnectDemandThreshold << "), must be 0.0-400.0");
+
+    validate(Condition(_connectDelay <= 10, BADPARAM)
+             << "Invalid connect delay (" << _connectDelay << "), must be 0-10");
+
+    validate(Condition(_disconnectMinutes >= 5 && _disconnectMinutes <= 60, BADPARAM)
+             << "Invalid number of disconnect minutes (" << _disconnectMinutes << "), must be 5-60");
+
+    validate(Condition(_connectMinutes >= 5 && _connectMinutes <= 60, BADPARAM)
+             << "Invalid number of connect minutes (" << _connectMinutes << "), must be 5-60");
+
+    validate(Condition(_demandInterval > 0, BADPARAM)
+             << "Invalid demand interval (" << _demandInterval << "), must be a positive integer");
 }
 
 Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand() :
@@ -54,7 +67,7 @@ Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand() :
     _connectDelay(5),
     _disconnectMinutes(5),
     _connectMinutes(5),
-    _reconnectButtonRequired(Yes),
+    _reconnectButtonRequired(ButtonRequired),
     _demandInterval(300),
     _executionState(&Mct410DisconnectConfigurationCommand::read)
 {
@@ -150,7 +163,7 @@ std::vector<unsigned char> Mct410DisconnectConfigurationCommand::assemblePayload
     // Byte 8 - Configuration Byte - force rev E disconnect true.
     unsigned char configuration = 0x40;
 
-    if( _reconnectButtonRequired == No )
+    if( _reconnectButtonRequired == ButtonNotRequired )
     {
         // Enable bit 2.
         configuration |= 0x04;

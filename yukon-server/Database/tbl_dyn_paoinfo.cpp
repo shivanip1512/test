@@ -33,7 +33,7 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
         (Dpi::Key_FreezeCounter,              "freeze counter")
         (Dpi::Key_FreezeExpected,             "expected freeze")
         (Dpi::Key_VerificationSequence,       "verification sequence")
-        (Dpi::Key_RfnE2eRequestId,            "rfn e2e request id")
+        (Dpi::Key_RFN_E2eRequestId,            "rfn e2e request id")
 
         (Dpi::Key_MCT_TimeAdjustTolerance,    "mct time adjust tolerance")
         (Dpi::Key_MCT_DSTStartTime,           "mct dst start time")
@@ -63,6 +63,7 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
         (Dpi::Key_MCT_EventFlagsMask2,        "mct event flags mask 2")
         (Dpi::Key_MCT_MeterAlarmMask,         "mct meter alarm mask")
         (Dpi::Key_MCT_OutageCycles,           "mct outage cycles")
+        (Dpi::Key_MCT_DisconnectMode,         "mct disconnect mode")
         (Dpi::Key_MCT_DemandThreshold,        "mct demand limit")
         (Dpi::Key_MCT_ConnectDelay,           "mct connect delay")
         (Dpi::Key_MCT_DisconnectMinutes,      "mct disconnect minutes")

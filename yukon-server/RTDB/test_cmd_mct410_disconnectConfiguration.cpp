@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
     const CtiTime execute_time(CtiDate(17, 8, 2010), 10);
 
     {
-        Mct410DisconnectConfigurationCommand disconnectCommand(0, 0.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::Yes, 300);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::Cycling, 0, 0.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::ButtonRequired, 300);
 
         const std::vector<unsigned char> expected = boost::assign::list_of
             (0x00)(0x00)(0x00)(0x00)(0x00)(0x05)(0x05)(0x05)(0x40);
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
     }
 
     {
-        Mct410DisconnectConfigurationCommand disconnectCommand(264213, 400.0, 10, 60, 60, Mct410DisconnectConfigurationCommand::No, 600);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::DemandThreshold, 264213, 400.0, 10, 60, 60, Mct410DisconnectConfigurationCommand::ButtonNotRequired, 600);
 
         const std::vector<unsigned char> expected = boost::assign::list_of
             (0x04)(0x08)(0x15)(0x02)(0x9b)(0x0a)(0x03c)(0x3c)(0x44);
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     try
     {
         // Bad disconnect address
-        Mct410DisconnectConfigurationCommand disconnectCommand(1 << 23, 0.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::Yes, 300);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::Cycling, 1 << 23, 0.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::ButtonRequired, 300);
         BOOST_FAIL("Mct410DisconnectCommand constructor did not throw");
     }
     catch( DlcCommand::CommandException &ex )
@@ -78,31 +78,31 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     try
     {
         // Bad demand threshold
-        Mct410DisconnectConfigurationCommand disconnectCommand(0, -1.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::Yes, 300);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::DemandThreshold, 0, -1.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::ButtonRequired, 300);
         BOOST_FAIL("Mct410DisconnectCommand constructor did not throw");
     }
     catch( DlcCommand::CommandException &ex )
     {
         BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
-        BOOST_CHECK_EQUAL(ex.error_description, "Invalid disconnect demand threshold (-1.0), must be 0.0-400.0");
+        BOOST_CHECK_EQUAL(ex.error_description, "Invalid disconnect demand threshold (-1), must be 0.0-400.0");
     }
 
     try
     {
         // Bad demand threshold
-        Mct410DisconnectConfigurationCommand disconnectCommand(0, 401.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::Yes, 300);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::DemandThreshold, 0, 401.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::ButtonRequired, 300);
         BOOST_FAIL("Mct410DisconnectCommand constructor did not throw");
     }
     catch( DlcCommand::CommandException &ex )
     {
         BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
-        BOOST_CHECK_EQUAL(ex.error_description, "Invalid disconnect demand threshold (401.0), must be 0.0-400.0");
+        BOOST_CHECK_EQUAL(ex.error_description, "Invalid disconnect demand threshold (401), must be 0.0-400.0");
     }
 
     try
     {
         // Bad connect delay
-        Mct410DisconnectConfigurationCommand disconnectCommand(0, 0.0, 11, 5, 5, Mct410DisconnectConfigurationCommand::Yes, 300);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::Cycling, 0, 0.0, 11, 5, 5, Mct410DisconnectConfigurationCommand::ButtonRequired, 300);
         BOOST_FAIL("Mct410DisconnectCommand constructor did not throw");
     }
     catch( DlcCommand::CommandException &ex )
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     try
     {
         // Bad disconnect minutes
-        Mct410DisconnectConfigurationCommand disconnectCommand(0, 0.0, 5, 4, 5, Mct410DisconnectConfigurationCommand::Yes, 300);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::Cycling, 0, 0.0, 5, 4, 5, Mct410DisconnectConfigurationCommand::ButtonRequired, 300);
         BOOST_FAIL("Mct410DisconnectCommand constructor did not throw");
     }
     catch( DlcCommand::CommandException &ex )
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     try
     {
         // Bad disconnect minutes
-        Mct410DisconnectConfigurationCommand disconnectCommand(0, 0.0, 5, 61, 5, Mct410DisconnectConfigurationCommand::Yes, 300);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::Cycling, 0, 0.0, 5, 61, 5, Mct410DisconnectConfigurationCommand::ButtonRequired, 300);
         BOOST_FAIL("Mct410DisconnectCommand constructor did not throw");
     }
     catch( DlcCommand::CommandException &ex )
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     try
     {
         // Bad connect minutes
-        Mct410DisconnectConfigurationCommand disconnectCommand(0, 0.0, 5, 5, 4, Mct410DisconnectConfigurationCommand::Yes, 300);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::Cycling, 0, 0.0, 5, 5, 4, Mct410DisconnectConfigurationCommand::ButtonRequired, 300);
         BOOST_FAIL("Mct410DisconnectCommand constructor did not throw");
     }
     catch( DlcCommand::CommandException &ex )
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     try
     {
         // Bad connect minutes
-        Mct410DisconnectConfigurationCommand disconnectCommand(0, 0.0, 5, 5, 61, Mct410DisconnectConfigurationCommand::Yes, 300);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::Cycling, 0, 0.0, 5, 5, 61, Mct410DisconnectConfigurationCommand::ButtonRequired, 300);
         BOOST_FAIL("Mct410DisconnectCommand constructor did not throw");
     }
     catch( DlcCommand::CommandException &ex )
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     try
     {
         // Bad demand interval
-        Mct410DisconnectConfigurationCommand disconnectCommand(0, 0.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::Yes, -1);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::Cycling, 0, 0.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::ButtonRequired, -1);
         BOOST_FAIL("Mct410DisconnectCommand constructor did not throw");
     }
     catch( DlcCommand::CommandException &ex )
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     try
     {
         // Bad demand interval
-        Mct410DisconnectConfigurationCommand disconnectCommand(0, 0.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::Yes, 0);
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::Cycling, 0, 0.0, 5, 5, 5, Mct410DisconnectConfigurationCommand::ButtonRequired, 0);
         BOOST_FAIL("Mct410DisconnectCommand constructor did not throw");
     }
     catch( DlcCommand::CommandException &ex )

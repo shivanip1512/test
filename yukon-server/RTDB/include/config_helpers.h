@@ -158,6 +158,33 @@ std::set<T> getConfigDataSet( Config::DeviceConfigSPtr &deviceConfig, const std:
    return result;
 }
 
+/**
+ * resolve config data for map or bimap mapview
+ * throws InvalidConfigDataException() if data is not found
+ */
+template <class MapType, typename KeyType>
+typename MapType::iterator::value_type::second_type resolveConfigData( MapType& m, KeyType& configData, const std::string & configKey )
+{
+    MapType::const_iterator itr = m.find(configData);
+
+    if( itr == m.end() )
+    {
+        std::ostringstream cause;
+
+        cause << "invalid value " << configData << ", expected [";
+
+        for( itr = m.begin(); itr != m.end(); )
+        {
+            cause << itr->first;
+            cause << ( ++itr == m.end() ? "]" : "; ");
+        }
+
+        throw InvalidConfigDataException( configKey, cause.str() );
+    }
+
+    return itr->second;
+}
+
 } // Anonymous
 
 } // Devices

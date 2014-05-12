@@ -42,33 +42,6 @@ typename Map::mapped_type getConfigData( const Map & configMap, const std::strin
 }
 
 /**
- * resolve config data for map or bimap mapview
- * throws InvalidConfigDataException() if data is not found
- */
-template <class MapType, typename KeyType>
-typename MapType::iterator::value_type::second_type resolveConfigData( MapType& m, KeyType& configData, const std::string & configKey )
-{
-    MapType::const_iterator itr = m.find(configData);
-
-    if( itr == m.end() )
-    {
-        std::ostringstream cause;
-
-        cause << "invalid value " << configData << ", expected [";
-
-        for( itr = m.begin(); itr != m.end(); )
-        {
-            cause << itr->first;
-            cause << ( ++itr == m.end() ? "]" : "; ");
-        }
-
-        throw InvalidConfigDataException( configKey, cause.str() );
-    }
-
-    return itr->second;
-}
-
-/**
  * create CtiDate object from string "mm/dd/yyyy"
  */
 CtiDate getDateFromString( std::string date )
@@ -147,15 +120,15 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
 
 /**
  * Convert a set of metrics to a vector of string for dynamic info
- * Note(1): one metric per row, 
-*  Note(2): the order is garanty by the metrics set in argument 
+ * Note(1): one metric per row,
+*  Note(2): the order is garanty by the metrics set in argument
  *
  * @param metrics set of metric string
  * @return vector of strings for dynamic info
  */
 std::vector<std::string> makeMetricListDynamicInfo( const Commands::RfnChannelConfigurationCommand::MetricList& metrics )
 {
-    
+
     return std::vector<std::string>( metrics.begin(), metrics.end() );
 }
 

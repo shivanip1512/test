@@ -2459,6 +2459,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
+        config.insertValue("disconnectMode", "DEMAND_THRESHOLD");
         config.insertValue("disconnectDemandThreshold", "2.71");
         config.insertValue("disconnectLoadLimitConnectDelay", "4");
         config.insertValue("disconnectMinutes", "7");
@@ -2565,6 +2566,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
+        config.insertValue("disconnectMode", "DEMAND_THRESHOLD");
         config.insertValue("disconnectDemandThreshold", "4.71");
         config.insertValue("disconnectLoadLimitConnectDelay", "3");
         config.insertValue("disconnectMinutes", "6");
@@ -3716,6 +3718,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
+    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
     const vector<tuple<unsigned, unsigned, int>> empty;
@@ -3854,6 +3857,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
+    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
 
@@ -4002,6 +4006,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
+    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
 
@@ -4161,6 +4166,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_1Dword)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
+    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
 
@@ -4199,6 +4205,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
+    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
 
@@ -4257,6 +4264,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
 {
     using namespace boost::assign;
     using namespace boost::tuples;
+    typedef CtiTableDynamicPaoInfo Dpi;
 
     vector<test_Mct410Device::ReadDescriptor> results;
 

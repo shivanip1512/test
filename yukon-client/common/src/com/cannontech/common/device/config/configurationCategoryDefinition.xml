@@ -291,6 +291,7 @@
     </category>
 
     <category type="mctDisconnectConfiguration">
+        <enum field="disconnectMode" type="DisconnectMode" default="ON_DEMAND"/>
         <float field="disconnectDemandThreshold" minValue="0.0" maxValue="400.0" default="0.0"/>
         <enum field="disconnectLoadLimitConnectDelay" type="DisconnectLoadLimitConnectDelay" default="5"/>
         <integer field="disconnectMinutes" minValue="5" maxValue="60" default="5"/>
