@@ -23,7 +23,6 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
     private SpecialRippleMessagePanel specialRippleMessagePanel = null;
     private LMGroupExpressComEditorPanel lmGroupExpressComEditorPanel = null;
     private LMGroupDigiSepPanel lmGroupDigiSepEditorPanel = null;
-    private LMGroupEcobeePanel lmGroupEcobeeEditorPanel = null;
     private LMGroupPointEditorPanel lmGroupPointEditorPanel = null;
     
     private LMGroupMCTEditorPanel lmGroupMCTEditorPanel = null;
@@ -88,13 +87,6 @@ public LMGroupDigiSepPanel getlmGroupDigiSepEditorPanel()
         lmGroupDigiSepEditorPanel = new LMGroupDigiSepPanel();
     
     return lmGroupDigiSepEditorPanel;
-}
-
-public LMGroupEcobeePanel getlmGroupEcobeeEditorPanel() {
-    if( lmGroupEcobeeEditorPanel == null )
-        lmGroupEcobeeEditorPanel = new LMGroupEcobeePanel();
-    
-    return lmGroupEcobeeEditorPanel;
 }
 
 public SA205EditorPanel getSA205EditorPanel() 
