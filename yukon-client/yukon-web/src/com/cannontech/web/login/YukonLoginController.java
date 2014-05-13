@@ -103,8 +103,7 @@ public class YukonLoginController extends MultiActionController {
         String redirect;
 
         String referer = request.getHeader("Referer");
-        referer = (referer != null) ? referer : LoginController.LOGIN_URL;
-        redirect = ServletUtil.createSafeRedirectUrl(request, referer);
+        redirect = (referer != null) ? referer : LoginController.LOGIN_URL;
         redirect = appendParams(redirect, retrySeconds, redirectedFrom);
 
         return redirect;
