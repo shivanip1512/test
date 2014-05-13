@@ -60,8 +60,6 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                 ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupId), ecId);
                 break;
             case OUT_OF_SERVICE:
-                // move device to EcobeeCommunicationService.UNENROLLED_SET
-                // if there are no longer any enrollments for the group remove it via deleteManagementSet
                 ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET, ecId);
                 // TODO get groupId of group previously enrolled in
                 //  if (!hasActiveEnrollments(groupId)) {
@@ -69,12 +67,10 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                 //  }
                 break;
             case TEMP_OUT_OF_SERVICE:
-                // move device to EcobeeCommunicationService.OPT_OUT_SET
                 ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.OPT_OUT_SET, ecId);
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
                 groupId = getGroupId(device.getInventoryID());
-                // move device back to ecobee management set with the enerolled LM groups paoId
                 ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupId), ecId);
                 break;
             case CONFIG:

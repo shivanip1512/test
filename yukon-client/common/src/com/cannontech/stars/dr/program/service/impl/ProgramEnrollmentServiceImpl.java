@@ -170,7 +170,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 
                                 lmHardwareCommandService.sendConfigCommand(command);
                             }
-                        } else if (inventoryBaseDao.getDeviceStatus(liteHw.getInventoryID()) == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
+                        } else if (inventoryBaseDao.getDeviceStatus(liteHw.getInventoryID())
+                                == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL
+                                || hardwareType.isEcobee()) {
                             LmHardwareCommand command = new LmHardwareCommand();
                             command.setDevice(liteHw);
                             command.setType(LmHardwareCommandType.IN_SERVICE);
