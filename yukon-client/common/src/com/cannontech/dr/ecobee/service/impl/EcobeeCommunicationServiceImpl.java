@@ -56,20 +56,6 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     private static final String demandResponseUrlPart = "demandResponse?format=json";
     private static final DateTimeFormatter drDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
     private static final DateTimeFormatter drTimeFormatter = DateTimeFormat.forPattern("HH:mm:ss");
-    
-    private <E extends BaseResponse> E queryEcobee(String url, HttpEntity<?> request, int ecId, Class<E> responseType) 
-            throws EcobeeCommunicationException, EcobeeNotAuthenticatedException {
-        try {
-            E response = restTemplate.postForObject(url, request, responseType);
-            if (response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
-                // causes EcobeeCommunicationAopAuthenticator to log us back in and try again
-                throw new EcobeeNotAuthenticatedException(ecId);
-            }
-            return response;
-        } catch (RestClientException e) {
-            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
-        }
-    }
 
     @Override
     public boolean registerDevice(String serialNumber, int ecId) throws EcobeeException {
@@ -219,6 +205,20 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         BaseResponse response = queryEcobee(url, requestEntity, ecId, BaseResponse.class);
 
         return response.hasCode(SUCCESS);
+    }
+
+    private <E extends BaseResponse> E queryEcobee(String url, HttpEntity<?> request, int ecId, Class<E> responseType) 
+            throws EcobeeCommunicationException, EcobeeNotAuthenticatedException {
+        try {
+            E response = restTemplate.postForObject(url, request, responseType);
+            if (response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
+                // causes EcobeeCommunicationAopAuthenticator to log us back in and try again
+                throw new EcobeeNotAuthenticatedException(ecId);
+            }
+            return response;
+        } catch (RestClientException e) {
+            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
+        }
     }
 
     /**
