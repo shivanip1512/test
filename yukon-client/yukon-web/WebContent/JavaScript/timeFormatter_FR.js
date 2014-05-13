@@ -12,10 +12,13 @@ yukon.timeFormatter = (function () {
                 hourStr,
                 minuteStr;
 
-            if ('number' !== typeof minutes || minutes === null) {
+            minutes = parseInt(minutes, 10);
+
+            // this gets a little complicated: if a non-numerical string or null is passed to parseInt,
+            // parseInt returns NaN, so check for that here
+            if (yukon.isReallyNaN(minutes)) {
                 return '00h00';
             }
-            
             // Make sure time is not negative and less than the number of minutes in a day
             if (minutes < 0) {
                 minutes = 0;

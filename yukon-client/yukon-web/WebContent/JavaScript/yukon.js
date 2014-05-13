@@ -124,6 +124,11 @@ yukon.namespace = function(ns) {
     return object;
 };
 
+// NaN is the one value that is not treated as being equal to itself
+yukon.isReallyNaN = function(val) {
+    return val !== val;
+};
+
 /** 
  * UI module - General purpose ui functionality for yukon.
  * 
