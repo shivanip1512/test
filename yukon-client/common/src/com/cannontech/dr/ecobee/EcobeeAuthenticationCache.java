@@ -9,11 +9,11 @@ import java.util.Map;
 public class EcobeeAuthenticationCache {
     private final Map<Integer, String> ecAuthKeys = new HashMap<>();
     
-    public String put(Integer energyCompanyId, String authKey) {
-        return ecAuthKeys.put(energyCompanyId, authKey);
+    public String put(Integer ecId, String authKey) {
+        return ecAuthKeys.put(ecId, authKey);
     }
     
-    public String get(Integer energyCompanyId) {
-        return ecAuthKeys.get(energyCompanyId);
+    public String get(Integer ecId) {
+        return ecAuthKeys.get(ecId);
     }
 }

@@ -36,6 +36,8 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
 
             // Update the Stars table with the device id
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), ecobeePao.getPaObjectId());
+            ecobeeCommunicationService.moveDeviceToSet(hardware.getSerialNumber(), 
+                                   EcobeeCommunicationService.UNENROLLED_SET, hardware.getEnergyCompanyId());
         } catch (EcobeeException e) {
             throw new DeviceCreationException(e.getMessage(), e);
         }

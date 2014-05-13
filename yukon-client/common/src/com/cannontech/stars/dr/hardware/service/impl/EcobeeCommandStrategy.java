@@ -57,10 +57,6 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
             switch(command.getType()) {
             case IN_SERVICE:
                 groupId = getGroupId(device.getInventoryID());
-                if (!hasActiveEnrollments(groupId)) {
-                    ecobeeCommunicationService.createManagementSet(Integer.toString(groupId), ecId);
-                }
-                ecobeeCommunicationService.registerDevice(serialNumber, ecId);
                 ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupId), ecId);
                 break;
             case OUT_OF_SERVICE:

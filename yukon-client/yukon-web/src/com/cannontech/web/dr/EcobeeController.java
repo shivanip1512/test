@@ -6,7 +6,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -19,15 +21,17 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.MonthYear;
 import com.cannontech.common.util.Range;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
+import com.cannontech.dr.ecobee.EcobeeException;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
-import com.cannontech.dr.ecobee.EcobeeException;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
@@ -39,7 +43,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
-import com.cannontech.core.roleproperties.YukonRole;
 
 @Controller
 @CheckRole(YukonRole.DEMAND_RESPONSE)
@@ -53,7 +56,6 @@ public class EcobeeController {
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
 
-    
     @RequestMapping(value="/ecobee/settings", method=RequestMethod.POST)
     public String saveSettings(@ModelAttribute("ecobeeSettings") EcobeeSettings settings, FlashScope flash) {
         log.info(settings);
@@ -62,19 +64,19 @@ public class EcobeeController {
         return "redirect:/dr/home";
     }
     
-    // TODO: set requestMapping values
+    // TODO: Mark: set requestMapping values
     //@RequestMapping(value="/ecobeeCsv", method=RequestMethod.GET)
     public void ecobeeDataReportCsv(HttpServletResponse response, LiteYukonUser user) 
             throws IOException, EcobeeException {
         response.setContentType("text/csv");
-        // TODO: figure out good name for file
+        // TODO: Mark: figure out good name for file
         response.setHeader("Content-Disposition","filename=\"ecobee_data_report.csv\"");
 
         int ecId = ecDao.getEnergyCompany(user).getId();
 
         // TODO: get date range from request
         Range<Instant> dateRange = Range.inclusive(Instant.now().minus(Duration.standardDays(7)), Instant.now());
-        // TODO: get loadGroupIds from request
+        // TODO: Mark: get loadGroupIds from request
         List<Integer> loadGroupIds = new ArrayList<>();
         List<String> allSerialNumbers = drGroupDeviceMappingDao.getInventorySerialNumbersForLoadGroups(loadGroupIds);
 
