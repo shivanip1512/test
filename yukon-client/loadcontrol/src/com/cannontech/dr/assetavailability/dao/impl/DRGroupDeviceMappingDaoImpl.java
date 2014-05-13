@@ -19,6 +19,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -148,13 +149,7 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
             }
         };
 
-        List<String> serialNumbers = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, 
-            new YukonRowMapper<String>() {
-            @Override
-            public String mapRow(YukonResultSet rs) throws SQLException {
-                return rs.getString("ManufacturerSerialNumber");
-            }
-        });
+        List<String> serialNumbers = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, RowMapper.STRING);
 
         return serialNumbers;
     }
