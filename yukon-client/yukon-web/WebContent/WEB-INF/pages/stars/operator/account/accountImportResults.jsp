@@ -104,16 +104,9 @@
             </tags:nameValue2>
         
         </tags:nameValueContainer2>
-        
-        <c:choose>
-            <c:when test="${prescan}">
-                <cti:url var="action" value="/stars/operator/account/doAccountImport"/>
-            </c:when>
-            <c:otherwise>
-                <cti:url var="action" value="/stars/operator/account/accountImport"/>
-            </c:otherwise>
-        </c:choose>
-        
+           
+        <cti:url var="action" value="/stars/operator/account/doAccountImport"/>
+         
         <div class="page-action-area">
             <form action="${action}" id="importForm">
                 <input type="hidden" value="${resultId}" name="resultId">
