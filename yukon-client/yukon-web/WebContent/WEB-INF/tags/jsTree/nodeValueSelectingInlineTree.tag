@@ -80,7 +80,7 @@
                     without some sort of code to handle the 'first' selection of a node.  Not really something I want
                     to deal with. --%>
 <jsTree:inlineTree  id="${id}"
-                    treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
+                    treeCss="/resources/js/lib/dynatree/skin/device.group.css"
                     treeParameters="${pageScope.treeParams}"
                     dataJson="${dataJson}"
                     multiSelect="${pageScope.multiSelect}"

@@ -44,8 +44,7 @@
                                          dataJson="${currentGroupsDataJson}"
                                          includeControlBar="true"
                                          highlightNodePath="${selectedNodePath}"
-                                         displayCheckboxes="false"
-                                         styleClass="static-mode"/>
+                                         displayCheckboxes="false"/>
 
     <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
         <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">

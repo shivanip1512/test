@@ -91,7 +91,7 @@
             titleBarObj = groupTreeObj.prev('.ui-dialog-titlebar');
             dialogCont = groupTreeObj.closest('.ui-dialog');
             offsetTop = dialogCont.offset().top;
-            treeHelperPane = groupTreeObj.find('.tree_helper_controls');
+            treeHelperPane = groupTreeObj.find('.tree-controls');
             // Store the first value of the top offset of the dialog. Subsequent values vary
             // considerably and undermine the positioning logic
             if ('undefined' === typeof yukon.ui.dialogs['${uniqueId}'].offsetTop) {

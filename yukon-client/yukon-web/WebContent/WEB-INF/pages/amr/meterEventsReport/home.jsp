@@ -111,7 +111,7 @@
         <i:simplePopup titleKey=".filter.eventTypes" id="filterPopupEventTypes" 
             onClose="yukon.ami.meter.events.report.updateEventTypes()" on="#eventTypesCogFilter, #eventTypesCogSchedule">
             <t:inlineTree id="eventTree"
-                treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
+                treeCss="/resources/js/lib/dynatree/skin/device.group.css"
                 treeParameters="{checkbox: true, selectMode: 3}"
                 includeControlBar="true" />
     

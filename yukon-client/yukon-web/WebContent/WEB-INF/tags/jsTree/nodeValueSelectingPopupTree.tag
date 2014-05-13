@@ -64,7 +64,7 @@
 
 <%-- POPUP TREE --%>
 <t:popupTree  id="${id}"
-                treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
+                treeCss="/resources/js/lib/dynatree/skin/device.group.css"
                 treeParameters="{onActivate:recordNameValue_${id}}"
                 triggerElement="${triggerElement}"
                 highlightNodePath="${pageScope.highlightNodePath}"

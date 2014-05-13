@@ -19,7 +19,7 @@
 <cti:includeScript link="JQUERY_TREE" />
 <cti:includeScript link="JQUERY_TREE_HELPERS" />
 
-<cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/ui.dynatree.css"/>
+<cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
 <c:if test="${not empty pageScope.treeCss}"><cti:includeCss link="${treeCss}"/></c:if>
 
 <c:set var="maxHeight" value="${not empty maxHeight and maxHeight > 0  ? maxHeight : 500}"/>
@@ -74,6 +74,10 @@
 
         var args = {
             children: data,
+            classNames: {
+                active: "", // don't add class names to avoid needing to do rediculous css overriding
+                focused: "" // don't add class names to avoid needing to do rediculous css overriding
+            },
             minExpandLevel: 2,    //prevent the top level elements (visually - dynatree has 1 hidden root by default) from expanding/collapsing
             onPostInit: function(isReloading, isError) {
                 //show the initially selected item
@@ -127,19 +131,19 @@
 
 <div id="internalTreeContainer_${id}" class="inline-tree contained ${pageScope.styleClass}">
     <c:if test="${not empty pageScope.includeControlBar and pageScope.includeControlBar}">
-        <div class="tree_helper_controls">
+        <div class="tree-controls clearfix">
             <cti:msg2 var="expand" key="yukon.common.expandAll"/>
             <cti:msg2 var="collapse" key="yukon.common.collapseAll"/>
-            <cti:msg2 var="search" key="yukon.web.components.button.search.label"/>
+            <cti:msg2 var="search" key="yukon.common.search.placeholder"/>
             <cti:msg2 var="tooltip" key="yukon.web.components.jstree.input.search.tooltip"/>
-            <a href="javascript:void(0);" class="open_all fl" data-tree-id="${id}" title="${expand}">${expand}</a>
-            <a href="javascript:void(0);" class="close_all fl" data-tree-id="${id}" title="${collapse}">${collapse}</a>
-            <input type="text" class="searchTree default fl" data-tree-id="${id}" data-default-value="${search}" value="${search}" title="${tooltip}" style="margin-left:20px;"/>
+            <a href="javascript:void(0);" class="open-all fl" data-tree-id="${id}" title="${expand}">${expand}</a>
+            <a href="javascript:void(0);" class="close-all fl" data-tree-id="${id}" title="${collapse}">${collapse}</a>
+            <input type="text" class="tree-search fl" data-tree-id="${id}" placeholder="${search}" title="${tooltip}"/>
         </div>
     </c:if>
 
     <%-- THE TREE GOES HERE --%>
-    <div class="tree_container">
-        <div id="${id}" class="fl treeCanvas" style="width:100%; overflow:auto;max-height: ${maxHeight}px;"></div>
+    <div class="tree_container clearfix">
+        <div id="${id}" class="fl tree-canvas" style="width:100%; overflow:auto;max-height: ${maxHeight}px;"></div>
     </div>
 </div>

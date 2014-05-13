@@ -72,88 +72,85 @@
 
 /* DynaTree Overrides */
 ul.dynatree-container {
+    
     font-family: helvetica, sans-serif;
-    font-size: 11px;
+    font-size: 13px;
     border: none;
+    
+    .dynatree-title {border-radius: 2px;border: 1px solid white;}
 }
-span.dynatree-icon {background-image:url("../styles/lib/dynatree/tree/folder.gif"); background-position: 0 0 !important; background-repeat:no-repeat; background-color:transparent;}
-.dynatree-expanded span.dynatree-icon {background-image:url("../styles/lib/dynatree/tree/folder-open.gif"); background-position: 0 0 !important; background-repeat:no-repeat; background-color:transparent;}
+span.dynatree-icon {
+    background-image:url("../../../resources/js/lib/dynatree/skin/tree/folder.gif");
+    background-position: 0 0 !important;
+    background-repeat:no-repeat;
+    background-color:transparent;
+}
+.dynatree-expanded span.dynatree-icon {
+    background-image:url("../../../resources/js/lib/dynatree/skin/tree/folder-open.gif");
+    background-position: 0 0 !important;
+    background-repeat:no-repeat;
+    background-color:transparent;
+}
 
-ul.dynatree-container a:hover {
-    color: @primary-color;
+.dynatree-container .dynatree-title:hover {
     text-decoration: none;
+    background-color: #eee;
+    border-color: #bbb;
 }
-span.dynatree-node a {
-    font-size: 11px;
-    line-height: 15px; /* 2 down from 17px to allow for 2px's of border (1 top, 1 bottom) */
-}
-span.dynatree-active a {
-    background-color: transparent !important;
+.dynatree-node .dynatree-title {
+    font-size: 13px;
+    line-height: 17px;
     color: @font-color !important;
 }
-span.dynatree-selected a {
-    color: @font-color;
+.dynatree-node .dynatree-title:focus {
+    background-color: white;
+    border-color: #555;
+}
+.dynatree-node.dynatree-selected .dynatree-title {
     font-style: normal;
+    background-color: #eee;
+    border: 1px solid #bbb;
+    color: @font-color;
 }
-span.dynatree-selected .dynatree-title {
-    background-color:#FFF465 !important;
-    color: @font-color !important;
+.dynatree-node.dynatree-selected .dynatree-title:focus {
+    background-color: #eee !important;
+    border-color: #555;
 }
-
-.inline-tree {
-    border: solid 1px #ccc;
-}
-
-.inline-tree.bn, .popupTree, .inline-tree.contained{
-    border: none;
+.dynatree-node.found .dynatree-title {
+    border-color: @primary-color;
 }
 
-.inline-tree .treeCanvas {
+.inline-tree { border: solid 1px #ccc; }
+
+.inline-tree.bn, .popupTree, .inline-tree.contained { border: none; }
+
+.inline-tree .tree-canvas {
     background: white;
+    border: 1px solid #ccc;
 }
 
-.tree_helper_controls {
-    background: #efefef;
-    border-bottom: 1px dotted #ccc;
-    padding: 2px 10px;
-    overflow:hidden;
-    font-size: 12px;
+.inline-tree .tree-controls { margin-bottom: 3px; }
+.inline-tree.contained .tree-controls { background: white; }
+
+.tree-controls .tree-search { 
+    margin-left: 4px;
+    width: 50%;
 }
-.tree_helper_controls a {
-    margin: 3px 4px 0 0;
-}
-.tree_helper_controls .open_all, .tree_helper_controls .close_all {
+
+.tree-controls .open-all, 
+.tree-controls .close-all {
+    float: left;
+    overflow: hidden;
     width: 16px;
     height: 1px;
+    margin: 5px 4px 0 0;
     padding-top: 15px;
-    float: left;
-    overflow:hidden;
     background-position: left top;
     background-color: transparent;
 }
-.tree_helper_controls .open_all {
-    background-image: url('../styles/lib/dynatree/tree/expand.png');
-}
-.tree_helper_controls .close_all {
-    background-image: url('../styles/lib/dynatree/tree/collapse.png');
-}
 
-.dynatree-title {border-radius: 2px;border: 1px solid white;}
-.dynatree-selected .dynatree-title {border: 1px solid #EFE455;}
-.static-mode .dynatree-selected .dynatree-title {border: 1px solid #bbb;}
-
-.contained .tree_helper_controls {background: white;}
-
-.static-mode .dynatree-selected .dynatree-title {background-color: white !important;}
-.static-mode .dynatree-title {cursor: default;}
-.static-mode a.dynatree-title:hover {color: black;}
-.static-mode .dynatree-focused a:link, span.dynatree-active a {color: black;background: white;}
-
-.static-mode span.dynatree-checkbox, .static-mode span.dynatree-checkbox:hover {background-position: 0px -160px;}
-.static-mode span.dynatree-selected span.dynatree-checkbox, .static-mode .dynatree-selected span.dynatree-checkbox:hover {background-position: -32px -160px;}
-.static-mode span.dynatree-partsel span.dynatree-checkbox, .static-mode .dynatree-partsel span.dynatree-checkbox:hover {background-position: -64px -160px;}
-
-.static-mode span.dynatree-selected .dynatree-title {background-color:#ddd !important;color: @font-color !important;}
+.tree-controls .open-all { background-image: url('../../../resources/js/lib/dynatree/skin/tree/expand.png'); }
+.tree-controls .close-all { background-image: url('../../../resources/js/lib/dynatree/skin/tree/collapse.png'); }
 
 /* jQuery UI Overrides */
 .ui-widget {
@@ -163,10 +160,17 @@ span.dynatree-selected .dynatree-title {
     padding: 0;
     font: inherit;
     
-    input, select, textarea, button {
+    input, 
+    select, 
+    textarea, 
+    button {
         font: inherit;
     }
-    button, .button, input[type=submit], input[type=button], input[type=reset] {
+    button, 
+    .button, 
+    input[type=submit], 
+    input[type=button], 
+    input[type=reset] {
         font: bold 12px Helvetica,Arial,sans-serif;
     }
     

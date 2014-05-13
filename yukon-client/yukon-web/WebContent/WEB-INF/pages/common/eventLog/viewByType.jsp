@@ -91,11 +91,11 @@
                 <cti:msg2 var="noEventLogSelected" key=".noEventLogSelected"/>
                                                             
                 <t:popupTree id="eventCategoryEditorTree"
-                               treeCss="/WebConfig/yukon/styles/lib/dynatree/eventType.css"
+                               treeCss="/resources/js/lib/dynatree/skin/event.type.css"
                                triggerElement="showPopupButton"
                                dataJson="${allEventCategoriesDataJson}" highlightNodePath="${extSelectedNodePath}"
                                title="${selectEventLog}"
-                               treeParameters="{onActivate: TreeHelper.redirect_node_data_href_onActivate}"
+                               treeParameters="{onActivate: yukon.dynatree.redirectOnActivate}"
                                includeControlBar="true" styleClass="contained"/>
             </td>
         </tr>

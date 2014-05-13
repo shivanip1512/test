@@ -44,7 +44,7 @@
 					<cti:includeScript link="JQUERY_SCROLLTO" />
 					<cti:includeScript link="JQUERY_TREE" />
 					<cti:includeScript link="JQUERY_TREE_HELPERS" />
-					<cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/ui.dynatree.css"/>
+					<cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
 	                <tags:widget bean="deviceGroupWidget"/>
             </div>
             <div class="column two nogutter">

@@ -37,6 +37,7 @@ public class ThemeableResourceCache {
     @Autowired private ResourceLoader loader;
     @Autowired private ConfigurationSource config;
     
+    private boolean debug;
     private static final Logger log = YukonLogManager.getLogger(ThemeableResourceCache.class);
     
     private YUICssCompressorProcessor compressor = new YUICssCompressorProcessor();
@@ -51,7 +52,7 @@ public class ThemeableResourceCache {
             }
         });
         
-        if (config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
+        if (debug) {
             long lastModified = loader.getResource(resource.getPath()).lastModified();
             if (value.getTimestamp() < lastModified) {
                 cache.put(resource, load(resource));
@@ -64,6 +65,7 @@ public class ThemeableResourceCache {
     
     @PostConstruct
     private void init() throws Exception {
+        debug = config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
         reloadAll();
     }
 
@@ -95,12 +97,14 @@ public class ThemeableResourceCache {
         log.info("Loading " + resource + ": less compiling took " + new Duration(start, Instant.now()).getMillis() + "ms");
         start = Instant.now();
         
-        StringWriter minified = new StringWriter();
-        compressor.process(new StringReader(css.toString()), minified);
+        if (!debug) {
+            StringWriter minified = new StringWriter();
+            compressor.process(new StringReader(css.toString()), minified);
+            log.info("Loading " + resource + ": css compression took " + new Duration(start, Instant.now()).getMillis() + "ms");
+            css = minified.toString();
+        }
         
-        log.info("Loading " + resource + ": css compression took " + new Duration(start, Instant.now()).getMillis() + "ms");
-        
-        return CachedResourceValue.of(minified.toString(), Instant.now().getMillis());
+        return CachedResourceValue.of(css, Instant.now().getMillis());
     }
 
     private String applyThemeProperties(Resource file) throws IOException {

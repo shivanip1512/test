@@ -102,7 +102,7 @@
         titleBarObj = groupTreeObj.prev('.ui-dialog-titlebar');
         buttonPaneObj = $(groupTreeObj.nextAll('.ui-dialog-buttonpane')[0]);
         dialogCont = groupTreeObj.closest('.ui-dialog');
-        treeHelperPane = groupTreeObj.find('.tree_helper_controls');
+        treeHelperPane = groupTreeObj.find('.tree-controls');
         // ignores if present, creates if not
         yukon.namespace('yukon.ui.dialogs');
         if ('undefined' === typeof yukon.ui.dialogs.${id}) {

@@ -76,6 +76,6 @@
              includeControlBar="true" 
              multiSelect="true"
              title="${titleText}"
-             treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
+             treeCss="/resources/js/lib/dynatree/skin/device.group.css"
              treeParameters="${pageScope.treeParameters}"
              triggerElement="${pageScope.triggerElement}"/>

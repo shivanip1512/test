@@ -1,3 +1,8 @@
+/**
+ * NOTE: This file has been modified by Eaton to remove dependancies on prototypejs library.
+ */
+
+
 //  based on code written by Tan Ling Wee on 2 Dec 2001
 //  last updated 20 June 2003
 //  email : fuushikaden@yahoo.com

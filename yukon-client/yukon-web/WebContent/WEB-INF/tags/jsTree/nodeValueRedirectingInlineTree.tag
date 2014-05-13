@@ -41,7 +41,7 @@ function redirectToNameValue_${id}(node) {
 
 <%-- INLINE TREE --%>
 <jsTree:inlineTree id="${id}"
-                treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
+                treeCss="/resources/js/lib/dynatree/skin/device.group.css"
                 treeParameters="{onActivate: redirectToNameValue_${id}}"
                 dataJson="${dataJson}"
                 maxHeight="${pageScope.maxHeight}"
