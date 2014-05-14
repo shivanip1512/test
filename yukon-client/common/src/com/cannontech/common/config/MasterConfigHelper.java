@@ -84,9 +84,9 @@ public class MasterConfigHelper {
         if (ClientSession.isRemoteSession()) {
             log.debug("Returning remote config");
             return getRemoteConfiguration();
-        } else {
-            log.debug("Returning local config");
-            return getLocalConfiguration();
         }
+
+        log.debug("Returning local config");
+        return getLocalConfiguration();
     }    
 }

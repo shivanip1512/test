@@ -12,9 +12,7 @@
     <bean id="dynamicDataSource" class="com.cannontech.core.dynamic.impl.DynamicDataSourceImpl"/>
     
     <bean id="serverRequest" class="com.cannontech.message.util.ServerRequestImpl" scope="prototype" />
-    <bean id="dynamicDataCache" class="com.cannontech.core.dynamic.impl.DynamicDataCache">
-        <property name="dispatchConnection" ref="dispatchConnection" />
-    </bean>
+    <bean id="dynamicDataCache" class="com.cannontech.core.dynamic.impl.DynamicDataCache"/>
     <bean id="dispatchProxy" class="com.cannontech.core.dynamic.impl.DispatchProxy">
         <property name="dispatchConnection" ref="dispatchConnection" />
         <property name="serverRequest" ref="serverRequest" />
@@ -22,5 +20,4 @@
     <bean id="pointService" class="com.cannontech.core.dynamic.impl.PointServiceImpl"/>
 
     <bean id="richPointDataService" class="com.cannontech.core.dynamic.impl.RichPointDataServiceImpl" />
-
 </beans>

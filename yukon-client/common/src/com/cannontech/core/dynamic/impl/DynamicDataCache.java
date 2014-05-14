@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
@@ -21,12 +24,14 @@ import com.cannontech.yukon.IServerConnection;
  * When the dispatch connection indicates it has disconnected,
  * DynamicDataCache will dump its state and start over to avoid
  * holding onto stale data.
- * @author alauinger
- *
  */
-class DynamicDataCache implements MessageListener {
-    IServerConnection dispatchConnection;
-    
+/* package */ class DynamicDataCache implements MessageListener {
+
+    @Autowired
+    public DynamicDataCache(@Qualifier("dispatch") IServerConnection dispatchConnection) {
+        dispatchConnection.addMessageListener(this);
+    }
+
     //  Stores current PointData messages by PointID
     private Map<Integer, PointData> pointData = 
         new ConcurrentHashMap<Integer, PointData>();
@@ -45,7 +50,6 @@ class DynamicDataCache implements MessageListener {
     }
     
     Set<Signal> getSignals(int pointId) {
-        
         Set<Signal> ret = pointSignals.get(pointId);
         return ret;
     }
@@ -53,28 +57,12 @@ class DynamicDataCache implements MessageListener {
     Set<Signal> getSignalForCategory(int categoryId) {
         return categorySignalsMap.get(categoryId);
     }
-    
-    int getTags(int pointId) {
-        return (int)pointData.get(pointId).getTags();
-    }
-    
-    void removePointId(int pointId) {
-        pointData.remove(pointId);
-        pointSignals.remove(pointId);
-    }
-    
-    public void clearCache() {
-        pointData.clear();
-        pointSignals.clear();
-        categorySignalsMap.clear();
-    }
 
     @Override
     public void messageReceived(MessageEvent e) {
         handleIncoming(e.getMessage());
     }
-    
-    
+
     void handleIncoming(Object msg) {        
         if(msg instanceof PointData) {
             handlePointData((PointData)msg);
@@ -86,8 +74,8 @@ class DynamicDataCache implements MessageListener {
             handleIncoming(((ServerResponseMsg)msg).getPayload());
         }
         else if(msg instanceof Multi) {
-            for(Object o: ((Multi)msg).getVector()) {
-                handleIncoming(o);
+            for (Object obj : ((Multi<?>) msg).getVector()) {
+                handleIncoming(obj);
             }
         }
         else if(msg instanceof ConnStateChange) {
@@ -147,13 +135,5 @@ class DynamicDataCache implements MessageListener {
         pointData.clear();
         pointSignals.clear();
         categorySignalsMap.clear();        
-    }
-    
-    public void setDispatchConnection(IServerConnection dispatchConnection) {
-        if(dispatchConnection != null) {
-            dispatchConnection.removeMessageListener(this);
-        }
-        this.dispatchConnection = dispatchConnection;
-        dispatchConnection.addMessageListener(this);
     }
 }
