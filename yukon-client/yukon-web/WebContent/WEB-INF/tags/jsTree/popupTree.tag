@@ -16,32 +16,25 @@
 
 <%-- POPUP WINDOW SETUP --%>
 <%-- buttonsList is used to add buttons (with handlers) to the window. It is not required. --%>
-<%-- windowAttributes should be convertable to a js hash and contains any configs to override default window panel configs --%>
 <%-- It should be in form of a list of hash. buttonsList should look something like this:  --%>
 <%-- [{text:'Button 1', click:doAction1();},{text:'Button 2', click:doAction1();}] --%>
 <%-- where doAction1() and doAction2() are javascript functions in your jsp --%>
 <%@ attribute name="title" %>
 <%@ attribute name="maxHeight"  type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500." %>
-<%@ attribute name="windowAttributes" %>
 <%@ attribute name="buttonsList" %>
 
 <c:if test="${!empty pageScope.treeCss}"><cti:includeCss link="${treeCss}"/></c:if>
 
-<div class="dn">
-    <!-- Hide the contents of this window. clicking the button will be MAGIC! -->
-    <div id="window_${id}">
-        <div class="some_contents">
-            <jsTree:inlineTree id="${id}"
-                 treeCss="${treeCss}"
-                 treeParameters="${treeParameters}"
-                 highlightNodePath="${highlightNodePath}"
-                 dataJson="${dataJson}"
-                 maxHeight="${pageScope.maxHeight}"
-                 includeControlBar="${includeControlBar}"
-                 styleClass="${styleClass} popupTree contained"
-                 multiSelect="${multiSelect}" />
-        </div>
-    </div>
+<div id="window_${id}" class="dn">
+        <jsTree:inlineTree id="${id}"
+             treeCss="${treeCss}"
+             treeParameters="${treeParameters}"
+             highlightNodePath="${highlightNodePath}"
+             dataJson="${dataJson}"
+             maxHeight="${pageScope.maxHeight}"
+             includeControlBar="${includeControlBar}"
+             styleClass="${styleClass} popupTree"
+             multiSelect="${multiSelect}"/>
 </div>
 
 <script type="text/javascript">
@@ -50,23 +43,12 @@
     // names will be the id, prefixed with tree_
     var tree_${id};
     var window_${id};
-    $(document).ready(function() {
-        var offsetTop,
-            titleBarObj,
-            groupTreeObj,
-            dialogCont,
-            buttonPaneObj,
-            dialogContOffset,
-            treeHelperPane,
-            TREE_DIALOG_MAX_WIDTH = 450,
-            calcMaxHeight = function (dialogCont, titleBar, treeHelper, buttonPane) {
-                var paneHeights = titleBar.height() + treeHelper.height() + buttonPane.height(),
-                    maxHeight;
-                maxHeight = dialogCont.height() - paneHeights - 15;
-                return maxHeight;
+    $(function() {
+        var calcMaxHeight = function (container) {
+                return $(container).height() - 29; // height 26px plus margin 3px of controls element
             };
         <c:if test="${!empty pageScope.buttonsList}">
-        var buttons = ${buttonsList}; 
+        var buttons = ${buttonsList};
         </c:if>
         
         <c:if test="${empty pageScope.buttonsList}">
@@ -78,60 +60,33 @@
                 <c:if test="${not empty pageScope.title}">
                 title: "${title}",
                 </c:if>
-                minWidth: 300,
+                minWidth: 400,
                 buttons: buttons,
                 resizable: true,
                 autoOpen: false,
                 draggable: true,
-                resizeStop: function( event, ui ) {
-                    var maxHeight = calcMaxHeight(dialogCont, titleBarObj, treeHelperPane, buttonPaneObj);
+                resizeStop: function(event, ui) {
+                    var maxHeight = calcMaxHeight(event.target);
                     $('#${id}').css('max-height', maxHeight);
                 }
             };
         
-        <c:if test="${!empty pageScope.windowAttributes}">
-        var parameters = ${windowAttributes};
-        for(key in parameters){
-            args[key] = parameters[key];
-        }
-        </c:if>
-
         window_${id} = $(document.getElementById("window_${id}")).dialog(args);
-
-        groupTreeObj = $('#' + 'window_${id}');
-        titleBarObj = groupTreeObj.prev('.ui-dialog-titlebar');
-        buttonPaneObj = $(groupTreeObj.nextAll('.ui-dialog-buttonpane')[0]);
-        dialogCont = groupTreeObj.closest('.ui-dialog');
-        treeHelperPane = groupTreeObj.find('.tree-controls');
-        // ignores if present, creates if not
-        yukon.namespace('yukon.ui.dialogs');
-        if ('undefined' === typeof yukon.ui.dialogs.${id}) {
-            yukon.namespace('yukon.ui.dialogs.${id}');
+        
+        if ('${!empty pageScope.triggerElement}' === 'true') {
+            //click a button, get the window
+            $(document.getElementById("${triggerElement}")).click(function() {
+                var 
+                maxHeight,
+                dialog = $('#' + 'window_${id}');
+                // prevents double scrollbars on tree container
+                dialog.css('overflow', 'hidden');
+                
+                dialog.dialog('open');
+                // size tree height so it is fully scrollable
+                maxHeight = calcMaxHeight($('#' + 'window_${id} .ui-dialog-content'));
+                $('#${id}').css('max-height', maxHeight);
+            });
         }
-        <c:if test="${!empty pageScope.triggerElement}">
-        //click a button, get the window
-        $(document.getElementById("${triggerElement}")).click(function(){
-            var maxHeight;
-            $(document.getElementById("window_${id}")).dialog('open');
-            offsetTop = dialogCont.offset().top;
-            // save offset of popup once. Subsequently, dialogCont.offset().top appears to change
-            // Store the first value of the top offset of the dialog. Subsequent values vary
-            // considerably and undermine the positioning logic
-            if ('undefined' === typeof yukon.ui.dialogs.${id}.offsetTop) {
-                yukon.ui.dialogs.${id}.offsetTop = offsetTop;
-            } else {
-                offsetTop = yukon.ui.dialogs.${id}.offsetTop;
-            }
-            // make dialog wider so long entries don't force horizontal scrollbars
-            groupTreeObj.dialog('option', 'width', TREE_DIALOG_MAX_WIDTH);
-            // no scrollbars on tree div, prevents double scrollbars
-            groupTreeObj.css('overflow', 'hidden');
-            dialogContOffset = dialogCont.offset();
-            dialogCont.offset({'left' : dialogContOffset.left, 'top' : offsetTop - buttonPaneObj.height()});
-            // size tree height so it is fully scrollable
-            maxHeight = calcMaxHeight(dialogCont, titleBarObj, treeHelperPane, buttonPaneObj);
-            $('#${id}').css('max-height', maxHeight);
-        });
-        </c:if>
     });
 </script>

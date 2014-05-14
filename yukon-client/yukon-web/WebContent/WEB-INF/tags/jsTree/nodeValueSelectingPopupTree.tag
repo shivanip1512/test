@@ -63,15 +63,15 @@
 <input type="hidden" name="${fieldName}" id="${fieldId}" value="${pageScope.fieldValue}">
 
 <%-- POPUP TREE --%>
-<t:popupTree  id="${id}"
-                treeCss="/resources/js/lib/dynatree/skin/device.group.css"
-                treeParameters="{onActivate:recordNameValue_${id}}"
-                triggerElement="${triggerElement}"
-                highlightNodePath="${pageScope.highlightNodePath}"
-                dataJson="${dataJson}"
-                title="${title}"
-                maxHeight="${pageScope.maxHeight}"
-                buttonsList="[{text:'${cancelButtonText}', click:cancelNodeSelection_${id}},{text:'${submitButtonText}', click:submitNodeSelection_${id}, 'class':'primary action'}]"
-                multiSelect="${multiSelect}"
-                includeControlBar="${includeControlBar}"
-                styleClass="${styleClass}" />
+<t:popupTree id="${id}"
+             treeCss="/resources/js/lib/dynatree/skin/device.group.css"
+             treeParameters="{onActivate:recordNameValue_${id}}"
+             triggerElement="${triggerElement}"
+             highlightNodePath="${pageScope.highlightNodePath}"
+             dataJson="${dataJson}"
+             title="${title}"
+             maxHeight="${pageScope.maxHeight}"
+             buttonsList="[{text:'${cancelButtonText}', click:cancelNodeSelection_${id}},{text:'${submitButtonText}', click:submitNodeSelection_${id}, 'class':'primary action'}]"
+             multiSelect="${multiSelect}"
+             includeControlBar="${includeControlBar}"
+             styleClass="${styleClass}" />

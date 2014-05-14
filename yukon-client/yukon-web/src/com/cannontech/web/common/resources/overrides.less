@@ -120,17 +120,12 @@ span.dynatree-icon {
     border-color: @primary-color;
 }
 
-.inline-tree { border: solid 1px #ccc; }
-
-.inline-tree.bn, .popupTree, .inline-tree.contained { border: none; }
-
 .inline-tree .tree-canvas {
     background: white;
     border: 1px solid #ccc;
 }
 
 .inline-tree .tree-controls { margin-bottom: 3px; }
-.inline-tree.contained .tree-controls { background: white; }
 
 .tree-controls .tree-search { 
     margin-left: 4px;
@@ -205,13 +200,14 @@ span.dynatree-icon {
 } /* need this since outside the one above */
 
 .ui-dialog {
+    box-sizing: content-box; // jquery ui is apparently depending on content-box when calculation dimension 
     background: #fff;
     -webkit-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+       -moz-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     -webkit-transition: margin-top 0.25s ease-in-out;
-    -moz-transition: margin-top 0.25s ease-in-out;
-    transition: margin-top 0.25s ease-in-out;
+       -moz-transition: margin-top 0.25s ease-in-out;
+            transition: margin-top 0.25s ease-in-out;
     z-index: 1000;
     
     .ui-dialog-titlebar {
@@ -241,7 +237,7 @@ span.dynatree-icon {
     
     .ui-dialog-buttonpane {
         border: none;
-        margin-top: 4px;
+        margin-top: 0;
         padding: 0;
         
         .ui-dialog-buttonset {

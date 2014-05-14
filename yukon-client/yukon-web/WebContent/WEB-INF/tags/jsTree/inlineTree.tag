@@ -1,4 +1,4 @@
-<%@ tag body-content="empty" %>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -14,10 +14,10 @@
 <%@ attribute name="maxHeight" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500." %>
 <%@ attribute name="dataJson" description="A dictionary starting with attributes of the root node." %>
 
-<cti:includeScript link="JQUERY_COOKIE" />
-<cti:includeScript link="JQUERY_SCROLLTO" />
-<cti:includeScript link="JQUERY_TREE" />
-<cti:includeScript link="JQUERY_TREE_HELPERS" />
+<cti:includeScript link="JQUERY_COOKIE"/>
+<cti:includeScript link="JQUERY_SCROLLTO"/>
+<cti:includeScript link="JQUERY_TREE"/>
+<cti:includeScript link="JQUERY_TREE_HELPERS"/>
 
 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
 <c:if test="${not empty pageScope.treeCss}"><cti:includeCss link="${treeCss}"/></c:if>
@@ -129,7 +129,7 @@
     });
 </script>
 
-<div id="internalTreeContainer_${id}" class="inline-tree contained ${pageScope.styleClass}">
+<div id="internalTreeContainer_${id}" class="inline-tree ${pageScope.styleClass}">
     <c:if test="${not empty pageScope.includeControlBar and pageScope.includeControlBar}">
         <div class="tree-controls clearfix">
             <cti:msg2 var="expand" key="yukon.common.expandAll"/>

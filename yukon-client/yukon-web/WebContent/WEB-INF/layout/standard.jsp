@@ -201,19 +201,23 @@
                             <li><a href="<cti:url value="/support"/>"><i:inline key=".support"/></a></li>
                             <li><a href="<cti:url value="/sitemap"/>"><i:inline key=".siteMap"/></a></li>
                             <cti:checkRolesAndProperties value="JAVA_WEB_START_LAUNCHER_ENABLED">
-                                <li><a href="javascript:void(0);" id="appsLauncher"><i:inline
-                                            key=".applications"/></a></li>
-                                <d:inline id="yukonApplicationDialog" okEvent="none" nameKey="applications"
-                                    on="#appsLauncher" options="{width: 400, 'buttons': [], 'position' : 'relative'}">
-                                    <c:import url="/jws/applications"/>
-                                </d:inline>
+                                <li>
+                                    <a href="javascript:void(0);" popup="#yukon-apps-popup">
+                                        <i:inline key=".applications"/>
+                                    </a>
+                                    <div id="yukon-apps-popup" 
+                                        data-title="<cti:msg2 key=".applications.title"/>" 
+                                        data-width="400" 
+                                        class="dn">
+                                        <c:import url="/jws/applications"/>
+                                    </div>
+                                </li>
                             </cti:checkRolesAndProperties>
                             <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
                                 <li><a href="<cti:url value="/support/development/main"/>">Development</a></li>
                             </cti:checkGlobalRolesAndProperties>
                             <c:if test="${showNM}">
-                                <li><a href="${nmUrl}" target="_blank"><i:inline
-                                            key="yukon.common.networkManager"/></a></li>
+                                <li><a href="${nmUrl}" target="_blank"><i:inline key="yukon.common.networkManager"/></a></li>
                             </c:if>
                         </ul>
                     </nav>
