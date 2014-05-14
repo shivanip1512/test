@@ -14,18 +14,18 @@ function addToSelected (roundingMode) {
     newOpt.setAttribute('value', field);
     
     newOpt.setAttribute('format','');
-    if (field.include('timestamp')) {
+    if (field.indexOf('timestamp') !== -1) {
         newOpt.setAttribute('format','MM/dd/yyyy');
-    } else if (field.include('reading')) {
-        if (field.include('Demand')) {
+    } else if (field.indexOf('reading') !== -1) {
+        if (field.indexOf('Demand') !== -1) {
             newOpt.setAttribute('format','##0.00');
-        } else if (field.include('Consumption')) {
+        } else if (field.indexOf('Consumption') !== -1) {
             newOpt.setAttribute('format','#####');
         }
     }
 
-    if (field.include('reading') ||
-            field.include('timestamp')) {
+    if ((field.indexOf('reading') !== -1) ||
+            (field.indexOf('timestamp') !== -1)) {
         newOpt.setAttribute('readingType', 'ELECTRIC');
     } else {
         newOpt.setAttribute('readingType', 'DEVICE_DATA');
