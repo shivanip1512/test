@@ -1,9 +1,10 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="thermostatSelect">
 
@@ -90,50 +91,44 @@
     });
     </script>
 
-       <form id="themostatSelectForm" method="post" action="/stars/operator/thermostatSelect/selectRedirect">
-            <cti:csrfToken/>
-    <tags:boxContainer2 nameKey="chooseThermostats" hideEnabled="false">
-        
+    <form id="themostatSelectForm" method="post" action="<cti:url value="/stars/operator/thermostatSelect/selectRedirect"/>">
+        <cti:csrfToken/>
+        <tags:sectionContainer2 nameKey="chooseThermostats" hideEnabled="false">
         
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" id="thermostatIds" name="thermostatIds" value="${thermostatIds}">
-            
+
             <table class="compact-results-table selectThermostatsTable">
-            
-                <tr>
-                    <th class="name">
-                        <i:inline key="yukon.web.modules.operator.thermostatSelect.name"/>
-                    </th>
-                    <th><i:inline key="yukon.web.modules.operator.thermostatSelect.type"/></th>
-                </tr>
-            
-                <c:forEach var="thermostat" items="${thermostats}">
-                    
-                     <tr>
-                        <td  class="name">
-                            <input type="checkbox" id="THERMOSTATCHECKBOX-${thermostat.id}-${thermostat.type}" onclick="checkboxChanged(this)">
-                            <label for="THERMOSTATCHECKBOX-${thermostat.id}-${thermostat.type}">
-                                <spring:escapeBody htmlEscape="true">${thermostat.label}</spring:escapeBody>
-                            </label>
-                        </td>
-                        <td>
-                            <cti:msg key="${thermostat.type}"/>
-                        </td>
+                <thead>
+                    <tr>
+                        <th class="name"><i:inline key="yukon.web.modules.operator.thermostatSelect.name" /></th>
+                        <th><i:inline key="yukon.web.modules.operator.thermostatSelect.type" /></th>
                     </tr>
-                
-                </c:forEach>
-            
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach var="thermostat" items="${thermostats}">
+                        <tr>
+                            <td class="name">
+                                <input type="checkbox" id="THERMOSTATCHECKBOX-${thermostat.id}-${thermostat.type}" 
+                                    onclick="checkboxChanged(this)">
+                                <label for="THERMOSTATCHECKBOX-${thermostat.id}-${thermostat.type}">
+                                    ${fn:escapeXml(thermostat.label)}
+                                </label>
+                            </td>
+                            <td><cti:msg key="${thermostat.type}" /></td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
             </table>
-        
-    
-    </tags:boxContainer2>
-    
-    <div class="page-action-area">
-        <cti:msg var="scheduleText" key="yukon.web.modules.operator.thermostatSelect.schedule"/>
-        <cti:button type="submit" value="${scheduleText}" name="schedule" label="${scheduleText}"/>
-        <cti:msg var="manualText" key="yukon.web.modules.operator.thermostatSelect.manual"/>
-        <cti:button type="submit" value="${manualText}" label="${manualText}" name="manual"/>
-    </div>
-</form>
+        </tags:sectionContainer2>
+
+        <div class="page-action-area">
+            <cti:msg var="scheduleText" key="yukon.web.modules.operator.thermostatSelect.schedule" />
+            <cti:button type="submit" value="${scheduleText}" name="schedule" label="${scheduleText}" />
+            <cti:msg var="manualText" key="yukon.web.modules.operator.thermostatSelect.manual" />
+            <cti:button type="submit" value="${manualText}" label="${manualText}" name="manual" />
+        </div>
+    </form>
 
 </cti:standardPage>
