@@ -505,6 +505,7 @@ input.error {
 /* MISC */
 .clearfix:before, .clearfix:after {content: " ";display: table;}
 .clearfix:after {clear: both;}
+
 .code {
     font-family: Consolas, "Liberation Mono", Courier, monospace;
     margin: 15px 0;
@@ -517,26 +518,37 @@ input.error {
     padding: 6px 10px;
     border-radius: 3px;
 }
+
 .full-width {width: 100%}
 .half-width {width: 50%}
+
 .fade-half {opacity: 0.5;}
-.stacked {margin-bottom: 10px;} /*  Soley for spacing vertically stacked elements */
-.stacked-medium {margin-bottom: 20px;} /*  Soley for spacing vertically stacked elements */
-.buffered {margin-bottom: 10px;margin-top: 10px;} /*  Soley for spacing vertically stacked elements */
+
+/* Soley for spacing vertically stacked elements */
+.stacked {margin-bottom: 10px;}
+.stacked-medium {margin-bottom: 20px;}
+.buffered {margin-bottom: 10px;margin-top: 10px;}
+
 .wall-of-text .value {max-width: 300px;}
 .title-bar-tool {float:right !important;margin-right: 10px;}
-.dialog-no-buttons {margin-bottom: 20px;} /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
+
+/* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
+.dialog-no-buttons {margin-bottom: 20px;}
+
 .detail {color: #777;}
 .note, .detail {font-size: .9em;}
+.hint {font-style: italic;}
 strong, .strong-label-small, .grouped-list .group {font-weight: bold;}
 .notes, .strong-label-small {font-size: 12px;}
 .monospace {font-family: Courier,monospace; font-size: 12px;}
 .monospace {white-space: pre;}
+
 .short-width {max-width: 200px;}
+
 hr, .divider {height: 1px;border-top: 1px solid #ccc;border-style: solid none none none;clear: both;}
 hr.dashed, .divider.dashed {border-style: dashed none none none;}
+
 .empty-list {font-style: italic; color: #676767;}
-.hint {font-style: italic;}
 .editable:hover {background-color: LemonChiffon; cursor: text;}
 .front {z-index: 9999;}
 .with-form-controls tbody td, .form-control {line-height: @form-control-height;}
@@ -588,7 +600,7 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
     -webkit-animation-timing-function: linear;
     -webkit-animation-iteration-count: infinite; 
 }
-.ltie10 .pulse-opacity, .ltie10 .blink-shadow {border: 2px solid @red;}
+.md-no-cssanimations .pulse-opacity, .md-no-cssanimations .blink-shadow {border: 2px solid @red;}
 .toggle-on-off .button:focus {outline: none;}
 .toggle-on-off .yes.on .b-label, .toggle-on-off .yes.on:hover .b-label {color: @green;}
 .toggle-on-off .no.on .b-label, .toggle-on-off .no.on:hover .b-label {color: @red;}

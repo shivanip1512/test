@@ -10,6 +10,7 @@
 
 <c:set var="browser" value="${header['User-Agent']}" scope="session"/>
 <c:set var="isIE" value="${fn:contains(browser, 'MSIE') ? 'ie' : 'no-ie'}"/>
+
 <!DOCTYPE html>
 <html dir="ltr" class="${module.moduleName}-module ${isIE} no-js">
 <head>
@@ -20,6 +21,7 @@
 <title>${pageDetail.pageTitle}</title>
 
 <link rel="shortcut icon" href="<cti:url value="/favicon.ico"/>" type="image/x-icon">
+
 <link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>">
 <link rel="stylesheet" href="<cti:url value="/resources/css/lib/bootstrap.css"/>">
 <link rel="stylesheet" href="<cti:url value="/resources/css/lib/animate.css"/>">
@@ -40,11 +42,6 @@
 
 <!-- Individual files from includeCss tag on the request page -->
 <c:forEach items="${innerContentCss}" var="file">
-    <link rel="stylesheet" href="<cti:url value="${file}"/>">
-</c:forEach>
-
-<!-- Login Group specific style sheets (YukonRoleProperty.STD_PAGE_STYLE_SHEET)-->
-<c:forEach items="${loginGroupCss}" var="file">
     <link rel="stylesheet" href="<cti:url value="${file}"/>">
 </c:forEach>
 
