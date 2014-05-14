@@ -440,7 +440,7 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, str
             if(ai->ai_family == AF_INET)
             {
                 SOCKADDR_IN* addr = (SOCKADDR_IN*)ai->ai_addr;
-                ul_addr = addr->sin_addr.S_un.S_addr;
+                ul_addr = ntohl(addr->sin_addr.S_un.S_addr);
             }
             else if(ai->ai_family == AF_INET6)
             {

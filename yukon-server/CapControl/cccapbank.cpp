@@ -1318,8 +1318,9 @@ string CtiCCCapBank::getIgnoreReasonText() const
     return retVal;
 }
 
-
-
+/*
+    The input 'value' to this function is REQUIRED to be in host byte order
+*/
 CtiCCCapBank& CtiCCCapBank::setIpAddress(unsigned long value)
 {
     _ipAddress = "(none)";
