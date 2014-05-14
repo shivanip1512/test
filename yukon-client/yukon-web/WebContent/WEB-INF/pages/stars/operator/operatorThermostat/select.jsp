@@ -101,8 +101,8 @@
             <table class="compact-results-table selectThermostatsTable">
                 <thead>
                     <tr>
-                        <th class="name"><i:inline key="yukon.web.modules.operator.thermostatSelect.name" /></th>
-                        <th><i:inline key="yukon.web.modules.operator.thermostatSelect.type" /></th>
+                        <th class="name"><i:inline key="yukon.web.modules.operator.thermostatSelect.name"/></th>
+                        <th><i:inline key="yukon.web.modules.operator.thermostatSelect.type"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -116,7 +116,7 @@
                                     ${fn:escapeXml(thermostat.label)}
                                 </label>
                             </td>
-                            <td><cti:msg key="${thermostat.type}" /></td>
+                            <td><cti:msg key="${thermostat.type}"/></td>
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -124,10 +124,10 @@
         </tags:sectionContainer2>
 
         <div class="page-action-area">
-            <cti:msg var="scheduleText" key="yukon.web.modules.operator.thermostatSelect.schedule" />
-            <cti:button type="submit" value="${scheduleText}" name="schedule" label="${scheduleText}" />
-            <cti:msg var="manualText" key="yukon.web.modules.operator.thermostatSelect.manual" />
-            <cti:button type="submit" value="${manualText}" label="${manualText}" name="manual" />
+            <cti:msg var="scheduleText" key="yukon.web.modules.operator.thermostatSelect.schedule"/>
+            <cti:button type="submit" value="${scheduleText}" name="schedule" label="${scheduleText}"/>
+            <cti:msg var="manualText" key="yukon.web.modules.operator.thermostatSelect.manual"/>
+            <cti:button type="submit" value="${manualText}" label="${manualText}" name="manual"/>
         </div>
     </form>
 
