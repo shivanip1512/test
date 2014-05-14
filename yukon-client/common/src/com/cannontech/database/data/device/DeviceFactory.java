@@ -503,7 +503,6 @@ public final class DeviceFactory {
         case RF_DA:
             returnDevice = new RfDa();
             returnDevice.setDeviceType(PaoType.RF_DA.name());
-            returnDevice.setDeviceID(PaoType.RF_DA.getDeviceTypeId());
             returnDevice.setDeviceClass(PaoType.RF_DA.getPaoClass().name());
             break;
         default:
