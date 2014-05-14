@@ -1,14 +1,14 @@
 <%@ tag body-content="empty" %>
 
-<%@ attribute name="accountId" required="true" type="java.lang.String"%>
-<%@ attribute name="actionPath" required="true" type="java.lang.String"%>
+<%@ attribute name="accountId" required="true" %>
+<%@ attribute name="actionPath" required="true" description="Application context will be handled inside the tag. Just pass a bare url." %>
 <%@ attribute name="schedule" required="true" type="com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule" %>
-<%@ attribute name="temperatureUnit" required="true" type="java.lang.String"%>
-<%@ attribute name="thermostatId" required="true" type="java.lang.String"%>
-<%@ attribute name="thermostatIds" required="true" type="java.lang.String"%>
+<%@ attribute name="temperatureUnit" required="true" %>
+<%@ attribute name="thermostatId" required="true" %>
+<%@ attribute name="thermostatIds" required="true" %>
 <%@ attribute name="thermostatType" required="true" type="com.cannontech.stars.dr.hardware.model.SchedulableThermostatType"%>
 
-<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
+<%@ attribute name="styleClass" required="false" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
@@ -21,9 +21,9 @@
 
 <div class="schedule editor ${pageScope.styleClass} ${schedule.thermostatScheduleMode}">
     
-    <cti:url value="${actionPath}" var="actionPath"/>
-    <form id="form_${schedule.accountThermostatScheduleId}" method="POST" action="${actionPath}" onsubmit="yukon.ThermostatScheduleEditor.prepForm(this);">
-        <cti:csrfToken/>        
+    <cti:url var="editUrl" value="${actionPath}"/>
+    <form id="form_${schedule.accountThermostatScheduleId}" method="POST" action="${editUrl}" onsubmit="yukon.ThermostatScheduleEditor.prepForm(this);">
+        <cti:csrfToken/>
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="schedulableThermostatType" value="${thermostatType}">
         <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">

@@ -1,7 +1,7 @@
 <%@ tag trimDirectiveWhitespaces="true" %>
 
 <%@ attribute name="accountId" required="true" %>
-<%@ attribute name="actionPath" required="true" %>
+<%@ attribute name="actionPath" required="true" description="Application context will be handled inside the tag. Just pass a bare url." %>
 <%@ attribute name="schedule" required="true" type="com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule" %>
 <%@ attribute name="temperatureUnit" required="true" %>
 <%@ attribute name="thermostatId" required="true" %>
@@ -25,7 +25,8 @@
 <cti:msgScope paths="modules.operator.thermostat.schedules">
 <div class="schedule ${pageScope.styleClass}" id="scheduleId_${schedule.accountThermostatScheduleId}">
 
-    <form method="POST" action="${actionPath}/save">
+    <cti:url var="saveUrl" value="${actionPath}/save"/>
+    <form method="POST" action="${saveUrl}">
         <cti:csrfToken/>
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
@@ -102,7 +103,8 @@
             </c:otherwise>
         </c:choose>
     </form>
-    <form id="send_${schedule.accountThermostatScheduleId}" action="${actionPath}/send" method="POST" class="dn">
+    <cti:url var="sendUrl" value="${actionPath}/send"/>
+    <form id="send_${schedule.accountThermostatScheduleId}" action="${sendUrl}" method="POST" class="dn">
         <cti:csrfToken/>
         <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
         <input type="hidden" name="thermostatIds" value="${thermostatIds}">
@@ -115,10 +117,12 @@
                        arguments="${fn:escapeXml(schedule.scheduleName)}" 
                        id="editSchedule_${schedule.accountThermostatScheduleId}" 
                        on=".edit_${schedule.accountThermostatScheduleId}, .copy_${schedule.accountThermostatScheduleId}">
+                       
                         <cti:msg2 var="copyPrefix" key="yukon.web.defaults.copy.prefix"/>
                         <input type="hidden" name="copyName" value="${copyPrefix} ${fn:escapeXml(schedule.scheduleName)}"/>
                         <input type="hidden" name="copyTitle" value="<i:inline key=".createSchedule.title"/>"/>
                         <input type="hidden" name="editTitle" value="<i:inline key=".editSchedule.title" arguments="${fn:escapeXml(schedule.scheduleName)}"/>"/>
+                        
             <div class="container clearfix">
                  <tags:thermostatScheduleEditor schedule="${schedule}"
                                         thermostatId="${thermostatId}"
@@ -131,7 +135,8 @@
             </div>
             <div class="action-area">
                 <cti:button nameKey="save" classes="f-blocker primary action f-save"/>
-                <form action="${actionPath}/delete" method="POST">
+                <cti:url var="deleteUrl" value="${actionPath}/delete"/>
+                <form action="${deleteUrl}" method="POST">
                     <cti:csrfToken/>
                     <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
                     <input type="hidden" name="thermostatId" value="${thermostatId}">
