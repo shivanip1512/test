@@ -125,7 +125,7 @@
                     </c:if>
                      <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                    
-                    <cti:button id="deleteButton" nameKey="delete" onclick="deleteValidationMonitor();" busy="true" data-disable-group="actionButtons" classes="delete"/>
+                    <cti:button id="deleteButton" nameKey="delete" onclick="deleteValidationMonitor();" data-disable-group="actionButtons" classes="delete"/>
                     <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                 </c:when>
                 <c:otherwise>

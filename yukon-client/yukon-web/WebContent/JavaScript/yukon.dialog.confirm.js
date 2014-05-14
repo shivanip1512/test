@@ -76,10 +76,10 @@ yukon.dialogConfirm = (function () {
                     _close_dialog();
                     window.location = element.data("href");
                 };
-            } else if (element.data("data-onclick")) {
+            } else if (element.data("onclick")) {
                 actionButton.click = function () {
                     _close_dialog();
-                    var scripts =  element.data("data-onclick");
+                    var scripts =  element.data("onclick");
                     eval(scripts);
                 };
             }
