@@ -93,15 +93,15 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     public boolean moveDeviceToSet(String serialNumber, String setPath, int ecId) throws EcobeeException {
         boolean success = false;
         try {
-            success = attempMoveDeviceToSet(serialNumber, setPath, ecId);
+            success = attemptMoveDeviceToSet(serialNumber, setPath, ecId);
         } catch (EcobeeSetDoesNotExistException e) {
             createManagementSet(setPath, ecId);
-            success =  attempMoveDeviceToSet(serialNumber, setPath, ecId);
+            success = attemptMoveDeviceToSet(serialNumber, setPath, ecId);
         }
         return success;
     }
 
-    private boolean attempMoveDeviceToSet(String serialNumber, String setPath, int ecId) throws EcobeeException {
+    private boolean attemptMoveDeviceToSet(String serialNumber, String setPath, int ecId) throws EcobeeException {
 
         HttpHeaders headers = getHeadersWithAuthentication(ecId);
         String url = getUrlBase(ecId) + modifyThermostatUrlPart;
