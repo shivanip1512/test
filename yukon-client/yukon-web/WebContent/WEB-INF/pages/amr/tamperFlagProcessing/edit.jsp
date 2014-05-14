@@ -105,7 +105,7 @@
                             <c:set var="toggleText" value="disable"/>
                         </c:if>
                         <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
-                        <cti:button id="deleteButton" nameKey="delete" onclick="deleteTamperFlagMonitor(${tamperFlagMonitorId});" busy="true" data-disable-group="actionButtons" classes="delete"/>
+                        <cti:button id="deleteButton" nameKey="delete" onclick="deleteTamperFlagMonitor(${tamperFlagMonitorId});" data-disable-group="actionButtons" classes="delete"/>
                         <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                         <cti:url var="backUrl" value="/amr/tamperFlagProcessing/process/process">
                             <cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitorId}"/>
