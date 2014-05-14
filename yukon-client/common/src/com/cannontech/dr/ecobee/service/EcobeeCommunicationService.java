@@ -56,6 +56,16 @@ public interface EcobeeCommunicationService {
             throws EcobeeException;
 
     /**
+     * Creates a new manaagement hierarchy set with teh specified name, directly beneath the root set "/"
+     * 
+     * Returns true if the management set was created (or already exists)
+     * 
+     * @param managementSetName
+     * @throws EcobeeException if Yukon cannot log in or connect to Ecobee API
+     */
+    boolean createManagementSet(String managementSetName, int ecId) throws EcobeeException;
+
+    /**
      * Deletes the specified management hierarchy set, assuming it is located directly beneath the root set ("/").
      * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.

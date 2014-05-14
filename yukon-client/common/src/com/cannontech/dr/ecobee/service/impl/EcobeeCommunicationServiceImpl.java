@@ -156,7 +156,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         return new ArrayList<>();
     }
 
-    private boolean createManagementSet(String managementSetName, int ecId) throws EcobeeException {
+    @Override
+    public boolean createManagementSet(String managementSetName, int ecId) throws EcobeeException {
         HttpHeaders headers = getHeadersWithAuthentication(ecId);
         String url = getUrlBase(ecId) + modifySetUrlPart;
         
