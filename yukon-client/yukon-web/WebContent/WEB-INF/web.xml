@@ -13,8 +13,7 @@
     </context-param>
 
     <context-param>
-        <!-- In addition to its normal Spring meaning, this is used to set the default context on 
-             the YukonSpringHook. -->
+        <!-- In addition to its normal Spring meaning, this is used to set the default context on the YukonSpringHook. -->
         <param-name>parentContextKey</param-name>
         <param-value>com.cannontech.context.web</param-value>
     </context-param>
@@ -26,8 +25,8 @@
     </context-param>
 
     <context-param>
-        <!-- This is read by the CannonContextLoaderListener and then used to set a system property
-             with the same name and value. -->
+        <!-- This is read by the CannonContextLoaderListener and then used to set a system property with the same 
+             name and value. -->
         <param-name>cti.app.name</param-name>
         <param-value>Webserver</param-value>
     </context-param>
@@ -44,95 +43,69 @@
 
     <filter>
         <filter-name>loginFilter</filter-name>
-        <filter-class>
-            com.cannontech.web.login.LoginFilter
-        </filter-class>
-    </filter>        
+        <filter-class>com.cannontech.web.login.LoginFilter</filter-class>
+    </filter>
 
     <filter>
         <filter-name>timerFilter</filter-name>
-        <filter-class>
-            com.cannontech.servlet.filter.TimerFilter
-        </filter-class>
+        <filter-class>com.cannontech.servlet.filter.TimerFilter</filter-class>
     </filter>
 
     <filter>
         <filter-name>ErrorHelper</filter-name>
-        <filter-class>
-            com.cannontech.web.util.ErrorHelperFilter
-        </filter-class>
+        <filter-class>com.cannontech.web.util.ErrorHelperFilter</filter-class>
     </filter>
 
     <filter>
         <filter-name>facesFilter</filter-name>
-        <filter-class>
-            com.cannontech.servlet.filter.FacesFilter
-        </filter-class>
+        <filter-class>com.cannontech.servlet.filter.FacesFilter</filter-class>
     </filter>
 
     <filter>
         <filter-name>noCacheFilter</filter-name>
-        <filter-class>
-            com.cannontech.servlet.filter.NoCacheFilter
-        </filter-class>
+        <filter-class>com.cannontech.servlet.filter.NoCacheFilter</filter-class>
     </filter>
 
     <filter>
         <filter-name>referrerPageFilter</filter-name>
-        <filter-class>
-            com.cannontech.servlet.filter.ReferrerPageFilter
-        </filter-class>
+        <filter-class>com.cannontech.servlet.filter.ReferrerPageFilter</filter-class>
     </filter>
 
     <filter>
         <filter-name>generalSecurityFilter</filter-name>
-        <filter-class>
-            com.cannontech.servlet.filter.GeneralSecurityFilter
-        </filter-class>
+        <filter-class>com.cannontech.servlet.filter.GeneralSecurityFilter</filter-class>
     </filter>
 
     <filter>
         <filter-name>jsFilter</filter-name>
-        <filter-class>
-            com.cannontech.esub.web.filter.JSFilter
-        </filter-class>
+        <filter-class>com.cannontech.esub.web.filter.JSFilter</filter-class>
     </filter>
-    
+
     <filter>
         <filter-name>imageFilter</filter-name>
-        <filter-class>
-            com.cannontech.esub.web.filter.ImageFilter
-        </filter-class>
+        <filter-class>com.cannontech.esub.web.filter.ImageFilter</filter-class>
     </filter>
-    
+
     <filter>
         <filter-name>htmlFilter</filter-name>
-        <filter-class>
-            com.cannontech.esub.web.filter.HTMLFilter
-        </filter-class>
+        <filter-class>com.cannontech.esub.web.filter.HTMLFilter</filter-class>
     </filter>
-    
+
     <filter>
         <filter-name>cssFilter</filter-name>
-        <filter-class>
-            com.cannontech.esub.web.filter.CSSFilter
-        </filter-class>
+        <filter-class>com.cannontech.esub.web.filter.CSSFilter</filter-class>
     </filter>
-    
+
     <filter>
         <filter-name>audioFilter</filter-name>
-        <filter-class>
-            com.cannontech.esub.web.filter.AudioFilter
-        </filter-class>
+        <filter-class>com.cannontech.esub.web.filter.AudioFilter</filter-class>
     </filter>
-    
+
     <filter>
         <filter-name>svgFilter</filter-name>
-        <filter-class>
-            com.cannontech.esub.web.filter.SVGFilter
-        </filter-class>
+        <filter-class>com.cannontech.esub.web.filter.SVGFilter</filter-class>
     </filter>
-  
+
     <!-- Provides support for Request Methods (PUT, DELETE, PATCH) -->
     <filter>
         <filter-name>hiddenHttpMethodFilter</filter-name>
@@ -142,17 +115,15 @@
     <!-- A MyFaces filter used to find resources in jar files -->
     <filter>
         <filter-name>extensionsFilter</filter-name>
-        <filter-class>
-            org.apache.myfaces.component.html.util.ExtensionsFilter
-        </filter-class>
+        <filter-class>org.apache.myfaces.component.html.util.ExtensionsFilter</filter-class>
     </filter>
 
-    <!--  LoginFilter must be first filter-mapping entry -->
+    <!-- LoginFilter must be first filter-mapping entry -->
     <filter-mapping>
         <filter-name>loginFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
+
     <filter-mapping>
         <filter-name>hiddenHttpMethodFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -240,25 +211,21 @@
     </filter-mapping>
 
     <listener>
-        <listener-class>
-            com.cannontech.servlet.KickStartLoggingListener
-        </listener-class>
+        <listener-class>com.cannontech.servlet.KickStartLoggingListener</listener-class>
     </listener>
 
     <listener>
-        <listener-class>
-            com.cannontech.web.util.CannonContextLoaderListener
-        </listener-class>
+        <listener-class>com.cannontech.web.util.CannonContextLoaderListener</listener-class>
     </listener>
 
     <listener>
         <listener-class>com.cannontech.servlet.TimerTaskInitializer</listener-class>
     </listener>
-    
+
     <listener>
         <listener-class>com.cannontech.servlet.MaintenanceContextListener</listener-class>
     </listener>
-    
+
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
@@ -280,166 +247,126 @@
         <servlet-name>login</servlet-name>
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
-   </servlet> 
+    </servlet>
 
     <servlet>
         <servlet-name>tools</servlet-name>
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
-   </servlet>
+    </servlet>
 
     <servlet>
         <servlet-name>deviceConfiguration</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-   
+
     <servlet>
         <servlet-name>bulk</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>commander</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
+
     <servlet>
         <servlet-name>picker</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>jws</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>dynamicBilling</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>
         <servlet-name>scheduledBilling</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>
         <servlet-name>contextualMenu</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>
         <servlet-name>support</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>
         <servlet-name>adminSetup</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>3</load-on-startup>
     </servlet>
     <servlet>
         <servlet-name>lucene-index</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>amr</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
+
     <servlet>
         <servlet-name>meter</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>chart</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>group</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>httpRemote</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>capcontrol</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>multispeak</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
-    
+
     <servlet>
         <servlet-name>macsscheduler</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
-    </servlet>    
+    </servlet>
 
     <servlet>
         <servlet-name>stars</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>/WEB-INF/contexts/stars-servlet.xml,
@@ -454,65 +381,49 @@
 
     <servlet>
         <servlet-name>starsDemandResponseAdmin</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>widgetDispatcher</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>componentDispatcher</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>dataUpdater</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>3</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>static</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>debug</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>dr</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>reports</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
@@ -530,108 +441,72 @@
 
     <servlet>
         <servlet-name>layout</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>3</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>springRedirect</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.SpringRedirectServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.web.spring.SpringRedirectServlet</servlet-class>
     </servlet>
 
     <servlet>
-        <description>
-            Returns an xml config file for log4j logging
-        </description>
+        <description>Returns an xml config file for log4j logging</description>
         <servlet-name>LoggingServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.LoggingServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.LoggingServlet</servlet-class>
     </servlet>
     <servlet>
-        <description>
-            Contains connection objects to various servers
-        </description>
+        <description>Contains connection objects to various servers</description>
         <servlet-name>ConnServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.ConnServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.ConnServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>
-        <description>
-            Dynamically generates graphs in gif format
-        </description>
+        <description>Dynamically generates graphs in gif format</description>
         <display-name>GraphGenerator</display-name>
         <servlet-name>GraphGenerator</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.GraphGenerator
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.GraphGenerator</servlet-class>
     </servlet>
     <servlet>
-        <description>
-            Dynamically generates reports in specific formats
-        </description>
+        <description>Dynamically generates reports in specific formats</description>
         <display-name>ReportGenerator</display-name>
         <servlet-name>ReportGenerator</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.ReportGenerator
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.ReportGenerator</servlet-class>
     </servlet>
     <servlet>
         <description>Maintains a connection to PIL(PORTER)</description>
         <display-name>PILConnectionServlet</display-name>
         <servlet-name>PILConnectionServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.PILConnectionServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.PILConnectionServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
     <servlet>
         <description>Handles start/stop requests to MACS</description>
         <display-name>ScheduleController</display-name>
         <servlet-name>ScheduleController</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.ScheduleController
-        </servlet-class>
-    </servlet>    
+        <servlet-class>com.cannontech.servlet.ScheduleController</servlet-class>
+    </servlet>
     <servlet>
         <description>Send operation commmands to deviceID.</description>
         <display-name>CommanderServlet</display-name>
         <servlet-name>CommanderServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.CommanderServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.CommanderServlet</servlet-class>
     </servlet>
     <servlet>
-        <description>
-            Handles acknowledging of mandatory curtailments.
-        </description>
+        <description>Handles acknowledging of mandatory curtailments.</description>
         <display-name>CurtailmentServlet</display-name>
         <servlet-name>CurtailmentServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.CurtailmentServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.CurtailmentServlet</servlet-class>
     </servlet>
     <servlet>
-        <description>
-            Maintains a connection with loadcontrol server.
-        </description>
+        <description>Maintains a connection with loadcontrol server.</description>
         <display-name>LCConnectionServlet</display-name>
         <servlet-name>LCConnectionServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.LCConnectionServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.LCConnectionServlet</servlet-class>
         <load-on-startup>3</load-on-startup>
     </servlet>
     <servlet>
-        <description>
-            Handles downloading of tabular data in various formats.
-        </description>
+        <description>Handles downloading of tabular data in various formats.</description>
         <display-name>Download</display-name>
         <servlet-name>Download</servlet-name>
         <servlet-class>com.cannontech.servlet.Download</servlet-class>
@@ -640,116 +515,80 @@
         <description>Billing reports for various formats.</description>
         <display-name>BillingServlet</display-name>
         <servlet-name>BillingServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.BillingServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.BillingServlet</servlet-class>
     </servlet>
     <servlet>
-        <description>
-            Allows a user to request a password via email.
-        </description>
+        <description>Allows a user to request a password via email.</description>
         <display-name>PWordRequest</display-name>
         <servlet-name>PWordRequest</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.PWordRequest
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.PWordRequest</servlet-class>
     </servlet>
 
     <!-- esub specific servlets -->
     <servlet>
         <servlet-name>EmbedSVGJSServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.EmbedSVGJSServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.EmbedSVGJSServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>svgGenerator</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.SVGGenerator
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.SVGGenerator</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DynamicTextServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.DynamicTextServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.DynamicTextServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>StateImageServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.StateImageServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.StateImageServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateAttribute</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.UpdateAttribute
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.UpdateAttribute</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ClearAlarm</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.ClearAlarm
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.ClearAlarm</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AlarmsTableGenerator</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.AlarmsTableGenerator
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.AlarmsTableGenerator</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AlarmTextStyleServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.AlarmTextStyleServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.AlarmTextStyleServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ControlServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.ControlServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.ControlServlet</servlet-class>
         <load-on-startup>4</load-on-startup>
     </servlet>
     <servlet>
         <servlet-name>AlarmAudioServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.AlarmAudioServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.AlarmAudioServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DisplaySearchServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.esub.web.servlet.DisplaySearchServlet
-        </servlet-class>
+        <servlet-class>com.cannontech.esub.web.servlet.DisplaySearchServlet</servlet-class>
     </servlet>
     <!-- end esub specific servlets -->
     <servlet>
         <servlet-name>CallbackServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.HttpCallback
-        </servlet-class>
+        <servlet-class>com.cannontech.servlet.HttpCallback</servlet-class>
     </servlet>
 
     <!-- AXIS servlets -->
     <servlet>
         <servlet-name>AxisServlet</servlet-name>
-        <servlet-class>
-            org.apache.axis.transport.http.AxisServlet
-        </servlet-class>
+        <servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AdminServlet</servlet-name>
-        <servlet-class>
-            org.apache.axis.transport.http.AdminServlet
-        </servlet-class>
+        <servlet-class>org.apache.axis.transport.http.AdminServlet</servlet-class>
         <load-on-startup>100</load-on-startup>
     </servlet>
     <servlet>
         <servlet-name>SOAPMonitorService</servlet-name>
-        <servlet-class>
-            org.apache.axis.monitor.SOAPMonitorService
-        </servlet-class>
+        <servlet-class>org.apache.axis.monitor.SOAPMonitorService</servlet-class>
         <init-param>
             <param-name>SOAPMonitorPort</param-name>
             <param-value>5001</param-value>
@@ -764,7 +603,6 @@
         <servlet-name>EmbedSVGJSServlet</servlet-name>
         <url-pattern>/esub/js/embedSVGControl.js</url-pattern>
     </servlet-mapping>
-
 
     <servlet-mapping>
         <servlet-name>EmbedSVGJSServlet</servlet-name>
@@ -854,7 +692,7 @@
         <servlet-name>bulk</servlet-name>
         <url-pattern>/bulk/*</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>deviceConfiguration</servlet-name>
         <url-pattern>/deviceConfiguration/*</url-pattern>
@@ -887,20 +725,20 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>dynamicBilling </servlet-name>
+        <servlet-name>dynamicBilling</servlet-name>
         <url-pattern>/dynamicBilling/* </url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>scheduledBilling</servlet-name>
         <url-pattern>/scheduledBilling/*</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>amr</servlet-name>
         <url-pattern>/amr/*</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>meter</servlet-name>
         <url-pattern>/meter/*</url-pattern>
@@ -940,7 +778,7 @@
         <servlet-name>stars</servlet-name>
         <url-pattern>/servlet/StarsAdmin</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>stars</servlet-name>
         <url-pattern>/servlet/SOAPClient</url-pattern>
@@ -949,18 +787,18 @@
     <servlet-mapping>
         <servlet-name>stars</servlet-name>
         <url-pattern>/servlet/ImportManager</url-pattern>
-    </servlet-mapping>     
-    
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>stars</servlet-name>
         <url-pattern>/servlet/InventoryManager</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>stars</servlet-name>
-        <url-pattern>/servlet/WorkOrderManager</url-pattern>    
+        <url-pattern>/servlet/WorkOrderManager</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>stars</servlet-name>
         <url-pattern>/servlet/StarsPWordRequest</url-pattern>
@@ -985,7 +823,7 @@
         <servlet-name>reports</servlet-name>
         <url-pattern>/reports/*</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>capcontrol</servlet-name>
         <url-pattern>/capcontrol/*</url-pattern>
@@ -1016,7 +854,7 @@
         <url-pattern>/commander/*</url-pattern>
     </servlet-mapping>
 
-    <!--  The following mappings used to be handled by the invoker servlet -->
+    <!-- The following mappings used to be handled by the invoker servlet -->
     <servlet-mapping>
         <servlet-name>LoggingServlet</servlet-name>
         <url-pattern>/servlet/LoggingServlet</url-pattern>
@@ -1133,7 +971,7 @@
         <servlet-name>billing</servlet-name>
         <url-pattern>/billing/*</url-pattern> <!-- retain consistency with legacy URLs -->
     </servlet-mapping>
-    
+
     <session-config>
         <!-- 24 hours in minutes -->
         <session-timeout>1440</session-timeout>
