@@ -2,7 +2,6 @@ package com.cannontech.dr.ecobee.service;
 
 import java.io.IOException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
@@ -21,8 +20,6 @@ public class EcobeeErrorHandler implements ResponseErrorHandler {
     public void handleError(ClientHttpResponse response) throws IOException {
         //log the status for troubleshooting
         log.error(response.getStatusCode() + " - " + response.getStatusText());
-        //log the response body
-        log.trace(IOUtils.toString(response.getBody(), "UTF-8"));
     }
 
     @Override
