@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Range;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationCache;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
@@ -33,10 +34,13 @@ import com.cannontech.dr.ecobee.message.DeleteSetRequest;
 import com.cannontech.dr.ecobee.message.DrResponse;
 import com.cannontech.dr.ecobee.message.DrRestoreRequest;
 import com.cannontech.dr.ecobee.message.DutyCycleDrRequest;
+import com.cannontech.dr.ecobee.message.EmptyRequest;
+import com.cannontech.dr.ecobee.message.HierarchyResponse;
 import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
 import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
+import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
@@ -48,14 +52,22 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     @Autowired @Qualifier("Ecobee") private RestTemplate restTemplate;
     @Autowired private EcobeeAuthenticationCache authenticationCache;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
-    @Autowired private DateFormattingService dateFormattingService;
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommunicationServiceImpl.class);
     
     private static final String modifySetUrlPart = "hierarchy/set?format=json";
     private static final String modifyThermostatUrlPart = "hierarchy/thermostat?format=json";
     private static final String demandResponseUrlPart = "demandResponse?format=json";
+    private static final String runtimeReportUrlPart = "runtimeReport?format=json";
     private static final DateTimeFormatter drDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
     private static final DateTimeFormatter drTimeFormatter = DateTimeFormat.forPattern("HH:mm:ss");
+    private static final String deviceReadColumns = 
+            "zoneAveTemp," + // indoor temp
+            "outdoorTemp," + // outdoor temp
+            "zoneCoolTemp," + // cool set point
+            "zoneHeatTemp," + // heat set point
+            "zoneCalendarEvent," + //currently running event
+            "compCool1," + // cool runtime
+            "compHeat1"; // heat runtime
 
     @Override
     public boolean registerDevice(String serialNumber, int ecId) throws EcobeeException {
@@ -113,8 +125,37 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     @Override
     public List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange, int ecId)
             throws EcobeeException {
-
-        // TODO: implement this 
+        /*
+        HttpHeaders headers = getHeadersWithAuthentication(energyCompanyId);
+        //Build base url
+        String url = getUrlBase(energyCompanyId) + runtimeReportUrlPart;
+        
+        //Add url parameters
+        String selectionMatch = Joiner.on(",").join(serialNumbers);
+        String startDate = drDateFormatter.print(dateRange.getMin()); //TODO: clusivity?
+        int startInterval = dateRange.getMin().get(DateTimeFieldType.minuteOfDay()) / 5;
+        String endDate = drDateFormatter.print(dateRange.getMax());
+        int endInterval = dateRange.getMax().get(DateTimeFieldType.minuteOfDay()) / 5;
+        
+        //RestTemplate could do the parameter substitution for us, except it chokes on the JSON that ecobee, in their
+        //infinite wisdom, forces us to use in the URL.
+        url += "&body={\"startDate\": \"" + startDate + "\",\"startInterval\": \"" + startInterval + "\"," +
+                "\"endDate\": \"" + endDate + "\",\"endInterval\": \"" + endInterval + "\",\"columns\": \"" + 
+                deviceReadColumns + "\",\"selection\":{\"selectionType\": \"" + SelectionType.THERMOSTATS + 
+                "\",\"selectionMatch\": \"" + selectionMatch + "\"}}";
+        
+        EmptyRequest request = new EmptyRequest();
+        HttpEntity<EmptyRequest> requestEntity = new HttpEntity<>(request, headers);
+        
+        ResponseEntity<DeviceDataResponse> responseEntity;
+        try {
+            responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, DeviceDataResponse.class);
+        } catch (RestClientException e) {
+            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
+        }
+        DeviceDataResponse response = responseEntity.getBody();
+        
+        checkForEcobeeError(response, energyCompanyId);*/
         ecobeeQueryCountDao.incrementQueryCount(EcobeeQueryType.DATA_COLLECTION, ecId);
         return new ArrayList<>();
     }
@@ -221,6 +262,34 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         }
     }
 
+    @Override
+    public List<SetNode> getHierarchy(int ecId) throws EcobeeException {
+        
+        HttpHeaders headers = getHeadersWithAuthentication(ecId);
+        //Create base url
+        String url = getUrlBase(ecId) + modifySetUrlPart;
+        //Add parameters
+        url += "&body={\"operation\":\"list\",\"setPath\":\"/\",\"recursive\":true,\"includeThermostats\":true}";
+        
+        EmptyRequest request = new EmptyRequest();
+        HttpEntity<EmptyRequest> requestEntity = new HttpEntity<>(request, headers);
+        
+        ResponseEntity<HierarchyResponse> responseEntity;
+        try {
+            responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, HierarchyResponse.class);
+        } catch (RestClientException e) {
+            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
+        }
+        HierarchyResponse response = responseEntity.getBody();
+        
+        if (response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
+            // causes EcobeeCommunicationAopAuthenticator to log us back in and try again
+            throw new EcobeeNotAuthenticatedException(ecId);
+        }
+        ecobeeQueryCountDao.incrementQueryCount(EcobeeQueryType.SYSTEM, ecId);
+        return response.getSets();
+    }
+    
     /**
      * Build a HttpHeaders object with the specified energy company's authentication token in the Authorization header.
      * @throws EcobeeNotAuthenticatedException if there is no cached authentication token for the energy company.

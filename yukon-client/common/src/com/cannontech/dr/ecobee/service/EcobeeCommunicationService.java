@@ -8,6 +8,7 @@ import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeException;
+import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 
@@ -86,4 +87,12 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
     boolean sendRestore(String drIdentifier, int ecId) throws EcobeeException;
+    
+    /**
+     * Gets the full hierarchy of sets and thermostats from Ecobee.
+     * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
+     * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
+     */
+    List<SetNode> getHierarchy(int energyCompanyId) throws EcobeeException;
+
 }

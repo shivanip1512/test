@@ -1,4 +1,4 @@
-package com.cannontech.dr.ecobee.message;
+package com.cannontech.dr.ecobee.message.partial;
 
 /**
  * Identifies an ecobee demand response event. Used to cancel events.

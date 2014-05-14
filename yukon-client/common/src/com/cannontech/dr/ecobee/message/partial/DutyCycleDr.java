@@ -1,4 +1,5 @@
-package com.cannontech.dr.ecobee.message;
+package com.cannontech.dr.ecobee.message.partial;
+
 
 public class DutyCycleDr {
     private final String name;

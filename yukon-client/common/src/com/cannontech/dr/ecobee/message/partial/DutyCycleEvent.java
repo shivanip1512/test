@@ -1,4 +1,4 @@
-package com.cannontech.dr.ecobee.message;
+package com.cannontech.dr.ecobee.message.partial;
 
 /**
  * Implementation of the ecobee "event" object used for duty cycle dr. Only includes the subset of "event" object fields

@@ -1,4 +1,4 @@
-package com.cannontech.dr.ecobee.message;
+package com.cannontech.dr.ecobee.message.partial;
 
 import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
 import com.fasterxml.jackson.annotation.JsonCreator;

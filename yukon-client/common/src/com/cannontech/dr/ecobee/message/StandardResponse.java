@@ -1,5 +1,6 @@
 package com.cannontech.dr.ecobee.message;
 
+import com.cannontech.dr.ecobee.message.partial.Status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
