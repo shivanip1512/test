@@ -25,6 +25,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.RolePropertyTypeHelper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -42,7 +43,6 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.util.JsonUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

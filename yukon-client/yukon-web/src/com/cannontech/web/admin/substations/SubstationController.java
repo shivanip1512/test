@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
@@ -28,7 +29,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 

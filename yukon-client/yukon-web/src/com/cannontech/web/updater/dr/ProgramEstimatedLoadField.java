@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
 import com.cannontech.dr.estimatedload.EstimatedLoadException;
 import com.cannontech.dr.estimatedload.EstimatedLoadResult;
@@ -13,7 +14,6 @@ import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceH
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Maps;
 

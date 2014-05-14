@@ -11,11 +11,11 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.HighlightSelectedGroupNodeAttributeSettingCallback;
 import com.cannontech.web.util.JsTreeNode;
-import com.cannontech.web.util.JsonUtils;
 
 @Configurable("deviceGroupHierarchyJsonPrototype")
 public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{

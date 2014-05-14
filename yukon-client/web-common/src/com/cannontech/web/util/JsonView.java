@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.View;
 
+import com.cannontech.common.util.JsonUtils;
+
 public class JsonView implements View {
 
     @Override

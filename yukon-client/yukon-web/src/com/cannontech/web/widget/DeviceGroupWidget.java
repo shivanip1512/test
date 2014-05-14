@@ -27,6 +27,7 @@ import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -36,7 +37,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.util.JsTreeNode;
-import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,4 +1,4 @@
-package com.cannontech.web.util;
+package com.cannontech.common.util;
 
 import java.io.IOException;
 import java.util.ArrayList;

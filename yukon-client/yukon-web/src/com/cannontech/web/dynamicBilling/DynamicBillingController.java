@@ -31,6 +31,7 @@ import com.cannontech.common.dynamicBilling.model.DynamicBillingField;
 import com.cannontech.common.dynamicBilling.model.DynamicFormat;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -39,7 +40,6 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.JsonUtils;
 
 @Controller
 @RequestMapping(value = "/*")

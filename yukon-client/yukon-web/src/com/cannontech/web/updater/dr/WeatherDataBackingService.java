@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.service.DateFormattingService;
@@ -20,7 +21,6 @@ import com.cannontech.loadcontrol.weather.WeatherLocation;
 import com.cannontech.loadcontrol.weather.WeatherObservation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
-import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class WeatherDataBackingService implements UpdateBackingService {

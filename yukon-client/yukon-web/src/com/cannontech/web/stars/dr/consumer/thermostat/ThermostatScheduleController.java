@@ -32,6 +32,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -57,7 +58,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 import com.cannontech.web.stars.dr.operator.validator.AccountThermostatScheduleValidator;
-import com.cannontech.web.util.JsonUtils;
 
 /**
  * Controller for Consumer-side Thermostat schedule operations

@@ -9,12 +9,12 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
 import com.cannontech.dr.estimatedload.EstimatedLoadSummary;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public abstract class EstimatedLoadBackingFieldBase implements EstimatedLoadBackingField {

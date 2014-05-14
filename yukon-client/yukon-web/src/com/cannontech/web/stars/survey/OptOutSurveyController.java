@@ -27,6 +27,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Survey;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
@@ -43,7 +44,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Sets;
 

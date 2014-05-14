@@ -37,6 +37,7 @@ import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.predicate.NullPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
@@ -47,7 +48,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.JsTreeNode;
-import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @RequestMapping("/editor/*")

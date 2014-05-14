@@ -27,6 +27,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.user.UserAuthenticationInfo;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -51,7 +52,6 @@ import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.user.validator.ChangePasswordValidatorFactory;
 import com.cannontech.web.user.validator.ChangePasswordValidatorFactory.ChangePasswordValidator;
 import com.cannontech.web.user.validator.UserProfileValidator;
-import com.cannontech.web.util.JsonUtils;
 import com.google.common.collect.Maps;
 
 @Controller

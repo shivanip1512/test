@@ -12,14 +12,14 @@ public class Selection {
         THERMOSTATS("thermostats"), //select individual thermostats by csv string
         MANAGEMENT_SET("managementSet"); //select all thermostats in a management set
         
-        private String stringValue;
-        private SelectionType(String stringValue) {
-            this.stringValue = stringValue;
-        }
+        private String ecobeeString;
         
-        @Override
-        public String toString() {
-            return stringValue;
+        private SelectionType(String ecobeeString) {
+            this.ecobeeString = ecobeeString;
+        }
+
+        public String getEcobeeString() {
+            return ecobeeString;
         }
     }
     
@@ -34,7 +34,7 @@ public class Selection {
     }
     
     public String getSelectionType() {
-        return selectionType.toString();
+        return selectionType.getEcobeeString();
     }
     
     public String getSelectionMatch() {

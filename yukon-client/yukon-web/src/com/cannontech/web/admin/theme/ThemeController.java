@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.image.dao.YukonImageDao;
@@ -39,7 +40,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.resources.ThemeableResourceCache;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.support.MappedPropertiesHelper;
-import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;

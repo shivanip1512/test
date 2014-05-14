@@ -93,6 +93,6 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeAuthenticationException if Yukon cannot log in to the Ecobee API.
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
-    List<SetNode> getHierarchy(int energyCompanyId) throws EcobeeException;
+    List<SetNode> getHierarchy(int ecId) throws EcobeeException;
 
 }

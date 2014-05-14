@@ -7,7 +7,7 @@ import javax.servlet.jsp.JspWriter;
 
 import org.springframework.web.util.HtmlUtils;
 
-import com.cannontech.web.util.JsonUtils;
+import com.cannontech.common.util.JsonUtils;
 
 public class JsonTag extends YukonTagSupport {
     private String id;
