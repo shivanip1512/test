@@ -195,7 +195,7 @@ public class InventoryController {
         model.addAttribute("showVoltage", showVoltage);
         
         // Hide route for meters, zigbee devices, and RF devices
-        if (!clazz.isMeter() && !type.isZigbee() && !type.isRf()) {
+        if (!clazz.isMeter() && !type.isZigbee() && !type.isRf() && !type.isEcobee()) {
             model.addAttribute("showRoute", true);
         }
         
@@ -409,7 +409,7 @@ public class InventoryController {
         model.addAttribute("showVoltage", showVoltage);
 
         // Hide route for meters and zigbee devices
-        if (!clazz.isMeter() && !type.isZigbee() && !type.isRf() && type != HardwareType.LCR_3102) {
+        if (!clazz.isMeter() && !type.isZigbee() && !type.isRf() && type != HardwareType.LCR_3102 && !type.isEcobee()) {
             model.addAttribute("showRoute", true);
         }
         
