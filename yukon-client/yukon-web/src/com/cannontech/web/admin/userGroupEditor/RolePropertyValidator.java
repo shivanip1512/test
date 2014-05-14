@@ -31,6 +31,7 @@ public class RolePropertyValidator extends SimpleValidator<GroupRolePropertyEdit
                     errors.rejectValue("values[DEFAULT_TIMEZONE]", baseKey + "invalidTimeZone");
                 }
             }
+           
         }
         if (rolePropertyValuesMap.containsKey(YukonRoleProperty.HOME_URL)) {
             String homeUrl = (String) rolePropertyValuesMap.get(YukonRoleProperty.HOME_URL);
@@ -44,5 +45,16 @@ public class RolePropertyValidator extends SimpleValidator<GroupRolePropertyEdit
                 errors.rejectValue("values[LOG_IN_URL]", baseKey + "invalidURL");
             }
         }
+        if(rolePropertyValuesMap.containsKey(YukonRoleProperty.DATA_UPDATER_DELAY_MS)){
+            Integer dataUpdaterValue = (Integer)rolePropertyValuesMap.get(YukonRoleProperty.DATA_UPDATER_DELAY_MS);
+           YukonValidationUtils.checkIsPositiveInt(errors,"values[DATA_UPDATER_DELAY_MS]", dataUpdaterValue);
+                
+            }
+        
+       if(rolePropertyValuesMap.containsKey(YukonRoleProperty.SESSION_TIMEOUT)){
+           Integer sessionTimeOutValue =(Integer)rolePropertyValuesMap.get(YukonRoleProperty.SESSION_TIMEOUT);
+           YukonValidationUtils.checkIsPositiveInt(errors, "values[SESSION_TIMEOUT]", sessionTimeOutValue);
+       }
     }
 }
+
