@@ -68,7 +68,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
@@ -76,51 +75,51 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
 
 
 public class AttributeServiceImpl implements AttributeService {
-    
+    private static final Logger log = YukonLogManager.getLogger(AttributeServiceImpl.class);
+
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoDefinitionService paoDefinitionService;
-    @Autowired private PointService pointService;
-    @Autowired private PointDao pointDao;
     @Autowired private PointCreationService pointCreationService;
-    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private PointDao pointDao;
+    @Autowired private PointService pointService;
     @Autowired private StateDao stateDao;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    private Logger log = YukonLogManager.getLogger(AttributeServiceImpl.class);
-    
     private Set<Attribute> readableAttributes;
     {
-        Iterable<BuiltInAttribute> readableAttributes = Iterables.filter(Arrays.asList(BuiltInAttribute.values()), new Predicate<BuiltInAttribute>() {
-            @Override
-            public boolean apply(BuiltInAttribute attribute) {
-                // Exclude profile attributes and event attributes that are not readable
-                return !attribute.isProfile() && !attribute.isRfnNonReadableEvent();
-            }
-        });
-        
+        Iterable<BuiltInAttribute> readableAttributes =
+            Iterables.filter(Arrays.asList(BuiltInAttribute.values()), new Predicate<BuiltInAttribute>() {
+                @Override
+                public boolean apply(BuiltInAttribute attribute) {
+                    // Exclude profile attributes and event attributes that are not readable
+                    return !attribute.isProfile() && !attribute.isRfnNonReadableEvent();
+                }
+            });
+
         // could consider other factors and handle user defined attributes in the future
-        this.readableAttributes = ImmutableSet.<Attribute>copyOf(readableAttributes);
+        this.readableAttributes = ImmutableSet.<Attribute> copyOf(readableAttributes);
     }
-    
+
     private Set<Attribute> advancedReadableAttributes;
     {
-        Iterable<BuiltInAttribute> advancedReadableAttributes = Iterables.filter(Arrays.asList(BuiltInAttribute.values()), new Predicate<BuiltInAttribute>() {
-            @Override
-            public boolean apply(BuiltInAttribute attribute) {
-                // Exclude event attributes that are not readable
-                return !attribute.isRfnNonReadableEvent() ;
-            }
-        });
-        
+        Iterable<BuiltInAttribute> advancedReadableAttributes =
+            Iterables.filter(Arrays.asList(BuiltInAttribute.values()), new Predicate<BuiltInAttribute>() {
+                @Override
+                public boolean apply(BuiltInAttribute attribute) {
+                    // Exclude event attributes that are not readable
+                    return !attribute.isRfnNonReadableEvent();
+                }
+            });
+
         // could consider other factors and handle user defined attributes in the future
-        this.advancedReadableAttributes = ImmutableSet.<Attribute>copyOf(advancedReadableAttributes);
+        this.advancedReadableAttributes = ImmutableSet.<Attribute> copyOf(advancedReadableAttributes);
     }
 
     @Override
@@ -129,7 +128,7 @@ public class AttributeServiceImpl implements AttributeService {
             PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifierForAttribute(pao, attribute);
 
             LitePoint litePoint = pointService.getPointForPao(paoPointIdentifier);
-        
+
             return litePoint;
         } catch (NotFoundException nfe) {
             throw new IllegalUseOfAttribute("Illegal use of attribute (no point): " + attribute);
@@ -137,24 +136,28 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
+    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute)
+            throws IllegalUseOfAttribute {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
-        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
+        AttributeDefinition attributeDefinition =
+            paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
         return attributeDefinition.getPaoPointIdentifier(pao);
     }
-    
+
     @Override
-    public PaoTypePointIdentifier getPaoTypePointIdentifierForAttribute(PaoType type, Attribute attribute) 
-    throws IllegalUseOfAttribute {
+    public PaoTypePointIdentifier getPaoTypePointIdentifierForAttribute(PaoType type, Attribute attribute)
+            throws IllegalUseOfAttribute {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(type, builtInAttribute);
         return PaoTypePointIdentifier.of(type, attributeDefinition.getPointTemplate().getPointIdentifier());
     }
-    
+
     @Override
-    public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
+    public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute)
+            throws IllegalUseOfAttribute {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
-        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
+        AttributeDefinition attributeDefinition =
+            paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
         return attributeDefinition.getPointTemplate(pao);
     }
 
@@ -168,15 +171,14 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributes(
             Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
-
         return getPaoMultiPointIdentifiersForAttributesHelper(devices, attributes, true);
     }
-    
-    private  PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributesHelper(
+
+    private PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributesHelper(
             Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean throwException) {
 
         PaoMultiPointIdentifierWithUnsupported devicesAndPoints = new PaoMultiPointIdentifierWithUnsupported();
-        
+
         for (YukonPao pao : devices) {
             List<PaoPointIdentifier> points = new ArrayList<>(attributes.size());
             for (Attribute attribute : attributes) {
@@ -205,7 +207,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public Set<Attribute> getAvailableAttributes(PaoType paoType) {
-        Set<Attribute> result = Sets.newHashSet();
+        Set<Attribute> result = new HashSet<>();
 
         // first add type-based attributes
         Set<AttributeDefinition> definedAttributes = paoDefinitionDao.getDefinedAttributes(paoType);
@@ -218,17 +220,19 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public Set<Attribute> getExistingAttributes(YukonPao pao, Set<? extends Attribute> desiredAttributes) {
-        Set<Attribute> result = Sets.newHashSet();
-        
+        Set<Attribute> result = new HashSet<>();
+
         for (final Attribute attribute : desiredAttributes) {
             try {
                 getPointForAttribute(pao, attribute);
                 result.add(attribute);
-            } catch (IllegalUseOfAttribute ignore) { }
+            } catch (IllegalUseOfAttribute ignore) {
+                // Skip attributes that don't match.
+            }
         }
         return result;
     }
-    
+
     @Override
     public Attribute resolveAttributeName(String name) {
         // some day this should also "lookup" user defined attributes
@@ -244,7 +248,8 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public boolean pointExistsForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
 
-        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), (BuiltInAttribute) attribute);
+        AttributeDefinition attributeDefinition =
+            paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), (BuiltInAttribute) attribute);
         PaoPointIdentifier paoPointIdentifier = attributeDefinition.findActualPointIdentifier(pao);
         if (paoPointIdentifier == null) {
             return false;
@@ -254,9 +259,10 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public Set<SimpleDevice> getDevicesInGroupThatSupportAnyAttributes(DeviceGroup group, Set<? extends Attribute> attributes) {
-        Set<SimpleDevice> allSupportedDevices = Sets.newHashSet();
-        for (Attribute attribute: attributes) {
+    public Set<SimpleDevice> getDevicesInGroupThatSupportAnyAttributes(DeviceGroup group,
+            Set<? extends Attribute> attributes) {
+        Set<SimpleDevice> allSupportedDevices = new HashSet<>();
+        for (Attribute attribute : attributes) {
             List<SimpleDevice> supportedDevices = getDevicesInGroupThatSupportAttribute(group, attribute);
             allSupportedDevices.addAll(supportedDevices);
         }
@@ -275,11 +281,12 @@ public class AttributeServiceImpl implements AttributeService {
         sql.append("FROM Device d");
         sql.append("JOIN YukonPaObject YPO ON (d.deviceid = YPO.paobjectid)");
         sql.append("WHERE YPO.type").in(collection);
-        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
+        SqlFragmentSource groupSqlWhereClause =
+            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
         sql.append("AND").appendFragment(groupSqlWhereClause);
 
         YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
-        List<SimpleDevice> devices = yukonJdbcTemplate.query(sql, mapper);
+        List<SimpleDevice> devices = jdbcTemplate.query(sql, mapper);
 
         return devices;
     }
@@ -289,20 +296,23 @@ public class AttributeServiceImpl implements AttributeService {
         boolean pointExists = this.pointExistsForAttribute(pao, attribute);
         if (!pointExists) {
             PaoPointTemplate paoPointTemplate = getPaoPointTemplateForAttribute(pao, attribute);
-            PointBase point = pointCreationService.createPoint(paoPointTemplate.getPaoIdentifier(), paoPointTemplate.getPointTemplate());
+            PointBase point =
+                pointCreationService.createPoint(paoPointTemplate.getPaoIdentifier(),
+                    paoPointTemplate.getPointTemplate());
             try {
                 dbPersistentDao.performDBChange(point, TransactionType.INSERT);
             } catch (PersistenceException e) {
                 // TODO this should throw a different exception
-                throw new DataAccessException("Could not create point for pao: " + pao, e) {};
+                throw new DataAccessException("Could not create point for pao: " + pao, e) {
+                };
             }
         }
     }
-    
+
     @Override
     public boolean isPointAttribute(PaoPointIdentifier paoPointIdentifier, Attribute attribute) {
         // the following could probably be optimized, but it is technically correct
-        
+
         PaoIdentifier paoIdentifier = paoPointIdentifier.getPaoIdentifier();
         try {
             PaoPointIdentifier pointForAttribute = getPaoPointIdentifierForAttribute(paoIdentifier, attribute);
@@ -314,46 +324,44 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public Set<BuiltInAttribute> findAttributesForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<? extends Attribute> possibleMatches) {
-        
-        Set<BuiltInAttribute> attributes = paoDefinitionDao.findAttributeForPaoTypeAndPoint(paoTypePointIdentifier); 
-        Set<BuiltInAttribute> intersection = Sets.newHashSet(attributes);
+    public Set<BuiltInAttribute> findAttributesForPoint(PaoTypePointIdentifier paoTypePointIdentifier,
+            Set<? extends Attribute> possibleMatches) {
+        Set<BuiltInAttribute> attributes = paoDefinitionDao.findAttributeForPaoTypeAndPoint(paoTypePointIdentifier);
+        Set<BuiltInAttribute> intersection = new HashSet<>(attributes);
         intersection.retainAll(possibleMatches);
         return intersection;
     }
-    
+
     @Override
     public Set<Attribute> getReadableAttributes() {
-    	return readableAttributes;
+        return readableAttributes;
     }
-    
+
     @Override
     public Set<Attribute> getAdvancedReadableAttributes() {
         return advancedReadableAttributes;
     }
-    
+
     @Override
-    public SortedMap<BuiltInAttribute, String> resolveAllToString(Set<BuiltInAttribute> bins, final YukonUserContext context) {
-        
-        SortedMap<BuiltInAttribute, String> sortedAttributes = new TreeMap<BuiltInAttribute, String>(getNameComparator(context));
+    public SortedMap<BuiltInAttribute, String> resolveAllToString(Set<BuiltInAttribute> bins,
+            final YukonUserContext context) {
+        SortedMap<BuiltInAttribute, String> sortedAttributes =
+            new TreeMap<BuiltInAttribute, String>(getNameComparator(context));
         for (BuiltInAttribute bin : bins) {
             sortedAttributes.put(bin, objectFormattingService.formatObjectAsString(bin, context));
         }
-        
+
         return sortedAttributes;
     }
-    
+
     @Override
     public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributeMapFromCollection(
             Collection<? extends Attribute> attributes, YukonUserContext userContext) {
-        
-        ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> allGroupedAttributes = 
-                BuiltInAttribute.getAllGroupedAttributes();
+        Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedAttributes = BuiltInAttribute.getAllGroupedAttributes();
+        Map<AttributeGroup, Set<BuiltInAttribute>> groupedAttributesMap = new HashMap<>();
 
-        Map<AttributeGroup, Set<BuiltInAttribute>> groupedAttributesMap = Maps.newHashMap();
-        
         for (AttributeGroup attributeGroup : allGroupedAttributes.keySet()) {
-            Set<BuiltInAttribute> attributesInGroup = Sets.newHashSet();
+            Set<BuiltInAttribute> attributesInGroup = new HashSet<>();
             for (BuiltInAttribute builtInAttribute : allGroupedAttributes.get(attributeGroup)) {
                 if (attributes.contains(builtInAttribute)) {
                     attributesInGroup.add(builtInAttribute);
@@ -363,41 +371,41 @@ public class AttributeServiceImpl implements AttributeService {
                 groupedAttributesMap.put(attributeGroup, attributesInGroup);
             }
         }
-        return objectFormattingService.sortDisplayableValues(
-                groupedAttributesMap, userContext);
+        return objectFormattingService.sortDisplayableValues(groupedAttributesMap, userContext);
     }
 
     @Override
     public Comparator<Attribute> getNameComparator(final YukonUserContext context) {
 
-        Ordering<Attribute> descriptionOrdering = Ordering.natural()
-                .onResultOf(new Function<Attribute, String>() {
-                    @Override
-                    public String apply(Attribute from) {
-                        return objectFormattingService.formatObjectAsString(from.getMessage(), context);
-                    }
-                });
+        Ordering<Attribute> descriptionOrdering = Ordering.natural().onResultOf(new Function<Attribute, String>() {
+            @Override
+            public String apply(Attribute from) {
+                return objectFormattingService.formatObjectAsString(from.getMessage(), context);
+            }
+        });
         return descriptionOrdering;
 
     }
-    
+
     @Override
     public List<Integer> getPointIds(Iterable<SimpleDevice> devices, BuiltInAttribute attribute) {
-        
-        ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        
+        ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+
         // get the points that match the attribute for these devices
         List<Integer> pointIds = new ArrayList<>();
-        
+
         // Look up point ids by pao type, sink into pointIds list
         // About 6x faster than using getPointForAttribute(device, attribute) for each device
         ListMultimap<PaoType, SimpleDevice> typeToDevices = ArrayListMultimap.create();
-        for (SimpleDevice device : devices) typeToDevices.put(device.getDeviceType(), device);
+        for (SimpleDevice device : devices) {
+            typeToDevices.put(device.getDeviceType(), device);
+        }
         for (PaoType type : typeToDevices.keySet()) {
-            
+
             try {
-                final PointIdentifier pi = paoDefinitionDao.getAttributeLookup(type, attribute).getPointTemplate().getPointIdentifier();
-                
+                final PointIdentifier pi =
+                    paoDefinitionDao.getAttributeLookup(type, attribute).getPointTemplate().getPointIdentifier();
+
                 SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
@@ -410,69 +418,70 @@ public class AttributeServiceImpl implements AttributeService {
                         return sql;
                     }
                 };
-                chunkyTemplate.queryInto(generator, PaoUtils.asPaoIdList(typeToDevices.get(type)), RowMapper.INTEGER, pointIds);
-            } catch(IllegalUseOfAttribute e) {
+                chunkyTemplate.queryInto(generator, PaoUtils.asPaoIdList(typeToDevices.get(type)), RowMapper.INTEGER,
+                    pointIds);
+            } catch (IllegalUseOfAttribute e) {
                 // Ignore pao types that don't support this attribute
             }
         }
-        
+
         return pointIds;
     }
-    
+
     @Override
     public BiMap<SimpleDevice, LitePoint> getPoints(Iterable<SimpleDevice> devices, BuiltInAttribute attribute) {
-        
-        ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        
+        ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+
         // get the points that match the attribute for these devices
         final BiMap<SimpleDevice, LitePoint> points = HashBiMap.create();
-        
+
         // Look up point ids by pao type, sink into pointIds list
         // About 6x faster than using getPointForAttribute(device, attribute) for each device
         ListMultimap<PaoType, SimpleDevice> typeToDevices = ArrayListMultimap.create();
-        for (SimpleDevice device : devices) typeToDevices.put(device.getDeviceType(), device);
+        for (SimpleDevice device : devices) {
+            typeToDevices.put(device.getDeviceType(), device);
+        }
         for (PaoType type : typeToDevices.keySet()) {
-            
+
             try {
-                final PointIdentifier pi = paoDefinitionDao.getAttributeLookup(type, attribute).getPointTemplate().getPointIdentifier();
-                
+                final PointIdentifier pi =
+                    paoDefinitionDao.getAttributeLookup(type, attribute).getPointTemplate().getPointIdentifier();
+
                 SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
-                        
                         SqlStatementBuilder sql = new SqlStatementBuilder(PointDao.litePaoPointSql);
                         sql.append("where PointType").eq(pi.getPointType());
                         sql.append("and PointOffset").eq(pi.getOffset());
                         sql.append("and YPO.PAObjectId").in(subList);
-                        
+
                         return sql;
                     }
                 };
-                chunkyTemplate.query(generator, PaoUtils.asPaoIdList(typeToDevices.get(type)), new YukonRowCallbackHandler() {
-                    
-                    @Override
-                    public void processRow(YukonResultSet rs) throws SQLException {
-                        PaoIdentifier pao = rs.getPaoIdentifier("PAObjectId", "Type");
-                        LitePoint litePoint = pointDao.createLitePoint(rs);
-                        points.put(new SimpleDevice(pao), litePoint);
-                    }
-                });
-            } catch(IllegalUseOfAttribute e) {
+                chunkyTemplate.query(generator, PaoUtils.asPaoIdList(typeToDevices.get(type)),
+                    new YukonRowCallbackHandler() {
+                        @Override
+                        public void processRow(YukonResultSet rs) throws SQLException {
+                            PaoIdentifier pao = rs.getPaoIdentifier("PAObjectId", "Type");
+                            LitePoint litePoint = pointDao.createLitePoint(rs);
+                            points.put(new SimpleDevice(pao), litePoint);
+                        }
+                    });
+            } catch (IllegalUseOfAttribute e) {
                 // Ignore pao types that don't support this attribute
             }
         }
-        
+
         return points;
     }
 
     @Override
     public List<LiteStateGroup> findStateGroups(List<SimpleDevice> devices, BuiltInAttribute attribute) {
-        
-        ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        
+        ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+
         // get the points that match the attribute for these devices
         List<Integer> pointIds = getPointIds(devices, attribute);
-        
+
         // get the distinct list of stategroups for these points
         Set<Integer> groupIds = new HashSet<>();
         SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
@@ -486,23 +495,22 @@ public class AttributeServiceImpl implements AttributeService {
             }
         };
         chunkyTemplate.queryInto(generator, pointIds, RowMapper.INTEGER, groupIds);
-        
+
         List<LiteStateGroup> groups = new ArrayList<LiteStateGroup>();
         for (Integer groupId : groupIds) {
             groups.add(stateDao.getLiteStateGroup(groupId));
         }
-        
+
         return groups;
     }
-    
+
     @Override
     public List<LiteStateGroup> findStateGroups(String groupName, BuiltInAttribute attribute) {
-        
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         if (group == null) {
             return new ArrayList<>(0);
         }
-        
+
         Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
         Multimap<Attribute, PaoType> dest = HashMultimap.create();
         Collection<PaoType> possiblePaoTypes = new ArrayList<>();
@@ -534,10 +542,10 @@ public class AttributeServiceImpl implements AttributeService {
         if (attributes.isEmpty()) {
             return Collections.emptyList();
         }
-        
-        SqlFragmentSource groupSqlWhereClause = 
-                deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
-        
+
+        SqlFragmentSource groupSqlWhereClause =
+            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
+
         // get the state group ID's
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT P.stategroupid AS stategroupid");
@@ -586,12 +594,12 @@ public class AttributeServiceImpl implements AttributeService {
         LiteStateGroup[] allStateGroups = stateDao.getAllStateGroups();
         final Map<Integer, LiteStateGroup> stateGroupsById =
             Maps.uniqueIndex(Arrays.asList(allStateGroups), new Function<LiteStateGroup, Integer>() {
-            @Override
-            public Integer apply(LiteStateGroup stateGroup) {
-                return stateGroup.getStateGroupID();
-            }
-        });
-        List<LiteStateGroup> results = yukonJdbcTemplate.query(sql, new YukonRowMapper<LiteStateGroup>() {
+                @Override
+                public Integer apply(LiteStateGroup stateGroup) {
+                    return stateGroup.getStateGroupID();
+                }
+            });
+        List<LiteStateGroup> results = jdbcTemplate.query(sql, new YukonRowMapper<LiteStateGroup>() {
             @Override
             public LiteStateGroup mapRow(YukonResultSet rs) throws SQLException {
                 return stateGroupsById.get(rs.getInt("stateGroupId"));
@@ -601,9 +609,8 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public List<PointIdentifier> findPointsForDevicesAndAttribute(
-            Iterable<? extends YukonPao> devices, Attribute attribute) {
-
+    public List<PointIdentifier> findPointsForDevicesAndAttribute(Iterable<? extends YukonPao> devices,
+            Attribute attribute) {
         Map<PaoType, YukonPao> typeToDevice = new HashMap<PaoType, YukonPao>();
         for (YukonPao device : devices) {
             final PaoType theType = device.getPaoIdentifier().getPaoType();
@@ -624,5 +631,4 @@ public class AttributeServiceImpl implements AttributeService {
 
         return pis;
     }
-
 }

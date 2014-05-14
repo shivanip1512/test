@@ -1,5 +1,6 @@
 package com.cannontech.dr.rfn.test;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,12 +10,9 @@ import org.junit.Test;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 public class RfnConditionTypeTest {
-
     /*
      * This test's goal is to ensure that every value of the RfnConditionType enum
      * appears in events grouped attribute lists.  If a new value is added to
@@ -23,8 +21,7 @@ public class RfnConditionTypeTest {
      */
     @Test
     public void rfnConditionTypeAttributeExistsTest() {
-        ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> eventGroupedAttributes = 
-                BuiltInAttribute.getRfnEventGroupedAttributes();
+        Map<AttributeGroup, Set<BuiltInAttribute>> eventGroupedAttributes = BuiltInAttribute.getRfnEventGroupedAttributes();
 
         // these are special types to ignore
         Set<RfnConditionType> specialTypes = Sets.newHashSet(RfnConditionType.OUTAGE,
@@ -43,7 +40,7 @@ public class RfnConditionTypeTest {
             boolean found = false;
             nextCondition:
             for (AttributeGroup attributeGroup : eventGroupedAttributes.keySet()) {
-                ImmutableSet<BuiltInAttribute> allAttributesInAGroup = eventGroupedAttributes.get(attributeGroup);
+                Set<BuiltInAttribute> allAttributesInAGroup = eventGroupedAttributes.get(attributeGroup);
                 for (BuiltInAttribute attribute : allAttributesInAGroup) {
                     if (StringUtils.equals(rfnConditionType.name(), attribute.name())) {
                         found = true;

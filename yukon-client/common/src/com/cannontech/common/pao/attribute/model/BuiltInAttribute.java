@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.context.MessageSourceResolvable;
@@ -18,9 +19,8 @@ import com.google.common.collect.Sets;
 
 
 public enum BuiltInAttribute implements Attribute {
+    // NOTE: Remember to add any new attributes to point.xml for i18n'ing, too
 
-    /* NOTE: Remember to add any new attributes to point.xml for i18n'ing, too */
-    
     BLINK_COUNT("Blink Count"),
     COMM_STATUS("Communication Status"),
     CONNECTION_STATUS("Connection Status"),
@@ -35,7 +35,7 @@ public enum BuiltInAttribute implements Attribute {
     CURRENT_ANGLE_PHASE_B("Current Angle (Phase B)"),
     CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)"),
     CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage"),
-    DEMAND("Demand"), 
+    DEMAND("Demand"),
     DISCONNECT_STATUS("Disconnect Status"),
     FAULT_STATUS("Fault Status"),
     FORWARD_INDUCTIVE_KVARH("Forward Inductive kVArh"),
@@ -43,7 +43,7 @@ public enum BuiltInAttribute implements Attribute {
     IED_DEMAND_RESET_COUNT("IED Demand Reset Count"),
     KVAH("kVAh"),
     KVAR("kVAr"),
-    /* Treating "kVArh" as "Delivered kVArh". May need to created separate attributes in the future.*/
+    // Treating "kVArh" as "Delivered kVArh". May need to created separate attributes in the future.
     KVARH("kVArh"),
     KVARH_RATE_A("kVArh Rate A"),
     KVARH_RATE_B("kVArh Rate B"),
@@ -124,11 +124,11 @@ public enum BuiltInAttribute implements Attribute {
     UNDER_VOLTAGE("Under Voltage"),
     UNDER_VOLTAGE_MEASURED("Under Voltage Measured"),
     UNDER_VOLTAGE_THRESHOLD("Under Voltage Threshold"),
-    USAGE("Usage Reading"), 
+    USAGE("Usage Reading"),
     USAGE_FROZEN("Usage Frozen"),
     USAGE_RATE_A("Usage Rate A"),
-    USAGE_RATE_B("Usage Rate B"), 
-    USAGE_RATE_C("Usage Rate C"), 
+    USAGE_RATE_B("Usage Rate B"),
+    USAGE_RATE_C("Usage Rate C"),
     USAGE_RATE_D("Usage Rate D"),
     USAGE_RATE_E("Usage Rate E"),
     USAGE_WATER("Water Usage Reading"),
@@ -143,7 +143,7 @@ public enum BuiltInAttribute implements Attribute {
     TERMINAL_BLOCK_COVER_REMOVAL_FLAG("Terminal Block Cover Removal"),
 
     DELIVERED_KWH("Delivered kWh"),
-    /* Delivered Rate x kWh is currently using USAGE_RATE_X attributes*/
+    // Delivered Rate x kWh is currently using USAGE_RATE_X attributes
     RECEIVED_KWH("Received kWh"),
     RECEIVED_KWH_FROZEN("Received kWh Frozen"),
     RECEIVED_KWH_RATE_A("Received kWh Rate A"),
@@ -152,7 +152,7 @@ public enum BuiltInAttribute implements Attribute {
     RECEIVED_KWH_RATE_D("Received kWh Rate D"),
     RECEIVED_KWH_RATE_E("Received kWh Rate E"),
     RECEIVED_KVAH("Received kVAh"),
-    
+
     NET_KWH("Net kWh"),
     NET_KWH_RATE_A("Net kWh Rate A"),
     NET_KWH_RATE_B("Net kWh Rate B"),
@@ -167,7 +167,7 @@ public enum BuiltInAttribute implements Attribute {
     SUM_KWH_RATE_D("Sum kWh Rate D"),
     SUM_KVAH("Sum kVAh"),
     SUM_KVARH("Sum kVArh"),
-    
+
     USAGE_PER_INTERVAL("Usage per Interval"),
     DELIVERED_KWH_PER_INTERVAL("Delivered kWh per Interval"),
     RECEIVED_KWH_PER_INTERVAL("Received kWh per Interval"),
@@ -180,7 +180,7 @@ public enum BuiltInAttribute implements Attribute {
     FORWARD_CAPACITIVE_KVARH_PER_INTERVAL("Forward Capacitive kVArh per Interval"),
     REVERSE_INDUCTIVE_KVARH_PER_INTERVAL("Reverse Inductive kVArh per Interval"),
     REVERSE_CAPACITIVE_KVARH_PER_INTERVAL("Reverse Capacitive kVArh per Interval"),
-    
+
     DELIVERED_KW_LOAD_PROFILE("Delivered kW Load Profile"),
     RECEIVED_KW_LOAD_PROFILE("Received kW Load Profile"),
     SUM_KW_LOAD_PROFILE("Sum kW Load Profile"),
@@ -193,7 +193,7 @@ public enum BuiltInAttribute implements Attribute {
     NET_DELIVERED_KVARH_RATE_B("Net Delivered kVArh Rate B"),
     NET_DELIVERED_KVARH_RATE_C("Net Delivered kVArh Rate C"),
     NET_DELIVERED_KVARH_RATE_D("Net Delivered kVArh Rate D"),
-    
+
     RECEIVED_KVARH("Received kVArh"),
     RECEIVED_KVARH_RATE_A("Received kVArh Rate A"),
     RECEIVED_KVARH_RATE_B("Received kVArh Rate B"),
@@ -204,9 +204,9 @@ public enum BuiltInAttribute implements Attribute {
     NET_RECEIVED_KVARH_RATE_B("Net Received kVArh Rate B"),
     NET_RECEIVED_KVARH_RATE_C("Net Received kVArh Rate C"),
     NET_RECEIVED_KVARH_RATE_D("Net Received kVArh Rate D"),
-    
-    // Rfn Events that map to Event Status points (this list must be kept in sync with both 
-    // our rfn set below AND its version in RfnConditionType.java. Outages and restores are
+
+    // RFN Events that map to Event Status points (this list must be kept in sync with both
+    // our RFN set below AND its version in RfnConditionType.java. Outages and restores are
     // the only exception to this rule (as in the names don't exactly match))
     ALTERNATE_MODE_ENTRY("Alternate Mode Entry"),
     ANSI_SECURITY_FAILED("ANSI Security Failed"),
@@ -285,41 +285,41 @@ public enum BuiltInAttribute implements Attribute {
     VOLTAGE_PHASE_B_OUT("Voltage Phase B Out"),
     VOLTAGE_PHASE_C_OUT("Voltage Phase C Out"),
     VOLTAGE_PHASE_ERROR("Voltage Phase Error");
-    
+
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
-    
+
     // These are informational sets not used for display group purposes.
-    private static ImmutableSet<BuiltInAttribute> rfnEventTypes;
-    private static ImmutableSet<BuiltInAttribute> rfnEventStatusTypes;
-    private static ImmutableSet<BuiltInAttribute> rfnEventAnalogTypes;
+    private static Set<BuiltInAttribute> rfnEventTypes;
+    private static Set<BuiltInAttribute> rfnEventStatusTypes;
+    private static Set<BuiltInAttribute> rfnEventAnalogTypes;
 
     // These are both informational and used for display group purposes.
-    private static ImmutableSet<BuiltInAttribute> profileAttributes;
-    private static ImmutableSet<BuiltInAttribute> readableProfileAttributes;
-    private static ImmutableSet<BuiltInAttribute> accumulatorAttributes;
-    
+    private static Set<BuiltInAttribute> profileAttributes;
+    private static Set<BuiltInAttribute> readableProfileAttributes;
+    private static Set<BuiltInAttribute> accumulatorAttributes;
+
     // The following maps and sets are used for displaying grouped attribute lists.
-    private static ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> groupedDataAttributes;
-    private static ImmutableSet<BuiltInAttribute> otherAttributes;
-    private static ImmutableSet<BuiltInAttribute> demandAttributes;
-    private static ImmutableSet<BuiltInAttribute> voltageAttributes; 
-    private static ImmutableSet<BuiltInAttribute> currentAttributes;
-    private static ImmutableSet<BuiltInAttribute> reactiveAttributes;
-    private static ImmutableSet<BuiltInAttribute> statusAttributes;
-    private static ImmutableSet<BuiltInAttribute> relayAttributes;
-    private static ImmutableSet<BuiltInAttribute> blinkAndOutageCounts;
-    
-    private static ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> groupedRfnEventAttributes;
-    private static ImmutableSet<BuiltInAttribute> rfnHardwareAttributes;
-    private static ImmutableSet<BuiltInAttribute> rfnSoftwareAttributes;
-    private static ImmutableSet<BuiltInAttribute> rfnVoltageAttributes;
-    private static ImmutableSet<BuiltInAttribute> rfnCurrentAttributes;
-    private static ImmutableSet<BuiltInAttribute> rfnMeteringAttributes;
-    private static ImmutableSet<BuiltInAttribute> rfnDemandAttributes;
-    private static ImmutableSet<BuiltInAttribute> rfnOtherAttributes;
-    private static ImmutableSet<BuiltInAttribute> rfnNonReadableEvents;
-    
-    private static ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> allGroupedAttributes;
+    private static Map<AttributeGroup, Set<BuiltInAttribute>> groupedDataAttributes;
+    private static Set<BuiltInAttribute> otherAttributes;
+    private static Set<BuiltInAttribute> demandAttributes;
+    private static Set<BuiltInAttribute> voltageAttributes;
+    private static Set<BuiltInAttribute> currentAttributes;
+    private static Set<BuiltInAttribute> reactiveAttributes;
+    private static Set<BuiltInAttribute> statusAttributes;
+    private static Set<BuiltInAttribute> relayAttributes;
+    private static Set<BuiltInAttribute> blinkAndOutageCounts;
+
+    private static Map<AttributeGroup, Set<BuiltInAttribute>> groupedRfnEventAttributes;
+    private static Set<BuiltInAttribute> rfnHardwareAttributes;
+    private static Set<BuiltInAttribute> rfnSoftwareAttributes;
+    private static Set<BuiltInAttribute> rfnVoltageAttributes;
+    private static Set<BuiltInAttribute> rfnCurrentAttributes;
+    private static Set<BuiltInAttribute> rfnMeteringAttributes;
+    private static Set<BuiltInAttribute> rfnDemandAttributes;
+    private static Set<BuiltInAttribute> rfnOtherAttributes;
+    private static Set<BuiltInAttribute> rfnNonReadableEvents;
+
+    private static Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedAttributes;
 
 
     static {
@@ -327,15 +327,14 @@ public enum BuiltInAttribute implements Attribute {
         buildRfnEventAttributeSets();
         buildAllAttributeGroups();
     }
-    
+
     /**
      * Builds sets of data attributes.  A data attribute is an attribute that holds a value
-     * or measurement.  Data attributes are sometimes called readable attributes since 
+     * or measurement.  Data attributes are sometimes called readable attributes since
      * they have numeric values which can be read.
      */
     private static void buildDataAttributeSets() {
-        
-        profileAttributes = ImmutableSet.of(
+        profileAttributes= ImmutableSet.of(
                 DELIVERED_KW_LOAD_PROFILE,
                 LOAD_PROFILE,
                 NET_KW_LOAD_PROFILE,
@@ -346,14 +345,14 @@ public enum BuiltInAttribute implements Attribute {
                 SUM_KVA_LOAD_PROFILE,
                 SUM_KW_LOAD_PROFILE,
                 VOLTAGE_PROFILE);
-        
+
         readableProfileAttributes = ImmutableSet.of(
                 LOAD_PROFILE,
                 PROFILE_CHANNEL_2,
                 PROFILE_CHANNEL_3,
                 VOLTAGE_PROFILE);
-        
-        //point is an accumulation; Example: Usage 
+
+        // point is an accumulation; Example: Usage
         accumulatorAttributes = ImmutableSet.of(
                 DELIVERED_KWH,
                 DELIVERED_KWH_PER_INTERVAL,
@@ -393,7 +392,7 @@ public enum BuiltInAttribute implements Attribute {
                 USAGE_RATE_E,
                 USAGE_WATER,
                 WATER_USAGE_PER_INTERVAL);
-        
+
         blinkAndOutageCounts = ImmutableSet.of(
                 BLINK_COUNT,
                 OUTAGE_LOG,
@@ -401,7 +400,7 @@ public enum BuiltInAttribute implements Attribute {
                 RFN_BLINK_RESTORE_COUNT,
                 RFN_OUTAGE_COUNT,
                 RFN_OUTAGE_RESTORE_COUNT);
-        
+
         reactiveAttributes = ImmutableSet.of(
                 FORWARD_INDUCTIVE_KVARH,
                 FORWARD_CAPACITIVE_KVARH_PER_INTERVAL,
@@ -447,7 +446,7 @@ public enum BuiltInAttribute implements Attribute {
                 POWER_FACTOR_PHASE_C,
                 SUM_KVARH_PER_INTERVAL
                 );
-        
+
         otherAttributes = ImmutableSet.of(
                 PHASE,
                 RECORDING_INTERVAL,
@@ -456,7 +455,7 @@ public enum BuiltInAttribute implements Attribute {
                 TOTAL_LUV_COUNT,
                 TEMPERATURE,
                 HUMIDITY);
-        
+
         demandAttributes = ImmutableSet.of(
                 DEMAND,
                 IED_DEMAND_RESET_COUNT,
@@ -471,7 +470,7 @@ public enum BuiltInAttribute implements Attribute {
                 PEAK_DEMAND_RATE_C,
                 PEAK_DEMAND_RATE_D,
                 PEAK_DEMAND_RATE_E);
-        
+
         voltageAttributes = ImmutableSet.of(
                 MAXIMUM_VOLTAGE,
                 MAXIMUM_VOLTAGE_FROZEN,
@@ -481,7 +480,7 @@ public enum BuiltInAttribute implements Attribute {
                 VOLTAGE_PHASE_A,
                 VOLTAGE_PHASE_B,
                 VOLTAGE_PHASE_C);
-        
+
         currentAttributes = ImmutableSet.of(
                 CURRENT,
                 CURRENT_PHASE_A,
@@ -491,7 +490,7 @@ public enum BuiltInAttribute implements Attribute {
                 CURRENT_ANGLE_PHASE_B,
                 CURRENT_ANGLE_PHASE_C,
                 NEUTRAL_CURRENT);
-        
+
         statusAttributes = ImmutableSet.of(
                 COMM_STATUS,
                 CONNECTION_STATUS,
@@ -515,7 +514,7 @@ public enum BuiltInAttribute implements Attribute {
                 ZERO_USAGE_FLAG,
                 ZIGBEE_LINK_STATUS,
                 TERMINAL_BLOCK_COVER_REMOVAL_FLAG);
-        
+
         relayAttributes = ImmutableSet.of(
                 RELAY_1_LOAD_SIZE,
                 RELAY_1_REMAINING_CONTROL,
@@ -532,11 +531,12 @@ public enum BuiltInAttribute implements Attribute {
                 RELAY_4_REMAINING_CONTROL,
                 RELAY_4_RUN_TIME_DATA_LOG,
                 RELAY_4_SHED_TIME_DATA_LOG);
-        
-        // This map defines how attributes are grouped in drop downs and list selectors. 
+
+        // This map defines how attributes are grouped in drop downs and list selectors.
         // Used in conjunction with the selectNameValue or attributeSelector tag and groupItems="true".
-        ImmutableMap.Builder<AttributeGroup, ImmutableSet<BuiltInAttribute>> groupedDataAttributesBuilder = ImmutableMap.builder();
-        
+        ImmutableMap.Builder<AttributeGroup, Set<BuiltInAttribute>> groupedDataAttributesBuilder =
+                ImmutableMap.builder();
+
         groupedDataAttributesBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, blinkAndOutageCounts);
         groupedDataAttributesBuilder.put(AttributeGroup.CURRENT, currentAttributes);
         groupedDataAttributesBuilder.put(AttributeGroup.DEMAND, demandAttributes);
@@ -547,16 +547,15 @@ public enum BuiltInAttribute implements Attribute {
         groupedDataAttributesBuilder.put(AttributeGroup.STATUS, statusAttributes);
         groupedDataAttributesBuilder.put(AttributeGroup.USAGE, accumulatorAttributes);
         groupedDataAttributesBuilder.put(AttributeGroup.VOLTAGE, voltageAttributes);
-        
+
         groupedDataAttributes = groupedDataAttributesBuilder.build();
     }
 
     /**
-     * This method builds ImmutableSet's of RFN event attributes.  An event attribute 
+     * This method builds ImmutableSet's of RFN event attributes.  An event attribute
      * indicates that some significant event has occurred on a device.
      */
     private static void buildRfnEventAttributeSets() {
-        
         rfnEventStatusTypes = ImmutableSet.of(
                 ALTERNATE_MODE_ENTRY,
                 ANSI_SECURITY_FAILED,
@@ -636,7 +635,7 @@ public enum BuiltInAttribute implements Attribute {
                 VOLTAGE_PHASE_C_OUT,
                 VOLTAGE_PHASE_ERROR,
                 WATT_HOUR_PULSE_FAILURE);
-        
+
         rfnEventAnalogTypes = ImmutableSet.of(
                 DNP3_ADDRESS_CHANGED,
                 OUTSTATION_DNP3_SERCOMM_LOCKED,
@@ -649,12 +648,12 @@ public enum BuiltInAttribute implements Attribute {
                 TEMPERATURE_DEVICE,
                 UNDER_VOLTAGE_MEASURED,
                 UNDER_VOLTAGE_THRESHOLD);
-        
+
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         builder.addAll(rfnEventStatusTypes);
         builder.addAll(rfnEventAnalogTypes);
         rfnEventTypes = builder.build();
-        
+
         rfnHardwareAttributes = ImmutableSet.of(
                 CRYSTAL_OSCILLATOR_ERROR,
                 EEPROM_ACCESS_ERROR,
@@ -680,7 +679,7 @@ public enum BuiltInAttribute implements Attribute {
                 UNDER_VOLTAGE_MEASURED,
                 UNDER_VOLTAGE_THRESHOLD,
                 WATT_HOUR_PULSE_FAILURE);
-        
+
         rfnSoftwareAttributes = ImmutableSet.of(
                 ALTERNATE_MODE_ENTRY,
                 ANSI_SECURITY_FAILED,
@@ -698,19 +697,19 @@ public enum BuiltInAttribute implements Attribute {
                 TOU_SCHEDULE_ERROR,
                 UNCONFIGURED,
                 UNPROGRAMMED);
-        
+
         rfnVoltageAttributes = ImmutableSet.of(
                 VOLTAGE_LOSS,
                 VOLTAGE_PHASE_A_OUT,
                 VOLTAGE_PHASE_B_OUT,
                 VOLTAGE_PHASE_C_OUT);
-        
+
         rfnCurrentAttributes = ImmutableSet.of(
                 CURRENT_LOSS,
                 LOSS_OF_ALL_CURRENT,
                 LOSS_OF_PHASE_A_CURRENT,
                 LOSS_OF_PHASE_C_CURRENT);
-        
+
         rfnMeteringAttributes = ImmutableSet.of(
                 ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE,
                 LINE_FREQUENCY_WARNING,
@@ -726,12 +725,12 @@ public enum BuiltInAttribute implements Attribute {
                 USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED,
                 VOLTAGE_ALERTS,
                 VOLTAGE_PHASE_ERROR);
-        
+
         rfnDemandAttributes = ImmutableSet.of(
                 DEMAND_OVERLOAD,
                 DEMAND_READS_AND_RESET,
                 DEMAND_THRESHOLD_EXCEEDED_WARNING);
-        
+
         rfnOtherAttributes = ImmutableSet.of(
                 CLOCK_ERROR,
                 CURRENT_WAVEFORM_DISTORTION,
@@ -749,10 +748,10 @@ public enum BuiltInAttribute implements Attribute {
                 TIME_ADJUSTMENT,
                 TIME_SYNC_FAILED,
                 THD_V_OR_TDD_I_ERROR);
-        
-        // This map defines how attributes are grouped in drop downs and list selectors. 
+
+        // This map defines how attributes are grouped in drop downs and list selectors.
         // Used in conjunction with the selectNameValue or attributeSelector tag and groupItems="true".
-        ImmutableMap.Builder<AttributeGroup, ImmutableSet<BuiltInAttribute>> groupedRfnEventBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<AttributeGroup, Set<BuiltInAttribute>> groupedRfnEventBuilder = ImmutableMap.builder();
 
         groupedRfnEventBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, rfnHardwareAttributes);
         groupedRfnEventBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, rfnSoftwareAttributes);
@@ -761,9 +760,9 @@ public enum BuiltInAttribute implements Attribute {
         groupedRfnEventBuilder.put(AttributeGroup.RFN_DEMAND_EVENT, rfnDemandAttributes);
         groupedRfnEventBuilder.put(AttributeGroup.RFN_OTHER_EVENT, rfnOtherAttributes);
         groupedRfnEventBuilder.put(AttributeGroup.RFN_METERING_EVENT, rfnMeteringAttributes);
-        
+
         groupedRfnEventAttributes = groupedRfnEventBuilder.build();
-        
+
         ImmutableSet.Builder<BuiltInAttribute> nonReadableRfnEventBuilder = ImmutableSet.builder();
         nonReadableRfnEventBuilder.addAll(Sets.difference(BuiltInAttribute.getRfnEventTypes(),
                                     EnumSet.of(BuiltInAttribute.POWER_FAIL_FLAG,
@@ -772,7 +771,7 @@ public enum BuiltInAttribute implements Attribute {
                                                BuiltInAttribute.OUTAGE_STATUS)));
         rfnNonReadableEvents = nonReadableRfnEventBuilder.build();
     }
-    
+
     /**
      * Group attributes in categories so they can be more easily displayed and
      * found in the UI.  Some data attribute groups and event attribute groups
@@ -780,13 +779,13 @@ public enum BuiltInAttribute implements Attribute {
      * in the case of the voltage & current groups.
      */
     private static void buildAllAttributeGroups() {
-        ImmutableMap.Builder<AttributeGroup, ImmutableSet<BuiltInAttribute>> allGroupedBuilder = ImmutableMap.builder();
-        
+        ImmutableMap.Builder<AttributeGroup, Set<BuiltInAttribute>> allGroupedBuilder = ImmutableMap.builder();
+
         ImmutableSet.Builder<BuiltInAttribute> allCurrentAttributes = ImmutableSet.builder();
         allCurrentAttributes.addAll(currentAttributes);
         allCurrentAttributes.addAll(rfnCurrentAttributes);
         allGroupedBuilder.put(AttributeGroup.CURRENT, allCurrentAttributes.build());
-        
+
         ImmutableSet.Builder<BuiltInAttribute> allVoltageAttributes = ImmutableSet.builder();
         allVoltageAttributes.addAll(voltageAttributes);
         allVoltageAttributes.addAll(rfnVoltageAttributes);
@@ -796,30 +795,30 @@ public enum BuiltInAttribute implements Attribute {
         allDemandAttributes.addAll(demandAttributes);
         allDemandAttributes.addAll(rfnDemandAttributes);
         allGroupedBuilder.put(AttributeGroup.DEMAND, allDemandAttributes.build());
-        
+
         ImmutableSet.Builder<BuiltInAttribute> allOtherAttributes = ImmutableSet.builder();
         allOtherAttributes.addAll(otherAttributes);
         allOtherAttributes.addAll(rfnOtherAttributes);
         allOtherAttributes.addAll(rfnMeteringAttributes);
         allGroupedBuilder.put(AttributeGroup.OTHER, allOtherAttributes.build());
-        
+
         allGroupedBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, blinkAndOutageCounts);
         allGroupedBuilder.put(AttributeGroup.PROFILE, profileAttributes);
         allGroupedBuilder.put(AttributeGroup.REACTIVE, reactiveAttributes);
         allGroupedBuilder.put(AttributeGroup.RELAY, relayAttributes);
         allGroupedBuilder.put(AttributeGroup.STATUS, statusAttributes);
         allGroupedBuilder.put(AttributeGroup.USAGE, accumulatorAttributes);
-        
+
         allGroupedBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, rfnHardwareAttributes);
         allGroupedBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, rfnSoftwareAttributes);
 
-        // The attribute group map that is created can be used in conjunction with 
+        // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".
         allGroupedAttributes = allGroupedBuilder.build();
     }
-    
+
     private String defaultDescription;
-    
+
     private BuiltInAttribute(String defaultDescription) {
         this.defaultDescription = defaultDescription;
     }
@@ -827,67 +826,67 @@ public enum BuiltInAttribute implements Attribute {
     public boolean isProfile() {
         return profileAttributes.contains(this);
     }
-    
+
     public boolean isReadableProfile() {
         return readableProfileAttributes.contains(this);
     }
-    
+
     public boolean isAccumulator() {
         return accumulatorAttributes.contains(this);
     }
 
-    public static ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> getStandardGroupedAttributes() {
+    public static Map<AttributeGroup, Set<BuiltInAttribute>> getStandardGroupedAttributes() {
         return groupedDataAttributes;
     }
-    
-    public static ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> getRfnEventGroupedAttributes() {
+
+    public static Map<AttributeGroup, Set<BuiltInAttribute>> getRfnEventGroupedAttributes() {
         return groupedRfnEventAttributes;
     }
 
-    public static ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> getAllGroupedAttributes() {
+    public static Map<AttributeGroup, Set<BuiltInAttribute>> getAllGroupedAttributes() {
         return allGroupedAttributes;
     }
 
     public static Set<BuiltInAttribute> getAccumulatorAttributes() {
         return accumulatorAttributes;
     }
-    
+
     public static Set<BuiltInAttribute> getRfnEventStatusTypes() {
         return rfnEventStatusTypes;
     }
-    
+
     public static Set<BuiltInAttribute> getRfnEventAnalogTypes() {
         return rfnEventAnalogTypes;
     }
-    
+
     public static Set<BuiltInAttribute> getRfnEventTypes() {
         return rfnEventTypes;
     }
-    
+
     public static Set<BuiltInAttribute> getProfileAttributes() {
         return profileAttributes;
     }
-    
+
     public static Set<BuiltInAttribute> getReadableProfileAttributes() {
         return readableProfileAttributes;
     }
-    
+
     public boolean isRfnEventType() {
         return rfnEventTypes.contains(this);
     }
-    
+
     public boolean isRfnEventStatusType() {
         return rfnEventStatusTypes.contains(this);
     }
-    
+
     public boolean isRfnEventAnalogType() {
         return rfnEventAnalogTypes.contains(this);
     }
-    
+
     public boolean isRfnNonReadableEvent() {
         return rfnNonReadableEvents.contains(this);
     }
-    
+
     @Override
     public String getKey() {
         return this.name();
@@ -897,7 +896,7 @@ public enum BuiltInAttribute implements Attribute {
     public MessageSourceResolvable getMessage() {
         return YukonMessageSourceResolvable.createDefault(keyPrefix + name(), defaultDescription);
     }
-    
+
     public static void sort(List<BuiltInAttribute> attributes, final MessageSourceAccessor accessor) {
         Comparator<Displayable> comparator = new Comparator<Displayable>() {
             @Override

@@ -39,31 +39,27 @@ import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Controller
 public class MapController {
-    
+    @Autowired private AttributeService attributeService;
     @Autowired private DynamicDataSource dynamicDataSource;
-    @Autowired private PaoLocationService paoLocationService;
-    @Autowired private PaoLocationDao paoLocationDao;
-    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private PaoDao paoDao;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private PaoLocationService paoLocationService;
     @Autowired private PointService pointService;
     @Autowired private StateDao stateDao;
-    @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired private AttributeService attributeService;
     
     /**
      * Meant for device collections that are not static. Like collections based on 
      * the violations device group of a status point or outage monitor.
      */
     @RequestMapping("/map/dynamic")
-    public String dynamcic(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext) {
-
+    public String dynamcic(ModelMap model, DeviceCollection deviceCollection) {
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("dynamic", true);
         
@@ -72,9 +68,8 @@ public class MapController {
 
     @RequestMapping(value="/map")
     public String map(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext) {
-        
         model.addAttribute("deviceCollection", deviceCollection);
-        ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> groups = BuiltInAttribute.getAllGroupedAttributes();
+        Map<AttributeGroup, Set<BuiltInAttribute>> groups = BuiltInAttribute.getAllGroupedAttributes();
         model.addAttribute("attributes", objectFormattingService.sortDisplayableValues(groups, userContext));
         
         Filter filter = new Filter();
@@ -85,7 +80,6 @@ public class MapController {
     
     @RequestMapping("/map/device/{id}/info")
     public String info(ModelMap model, @PathVariable int id) {
-        
         YukonPao pao = paoDao.getYukonPao(id);
         DisplayablePao displayable = paoLoadingService.getDisplayablePao(pao);
         PaoLocation location = paoLocationDao.getLocation(id);
@@ -98,7 +92,6 @@ public class MapController {
     
     @RequestMapping("/map/locations")
     public @ResponseBody FeatureCollection locations(DeviceCollection deviceCollection) {
-        
         FeatureCollection locations = paoLocationService.getLocationsAsGeoJson(deviceCollection.getDeviceList());
         
         return locations;
@@ -106,14 +99,12 @@ public class MapController {
     
     @RequestMapping("/map/filter/state-groups")
     public @ResponseBody List<LiteStateGroup> states(DeviceCollection deviceCollection, BuiltInAttribute attribute) {
-        
         List<LiteStateGroup> stateGroups = attributeService.findStateGroups(deviceCollection.getDeviceList(), attribute);
         return stateGroups;
     }
     
     @RequestMapping("/map/filter")
     public @ResponseBody Map<Integer, Boolean> filter(DeviceCollection deviceCollection, @ModelAttribute Filter filter) {
-        
         Map<Integer, Boolean> results = new HashMap<>();
         Map<Integer, Group> groups = Maps.uniqueIndex(filter.getGroups(), Group.ID_FUNCTION);
         
@@ -167,5 +158,4 @@ public class MapController {
         
         return results;
     }
-    
 }

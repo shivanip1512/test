@@ -1,18 +1,17 @@
 package com.cannontech.dr.rfn.test;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 public class BuiltInAttributeGroupedAttributesTest {
-
     /*
      * This test's goal is to ensure that every value of the BuiltInAttributes enum
      * appears in one of the grouped attribute lists.  If a new value is added to
@@ -22,8 +21,7 @@ public class BuiltInAttributeGroupedAttributesTest {
      */
     @Test
     public void attributeGroupMembershipTest() {
-        ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> allGroupedAttributes = 
-                BuiltInAttribute.getAllGroupedAttributes();
+        Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedAttributes = BuiltInAttribute.getAllGroupedAttributes();
         List<BuiltInAttribute> allAttributesInAGroup = Lists.newArrayList();
 
         for (AttributeGroup group : allGroupedAttributes.keySet()) {
