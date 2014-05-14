@@ -43,23 +43,16 @@
                 <%-- Icons --%>
                 <td>
                     <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
+                    <cti:icon icon="icon-bullet-orange" classes="thin" data-dual-bus-feeder="${feederId}" />
+                    <cti:dataUpdaterCallback function="feederDualBus(${feederId})" initialize="true" value="FEEDER/${feederId}/DUALBUS"/>
                 </td>
                 <%-- Name --%>
                 <td class="wsnw">
-                    <c:set var="warning" value=""/>
-                    <c:if test="${viewfeeder.movedFeeder}">
-                        <c:set var="warning" value="warning"/>
-                    </c:if>
                     <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                         <cti:param name="type" value="2"/>
                         <cti:param name="itemid" value="${feederId}"/>
                     </cti:url>
-
-                    <span class="${warning}">
-                        <a href="${editUrl}">
-                            ${fn:escapeXml(viewfeeder.feeder.ccName)}
-                        </a>
-                    </span>
+                    <a href="${editUrl}">${fn:escapeXml(viewfeeder.feeder.ccName)}</a>
                 </td>
 
                 <%-- State --%>

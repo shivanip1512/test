@@ -51,6 +51,18 @@ function updateDualBusImage(id) {
     };
 }
 
+function feederDualBus(id) {
+    return function (data) {
+        var icon = jQuery('[data-dual-bus-feeder='+ id + ']');
+        dualBus = data.value;
+        if (dualBus === 'true') {
+            icon.show();
+        } else {
+            icon.hide();
+        }
+    };
+}
+
 function updateCapBankWarningImage(id) {
     return function (data) {
         var yellowSpan = $('#' + id + '_yellow'),

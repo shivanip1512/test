@@ -26,8 +26,8 @@
     <entry key="yukon.web.modules.capcontrol.remote">Remote</entry>
     <entry key="yukon.web.modules.capcontrol.ovuvDisabled">-V</entry>
     <entry key="yukon.web.modules.capcontrol.waive">-W</entry>
-    <entry key="yukon.web.modules.capcontrol.altBus">-ALT BUS</entry>
-    <entry key="yukon.web.modules.capcontrol.primaryBus">-PRIMARY BUS</entry>
+    <entry key="yukon.web.modules.capcontrol.altBus">-INACTIVE</entry>
+    <entry key="yukon.web.modules.capcontrol.primaryBus">-ACTIVE</entry>
     <entry key="yukon.web.modules.capcontrol.dualBusDisabled">Disabled</entry>
     <entry key="yukon.web.modules.capcontrol.dualBusPrimary">Primary</entry>
     <entry key="yukon.web.modules.capcontrol.dualBusPrimaryMsg">This Substation Bus is operating under dual bus mode, {0} is the Alternate Bus.</entry>

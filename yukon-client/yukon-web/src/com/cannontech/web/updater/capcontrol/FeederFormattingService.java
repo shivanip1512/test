@@ -129,4 +129,11 @@ public class FeederFormattingService extends AbstractFormattingService<Feeder> {
         return value;    
     }
 
+    @Override
+    protected String getDualBus(final Feeder latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        if (latestValue.getOriginalParentId() > 0) {
+            return "true";
+        }
+        return "false";
+    }
 }
