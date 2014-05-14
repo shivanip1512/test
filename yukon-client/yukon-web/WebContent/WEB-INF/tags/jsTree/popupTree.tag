@@ -75,7 +75,7 @@
         
         if ('${!empty pageScope.triggerElement}' === 'true') {
             //click a button, get the window
-            $(document.getElementById("${triggerElement}")).click(function() {
+            $(document.getElementById('${triggerElement}')).click(function() {
                 var 
                 maxHeight,
                 dialog = $('#' + 'window_${id}');

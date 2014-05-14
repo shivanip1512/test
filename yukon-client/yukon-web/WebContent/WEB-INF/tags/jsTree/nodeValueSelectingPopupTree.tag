@@ -3,59 +3,64 @@
 <%-- name of key in the selected node's info attribute --%>
 <%-- also will be the name of the hidden field on which the value is set --%>
 <%-- submitCallback is optional, can be used for application specific behavior after submit button click is handled (like to submit a form or do nothing) --%>
-<%@ attribute name="fieldId" required="true" type="java.lang.String"%>
-<%@ attribute name="fieldName" required="true" type="java.lang.String"%>
-<%@ attribute name="fieldValue" required="false" type="java.lang.String"%>
-<%@ attribute name="nodeValueName" required="true" type="java.lang.String"%>
-<%@ attribute name="submitButtonText" required="true" type="java.lang.String"%>
-<%@ attribute name="cancelButtonText" required="true" type="java.lang.String"%>
-<%@ attribute name="submitCallback" required="false" type="java.lang.String"%>
+<%@ attribute name="fieldId" required="true" %>
+<%@ attribute name="fieldName" required="true" %>
+<%@ attribute name="fieldValue" %>
+<%@ attribute name="nodeValueName" required="true" %>
+<%@ attribute name="submitButtonText" required="true" %>
+<%@ attribute name="cancelButtonText" required="true" %>
+<%@ attribute name="submitCallback" %>
 
 <%-- PASS THROUGH PARAMETERS TO ext:popupTree --%>
 <%-- see popupTree.tag for parameter descriptions --%>
-<%@ attribute name="id" required="true" type="java.lang.String"%>
-<%@ attribute name="triggerElement" required="false" type="java.lang.String"%>
-<%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
-<%@ attribute name="dataJson" required="true" type="java.lang.String"%>
-<%@ attribute name="title" required="true" type="java.lang.String"%>
-<%@ attribute name="maxHeight"          required="false"    type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
-<%@ attribute name="noSelectionAlertText" required="false" type="java.lang.String"%>
-<%@ attribute name="multiSelect"        required="false"     type="java.lang.Boolean"%>
-<%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
+<%@ attribute name="id" required="true" %>
+<%@ attribute name="triggerElement" %>
+<%@ attribute name="highlightNodePath" %>
+<%@ attribute name="dataJson" required="true" %>
+<%@ attribute name="title" required="true" %>
+<%@ attribute name="maxHeight" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
+<%@ attribute name="noSelectionAlertText" %>
+<%@ attribute name="multiSelect" type="java.lang.Boolean"%>
+<%@ attribute name="includeControlBar" type="java.lang.Boolean"%>
+<%@ attribute name="styleClass" %>
 
 <%-- DEVICE GROUP SELECTION HANDLER CODE --%>
 <script type="text/javascript">
 
-    var selectedNodeId_${id} = null;
-    var saveValue_${id} = '${pageScope.fieldValue}';
+    window['selectedNodeId_${id}'] = null;
+    window['saveValue_${id}'] = '${pageScope.fieldValue}';
 
-    function recordNameValue_${id}(node) {
-        // save group name
-        var nodeValue = node.data.metadata["${nodeValueName}"];
-        $(document.getElementById("${fieldId}")).val(nodeValue);
-        selectedNodeId_${id} = node;
-    }
+    window['recordNameValue_${id}'] = function(select, node) {
+        if (select) {
+            var nodeValue = node.data.metadata['${nodeValueName}'];
+            $('#${fieldId}').val(nodeValue);
+            window['selectedNodeId_${id}'] = node;
+        } else {
+            // deselect happened
+            $('#${fieldId}').val('');
+            window['selectedNodeId_${id}'] = null;
+        }
+    };
     
-    function submitNodeSelection_${id}() {
-        if (selectedNodeId_${id} == null && '${pageScope.noSelectionAlertText}' != '') {
+    window['submitNodeSelection_${id}'] = function() {
+        if (window['selectedNodeId_${id}'] == null && '${pageScope.noSelectionAlertText}' != '') {
             alert('${pageScope.noSelectionAlertText}');
             return false;
         }
-        saveValue_${id} = $(document.getElementById('${fieldId}')).val();
-        closeWindow_${id}();
+        window['saveValue_${id}'] = $('#${fieldId}').val();
+        window['closeWindow_${id}']();
         ${pageScope.submitCallback}
-    }
+    };
     
-    function cancelNodeSelection_${id}() {
-        selectedNodeId_${id} = null;
-        $(document.getElementById("${fieldId}")).val(saveValue_${id});
-        closeWindow_${id}();
-    }
+    window['cancelNodeSelection_${id}'] = function() {
+        window['selectedNodeId_${id}'] = null;
+        $('#${fieldId}').val(window['saveValue_${id}']);
+        window['closeWindow_${id}']();
+    };
     
-    function closeWindow_${id}() {
-        $(document.getElementById("window_${id}")).dialog("close");
-    }
+    window['closeWindow_${id}'] = function() {
+        $('#window_${id}').dialog('close');
+    };
 
 </script>
 
@@ -65,7 +70,7 @@
 <%-- POPUP TREE --%>
 <t:popupTree id="${id}"
              treeCss="/resources/js/lib/dynatree/skin/device.group.css"
-             treeParameters="{onActivate:recordNameValue_${id}}"
+             treeParameters="{onSelect:recordNameValue_${id}}"
              triggerElement="${triggerElement}"
              highlightNodePath="${pageScope.highlightNodePath}"
              dataJson="${dataJson}"

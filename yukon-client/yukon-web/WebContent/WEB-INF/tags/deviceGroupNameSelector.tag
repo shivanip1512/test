@@ -2,9 +2,9 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="dataJson" required="true" %>
 <%@ attribute name="classes" %>
@@ -33,16 +33,11 @@
 <cti:default var="fieldId" value="${fieldName}"/>
 
 <script>
-    // ignores if present, creates if not
-    yukon.namespace('yukon.ui.dialogs');
-    if ('undefined' === typeof yukon.ui.dialogs['${uniqueId}']) {
-        yukon.namespace('yukon.ui.dialogs.${uniqueId}');
-    }
 
     $(document).on('click', '#viewSelectedDevices_${uniqueId}', function() {
         var url = yukon.url('/bulk/selectedDevicesTableForGroupName?groupName=' + encodeURIComponent($('#${fieldId}').val()));
-        $('#showSelectedDevices_${uniqueId}').load(url, function() {
-            $('#showSelectedDevices_${uniqueId}').dialog({width:450, height: 300});
+        $('#show-selected-${uniqueId}').load(url, function() {
+            $('#show-selected-${uniqueId}').dialog({width:450, height: 300});
         });
     });
 
@@ -54,67 +49,17 @@
     });
     
     $(document).on('click', '.chooseGroupIcon_${uniqueId}', function() {
-        var uniqueId = '${uniqueId}',
-            devGroupTree,
-            groupTreeObj,
-            titleBarObj,
-            dialogCont,
-            dialogHeight,
-            offsetTop,
-            buttonPaneObj,
-            treeHelperPane,
-            dialogContOffset,
-            maxHeight,
-            TREE_DIALOG_MAX_WIDTH = 450,
-            // TODO: coalesce this function and put in a separate JavaScript file that can be shared
-            // between this tag file and popupTree.tag
-            calcMaxHeight = function (dialogCont, titleBar, treeHelper, buttonPane) {
-                var paneHeights = titleBar.height() + treeHelper.height() + buttonPane.height(),
-                    maxHeight;
-                // 8-pixel slop addresses top and bottom padding on the elements comprising the popup
-                maxHeight = dialogCont.height() - paneHeights - 8;
-                return maxHeight;
-            };
-
-        if ('undefined' === typeof yukon.ui.dialogs['${uniqueId}'].init) {
-            yukon.ui.dialogs['${uniqueId}'].init = 'inited';
-        } else {
-            // for some reason, this is called multiple times
-            if (true === $('#window_selectGroupTree_${uniqueId}').dialog('isOpen')) {
-                return;
-            }
-        }
-        $('#window_selectGroupTree_${uniqueId}').dialog('open');
-        if (-1 !== uniqueId.indexOf('deviceGroupNameSelectorTag')) {
-            devGroupTree = document.getElementById('window_selectGroupTree_${uniqueId}');
-            groupTreeObj = $(devGroupTree);
-            titleBarObj = groupTreeObj.prev('.ui-dialog-titlebar');
-            dialogCont = groupTreeObj.closest('.ui-dialog');
-            offsetTop = dialogCont.offset().top;
-            treeHelperPane = groupTreeObj.find('.tree-controls');
-            // Store the first value of the top offset of the dialog. Subsequent values vary
-            // considerably and undermine the positioning logic
-            if ('undefined' === typeof yukon.ui.dialogs['${uniqueId}'].offsetTop) {
-                yukon.ui.dialogs['${uniqueId}'].offsetTop = offsetTop;
-            } else {
-                offsetTop = yukon.ui.dialogs['${uniqueId}'].offsetTop;
-            }
-            dialogHeight = window.windowHeight - offsetTop;
-            // height set on dialog. when tree expanded
-            groupTreeObj.dialog('option', 'height', dialogHeight + titleBarObj.height());
-            // make dialog wider so long entries don't force horizontal scrollbars
-            groupTreeObj.dialog('option', 'width', TREE_DIALOG_MAX_WIDTH);
-            // no scrollbars on tree div, prevents double scrollbars
-            groupTreeObj.css('overflow', 'hidden');
-            dialogContOffset = dialogCont.offset();
-            buttonPaneObj = $(groupTreeObj.nextAll('.ui-dialog-buttonpane')[0]);
-            // position dialog
-            dialogCont.offset({'left' : dialogContOffset.left, 'top' : offsetTop - buttonPaneObj.height()});
-            // size tree height so it is fully scrollable
-            maxHeight = calcMaxHeight(dialogCont, titleBarObj, treeHelperPane, buttonPaneObj);
-            // set max height of tree dialog so the scrolling works through all the entries
-            $('#selectGroupTree_${uniqueId}').css('max-height', maxHeight);
-        }
+        
+        var 
+        dialog = $('#window_selectGroupTree_${uniqueId}'),
+        content = dialog.find('.ui-dialog-content');
+        
+        // prevents double scrollbars on tree container
+        dialog.css('overflow', 'hidden');
+        dialog.dialog('open');
+        
+        // height (26px) plus margin (3px) of controls element
+        $('#selectGroupTree_${uniqueId}').css('max-height', content.height() -29);
     });
     
     window['setSelectedGroupName_${uniqueId}'] = function() {
@@ -168,7 +113,7 @@
     <cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
     <span id="viewDevicesIconSpan_${uniqueId}" <c:if test="${empty pageScope.fieldValue}">style="display:none;"</c:if>>
         <a id="viewSelectedDevices_${uniqueId}" href="javascript:void(0);" title="${popupTitle}" class="dib"><i class="icon icon-magnifier"></i></a>
-        <div id="showSelectedDevices_${uniqueId}" title="${popupTitle}" class="dn"></div>
+        <div id="show-selected-${uniqueId}" title="${popupTitle}" class="dn"></div>
     </span>
 </c:if>
 </div>
