@@ -14,7 +14,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.amr.rfn.message.event.RfnEventArchiveRequest;
 import com.cannontech.amr.rfn.message.event.RfnEventArchiveResponse;
 import com.cannontech.amr.rfn.service.RfnMeterEventService;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.message.dispatch.message.PointData;
@@ -23,7 +22,6 @@ import com.google.common.collect.Lists;
 
 @ManagedResource
 public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnEventArchiveRequest> {
-
     private static final Logger log = YukonLogManager.getLogger(EventArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.EventArchiveResponse";
 
@@ -34,12 +32,12 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
 
     public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
-            super(workerNumber, queueSize);
+            super("EventArchiveConverter", workerNumber, queueSize);
         }
 
         @Override
         protected void processData(RfnDevice device, RfnEventArchiveRequest eventRequest) {
-            /** Only process events for meters at this time */
+            // Only process events for meters at this time
             if (device.getPaoIdentifier().getPaoType().isMeter()) {
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
                 rfnMeterEventService.processEvent(device, eventRequest.getEvent(), messagesToSend);
@@ -48,13 +46,16 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
                 dynamicDataSource.putValues(messagesToSend);
                 processedEventRequest.addAndGet(messagesToSend.size());
     
-                LogHelper.debug(log, "%d PointDatas generated for RfnEventArchiveRequest", messagesToSend.size());
+                if (log.isDebugEnabled()) {
+                    log.debug(messagesToSend.size() + " PointDatas generated for RfnEventArchiveRequest");
+                }
                 incrementProcessedArchiveRequest();
             }
             sendAcknowledgement(eventRequest);
         }
     }
 
+    @Override
     @PostConstruct
     public void init() {
         // setup as many workers as requested
@@ -99,5 +100,4 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
     public int getProcessedEventRequest() {
         return processedEventRequest.get();
     }
-
 }

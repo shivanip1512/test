@@ -14,7 +14,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveResponse;
 import com.cannontech.amr.rfn.service.RfnMeterEventService;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.message.dispatch.message.PointData;
@@ -23,23 +22,22 @@ import com.google.common.collect.Lists;
 
 @ManagedResource
 public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnAlarmArchiveRequest> {
-
     private static final Logger log = YukonLogManager.getLogger(AlarmArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.AlarmArchiveResponse";
 
-    private RfnMeterEventService rfnMeterEventService;
+    @Autowired private RfnMeterEventService rfnMeterEventService;
 
     private List<Worker> workers;
     private AtomicInteger processedAlarmArchiveRequest = new AtomicInteger();
 
     public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
-            super(workerNumber, queueSize);
+            super("AlarmArchiveConverter", workerNumber, queueSize);
         }
 
         @Override
         protected void processData(RfnDevice device, RfnAlarmArchiveRequest archiveRequest) {
-            /** Only process events for meters at this time */
+            // Only process events for meters at this time
             if (device.getPaoIdentifier().getPaoType().isMeter()) {
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
                 rfnMeterEventService.processEvent(device, archiveRequest.getAlarm(), messagesToSend);
@@ -49,13 +47,16 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
                 processedAlarmArchiveRequest.addAndGet(messagesToSend.size());
     
                 incrementProcessedArchiveRequest();
-                LogHelper.debug(log, "%d PointDatas generated for RfnAlarmArchiveRequest", messagesToSend.size());
+                if (log.isDebugEnabled()) {
+                    log.debug(messagesToSend.size() + " PointDatas generated for RfnAlarmArchiveRequest");
+                }
             }
             
             sendAcknowledgement(archiveRequest);
         }
     }
 
+    @Override
     @PostConstruct
     public void init() {
         // setup as many workers as requested
@@ -99,10 +100,5 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
     @ManagedAttribute
     public int getProcessedAlarmArchiveRequest() {
         return processedAlarmArchiveRequest.get();
-    }
-
-    @Autowired
-    public void setRfnMeterEventService(RfnMeterEventService rfnMeterEventService) {
-        this.rfnMeterEventService = rfnMeterEventService;
     }
 }

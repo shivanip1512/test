@@ -49,7 +49,8 @@ import com.google.common.collect.Lists;
 
 @ManagedResource
 public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnLcrArchiveRequest> {
-    
+    private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
+
     @Autowired private RfnLcrDataMappingService rfnLcrDataMappingService;
     @Autowired private ExiParsingService exiParsingService;
     @Autowired private PaoDao paoDao;
@@ -62,7 +63,6 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
     
-    private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
     
     private List<Worker> workers;
@@ -70,12 +70,11 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     
     public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
-            super(workerNumber, queueSize);
+            super("LcrReadingArchive", workerNumber, queueSize);
         }
         
         @Override
         public void processData(RfnDevice rfnDevice, RfnLcrArchiveRequest archiveRequest) {
-            
             if (archiveRequest instanceof RfnLcrReadingArchiveRequest) {
                 RfnLcrReadingArchiveRequest readingArchiveRequest = ((RfnLcrReadingArchiveRequest) archiveRequest);
                 SimpleXPathTemplate decodedPayload = null;
@@ -89,16 +88,16 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                     }
                     decodedPayload = exiParsingService.parseRfLcrReading(payload);
                 } catch (ParseExiException e) {
-                    //Acknowledge the request to prevent NM from sending back that data which can't be parsed.
+                    // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
                     sendAcknowledgement(archiveRequest);
                     log.error("Can't parse incoming RF LCR payload data.  Payload may be corrupt or not schema compliant.", e);
                     throw new RuntimeException("Error parsing RF LCR payload.", e);
                 }
                 
-                /** Handle Broadcast Verification Messages */
+                // Handle Broadcast Verification Messages
                 Schema schema = exiParsingService.getSchema(payload);
                 if (schema.supportsBroadcastVerificationMessages()) {
-                    //Verification Messages should be processed even if there is no connection to dispatch
+                    // Verification Messages should be processed even if there is no connection to dispatch
                     Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
                         .mapBroadcastVerificationMessages(decodedPayload);
                     Range<Instant> range = rfnLcrDataMappingService
@@ -108,9 +107,8 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 }
                 
                 // Discard all the data before 1/1/2001
-                if(rfnLcrDataMappingService.isValidTimeOfReading(decodedPayload)){
-                
-	                /** Handle point data */
+                if (rfnLcrDataMappingService.isValidTimeOfReading(decodedPayload)){
+	                // Handle point data
 	                List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
 	                messagesToSend = rfnLcrDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
 	                dynamicDataSource.putValues(messagesToSend);
@@ -119,19 +117,18 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 	                    log.debug(messagesToSend.size() + " PointDatas generated for RfnLcrReadingArchiveRequest");
 	                }
 
-	                /** Handle addressing data */
+	                // Handle addressing data
 	                rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
                 }
                 incrementProcessedArchiveRequest();
                 
             } else {
-                
-                /** Just an lcr archive request, these happen when devices join the network */
+                // Just an LCR archive request, these happen when devices join the network
                 InventoryIdentifier inventory = inventoryDao.getYukonInventoryForDeviceId(rfnDevice.getPaoIdentifier().getPaoId());
                 int inventoryId = inventory.getInventoryId();
                 List<ProgramEnrollment> activeEnrollments = enrollmentService.getActiveEnrollmentsByInventory(inventoryId);
                 if (!activeEnrollments.isEmpty()) {
-                    /** Send config if auto-config is enabled */
+                    // Send config if auto-config is enabled
                     YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
                     boolean autoConfig = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, yec.getEnergyCompanyId());
                     if (autoConfig) {
@@ -158,7 +155,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Override
     @PostConstruct
     public void init() {
-     // setup as many workers as requested
+       // setup as many workers as requested
         ImmutableList.Builder<Worker> workerBuilder = ImmutableList.builder();
         int workerCount = getWorkerCount();
         int queueSize = getQueueSize();
@@ -207,5 +204,4 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     public int getArchivedReadings() {
         return archivedReadings.get();
     }
-    
 }

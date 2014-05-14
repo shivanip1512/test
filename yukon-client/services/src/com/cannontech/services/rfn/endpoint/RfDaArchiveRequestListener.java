@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -22,7 +21,6 @@ import com.google.common.collect.ImmutableList;
 
 @ManagedResource
 public class RfDaArchiveRequestListener extends ArchiveRequestListenerBase<RfDaArchiveRequest> {
-    
     private static final Logger log = YukonLogManager.getLogger(RfDaArchiveRequestListener.class);
     
     @Autowired protected RfDaCreationService rfdaCreationService;
@@ -34,7 +32,7 @@ public class RfDaArchiveRequestListener extends ArchiveRequestListenerBase<RfDaA
     
     public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
-            super(workerNumber, queueSize);
+            super("RfDaArchive", workerNumber, queueSize);
         }
         
         @Override
@@ -102,5 +100,4 @@ public class RfDaArchiveRequestListener extends ArchiveRequestListenerBase<RfDaA
     public int getArchivedReadings() {
         return archivedReadings.get();
     }
-    
 }

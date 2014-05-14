@@ -17,7 +17,6 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
 import com.cannontech.amr.rfn.service.RfnChannelDataConverter;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -28,11 +27,11 @@ import com.google.common.collect.Lists;
 
 @ManagedResource
 public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnMeterReadingArchiveRequest> {
+    private static final Logger log = YukonLogManager.getLogger(MeterReadingArchiveRequestListener.class);
     
     @Autowired private RfnChannelDataConverter converter;
     @Autowired private CalculatedPointDataProducer calculatedProducer;
     
-    private static final Logger log = YukonLogManager.getLogger(MeterReadingArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveResponse";
     
     private List<Converter> converters; // Threads to convert channel data to point data
@@ -43,9 +42,8 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
      * Special thread class to handle archiving channel data converted point data.
      */
     public class Converter extends ConverterBase {
-        
         public Converter(int converterNumber, int queueSize) {
-            super(converterNumber, queueSize);
+            super("MeterReadingArchiveConverter", converterNumber, queueSize);
         }
         
         @Override
@@ -59,21 +57,24 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
 
             sendAcknowledgement(request);
             incrementProcessedArchiveRequest();
-            LogHelper.debug(log, "%d PointDatas converted for RfnMeterReadingArchiveRequest, %d calculations produced.", messagesToSend.size(), toCalculate.size());
-            
-            /* Converting went well which means the device exist, we can queue the corresponding calculator now. 
-             * We only need to do this if we found any channel data that we use to calculate other data, also we 
-             * only do this for interval readings for now since we are just generating per interval values and
-             * load profile. 
-             * 
-             * Order is important: we update the producers cache BEFORE we queue the calculator thread so the data
-             * will be there before he needs it. This also means since this is currently the only thing that seeds
-             * the cache, we will never handle the first interval after startup. */
+            if (log.isDebugEnabled()) {
+                log.debug(messagesToSend.size() + " PointDatas converted for RfnMeterReadingArchiveRequest, "
+                        + toCalculate.size() + " calculations produced.");
+            }
+
+            // Converting went well which means the device exist, we can queue the corresponding calculator now.
+            // We only need to do this if we found any channel data that we use to calculate other data, also we
+            // only do this for interval readings for now since we are just generating per interval values and
+            // load profile.
+            //
+            // Order is important: we update the producers cache BEFORE we queue the calculator thread so the data
+            // will be there before he needs it. This also means since this is currently the only thing that seeds
+            // the cache, we will never handle the first interval after startup.
             if (request.getReadingType() == RfnMeterReadingType.INTERVAL && !toCalculate.isEmpty()) {
                 try {
                     calculatedProducer.updateCache(toCalculate);
                     calculators.get(getConverterNumber()).queue(toCalculate);
-                    LogHelper.debug(log, "%d calculations queued.", toCalculate.size());
+                    log.debug(toCalculate.size() + " calculations queued.");
                 } catch (InterruptedException e) {
                     log.warn("interrupted while queuing generate request", e);
                     Thread.currentThread().interrupt();
@@ -86,7 +87,6 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
      * Special thread class to handle generating point data based on calculations from converted channel data.
      */
     public class Calculator extends CalculatorBase {
-        
         public Calculator(int calculatorNumber, int queueSize) {
             super(calculatorNumber, queueSize);
         }
@@ -97,10 +97,11 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
             calculatedProducer.calculate(toCalculate, messagesToSend);
 
             dynamicDataSource.putValues(messagesToSend);
-            LogHelper.debug(log, "%d PointDatas calculated for RfnMeterReadingArchiveRequest", messagesToSend.size());
+            log.debug(messagesToSend.size() + " PointDatas calculated for RfnMeterReadingArchiveRequest");
         }
     }
     
+    @Override
     @PostConstruct
     public void init() {
         // setup as many workers as requested
@@ -161,5 +162,4 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     public int getArchivedReadings() {
         return archivedReadings.get();
     }
-
 }

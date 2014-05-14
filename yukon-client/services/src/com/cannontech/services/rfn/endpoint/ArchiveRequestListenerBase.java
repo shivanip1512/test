@@ -14,7 +14,6 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.service.RfnChannelDataConverter;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
@@ -29,7 +28,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 
 public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage> {
-
     private static final Logger log = YukonLogManager.getLogger(ArchiveRequestListenerBase.class);
 
     @Autowired protected DynamicDataSource dynamicDataSource;
@@ -46,8 +44,8 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         private volatile boolean shutdown = false;
         private int converterNumber;
 
-        protected ConverterBase(int converterNumber, int queueSize) {
-            super("RfnConverter: " + converterNumber);
+        protected ConverterBase(String threadNameBase, int converterNumber, int queueSize) {
+            super(threadNameBase + ": " + converterNumber);
             inQueue = new ArrayBlockingQueue<T>(queueSize);
             this.converterNumber = converterNumber;
         }
@@ -110,27 +108,33 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                     if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
                         sendAcknowledgement(request);
                         return;
-                    } else {
-                        throw e;
                     }
+                    throw e;
                 }
             }
             processData(rfnDevice, request);
         }
 
+        /**
+         * @param request unused
+         */
         protected RfnDevice processCreation(T request, RfnIdentifier identifier) {
             try {
                 RfnDevice device = rfnDeviceCreationService.create(identifier);
                 rfnDeviceCreationService.incrementNewDeviceCreated();
-                LogHelper.debug(log, "Created new device: %s", device);
+                if (log.isDebugEnabled()) {
+                    log.debug("Created new device: " + device);
+                }
                 return device;
             } catch (IgnoredTemplateException e) {
                 throw new RuntimeException("Unable to create device for " + identifier + " because template is ignored", e);
             } catch (BadTemplateDeviceCreationException e) {
-                LogHelper.warn(log, "Creation failed for %s. Manufacture, Model and Serial Number combination do not match the template. This could be caused by an existing device with the same serial and manufacturer as the new device.  %s", identifier, e);
+                log.warn("Creation failed for " + identifier + ". Manufacture, Model and Serial Number combination do "
+                    + "not match the template. This could be caused by an existing device with the same serial and "
+                    + "manufacturer as the new device.  " + e);
                 throw new RuntimeException("Creation failed for " + identifier, e);
             } catch (Exception e) {
-                LogHelper.warn(log, "Creation failed for %s: %s", identifier, e);
+                log.warn("Creation failed for " + identifier + ": " + e);
                 throw new RuntimeException("Creation failed for " + identifier, e);
             }
         }
@@ -262,5 +266,4 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(false);
     }
-
 }
