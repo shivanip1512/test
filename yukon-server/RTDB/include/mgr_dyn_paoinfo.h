@@ -56,7 +56,10 @@ public:
     //  note - this returns the value as a long for convenience - the name may need to be changed to prevent confusion if it arises
     static long getInfo(const long paoId, PaoInfoKeys k);
 
-    static void writeInfo();
+    static Database::id_set writeInfo();
+
+    // schedule pao Ids to reload
+    static void schedulePaoIdsToReload(const Database::id_set& paoIds);
 
     // set a values using indexed dynamic info
     template <typename T>
@@ -124,6 +127,8 @@ private:
     Applications owner;
 
     readers_writer_lock_t mux;
+
+    Database::id_set paosToReload;
 };
 
 extern IM_EX_DYNPAOINFO std::auto_ptr<DynamicPaoInfoManager> gDynamicPaoInfoManager;  //  auto_ptr so it can be overridden for unit tests

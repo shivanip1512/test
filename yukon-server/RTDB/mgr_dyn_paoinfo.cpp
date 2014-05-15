@@ -40,7 +40,6 @@ const std::auto_ptr<DynamicPaoInfoManager> &instance = gDynamicPaoInfoManager;
 
 /**
  * Delete indexed infoKeys from DynamicPaoInfo
- *
  * @return true if the command was successfully executed (even if no rows are affected), false otherwise
  */
 bool deleteIndexedInfo(const std::string& ownerString, const long paoId, CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed k)
@@ -66,7 +65,19 @@ bool deleteIndexedInfo(const std::string& ownerString, const long paoId, CtiTabl
     return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
-} // anonymous
+/**
+ * Copy only if the destination shared_ptr is null
+ */
+template <typename T>
+void copyIfDestIsNull( boost::shared_ptr<T> &dst, const boost::shared_ptr<T> &src )
+{
+    if( ! dst )
+    {
+        dst = src;
+    }
+}
+
+} // namespace anonymous
 
 DynamicPaoInfoManager::DynamicPaoInfoManager() :
     owner(Application_Invalid)
@@ -82,12 +93,46 @@ void DynamicPaoInfoManager::setOwner(const Applications owner)
 
 void DynamicPaoInfoManager::loadInfoIfNecessary(const long paoId)
 {
-    bool loaded = false;
+    bool loaded = false, reload = false;
 
     {
         readers_writer_lock_t::reader_lock_guard_t guard(mux);
 
         loaded = loadedPaos.count(paoId);
+        reload = paosToReload.count(paoId);
+    }
+
+    if( reload )
+    {
+        readers_writer_lock_t::writer_lock_guard_t lock(mux);
+
+        if( loaded )
+        {
+            if( ! dirtyInfo.empty() || ! dirtyInfoIndexed.empty() )
+            {
+                // if we have dirty info, try to write it to the DB before continuing
+                writeInfo();
+
+                if( ! dirtyInfo.empty() || ! dirtyInfoIndexed.empty() )
+                {
+                    // if writing info to the database as fail, dont go any further
+                    return;
+                }
+            }
+
+            // unload all dynamic info associated with the Pao ID
+            paoInfoPerId.erase(paoId);
+            paoInfoPerIdIndexed.erase(paoId);
+
+            // mark the Pao ID as unloaded
+            loadedPaos.erase(paoId);
+            loaded = false;
+        }
+
+        // NOTE:
+        // even if nothing was loaded from the DB we may still have dirty Info associated with the PaoId
+        // however the dirty info will not be lost (overwritten) after we successfully load.
+        paosToReload.erase(paoId);
     }
 
     if( ! loaded )
@@ -114,103 +159,117 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
 
     boost::range::set_difference(paoids, loadedPaos, std::inserter(paoidsToLoad, paoidsToLoad.begin()));
 
+    // There is a possibility of having no PAOs to load if 2 threads try to load the same IDs,
+    // lets allow the first one to continue and log
+    if( paoidsToLoad.empty() )
+    {
+        return;
+    }
+
     //  Need to write before reading to ensure dirty info is written out before it's overwritten?
 
+    if(DebugLevel & 0x00020000)
     {
-        if(DebugLevel & 0x00020000)
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+        dout << CtiTime() << " Looking for Dynamic PAO Info " << __FILE__ << "(" << __LINE__ << ")" << std::endl;
+    }
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection);
+
+    std::string sql = CtiTableDynamicPaoInfo::getSQLCoreStatement();
+
+    boost::optional<std::string> ownerString = mapFind(OwnerMap, owner);
+
+    if( ! ownerString || ownerString->empty() )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+        dout << CtiTime() << " Owner string not set " << __FILE__ << "(" << __LINE__ << ")" << std::endl;
+
+        return;
+    }
+
+    sql += " WHERE owner = ? AND " + Database::createIdSqlClause(paoidsToLoad, "DPI", "paobjectid");
+
+    rdr.setCommandText(sql);
+    rdr << *ownerString;
+    Database::executeCommand(rdr, __FILE__, __LINE__, Database::LogDebug(DebugLevel & 0x00020000));
+
+    if(rdr.isValid())
+    {
+        while( rdr() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            dout << CtiTime() << " Looking for Dynamic PAO Info " << __FILE__ << "(" << __LINE__ << ")" << std::endl;
-        }
-
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
-
-        std::string sql = CtiTableDynamicPaoInfo::getSQLCoreStatement();
-
-        boost::optional<std::string> ownerString = mapFind(OwnerMap, owner);
-
-        if( ! ownerString || ownerString->empty() )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            dout << CtiTime() << " Owner string not set " << __FILE__ << "(" << __LINE__ << ")" << std::endl;
-
-            return;
-        }
-
-        sql += " WHERE owner = ? AND " + Database::createIdSqlClause(paoidsToLoad, "DPI", "paobjectid");
-
-        rdr.setCommandText(sql);
-        rdr << *ownerString;
-        Database::executeCommand(rdr, __FILE__, __LINE__, Database::LogDebug(DebugLevel & 0x00020000));
-
-        if(rdr.isValid())
-        {
-            while( rdr() )
+            // try non-indexed key
+            try
             {
-                // try non-indexed key
-                try
-                {
-                    DynInfoSPtr dynInfo = boost::make_shared<CtiTableDynamicPaoInfo>(boost::ref(rdr));
+                const DynInfoSPtr dynInfo = boost::make_shared<CtiTableDynamicPaoInfo>(boost::ref(rdr));
 
-                    paoInfoPerId[dynInfo->getPaoID()][dynInfo->getKey()] = dynInfo;
+                DynInfoSPtr& currInfo = paoInfoPerId[dynInfo->getPaoID()][dynInfo->getKey()];
 
-                    continue;
-                }
-                catch( CtiTableDynamicPaoInfo::BadKeyException& )
-                {
-                    // we will re-try
-                }
+                // assume that cached info is always newer then what's from the DB
+                copyIfDestIsNull(currInfo, dynInfo);
 
-                // if the key was not recognize, retry with indexed key
-                try
-                {
-                    DynInfoIndexSPtr dynInfo = boost::make_shared<CtiTableDynamicPaoInfoIndexed>(boost::ref(rdr));
-
-                    PaoInfoIndexed& paoInfoIndexed = paoInfoPerIdIndexed[dynInfo->getPaoID()][dynInfo->getKey()];
-
-                    if( dynInfo->getIndex() )
-                    {
-                        const unsigned index = *dynInfo->getIndex();
-
-                        if( paoInfoIndexed.valuesInfo.size() < index + 1 )
-                        {
-                            // resize shall create empty null DynInfoSPtr
-                            // make sure we check this later when we retrieve indexed information
-                            paoInfoIndexed.valuesInfo.resize(index + 1);
-                        }
-
-                        paoInfoIndexed.valuesInfo[index] = dynInfo;
-                    }
-                    else
-                    {
-                        paoInfoIndexed.sizeInfo = dynInfo;
-                    }
-
-                }
-                catch( CtiTableDynamicPaoInfo::BadKeyException &ex )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                    dout << "Invalid key - paoid = " << ex.paoid << ", key = " << ex.key << ", owner = " << ex.owner << std::endl;
-                }
+                continue;
+            }
+            catch( CtiTableDynamicPaoInfo::BadKeyException& )
+            {
+                // we will re-try
             }
 
-            loadedPaos.insert(paoids.begin(), paoids.end());
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            dout << "Error reading Dynamic PAO Info from database. " << std::endl;
+            // if the key was not recognize, retry with indexed key
+            try
+            {
+                const DynInfoIndexSPtr dynInfo = boost::make_shared<CtiTableDynamicPaoInfoIndexed>(boost::ref(rdr));
+
+                PaoInfoIndexed& paoInfoIndexed = paoInfoPerIdIndexed[dynInfo->getPaoID()][dynInfo->getKey()];
+
+                if( dynInfo->getIndex() )
+                {
+                    const unsigned index = *dynInfo->getIndex();
+
+                    if( paoInfoIndexed.valuesInfo.size() < index + 1 )
+                    {
+                        // resize shall create empty null DynInfoSPtr
+                        // make sure we check this later when we retrieve indexed information
+                        paoInfoIndexed.valuesInfo.resize(index + 1);
+                    }
+
+                    DynInfoIndexSPtr& currInfo = paoInfoIndexed.valuesInfo[index];
+
+                    // assume that cached info is always newer then what's from the DB
+                    copyIfDestIsNull(currInfo, dynInfo);
+                }
+                else
+                {
+                    DynInfoIndexSPtr& currInfo = paoInfoIndexed.sizeInfo;
+
+                    // assume that cached info is always newer then what's from the DB
+                    copyIfDestIsNull(currInfo, dynInfo);
+                }
+
+            }
+            catch( CtiTableDynamicPaoInfo::BadKeyException &ex )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << "Invalid key - paoid = " << ex.paoid << ", key = " << ex.key << ", owner = " << ex.owner << std::endl;
+            }
         }
 
-        if(DebugLevel & 0x00020000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Dynamic PAO Info" << std::endl;
-        }
+        loadedPaos.insert(paoids.begin(), paoids.end());
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        dout << "Error reading Dynamic PAO Info from database. " << std::endl;
+    }
+
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Dynamic PAO Info" << std::endl;
     }
 }
 
@@ -297,8 +356,10 @@ void DynamicPaoInfoManager::purgeInfo(long paoId, CtiTableDynamicPaoInfo::PaoInf
     Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
-void DynamicPaoInfoManager::writeInfo( void )
+Database::id_set DynamicPaoInfoManager::writeInfo( void )
 {
+    Database::id_set paoIdsWritten;
+
     Cti::Database::DatabaseConnection conn;
 
     if ( ! conn.isValid() )
@@ -306,7 +367,7 @@ void DynamicPaoInfoManager::writeInfo( void )
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-        return;
+        return Database::id_set();
     }
 
     readers_writer_lock_t::writer_lock_guard_t lock(instance->mux);
@@ -320,7 +381,7 @@ void DynamicPaoInfoManager::writeInfo( void )
 
         instance->dirtyInfo.clear();
 
-        return;
+        return Database::id_set();
     }
 
     // insert/update CtiTableDynamicPaoInfo items
@@ -362,6 +423,8 @@ void DynamicPaoInfoManager::writeInfo( void )
 
                     continue;
                 }
+
+                paoIdsWritten.insert(dirtyInfo->getPaoID());
             }
 
             instance->dirtyInfo.erase(dirtyItr++);
@@ -414,9 +477,13 @@ void DynamicPaoInfoManager::writeInfo( void )
                 }
 
                 instance->dirtyInfoIndexed.erase(dirtyItr++);
+
+                paoIdsWritten.insert(dirtyInfo->getPaoID());
             }
         }
     }
+
+    return paoIdsWritten;
 }
 
 
@@ -610,6 +677,13 @@ boost::optional<std::vector<T>> DynamicPaoInfoManager::getInfo(const long paoId,
 
         return result;
     }
+}
+
+void DynamicPaoInfoManager::schedulePaoIdsToReload(const Database::id_set& paoIds)
+{
+    readers_writer_lock_t::writer_lock_guard_t lock(instance->mux);
+
+    instance->paosToReload.insert(paoIds.begin(), paoIds.end());
 }
 
 }

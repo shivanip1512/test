@@ -74,6 +74,11 @@
 
 #include "connection_client.h"
 
+#include <boost/interprocess/ipc/message_queue.hpp>
+#include <boost/interprocess/exceptions.hpp>
+#include <boost/interprocess/creation_tags.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
@@ -698,6 +703,74 @@ void applyPortLoadReport(const long unusedid, CtiPortSPtr ptPort, void *passedPt
     }
 }
 
+namespace {
+
+inline boost::posix_time::ptime getAbsTimeFromMillis( unsigned long millis )
+{
+    return boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(millis);
+}
+
+// keeps track of the last time we logged open message queue failure
+boost::optional<CtiTime> nextScannerloggingFail;
+
+void writeDynamicPaoInfo()
+{
+    const std::set<long> paoIdsWritten = Cti::DynamicPaoInfoManager::writeInfo();
+
+    if( paoIdsWritten.empty() )
+    {
+        return;
+    }
+
+    try
+    {
+        // Open the message_queue.
+        boost::interprocess::message_queue message_queue(
+                boost::interprocess::open_only,     // open only
+                "SCANNER_DYNAMICDATA_DBCHANGE"      // name
+                );
+
+        // reset the next scanner logging
+        nextScannerloggingFail = boost::none;
+
+        try
+        {
+            for each( long paoId in paoIdsWritten )
+            {
+                if( ! message_queue.timed_send(&paoId, sizeof(long), 0, getAbsTimeFromMillis(1000)) )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** ERROR **** : Timeout while sending paoIds to Scanner. " << __FILE__ << " (" << __LINE__ << ") " << endl;
+                    }
+                    return;
+                }
+            }
+        }
+        catch( boost::interprocess::interprocess_exception &ex )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION **** : " << ex.what() << " " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        }
+    }
+    catch( boost::interprocess::interprocess_exception &ex )
+    {
+        CtiTime now;
+
+        // Log this error on the first incident, or after one hour or more
+        if( ! nextScannerloggingFail || now >= *nextScannerloggingFail )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << now << " **** WARNING **** : Interprocess message queue could not be open, SCANNER may not be started. "
+                        "Exception: " << ex.what() << " " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            }
+            nextScannerloggingFail = now + (60*60); // now + 1 hour
+        }
+    }
+}
+
+} // namespace anonymous
 
 INT PorterMainFunction (INT argc, CHAR **argv)
 {
@@ -953,7 +1026,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         if( last_flush + 60 <= ::time(0) )
         {
             last_flush = ::time(0);
-            Cti::DynamicPaoInfoManager::writeInfo();
+            writeDynamicPaoInfo();
             PorterPointManager.processExpired();
         }
 
@@ -974,7 +1047,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     PorterCleanUp(0);
     _CrtSetAllocHook(pfnOldCrtAllocHook);
 
-    Cti::DynamicPaoInfoManager::writeInfo();
+    writeDynamicPaoInfo();
 
     return 0;
 }

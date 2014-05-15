@@ -43,6 +43,11 @@
 #include "millisecond_timer.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
+#include <boost/assign/list_of.hpp>
+#include <boost/interprocess/ipc/message_queue.hpp>
+#include <boost/interprocess/exceptions.hpp>
+#include <boost/interprocess/creation_tags.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #define NEXT_SCAN       0
 #define REMOTE_SCAN     1
@@ -53,7 +58,7 @@
 using namespace std;
 using Cti::ThreadStatusKeeper;
 
-static INT      ScannerReloadRate = 86400;
+static INT      ScannerReloadRate = 60 * 60 * 24; // 24 hours
 static CtiTime  LastPorterOutTime;
 static CtiTime  LastPorterInTime;
 
@@ -466,7 +471,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
         if(_beginthread (DatabaseHandlerThread, 0, NULL) == -1)
         {
-            dout << "Error starting Dispatch Thread" << endl;
+            dout << "Error starting Database Thread" << endl;
             return -1;
         }
 
@@ -1453,57 +1458,112 @@ void DispatchMsgHandlerThread(void *Arg)
     } /* End of for */
 }
 
+namespace {
+
+inline boost::posix_time::ptime getAbsTimeFromMillis( unsigned long millis )
+{
+    return boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(millis);
+}
+
+} // anonymous
+
 void DatabaseHandlerThread(void *Arg)
 {
     ThreadStatusKeeper threadStatus("Scanner DatabaseHandlerThread");
 
-    CtiTime TimeNow;
-    CtiTime RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, ScannerReloadRate );
+    CtiTime timeNow;
+    CtiTime refreshTime = nextScheduledTimeAlignedOnRate(timeNow, ScannerReloadRate);
 
-    ULONG   refreshRate = 900L;     // Max 15 minute (900 second) time between database processing.
-    ULONG   delta       = std::min( static_cast<ULONG>(RefreshTime.seconds() - TimeNow.seconds()), refreshRate);
-    ULONG   counter     = 0;
+    const unsigned long databaseRefreshRate = 60 * 15; // Max 15 minute (900 seconds) time between database processing.
 
-    /* perform the wait loop forever */
-    for( ; !ScannerQuit ; )
+    CtiTime databaseRefreshTime = std::min((timeNow + databaseRefreshRate), refreshTime);
+
+    long paoId;
+    unsigned int priority;
+    boost::interprocess::message_queue::size_type recvd_size;
+
+    while( ! ScannerQuit )
     {
-        threadStatus.monitorCheck(CtiThreadRegData::None);
-
-        if( WAIT_OBJECT_0 == WaitForSingleObject(hScannerSyncs[S_QUIT_EVENT], 1000) )
+        try
         {
-            ScannerQuit = TRUE;
-        }
-        else
-        {
-            counter++;
-        }
+            // Erase the message queue (should not throw)
+            boost::interprocess::message_queue::remove("SCANNER_DYNAMICDATA_DBCHANGE");
 
-        if( !ScannerQuit && counter >= delta )
-        {
-            TimeNow = TimeNow.now();
+            // Create a message_queue.
+            boost::interprocess::message_queue message_queue(
+                   boost::interprocess::create_only,   // create only
+                   "SCANNER_DYNAMICDATA_DBCHANGE",     // name
+                   1024,                               // max message number
+                   sizeof(long)                        // max message size
+                   );
 
+            while( ! ScannerQuit )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow << " DatabaseHandlerThread managing the database now. " << endl;
+                threadStatus.monitorCheck(CtiThreadRegData::None);
+
+                if( message_queue.timed_receive(&paoId, sizeof(long), recvd_size, priority, getAbsTimeFromMillis(1000)) &&
+                    recvd_size == sizeof(long) )
+                {
+                    Cti::Database::id_set paoIds = boost::assign::list_of(paoId);
+
+                    Cti::Timing::MillisecondTimer timer_backtoback;
+
+                    // receive back-to-back paoIds from porter, allow 1 ms
+                    while( message_queue.timed_receive(&paoId, sizeof(long), recvd_size, priority, getAbsTimeFromMillis(1)) &&
+                           recvd_size == sizeof(long) )
+                    {
+                        paoIds.insert(paoId);
+                        
+                        if( timer_backtoback.elapsed() > 1000 )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** WARNING **** receiving paoIds back-to-back for more then 1 second " << __FILE__ << " (" << __LINE__ << ") " << endl;
+                            }
+                            break;
+                        }
+                    }
+
+                    Cti::DynamicPaoInfoManager::schedulePaoIdsToReload(paoIds);
+                }
+
+                if( ! ScannerQuit && (timeNow = CtiTime::now()) >= databaseRefreshTime )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << timeNow << " DatabaseHandlerThread managing the database now. " << endl;
+                    }
+
+                    RecordDynamicData();
+                    Cti::DynamicPaoInfoManager::writeInfo();
+
+                    if( timeNow >= refreshTime )
+                    {
+                        LoadScannableDevices();
+                        // Post the wakup to ensure that the main loop re-examines the devices.
+                        SetEvent(hScannerSyncs[S_SCAN_EVENT]);
+
+                        refreshTime = nextScheduledTimeAlignedOnRate(timeNow, ScannerReloadRate);
+                    }
+
+                    databaseRefreshTime = std::min((timeNow + databaseRefreshRate), refreshTime);
+                }
             }
-
-            RecordDynamicData();
-            Cti::DynamicPaoInfoManager::writeInfo();
-
-            if(TimeNow >= RefreshTime)
-            {
-                LoadScannableDevices();
-                // Post the wakup to ensure that the main loop re-examines the devices.
-                SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
-
-                RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, ScannerReloadRate );
-            }
-
-            counter = 0;
-            TimeNow = TimeNow.now();
-            delta   = std::min( static_cast<ULONG>(RefreshTime.seconds() - TimeNow.seconds()), refreshRate);
         }
-    } /* End of for */
+        catch( boost::interprocess::interprocess_exception& ex )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION **** : " << ex.what() << " " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        }
+
+        if( ! ScannerQuit )
+        {
+            Sleep(1000); // prevent run-away loop
+        }
+    }
+
+    // Erase the message queue (should not throw)
+    boost::interprocess::message_queue::remove("SCANNER_DYNAMICDATA_DBCHANGE");
 
     RecordDynamicData();
     Cti::DynamicPaoInfoManager::writeInfo();
