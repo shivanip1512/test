@@ -58,9 +58,9 @@ $(function(){
 </div>
 <div class="stacked">
     <cti:url var="postUrl" value="/stars/operator/thermostatSchedule/updateTemperaturePreference"/>
-    <cti:url var="schedUrl" value="/stars/operator/thermostat/schedule"/>
-    <cti:url var="thermoSchedUrl" value="/stars/operator/thermostatSchedule"/>
-    <cti:url var="schedSaveUrl" value="/stars/operator/thermostatSchedule/save"/>
+    <c:set var="schedUrl" value="/stars/operator/thermostat/schedule"/>
+    <c:set var="thermoSchedUrl" value="/stars/operator/thermostatSchedule"/>
+    <c:set var="schedSaveUrl" value="/stars/operator/thermostatSchedule/save"/>
     <c:choose>
         <c:when test="${empty schedules and empty currentSchedule}">
             <%-- THERMOSTAT NAMES --%>

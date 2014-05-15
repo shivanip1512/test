@@ -72,7 +72,7 @@ $(function(){
 </div>
 
 <cti:url var="postUrl" value="/stars/consumer/thermostat/schedule/updateTemperaturePreference"/>
-<cti:url var="schedUrl" value="/stars/consumer/thermostat/schedule"/>
+<c:set var="schedUrl" value="/stars/consumer/thermostat/schedule"/>
 <c:choose>
     <c:when test="${empty schedules and empty currentSchedule}">
         <div class="helper">
