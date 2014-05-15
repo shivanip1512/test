@@ -10520,14 +10520,14 @@
                 <name>IP Address</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="20002">
                 <init>true</init>
                 <name>UDP Port</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <!-- STATUS POINTS -->
             <point type="Status" offset="2">
