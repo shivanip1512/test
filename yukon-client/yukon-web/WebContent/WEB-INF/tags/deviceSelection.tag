@@ -67,7 +67,7 @@ function selectDevices(devices) {
 
 function submitSelectDevicesByGroupForm() {
 
-    if (document.getElementById('group.name').value == '') {
+    if (document.getElementById('group-name').value == '') {
         alert('${noGroupSelectedAlertText}');
         return false;
     }
@@ -204,7 +204,7 @@ function validateAddressRange() {
             <form id="selectDevicesByGroupForm" method="get" action="${action}">
                 <input type="hidden" name="collectionType" value="group"/>
                 <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
-                <jsTree:nodeValueSelectingPopupTree fieldId="group.name"
+                <jsTree:nodeValueSelectingPopupTree fieldId="group-name"
                                                     fieldName="group.name"
                                                     nodeValueName="groupName"
                                                     submitButtonText="${submitButtonText}"
