@@ -1,11 +1,19 @@
 package com.cannontech.dr.ecobee.message.partial;
 
+import java.util.Collections;
+
+import com.cannontech.common.util.JsonSerializers;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * Describes a selection of Ecobee thermostats.
+ * 
+ * https://www.ecobee.com/home/developer/api/documentation/v1/objects/Selection.shtml
  */
 public class Selection {
     private final SelectionType selectionType;
-    private final String selectionMatch;
+    private final Iterable<String> serialNumbers;
     
     public static enum SelectionType {
         REGISTERED("registered"), //selects all registered thermostats
@@ -28,16 +36,22 @@ public class Selection {
      * selectionMatch.
      * @param selectionMatch Contains the criteria that ecobee uses to determine what thermostats match the selection.
      */
-    public Selection(SelectionType selectionType, String selectionMatch) {
+    public Selection(SelectionType selectionType, Iterable<String> serialNumbers) {
         this.selectionType = selectionType;
-        this.selectionMatch = selectionMatch;
+        this.serialNumbers = serialNumbers;
+    }
+    
+    public Selection(SelectionType selectionType, String serialNumber) {
+        this(selectionType, Collections.singleton(serialNumber));
     }
     
     public String getSelectionType() {
         return selectionType.getEcobeeString();
     }
-    
-    public String getSelectionMatch() {
-        return selectionMatch;
+
+    @JsonSerialize(using=JsonSerializers.Csv.class)
+    @JsonGetter("selectionMatch")
+    public Iterable<String> getSerialNumbers() {
+        return serialNumbers;
     }
 }

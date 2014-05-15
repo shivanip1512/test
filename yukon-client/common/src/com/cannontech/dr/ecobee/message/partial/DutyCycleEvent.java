@@ -1,18 +1,21 @@
 package com.cannontech.dr.ecobee.message.partial;
 
+import org.joda.time.Instant;
+
+import com.cannontech.common.util.JsonSerializers;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * Implementation of the ecobee "event" object used for duty cycle dr. Only includes the subset of "event" object fields
  * necessary for this type of control, and uses appropriate default values where possible.
  */
 public class DutyCycleEvent {
-    private final String name;
     private final String type = "demandResponse";
+    private final String name;
     private final boolean isOptional = false;
-    
-    private final String startDate; //format: yyyy-mm-dd
-    private final String startTime; //format: hh:mm:ss
-    private final String endDate; //format: yyyy-mm-dd
-    private final String endTime; //format: hh:mm:ss
+
+    private final Instant startDate;
+    private final Instant endDate;
     
     //Since this control uses duty cycle, set a relative temperature offset of 0 degrees
     private final boolean isTemperatureRelative = true;
@@ -21,14 +24,11 @@ public class DutyCycleEvent {
     
     private final int dutyCyclePercentage;
     
-    public DutyCycleEvent(String name, int dutyCyclePercentage, String startDate, String startTime, String endDate, 
-                 String endTime) {
+    public DutyCycleEvent(String name, int dutyCyclePercentage, Instant startDate, Instant endDate) {
         this.name = name;
         this.dutyCyclePercentage = dutyCyclePercentage;
         this.startDate = startDate;
-        this.startTime = startTime;
         this.endDate = endDate;
-        this.endTime = endTime;
     }
 
     public String getName() {
@@ -39,20 +39,24 @@ public class DutyCycleEvent {
         return type;
     }
 
-    public String getStartDate() {
+    @JsonSerialize(using=JsonSerializers.EcobeeDate.class)
+    public Instant getStartDate() {
         return startDate;
     }
 
-    public String getStartTime() {
-        return startTime;
+    @JsonSerialize(using=JsonSerializers.EcobeeTime.class)
+    public Instant getStartTime() {
+        return startDate;
     }
 
-    public String getEndDate() {
+    @JsonSerialize(using=JsonSerializers.EcobeeDate.class)
+    public Instant getEndDate() {
         return endDate;
     }
 
-    public String getEndTime() {
-        return endTime;
+    @JsonSerialize(using=JsonSerializers.EcobeeTime.class)
+    public Instant getEndTime() {
+        return endDate;
     }
 
     public boolean getIsTemperatureRelative() {

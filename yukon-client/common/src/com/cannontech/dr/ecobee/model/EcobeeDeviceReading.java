@@ -2,8 +2,6 @@ package com.cannontech.dr.ecobee.model;
 
 import org.joda.time.Instant;
 
-
-
 public final class EcobeeDeviceReading {
     private final Float outdoorTempInF;
     private final Float indoorTempInF;

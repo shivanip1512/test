@@ -2,7 +2,7 @@ package com.cannontech.dr.ecobee.message;
 
 import java.util.List;
 
-import com.cannontech.dr.ecobee.message.partial.DeviceDataReport;
+import com.cannontech.dr.ecobee.message.partial.RuntimeReport;
 import com.cannontech.dr.ecobee.message.partial.Status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,7 +15,7 @@ public class DeviceDataResponse extends BaseResponse {
     private final String endDate;
     private final int endInterval;
     private final String columns;
-    private final List<DeviceDataReport> reportList;
+    private final List<RuntimeReport> reportList;
     private final List<String> sensorList;
     
     @JsonCreator
@@ -25,7 +25,7 @@ public class DeviceDataResponse extends BaseResponse {
                               @JsonProperty("endDate") String endDate,
                               @JsonProperty("endInterval") int endInterval,
                               @JsonProperty("columns") String columns,
-                              @JsonProperty("reportList") List<DeviceDataReport> reportList,
+                              @JsonProperty("reportList") List<RuntimeReport> reportList,
                               @JsonProperty("sensorList") List<String> sensorList) {
         super(status);
         this.startDate = startDate;
@@ -57,7 +57,7 @@ public class DeviceDataResponse extends BaseResponse {
         return columns;
     }
 
-    public List<DeviceDataReport> getReportList() {
+    public List<RuntimeReport> getReportList() {
         return reportList;
     }
 

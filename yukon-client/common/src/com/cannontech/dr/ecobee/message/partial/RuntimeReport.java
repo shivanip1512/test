@@ -7,18 +7,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class DeviceDataReport {
+public class RuntimeReport {
     private final String thermostatIdentifier;
     private final int rowCount;
-    private final List<String> rowList;
+    private final List<RuntimeReportRow> runtimeReports;
     
     @JsonCreator
-    public DeviceDataReport(@JsonProperty("thermostatIdentifier") String thermostatIdentifier,
+    public RuntimeReport(@JsonProperty("thermostatIdentifier") String thermostatIdentifier,
                             @JsonProperty("rowCount") int rowCount,
-                            @JsonProperty("rowList") List<String> rowList) {
+                            @JsonProperty("rowList") List<RuntimeReportRow> runtimeReports) {
         this.thermostatIdentifier = thermostatIdentifier;
         this.rowCount = rowCount;
-        this.rowList = rowList;
+        this.runtimeReports = runtimeReports;
     }
 
     public String getThermostatIdentifier() {
@@ -29,7 +29,7 @@ public class DeviceDataReport {
         return rowCount;
     }
 
-    public List<String> getRowList() {
-        return rowList;
+    public List<RuntimeReportRow> getRuntimeReports() {
+        return runtimeReports;
     }
 }

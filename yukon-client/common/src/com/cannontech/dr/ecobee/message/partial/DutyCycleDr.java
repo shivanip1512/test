@@ -1,5 +1,7 @@
 package com.cannontech.dr.ecobee.message.partial;
 
+import org.joda.time.Instant;
+
 
 public class DutyCycleDr {
     private final String name;
@@ -8,15 +10,15 @@ public class DutyCycleDr {
     private final boolean randomizeStartTime;
     private final boolean randomizeEndTime;
     
-    public DutyCycleDr(String name, String message, int dutyCyclePercentage, String startDate, 
-            String startTime, boolean randomizeStartTime, String endDate, String endTime, boolean randomizeEndTime) {
+    public DutyCycleDr(String name, String message, int dutyCyclePercentage, Instant startDate, 
+                       boolean randomizeStartTime, Instant endDate, boolean randomizeEndTime) {
         this.name = name;
         this.message = message;
         this.randomizeStartTime = randomizeStartTime;
         this.randomizeEndTime = randomizeEndTime;
-        this.event = new DutyCycleEvent(name, dutyCyclePercentage, startDate, startTime, endDate, endTime);
+        this.event = new DutyCycleEvent(name, dutyCyclePercentage, startDate, endDate);
     }
-    
+
     public String getName() {
         return name;
     }

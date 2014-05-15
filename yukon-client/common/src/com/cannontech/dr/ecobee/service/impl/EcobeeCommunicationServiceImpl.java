@@ -9,8 +9,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -34,7 +32,6 @@ import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
 import com.cannontech.dr.ecobee.message.BaseResponse;
 import com.cannontech.dr.ecobee.message.CreateSetRequest;
 import com.cannontech.dr.ecobee.message.DeleteSetRequest;
-import com.cannontech.dr.ecobee.message.DevcieDataRequest;
 import com.cannontech.dr.ecobee.message.DeviceDataResponse;
 import com.cannontech.dr.ecobee.message.DrResponse;
 import com.cannontech.dr.ecobee.message.DrRestoreRequest;
@@ -44,16 +41,18 @@ import com.cannontech.dr.ecobee.message.ListHierarchyRequest;
 import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
 import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
+import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
-import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
+import com.cannontech.dr.ecobee.message.partial.RuntimeReport;
+import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
+import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Joiner;
 
 public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationService {
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
@@ -66,16 +65,18 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     private static final String modifyThermostatUrlPart = "hierarchy/thermostat?format=json";
     private static final String demandResponseUrlPart = "demandResponse?format=json";
     private static final String runtimeReportUrlPart = "runtimeReport?format=json";
-    private static final DateTimeFormatter drDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
-    private static final DateTimeFormatter drTimeFormatter = DateTimeFormat.forPattern("HH:mm:ss");
-    private static final String deviceReadColumns = 
-            "zoneAveTemp," + // indoor temp
-            "outdoorTemp," + // outdoor temp
-            "zoneCoolTemp," + // cool set point
-            "zoneHeatTemp," + // heat set point
-            "zoneCalendarEvent," + //currently running event
-            "compCool1," + // cool runtime
-            "compHeat1"; // heat runtime
+    private static final List<String> deviceReadColumns = new ArrayList<>();
+    static {
+        // If the order is changed here or something is added or removed we need to update
+        // JsonSerializers.EcobeeRuntimeReportRow and RuntimeReport
+        deviceReadColumns.add("zoneCalendarEvent"); //currently running event
+        deviceReadColumns.add("zoneAveTemp"); // indoor temp
+        deviceReadColumns.add("outdoorTemp"); // outdoor temp
+        deviceReadColumns.add("zoneCoolTemp"); // cool set point
+        deviceReadColumns.add("zoneHeatTemp"); // heat set point
+        deviceReadColumns.add("compCool1"); // cool runtime
+        deviceReadColumns.add("compHeat1"); // heat runtime
+    }
 
     @Override
     public boolean registerDevice(String serialNumber, int ecId) throws EcobeeException {
@@ -131,29 +132,36 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     @Override
     public List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange, int ecId)
             throws EcobeeException {
-        
-        HttpHeaders headers = getHeadersWithAuthentication(ecId);
-        HttpEntity<DevcieDataRequest> requestEntity = new HttpEntity<>(headers);
-        //Build base url
-        String url = getUrlBase(ecId) + runtimeReportUrlPart + "&body={bodyJson}";
-        
-        //Add url parameters
-        String selectionMatch = Joiner.on(",").join(serialNumbers);
-        String startDate = drDateFormatter.print(dateRange.getMin()); //TODO: clusivity?
-        int startInterval = dateRange.getMin().get(DateTimeFieldType.minuteOfDay()) / 5;
-        String endDate = drDateFormatter.print(dateRange.getMax());
-        int endInterval = dateRange.getMax().get(DateTimeFieldType.minuteOfDay()) / 5;
 
+        HttpHeaders headers = getHeadersWithAuthentication(ecId);
+        HttpEntity<RuntimeReportRequest> requestEntity = new HttpEntity<>(headers);
+        //Build base url
         //RestTemplate could do the parameter substitution for us, except it chokes on the JSON that ecobee, in their
         //infinite wisdom, forces us to use in the URL.
-        DevcieDataRequest request = new DevcieDataRequest(startDate, startInterval, 
-                  endDate, endInterval, SelectionType.THERMOSTATS, selectionMatch, deviceReadColumns);
+        String url = getUrlBase(ecId) + runtimeReportUrlPart + "&body={bodyJson}";
+
+        //Add url parameters
+        int startInterval = dateRange.getMin().get(DateTimeFieldType.minuteOfDay()) / 5;
+        int endInterval = dateRange.getMax().get(DateTimeFieldType.minuteOfDay()) / 5;
+
+        RuntimeReportRequest request = new RuntimeReportRequest(dateRange.getMin(), startInterval, 
+                  dateRange.getMax(), endInterval, serialNumbers, deviceReadColumns);
 
         DeviceDataResponse response = queryEcobeeGet(url, requestEntity, request, EcobeeQueryType.DATA_COLLECTION, ecId,
                                           DeviceDataResponse.class);
 
-        //TODO: convert and return the data 
-        return new ArrayList<>();
+        List<EcobeeDeviceReadings> deviceData = new ArrayList<>();
+        for (RuntimeReport runtimeReport : response.getReportList()) {
+            List<EcobeeDeviceReading> readings = new ArrayList<>();
+            for (RuntimeReportRow reportRow : runtimeReport.getRuntimeReports()) {
+                EcobeeDeviceReading reading = new EcobeeDeviceReading(reportRow.getOutdoorTemp(),
+                    reportRow.getIndoorTemp(), reportRow.getCoolSetPoint(), reportRow.getHeatSetPoint(), 
+                    reportRow.getHeatRuntime(), "", reportRow.getDate());
+                readings.add(reading);
+            }
+            deviceData.add(new EcobeeDeviceReadings(runtimeReport.getThermostatIdentifier(), dateRange, readings));
+        }
+        return deviceData;
     }
 
     @Override
@@ -202,23 +210,17 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
         return response.getSuccess();
     }
-    
+
     @Override
     public String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters, int ecId) throws EcobeeException {
-
         HttpHeaders headers = getHeadersWithAuthentication(ecId);
         String url = getUrlBase(ecId) + demandResponseUrlPart;
-        
-        String startDateString = drDateFormatter.print(parameters.getStartTime());
-        String startTimeString = drTimeFormatter.print(parameters.getStartTime());
-        String endDateString = drDateFormatter.print(parameters.getEndTime());
-        String endTimeString = drTimeFormatter.print(parameters.getEndTime());
-        
+
         String groupIdString = Integer.toString(parameters.getGroupId());
-        DutyCycleDrRequest request = new DutyCycleDrRequest(groupIdString, "yukonDutyCycleDr", 
-                                                            parameters.getDutyCyclePercent(), startDateString,
-                                                            startTimeString, parameters.isRampIn(), endDateString,
-                                                            endTimeString, parameters.isRampOut());
+        DutyCycleDrRequest request = new DutyCycleDrRequest(groupIdString, "yukonDutyCycleDr",
+                    parameters.getDutyCyclePercent(), parameters.getStartTime(), parameters.isRampIn(),
+                    parameters.getEndTime(), parameters.isRampOut());
+
         HttpEntity<DutyCycleDrRequest> requestEntity = new HttpEntity<>(request, headers);
 
         DrResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.DEMAND_RESPONSE, ecId, DrResponse.class);
