@@ -99,9 +99,9 @@ bool IM_EX_CTIBASE executeUpdater( DatabaseWriter& updater, const char* file, co
 
 /**
  * Execute a database insert command
- * @return normalized error code, or null if no error
+ * @throws Cti::Database::DBException
  */
-IM_EX_CTIBASE const ErrorCodes *executeInserter( DatabaseWriter &inserter, const char* file, const int line, const LogDebug::Options logDebug );
+IM_EX_CTIBASE void executeDBWriter( DatabaseWriter &dbWriter, const char* file, const int line, const LogDebug::Options logDebug );
 
 /**
  * Helper method to create a string of the format
@@ -111,16 +111,16 @@ IM_EX_CTIBASE const ErrorCodes *executeInserter( DatabaseWriter &inserter, const
  */
 std::string IM_EX_CTIBASE createIdSqlClause(const id_set &paoids, const std::string &table, const std::string &column);
 
-
-typedef boost::function<void (DatabaseWriter &)> InitWriterFunc;
-
 /**
  * Execute an Upsert operation
+ * @throws Cti::Database::DBException
  */
-IM_EX_CTIBASE const ErrorCodes *executeUpsert(
+IM_EX_CTIBASE void executeUpsert(
         DatabaseConnection &conn,
-        const InitWriterFunc& initInserter, const InitWriterFunc& initUpdater,
-        const char* file, const int line, const TryInsertFirst::Options tryInsertFirst, const LogDebug::Options logDebug );
+        const boost::function<void (DatabaseWriter &)> &initInserter, 
+        const boost::function<void (DatabaseWriter &)> &initUpdater,
+        const TryInsertFirst::Options tryInsertFirst, 
+        const char* file, const int line, const LogDebug::Options logDebug );
 
 } // namespace Database
 } // namespace Cti

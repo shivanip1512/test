@@ -12,18 +12,6 @@ namespace Database {
 typedef std::set<long> id_set;
 typedef id_set::const_iterator id_set_itr;
 
-struct IM_EX_CTIBASE ErrorCodes
-{
-    const std::string name;
-
-    static const ErrorCodes ErrorCode_ForeignKeyViolated;
-    static const ErrorCodes ErrorCode_PrimaryKeyViolated;
-    static const ErrorCodes ErrorCode_Other;
-
-private:
-    ErrorCodes(const std::string name_);
-};
-
 class IM_EX_CTIBASE DatabaseConnection
 {
 private:
@@ -45,7 +33,7 @@ protected:
     bool rollbackTransaction();
     bool commitTransaction();
 
-    static const ErrorCodes *resolveErrorCode(const SAConnection *conn, const SAException &x);
+    static void resolveErrorCodeAndThrow(const SAConnection *conn, const SAException &x);
 
 public:
     DatabaseConnection();

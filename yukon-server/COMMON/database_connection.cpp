@@ -1,7 +1,8 @@
 #include "precompiled.h"
-#include "database_connection.h"
-#include "logger.h"
 
+#include "database_connection.h"
+#include "database_exceptions.h"
+#include "logger.h"
 #include "std_helper.h"
 
 #include <SQLAPI.h>
@@ -84,6 +85,18 @@ bool DatabaseConnection::commitTransaction()
     return false;
 }
 
+namespace {
+
+void throwPrimaryKeyViolationException(const SAException &x)
+{
+    throw PrimaryKeyViolationException((std::string)x.ErrText());
+}
+
+void throwForeignKeyViolationException(const SAException &x)
+{
+    throw ForeignKeyViolationException((std::string)x.ErrText());
+}
+
 //  foreign key insert error:
 //  oracle = ORA-02291
 //  sqlsvr = 547 - The %ls statement conflicted with the %ls constraint "%.*ls". The conflict occurred in database "%.*ls", table "%.*ls"%ls%.*ls%ls.
@@ -92,40 +105,40 @@ bool DatabaseConnection::commitTransaction()
 //  oracle = ORA-00001
 //  sqlsvr = 2627 - Violation of %ls constraint '%.*ls'. Cannot insert duplicate key in object '%.*ls'.
 
-typedef std::map<int, const ErrorCodes *> VendorErrorMap;
+typedef void (*ThrowDBExceptionFunc) (const SAException &);
+typedef std::map<int, ThrowDBExceptionFunc> VendorErrorMap;
 
 const VendorErrorMap sqlServerErrors = boost::assign::map_list_of
-    ( 547, &ErrorCodes::ErrorCode_ForeignKeyViolated)
-    (2627, &ErrorCodes::ErrorCode_PrimaryKeyViolated);
+    ( 547, &throwForeignKeyViolationException)
+    (2627, &throwPrimaryKeyViolationException);
 
 const VendorErrorMap oracleErrors = boost::assign::map_list_of
-    (2291, &ErrorCodes::ErrorCode_ForeignKeyViolated)
-    (   1, &ErrorCodes::ErrorCode_PrimaryKeyViolated);
+    (2291, &throwForeignKeyViolationException)
+    (   1, &throwPrimaryKeyViolationException);
 
-const ErrorCodes *DatabaseConnection::resolveErrorCode(const SAConnection *conn, const SAException &x)
+} // anonymous namespace
+
+void DatabaseConnection::resolveErrorCodeAndThrow(const SAConnection *conn, const SAException &x)
 {
-    boost::optional<const ErrorCodes *> ec;
-
-    if( conn )
+    if( ! conn )
     {
-        switch( conn->Client() )
-        {
-            case SA_Oracle_Client:       ec = Cti::mapFind(oracleErrors,    x.ErrNativeCode());  break;
-            case SA_SQLServer_Client:    ec = Cti::mapFind(sqlServerErrors, x.ErrNativeCode());  break;
-        }
+        std::string description = "Unexpected SAConnection is Null: " + x.ErrText();
+        throw DBException(description);
     }
 
-    if( ! ec || ! *ec )
+    boost::optional<ThrowDBExceptionFunc> throwFunc;
+
+    switch( conn->Client() )
     {
-        return &ErrorCodes::ErrorCode_Other;
+        case SA_Oracle_Client:    throwFunc = Cti::mapFind(oracleErrors,    x.ErrNativeCode()); break;
+        case SA_SQLServer_Client: throwFunc = Cti::mapFind(sqlServerErrors, x.ErrNativeCode()); break;
     }
 
-    return *ec;
+    if( ! throwFunc )
+    {
+        std::string description = "Other Error: " + x.ErrText();
+        throw DBException(description);
+    }
+
+    (*throwFunc)(x); // throw the exception found
 }
-
-ErrorCodes::ErrorCodes(const std::string name_) : name(name_) {}
-
-const ErrorCodes ErrorCodes::ErrorCode_ForeignKeyViolated("Foreign key violated");
-const ErrorCodes ErrorCodes::ErrorCode_PrimaryKeyViolated("Primary key violated");
-const ErrorCodes ErrorCodes::ErrorCode_Other             ("Other");
-

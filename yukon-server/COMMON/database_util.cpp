@@ -1,5 +1,6 @@
 #include "precompiled.h"
 
+#include "database_exceptions.h"
 #include "database_util.h"
 #include "database_reader.h"
 
@@ -100,11 +101,11 @@ bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, 
  * Execute a database insert command
  * @return normalized error code, or null if no error
  */
-const ErrorCodes *executeInserter( DatabaseWriter &inserter, const char* file, const int line, const LogDebug::Options logDebug )
+void executeDBWriter( DatabaseWriter &dbWriter, const char* file, const int line, const LogDebug::Options logDebug )
 {
     if( logDebug == LogDebug::Enable )
     {
-        std::string loggedSQLstring = inserter.asString();
+        std::string loggedSQLstring = dbWriter.asString();
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << CtiTime() << " **** DEBUG **** DB command : " << file << " (" << line << ")" << std::endl
@@ -112,19 +113,20 @@ const ErrorCodes *executeInserter( DatabaseWriter &inserter, const char* file, c
         }
     }
 
-    const ErrorCodes *ec = inserter.executeReturningErrorCode();
-
-    if( ec )
+    try
     {
-        std::string loggedSQLstring = inserter.asString();
+        dbWriter.executeAndThrowOnError();
+    }
+    catch( DBException& )
+    {
+        std::string loggedSQLstring = dbWriter.asString();
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << CtiTime() << " **** ERROR **** DB command : " << file << " (" << line << ")" << std::endl
                  << loggedSQLstring << std::endl;
         }
+        throw;
     }
-
-    return ec;
 }
 
 
@@ -172,19 +174,22 @@ std::string createIdSqlClause(const id_set &paoids, const std::string &table, co
  * Update -> if no error but no rows are affected try an insert
  *
  */
-const ErrorCodes *executeUpsert(
-        DatabaseConnection &conn,
-        const InitWriterFunc& initInserter, const InitWriterFunc& initUpdater,
-        const char* file, const int line, const TryInsertFirst::Options tryInsertFirst, const LogDebug::Options logDebug)
+void executeUpsert(DatabaseConnection &conn,
+                   const boost::function<void (DatabaseWriter &)> &initInserter,
+                   const boost::function<void (DatabaseWriter &)> &initUpdater,
+                   const TryInsertFirst::Options tryInsertFirst,
+                   const char* file, const int line, const LogDebug::Options logDebug )
 {
     if( tryInsertFirst == TryInsertFirst::Enable )
     {
-        DatabaseWriter inserter(conn);
-        initInserter( inserter );
+        try
+        {
+            DatabaseWriter inserter(conn);
+            initInserter( inserter );
 
-        const ErrorCodes* ec = executeInserter(inserter, file, line, logDebug);
-
-        if( ec == &ErrorCodes::ErrorCode_PrimaryKeyViolated )
+            executeDBWriter(inserter, file, line, logDebug);
+        }
+        catch( PrimaryKeyViolationException& ex )
         {
             if( logDebug == LogDebug::Enable )
             {
@@ -192,38 +197,30 @@ const ErrorCodes *executeUpsert(
                 dout << CtiTime() << " DB Insert has fail for primary key violation, will try Update : " << file << " (" << line << ")" << std::endl;
             }
 
-            // if the error is a primary violation the row could already be there,
-            // retry with update first
-            return executeUpsert(conn, initInserter, initUpdater, file, line, TryInsertFirst::Disable, logDebug);
+            // if the error is a primary violation the row could already be there, retry with update first
+            executeUpsert(conn, initInserter, initUpdater, TryInsertFirst::Disable, file, line, logDebug);
         }
-
-        return ec;
     }
     else
     {
         DatabaseWriter updater(conn);
         initUpdater( updater );
 
-        if( ! executeCommand(updater, file, line, logDebug) )
-        {
-            return &ErrorCodes::ErrorCode_Other;
-        }
+        executeDBWriter(updater, file, line, logDebug);
 
         if( ! updater.rowsAffected() )
         {
             if( logDebug == LogDebug::Enable )
             {
                 CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " DB Update no rows affected will try Insert : " << file << " (" << line << ")" << std::endl;
+                dout << CtiTime() << " DB Update no rows affected, will try Insert : " << file << " (" << line << ")" << std::endl;
             }
 
             DatabaseWriter inserter(conn);
             initInserter( inserter );
 
-            return executeInserter(inserter, file, line, logDebug);
+            executeDBWriter(inserter, file, line, logDebug);
         }
-
-        return 0;
     }
 }
 

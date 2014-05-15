@@ -10,6 +10,7 @@ using namespace std;
 #include "database_reader.h"
 #include "database_writer.h"
 #include "database_util.h"
+#include "database_exceptions.h"
 #include "ctidate.h"
 #include "ctitime.h"
 
@@ -158,28 +159,32 @@ bool CtiTablePointDispatch::writeToDB(Cti::Database::DatabaseConnection &conn)
 {
     using namespace Cti::Database;
 
-    const TryInsertFirst tryInsertFirst = ! getUpdatedFlag();
-
-    const ErrorCodes* ec = executeUpsert(
-            conn,
-            boost::bind(&CtiTablePointDispatch::initInserter, this, _1),
-            boost::bind(&CtiTablePointDispatch::initUpdater,  this, _1),
-            __FILE__, __LINE__, tryInsertFirst, LogDebug::Disable );
-
-    if( ec )
+    try
     {
-        if( ec == &ErrorCodes::ErrorCode_PrimaryKeyViolated || ec == &ErrorCodes::ErrorCode_ForeignKeyViolated )
-        {
-            _pointIdInvalid = true;
-        }
+        const TryInsertFirst tryInsertFirst = ! getUpdatedFlag();
 
-        return false;
+        executeUpsert(
+                conn,
+                boost::bind(&CtiTablePointDispatch::initInserter, this, _1),
+                boost::bind(&CtiTablePointDispatch::initUpdater,  this, _1),
+                tryInsertFirst,
+                __FILE__, __LINE__, LogDebug::Disable );
+
+        setUpdatedFlag(true);
+        setDirty(false);
+
+        return true;
+    }
+    catch( Cti::Database::ForeignKeyViolationException& )
+    {
+        _pointIdInvalid = true;
+    }
+    catch( Cti::Database::DBException& )
+    {
+        // logging is done inside executeUpsert()
     }
 
-    setUpdatedFlag(true);
-    setDirty(false);
-
-    return true;
+    return false;
 }
 
 

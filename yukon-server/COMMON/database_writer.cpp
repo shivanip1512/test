@@ -50,13 +50,11 @@ bool DatabaseWriter::execute()
     return retVal;
 }
 
-const ErrorCodes *DatabaseWriter::executeReturningErrorCode()
+void DatabaseWriter::executeAndThrowOnError()
 {
     try
     {
         _command.Execute();
-
-        return 0;
     }
     catch(SAException &x)
     {
@@ -67,7 +65,7 @@ const ErrorCodes *DatabaseWriter::executeReturningErrorCode()
             dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
         }
 
-        return DatabaseConnection::resolveErrorCode(_command.Connection(), x);
+        DatabaseConnection::resolveErrorCodeAndThrow(_command.Connection(), x);
     }
 }
 
