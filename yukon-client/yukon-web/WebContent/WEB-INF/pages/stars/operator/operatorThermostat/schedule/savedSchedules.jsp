@@ -57,6 +57,10 @@ $(function(){
     </div>
 </div>
 <div class="stacked">
+    <cti:url var="postUrl" value="/stars/operator/thermostatSchedule/updateTemperaturePreference"/>
+    <cti:url var="schedUrl" value="/stars/operator/thermostat/schedule"/>
+    <cti:url var="thermoSchedUrl" value="/stars/operator/thermostatSchedule"/>
+    <cti:url var="schedSaveUrl" value="/stars/operator/thermostatSchedule/save"/>
     <c:choose>
         <c:when test="${empty schedules and empty currentSchedule}">
             <%-- THERMOSTAT NAMES --%>
@@ -87,7 +91,7 @@ $(function(){
                                 thermostatIds="${thermostatIds}"
                                 accountId="${accountId}"
                                 temperatureUnit="${temperatureUnit}"
-                                actionPath="/stars/operator/thermostatSchedule"
+                                actionPath="${schedUrl}"
                                 thermostatType="${thermostatType}"
                                 styleClass="vh"/>
                         </div>
@@ -104,7 +108,7 @@ $(function(){
                         <cti:button nameKey="history" icon="icon-time" href="${historyUrl}" />
                     </div>
                     <div class="tempControls fl">
-                        <form method="post" action="/stars/operator/thermostatSchedule/updateTemperaturePreference">
+                        <form method="post" action="${postUrl}">
                             <cti:csrfToken/>
                             <input type="hidden" name="accountId" value="${accountId}"/>
                             <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
@@ -121,7 +125,7 @@ $(function(){
                                 thermostatIds="${thermostatIds}"
                                 accountId="${accountId}"
                                 temperatureUnit="${temperatureUnit}"
-                                actionPath="/stars/operator/thermostatSchedule"
+                                actionPath="${thermoSchedUrl}"
                                 thermostatType="${thermostatType}"
                                 styleClass="vh stacked-medium"/>
                         </c:forEach>    
@@ -164,7 +168,7 @@ $(function(){
                                         thermostatIds="${thermostatIds}"
                                         accountId="${accountId}"
                                         temperatureUnit="${temperatureUnit}"
-                                        actionPath="/stars/operator/thermostatSchedule/save"
+                                        actionPath="${schedSaveUrl}"
                                         thermostatType="${thermostatType}"/>
                     </c:forEach>
                 </div>

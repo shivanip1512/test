@@ -57,7 +57,8 @@ yukon.ThermostatScheduleEditor = {
         //update the temperature unit preference via ajax
         $(".tempControls input:radio").click(function(e){
             //ajax preference
-            var form = $(this).closest('form');
+            var form = $(this).closest('form'),
+                inputElem = this;
             if(form[0]){
                 var params = {temperatureUnit: this.value};
                 var accountIdInput = form.find('input[name=accountId]');
@@ -71,7 +72,7 @@ yukon.ThermostatScheduleEditor = {
                     type: 'POST',
                     data: params
                 }).done(function (data, textStatus, jqXHR) {
-                    yukon.ThermostatScheduleEditor[this.value]();
+                    yukon.ThermostatScheduleEditor[inputElem.value]();
                 });
             }
         });
@@ -709,27 +710,28 @@ yukon.ThermostatManualEditor = {
     },
     
     prepForm: function(event){
-        var dialog = $("#" + event.currentTarget.getAttribute("popup_id"));
-        var widget = $(event.currentTarget).closest(".manualThermostat");
+        var dialog = $("#" + event.currentTarget.getAttribute("popup_id")),
+            widget = $(event.currentTarget).closest(".manualThermostat");
         
         $(".unit", dialog).hide();
         
         $("." + yukon.ThermostatManualEditor.thermostat.COOL.temperature.unit, dialog).show();
         
-        $("input:hidden", dialog).each(function(index, input){
-            var name = input.getAttribute("name");
-            var source = $("input[name="+ name +"]", widget);
+        $("input:hidden", dialog).each(function (index, input) {
+            var name = input.getAttribute("name"),
+                source = $('input[name="' + name + '"]', widget),
+                checked;
             
             if(source.length > 0){
                 //not really true for the checkbox, but we overwrite it down below
                 input.value = source.val();
-                if($("."+ name +".selected", widget).length > 0){
+                if ($("."+ name +".selected", widget).length > 0) {
                     $("."+ name +"Confirm", dialog).html($("."+ name +".selected", widget).html()); 
-                }else if($("input[type=text]."+ name +"", widget).length > 0){
+                } else if ($("input[type=text]."+ name +"", widget).length > 0) {
                     $("."+ name  +"Confirm", dialog).html($("."+ name, widget).val());
-                }else if($("input[type=checkbox]."+ name +"", widget).length > 0){
+                } else if ($("input[type=checkbox]."+ name +"", widget).length > 0) {
 
-                    var checked = $("."+ name, widget).is(":checked");
+                    checked = $("."+ name, widget).is(":checked");
                     $("." + name + " ." + checked, dialog).show();
                     $("." + name + " ." + !checked, dialog).hide();
                     
@@ -821,10 +823,10 @@ yukon.ThermostatManualEditor = {
                     case 'EMERGENCY_HEAT':
                     case 'HEAT':
                     case 'COOL':
-                        elem.enable();
+                        $(elem).prop('disabled', false);
                         break;
                     default:
-                        elem.disable();
+                        $(elem).prop('disabled', true);
                     }
                 
                 //render the temperature w/ correct color and input availability
@@ -930,7 +932,6 @@ yukon.Thermostat = function(args){
         } 
 
         // Check if we're looking at a device in auto mode that is not on the autoEnabled view.  If so default to cool instead.
-        var mode = this.mode;
         if (this.mode == 'AUTO' && !this.autoEnabled) {
             this.setMode('COOL');
         }

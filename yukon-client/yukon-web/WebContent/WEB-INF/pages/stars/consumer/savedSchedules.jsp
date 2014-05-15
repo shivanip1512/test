@@ -71,6 +71,8 @@ $(function(){
     </div>
 </div>
 
+<cti:url var="postUrl" value="/stars/consumer/thermostat/schedule/updateTemperaturePreference"/>
+<cti:url var="schedUrl" value="/stars/consumer/thermostat/schedule"/>
 <c:choose>
     <c:when test="${empty schedules and empty currentSchedule}">
         <div class="helper">
@@ -78,7 +80,7 @@ $(function(){
         </div>
         <br>
         <div class="tempControls fl">
-            <form method="post" action="/stars/consumer/thermostat/schedule/updateTemperaturePreference">
+            <form method="post" action="${postUrl}">
                 <cti:csrfToken/>
                 <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
                 <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
@@ -99,7 +101,7 @@ $(function(){
 	                        thermostatIds="${thermostatIds}"
 	                        accountId="${customerAccount.accountId}"
 	                        temperatureUnit="${temperatureUnit}"
-	                        actionPath="/stars/consumer/thermostat/schedule"
+	                        actionPath="${schedUrl}"
 	                        thermostatType="${thermostatType}"
 	                        styleClass="vh"/>
 	                </div>
@@ -111,7 +113,7 @@ $(function(){
                     <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
                 </div>
                 <div class="tempControls fl">
-                    <form method="post" action="/stars/consumer/thermostat/schedule/updateTemperaturePreference">
+                    <form method="post" action="${postUrl}">
                         <cti:csrfToken/>
                         <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
                         <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
@@ -127,7 +129,7 @@ $(function(){
                             thermostatIds="${thermostatIds}"
                             accountId="${customerAccount.accountId}"
                             temperatureUnit="${temperatureUnit}"
-                            actionPath="/stars/consumer/thermostat/schedule"
+                            actionPath="${schedUrl}"
                             thermostatType="${thermostatType}"
                             styleClass="vh"/>
                     </c:forEach>    
