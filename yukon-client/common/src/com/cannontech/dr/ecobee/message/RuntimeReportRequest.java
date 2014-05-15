@@ -1,14 +1,10 @@
 package com.cannontech.dr.ecobee.message;
 
-import java.util.ArrayList;
-
 import org.joda.time.Instant;
 
 import com.cannontech.common.util.JsonSerializers;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.message.partial.Selection;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
@@ -31,21 +27,6 @@ public class RuntimeReportRequest {
         this.endInterval = endInterval;
         this.selection = new Selection(SelectionType.THERMOSTATS, serialNumbers);
         this.columns = columns;
-    }
-
-    public static void main(String...args) throws JsonProcessingException {
-        ArrayList<String> serialNumbers = new ArrayList<>();
-        serialNumbers.add("sldjflsdfj");
-        serialNumbers.add("sdf");
-        
-        ArrayList<String> columns = new ArrayList<>();
-        columns.add("column_A");
-        columns.add("column_B");
-        
-        RuntimeReportRequest d = new RuntimeReportRequest(new Instant(), 123, new Instant(11199146444545L), 1234234234,
-                                                          serialNumbers, columns);
-
-        System.out.println(JsonUtils.toJson(d));
     }
 
     @JsonSerialize(using=JsonSerializers.EcobeeDate.class)

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(using=JsonSerializers.EcobeeRuntimeReportRow.class)
 public class RuntimeReportRow {
     private final Instant date;
+    private final String eventName;
     private final Float indoorTemp;
     private final Float outdoorTemp;
     private final Float coolSetPoint;
@@ -15,15 +16,20 @@ public class RuntimeReportRow {
     private final Integer coolRuntime;
     private final Integer heatRuntime;
 
-    public RuntimeReportRow(Instant date, Float indoorTemp, Float outdoorTemp, Float coolSetPoint,
+    public RuntimeReportRow(Instant date, String eventName, Float indoorTemp, Float outdoorTemp, Float coolSetPoint,
                             Float heatSetPoint, Integer coolRuntime, Integer heatRuntime) {
         this.date = date;
+        this.eventName = eventName;
         this.indoorTemp = indoorTemp;
         this.outdoorTemp = outdoorTemp;
         this.coolSetPoint = coolSetPoint;
         this.heatSetPoint = heatSetPoint;
         this.coolRuntime = coolRuntime;
         this.heatRuntime = heatRuntime;
+    }
+
+    public String getEventName() {
+        return eventName;
     }
 
     public Float getIndoorTemp() {

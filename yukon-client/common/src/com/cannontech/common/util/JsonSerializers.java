@@ -55,14 +55,15 @@ public interface JsonSerializers {
             String[] split = str.split(",", -1);
             Instant date = ecobeeDateTimeFormatter.parseDateTime(split[0] + " " + split[1]).toInstant();
             // order comes from deviceReadColumns in EcobeeCommunicationServiceImpl
-            Float indoorTemp = StringUtils.isEmpty(split[2]) ? null : Float.parseFloat(split[2]);
-            Float outdoorTemp = StringUtils.isEmpty(split[3]) ? null : Float.parseFloat(split[3]);
-            Float coolSetPoint = StringUtils.isEmpty(split[4]) ? null : Float.parseFloat(split[4]);
-            Float heatSetPoint = StringUtils.isEmpty(split[5]) ? null : Float.parseFloat(split[5]);
-            Integer coolRuntime = StringUtils.isEmpty(split[6]) ? null : Integer.parseInt(split[6]);
-            Integer heatRuntime = StringUtils.isEmpty(split[7]) ? null : Integer.parseInt(split[7]);
+            String eventName = split[2];
+            Float indoorTemp = StringUtils.isEmpty(split[3]) ? null : Float.parseFloat(split[3]);
+            Float outdoorTemp = StringUtils.isEmpty(split[4]) ? null : Float.parseFloat(split[4]);
+            Float coolSetPoint = StringUtils.isEmpty(split[5]) ? null : Float.parseFloat(split[5]);
+            Float heatSetPoint = StringUtils.isEmpty(split[6]) ? null : Float.parseFloat(split[6]);
+            Integer coolRuntime = StringUtils.isEmpty(split[7]) ? null : Integer.parseInt(split[7]);
+            Integer heatRuntime = StringUtils.isEmpty(split[8]) ? null : Integer.parseInt(split[8]);
 
-            return new RuntimeReportRow(date, indoorTemp, outdoorTemp, coolSetPoint, heatSetPoint, 
+            return new RuntimeReportRow(date, eventName, indoorTemp, outdoorTemp, coolSetPoint, heatSetPoint, 
                                         coolRuntime, heatRuntime);
         }
     }

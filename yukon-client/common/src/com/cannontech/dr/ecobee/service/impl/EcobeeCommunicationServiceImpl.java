@@ -154,9 +154,12 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         for (RuntimeReport runtimeReport : response.getReportList()) {
             List<EcobeeDeviceReading> readings = new ArrayList<>();
             for (RuntimeReportRow reportRow : runtimeReport.getRuntimeReports()) {
+                // TODO: only using HeatRuntime here not CoolRuntime since EcobeeDeviceReading only has one runtime
+                // property. Need to figure out if EcobeeDeviceReading should have both as a runtime or if some other 
+                // value is needed
                 EcobeeDeviceReading reading = new EcobeeDeviceReading(reportRow.getOutdoorTemp(),
                     reportRow.getIndoorTemp(), reportRow.getCoolSetPoint(), reportRow.getHeatSetPoint(), 
-                    reportRow.getHeatRuntime(), "", reportRow.getDate());
+                    reportRow.getHeatRuntime(), reportRow.getEventName(), reportRow.getDate());
                 readings.add(reading);
             }
             deviceData.add(new EcobeeDeviceReadings(runtimeReport.getThermostatIdentifier(), dateRange, readings));
