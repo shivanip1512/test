@@ -1,9 +1,10 @@
 package com.cannontech.stars.dr.hardware.exception;
 
+import com.cannontech.common.rfn.Acknowledgeable;
 import com.cannontech.stars.util.StarsClientRequestException;
 
 public class StarsDeviceSerialNumberAlreadyExistsException extends
-        StarsClientRequestException {
+        StarsClientRequestException implements Acknowledgeable{
 
     private String serialNumber = "";
     private String energyCompany = "";

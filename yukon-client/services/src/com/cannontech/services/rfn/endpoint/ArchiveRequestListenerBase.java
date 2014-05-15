@@ -18,6 +18,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
+import com.cannontech.common.rfn.Acknowledgeable;
 import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
@@ -90,11 +91,14 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
         protected void processRequest(T request) {
             RfnIdentifier rfnIdentifier = request.getRfnIdentifier();
-            if ("_EMPTY_".equals(rfnIdentifier.getSensorSerialNumber())) {
-                if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
-                    sendAcknowledgement(request);
-                    return;
-                }
+            if ("_EMPTY_".equals(rfnIdentifier.getSensorSerialNumber())
+                || "_EMPTY_".equals(rfnIdentifier.getSensorManufacturer())
+                || "_EMPTY_".equals(rfnIdentifier.getSensorModel())) {
+                log.info("Serial Number:" + rfnIdentifier.getSensorSerialNumber() + " Sensor Manufacturer:"
+                         + rfnIdentifier.getSensorManufacturer() + " Sensor Model:" + rfnIdentifier.getSensorModel());
+                log.info("Sending Acknowledgement");
+                sendAcknowledgement(request);
+                return;
             }
             RfnDevice rfnDevice;
             try {
@@ -105,7 +109,11 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                 try {
                     rfnDevice = processCreation(request, rfnIdentifier);
                 } catch (RuntimeException e) {
-                    if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
+                    boolean isDev = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
+                    boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
+                    if (isDev || isAcknowledgeable) {
+                        log.info("Exception:" + e.getMessage());
+                        log.info("Sending Acknowledgement");
                         sendAcknowledgement(request);
                         return;
                     }
