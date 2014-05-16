@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -50,6 +51,7 @@ import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -59,24 +61,25 @@ import com.google.common.collect.Lists;
 
 public class HardwareServiceImpl implements HardwareService {
 
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private ApplianceDao applianceDao;
     @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private HardwareTypeExtensionServiceImpl hardwareTypeExtensionService;
+    @Autowired private HardwareUiService hardwareUiService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private InventoryDao inventoryDao;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private LMHardwareEventDao lmHardwareEventDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private InventoryBaseDao inventoryBaseDao;
-    @Autowired private OptOutService optOutService;
     @Autowired private OptOutEventDao optOutEventDao;
-    @Autowired private HardwareTypeExtensionServiceImpl hardwareTypeExtensionService;
-    @Autowired private InventoryDao inventoryDao;
+    @Autowired private OptOutService optOutService;
     @Autowired private PaoDao paoDao;
-    @Autowired private HardwareUiService hardwareUiService;
-    @Autowired private YukonListDao yukonListDao;
-    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private SelectionListService selectionListService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonListDao yukonListDao;
 
     @Override
     @Transactional
@@ -167,6 +170,8 @@ public class HardwareServiceImpl implements HardwareService {
         if (lib instanceof LiteLmHardwareBase) {
             applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);
         }
+        // Remove association between inventory and account thermostat schedules.
+        accountThermostatScheduleDao.unmapThermostatsToSchedule(Collections.singletonList(inventoryId));
         
         /* Removes any entries found in the InventoryBase */
         LiteInventoryBase inventoryBase = inventoryBaseDao.getByInventoryId(inventoryId);

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/2/2014 10:52:46 AM                         */
+/* Created on:     5/15/2014 2:22:17 PM                         */
 /*==============================================================*/
 
 
@@ -12391,6 +12391,7 @@ go
 alter table InventoryToAcctThermostatSch
    add constraint FK_InvToAcctThermSch_InvBase foreign key (InventoryId)
       references InventoryBase (InventoryID)
+         on delete cascade
 go
 
 alter table InventoryToWarehouseMapping

@@ -295,23 +295,27 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     }
     
     // MAP THERMOSTATS TO SCHEDULE
-	public void mapThermostatsToSchedule(List<Integer> thermostatIds, int atsId) {
-		
+	@Override
+    public void mapThermostatsToSchedule(List<Integer> thermostatIds, int atsId) {
 		// delete existing mappings
-		SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-		deleteSql.append("DELETE FROM InventoryToAcctThermostatSch");
-		deleteSql.append("WHERE InventoryId").in(thermostatIds);
-		yukonJdbcTemplate.update(deleteSql);
+		unmapThermostatsToSchedule(thermostatIds);
 			
 		// insert new mappings
 		for (int thermostatId : thermostatIds) {
-			
 			SqlStatementBuilder insertSql = new SqlStatementBuilder();
 			insertSql.append("INSERT INTO InventoryToAcctThermostatSch (InventoryId, AcctThermostatScheduleId)");
 			insertSql.append("VALUES (").appendArgumentList(Lists.newArrayList(thermostatId, atsId)).append(")");
 			yukonJdbcTemplate.update(insertSql);
 		}
 	}
+
+	@Override
+    public void unmapThermostatsToSchedule(List<Integer> thermostatIds) {
+		SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+		deleteSql.append("DELETE FROM InventoryToAcctThermostatSch");
+		deleteSql.append("WHERE InventoryId").in(thermostatIds);
+		yukonJdbcTemplate.update(deleteSql);
+    }
 	
 	// ALL SCHEDULES FOR ACCOUNT BY TYPE
 	@Override

@@ -22,8 +22,11 @@
 <cti:url var="selectMultipleUrl" value="/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
 <cti:url var="editManualUrl" value="/stars/operator/thermostatManual/view?accountId=${accountId}&amp;thermostatIds="/>
 <cti:url var="thermostatHistoryUrl" value="/stars/operator/thermostat/history/view?accountId=${accountId}&amp;thermostatIds="/>
-
-<form id="changeOutForm" action="/stars/operator/hardware/changeOut">
+<cti:url var="changeOutUrl" value="/stars/operator/hardware/changeOut"/>
+<cti:url var="addMeterUrl" value="/stars/operator/hardware/addMeter"/>
+<cti:url var="meterCreateUrl" value="/stars/operator/hardware/mp/create"/>
+                    
+<form id="changeOutForm" action="${changeOutUrl}">
     <input type="hidden" name="accountId" value="${accountId}">
     <input type="hidden" name="newInventoryId" id="newInventoryId">
     <input type="hidden" name="oldInventoryId" id="oldInventoryId">
@@ -31,7 +34,7 @@
     <input type="hidden" name="redirect" value="list">
 </form>
 
-<form id="addMeterForm" action="/stars/operator/hardware/addMeter">
+<form id="addMeterForm" action="${addMeterUrl}">
     <input type="hidden" name="accountId" value="${accountId}">
     <input type="hidden" name="meterId" id="meterId">
 </form>
@@ -600,7 +603,7 @@
         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
                 <div class="action-area">
-                    <form action="/stars/operator/hardware/mp/create" method="get">
+                    <form action="${meterCreateUrl}" method="get">
                         <input type="hidden" name="accountId" value="${accountId}">
                         <c:choose>
                             <c:when test="${starsMeters}">

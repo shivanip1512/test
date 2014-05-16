@@ -133,6 +133,13 @@ public interface AccountThermostatScheduleDao {
 	public void mapThermostatsToSchedule(List<Integer> thermostatIds, int atsId);
 	
 	/**
+     * Remove the mapping between inventory and any account thermostat schedules. Used when moving a piece of inventory
+     * from an account to warehouse, since inventory in the warehouse (i.e. not assigned to an account) should not have 
+     * ties to a specific account schedule.
+     */
+    public void unmapThermostatsToSchedule(List<Integer> thermostatIds);
+
+	/**
 	 * Retrieve list of all AccountThermostatSchedules for a given accountId and thermostat type excluding archived entries.
 	 * a.k.a. "all saved schedules for account"
 	 */

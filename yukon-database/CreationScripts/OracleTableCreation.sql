@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/2/2014 10:52:07 AM                         */
+/* Created on:     5/15/2014 2:23:11 PM                         */
 /*==============================================================*/
 
 
@@ -11480,7 +11480,8 @@ alter table InventoryToAcctThermostatSch
 
 alter table InventoryToAcctThermostatSch
    add constraint FK_InvToAcctThermSch_InvBase foreign key (InventoryId)
-      references InventoryBase (InventoryID);
+      references InventoryBase (InventoryID)
+      on delete cascade;
 
 alter table InventoryToWarehouseMapping
    add constraint FK_INVTOWAREMAP_INVENBASE foreign key (InventoryID)

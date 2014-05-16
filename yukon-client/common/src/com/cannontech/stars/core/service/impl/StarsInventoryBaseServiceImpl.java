@@ -1,5 +1,6 @@
 package com.cannontech.stars.core.service.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -51,6 +52,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlready
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -59,23 +61,24 @@ import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
     
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private ApplianceDao applianceDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private EnrollmentHelperService enrollmentService;
+    @Autowired private GatewayDeviceDao gatewayDeviceDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
-    @Autowired private StarsSearchDao starsSearchDao;
-    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private InventoryDao inventoryDao;
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     @Autowired private LMHardwareEventDao hardwareEventDao;
-    @Autowired private ApplianceDao applianceDao;
+    @Autowired private LmHardwareBaseDao hardwareBaseDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private SelectionListService selectionListService;
+    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService;
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private EnrollmentHelperService enrollmentService;
-    @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private LmHardwareBaseDao hardwareBaseDao;
-    @Autowired private InventoryDao inventoryDao;
-    @Autowired private GatewayDeviceDao gatewayDeviceDao;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private SelectionListService selectionListService;
 
     // ADD DEVICE TO ACCOUNT
     @Override
@@ -351,6 +354,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         if (enrollable) {
             applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);
         }
+        
+        // Remove inventory to account thermostat schedule mapping if it exists.
+        accountThermostatScheduleDao.unmapThermostatsToSchedule(Collections.singletonList(inventoryId));
 
         String removeLbl = lib.getManufacturerSerialNumber();
         // update the Inventory to remove it from the account
