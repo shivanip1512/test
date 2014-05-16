@@ -23,6 +23,8 @@
 <cti:msg var="resultsHideReportText" key="yukon.web.modules.amr.cre.detail.results.hideReport" />
 <cti:msg var="resultsFailStatsReportText" key="yukon.web.modules.amr.cre.detail.results.failStatsReport" />
 <cti:msg var="resultsUnsupportedText" key="yukon.web.modules.amr.cre.detail.results.unsupported" />
+<cti:msg var="resultsNotConfiguredText" key="yukon.web.modules.amr.cre.detail.results.notConfigured" />
+<cti:msg var="resultsCanceledText" key="yukon.web.modules.amr.cre.detail.results.canceled" />
     
     <script type="text/javascript">
 
@@ -143,17 +145,27 @@
                 <amr:commandRequestExecutionResultsCountLink commandRequestExecutionId="${commandRequestExecutionId}" commandRequestExecutionUpdaterType="FAILURE_RESULTS_COUNT" linkedInitially="${failCount > 0}"/>
             </tags:nameValue>
             
+            <tags:nameValue name="${resultsNotConfiguredText}">
+                <amr:commandRequestExecutionResultsCountLink commandRequestExecutionId="${commandRequestExecutionId}" commandRequestExecutionUpdaterType="NOT_CONFIGURED_COUNT" linkedInitially="${notConfiguredCount > 0}"/>
+            </tags:nameValue>
+            
             <tags:nameValue name="${resultsUnsupportedText}">
                 <amr:commandRequestExecutionResultsCountLink commandRequestExecutionId="${commandRequestExecutionId}" commandRequestExecutionUpdaterType="UNSUPPORTED_COUNT" linkedInitially="${unsupportedCount > 0}"/>
             </tags:nameValue>
-
-            <tags:nameValue name="${resultsViewReportText}">
-                <a href="javascript:void(0);" onclick="switchResultsFilterType('FAIL_STATS');">${resultsFailStatsReportText}</a>
-                <c:forEach var="resultsFilterType" items="${resultsFilterTypes}">
-                    | <a href="javascript:void(0);" onclick="switchResultsFilterType('${resultsFilterType}');">${resultsFilterType.description}</a>
-                </c:forEach>
-                <img id="viewHideDetailsReportButtonIndicator" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting"> 
+            
+            <tags:nameValue name="${resultsCanceledText}">
+                <amr:commandRequestExecutionResultsCountLink commandRequestExecutionId="${commandRequestExecutionId}" commandRequestExecutionUpdaterType="CANCELED_COUNT" linkedInitially="${canceledCount > 0}"/>
             </tags:nameValue>
+            
+            <c:if test="${failCount > 0 || successCount > 0}">
+                <tags:nameValue name="${resultsViewReportText}">
+                    <a href="javascript:void(0);" onclick="switchResultsFilterType('FAIL_STATS');">${resultsFailStatsReportText}</a>
+                    <c:forEach var="resultsFilterType" items="${resultsFilterTypes}">
+                        | <a href="javascript:void(0);" onclick="switchResultsFilterType('${resultsFilterType}');">${resultsFilterType.description}</a>
+                    </c:forEach>
+                    <img id="viewHideDetailsReportButtonIndicator" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting"> 
+                </tags:nameValue>
+            </c:if>
         </tags:nameValueContainer>
             
         <div id="detailsReportDiv" style="display:none;">

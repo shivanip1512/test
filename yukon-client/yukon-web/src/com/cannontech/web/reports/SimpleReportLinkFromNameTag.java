@@ -8,6 +8,8 @@ import javax.servlet.jsp.PageContext;
 
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.cannontech.util.ServletUtil;
+
 @Configurable("simpleReportLinkFromNameTagPrototype")
 public class SimpleReportLinkFromNameTag extends SimpleReportLinkFromNameTagBase {
     
@@ -23,6 +25,7 @@ public class SimpleReportLinkFromNameTag extends SimpleReportLinkFromNameTagBase
     	
         Map<String, String> propertiesMap = getpropertiesMap(definitionName);
         String url = buildUrl(viewType, propertiesMap, true);
+        url = ServletUtil.createSafeUrl(getRequest(), url);
         
         if (var == null) {
          // construct final <a> tag

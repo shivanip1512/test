@@ -20,6 +20,8 @@
         <cti:msg var="readAttributeDescription" key="yukon.common.device.bulk.collectionActions.readAttributeDescription"/>
         <cti:msg var="routeLocateLabel" key="yukon.common.device.bulk.collectionActions.routeLocateLabel"/>
         <cti:msg var="routeLocateDescription" key="yukon.common.device.bulk.collectionActions.routeLocateDescription"/>
+        <cti:msg var="disconnectLabel" key="yukon.common.device.bulk.collectionActions.disconnectLabel"/>
+        <cti:msg var="disconnectDescription" key="yukon.common.device.bulk.collectionActions.disconnectDescription"/>
 
         <cti:msg var="headerReporting" key="yukon.common.device.bulk.collectionActions.header.reporting"/>
         <cti:msg var="deviceCollectionReportLabel" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel"/>
@@ -69,6 +71,7 @@
         <cti:url var="sendCommandUrl" value="/group/commander/collectionProcessing"/>
         <cti:url var="readAttributeUrl" value="/group/groupMeterRead/homeCollection"/>
         <cti:url var="routeLocateUrl" value="/bulk/routeLocate/home"/>
+        <cti:url var="disconnectUrl" value="/bulk/disconnect/home"/>
         
         <cti:url var="assignConfigUrl" value="/bulk/config/assignConfig"/>
         <cti:url var="unassignConfigUrl" value="/bulk/config/unassignConfig"/>
@@ -149,6 +152,15 @@
                                 <%-- LOCATE ROUTE --%>
                                 <tags:collectionActionTr buttonValue="${routeLocateLabel}" description="${routeLocateDescription}"
                                     action="${routeLocateUrl}" deviceCollection="${deviceCollection}"/>
+                            </cti:checkRolesAndProperties>
+
+                            <%-- DISCONNECT --%>
+                            <cti:checkRolesAndProperties value="GROUP_DISCONNECT_CONTROL">
+                                <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
+                                <tags:collectionActionTr buttonValue="${disconnectLabel}"
+                                    description="${disconnectDescription}" action="${disconnectUrl}"
+                                    deviceCollection="${deviceCollection}" />
+                                </cti:checkRolesAndProperties>
                             </cti:checkRolesAndProperties>
                         </table>
                     </tags:sectionContainer>

@@ -44,7 +44,7 @@ public final class CommandRequestExecutionDefaults {
         b.put(PING_DEVICE_ON_ROUTE_COMMAND,                       new ExecutionInfo(false, 14, false));
         b.put(PEAK_REPORT_COMMAND,                                new ExecutionInfo(true, 14, false));
         b.put(ROUTE_DISCOVERY_PUTCONFIG_COMMAND,                  new ExecutionInfo(false, 14, false));
-        b.put(CONTROL_CONNECT_DISCONNECT_COMAMND,                 new ExecutionInfo(true, 14, false));
+        b.put(METER_CONNECT_DISCONNECT_WIDGET,                    new ExecutionInfo(true, 14, false));
         b.put(TOU_SCHEDULE_COMMAND,                               new ExecutionInfo(true, 14, false));
         b.put(LM_HARDWARE_COMMAND,                                new ExecutionInfo(false, 14, false));
         b.put(INVENTORY_RECONFIG,                                 new ExecutionInfo(false, 6, false));
@@ -56,6 +56,7 @@ public final class CommandRequestExecutionDefaults {
         b.put(DISCONNECT_STATUS_ATTRIBUTE_READ,                   new ExecutionInfo(false, 14, false));
         // It is important that GROUP_COMMAND_VERIFY have a lower priority than GROUP_COMMAND.
         // This is used to ensure that a verification gets sent out after the request.
+        b.put(GROUP_CONNECT_DISCONNECT,                           new ExecutionInfo(false, 8, false));
         b.put(GROUP_COMMAND,                                      new ExecutionInfo(false, 8, false));
         b.put(GROUP_COMMAND_VERIFY,                               new ExecutionInfo(false, 7, false));
         b.put(DEMAND_RESET_COMMAND,                               new ExecutionInfo(false, 14, false));

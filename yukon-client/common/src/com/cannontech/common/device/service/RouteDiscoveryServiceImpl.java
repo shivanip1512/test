@@ -240,7 +240,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                         // Sends a cancel command to all the commands that have been sent out.
                         if(commandCompletionCallbacks != null){
                             for ( CommandCompletionCallback<CommandRequestRouteAndDevice> commandCompletionCallback : commandCompletionCallbacks) {
-                                commandRequestRouteAndDeviceExecutor.cancelExecution(commandCompletionCallback, user);
+                                commandRequestRouteAndDeviceExecutor.cancelExecution(commandCompletionCallback, user, true);
                             }
                         }
                     }

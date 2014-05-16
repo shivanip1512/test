@@ -55,4 +55,9 @@ public interface MeterDao {
     
     public int getMeterCount();
 
+    /*
+     * Returns a list of devices ids that have disconnect address.
+     */
+    List<Integer> getMetersWithDisconnectCollarAddress(Iterable<Integer> ids);
+
 }

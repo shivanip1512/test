@@ -127,6 +127,8 @@
     <entry key="yukon.common.device.bulk.collectionActions.readAttributeDescription">Read an attribute of multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.routeLocateLabel">Locate Route</entry>
     <entry key="yukon.common.device.bulk.collectionActions.routeLocateDescription">Find route that devices respond on.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.disconnectLabel">Disconnect</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.disconnectDescription">Disconnect devices.</entry>
 
     <entry key="yukon.common.device.bulk.collectionActions.header.reporting">Reporting</entry>
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel">Device Report</entry>
@@ -908,4 +910,67 @@
     <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.nextImportLabel">Next Import</entry>
     <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.tabularDataLabel">Tabular Data</entry>
     
+    
+    <!-- CONNECT/DISCONNECT -->
+    <!-- ******************************************************************************************************************** -->
+    <!-- ******************************************************************************************************************** -->
+    <entry key="yukon.web.modules.tools.bulk.disconnect.command.CONNECT">Connect</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.command.DISCONNECT">Disconnect</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.command.ARM">Arm</entry>
+
+    <entry key="yukon.web.modules.tools.bulk.disconnect.CONNECTED">Connected</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.DISCONNECTED">Disconnected</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.ARMED">Armed</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.UNSUPPORTED">Unsupported</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.NOT_CONFIGURED">Not Configured</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.FAILED">Failed</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.CANCELED">Canceled</entry>
+    
+    <!-- /bulk/disconnect/home.jsp -->
+    <entry key="yukon.web.modules.tools.bulk.disconnect.pageName">Disconnect</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.contextualPageName">Disconnect</entry>
+    <entry key="yukon.common.device.bulk.disconnect.header">Disconnect</entry>
+    <entry key="yukon.common.device.bulk.disconnect.noteLabel">Note: </entry>
+    <entry key="yukon.common.device.bulk.disconnect.noteText"><![CDATA[
+       Select the type of control to send to the selected devices. You will be redirected to another page before the operation starts.
+    ]]></entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.disconnect.description">Send disconnect command to selected devices.</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.arm.description">Send arm command to selected devices.</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.connect.description">Send connect command to selected devices.</entry>
+    
+    <!-- /bulk/disconnect/resultDetail.jsp -->
+    <entry key="yukon.web.modules.tools.bulk.connect.results.pageName">Connect</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.pageName">Disconnect</entry>
+    <entry key="yukon.web.modules.tools.bulk.arm.results.pageName">Arm</entry>
+    
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.note.label">Note:</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.note.text"><![CDATA[
+        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>
+        You may view the progress on <a href="{0}">Recent Connect/Disconnect Results</a> page.<br>
+        {1}
+    ]]></entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.disconnect.help">The selected devices will be disconnected. Any additional options, such as demand threshold or cycling, will be controlled by each individual device’s configuration.</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.connect.help">The selected devices will be connected. Any additional options, such as Arm, will be controlled by each individual device’s configuration.</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.arm.help">The selected devices will be connected in Arm mode. For devices that do not support Arm command, a Connect command will be sent instead, such that any arm options will be controlled by each individual device’s configuration.</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.inProgress">In Progress</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.complete">Complete</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.error">Error: {exceptionReason}</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.progressLabel">Progress</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.newOperationAll">Choose New Operation For All Devices</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.newOperation">Choose New Operation For These Devices</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.creResults">View Results Log</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.view">View Results:</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.view.failed">View Failure Reasons</entry>
+    
+    <!-- /bulk/disconnect/results.jsp -->
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.pageName">Recent Connect/Disconnect Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.crumbTitle">Recent Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.command">Command</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.devices">Devices</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.status">Status</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.success">Success</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.failed">Failed</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.notAttempted">Not Attempted</entry>
+        
 </properties>

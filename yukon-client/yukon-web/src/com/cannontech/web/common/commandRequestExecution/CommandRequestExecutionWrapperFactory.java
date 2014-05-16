@@ -38,7 +38,7 @@ public class CommandRequestExecutionWrapperFactory {
 		}
 
         public int getUnsupportedCount() {
-            return commandRequestExecutionResultDao.getUnsupportedCountByExecutionId(cre.getId());
+            return commandRequestExecutionResultDao.getUnsupportedCountByExecutionId(cre.getId(), null);
         }
 	}
 	

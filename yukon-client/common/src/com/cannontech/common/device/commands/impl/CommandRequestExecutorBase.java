@@ -464,7 +464,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     
     // CANCEL
     @Override
-    public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user) {
+    public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user, boolean updateExecutionStatus) {
         
         if(msgListeners.isEmpty()){
             log.debug("No message listeners found while cancelling command request execution.");
@@ -500,7 +500,9 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         log.debug("Sending cancel request. groupMessageId = " + messageListener.getGroupMessageId());
         long commandsCanceled = porterRequestCancelService.cancelRequests(messageListener.getGroupMessageId(), CANCEL_PRIORITY);
         
-        completeCommandRequestExecutionRecord(messageListener.getCommandRequestExecution(), CommandRequestExecutionStatus.CANCELLED);
+        if(updateExecutionStatus){
+            completeCommandRequestExecutionRecord(messageListener.getCommandRequestExecution(), CommandRequestExecutionStatus.CANCELLED);
+        }
         
         // cancel callback
         log.debug("Calling callback. groupMessageId = " + messageListener.getGroupMessageId());

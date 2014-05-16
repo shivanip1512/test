@@ -131,7 +131,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
     public long cancelExecution(String resultId, LiteYukonUser user) throws ResultResultExpiredException {
 
         GroupCommandResult result = getResult(resultId);
-        long commandsCanceled = commandRequestExecutor.cancelExecution(result.getCallback(), user);
+        long commandsCanceled = commandRequestExecutor.cancelExecution(result.getCallback(), user, true);
 
         return commandsCanceled;
     }

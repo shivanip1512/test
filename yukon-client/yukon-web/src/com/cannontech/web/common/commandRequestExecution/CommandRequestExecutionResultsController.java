@@ -17,6 +17,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupReque
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
@@ -135,12 +136,23 @@ public class CommandRequestExecutionResultsController {
         int requestCount = commandRequestExecutionDao.getRequestCountByCreId(commandRequestExecutionId);
         int successCount = commandRequestExecutionResultDao.getSucessCountByExecutionId(commandRequestExecutionId);
         int failCount = commandRequestExecutionResultDao.getFailCountByExecutionId(commandRequestExecutionId);
-        int unsupported = commandRequestExecutionResultDao.getUnsupportedCountByExecutionId(commandRequestExecutionId);
+        int unsupported =
+            commandRequestExecutionResultDao
+                .getUnsupportedCountByExecutionId(commandRequestExecutionId, CommandRequestUnsupportedType.UNSUPPORTED);
+        int notConfigured =
+            commandRequestExecutionResultDao
+                .getUnsupportedCountByExecutionId(commandRequestExecutionId,
+                                                  CommandRequestUnsupportedType.NOT_CONFIGURED);
+        int canceled =
+            commandRequestExecutionResultDao.getUnsupportedCountByExecutionId(commandRequestExecutionId,
+                                                                              CommandRequestUnsupportedType.CANCELED);
         boolean isComplete = commandRequestExecutionDao.isComplete(commandRequestExecutionId);
         model.addAttribute("requestCount", requestCount);
         model.addAttribute("successCount", successCount);
         model.addAttribute("failCount", failCount);
         model.addAttribute("unsupportedCount", unsupported);
+        model.addAttribute("notConfigured", notConfigured);
+        model.addAttribute("canceled", canceled);
         model.addAttribute("isComplete", isComplete);
 
         model.addAttribute("resultsFilterTypes", CommandRequestExecutionResultsFilterType.values());
@@ -173,24 +185,41 @@ public class CommandRequestExecutionResultsController {
 			@RequestParam("commandRequestExecutionId") int commandRequestExecutionId,
 			CommandRequestExecutionUpdaterTypeEnum commandRequestExecutionUpdaterType) {
 
-		List<PaoIdentifier> paoIdentifiers;
+        List<PaoIdentifier> paoIdentifiers;
 
-		switch(commandRequestExecutionUpdaterType) {
-			case REQUEST_COUNT:
-				paoIdentifiers = commandRequestExecutionResultDao.getDeviceIdsByExecutionId(commandRequestExecutionId);
-				break;
-			case SUCCESS_RESULTS_COUNT:
-				paoIdentifiers = commandRequestExecutionResultDao.getSucessDeviceIdsByExecutionId(commandRequestExecutionId);
-				break;
-			case FAILURE_RESULTS_COUNT:
-				paoIdentifiers = commandRequestExecutionResultDao.getFailDeviceIdsByExecutionId(commandRequestExecutionId);
-				break;
-            case UNSUPPORTED_COUNT:
-                paoIdentifiers = commandRequestExecutionResultDao.getUnsupportedDeviceIdsByExecutionId(commandRequestExecutionId);
-                break;
-			default:
-				throw new IllegalArgumentException("Invalid commandRequestExecutionUpdaterType: " + commandRequestExecutionUpdaterType);
-		}
+        switch (commandRequestExecutionUpdaterType) {
+        case REQUEST_COUNT:
+            paoIdentifiers = commandRequestExecutionResultDao.getDeviceIdsByExecutionId(commandRequestExecutionId);
+            break;
+        case SUCCESS_RESULTS_COUNT:
+            paoIdentifiers =
+                commandRequestExecutionResultDao.getSucessDeviceIdsByExecutionId(commandRequestExecutionId);
+            break;
+        case FAILURE_RESULTS_COUNT:
+            paoIdentifiers = commandRequestExecutionResultDao.getFailDeviceIdsByExecutionId(commandRequestExecutionId);
+            break;
+        case UNSUPPORTED_COUNT:
+            paoIdentifiers =
+                commandRequestExecutionResultDao
+                    .getUnsupportedDeviceIdsByExecutionId(commandRequestExecutionId,
+                                                          CommandRequestUnsupportedType.UNSUPPORTED);
+            break;
+        case NOT_CONFIGURED_COUNT:
+            paoIdentifiers =
+                commandRequestExecutionResultDao
+                    .getUnsupportedDeviceIdsByExecutionId(commandRequestExecutionId,
+                                                          CommandRequestUnsupportedType.NOT_CONFIGURED);
+            break;
+        case CANCELED_COUNT:
+            paoIdentifiers =
+                commandRequestExecutionResultDao
+                    .getUnsupportedDeviceIdsByExecutionId(commandRequestExecutionId,
+                                                          CommandRequestUnsupportedType.CANCELED);
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid commandRequestExecutionUpdaterType: "
+                                               + commandRequestExecutionUpdaterType);
+        }
 
 		StoredDeviceGroup tempGroup = temporaryDeviceGroupService.createTempGroup();
 		ImmutableList<YukonDevice> deviceList = PaoUtils.asDeviceList(paoIdentifiers);

@@ -185,4 +185,7 @@
 <entry key="yukon.web.reportTypes.ZIGBEE_CONTROL_EVENT_DEVICE">Zigbee Controlled Devices</entry>
 <entry key="yukon.web.reportTypes.ZIGBEE_CONTROL_EVENT_DEVICE.description">Detailed report showing the control information for ZigBee devices.</entry>
 
+<entry key="yukon.common.reports.disconnect.failure.title">{0} Failure Results</entry>
+<entry key="yukon.common.reports.disconnect.success.title">{0} Success Results</entry>
+<entry key="yukon.common.reports.disconnect.all.title">Connect/Disconnect Results</entry>
 </properties>

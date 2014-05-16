@@ -18,5 +18,6 @@
 <entry key="yukon.web.alerts.types.GROUP_METER_READ_COMPLETION">Group Attribute Read</entry>
 <entry key="yukon.web.alerts.types.OUTAGE_PROCESSING_READ_LOGS_COMPLETION">Outage Logs Read</entry>
 <entry key="yukon.web.alerts.types.TAMPER_FLAG_PROCESSING_READ_INTERNAL_FLAGS_COMPLETION">Internal Flags Read</entry>
+<entry key="yukon.web.alerts.types.DISCONNECT_COMPLETION">Disconnect</entry>
 
 </properties>

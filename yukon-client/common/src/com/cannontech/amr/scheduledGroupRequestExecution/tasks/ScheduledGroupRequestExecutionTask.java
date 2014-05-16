@@ -67,7 +67,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     	int jobId = getJob().getId();
     	
     	log.info("Stopping job with id " + jobId);
-    	long commandsCancelled = currentExecutor.cancelExecution(currentCallback, getUserContext().getYukonUser());
+    	long commandsCancelled = currentExecutor.cancelExecution(currentCallback, getUserContext().getYukonUser(), true);
     	log.info("Stopped job with id " + jobId + ". " + commandsCancelled + " commands were cancelled.");
     }
     

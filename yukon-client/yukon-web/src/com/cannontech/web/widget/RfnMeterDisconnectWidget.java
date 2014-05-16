@@ -23,6 +23,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -119,12 +120,12 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
                 }
     
                 @Override
-                public void receivedSuccess(RfnMeterDisconnectState state) {
+                public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
                     model.addAttribute("responseSuccess", true);
                 }
     
                 @Override
-                public void receivedError(MessageSourceResolvable message) {
+                public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state) {
                     model.addAttribute("responseStatus", message);
                     model.addAttribute("responseSuccess", false);
                 }

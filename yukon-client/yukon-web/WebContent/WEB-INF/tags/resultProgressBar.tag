@@ -12,11 +12,12 @@
 <%@ attribute name="isAbortedKey" %>
 <%@ attribute name="hideCount" %>
 <%@ attribute name="completionCallback" description="Name of a javascript function to call when progress reaches 100%. The function will be called each iteration of the data updater, so the function must manage being called multiple times if needed." %>
+<%@ attribute name="classes" description="CSS class names applied to the container" %>
 
 <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
 <cti:uniqueIdentifier var="pDescId" prefix="pgd_"/>
 
-<div class="stacked clearfix">
+<div class="stacked clearfix ${pageScope.classes}">
     <span class="fwb dib fl"><cti:msg2 key="${progressLabelTextKey}" />:&nbsp;</span>
     <span class="dib fl" style="margin-right:10px;">
         <c:choose>

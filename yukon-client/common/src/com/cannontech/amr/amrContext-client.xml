@@ -136,4 +136,10 @@
     <bean class="com.cannontech.amr.profileCollection.service.impl.ProfileCollectionServiceImpl"/>
 
     <bean class="com.cannontech.amr.monitors.impl.DeviceDataMonitorCacheServiceImpl"/>
+
+    <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectServiceImpl" />
+    <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectPlcStrategy" />
+    <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectPlcServiceImpl" />
+    <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectRfnStrategy" />
+    <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectRfnServiceImpl" />
 </beans>

@@ -245,7 +245,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
     @Override
     public void cancelReadPhaseDetect(LiteYukonUser user) {
         try {
-            commandRequestExecutor.cancelExecution(phaseDetectResult.getCallback(), user);
+            commandRequestExecutor.cancelExecution(phaseDetectResult.getCallback(), user, true);
         } catch (Exception e) {
             log.warn("Unable to cancel phase detect read.", e);
         }

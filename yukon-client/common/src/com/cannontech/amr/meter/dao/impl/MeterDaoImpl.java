@@ -1,5 +1,7 @@
 package com.cannontech.amr.meter.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -302,6 +305,28 @@ public class MeterDaoImpl implements MeterDao {
                 return naturalOrderComparator.compare(n1, n2);
             }
         };
+    }
+    
+    
+    @Override
+    public List<Integer> getMetersWithDisconnectCollarAddress(Iterable<Integer> ids) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DeviceID FROM DeviceMCT400Series ");
+                sql.append("WHERE DeviceID").in(subList);
+                return sql;
+            }
+        };
+        List<Integer> deviceIds = template.query(sqlGenerator, ids, new ParameterizedRowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getInt("DeviceID");
+            }
+        });
+        return deviceIds;
     }
 
     private void sendDBChangeMessage(YukonMeter meter) {

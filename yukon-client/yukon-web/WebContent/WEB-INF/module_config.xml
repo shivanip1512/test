@@ -384,6 +384,21 @@
                     </pages>
                   </page>
                   <page name="map" type="BASIC"/>
+                  <page name="bulk.disconnect.results" type="BASIC">
+                    <pages>
+                      <page name="bulk.disconnect.results.recent" type="BASIC"/>
+                    </pages>
+                  </page>
+                  <page name="bulk.connect.results" type="BASIC">
+                    <pages>
+                      <page name="bulk.connect.results.recent" type="BASIC"/>
+                    </pages>
+                  </page>
+                  <page name="bulk.arm.results" type="BASIC">
+                    <pages>
+                      <page name="bulk.arm.results.recent" type="BASIC"/>
+                    </pages>
+                  </page>
                 </pages>
               </page>
             </pages>

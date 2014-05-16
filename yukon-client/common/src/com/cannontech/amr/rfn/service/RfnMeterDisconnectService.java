@@ -23,6 +23,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.PointData;
@@ -80,6 +81,7 @@ public class RfnMeterDisconnectService {
 
             @Override
             public void handleException(Exception e) {
+                log.error(e);
                 MessageSourceResolvable message = 
                     YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error", e.toString());
                 callback.processingExceptionOccured(message);
@@ -91,7 +93,7 @@ public class RfnMeterDisconnectService {
                     /* Request failed */
                     MessageSourceResolvable message = 
                         YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error", initialReply);
-                    callback.receivedError(message);
+                    callback.receivedError(message, null);
                     return false;
                 } else {
                     /* Request successful, wait for reply 2 */
@@ -105,43 +107,33 @@ public class RfnMeterDisconnectService {
                     /* Request failed */
                     MessageSourceResolvable message = 
                         YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.confirmError", confirmationReplyMessage);
-                    callback.receivedError(message);
+                    callback.receivedError(message, confirmationReplyMessage.getState());
                 } else {
-                    // State will only be used as the state of the meter when doing
-                    // a 'QUERY' command for now.  This may change based on what
-                    // NM will decide to set this as for connect/disconnect/arm commands.
-                    // For now we assume that if the user clicked the disconnect button and
-                    // the response was successful we set the state to disconnect regardless
-                    // of what NM has set the state to in the success message.
-                    if (action == RfnMeterDisconnectStatusType.QUERY) {
-                        publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
-                    } else {
-                        publishPointData(RfnMeterDisconnectState.getForType(action).getRawState(), meter);
-                    }
+                    PointValueQualityHolder pointData = publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
                     /* Confirmation response successful, process point data */
-                    callback.receivedSuccess(confirmationReplyMessage.getState());
+                    callback.receivedSuccess(confirmationReplyMessage.getState(), pointData);
                 }
            }
-
+            
             @Override
             public void handleTimeout1() {
                 MessageSourceResolvable createSingleCodeWithArguments = 
                     YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error", "T1");
-                callback.receivedError(createSingleCodeWithArguments);
+                callback.receivedError(createSingleCodeWithArguments, null);
             }
 
             @Override
             public void handleTimeout2() {
                 MessageSourceResolvable createSingleCodeWithArguments = 
                     YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.confirmError", "T2");
-                callback.receivedError(createSingleCodeWithArguments);
+                callback.receivedError(createSingleCodeWithArguments, null);
             }
         };
         
         rrrTemplate.send(new RfnMeterDisconnectRequest(meter.getRfnIdentifier(), action), handler);
     }
     
-    private void publishPointData(int rawState, RfnMeter meter) {
+    private PointValueQualityHolder publishPointData(int rawState, RfnMeter meter) {
         LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
         PointData pointData = new PointData();
         pointData.setId(point.getLiteID());
@@ -153,6 +145,7 @@ public class RfnMeterDisconnectService {
         dynamicDataSource.putValue(pointData);
         
         log.debug("PointData generated for RfnMeterDisconnectRequest");
+        return pointData;
     }
     
     @PostConstruct

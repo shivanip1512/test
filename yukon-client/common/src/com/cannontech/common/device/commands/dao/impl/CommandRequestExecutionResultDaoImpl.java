@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
@@ -24,6 +25,7 @@ import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.Lists;
 
 public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecutionResultDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -63,6 +65,7 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
             public void extractValues(MapSqlParameterSource parameterHolder, CommandRequestUnsupported commandUnsupported) {
                 parameterHolder.addValue("CommandRequestExecId", commandUnsupported.getCommandRequestExecId());
                 parameterHolder.addValue("DeviceId", commandUnsupported.getDeviceId());
+                parameterHolder.addValue("Type", commandUnsupported.getType());
             }
         };
     }
@@ -140,15 +143,17 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
 	}
 
     @Override
-    public List<PaoIdentifier> getUnsupportedDeviceIdsByExecutionId(int commandRequestExecutionId) {
+    public List<PaoIdentifier> getUnsupportedDeviceIdsByExecutionId(int commandRequestExecutionId,
+                                                                    CommandRequestUnsupportedType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT YPO.PAObjectID, YPO.Type");
         sql.append("FROM CommandRequestUnsupported CRER");
         sql.append("  JOIN YukonPAObject YPO on CRER.DeviceId = YPO.PAObjectID");
         sql.append("WHERE CommandRequestExecId").eq(commandRequestExecutionId);
+        sql.append("AND CRER.Type").eq_k(type);
         return jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
     }
-
+   
     private SqlStatementBuilder getBaseDeviceSqlForExecutionId(int commandRequestExecutionId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT YPO.PAObjectID, YPO.Type");
@@ -162,17 +167,37 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
     public void saveUnsupported(CommandRequestUnsupported unsupportedCmd) {
         unsupportedTemplate.save(unsupportedCmd);
     }
+    
+    @Override
+    public void create(Iterable<CommandRequestUnsupported> unsupported) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO CommandRequestUnsupported");
+        sql.append(" (CommandRequestUnsupportedId, CommandRequestExecId, DeviceId, Type) ");
+        sql.append("VALUES (?,?,?,?) ");
+        List<Object[]> batchArgs = Lists.newArrayList();
+
+        for (CommandRequestUnsupported commandRequestUnsupported : unsupported) {
+            int id = nextValueHelper.getNextValue("CommandRequestUnsupported");
+            batchArgs.add(new Object[] {
+                    id, commandRequestUnsupported.getCommandRequestExecId(), commandRequestUnsupported.getDeviceId(),
+                    commandRequestUnsupported.getType().getDatabaseRepresentation() });
+        }
+        jdbcTemplate.batchUpdate(sql.getSql(), batchArgs);
+    }
 
     @Override
-    public int getUnsupportedCountByExecutionId(int commandRequestExecutionId) {
+    public int getUnsupportedCountByExecutionId(int commandRequestExecutionId, CommandRequestUnsupportedType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
         sql.append("FROM CommandRequestUnsupported");
         sql.append("WHERE CommandRequestExecId").eq(commandRequestExecutionId);
+        if (type != null) {
+            sql.append("AND Type").eq_k(type);
+        }
         
         return jdbcTemplate.queryForInt(sql);
     }
-
+        
     @PostConstruct
     public void postConstruct() {
         template = new SimpleTableAccessTemplate<>(jdbcTemplate, nextValueHelper);

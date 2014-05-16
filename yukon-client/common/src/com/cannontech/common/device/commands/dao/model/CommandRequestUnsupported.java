@@ -1,9 +1,12 @@
 package com.cannontech.common.device.commands.dao.model;
 
+import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
+
 public class CommandRequestUnsupported {
     private Integer id;
     private Integer deviceId;
     private long CommandRequestExecId;
+    private CommandRequestUnsupportedType type;
 
     public Integer getId() {
         return id;
@@ -22,5 +25,11 @@ public class CommandRequestUnsupported {
     }
     public void setCommandRequestExecId(long commandRequestExecId) {
         CommandRequestExecId = commandRequestExecId;
+    }
+    public CommandRequestUnsupportedType getType() {
+        return type;
+    }
+    public void setType(CommandRequestUnsupportedType type) {
+        this.type = type;
     }
 }

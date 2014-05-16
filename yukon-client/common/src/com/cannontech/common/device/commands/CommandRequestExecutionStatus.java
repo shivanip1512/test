@@ -8,6 +8,7 @@ public enum CommandRequestExecutionStatus implements DisplayableEnum {
 	STARTED,
 	COMPLETE,
 	FAILED,
+	CANCELLING,
 	CANCELLED;
 	
 	@Override

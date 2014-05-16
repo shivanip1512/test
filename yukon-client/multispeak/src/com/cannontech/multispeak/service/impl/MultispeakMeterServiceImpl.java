@@ -83,6 +83,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.substation.dao.SubstationDao;
@@ -823,7 +824,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
         };
         
-        commandRequestDeviceExecutor.execute(plcCommandRequests, callback, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, yukonUserContext.getYukonUser());
+        commandRequestDeviceExecutor.execute(plcCommandRequests, callback, DeviceRequestType.GROUP_CONNECT_DISCONNECT, yukonUserContext.getYukonUser());
     }
     
     /**
@@ -841,14 +842,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         RfnMeterDisconnectCallback rfnCallback = new RfnMeterDisconnectCallback() {
             
             @Override
-            public void receivedSuccess(RfnMeterDisconnectState state) {
+            public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
                 log.debug("rfn receivedSuccess for cdEvent " + state);
                 MspLoadActionCode mspLoadActionCode = MspLoadActionCode.getForRfnState(RfnDisconnectStatusState.getForNmState(state));
                 sendCDEventNotification(meter, mspLoadActionCode.getLoadActionCode(), vendor, transactionId, responseUrl);
             }
             
             @Override
-            public void receivedError(MessageSourceResolvable message) {
+            public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state) {
                 log.warn("rfn receivedError for cdEvent " + message);
                 sendCDEventNotification(meter, LoadActionCode.Unknown, vendor, transactionId, responseUrl);
             }

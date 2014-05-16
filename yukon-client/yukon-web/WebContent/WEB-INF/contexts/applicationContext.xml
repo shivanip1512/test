@@ -673,6 +673,7 @@
     </bean>
 
    <bean id="tdcBackingService" class="com.cannontech.web.updater.tdc.TdcBackingService"/>
+   <bean id="disconnectBackingService" class="com.cannontech.web.updater.disconnect.DisconnectBackingService"/>
 
     <!-- Update Service -->
     <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService">
@@ -804,6 +805,9 @@
                 <entry key="TDC">
                     <ref local="tdcBackingService"/>
                 </entry>
+                <entry key="DISCONNECT">
+                    <ref local="disconnectBackingService" />
+                </entry>
             </map>
         </property>
         <property name="bulkBacks">
@@ -889,6 +893,8 @@
     <bean id="requestCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.RequestCountCommandExecutionUpdaterHandler"/>
     <bean id="resultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.ResultsCountCommandExecutionUpdaterHandler"/>
     <bean id="unsupportedCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.UnsupportedCountCommandExecutionUpdaterHandler"/>
+    <bean id="notConfiguredCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.NotConfiguredCountCommandExecutionUpdaterHandler"/>
+    <bean id="canceledCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.CanceledCountCommandExecutionUpdaterHandler"/>
     <bean id="successResultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.SuccessResultsCountCommandExecutionUpdaterHandler"/>
     <bean id="failureResultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.FailureResultsCountCommandExecutionUpdaterHandler"/>
     <bean id="stopTimeCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.StopTimeCommandExecutionUpdaterHandler"/>

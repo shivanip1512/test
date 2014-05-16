@@ -1004,4 +1004,66 @@
             <bean class="com.cannontech.simplereport.reportlayoutdata.SurveyResultsDetailReportLayoutData"/>
         </property>
     </bean>
+    
+    <!-- Connect/Disconnect Result Reports -->
+    <bean id="disconnectSuccessResultModel" class="com.cannontech.analysis.tablemodel.DisconnectSuccessResultsModel" scope="prototype"/>
+    <bean id="disconnectFailureResultModel" class="com.cannontech.analysis.tablemodel.DisconnectFailureResultsModel" scope="prototype"/>
+    <bean id="disconnectAllResultModel" class="com.cannontech.analysis.tablemodel.DisconnectAllResultsModel" scope="prototype"/>
+    
+    <bean id="disconnectResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" abstract="true">
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="resultKey"/>
+                            <property name="displayName" value="Result Key"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                            <property name="validatorList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.validate.RequiredValidator"/>
+                                </list>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="state"/>
+                            <property name="displayName" value="Current State"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="disconnectAllResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="disconnectResultDefinition">
+        <property name="reportModelName">
+            <idref local="disconnectAllResultModel" />
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.DisconnectAllResultsReportLayoutData"/>
+        </property>
+    </bean>
+    
+    <bean id="disconnectSuccessResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="disconnectResultDefinition">
+        <property name="reportModelName">
+            <idref local="disconnectSuccessResultModel" />
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.DisconnectSuccessResultsReportLayoutData"/>
+        </property>
+    </bean>
+    
+    <bean id="disconnectFailureResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="disconnectResultDefinition">
+        <property name="reportModelName">
+            <idref local="disconnectFailureResultModel"/>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.DisconnectFailureResultsReportLayoutData"/>
+        </property>
+     </bean>
 </beans>

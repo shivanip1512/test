@@ -8,6 +8,8 @@ public enum CommandRequestExecutionUpdaterTypeEnum {
     SUCCESS_RESULTS_COUNT,
     FAILURE_RESULTS_COUNT,
     UNSUPPORTED_COUNT,
+    NOT_CONFIGURED_COUNT,
+    CANCELED_COUNT,
     IS_COMPLETE,
     STOP_TIME,
     ;

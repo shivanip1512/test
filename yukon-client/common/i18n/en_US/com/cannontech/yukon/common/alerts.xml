@@ -44,4 +44,14 @@ Group Attribute Read "{attributesDescription}" completed with {percentSuccess|#0
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
 ]]></entry>
 
+<entry key="yukon.common.alerts.disconnectCompletion"><![CDATA[
+<a href="{url}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+{command} completed with {percentSuccess|#0.0#}% success of the {completedCount} sent.</a>
+]]></entry>
+
+<entry key="yukon.common.alerts.disconnectCompletion.failed"><![CDATA[
+{command} failed. Reason: {exceptionReason}</p>
+<a href="{url}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+{notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
+]]></entry>
 </properties>

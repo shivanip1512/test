@@ -28,6 +28,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
+import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
@@ -343,6 +344,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             CommandRequestUnsupported unsupportedCmd = new CommandRequestUnsupported();
             unsupportedCmd.setCommandRequestExecId(identifier.getCommandRequestExecutionId());
             unsupportedCmd.setDeviceId(pao.getPaoIdentifier().getPaoId());
+            unsupportedCmd.setType(CommandRequestUnsupportedType.UNSUPPORTED);
 
             commandRequestExecutionResultDao.saveUnsupported(unsupportedCmd);
         }

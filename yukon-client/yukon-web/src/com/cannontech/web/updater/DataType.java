@@ -43,6 +43,7 @@ public enum DataType {
     LM_REPORTED_ADDRESS,
     WEATHER_STATION,
     ASSET_AVAILABILITY_READ,
-    TDC
+    TDC,
+    DISCONNECT,
     ;
 }

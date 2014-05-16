@@ -7,7 +7,7 @@ public enum DeviceRequestType {
     PING_DEVICE_ON_ROUTE_COMMAND("Ping Device On Route Command", "A 'ping' command sent to device on a specific route.", false),
     PEAK_REPORT_COMMAND("Peak Report Command", "A 'getvalue lp peak' command sent for the purpose of profiling.", false),
     ROUTE_DISCOVERY_PUTCONFIG_COMMAND("Route Discovery Put Config Command", "A 'putconfig emetcon intervals' command sent to 410s after a route has been set due to running a route discovery action.", false),
-    CONTROL_CONNECT_DISCONNECT_COMAMND("Connect/Disconnect Command", "A 'control connect' or 'control disconnect' command sent from the disconnect widget.", false),
+    METER_CONNECT_DISCONNECT_WIDGET("Connect/Disconnect Command", "A 'control connect' or 'control disconnect' command sent from the disconnect widget.", false),
     TOU_SCHEDULE_COMMAND("TOU Schedule Command", "A 'putconfig tou ...' command sent from the TOU widget.", false),
     LM_HARDWARE_COMMAND("LM Hardware Command", "A command sent to LM hardware.", false),
     INVENTORY_RECONFIG("Inventory Reconfiguration", "A command sent to LM hardware as a result of inventory reconfiguration.", false),
@@ -26,6 +26,7 @@ public enum DeviceRequestType {
     GROUP_ATTRIBUTE_READ("Group Attribute Read", "An attribute read command sent to a group of devices.", false),
     SCHEDULED_GROUP_COMMAND("Scheduled Group Command", "A command sent to a group of devices periodically.", true),
     SCHEDULED_GROUP_ATTRIBUTE_READ("Scheduled Group Attribute Read", "An attribute read command sent to a group of devices periodically.", true),
+    GROUP_CONNECT_DISCONNECT("Group Connect/Disconnect", "A 'control connect' or 'control disconnect' command sent to a group of devices.", false),
     
     GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ("Outage Processing Outage Logs Read", "Outage logs read for the purpose of Outage Processing on the Outages Group of an Outage Monitor.", false),
     GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ("Tamper Flag Processing Internal Flags Read", "Internal flags read for the purpose of Tamper Flag Processing on the Tamper Flag Group of a Tamper Flag Monitor.", false),

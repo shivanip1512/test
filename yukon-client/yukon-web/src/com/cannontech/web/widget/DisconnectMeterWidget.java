@@ -168,7 +168,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
     	YukonMeter meter = getMeter(request);
     	
-        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
         
@@ -182,7 +182,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
     	YukonMeter meter = getMeter(request);
     	
-        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
         
