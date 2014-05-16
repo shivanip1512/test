@@ -18,8 +18,8 @@
                     <tags:sectionContainer title="${startText}">
                     <div>
                         <input type="checkbox" name="startNow" checked="checked"/><i:inline key=".startNow"/>
-                        <dt:dateTime name="start" value="${currentTime}" />
                     </div>
+                        <dt:dateTime name="start" value="${currentTime}" />
                     </tags:sectionContainer>
                 </div>
                 <div class="column two nogutter">
