@@ -61,33 +61,31 @@ import com.google.common.collect.ImmutableList.Builder;
 
 @Controller
 public class LayoutController {
-    
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private CommonModuleBuilder moduleBuilder;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private PageDetailProducer pageDetailProducer;
     @Autowired private ConfigurationSource configSource;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private YukonUserDao userDao;
-    @Autowired private StandardMenuRenderer stdMenuRender;
-    @Autowired private SearchRenderer searchRenderer;
     @Autowired private HttpExpressionLanguageResolver expressionLanguageResolver;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private PageDetailProducer pageDetailProducer;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private SearchRenderer searchRenderer;
+    @Autowired private StandardMenuRenderer stdMenuRender;
     @Autowired private UserPreferenceService prefService;
-    
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserDao userDao;
+
     private List<String> layoutScriptFiles;
-    
+
     @PostConstruct
     public void initialize() {
-        
         boolean dev = configSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
-        
+
         Builder<String> builder = ImmutableList.builder();
-        
+
         builder.add(JsLibrary.DEBUGGER.getPath());
-        
+
         builder.add(JsLibrary.MODERNIZR.getPath());
-        
+
         builder.add(dev ? JsLibrary.JQUERY.getPath() : JsLibrary.JQUERY_MIN.getPath());
         builder.add(dev ? JsLibrary.JQUERY_UI.getPath() : JsLibrary.JQUERY_UI_MIN.getPath());
         builder.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
@@ -99,7 +97,7 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_SPECTRUM.getPath());
         builder.add(JsLibrary.JQUERY_CHOSEN.getPath());
 
-        //add the other standard libs
+        // add the other standard libs
         builder.add(JsLibrary.YUKON.getPath());
         builder.add(JsLibrary.YUKON_ALERTS.getPath());
         builder.add(JsLibrary.YUKON_CONFIRM.getPath());
@@ -110,42 +108,43 @@ public class LayoutController {
         builder.add("/JavaScript/yukon.dialog.js");
         builder.add("/JavaScript/yukon.analytics.js");
         builder.add(JsLibrary.YUKON_FAVORITES.getPath());
-        
+
         layoutScriptFiles = builder.build();
     }
-    
+
     // StandardPageTag forwards to here!
     @RequestMapping("/")
-    public String display(final HttpServletRequest request, final HttpServletResponse response, ModelMap map) throws JspException {
-
+    public String display(final HttpServletRequest request, final HttpServletResponse response, ModelMap map)
+            throws JspException {
         // get data passed over - in attributes
         final BodyContent bodyContent = StandardPageTag.getBodyContent(request);
-        
-        //create a callback for writing out the body (as opposed to just putting a string of the body in the model)
+
+        // create a callback for writing out the body (as opposed to just putting a string of the body in the model)
         map.addAttribute("bodyContent", new Writable() {
             @Override
             public void write(Writer out) throws IOException {
                 bodyContent.writeOut(out);
             }
         });
-        
+
         final StandardPageInfo tagInfo = StandardPageTag.getStandardPageInfo(request);
         map.addAttribute("info", tagInfo);
-        
+
         final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        
-        //used for determining page title etc...
+
+        // used for determining page title etc...
         final Module moduleBase = getModuleBase(tagInfo.getModuleName());
         map.addAttribute("module", moduleBase);
-        
-        //parse the module_config.xml and figure out our hierarchy for menus etc...
+
+        // parse the module_config.xml and figure out our hierarchy for menus etc...
         PageInfo pageInfo = moduleBase.getPageInfo(tagInfo.getPageName());
 
         PageDetail pageDetailTemp;
         if (pageInfo != null) {
-            map.addAttribute("canFavorite", ! pageInfo.isHideFavorite());
-            List<String> resolvedLabelArgs = expressionLanguageResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
+            map.addAttribute("canFavorite", !pageInfo.isHideFavorite());
+            List<String> resolvedLabelArgs =
+                expressionLanguageResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
             String labelArgs = com.cannontech.common.util.StringUtils.listAsJsSafeString(resolvedLabelArgs);
             map.addAttribute("labelArgs", labelArgs);
             pageDetailTemp = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
@@ -156,50 +155,52 @@ public class LayoutController {
             pageDetailTemp.setBreadCrumbText("");
             if (StringUtils.isNotBlank(tagInfo.getTitle())) {
                 pageDetailTemp.setPageTitle(tagInfo.getTitle());
-            } else if (StringUtils.isNotBlank(tagInfo.getPageName())){
+            } else if (StringUtils.isNotBlank(tagInfo.getPageName())) {
                 try {
-                    String pageTitleKey = "yukon.web.modules." + tagInfo.getModuleName() + "." + tagInfo.getPageName() + ".pageTitle";
+                    String pageTitleKey =
+                        "yukon.web.modules." + tagInfo.getModuleName() + "." + tagInfo.getPageName() + ".pageTitle";
                     pageDetailTemp.setPageTitle(messageSourceAccessor.getMessage(pageTitleKey));
                 } catch (NoSuchMessageException e) {
-                    pageDetailTemp.setPageTitle(messageSourceAccessor.getMessageWithDefault("yukon.web.defaults.pageTitle", ""));
+                    pageDetailTemp.setPageTitle(messageSourceAccessor.getMessageWithDefault(
+                        "yukon.web.defaults.pageTitle", ""));
                 }
-                
+
             }
         }
-        
+
         final PageDetail pageDetail = pageDetailTemp;
-        
+
         map.addAttribute("pageDetail", pageDetail);
 
         map.addAttribute("servletPath", tagInfo.getServletPath());
-        
+
         List<String> moduleConfigCssList = new ArrayList<String>(moduleBase.getCssFiles());
         removeDuplicates(moduleConfigCssList);
         map.addAttribute("moduleConfigCss", moduleConfigCssList);
-        
+
         List<String> innerContentCssList = new ArrayList<String>(tagInfo.getCssFiles());
         removeDuplicates(innerContentCssList);
         map.addAttribute("innerContentCss", innerContentCssList);
-        
+
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         String cssLocations = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.STD_PAGE_STYLE_SHEET, user);
-        cssLocations = StringUtils.defaultString(cssLocations,"");
+        cssLocations = StringUtils.defaultString(cssLocations, "");
         String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
         List<String> loginGroupCssList = new ArrayList<String>(Arrays.asList(cssLocationArray));
-        removeDuplicates(loginGroupCssList); 
+        removeDuplicates(loginGroupCssList);
         map.addAttribute("loginGroupCss", loginGroupCssList);
-        
+
         Set<String> finalScriptList = new LinkedHashSet<String>();
-        
+
         finalScriptList.addAll(layoutScriptFiles);
 
         // get script files declared in the module
         finalScriptList.addAll(moduleBase.getScriptFiles());
         finalScriptList.addAll(tagInfo.getScriptFiles());
         map.addAttribute("javaScriptFiles", finalScriptList);
-        
+
         LayoutSkinEnum skin = moduleBase.getSkin();
-        
+
         // setup menu
         if (skin.isLeftSideMenu()) {
             // handle new and old methods for specifying menu (but not both)
@@ -212,9 +213,9 @@ public class LayoutController {
             if (showOldMenu && showNewMenu) {
                 throw new IllegalStateException("Menu cannot be specified on JSP and in module_config.xml");
             }
-            
+
             String menuSelection = null;
-            
+
             if (showOldMenu) {
                 menuSelection = tagInfo.getMenuSelection();
                 showMenu = true;
@@ -222,10 +223,10 @@ public class LayoutController {
                 menuSelection = pageInfo.getMenuSelection();
                 showMenu = true;
             }
-            
+
             if (showMenu) {
-                
-                final LeftSideMenuRenderer menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
+                final LeftSideMenuRenderer menuRenderer =
+                    new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
                 menuRenderer.setMenuSelection(menuSelection);
                 // if bread crumbs were specified within the JSP, use them (old style)
                 String breadCrumbs = tagInfo.getBreadCrumbs();
@@ -253,14 +254,14 @@ public class LayoutController {
                     }
                 }
             });
-            
+
             map.addAttribute("searchRenderer", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {
                     searchRenderer.render(moduleBase, request, out);
                 }
             });
-            
+
             map.addAttribute("bcRenderer", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {
@@ -273,23 +274,23 @@ public class LayoutController {
                 }
             });
         }
-        
+
         LiteYukonUser yukonUser = userContext.getYukonUser();
         String username = yukonUser.getUsername();
         String energyCompanyName = null;
-        
+
         try {
             YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(yukonUser);
             energyCompanyName = energyCompany.getName();
         } catch (EnergyCompanyNotFoundException e) {
-           //The user does not need an Energy Company just to log in.
+            // The user does not need an Energy Company just to log in.
         }
-        
+
         map.addAttribute("energyCompanyName", energyCompanyName);
         map.addAttribute("username", username);
-        
+
         map.addAttribute("displayName", buildDisplayName(userDao.getLiteContact(yukonUser.getLiteID()), yukonUser));
-        
+
         boolean showContextualNavigation = pageInfo != null && pageInfo.isShowContextualNavigation();
         map.addAttribute("showContextualNavigation", showContextualNavigation);
         if (showContextualNavigation) {
@@ -300,7 +301,7 @@ public class LayoutController {
                 }
             });
         }
-        
+
         map.addAttribute("currentTime", new Date());
 
         map.addAttribute("alertSounds", prefService.getDefaultNotificationAlertSound(yukonUser));
@@ -308,36 +309,38 @@ public class LayoutController {
 
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-cache, no-store");
-        
+
         return skin.getViewName();
     }
-    
+
     private String buildDisplayName(LiteContact contact, LiteYukonUser user) {
         if (contact == null) {
             return user.getUsername();
         } else if (StringUtils.isBlank(contact.getContFirstName()) && StringUtils.isBlank(contact.getContFirstName())) {
             return user.getUsername();
-        } else if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE) && contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+        } else if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE)
+            && contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
             return user.getUsername();
         }
-        if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE) || StringUtils.isBlank(contact.getContFirstName())) {
+        if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE)
+            || StringUtils.isBlank(contact.getContFirstName())) {
             return user.getUsername();
         }
-            String displayName = contact.getContFirstName();
-            if (!contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE) && !StringUtils.isBlank(contact.getContLastName())) {
-                displayName += " " + contact.getContLastName();
-            }
-            return displayName;
+        String displayName = contact.getContFirstName();
+        if (!contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE)
+            && !StringUtils.isBlank(contact.getContLastName())) {
+            displayName += " " + contact.getContLastName();
         }
+        return displayName;
+    }
 
     @ModelAttribute("yukonVersion")
     public String getYukonVersion() {
         return VersionTools.getYUKON_VERSION();
     }
-    
+
     @ModelAttribute("showNM")
     public boolean showNetworkManagerLink(ModelMap model, LiteYukonUser user) {
-
         boolean showNM = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_NM_ACCESS, user);
         if (showNM) {
             String url = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_ADDRESS);
@@ -345,26 +348,26 @@ public class LayoutController {
         }
         return showNM;
     }
-    
+
     @ModelAttribute("buildInfo")
     public String getYukonBuild() {
         Map<String, String> buildInfo = VersionTools.getBuildInfo();
         if (buildInfo.containsKey("JOB_NAME") && buildInfo.containsKey("BUILD_NUMBER")) {
-            return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/" 
-            + buildInfo.get("BUILD_NUMBER") + "\">" + buildInfo.get("BUILD_NUMBER") + "</a>";
+            return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/"
+                + buildInfo.get("BUILD_NUMBER") + "\">" + buildInfo.get("BUILD_NUMBER") + "</a>";
         }
-            return "undefined";
-        }
-    
+        return "undefined";
+    }
+
     private Module getModuleBase(String moduleName) throws JspException {
         Module moduleBase = moduleBuilder.getModule(moduleName);
 
         return moduleBase;
     }
-    
+
     private void removeDuplicates(List<String> list) {
         Set<String> set = new LinkedHashSet<String>();
-        
+
         for (String file : list) {
             // we want the order to reflect the position of the last reference to the file
             file = StringUtils.strip(file);
@@ -373,7 +376,7 @@ public class LayoutController {
                 set.add(file);
             }
         }
-        
+
         list.clear();
         list.addAll(set);
     }
