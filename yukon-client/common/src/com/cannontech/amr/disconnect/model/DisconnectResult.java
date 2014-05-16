@@ -17,7 +17,7 @@ import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.ExceptionStatus;
 
-public class DisconnectResult implements Completable, ExceptionStatus, CancelStatus{
+public class DisconnectResult implements Completable, ExceptionStatus, CancelStatus {
     
     private DisconnectCommand command;
     private boolean complete;
@@ -38,30 +38,28 @@ public class DisconnectResult implements Completable, ExceptionStatus, CancelSta
     private CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback;
     
     //This map contains failed devices
-    private Map<SimpleDevice, SpecificDeviceErrorDescription> errors =
-        new ConcurrentHashMap<SimpleDevice, SpecificDeviceErrorDescription>(100, .75f, 1);
+    private Map<SimpleDevice, SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<>(100, .75f, 1);
     
 
     //This map contains successful devices
-    private Map<SimpleDevice, Instant> timestamps =
-            new ConcurrentHashMap<SimpleDevice, Instant>(100, .75f, 1);
+    private Map<SimpleDevice, Instant> timestamps = new ConcurrentHashMap<>(100, .75f, 1);
     
     @Override
     public boolean isComplete() {
         return complete;
     }
     
-    public void addTimestamp(SimpleDevice device, Instant timestamp){
-        if(timestamp != null){
+    public void addTimestamp(SimpleDevice device, Instant timestamp) {
+        if (timestamp != null) {
             timestamps.put(device, timestamp);
         }
     }
     
-    public Instant getTimestamp(SimpleDevice device){
+    public Instant getTimestamp(SimpleDevice device) {
         return timestamps.get(device);
     }
     
-    public void complete(){
+    public void complete() {
         complete = true;
     }
     
@@ -203,40 +201,43 @@ public class DisconnectResult implements Completable, ExceptionStatus, CancelSta
     /**
      * Returns the count of the devices that responded
      */
-    public int getCompletedCount(){
-        return (int) (failedCollection.getDeviceCount() +
-                      +armedCollection.getDeviceCount()
-                      + connectedCollection.getDeviceCount() + disconnectedCollection.getDeviceCount());
+    public int getCompletedCount() {
+        return (int) (failedCollection.getDeviceCount() 
+                      + armedCollection.getDeviceCount()
+                      + connectedCollection.getDeviceCount()
+                      + disconnectedCollection.getDeviceCount());
     }
     
     /**
      * Returns the count of all the devices
      */
-    public int getTotalCount(){
+    public int getTotalCount() {
         return (int) allDevicesCollection.getDeviceCount();
     }
     
     /**
      * Returns the count of the devices that succeeded
      */
-    public int getSuccessCount(){
+    public int getSuccessCount() {
         return (int) (armedCollection.getDeviceCount()
-                      + connectedCollection.getDeviceCount() + disconnectedCollection.getDeviceCount());
+                      + connectedCollection.getDeviceCount() 
+                      + disconnectedCollection.getDeviceCount());
     }
     
     /**
      * Returns the count of the devices that failed
      */
-    public int getFailedCount(){
+    public int getFailedCount() {
         return (int) failedCollection.getDeviceCount();
     }
-    
     
     /**
      * Returns the count of the devices that the command was not sent to
      */
     public int getNotAttemptedCount() {
-        return (int) (unsupportedCollection.getDeviceCount() + notConfiguredCollection.getDeviceCount() + canceledCollection
-            .getDeviceCount());
+        return (int) (unsupportedCollection.getDeviceCount() 
+                + notConfiguredCollection.getDeviceCount() 
+                + canceledCollection.getDeviceCount());
     }
+    
 }
