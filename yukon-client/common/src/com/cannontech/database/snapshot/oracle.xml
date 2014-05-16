@@ -28312,7 +28312,7 @@
             <i__columnName>INVENTORYID</i__columnName>
             <i__foreignColumnName>INVENTORYID</i__foreignColumnName>
             <i__foreignTableName>INVENTORYBASE</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
