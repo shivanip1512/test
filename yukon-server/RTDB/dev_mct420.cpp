@@ -403,9 +403,11 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
         {
             string config_key = "displayItem" + CtiNumStr(++i);
 
-            long config_value;
 
-            if( !deviceConfig->getLongValue(config_key, config_value) )
+            const boost::optional<long>
+                config_value = deviceConfig->findValue<long>(config_key);
+
+            if ( ! config_value )
             {
                 if( getMCTDebugLevel(DebugLevel_Configs) )
                 {
@@ -416,7 +418,7 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
                 return NoConfigData;
             }
 
-            display_metrics.push_back(config_value);
+            display_metrics.push_back(*config_value);
 
             long pao_value = 0xff;
 
@@ -474,14 +476,17 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
 
     if( ! readsOnly )
     {
-        long cycleTime, paoInfo_displayParams, paoInfo_cycleTime;
+        long paoInfo_displayParams, paoInfo_cycleTime;
         bool paoInfo_displayDisabled;
         boost::optional<unsigned char> display_digits, paoInfo_displayDigits;
         boost::optional<unsigned> transformerRatio;
 
         bool displayDigitsSupported = isSupported(Feature_LcdDisplayDigitConfiguration);
 
-        if( !deviceConfig->getLongValue(MCTStrings::LcdCycleTime, cycleTime) )
+        const boost::optional<long>
+            cycleTime = deviceConfig->findValue<long>(MCTStrings::LcdCycleTime);
+
+        if( ! cycleTime )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
@@ -496,8 +501,10 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
 
         if( displayDigitsSupported )
         {
-            long numDigits;
-            if( !deviceConfig->getLongValue(MCTStrings::DisplayDigits, numDigits) )
+            const boost::optional<long>
+                numDigits = deviceConfig->findValue<long>(MCTStrings::DisplayDigits);
+
+            if( ! numDigits )
             {
                 if( getMCTDebugLevel(DebugLevel_Configs) )
                 {
@@ -516,7 +523,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
              */
             std::map<long, unsigned> digitLookup = boost::assign::map_list_of (4, 0x20)(5, 0x00)(6, 0x10);
 
-            display_digits = digitLookup[numDigits];
+            display_digits = digitLookup[*numDigits];
         }
         else
         {
@@ -551,7 +558,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
         paoInfo_displayDigits   = paoInfo_displayParams & 0x70;
         paoInfo_cycleTime       = paoInfo_displayParams & 0x0f;
 
-        if( paoInfo_displayDisabled == *disconnectDisplayDisabled && paoInfo_cycleTime == cycleTime )
+        if( paoInfo_displayDisabled == *disconnectDisplayDisabled && paoInfo_cycleTime == *cycleTime )
         {
             if( displayDigitsSupported )
             {
@@ -582,7 +589,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
 
         meterParameterCommand.reset(
             new Mct420MeterParametersDisplayDigitsCommand(
-                cycleTime,
+                *cycleTime,
                 *disconnectDisplayDisabled,
                 transformerRatio,
                 boost::none,

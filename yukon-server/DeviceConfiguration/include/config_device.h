@@ -23,6 +23,7 @@ class IM_EX_CONFIG DeviceConfig
 protected:
 
     bool insertValue( std::string identifier, const std::string & value );
+    bool getLongValue( const std::string & key, long & value ) const;
 
 private:
 
@@ -50,7 +51,6 @@ public:
     boost::optional<T> findValue( const std::string & key ) const;
 
     std::string getValueFromKey( const std::string & key ) const;
-    bool        getLongValue( const std::string & key, long & value ) const;
     long        getLongValueFromKey( const std::string & key ) const;
     double      getFloatValueFromKey( const std::string & key ) const;
 

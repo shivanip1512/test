@@ -2411,7 +2411,8 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
     {
         if( ! readsOnly )
         {
-            char timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
+            boost::optional<long>
+                timezoneOffset = deviceConfig->findValue<long>(MCTStrings::TimeZoneOffset);
 
             if (!getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
             {
@@ -2419,7 +2420,7 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NoConfigData;
             }
-            else if(timezoneOffset == std::numeric_limits<long>::min())
+            else if( ! timezoneOffset )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2427,14 +2428,14 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
             }
             else
             {
-                timezoneOffset = timezoneOffset * 4; //The timezone offset in the mct is in 15 minute increments.
+                *timezoneOffset *= 4; //The timezone offset in the mct is in 15 minute increments.
                 if(parse.isKeyValid("force")
-                   || (char)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != *timezoneOffset)
                 {
                     if( !parse.isKeyValid("verify") )
                     {
                         //  the bstruct IO is set above by getOperation()
-                        OutMessage->Buffer.BSt.Message[0] = (timezoneOffset);
+                        OutMessage->Buffer.BSt.Message[0] = (*timezoneOffset);
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                         nRet = NORMAL;
                     }
@@ -2477,7 +2478,8 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
     {
         if( ! readsOnly )
         {
-            long spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
+            const boost::optional<long>
+                spid = deviceConfig->findValue<long>(MCTStrings::ServiceProviderID);
 
             if(!getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt))
             {
@@ -2485,7 +2487,7 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NoConfigData;
             }
-            else if(spid == std::numeric_limits<long>::min())
+            else if( ! spid )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2495,12 +2497,12 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
             {
 
                 if(parse.isKeyValid("force")
-                   || (char)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != spid)
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != *spid)
                 {
                     if( !parse.isKeyValid("verify") )
                     {
                         //the bstruct IO is set above by getOperation()
-                        OutMessage->Buffer.BSt.Message[0] = (spid);
+                        OutMessage->Buffer.BSt.Message[0] = (*spid);
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                         nRet = NORMAL;
@@ -2614,7 +2616,8 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
     {
         if( ! readsOnly )
         {
-            long timeAdjustTolerance = deviceConfig->getLongValueFromKey(MCTStrings::TimeAdjustTolerance);
+            const boost::optional<long>
+                timeAdjustTolerance = deviceConfig->findValue<long>(MCTStrings::TimeAdjustTolerance);
 
             if(!getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
             {
@@ -2622,7 +2625,7 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NoConfigData;
             }
-            else if (timeAdjustTolerance == std::numeric_limits<long>::min())
+            else if ( ! timeAdjustTolerance )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2631,12 +2634,12 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
             else
             {
                 if (parse.isKeyValid("force") ||
-                    CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
+                    CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != *timeAdjustTolerance )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
                         //the bstruct IO is set above by getOperation()
-                        OutMessage->Buffer.BSt.Message[0] = timeAdjustTolerance;
+                        OutMessage->Buffer.BSt.Message[0] = *timeAdjustTolerance;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                         nRet = NORMAL;
