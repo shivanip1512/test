@@ -20,7 +20,8 @@
         </form>
         <d:confirm on=".f-delete" nameKey="delete" argument="${accountGeneral.accountDto.accountNumber}"/>
         
-        <form id="deleteUserForm" action="/stars/operator/account/deleteLogin" method="get">
+        <form id="deleteUserForm" action="deleteLogin" method="post">
+          <cti:csrfToken/>
           <input type="hidden" name="accountId" value="${accountId}">
           <input type="hidden" name="loginMode" value="${loginMode}">
         </form>
