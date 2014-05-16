@@ -124,7 +124,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         }
 
         /**
-         * @param request unused
+         * @param request The original request message.  This is used by subclasses.
          */
         protected RfnDevice processCreation(T request, RfnIdentifier identifier) {
             try {
