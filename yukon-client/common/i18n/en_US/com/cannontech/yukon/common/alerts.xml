@@ -5,53 +5,53 @@
 <entry key="yukon.common.alerts.alarm">{paoName} / {pointName}: {alarmText}</entry>
 <entry key="yukon.common.alerts.serverResponse">{responseText}</entry>
 <entry key="yukon.common.alerts.commandCompletion"><![CDATA[
-<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
 Command "{command}" completed with {percentSuccess|#0.0#}% success of the {completedCount} sent.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.commandCompletion.canceled"><![CDATA[
 <p>Command "{command}" was canceled before completion.</p>
-<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.commandCompletion.canceled.noneSucceeded"><![CDATA[
 <p>Command "{command}" was canceled before completion.</p>
-<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
 {notCompletedCount} commands did not complete. None of the commands that completed were successful.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.commandCompletion.failed"><![CDATA[
 <p>Command "{command}" failed. Reason: {exceptionReason}</p>
-<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.commandCompletion.failed.noneSucceeded"><![CDATA[
 <p>Command "{command}" failed. Reason: {exceptionReason}</p>
-<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
 {notCompletedCount} commands did not complete. None of the commands that completed were successful.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.groupMeterReadCompletion"><![CDATA[
-<a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+<a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
 Group Attribute Read "{attributesDescription}" completed with {percentSuccess|#0.0#}% success of the {completedCount} sent.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.groupMeterReadCompletion.failed"><![CDATA[
 <p>Group Attribute Read "{attributesDescription}" failed. Reason: {exceptionReason}</p>
-<a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+<a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.disconnectCompletion"><![CDATA[
-<a href="{url}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+<a href="{url}" title="Click to see complete details">
 {command} completed with {percentSuccess|#0.0#}% success of the {completedCount} sent.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.disconnectCompletion.failed"><![CDATA[
 {command} failed. Reason: {exceptionReason}</p>
-<a href="{url}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+<a href="{url}" title="Click to see complete details">
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
 ]]></entry>
 </properties>
