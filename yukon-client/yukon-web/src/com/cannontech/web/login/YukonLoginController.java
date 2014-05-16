@@ -30,20 +30,25 @@ public class YukonLoginController extends MultiActionController {
     @Autowired private PasswordResetService passwordResetService;
     @Autowired private UrlAccessChecker urlAccessChecker;
 
-    public ModelAndView view(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
+    /**
+     * @param request unused
+     * @param response unused
+     */
+    public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ModelAndView mav = new ModelAndView();
         mav.setViewName("login.jsp");
-        
-        boolean useOldForgottenPasswordPage = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.USE_OLD_FORGOTTEN_PASSWORD_PAGE);
+
+        boolean useOldForgottenPasswordPage =
+            configurationSource.getBoolean(MasterConfigBooleanKeysEnum.USE_OLD_FORGOTTEN_PASSWORD_PAGE);
         mav.addObject("useOldForgottenPasswordPage", useOldForgottenPasswordPage);
         return mav;
     }
 
     public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final String username = ServletRequestUtils.getRequiredStringParameter(request, LoginController.USERNAME);
-        final String password = ServletRequestUtils.getRequiredStringParameter(request, LoginController.PASSWORD);
-        final Boolean createRememberMeCookie = ServletRequestUtils.getBooleanParameter(request, "rememberme", false);
-        final String redirectedFrom = ServletRequestUtils.getStringParameter(request, LoginController.REDIRECTED_FROM);
+        String username = ServletRequestUtils.getRequiredStringParameter(request, LoginController.USERNAME);
+        String password = ServletRequestUtils.getRequiredStringParameter(request, LoginController.PASSWORD);
+        Boolean createRememberMeCookie = ServletRequestUtils.getBooleanParameter(request, "rememberme", false);
+        String redirectedFrom = ServletRequestUtils.getStringParameter(request, LoginController.REDIRECTED_FROM);
 
         String redirect;
 
@@ -61,22 +66,22 @@ public class YukonLoginController extends MultiActionController {
             redirect = getBadAuthenticationRedirectUrl(request, redirectedFrom, retrySeconds);
             return new ModelAndView("redirect:" + redirect);
         } catch (NotAuthorizedException e) {
-        	CTILogger.info("Unable to log user in. Reason: " + e.getMessage());
+            CTILogger.info("Unable to log user in. Reason: " + e.getMessage());
 
-        	redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
-        	return new ModelAndView("redirect:" + redirect);
+            redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
+            return new ModelAndView("redirect:" + redirect);
         } catch (PasswordExpiredException e) {
-            CTILogger.debug("The password for "+username+" is expired.", e);
+            CTILogger.debug("The password for " + username + " is expired.", e);
 
             String passwordResetUrl = passwordResetService.getPasswordResetUrl(username, request);
-            return new ModelAndView("redirect:"+passwordResetUrl);
+            return new ModelAndView("redirect:" + passwordResetUrl);
         }
-        
+
         LiteYukonUser user = ServletUtil.getYukonUser(request);
 
-        ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, 
-        		"User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
-        
+        ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername()
+            + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
+
         if (createRememberMeCookie) {
             loginCookieHelper.setRememberMeCookie(request, response, username, password);
         }
@@ -86,20 +91,20 @@ public class YukonLoginController extends MultiActionController {
         } else {
             redirect = "/home";
         }
-    
+
         boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);
         if (!hasUrlAccess) {
-        	loginService.invalidateSession(request, "No access to URL (" + redirect + ")");
+            loginService.invalidateSession(request, "No access to URL (" + redirect + ")");
             redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
         }
-	          
+
         return new ModelAndView("redirect:" + redirect);
     }
 
     /**
-     * Gets the redirect url when the authentication fails
+     * Get the redirect URL when the authentication fails
      */
-    private String getBadAuthenticationRedirectUrl(HttpServletRequest request, final String redirectedFrom, long retrySeconds) {
+    private String getBadAuthenticationRedirectUrl(HttpServletRequest request, String redirectedFrom, long retrySeconds) {
         String redirect;
 
         String referer = request.getHeader("Referer");
@@ -109,12 +114,15 @@ public class YukonLoginController extends MultiActionController {
         return redirect;
     }
 
-    // appends params to the redirect url provided
+    /**
+     * Append parameters to the redirect URL provided.
+     */
     private String appendParams(String redirect, long retrySeconds, String redirectedFrom) {
         String result = redirect;
-        //user sees either invalid login OR retry after xx seconds message
+        // user sees either invalid login OR retry after xx seconds message
         if (retrySeconds > 0) {
-            result = ServletUtil.tweakRequestURL(result, LoginController.AUTH_RETRY_SECONDS_PARAM, Long.toString(retrySeconds));
+            result = ServletUtil.tweakRequestURL(result, LoginController.AUTH_RETRY_SECONDS_PARAM,
+                    Long.toString(retrySeconds));
             result = ServletUtil.tweakRequestURL(result, LoginController.AUTH_FAILED_PARAM, null);
         } else {
             result = ServletUtil.tweakRequestURL(result, LoginController.AUTH_FAILED_PARAM, "true");
@@ -127,7 +135,7 @@ public class YukonLoginController extends MultiActionController {
         }
         return result;
     }
-    
+
     public ModelAndView logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
         loginService.logout(request, response);
         return null;
@@ -142,5 +150,4 @@ public class YukonLoginController extends MultiActionController {
         loginService.outboundVoiceLogin(request, response);
         return null;
     }
-
 }

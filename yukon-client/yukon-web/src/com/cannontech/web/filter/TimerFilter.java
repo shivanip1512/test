@@ -68,9 +68,11 @@ public class TimerFilter implements Filter {
 
     @Override
     public void destroy() {
+        // Unused but must implement.
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        // Unused but must implement.
     }
 }
