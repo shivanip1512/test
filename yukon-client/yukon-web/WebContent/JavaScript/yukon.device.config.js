@@ -1,11 +1,10 @@
-
 yukon.namespace('yukon.deviceConfig');
 
+/** 
+ * This module handles behavior on the device configuration pages.
+ * @module yukon.deviceConfig 
+ */
 yukon.deviceConfig = (function () {
-    
-    /*******************
-     * Private Methods *
-     *******************/
     
     var _determineDisplayItemAddButtonVisibility = function() {
         var visibleElems = $("[id^='displayItem']").filter(":visible");
@@ -67,7 +66,7 @@ yukon.deviceConfig = (function () {
     _makeAjaxCall = function(method, params, button) {
         var url = yukon.url('/deviceConfiguration/category/' + method);
         $('#' + button.attr('id')).mouseleave();
-        $('#categoryPopup').load(url, params, function() {
+        $('#category-popup').load(url, params, function() {
             _handleVisibleElemsAndButtons();
             _enableButton(button);
             _registerScheduleButtons();
@@ -153,40 +152,121 @@ yukon.deviceConfig = (function () {
     },
 
     mod = {
-        /******************
-         * Public Methods *
-         ******************/
-        configInit : function() {
-            $(function() {
-                var typesPopup = $('#supportedTypePopup');
-                if (typesPopup.attr('data-show-on-load') === 'true') {
-                    typesPopup.load('processAddTypes', {configId : typesPopup.attr('data-config-id')});
-                }
+        
+        /** Initialize the module. Depends on DOM elements so call after page load. */
+        init : function() {
             
-                $("#addTypeBtn").click(function() {
-                    $('#supportedTypePopup').load('processAddTypes', {configId : $(this).attr('data-config-id')});
-                });
-                
-                $(".f-editBtn").click(function() {
-                    var btn = $(this),
-                        catType = btn.attr('data-category-type'),
-                        params = {'categoryId' : $('#categoryId_' + catType).val(),
-                                  'configId' : btn.attr('data-config-id') };
-                    
-                    _makeAjaxCall('editInPlace', params, btn);
-                });
-                
-                $(".f-createBtn").click(function() {
-                    var btn = $(this),
-                        catType = btn.attr('data-category-type'),
-                        params = {'categoryType' : catType, 
-                                  'configId' : btn.attr('data-config-id') };
-            
-                    _makeAjaxCall('createInPlace', params, btn);        
-                });
-
-                _hideThingsInMap();
+            var typesPopup = $('#supportedTypePopup');
+            if (typesPopup.attr('data-show-on-load') === 'true') {
+                typesPopup.load('processAddTypes', { configId : typesPopup.attr('data-config-id') });
+            }
+        
+            $("#addTypeBtn").click(function() {
+                $('#supportedTypePopup').load('processAddTypes', { configId : $(this).attr('data-config-id') });
             });
+            
+            /** Edit button clicked for category, show category edit popup. */
+            $('.f-edit-category').click(function(ev) {
+                
+                var btn = $(this),
+                    categoryId = $('#categoryId_' + btn.data('categoryType')).val(),
+                    configId = btn.data('configId'),
+                    url = yukon.url('/deviceConfiguration/category/editInPlace?categoryId=' 
+                        + categoryId + '&configId=' + configId);
+                
+                $('#category-popup').load(url, function() {
+                    yukon.ui.unbusy(btn);
+                    _handleVisibleElemsAndButtons();
+                    _registerScheduleButtons();
+                    _hideThingsInMap();
+                    var title = $('#popup-title').val(),
+                        buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon.deviceConfigs.category.save' });
+                    $('#category-popup').dialog({ width: 900, height: 600, title: title, buttons: buttons });
+                });
+            });
+            
+            /** Save button click on cateogry edit or create popup. Post form and handle results */
+            $('#category-popup').on('yukon.deviceConfigs.category.save', function(ev) {
+                $('#category-form').ajaxSubmit({
+                    type: 'post',
+                    success: function(data, status, xhr, $form) {
+                        
+                        $('#category-popup').dialog('close');
+                        // TODO add message
+                        
+                    },
+                    error: function(xhr, status, error, $form) {
+                        $('#category-popup').html(xhr.responseText);
+                        _hideThingsInMap();
+                    }
+                });
+            });
+            
+            /** Create button clicked for category, show category create popup. */
+            $(".f-create-category").click(function(ev) {
+                var btn = $(this),
+                    type = btn.data('categoryType'),
+                    configId = btn.data('configId'),
+                    url = yukon.url('/deviceConfiguration/category/createInPlace?categoryType=' 
+                        + type + '&configId=' + configId);
+            
+                $('#category-popup').load(url, function() {
+                    yukon.ui.unbusy(btn);
+                    _handleVisibleElemsAndButtons();
+                    _registerScheduleButtons();
+                    _hideThingsInMap();
+                    var title = $('#popup-title').val(),
+                        buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon.deviceConfigs.category.save' });
+                    $('#category-popup').dialog({ width: 900, height: 600, title: title, buttons: buttons });
+                });
+            });
+
+            _hideThingsInMap();
+            _determineDisplayItemAddButtonVisibility();
+            _showSandwichedSlotDisabledEntries();
+            
+            for (var num = 1; num < 5; num++) {
+                _determineScheduleAddButtonVisibility(num);
+                _showSandwichedMidnightEntries(num);
+            }
+            
+            $("#showNextFieldBtn").on("click", function() {
+                // Show the next hidden display item.
+                var hiddenElems = $("[id^='displayItem']").filter(":hidden");
+                $('#' + hiddenElems[0].id).removeClass('dn');
+                _determineDisplayItemAddButtonVisibility();
+            });
+            
+            $(".f-categories").click(function() {
+                var deviceType = $(this).attr('data-device-type');
+                $(".pipe").css('visibility', 'hidden');
+                $(".pipe[data-device-type-" + deviceType + "]").css('visibility', 'visible');
+                $(".pipe[data-device-type=" + deviceType + "]").css('visibility', 'visible');
+            });
+            
+            $("#category-popup").on("click", function(event) {
+                if ($(event.target).closest('#showNextFieldBtn').length > 0) {
+                    // Show the next hidden display item.
+                    var hiddenElems = $("[id^='displayItem']").filter(":hidden"),
+                        visibleElems = $("[id^='displayItem']").filter(":visible");
+                    $('#' + hiddenElems[0].id).removeClass('dn');
+                    if (visibleElems.length < 26) {
+                        $('#showNextDiv').show();
+                    } else {
+                        $('#showNextDiv').hide();
+                    }
+                }
+            });
+            
+            _registerScheduleButtons();
+            
+            // Find the first type and select his categories
+            var pipe = $(".pipe").get(0);
+            if (pipe) {
+                var deviceType = pipe.attributes["data-device-type"].value;
+                $('.pipe[data-device-type-' + deviceType + ']').css('visibility', 'visible');
+                $(pipe).css('visibility', 'visible');
+            }
         }, 
         
         changeOut : function(type) {
@@ -196,57 +276,7 @@ yukon.deviceConfig = (function () {
         }
     };
 
-    $(function() {
-        _determineDisplayItemAddButtonVisibility();
-        _showSandwichedSlotDisabledEntries();
-        
-        for (var num = 1; num < 5; num++) {
-            _determineScheduleAddButtonVisibility(num);
-            _showSandwichedMidnightEntries(num);
-        }
-        
-        $("#showNextFieldBtn").on("click", function() {
-            // Show the next hidden display item.
-            var hiddenElems = $("[id^='displayItem']").filter(":hidden");
-            $('#' + hiddenElems[0].id).removeClass('dn');
-            _determineDisplayItemAddButtonVisibility();
-        });
-        
-        $(".f-categories").click(function() {
-            var deviceType = $(this).attr('data-device-type');
-            $(".pipe").css('visibility', 'hidden');
-            $(".pipe[data-device-type-" + deviceType + "]").css('visibility', 'visible');
-            $(".pipe[data-device-type=" + deviceType + "]").css('visibility', 'visible');
-        });
-        
-        $("#categoryPopup").on("click", function(event) {
-            if ($(event.target).closest('#showNextFieldBtn').length > 0) {
-                // Show the next hidden display item.
-                var hiddenElems = $("[id^='displayItem']").filter(":hidden"),
-                    visibleElems = $("[id^='displayItem']").filter(":visible");
-                $('#' + hiddenElems[0].id).removeClass('dn');
-                if (visibleElems.length < 26) {
-                    $('#showNextDiv').show();
-                } else {
-                    $('#showNextDiv').hide();
-                }
-            }
-        });
-        
-        _registerScheduleButtons();
-        
-        // Find the first type and select his categories
-        var pipe = $(".pipe").get(0);
-        if (pipe) {
-            var deviceType = pipe.attributes["data-device-type"].value;
-            $('.pipe[data-device-type-' + deviceType + ']').css('visibility', 'visible');
-            $(pipe).css('visibility', 'visible');
-        }
-    });
-    
     return mod;
 }());
 
-$(function() {
-    yukon.deviceConfig.configInit();
-});
+$(function() { yukon.deviceConfig.init(); });

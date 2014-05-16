@@ -1,36 +1,41 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
-<script type="text/javascript">
-$(function() {
-    $(document).on('categorySubmitted', closeAjaxDialogAndRefresh); 
-});
-</script>
+<input id="popup-title" type="hidden" value="${popupTitle}"/>
 
-<d:ajaxPage nameKey="${nameKey}" module="tools" page="configs.config" okEvent="ajaxDialogSubmit" 
-    id="categoryPopup"
-    options="{ 'height' : '600', 'width' : '988' }">
-    <cti:url var="saveInPlaceUrl" value="/deviceConfiguration/category/saveInPlace"/>
-    <form:form commandName="categoryEditBean" action="${saveInPlaceUrl}">
-        <form:hidden path="categoryType"/>
-        <form:hidden path="categoryId"/>
-        <input type="hidden" name="configId" value="${configId}"/>
+<cti:url var="saveInPlaceUrl" value="/deviceConfiguration/category/saveInPlace"/>
+<form:form id="category-form" commandName="categoryEditBean" action="${saveInPlaceUrl}">
+
+    <form:hidden path="categoryType"/>
+    <form:hidden path="categoryId"/>
+    <input type="hidden" name="configId" value="${configId}"/>
+    
+    <cti:msgScope paths="modules.tools.configs, modules.tools.configs.category">
         
-        <cti:msgScope paths=",.category">
-            <tags:nameValueContainer2 tableClass="stacked">
-                <tags:inputNameValue nameKey=".categoryName" path="categoryName" size="50" maxlength="60"/>
-                <tags:nameValue2 nameKey=".type"><i:inline key=".${categoryTemplate.categoryType}.title"/></tags:nameValue2>
-                <tags:nameValue2 nameKey=".definition"><i:inline key=".${categoryTemplate.categoryType}.definition"/></tags:nameValue2>
-                <tags:textareaNameValue nameKey=".description" rows="4" cols="50" path="description" nameClass="vat"/>
-            </tags:nameValueContainer2>
+        <div class="warning stacked"><i:inline key=".category.changeWarning"/></div>
         
-            <tags:sectionContainer2 nameKey="warning"><i:inline key=".category.changeWarning"/></tags:sectionContainer2>
-        </cti:msgScope>
+        <tags:nameValueContainer2 tableClass="stacked">
+            
+            <tags:inputNameValue nameKey=".categoryName" path="categoryName" size="50" maxlength="60"/>
+            
+            <tags:nameValue2 nameKey=".type">
+                <i:inline key=".${categoryTemplate.categoryType}.title"/>
+            </tags:nameValue2>
+            
+            <tags:nameValue2 nameKey=".definition">
+                <i:inline key=".${categoryTemplate.categoryType}.definition"/>
+            </tags:nameValue2>
+            
+            <tags:textareaNameValue nameKey=".description" rows="4" cols="50" path="description"/>
+            
+        </tags:nameValueContainer2>
         
-        <%@ include file="category.jspf" %>
-    </form:form>
-</d:ajaxPage>
+    </cti:msgScope>
+    
+    <%@ include file="category.jspf" %>
+</form:form>

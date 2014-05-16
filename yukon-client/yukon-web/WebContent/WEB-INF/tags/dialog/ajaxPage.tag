@@ -62,7 +62,6 @@ $(document).ready(function() {
     </c:if>
     var dialogOpts = {
             'title' : '${titleMsg}',
-            'position' : 'center',
             'width' : 'auto',
             'height' : 'auto',
             'modal' : true,

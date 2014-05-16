@@ -12,7 +12,7 @@
 
     // credit to:
     // http://stackoverflow.com/questions/3954438/remove-item-from-array-by-value
-    Array.prototype.removeByVal = function() {
+    Array.prototype.removeByVal = function () {
         var args = arguments, arrEl, len = args.length, aidx;
         while (len && this.length) {
             len -= 1;
@@ -31,9 +31,9 @@
                 this_thermostatType = this_cb.id.split('-')[2],
                 // thermostatIds value -> currentIds array
                 currentIds = $('#thermostatIds').val(),
-                convertToArray = function(thing) {
+                convertToArray = function (thing) {
                     var arr = [],
-                        buildArr = function(index, element) {
+                        buildArr = function (index, element) {
                             arr.push(element);
                         };
                     $.each(thing, buildArr);
@@ -79,14 +79,14 @@
             });
         }
     
-    $( function () {
+    $(function() {
         var thermos = $('input[id*="THERMOSTATCHECKBOX"]');
         // if we check a box, press schedule, then return to this page, clear all checkboxes
         // Chrome "remembers" previous selections, IE and Firefox do not
-        $.each(thermos, function (index, cb) {
+        $.each(thermos, function(index, cb) {
             cb.checked = false;
             cb.disabled = false;
-        })
+        });
         $('#thermostatIds').val('');
     });
     </script>
@@ -94,7 +94,7 @@
     <form id="themostatSelectForm" method="post" action="<cti:url value="/stars/operator/thermostatSelect/selectRedirect"/>">
         <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="chooseThermostats" hideEnabled="false">
-        
+
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" id="thermostatIds" name="thermostatIds" value="${thermostatIds}">
 

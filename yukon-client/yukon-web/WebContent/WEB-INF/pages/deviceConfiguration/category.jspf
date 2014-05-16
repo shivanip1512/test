@@ -6,7 +6,7 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<cti:msgScope paths=",yukon.web.modules.tools.configs.category">
+<cti:msgScope paths="yukon.web.modules.tools.configs.category">
 
 <tags:setFormEditMode mode="${mode}"/>
 

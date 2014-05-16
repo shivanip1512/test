@@ -1,7 +1,7 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths=",yukon.web.modules.tools.configs.category">
     <div class="clearfix">
@@ -21,13 +21,11 @@
                 <tags:alertBox nameKey=".needsSelection"/>
             </c:if>
 
-            <tags:nameValueContainer2 >
-                <tags:nameValue2 nameKey=".name" nameColumnWidth="15%" nameClass="vat">
-                    <div id="categoryName_${catType}">
-                        ${fn:escapeXml(selection.categoryName)}
-                    </div>
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".name" nameColumnWidth="15%">
+                    <div id="categoryName_${catType}">${fn:escapeXml(selection.categoryName)}</div>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".type" nameColumnWidth="15%" nameClass="vat">
+                <tags:nameValue2 nameKey=".type">
                     <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
                     <cti:msg2 var="catPopupTitle" key=".categoryInfoTitle" argument="${i18nCatType}"/>
                     <i:inline key=".${catType}.title"/>
@@ -37,9 +35,9 @@
                        data-category-type="${catType}" 
                        data-config-id="${configurationCategoriesBackingBean.configId}"
                        data-popup-title="${catPopupTitle}">
-                        <cti:icon icon="icon-help" id="help_icon_${catType}"/>
+                        <cti:icon icon="icon-help" popup="#section-container-info-popup-${catType}"/>
                     </a>
-                    <tags:simplePopup id="section-container-info-popup-${catType}" title="${catPopupTitle}" on="#help_icon_${catType}" options="{width:600}">
+                    <div id="section-container-info-popup-${catType}" title="${catPopupTitle}" data-width="500" class="dn">
                         <c:set var="supportedTypes" value=""/>
                         <c:forEach var="paoType" items="${categoryToDeviceTypeMap[catType]}" varStatus="status">
                             <c:choose>
@@ -53,10 +51,10 @@
                         </c:forEach>
                         <c:set var="supportedTypes" value="${supportedTypes}."/>
                         <cti:msg2 key=".categoryDeviceTypes" arguments="${supportedTypes}"/>
-                    </tags:simplePopup> 
+                    </div> 
                 </tags:nameValue2>
                 <c:if test="${not empty selection.categoryId}">
-                    <tags:nameValue2 nameKey=".description" nameColumnWidth="15%" nameClass="vat">
+                    <tags:nameValue2 nameKey=".description">
                         ${fn:escapeXml(selection.description)}
                     </tags:nameValue2>
                 </c:if>
@@ -95,11 +93,23 @@
                                 </c:if>
                                     
                                 <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
-                                <cti:msg2 var="createBtnTitle" key=".createCategory" argument="${i18nCatType}"/>                            
-                                <cti:button nameKey="create" data-config-id="${configurationCategoriesBackingBean.configId}" data-category-type="${catType}" classes="f-createBtn" busy="true" icon="icon-plus-green" title="${createBtnTitle}"/>
+                                <cti:msg2 var="createBtnTitle" key=".createCategory" argument="${i18nCatType}"/>
+                                <cti:button nameKey="create" 
+                                    data-config-id="${configurationCategoriesBackingBean.configId}" 
+                                    data-category-type="${catType}" 
+                                    classes="f-create-category" 
+                                    busy="true" 
+                                    icon="icon-plus-green" 
+                                    title="${createBtnTitle}"/>
                                 <c:if test="${not empty selection.categoryId}">
                                     <cti:msg2 var="editBtnTitle" key=".editAssignedCategory" argument="${selection.categoryName}"/>
-                                    <cti:button nameKey="edit" data-config-id="${configurationCategoriesBackingBean.configId}" data-category-type="${catType}" classes="f-editBtn" busy="true" icon="icon-pencil" title="${editBtnTitle}"/>
+                                    <cti:button nameKey="edit" 
+                                        data-config-id="${configurationCategoriesBackingBean.configId}" 
+                                        data-category-type="${catType}" 
+                                        classes="f-edit-category" 
+                                        busy="true" 
+                                        icon="icon-pencil" 
+                                        title="${editBtnTitle}"/>
                                 </c:if>
                             </div>
                         </cti:displayForPageEditModes>

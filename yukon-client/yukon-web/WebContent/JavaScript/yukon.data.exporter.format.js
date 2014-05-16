@@ -69,9 +69,7 @@ yukon.dataExporterFormat = (function () {
          */
         init: function() {
             
-            if (_initialized) {
-                return;
-            }
+            if (_initialized) return;
             
             _config = yukon.fromJson('#module-config');
             

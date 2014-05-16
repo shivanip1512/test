@@ -10,17 +10,18 @@
     <c:set var="appName" value=""/>
 </c:if>
 <script type="text/javascript">
-var YG = {
-        PHONE: {
-            FORMATS: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
-        },
-        
-        APP_NAME: '${appName}',
-        
-        TEXT: {
-            ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
-            cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>'
-        },
-        DEV_MODE: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true'
+var yg = {
+    phone: {
+        formats: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
+    },
+    
+    app_name: '${appName}',
+    
+    text: {
+        ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
+        cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>',
+        save: '<cti:msg2 key="yukon.web.components.button.save.label"/>'
+    },
+    dev_mode: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true'
 };
 </script>

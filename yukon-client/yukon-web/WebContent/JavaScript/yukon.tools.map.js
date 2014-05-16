@@ -304,6 +304,7 @@ yukon.tools.map = (function() {
                     var layer = $(this).data('layer');
                     _tiles[i].set('visible', (_tiles[i].get('name') === layer));
                 }
+                
             });
             
             /** Remove filtering when no filter button clicked. */

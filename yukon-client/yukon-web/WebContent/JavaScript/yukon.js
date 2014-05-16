@@ -86,7 +86,7 @@ var yukon = (function () {
         },
         /** Handle app name prepending here */
         url : function (url) {
-            return YG.APP_NAME + url;
+            return yg.app_name + url;
         },
         /** JavaScript side of JsonTag.java */
         fromJson : function (selector) {
@@ -217,16 +217,16 @@ yukon.ui = (function () {
          *        {string} [event=yukon.dialog.ok] - The name of the event to fire when 'ok' button is clicked. Defaults to 'yukon.dialog.ok'.
          *        {string, element} [form] - If present, submits the form supplied or the first form element found inside the popup. 
          *                                   'event' is not fired when 'form' is present. 
-         *        {string, element} [target=the popup element] - The target of the event (element or selector). Defaults to the popup.
-         *        {string} [okText=YG.TEXT.ok] - The text of the ok button. Defaults to YG.TEXT.ok.
-         *        {string} [cancelText=YG.TEXT.cancel] - The text of the cancel button. Defaults to YG.TEXT.cancel.
+         *        {string|element} [target=the popup element] - The target of the event (element or selector). Defaults to the popup.
+         *        {string} [okText=yg.text.ok] - The text of the ok button. Defaults to yg.text.ok.
+         *        {string} [cancelText=yg.text.cancel] - The text of the cancel button. Defaults to yg.text.cancel.
          */
         buttons: function(options) {
             
             var defaults = {
                     event: 'yukon.dialog.ok',
-                    okText: YG.TEXT.ok,
-                    cancelText: YG.TEXT.cancel,
+                    okText: yg.text.ok,
+                    cancelText: yg.text.cancel,
                 };
             if (typeof(options) !== 'undefined') {
                 $.extend(defaults, options);
@@ -570,9 +570,9 @@ yukon.ui = (function () {
                 regex,
                 format;
             if (stripped.length > 0) {
-                for (i=0; i<YG.PHONE.FORMATS.length; i++) {
-                    regex = YG.PHONE.FORMATS[i].regex;
-                    format = YG.PHONE.FORMATS[i].format;
+                for (i=0; i<yg.phone.formats.length; i++) {
+                    regex = yg.phone.formats[i].regex;
+                    format = yg.phone.formats[i].format;
                     if (regex.test(stripped)) {
                         input.value = stripped.replace(regex, format);
                         break;

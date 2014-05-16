@@ -132,6 +132,6 @@
     </cti:displayForPageEditModes>
     
     <div id="supportedTypePopup" data-show-on-load="${showTypesPopupOnLoad}" data-config-id="${deviceConfigurationBackingBean.configId}"></div>
+    <div id="category-popup" class="dn"></div>
     
-    <div id="categoryPopup" class="dn"></div>
 </cti:standardPage>

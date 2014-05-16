@@ -19,8 +19,8 @@ yukon.favorites = (function () {
 
         if (typeof data.path === 'undefined') {
             data.path = window.location.pathname + window.location.search;
-            if (YG.APP_NAME.length > 0) {
-                data.path = data.path.substring(YG.APP_NAME.length - 1);
+            if (yg.app_name.length > 0) {
+                data.path = data.path.substring(yg.app_name.length - 1);
             }
         }
         return data;

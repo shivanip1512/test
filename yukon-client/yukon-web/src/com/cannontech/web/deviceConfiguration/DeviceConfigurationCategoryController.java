@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -26,11 +27,12 @@ import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.model.jaxb.InputBase;
 import com.cannontech.common.device.config.model.jaxb.InputMap;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -46,12 +48,14 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("/category/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_CONFIG)
 public class DeviceConfigurationCategoryController {
+    
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigurationCategoryController.class);
     
-    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
-    @Autowired private DeviceConfigurationHelper deviceConfigurationHelper;
-    @Autowired private DeviceConfigurationService deviceConfigurationService;
+    @Autowired private DeviceConfigurationDao deviceConfigDao;
+    @Autowired private DeviceConfigurationHelper deviceConfigHelper;
+    @Autowired private DeviceConfigurationService deviceConfigService;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     private final static String baseKey = "yukon.web.modules.tools.configs";
     
@@ -60,7 +64,7 @@ public class DeviceConfigurationCategoryController {
     
     @RequestMapping("create")
     public String create(ModelMap model, String categoryType, YukonUserContext context) {
-        Category category = deviceConfigurationDao.getCategoryByType(CategoryType.fromValue(categoryType));
+        Category category = deviceConfigDao.getCategoryByType(CategoryType.fromValue(categoryType));
         
         CategoryEditBean categoryEditBean = new CategoryEditBean();
         categoryEditBean.setCategoryType(categoryType);
@@ -86,7 +90,8 @@ public class DeviceConfigurationCategoryController {
     
     @RequestMapping("createInPlace")
     public String createInPlace(ModelMap model, String categoryType, int configId, YukonUserContext context) {
-        Category category = deviceConfigurationDao.getCategoryByType(CategoryType.fromValue(categoryType));
+        
+        Category category = deviceConfigDao.getCategoryByType(CategoryType.fromValue(categoryType));
         
         CategoryEditBean categoryEditBean = new CategoryEditBean();
         categoryEditBean.setCategoryType(categoryType);
@@ -106,16 +111,16 @@ public class DeviceConfigurationCategoryController {
             categoryEditBean.getCategoryInputs().put(inputBase.getField(), inputBase.getDefault());
         }
         
-        return navigateToCategoryPopup(categoryEditBean, model, configId, context);
+        return categoryPopup(categoryEditBean, model, configId, context);
     }
     
     @RequestMapping("editInPlace")
     public String editInPlace(ModelMap model, int categoryId, int configId, YukonUserContext context) {
-        DeviceConfigCategory category = deviceConfigurationDao.getDeviceConfigCategory(categoryId);
         
+        DeviceConfigCategory category = deviceConfigDao.getDeviceConfigCategory(categoryId);
         CategoryEditBean categoryEditBean = createCategoryEditBean(category);
         
-        return navigateToCategoryPopup(categoryEditBean, model, configId, context);
+        return categoryPopup(categoryEditBean, model, configId, context);
     }
     
     @RequestMapping("edit")
@@ -131,7 +136,7 @@ public class DeviceConfigurationCategoryController {
     
     @RequestMapping("delete")
     public String delete(ModelMap model, FlashScope flashScope, int categoryId) {
-        deviceConfigurationService.deleteCategory(categoryId);
+        deviceConfigService.deleteCategory(categoryId);
         
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".category.deleteSuccess"));
         
@@ -148,7 +153,7 @@ public class DeviceConfigurationCategoryController {
         CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
         
         CategoryTemplate categoryTemplate = 
-                deviceConfigurationHelper.createTemplate(deviceConfigurationDao.getCategoryByType(type), context);
+                deviceConfigHelper.createTemplate(deviceConfigDao.getCategoryByType(type), context);
 
         CategoryEditValidator validator = new CategoryEditValidator(categoryTemplate);
         validator.validate(categoryEditBean, bindingResult);
@@ -167,7 +172,7 @@ public class DeviceConfigurationCategoryController {
         
         DeviceConfigCategory configCategory = categoryEditBean.getModelObject();
         try {
-            int categoryId = deviceConfigurationService.saveCategory(configCategory);
+            int categoryId = deviceConfigService.saveCategory(configCategory);
 
             flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".category.saveSuccess"));
             
@@ -187,64 +192,60 @@ public class DeviceConfigurationCategoryController {
     }
     
     @RequestMapping("saveInPlace")
-    public String saveInPlace(HttpServletResponse response,
+    public String saveInPlace(HttpServletResponse resp,
                               ModelMap model, 
-                              FlashScope flashScope, 
-                              @ModelAttribute CategoryEditBean categoryEditBean,
-                              BindingResult bindingResult, 
+                              FlashScope flash, 
+                              @ModelAttribute CategoryEditBean category,
+                              BindingResult result, 
                               int configId,
                               YukonUserContext context) {
-        CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
         
-        CategoryTemplate categoryTemplate = 
-                deviceConfigurationHelper.createTemplate(deviceConfigurationDao.getCategoryByType(type), context);
+        CategoryType type = CategoryType.fromValue(category.getCategoryType());
+        
+        Category categoryByType = deviceConfigDao.getCategoryByType(type);
+        CategoryTemplate categoryTemplate = deviceConfigHelper.createTemplate(categoryByType, context);
 
         CategoryEditValidator validator = new CategoryEditValidator(categoryTemplate);
-        validator.validate(categoryEditBean, bindingResult);
+        validator.validate(category, result);
         
-        if (bindingResult.hasErrors()) {
-            flashScope.setMessage(
-                new YukonMessageSourceResolvable(baseKey + ".errorsExist"), 
-                FlashScopeMessageType.ERROR);
-            
-            return navigateToCategoryPopup(categoryEditBean, model, configId, context);
+        if (result.hasErrors()) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".errorsExist"));
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            return categoryPopup(category, model, configId, context);
         }
         
         try {
-            deviceConfigurationService.saveCategory(categoryEditBean.getModelObject());
-
-            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".category.saveSuccess"));
+            deviceConfigService.saveCategory(category.getModelObject());
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".category.saveSuccess"));
         } catch (DuplicateException de) {
             log.debug("An attempt to save a category with a duplicate name has occurred.");
-            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".category.nameExists"));
-            
-            return navigateToCategoryPopup(categoryEditBean, model, configId, context);
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".category.nameExists"));
+            resp.setStatus(HttpStatus.CONFLICT.value());
+            return categoryPopup(category, model, configId, context);
         }
         
         model.clear();
-        
-        ServletUtils.dialogFormSuccess(response, "categorySubmitted");
         return null;
     }
     
-    /**
-     * Return the user to the category popup.
-     * @param categoryEditBean - the backing bean for the category
-     * @param model - the model map
-     * @param configId - the config id of the configuration the user is modifying
-     * @param context - the user context
-     * @return the jsp of the category popup.
+    /** 
+     * Return the category popup view. 
      */
-    private String navigateToCategoryPopup(CategoryEditBean categoryEditBean, ModelMap model, int configId, 
-                                   YukonUserContext context) {
+    private String categoryPopup(CategoryEditBean category, ModelMap model, int configId, YukonUserContext userContext) {
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        
         // Return to the edit view if the category has an Id, create otherwise.
-        PageEditMode mode = categoryEditBean.getCategoryId() != null ? PageEditMode.EDIT : PageEditMode.CREATE;
-        
-        model.addAttribute("nameKey", mode == PageEditMode.EDIT ? "editCategory" : "createCategory");
-
+        PageEditMode mode = PageEditMode.CREATE;
+        if (category.getCategoryId() != null) {
+            mode = PageEditMode.EDIT;
+            model.addAttribute("popupTitle", accessor.getMessage(baseKey + ".category.EDIT.pageName"));
+        } else {
+            model.addAttribute("popupTitle", accessor.getMessage(baseKey + ".category.CREATE.pageName"));
+        }
         model.addAttribute("configId", configId);
+        setupModelMap(model, mode, category, userContext);
         
-        setupModelMap(model, mode, categoryEditBean, context);
         return "ajaxCategory.jsp";
     }
     
@@ -257,7 +258,7 @@ public class DeviceConfigurationCategoryController {
      * @return the jsp of the view
      */
     private String viewOrEdit(ModelMap model, int categoryId, YukonUserContext context, PageEditMode mode) {
-        DeviceConfigCategory category = deviceConfigurationDao.getDeviceConfigCategory(categoryId);
+        DeviceConfigCategory category = deviceConfigDao.getDeviceConfigCategory(categoryId);
         
         CategoryEditBean categoryEditBean = createCategoryEditBean(category);
 
@@ -279,7 +280,7 @@ public class DeviceConfigurationCategoryController {
         categoryEditBean.setCategoryType(category.getCategoryType());
         categoryEditBean.setDescription(category.getDescription());
         
-        List<String> configNames = deviceConfigurationDao.getConfigurationNamesForCategory(category.getCategoryId());
+        List<String> configNames = deviceConfigDao.getConfigurationNamesForCategory(category.getCategoryId());
         categoryEditBean.setAssignments(configNames);
         
         List<DeviceConfigCategoryItem> deviceConfigurationItems = category.getDeviceConfigurationItems();
@@ -361,7 +362,7 @@ public class DeviceConfigurationCategoryController {
                               YukonUserContext context) {
         // This category can be deleted if it exists in the database and has no configuration assignments.
         boolean isDeletable = categoryEditBean.getCategoryId() == null ? false : 
-                deviceConfigurationDao.getConfigurationNamesForCategory(categoryEditBean.getCategoryId()).size() == 0;
+                deviceConfigDao.getConfigurationNamesForCategory(categoryEditBean.getCategoryId()).size() == 0;
            
         model.addAttribute("isDeletable", isDeletable);
         
@@ -369,7 +370,7 @@ public class DeviceConfigurationCategoryController {
         
         CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
         CategoryTemplate categoryTemplate = 
-            deviceConfigurationHelper.createTemplate(deviceConfigurationDao.getCategoryByType(type), context);
+            deviceConfigHelper.createTemplate(deviceConfigDao.getCategoryByType(type), context);
         
         model.addAttribute("categoryTemplate", categoryTemplate);
         
