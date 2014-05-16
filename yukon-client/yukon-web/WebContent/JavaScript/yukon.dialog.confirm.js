@@ -42,7 +42,6 @@ yukon.dialogConfirm = (function () {
                 actionButton,
                 //dialog default options
                 defaults = {
-                    'position': 'center',
                     'width': '500px',
                     'height': 'auto',
                     'buttons': buttons,

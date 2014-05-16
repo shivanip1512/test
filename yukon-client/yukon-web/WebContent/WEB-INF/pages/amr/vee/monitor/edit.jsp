@@ -8,6 +8,13 @@
 <cti:standardPage module="amr" page="validationEditor.${mode}" >
 <style>.validation-value{text-align: right;margin-right: 5px !important;}</style>
 <script type="text/javascript">
+    $(function() {
+        $(document).on('yukon.dialog.confirm.cancel', function(ev) {
+            yukon.ui.unbusy('#deleteButton');
+            $('.page-action-area .button').enable();
+        });
+    });
+
     function deleteValidationMonitor() {
         $("button[data-disable-group=actionButtons]").each( function(){
             this.disabled = true;
@@ -125,7 +132,8 @@
                     </c:if>
                      <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                    
-                    <cti:button id="deleteButton" nameKey="delete" onclick="deleteValidationMonitor();" data-disable-group="actionButtons" classes="delete"/>
+                    <cti:button id="deleteButton" nameKey="delete" onclick="deleteValidationMonitor();" busy="true" 
+                        data-disable-group="actionButtons" classes="delete"/>
                     <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                 </c:when>
                 <c:otherwise>

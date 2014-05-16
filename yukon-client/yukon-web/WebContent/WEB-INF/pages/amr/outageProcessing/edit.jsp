@@ -16,6 +16,10 @@
     
         $(function() {
             toggleReadFrequencyOptions();
+            $(document).on('yukon.dialog.confirm.cancel', function(ev) {
+                yukon.ui.unbusy('#deleteButton');
+                $('.page-action-area .button').enable();
+            });
         });
     
         function toggleReadFrequencyOptions() {
@@ -31,9 +35,6 @@
         }
 
         function deleteOutageMonitor() {
-            $("button[data-disable-group=actionButtons]").each( function(){
-                this.disabled = true;
-            });
             $('#configDeleteForm').submit();
         }
 
@@ -188,25 +189,27 @@
         </cti:checkRolesAndProperties>
         
         <%-- create / update / delete --%>
-        <c:choose>
-            <c:when test="${outageMonitorId > 0}">
-                <cti:button nameKey="update" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
-                <c:set var="toggleText" value="enable"/>
-                <c:if test="${outageMonitor.evaluatorStatus eq 'ENABLED'}">
-                    <c:set var="toggleText" value="disable"/>
-                </c:if>
-                <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
-                <cti:button id="deleteButton" nameKey="delete" onclick="deleteOutageMonitor();" data-disable-group="actionButtons" classes="delete"/>
-                <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
-                <cti:url var="backUrl" value="/amr/outageProcessing/process/process">
-                    <cti:param name="outageMonitorId" value="${outageMonitorId}" />
-                </cti:url>
-            </c:when>
-            <c:otherwise>
-                <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" classes="primary action"/>
-                <cti:url var="backUrl" value="/meter/start"/>
-            </c:otherwise>
-        </c:choose>
-        <cti:button nameKey="cancel" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
+        <div class="page-action-area">
+            <c:choose>
+                <c:when test="${outageMonitorId > 0}">
+                    <cti:button nameKey="update" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
+                    <c:set var="toggleText" value="enable"/>
+                    <c:if test="${outageMonitor.evaluatorStatus eq 'ENABLED'}">
+                        <c:set var="toggleText" value="disable"/>
+                    </c:if>
+                    <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
+                    <cti:button id="deleteButton" nameKey="delete" onclick="deleteOutageMonitor();" busy="true" data-disable-group="actionButtons" classes="delete"/>
+                    <d:confirm on="#deleteButton" nameKey="confirmDelete" />
+                    <cti:url var="backUrl" value="/amr/outageProcessing/process/process">
+                        <cti:param name="outageMonitorId" value="${outageMonitorId}" />
+                    </cti:url>
+                </c:when>
+                <c:otherwise>
+                    <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" classes="primary action"/>
+                    <cti:url var="backUrl" value="/meter/start"/>
+                </c:otherwise>
+            </c:choose>
+            <cti:button nameKey="cancel" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
+        </div>
     </form>
 </cti:standardPage>
