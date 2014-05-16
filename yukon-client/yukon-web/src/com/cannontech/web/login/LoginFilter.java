@@ -43,7 +43,7 @@ import com.cannontech.web.util.YukonUserContextResolver;
 import com.google.common.collect.ImmutableList;
 
 public class LoginFilter implements Filter {
-    private final Logger log = YukonLogManager.getLogger(getClass());
+    private static final Logger log = YukonLogManager.getLogger(LoginFilter.class);
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
     private YukonUserContextResolver userContextResolver;
@@ -91,15 +91,15 @@ public class LoginFilter implements Filter {
                          "/remote/remoteLogin");
     
     @Override
-    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException,
-            ServletException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) resp;
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
+            throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         // Support accented chars in request parameters.
-        req.setCharacterEncoding("UTF-8");
+        servletRequest.setCharacterEncoding("UTF-8");
 
-        boolean isAjaxRequest = ServletUtil.isAjaxRequest(req);
+        boolean isAjaxRequest = ServletUtil.isAjaxRequest(servletRequest);
         boolean excludedRequest = ServletUtil.isExcludedRequest(request, excludedFilePaths);
 
         // For excluded requests, try to attach the userContext, but they may not be logged in.
@@ -110,13 +110,12 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        if (!isJsessionCookieLoggedIn(request)
-            && !doRememberMeCookieLogin(request, response)
+        if (!isJsessionCookieLoggedIn(request) && !doRememberMeCookieLogin(request, response)
             && !doDefaultParameterLogin(request)) {
-                 // If we got here, they couldn't be authenticated, send an error response or redirect to login page.
-                log.debug("All login attempts failed, returning error");
-                doLoginRedirect(isAjaxRequest, request, response);
-                return;
+            // If we got here, they couldn't be authenticated, send an error response or redirect to login page.
+            log.debug("All login attempts failed, returning error");
+            doLoginRedirect(isAjaxRequest, request, response);
+            return;
         }
 
         log.debug("Proceeding with request after successful handler login");
@@ -142,10 +141,10 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        chain.doFilter(req, resp);
+        chain.doFilter(request, response);
     }
 
-    private void checkSessionTimeout(HttpServletRequest request, boolean ajaxRequest) {
+    private void checkSessionTimeout(HttpServletRequest request, boolean isAjaxRequest) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             SessionInfo sessionInfo = (SessionInfo) session.getAttribute(ServletUtil.SESSION_INFO);
@@ -164,7 +163,7 @@ public class LoginFilter implements Filter {
                 throw new SessionTimeoutException();
             }
             // Update the last activity time to now for non ajax requests.
-            if (!ajaxRequest) {
+            if (!isAjaxRequest) {
                 sessionInfo.setLastActivityTime(new Instant());
             }
         } else {
@@ -194,7 +193,7 @@ public class LoginFilter implements Filter {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Authenticated!");
         } else {
             String redirectUrl = request.getRequestURI().substring(request.getContextPath().length());
-            
+
             String urlParams = request.getQueryString();
             String unencodedNavUrl = redirectUrl + ((urlParams != null) ? "?" + urlParams : "");
             String encodedNavUrl = ServletUtil.urlEncode(unencodedNavUrl);
@@ -240,9 +239,8 @@ public class LoginFilter implements Filter {
                 LiteYukonUser user = ServletUtil.getYukonUser(request);
 
                 ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION,
-                                        "User " + user.getUsername()
-                                        + " (userid=" + user.getUserID() + ") has logged in from "
-                                        + request.getRemoteAddr() + " (cookie)");
+                    "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from "
+                        + request.getRemoteAddr() + " (cookie)");
 
                 log.info("Proceeding with request after successful Remember Me login");
                 return true;
@@ -253,7 +251,7 @@ public class LoginFilter implements Filter {
             } catch (PasswordExpiredException e) {
                 log.error("The password for " + userPass.getUsername() + " is expired.");
             }
-            //cookie login failed, remove cookies.
+            // Cookie login failed, remove cookies.
             ServletUtil.deleteAllCookies(request, response);
         }
         return false;
@@ -262,12 +260,14 @@ public class LoginFilter implements Filter {
     private boolean doDefaultParameterLogin(HttpServletRequest request) throws ServletRequestBindingException {
         String username = ServletRequestUtils.getStringParameter(request, LoginController.USERNAME);
         String password = ServletRequestUtils.getStringParameter(request, LoginController.PASSWORD);
-        
-        if (username == null || password == null) return false;
-        
+
+        if (username == null || password == null) {
+            return false;
+        }
+
         try {
             loginService.login(request, username, password);
-            
+
             log.info("Proceeding with request after successful Param login");
             return true;
         } catch (AuthenticationThrottleException e) {
@@ -275,15 +275,15 @@ public class LoginFilter implements Filter {
         } catch (BadAuthenticationException e) {
             log.error(e);
         } catch (PasswordExpiredException e) {
-            log.debug("The password for "+username+" is expired.");
+            log.debug("The password for " + username + " is expired.");
         }
         return false;
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        WebApplicationContext applicationContext = 
-                WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
+        WebApplicationContext applicationContext =
+            WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
         userContextResolver = applicationContext.getBean(YukonUserContextResolver.class);
         loginCookieHelper = applicationContext.getBean(LoginCookieHelper.class);
         urlAccessChecker = applicationContext.getBean(UrlAccessChecker.class);

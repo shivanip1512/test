@@ -1,4 +1,4 @@
-package com.cannontech.servlet.filter;
+package com.cannontech.web.filter;
 
 import java.io.IOException;
 import java.util.Locale;

@@ -47,8 +47,13 @@
     </filter>
 
     <filter>
+        <filter-name>favoriteFilter</filter-name>
+        <filter-class>com.cannontech.web.filter.FavoriteFilter</filter-class>
+    </filter>
+
+    <filter>
         <filter-name>timerFilter</filter-name>
-        <filter-class>com.cannontech.servlet.filter.TimerFilter</filter-class>
+        <filter-class>com.cannontech.web.filter.TimerFilter</filter-class>
     </filter>
 
     <filter>
@@ -58,51 +63,51 @@
 
     <filter>
         <filter-name>facesFilter</filter-name>
-        <filter-class>com.cannontech.servlet.filter.FacesFilter</filter-class>
+        <filter-class>com.cannontech.web.filter.FacesFilter</filter-class>
     </filter>
 
     <filter>
         <filter-name>noCacheFilter</filter-name>
-        <filter-class>com.cannontech.servlet.filter.NoCacheFilter</filter-class>
+        <filter-class>com.cannontech.web.filter.NoCacheFilter</filter-class>
     </filter>
 
     <filter>
         <filter-name>referrerPageFilter</filter-name>
-        <filter-class>com.cannontech.servlet.filter.ReferrerPageFilter</filter-class>
+        <filter-class>com.cannontech.web.filter.ReferrerPageFilter</filter-class>
     </filter>
 
     <filter>
         <filter-name>generalSecurityFilter</filter-name>
-        <filter-class>com.cannontech.servlet.filter.GeneralSecurityFilter</filter-class>
+        <filter-class>com.cannontech.web.filter.GeneralSecurityFilter</filter-class>
     </filter>
 
     <filter>
-        <filter-name>jsFilter</filter-name>
+        <filter-name>esubJsFilter</filter-name>
         <filter-class>com.cannontech.esub.web.filter.JSFilter</filter-class>
     </filter>
 
     <filter>
-        <filter-name>imageFilter</filter-name>
+        <filter-name>esubImageFilter</filter-name>
         <filter-class>com.cannontech.esub.web.filter.ImageFilter</filter-class>
     </filter>
 
     <filter>
-        <filter-name>htmlFilter</filter-name>
+        <filter-name>esubHtmlFilter</filter-name>
         <filter-class>com.cannontech.esub.web.filter.HTMLFilter</filter-class>
     </filter>
 
     <filter>
-        <filter-name>cssFilter</filter-name>
+        <filter-name>esubCssFilter</filter-name>
         <filter-class>com.cannontech.esub.web.filter.CSSFilter</filter-class>
     </filter>
 
     <filter>
-        <filter-name>audioFilter</filter-name>
+        <filter-name>esubAudioFilter</filter-name>
         <filter-class>com.cannontech.esub.web.filter.AudioFilter</filter-class>
     </filter>
 
     <filter>
-        <filter-name>svgFilter</filter-name>
+        <filter-name>esubSvgFilter</filter-name>
         <filter-class>com.cannontech.esub.web.filter.SVGFilter</filter-class>
     </filter>
 
@@ -173,30 +178,30 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>jsFilter</filter-name>
+        <filter-name>esubJsFilter</filter-name>
         <url-pattern>/esub/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>imageFilter</filter-name>
+        <filter-name>esubImageFilter</filter-name>
         <url-pattern>/esub/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>htmlFilter</filter-name>
+        <filter-name>esubHtmlFilter</filter-name>
         <url-pattern>/esub/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>cssFilter</filter-name>
+        <filter-name>esubCssFilter</filter-name>
         <url-pattern>/esub/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
-        <filter-name>audioFilter</filter-name>
+        <filter-name>esubAudioFilter</filter-name>
         <url-pattern>/esub/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
-        <filter-name>svgFilter</filter-name>
+        <filter-name>esubSvgFilter</filter-name>
         <url-pattern>/esub/*</url-pattern>
     </filter-mapping>
 

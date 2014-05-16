@@ -26,7 +26,7 @@ public class StandardPageTag extends BodyTagSupport {
     public static final String STANDARD_PAGE_INFO_ATTR = StandardPageTag.class.getName() + ".stdPageInfo";
     public static final String MAIN_CONTENT_ATTR = StandardPageTag.class.getName() + ".mainContent";
     public static final String STANDARD_PAGE_INSTANCE_ATTR = StandardPageTag.class.getName() + ".standardPageInstance";
-    
+
     private String title = "";
     private HtmlLevel htmlLevel = HtmlLevel.transitional;
     private List<String> cssFiles;
@@ -38,7 +38,7 @@ public class StandardPageTag extends BodyTagSupport {
     private String menuSelection = null;
     private boolean skipPage;
     private StandardPageInfo model;
-    
+
     @Override
     public int doStartTag() throws JspException {
         skipPage = false;
@@ -57,12 +57,11 @@ public class StandardPageTag extends BodyTagSupport {
         pageContext.setAttribute(STANDARD_PAGE_INFO_ATTR, model, PageContext.REQUEST_SCOPE);
         
         pageContext.setAttribute(STANDARD_PAGE_INSTANCE_ATTR, this, PageContext.REQUEST_SCOPE);
-        
+
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-        
+
         model.setServletPath(request.getServletPath());
         // push the scope of paths (list - page name split on the period)
-        // 
         MessageScope messageScope = MessageScopeHelper.forRequest(request);
         
         if (StringUtils.isNotBlank(model.getPageName())) {
@@ -124,7 +123,7 @@ public class StandardPageTag extends BodyTagSupport {
         }
     }
     
-    //reference to the instance of this standard page tag
+    // Reference to the instance of this standard page tag.
     public static StandardPageTag find(JspContext context) {
         Object attribute = context.getAttribute(STANDARD_PAGE_INSTANCE_ATTR, PageContext.REQUEST_SCOPE);
         return (StandardPageTag) attribute;
@@ -141,7 +140,6 @@ public class StandardPageTag extends BodyTagSupport {
     }
     
     private void cleanup() {
-        
         // we have no need for the body anymore
         setBodyContent(null);
         
@@ -219,7 +217,4 @@ public class StandardPageTag extends BodyTagSupport {
     public List<String> getScriptFiles() {
         return scriptFiles;
     }
-
-
-    
 }

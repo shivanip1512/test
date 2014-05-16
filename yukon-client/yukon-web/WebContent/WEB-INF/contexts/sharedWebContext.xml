@@ -13,6 +13,8 @@
     <!-- This file is included in every CannonDispatcherServlet context.  That is to say, everything in this file
          is duplicated in all CannonDispatcherServlet contexts. -->
 
+    <context:annotation-config/>
+
     <mvc:annotation-driven>
         <mvc:argument-resolvers>
             <bean class="com.cannontech.web.bulk.model.DeviceCollectionHandlerMethodArgumentResolver"/>
@@ -28,8 +30,6 @@
             <bean class="com.cannontech.spring.JacksonHttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
-
-    <context:annotation-config/>
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 </beans>
