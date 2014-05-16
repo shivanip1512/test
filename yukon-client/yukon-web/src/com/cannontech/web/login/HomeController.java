@@ -41,6 +41,9 @@ public class HomeController {
     @RequestMapping(value = {"/home", "/index.jsp"})
     public String home(LiteYukonUser user) {
         String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+        if ("/operator/Operations.jsp".equals(homeUrl)) {
+            homeUrl = "/dashboard";
+        }
 
         return "redirect:" + homeUrl;
     }

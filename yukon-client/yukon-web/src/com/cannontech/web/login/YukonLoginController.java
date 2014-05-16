@@ -18,6 +18,8 @@ import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
@@ -28,6 +30,7 @@ public class YukonLoginController extends MultiActionController {
     @Autowired private LoginCookieHelper loginCookieHelper;
     @Autowired private LoginService loginService;
     @Autowired private PasswordResetService passwordResetService;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UrlAccessChecker urlAccessChecker;
 
     /**
@@ -89,7 +92,10 @@ public class YukonLoginController extends MultiActionController {
         if (redirectedFrom != null && !redirectedFrom.equals("")) {
             redirect = redirectedFrom;
         } else {
-            redirect = "/home";
+            redirect = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+            if ("/operator/Operations.jsp".equals(redirect)) {
+                redirect = "/dashboard";
+            }
         }
 
         boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);
@@ -105,10 +111,8 @@ public class YukonLoginController extends MultiActionController {
      * Get the redirect URL when the authentication fails
      */
     private String getBadAuthenticationRedirectUrl(HttpServletRequest request, String redirectedFrom, long retrySeconds) {
-        String redirect;
-
         String referer = request.getHeader("Referer");
-        redirect = (referer != null) ? referer : LoginController.LOGIN_URL;
+        String redirect = (referer != null) ? referer : LoginController.LOGIN_URL;
         redirect = appendParams(redirect, retrySeconds, redirectedFrom);
 
         return redirect;
