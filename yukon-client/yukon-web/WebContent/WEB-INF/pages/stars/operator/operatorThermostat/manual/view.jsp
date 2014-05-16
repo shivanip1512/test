@@ -40,7 +40,6 @@ $(function(){
     });
 });
 </script>
-    <cti:url var="saveUrl" value="/stars/operator/thermostatManual/save"/>
     <c:set var="multipleThermostatsSelected" value="${fn:length(thermostatNames) > 1}"></c:set>
 
     <%-- THERMOSTAT NAMES --%>
@@ -79,7 +78,7 @@ $(function(){
             </c:choose>
             
             <tags:thermostatManualEditor thermostat="${thermostat}"
-                                         actionPath="${saveUrl}" 
+                                         actionPath="/stars/operator/thermostatManual/save" 
                                          temperatureUnit="${temperatureUnit}"
                                          event="${event}"
                                          thermostatIds="${thermostatIds}"

@@ -58,9 +58,6 @@ $(function(){
 </div>
 <div class="stacked">
     <cti:url var="postUrl" value="/stars/operator/thermostatSchedule/updateTemperaturePreference"/>
-    <c:set var="schedUrl" value="/stars/operator/thermostat/schedule"/>
-    <c:set var="thermoSchedUrl" value="/stars/operator/thermostatSchedule"/>
-    <c:set var="schedSaveUrl" value="/stars/operator/thermostatSchedule/save"/>
     <c:choose>
         <c:when test="${empty schedules and empty currentSchedule}">
             <%-- THERMOSTAT NAMES --%>
@@ -91,7 +88,7 @@ $(function(){
                                 thermostatIds="${thermostatIds}"
                                 accountId="${accountId}"
                                 temperatureUnit="${temperatureUnit}"
-                                actionPath="${schedUrl}"
+                                actionPath="/stars/operator/thermostat/schedule"
                                 thermostatType="${thermostatType}"
                                 styleClass="vh"/>
                         </div>
@@ -125,7 +122,7 @@ $(function(){
                                 thermostatIds="${thermostatIds}"
                                 accountId="${accountId}"
                                 temperatureUnit="${temperatureUnit}"
-                                actionPath="${thermoSchedUrl}"
+                                actionPath="/stars/operator/thermostatSchedule"
                                 thermostatType="${thermostatType}"
                                 styleClass="vh stacked-medium"/>
                         </c:forEach>    
@@ -168,7 +165,7 @@ $(function(){
                                         thermostatIds="${thermostatIds}"
                                         accountId="${accountId}"
                                         temperatureUnit="${temperatureUnit}"
-                                        actionPath="${schedSaveUrl}"
+                                        actionPath="/stars/operator/thermostatSchedule/save"
                                         thermostatType="${thermostatType}"/>
                     </c:forEach>
                 </div>

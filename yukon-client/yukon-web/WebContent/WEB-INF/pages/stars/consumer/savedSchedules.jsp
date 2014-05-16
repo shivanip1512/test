@@ -72,7 +72,6 @@ $(function(){
 </div>
 
 <cti:url var="postUrl" value="/stars/consumer/thermostat/schedule/updateTemperaturePreference"/>
-<c:set var="schedUrl" value="/stars/consumer/thermostat/schedule"/>
 <c:choose>
     <c:when test="${empty schedules and empty currentSchedule}">
         <div class="helper">
@@ -101,7 +100,7 @@ $(function(){
 	                        thermostatIds="${thermostatIds}"
 	                        accountId="${customerAccount.accountId}"
 	                        temperatureUnit="${temperatureUnit}"
-	                        actionPath="${schedUrl}"
+	                        actionPath="/stars/consumer/thermostat/schedule"
 	                        thermostatType="${thermostatType}"
 	                        styleClass="vh"/>
 	                </div>
@@ -129,7 +128,7 @@ $(function(){
                             thermostatIds="${thermostatIds}"
                             accountId="${customerAccount.accountId}"
                             temperatureUnit="${temperatureUnit}"
-                            actionPath="${schedUrl}"
+                            actionPath="/stars/consumer/thermostat/schedule"
                             thermostatType="${thermostatType}"
                             styleClass="vh"/>
                     </c:forEach>    
