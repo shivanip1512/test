@@ -17,16 +17,17 @@ import com.cannontech.core.authentication.service.PasswordSetProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class ScryptAuthenticationService implements AuthenticationProvider, PasswordSetProvider, PasswordEncrypter {
-    
     @Autowired private YukonUserPasswordDao userPasswordDao;
-    private static final int derivedKeyLength = 32;
+
+    private final static int derivedKeyLength = 32;
+
     /**
-     * Default encryption values.Changing below these parameter values will make different hashing
-     * password.So please do not change these values unless it is necessary
+     * Default encryption values. Changing these parameters will change the password hashing, but they are
+     * stored with the password so they can be changed to increase password security as computers get faster.
      */
-    private static final int cpuCostParam = 16384;
-    private static final int memoryCostParam = 8;
-    private static final int parallelParam = 1;
+    private final static int cpuCostParam = 16384;
+    private final static int memoryCostParam = 8;
+    private final static int parallelParam = 1;
 
     @Override
     public void setPassword(LiteYukonUser user, String newPassword) {
@@ -46,7 +47,7 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
         String digest = userPasswordDao.getDigest(user);
         return checkPassword(digest, password, user, isSetPasswordRequired);
     }
-    
+
     /**
      * Encrypt the given password. This is exposed as an extra public method (which is not part of
      * {@link AuthenticationProvider}) because it is only needed when we are encrypting old plain
@@ -64,6 +65,7 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
      * The Format of hashing password is $cpuCostParam$memoryCostParam$parallelParam$SALT$KEY
      * SALT and KEY are base64-encoded.
      * Returns the String depends upon the password.
+     * 
      * @throws IllegalStateException
      */
     private static String encryptPassword(String password, int cpuCostParam, int memoryCostParam, int parallelParam) {
@@ -72,7 +74,7 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
             SecureRandom.getInstance("SHA1PRNG").nextBytes(salt);
             byte[] fullHashedPasswordString =
                 SCrypt.generate(password.getBytes("UTF-8"), salt, cpuCostParam, memoryCostParam, parallelParam,
-                                derivedKeyLength);
+                    derivedKeyLength);
             StringBuilder sb = new StringBuilder((salt.length + fullHashedPasswordString.length) * 2);
             sb.append("$").append(cpuCostParam).append("$").append(memoryCostParam).append("$").append(parallelParam);
             sb.append("$").append(new String(Base64.encode(salt))).append('$');
@@ -87,6 +89,7 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
      * This method check if the user is logged into the application with correct password and auto
      * update the database if there is any change in scrypt parameters.
      * Returns the boolean check depends upon the stored password.
+     * 
      * @throws IllegalStateException
      */
     private boolean checkPassword(String digest, String password, LiteYukonUser user, boolean isSetPasswordRequired) {
@@ -102,12 +105,12 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
                 && parallelParam == storedParallelParam) {
                 byte[] fullHashedPasswordString =
                     SCrypt.generate(password.getBytes("UTF-8"), salt, cpuCostParam, memoryCostParam, parallelParam,
-                                    derivedKeyLength);
+                        derivedKeyLength);
                 isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
             } else {
                 byte[] fullHashedPasswordString =
                     SCrypt.generate(password.getBytes("UTF-8"), salt, storedCpuCostParam, storedMemoryCostParam,
-                                    storedParallelParam, derivedKeyLength);
+                        storedParallelParam, derivedKeyLength);
                 isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
                 if (isPasswordMatched && isSetPasswordRequired) {
                     setPassword(user, password);
@@ -116,6 +119,7 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("JVM Doest not support UTF-8 ?");
         }
+
         return isPasswordMatched;
     }
 }

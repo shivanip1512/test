@@ -24,12 +24,8 @@ import com.google.common.collect.Sets;
  * Implementation for PaoPermissionService
  */
 public class PaoPermissionServiceImpl implements PaoPermissionService {
-
-    @Qualifier("userGroup")
-    @Autowired private PaoPermissionDao<LiteUserGroup> userGroupPaoPermissionDao;
-
-    @Qualifier("user")
-    @Autowired private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
+    @Autowired private @Qualifier("userGroup") PaoPermissionDao<LiteUserGroup> userGroupPaoPermissionDao;
+    @Autowired private @Qualifier("user") PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
 
     @Autowired UserGroupDao userGroupDao;
 
@@ -49,51 +45,50 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     public AuthorizationResponse hasPermission(LiteYukonUser user, YukonPao pao, Permission permission) {
         // Get all groups that the user is in
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(user.getUserID());
-        if(!permission.isSettablePerPao() || userGroup == null) {
+        if (!permission.isSettablePerPao() || userGroup == null) {
             return AuthorizationResponse.UNKNOWN;
         }
-        
-        AuthorizationResponse ret = userPaoPermissionDao.hasPermissionForPao(user, pao, permission);        
-        if( ret != AuthorizationResponse.UNKNOWN) {
+
+        AuthorizationResponse ret = userPaoPermissionDao.hasPermissionForPao(user, pao, permission);
+        if (ret != AuthorizationResponse.UNKNOWN) {
             return ret;
         }
 
         ret = userGroupPaoPermissionDao.hasPermissionForPao(userGroup, pao, permission);
-        
+
         return ret;
     }
-    
+
     @Override
     public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
-                                                                               LiteYukonUser user, Permission permission) {
+            LiteYukonUser user, Permission permission) {
 
         // Get group pao authorizations for the user
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(user.getUserID());
-        if(!permission.isSettablePerPao() || userGroup == null) {
+        if (!permission.isSettablePerPao() || userGroup == null) {
             // Authorization unknown for all paos
-            Multimap<AuthorizationResponse, PaoIdentifier> result = ArrayListMultimap.create();     
+            Multimap<AuthorizationResponse, PaoIdentifier> result = ArrayListMultimap.create();
             result.putAll(AuthorizationResponse.UNKNOWN, paos);
             return result;
         }
-        
-        // Get user pao authorizations
-        Multimap<AuthorizationResponse, PaoIdentifier> userPaoAuthorizations = 
-            userPaoPermissionDao.getPaoAuthorizations(paos, user, permission);
-        
-        Collection<PaoIdentifier> unknownUserPaos = 
-            userPaoAuthorizations.get(AuthorizationResponse.UNKNOWN);
-        Multimap<AuthorizationResponse, PaoIdentifier> groupPaoAuthorizations = 
-            userGroupPaoPermissionDao.getPaoAuthorizations(unknownUserPaos, userGroup, permission);
-        
-        // Add the authorized and unauthorized paos from the user results to the group results to 
-        // get the final map of authorizations.  The unknown paos from the user results are not 
-        // useful since the group authorizations hopefully shrunk that list.
-        groupPaoAuthorizations.putAll(AuthorizationResponse.AUTHORIZED, 
-                                      userPaoAuthorizations.get(AuthorizationResponse.AUTHORIZED));
 
-        groupPaoAuthorizations.putAll(AuthorizationResponse.UNAUTHORIZED, 
-                                      userPaoAuthorizations.get(AuthorizationResponse.UNAUTHORIZED));
-        
+        // Get user pao authorizations
+        Multimap<AuthorizationResponse, PaoIdentifier> userPaoAuthorizations =
+            userPaoPermissionDao.getPaoAuthorizations(paos, user, permission);
+
+        Collection<PaoIdentifier> unknownUserPaos = userPaoAuthorizations.get(AuthorizationResponse.UNKNOWN);
+        Multimap<AuthorizationResponse, PaoIdentifier> groupPaoAuthorizations =
+            userGroupPaoPermissionDao.getPaoAuthorizations(unknownUserPaos, userGroup, permission);
+
+        // Add the authorized and unauthorized paos from the user results to the group results to
+        // get the final map of authorizations. The unknown paos from the user results are not
+        // useful since the group authorizations hopefully shrunk that list.
+        groupPaoAuthorizations.putAll(AuthorizationResponse.AUTHORIZED,
+            userPaoAuthorizations.get(AuthorizationResponse.AUTHORIZED));
+
+        groupPaoAuthorizations.putAll(AuthorizationResponse.UNAUTHORIZED,
+            userPaoAuthorizations.get(AuthorizationResponse.UNAUTHORIZED));
+
         return groupPaoAuthorizations;
     }
 
@@ -106,7 +101,7 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
         // Get paos for user's groups
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(user.getUserID());
-        if(userGroup != null){
+        if (userGroup != null) {
             List<Integer> groupPaoIdList = userGroupPaoPermissionDao.getPaosForPermission(userGroup, permission);
             // Combine the user's paos with all of the paos from the groups
             paoIdSet.addAll(groupPaoIdList);
@@ -121,9 +116,8 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     }
 
     private void validatePermission(Permission permission) {
-        if(!permission.isSettablePerPao()) {
+        if (!permission.isSettablePerPao()) {
             throw new IllegalArgumentException("Permission not settable per pao.");
         }
     }
 }
-

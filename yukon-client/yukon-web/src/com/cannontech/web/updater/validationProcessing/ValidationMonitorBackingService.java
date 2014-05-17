@@ -1,10 +1,7 @@
 package com.cannontech.web.updater.validationProcessing;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +9,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.validationProcessing.handler.ValidationProcessingUpdaterHandler;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public class ValidationMonitorBackingService implements UpdateBackingService {
+    private final Map<ValidationMonitorUpdaterTypeEnum, ValidationProcessingUpdaterHandler> handlersMap;
 
-    private List<ValidationProcessingUpdaterHandler> handlers;
-    private Map<ValidationMonitorUpdaterTypeEnum, ValidationProcessingUpdaterHandler> handlersMap;
-    
+    @Autowired
+    public ValidationMonitorBackingService(List<ValidationProcessingUpdaterHandler> handlers) {
+        Builder<ValidationMonitorUpdaterTypeEnum, ValidationProcessingUpdaterHandler> builder = ImmutableMap.builder();
+        for (ValidationProcessingUpdaterHandler handler : handlers) {
+            builder.put(handler.getUpdaterType(), handler);
+        }
+        handlersMap = builder.build();
+    }
+
     @Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
-        
         int validationMonitorId = 0;
         String updaterTypeStr = null;
         String[] idParts = StringUtils.split(identifier, "/");
@@ -30,29 +35,14 @@ public class ValidationMonitorBackingService implements UpdateBackingService {
             validationMonitorId = Integer.parseInt(idParts[0]);
             updaterTypeStr = idParts[1];
         }
-        
+
         ValidationMonitorUpdaterTypeEnum updaterType = ValidationMonitorUpdaterTypeEnum.valueOf(updaterTypeStr);
         ValidationProcessingUpdaterHandler handler = handlersMap.get(updaterType);
         return handler.handle(validationMonitorId, userContext);
     }
-    
-    @Override
-    public boolean isValueAvailableImmediately(String fullIdentifier,
-            long afterDate, YukonUserContext userContext) {
-        return true;
-    }
-    
-    @PostConstruct
-    public void init() throws Exception {
 
-        this.handlersMap = new HashMap<ValidationMonitorUpdaterTypeEnum, ValidationProcessingUpdaterHandler>();
-        for (ValidationProcessingUpdaterHandler handler : this.handlers) {
-            this.handlersMap.put(handler.getUpdaterType(), handler);
-        }
-    }
-    
-    @Autowired
-    public void setHandlers(List<ValidationProcessingUpdaterHandler> handlers) {
-        this.handlers = handlers;
+    @Override
+    public boolean isValueAvailableImmediately(String fullIdentifier, long afterDate, YukonUserContext userContext) {
+        return true;
     }
 }
