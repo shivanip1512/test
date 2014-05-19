@@ -522,7 +522,7 @@ public class OptOutServiceImpl implements OptOutService {
 	    logger.debug("Cancel all opt outs command initiated by user: " + user.getUsername());
 	    
 		YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
-		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts((LiteStarsEnergyCompany) energyCompany);
+		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts((EnergyCompany) energyCompany);
 
 		boolean broadCastSpidEnabled 
 		= energyCompanySettingDao.isEnabled(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID, energyCompany.getEnergyCompanyId());

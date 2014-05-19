@@ -113,7 +113,7 @@ public class OptOutEventDaoAdapter implements OptOutEventDao {
     }
 
     @Override
-    public List<OptOutEvent> getAllCurrentOptOuts(LiteStarsEnergyCompany energyCompany) {
+    public List<OptOutEvent> getAllCurrentOptOuts(EnergyCompany energyCompany) {
         throw new UnsupportedOperationException("not implemented");
     }
 

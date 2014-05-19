@@ -151,7 +151,7 @@ public class MockOptOutEventDao implements OptOutEventDao {
     }
 
     @Override
-    public List<OptOutEvent> getAllCurrentOptOuts(LiteStarsEnergyCompany energyCompany) {
+    public List<OptOutEvent> getAllCurrentOptOuts(EnergyCompany energyCompany) {
         throw new MethodNotImplementedException();
     }
 

@@ -662,7 +662,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 
 	@Override
-	public List<OptOutEvent> getAllCurrentOptOuts(LiteStarsEnergyCompany energyCompany) {
+	public List<OptOutEvent> getAllCurrentOptOuts(EnergyCompany energyCompany) {
 
 		Instant now = new Instant();
 		

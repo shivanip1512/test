@@ -154,7 +154,7 @@ public interface OptOutEventDao {
 	 * @param energyCompany - Company to get opt outs for
 	 * @return List of Opt out events
 	 */
-	public List<OptOutEvent> getAllCurrentOptOuts(LiteStarsEnergyCompany energyCompany);
+	public List<OptOutEvent> getAllCurrentOptOuts(EnergyCompany energyCompany);
 	
 	/**
 	 * Method to get all current opt out events for a given energy company.
