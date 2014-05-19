@@ -63,16 +63,14 @@ public class EcobeeController {
         flash.setError(new YukonMessageSourceResolvable(homeKey + "failed"));
         return "redirect:/dr/home";
     }
-    
+
     // TODO: Mark: set requestMapping values
     //@RequestMapping(value="/ecobeeCsv", method=RequestMethod.GET)
-    public void ecobeeDataReportCsv(HttpServletResponse response, LiteYukonUser user) 
+    public void ecobeeDataReportCsv(HttpServletResponse response, LiteYukonUser user)
             throws IOException, EcobeeException {
         response.setContentType("text/csv");
         // TODO: Mark: figure out good name for file
         response.setHeader("Content-Disposition","filename=\"ecobee_data_report.csv\"");
-
-        int ecId = ecDao.getEnergyCompany(user).getId();
 
         // TODO: get date range from request
         Range<Instant> dateRange = Range.inclusive(Instant.now().minus(Duration.standardDays(7)), Instant.now());
@@ -90,14 +88,14 @@ public class EcobeeController {
 
         // readDeviceData should only be sent 25 serial numbers at a time
         for (List<String> serialNumbers : Lists.partition(allSerialNumbers, 25)) {
-            List<EcobeeDeviceReadings> allDeviceReadings = 
-                    ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange, ecId);
+            List<EcobeeDeviceReadings> allDeviceReadings =
+                    ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange);
             for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
                 String serialNumber = deviceReadings.getSerialNumber();
                 for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
                     String dateStr = timeFormatter.print(deviceReading.getDate());
                     String line = String.format(dataFormat, serialNumber, dateStr,
-                        deviceReading.getOutdoorTempInF(), deviceReading.getIndoorTempInF(), 
+                        deviceReading.getOutdoorTempInF(), deviceReading.getIndoorTempInF(),
                         deviceReading.getSetCoolTempInF(), deviceReading.getSetHeatTempInF(),
                         deviceReading.getRuntimeSeconds(), deviceReading.getEventActivity());
                     output.write(line);
@@ -107,33 +105,33 @@ public class EcobeeController {
 
         output.flush();
     }
-    
+
     @RequestMapping(value="/ecobee", method=RequestMethod.GET)
     public String details(ModelMap model, YukonUserContext userContext) {
-        
+
         // dummy data for issues until job created to generate issues
         List<EcobeeSyncIssue> issues = new ArrayList<>();
-        
+
         EcobeeSyncIssue deviceNotInEcobee = new EcobeeSyncIssue();
         deviceNotInEcobee.setType(EcobeeSyncIssueType.DEVICE_NOT_IN_ECOBEE);
         deviceNotInEcobee.setSerialNumber("123456789");
         issues.add(deviceNotInEcobee);
-        
+
         EcobeeSyncIssue deviceNotInYukon = new EcobeeSyncIssue();
         deviceNotInYukon.setType(EcobeeSyncIssueType.DEVICE_NOT_IN_YUKON);
         deviceNotInYukon.setSerialNumber("987654321");
         issues.add(deviceNotInYukon);
-        
+
         EcobeeSyncIssue loadGroupNotInEcobee = new EcobeeSyncIssue();
         loadGroupNotInEcobee.setType(EcobeeSyncIssueType.LOAD_GROUP_NOT_IN_ECOBEE);
         loadGroupNotInEcobee.setLoadGroupName("AC Super Saver 9000");;
         issues.add(loadGroupNotInEcobee);
-        
+
         EcobeeSyncIssue ecobeeEnrollmentIncorrect = new EcobeeSyncIssue();
         ecobeeEnrollmentIncorrect.setType(EcobeeSyncIssueType.LOAD_GROUP_NOT_IN_ECOBEE);
         ecobeeEnrollmentIncorrect.setLoadGroupName("WH Lite 50%");
         issues.add(ecobeeEnrollmentIncorrect);
-        
+
         EcobeeSyncIssue ecobeeSetDoesNotMatch = new EcobeeSyncIssue();
         ecobeeSetDoesNotMatch.setType(EcobeeSyncIssueType.ECOBEE_SET_DOES_NOT_MATCH);
         ecobeeSetDoesNotMatch.setLoadGroupName("Com 5M Control");
@@ -145,16 +143,15 @@ public class EcobeeController {
         issues.add(ecobeeIncorrectLocation);
 
         model.addAttribute("issues", issues);
-        
+
         LiteYukonUser user = userContext.getYukonUser();
-        int energyCoId = ecDao.getEnergyCompany(user).getId();
 
         //get stats across a range of months
         MonthYear currentMonth = MonthYear.now();
         MonthYear yearAgoMonth = currentMonth.minus(0, 1);
         Range<MonthYear> range = Range.inclusive(yearAgoMonth, currentMonth);
 
-        List<EcobeeQueryStatistics> rangeOfStatsList = ecobeeQueryCountDao.getCountsForRange(range, energyCoId);
+        List<EcobeeQueryStatistics> rangeOfStatsList = ecobeeQueryCountDao.getCountsForRange(range);
         List<EcobeeQueryStats> queryStatsList = new ArrayList<>();
         for(EcobeeQueryStatistics stats : rangeOfStatsList) {
             int statsMonth = stats.getMonth();
@@ -193,14 +190,14 @@ public class EcobeeController {
 
         return "dr/ecobee/details.jsp";
     }
-    
+
     public class EcobeeSyncIssue {
-        
+
         private EcobeeSyncIssueType type;
         private String serialNumber;
         private String loadGroupName;
         private String issueName;
-        
+
         public EcobeeSyncIssueType getType() {
             return type;
         }
@@ -226,25 +223,25 @@ public class EcobeeController {
             this.issueName = issueName;
         }
     }
-    
+
     public enum EcobeeSyncIssueType implements DisplayableEnum {
-        
+
         DEVICE_NOT_IN_ECOBEE(false),
         DEVICE_NOT_IN_YUKON(false),
         LOAD_GROUP_NOT_IN_ECOBEE(true),  // User should be able to create load group in ecobee system and auto populate it with devices from matching yukon load group.
         ECOBEE_ENROLLMENT_INCORRECT(true), // User should be able to move devices to correct ecobee load group in ecobee system.
         ECOBEE_SET_DOES_NOT_MATCH(false),
         ECOBEE_SET_IN_INCORRECT_LOCATION(true);
-        
+
         private final boolean fixable;
         private EcobeeSyncIssueType (boolean fixable) {
             this.fixable = fixable;
         }
-        
+
         public boolean isFixable() {
             return fixable;
         }
-        
+
         public boolean isDeviceIssue() {
             return this == DEVICE_NOT_IN_ECOBEE || this == DEVICE_NOT_IN_YUKON;
         }
@@ -254,7 +251,7 @@ public class EcobeeController {
             return "yukon.web.modules.dr.ecobee.details." + name();
         }
     }
-    
+
     public class EcobeeQueryStats {
         private int statsMonth;
         private int statsYear;
@@ -262,7 +259,7 @@ public class EcobeeController {
         private int dataCollectionCount;
         private int systemCount;
         private String monthYearStr;
-        
+
         public EcobeeQueryStats(int month, int year, int demandCount, int dataCount, int sysCount) {
             statsMonth = month;
             statsYear = year;

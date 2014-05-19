@@ -23,15 +23,15 @@ import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
 import com.cannontech.dr.ecobee.message.AuthenticationResponse;
 import com.cannontech.dr.ecobee.message.BaseResponse;
-import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class EcobeeRestProxyFactory {
     private static final Logger log = YukonLogManager.getLogger(EcobeeRestProxyFactory.class);
 
     private static final String authUrlPart = "register?format=json";
 
-    @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private GlobalSettingDao settingDao;
 
     private final RestTemplate proxiedTemplate;
 
@@ -74,8 +74,7 @@ public class EcobeeRestProxyFactory {
     }
 
     /**
-     * Searches arguments for an HttpHeader. If one is found it is assumed it will have an 'EnergyCompanyId' value
-     * which will be removed and an ecobee authorization header added in its place.
+     * Searches arguments for an HttpHeader. If one is found  an ecobee authorization header will be added.
      */
     private void addAuthorizationToken(Object[] args)
             throws EcobeeCommunicationException, EcobeeAuthenticationException {
@@ -83,36 +82,31 @@ public class EcobeeRestProxyFactory {
             Object arg = args[i];
             if (arg instanceof HttpEntity) {
                 Object httpBody = ((HttpEntity<?>) arg).getBody();
-                HttpHeaders httpHeader = ((HttpEntity<?>) arg).getHeaders();
-
-                int ecId = Integer.parseInt(httpHeader.get("EnergyCompanyId").get(0));
 
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("Authorization", "Bearer " + getAuthenticationToken(ecId));
-                headers.add("EnergyCompanyId", Integer.toString(ecId));
+                headers.add("Authorization", "Bearer " + getAuthenticationToken());
                 args[i] = new HttpEntity<>(httpBody, headers);
             }
         }
     }
 
-    private String getAuthenticationToken(int ecId) throws EcobeeCommunicationException, EcobeeAuthenticationException {
+    private String getAuthenticationToken() throws EcobeeCommunicationException, EcobeeAuthenticationException {
         if (authToken != null) {
             return authToken;
         }
         //The request failed because the energy company's authentication token is expired
         //or no token has been generated yet.
-        String urlBase = ecSettingDao.getString(EnergyCompanySettingType.ECOBEE_SERVER_URL, ecId);
-        String password = ecSettingDao.getString(EnergyCompanySettingType.ECOBEE_PASSWORD, ecId);
-        String userName = ecSettingDao.getString(EnergyCompanySettingType.ECOBEE_USERNAME, ecId);
+        String urlBase = settingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
+        String password = settingDao.getString(GlobalSettingType.ECOBEE_PASSWORD);
+        String userName = settingDao.getString(GlobalSettingType.ECOBEE_USERNAME);
 
         //Sanity-check configuration values
         if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password)) {
-            throw new EcobeeAuthenticationException("One or more ecobee authentication settings is empty. "
-                                                    + "Energy company id: " + ecId);
+            throw new EcobeeAuthenticationException("One or more ecobee authentication settings is empty.");
         }
 
         String url = urlBase + authUrlPart;
-        log.debug("Attempting login for energy company id " + ecId + " with userName " + userName + " URL: "
+        log.debug("Attempting login with userName " + userName + " URL: "
                  + url);
 
         AuthenticationRequest authRequest = new AuthenticationRequest(userName, password);
@@ -125,7 +119,7 @@ public class EcobeeRestProxyFactory {
 
         if (authResponse.hasCode(SUCCESS)) {
             //Authentication was successful. Cache the token and try the request again.
-            log.debug("Successfully logged in energy company id " + ecId);
+            log.debug("Successfully logged in");
             authToken = authResponse.getToken();
         } else {
             //Authentication failed. Give up.

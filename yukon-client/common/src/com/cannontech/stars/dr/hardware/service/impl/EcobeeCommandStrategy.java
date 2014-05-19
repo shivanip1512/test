@@ -49,7 +49,6 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
         LiteLmHardwareBase device = command.getDevice();
-        int ecId = device.getEnergyCompanyId();
         String serialNumber = device.getManufacturerSerialNumber();
 
         try {
@@ -57,27 +56,27 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
             switch(command.getType()) {
             case IN_SERVICE:
                 groupId = getGroupId(device.getInventoryID());
-                ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupId), ecId);
+                ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupId));
                 break;
             case OUT_OF_SERVICE:
-                ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET, ecId);
+                ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
                 // TODO get groupId of group previously enrolled in
                 //  if (!hasActiveEnrollments(groupId)) {
                 //      ecobeeCommunicationService.deleteManagementSet(Integer.toString(groupId), ecId);
                 //  }
                 break;
             case TEMP_OUT_OF_SERVICE:
-                ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.OPT_OUT_SET, ecId);
+                ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.OPT_OUT_SET);
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
                 groupId = getGroupId(device.getInventoryID());
-                ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupId), ecId);
+                ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupId));
                 break;
             case CONFIG:
             case PERFORMANCE_VERIFICATION:
             case READ_NOW:
                 // TODO
-                //ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange, energyCompanyId);
+                //ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange);
             default:
                 break;
             }
@@ -86,11 +85,11 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
             throw new CommandCompletionException("Unable to send command.", e);
         }
     }
-    
+
     private int getGroupId(int inventoryId) {
         List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(inventoryId);
         if(hardwareConfig.size() != 1) {
-            throw new IllegalStateException(hardwareConfig.size() 
+            throw new IllegalStateException(hardwareConfig.size()
                                             + " groups. Ecobee only supports one and only one group per device.");
         }
         return hardwareConfig.get(0).getAddressingGroupId();
@@ -105,7 +104,7 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
         }
         return false;
     }
-    
+
     @Override
     public boolean canBroadcast(LmCommand command) {
         return false;

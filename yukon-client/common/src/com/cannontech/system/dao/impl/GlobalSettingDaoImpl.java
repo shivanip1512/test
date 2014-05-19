@@ -1,8 +1,11 @@
 package com.cannontech.system.dao.impl;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
+import org.apache.commons.codec.DecoderException;
 import org.apache.log4j.Logger;
+import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -13,18 +16,21 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.encryption.CryptoException;
+import com.cannontech.encryption.CryptoUtils;
+import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.model.GlobalSetting;
 
 /**
  * The class handles Yukon System wide settings.
- * 
+ *
  * These were previously associated with Yukon Grp role properties.
- * 
+ *
  * This is primarily intended for reading the settings and not for updating settings.
  * To update Yukon settings there is GlobalSettingsUpdateDao to avoid circular dependencies
- * 
+ *
  * Taken From RolePropertyDaoImpl.java:
  * This class is designed to have a single dependency on a JdbcTemplate. Any other
  * dependency could cause issues because this class is needed early in the boot process.
@@ -40,13 +46,13 @@ import com.cannontech.system.model.GlobalSetting;
  *             |                 |
  *    GlobalSettingChangeHelper --|
  * </pre>
- * 
+ *
  */
 public class GlobalSettingDaoImpl implements GlobalSettingDao {
-    
+
     private final Logger log = YukonLogManager.getLogger(GlobalSettingDaoImpl.class);
     private final LeastRecentlyUsedCacheMap<GlobalSettingType, GlobalSetting> cache = new LeastRecentlyUsedCacheMap<GlobalSettingType, GlobalSetting>(10000);
-    
+
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
     @Override
@@ -96,7 +102,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
             return convertedValue;
         }
     }
-    
+
     @Override
     public <E extends Enum<E>> E getEnum(GlobalSettingType type, Class<E> enumClass) {
         return getConvertedValue(type, enumClass);
@@ -105,7 +111,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     @Override
     public GlobalSetting getSetting(GlobalSettingType type) {
         GlobalSetting setting = cache.get(type);
-        
+
         if (setting == null) {
             // Not in cache, Look in Db
             setting = findSetting(type);
@@ -120,7 +126,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         } else if(log.isDebugEnabled()) {
             log.debug("Cache hit for " + type);
         }
-        
+
         return new GlobalSetting(setting);
     }
 
@@ -139,7 +145,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         sql.append("SELECT GlobalSettingId, Value, Name, Comments, LastChangedDate");
         sql.append("FROM GlobalSetting");
         sql.append("WHERE Name").eq(setting.name());
-        
+
         GlobalSetting settingDb = null;
         try {
             settingDb = yukonJdbcTemplate.queryForObject(sql, settingMapper);
@@ -151,26 +157,33 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         log.debug("Found one setting value for " + setting.name());
         return settingDb;
     }
-    
+
     @Override
     public void valueChanged() {
         log.debug("Removing " +  cache.size() + " values from the Global Settings Cache");
         cache.clear();
     }
-    
+
     private final YukonRowMapper<GlobalSetting> settingMapper = new YukonRowMapper<GlobalSetting>() {
         @Override
         public GlobalSetting mapRow(YukonResultSet rs) throws SQLException {
-
             GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
 
             Object value = rs.getObjectOfInputType("Value", type.getType());
+            if (type.isSensitiveInformation()) {
+                try {
+                    value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).decryptHexStr((String) value);
+                } catch (CryptoException | IOException | JDOMException |DecoderException e) {
+                    value = type.getDefaultValue();
+                    log.error("Unable to decrypt value for setting " + type + ". Using the default value");
+                }
+            }
 
             GlobalSetting setting = new GlobalSetting(type, value);
             setting.setId(rs.getInt("GlobalSettingId"));
             setting.setComments(rs.getString("Comments"));
             setting.setLastChanged(rs.getInstant("LastChangedDate"));
-            
+
             return setting;
         }
     };

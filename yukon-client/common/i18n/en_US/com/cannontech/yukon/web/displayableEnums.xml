@@ -346,6 +346,12 @@
     <entry key="yukon.common.setting.LAST_RUNTIME_HOURS.description">Maximum number of hours since last runtime from device.</entry>
     <entry key="yukon.common.setting.RF_BROADCAST_PERFORMANCE">RF Broadcast Performance</entry>
     <entry key="yukon.common.setting.RF_BROADCAST_PERFORMANCE.description">Enables the RF broadcast performance feature for demand response messaging.</entry>
+    <entry key="yukon.common.setting.ECOBEE_USERNAME">ecobee Username</entry>
+    <entry key="yukon.common.setting.ECOBEE_USERNAME.description">Username to authenticate with the ecobee service</entry>
+    <entry key="yukon.common.setting.ECOBEE_PASSWORD">ecobee Password</entry>
+    <entry key="yukon.common.setting.ECOBEE_PASSWORD.description">Password to authenticate with the ecobee service</entry>
+    <entry key="yukon.common.setting.ECOBEE_SERVER_URL">ecobee API URL</entry>
+    <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service</entry>
 
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS">Admin Email Address</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS.description">Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.</entry>
@@ -391,16 +397,9 @@
     <entry key="yukon.common.energyCompanySetting.METER_MCT_BASE_DESIGNATION.description">Allow meters to be used general stars entries versus Yukon MCTs</entry>
     <entry key="yukon.common.energyCompanySetting.OPTIONAL_PRODUCT_DEV">Optional Product Dev</entry>
     <entry key="yukon.common.energyCompanySetting.OPTIONAL_PRODUCT_DEV.description">This feature is for development purposes only</entry>
-    <entry key="yukon.common.energyCompanySetting.ECOBEE_USERNAME">Username</entry>
-    <entry key="yukon.common.energyCompanySetting.ECOBEE_USERNAME.description">Username to authenticate with the ecobee service</entry>
-    <entry key="yukon.common.energyCompanySetting.ECOBEE_PASSWORD">Password</entry>
-    <entry key="yukon.common.energyCompanySetting.ECOBEE_PASSWORD.description">Password to authenticate with the ecobee service</entry>
-    <entry key="yukon.common.energyCompanySetting.ECOBEE_SERVER_URL">API URL</entry>
-    <entry key="yukon.common.energyCompanySetting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service</entry>
 
     <entry key="yukon.common.energyCompanySetting.category.ACCOUNT">Account</entry>
     <entry key="yukon.common.energyCompanySetting.category.HARDWARE">Hardware</entry>
-    <entry key="yukon.common.energyCompanySetting.category.ECOBEE">ecobee</entry>
     <entry key="yukon.common.energyCompanySetting.category.MISC">Miscellaneous</entry>
 
     <entry key="yukon.common.eventSource.API">API</entry>

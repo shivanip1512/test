@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.userpage.dao.UserPageDao;
@@ -50,7 +52,7 @@ import com.google.common.collect.Ordering;
 @Controller
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public class HomeController {
-    
+
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
@@ -68,13 +70,13 @@ public class HomeController {
     @Autowired private EnergyCompanyDao ecDao;
 
     @RequestMapping("/home")
-    public String home(ModelMap model, 
+    public String home(ModelMap model,
                     YukonUserContext userContext,
-                    String favSort, 
-                    Boolean favDescending, 
+                    String favSort,
+                    Boolean favDescending,
                     String rvSort,
                     Boolean rvDescending) throws ParseException {
-        
+
         LiteYukonUser user = userContext.getYukonUser();
         List<DisplayablePao> favorites = userPageDao.getDrFavorites(user);
         favorites = paoAuthorizationService.filterAuthorized(user, favorites, Permission.LM_VISIBLE);
@@ -107,36 +109,36 @@ public class HomeController {
         }
         Collections.sort(recentlyViewed, sorter);
         model.addAttribute("recents", recentlyViewed);
-        
+
         /** RF BROADCAST PERMORMANCE */
         OnOff rfPerformance = globalSettingDao.getEnum(GlobalSettingType.RF_BROADCAST_PERFORMANCE, OnOff.class);
         boolean showRfPerformance = (rfPerformance == OnOff.ON);
         model.addAttribute("showRfPerformance", showRfPerformance);
-        
+
         if (showRfPerformance) {
             PerformanceVerificationAverageReports averageReports = performanceVerificationService.getAverageReports();
 
             model.addAttribute("last24Hr", averageReports.getLastDay());
             model.addAttribute("last7Days", averageReports.getLastSevenDays());
             model.addAttribute("last30Days", averageReports.getLastThirtyDays());
-            
+
             ScheduledRepeatingJob testCommandJob = getJob(rfnVerificationJobDef);
             ScheduledRepeatingJob emailJob = getJob(rfnEmailJobDef);
-            
+
             RfPerformanceSettings settings = new RfPerformanceSettings();
-            
+
             String[] time = StringUtils.split(testCommandJob.getCronString(), " ");
             int minutes = Integer.parseInt(time[1]);
             int hours = Integer.parseInt(time[2]);
             settings.setTime((hours * 60) + minutes); // minutes from midnight
-            
+
             String[] emailTime = StringUtils.split(emailJob.getCronString(), " ");
             minutes = Integer.parseInt(emailTime[1]);
             hours = Integer.parseInt(emailTime[2]);
             settings.setEmailTime((hours * 60) + minutes); // minutes from midnight
-            
+
             settings.setEmail(!emailJob.isDisabled());
-            
+
             String notifs = emailJob.getJobProperties().get("notificationGroups");
             if (StringUtils.isNotBlank(notifs)) {
                 List<String> groupIdStrings = Lists.newArrayList(notifs.split(","));
@@ -145,25 +147,24 @@ public class HomeController {
                 });
                 settings.setNotifGroupIds(groupIds);
             }
-            
+
             model.addAttribute("settings", settings);
         }
-        
+
         /** ECOBEE */
 //        OnOff ecobee = globalSettingDao.getEnum(GlobalSettingType.ECOBEE, OnOff.class);
 //        boolean showEcobeeStats = (ecobee == OnOff.ON);
         boolean showEcobeeStats = true;
         model.addAttribute("showEcobeeStats", showEcobeeStats);
         model.addAttribute("month", new DateTime().toString("MMM YYYY"));
-        
+
         EcobeeSettings ecobeeSettings = new EcobeeSettings();
         ecobeeSettings.setCheckErrors(true);
         ecobeeSettings.setDataCollection(true);
         ecobeeSettings.setErrorCheckTime(42);
         model.addAttribute("ecobeeSettings", ecobeeSettings);
-        
-        int energyCoId = ecDao.getEnergyCompany(user).getId();
-        EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now(), energyCoId);
+
+        EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now());
         int currentMonthDataCollectionQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
         int currentMonthDemandResponseQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
         int currentMonthSystemQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
@@ -184,13 +185,13 @@ public class HomeController {
         model.addAttribute("currentMonthSystemCount", currentMonthSystemQueryCount);
         return "dr/home.jsp";
     }
-    
+
     @RequestMapping("/details")
     public String details(LiteYukonUser user) {
-        
-        boolean showControlAreas = 
+
+        boolean showControlAreas =
                 rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CONTROL_AREAS, user);
-        boolean showScenarios = 
+        boolean showScenarios =
                 rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_SCENARIOS, user);
 
         // The Details link defaults to control area list, if control areas are hidden,
@@ -199,7 +200,7 @@ public class HomeController {
         String link = "/dr/controlArea/list";
         if(!showControlAreas) {
             if(showScenarios) {
-                link = "/dr/scenario/list"; 
+                link = "/dr/scenario/list";
             } else {
                 link = "/dr/program/list";
             }
@@ -207,7 +208,7 @@ public class HomeController {
 
         return "redirect:" + link;
     }
-    
+
     private ScheduledRepeatingJob getJob(YukonJobDefinition<? extends YukonTask> jobDefinition) {
         List<ScheduledRepeatingJob> activeJobs = jobManager.getNotDeletedRepeatingJobsByDefinition(jobDefinition);
         return Iterables.getOnlyElement(activeJobs);

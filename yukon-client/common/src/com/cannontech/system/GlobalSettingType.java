@@ -58,7 +58,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     // Authentication > Password Management  (this could go under Authentication > General if we didn't want two sub sections with so few items)
     ENABLE_PASSWORD_RECOVERY(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
     ENABLE_CAPTCHAS(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
-    // END Authentication 
+    // END Authentication
 
     // Calc Historical
     INTERVAL(GlobalSettingSubCategory.CALC_HISTORICAL, integerType(), 900),
@@ -107,6 +107,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     LAST_COMMUNICATION_HOURS(GlobalSettingSubCategory.DR, integerType(), 60),
     LAST_RUNTIME_HOURS(GlobalSettingSubCategory.DR, integerType(), 168),
     RF_BROADCAST_PERFORMANCE(GlobalSettingSubCategory.DR, InputTypeFactory.enumType(OnOff.class), OnOff.OFF),
+    ECOBEE_USERNAME(GlobalSettingSubCategory.DR, stringType(), ""),
+    ECOBEE_PASSWORD(GlobalSettingSubCategory.DR, stringType(), ""),
+    ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://api.ecobee.com/1/"),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
@@ -121,14 +124,14 @@ public enum GlobalSettingType implements DisplayableEnum {
     ENERGY_DAYS_PREVIOUS(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 7),
     APPEND_TO_FILE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
     REMOVE_MULTIPLIER(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
-    COOP_ID_CADP_ONLY(GlobalSettingSubCategory.DATA_EXPORT, stringType(), null), 
+    COOP_ID_CADP_ONLY(GlobalSettingSubCategory.DATA_EXPORT, stringType(), null),
     DEFAULT_ROUNDING_MODE(GlobalSettingSubCategory.DATA_EXPORT, InputTypeFactory.enumType(RoundingMode.class), RoundingMode.HALF_EVEN),
     SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS(GlobalSettingSubCategory.DATA_EXPORT, stringType(), ".csv,.dat,.txt"),
     // Defaulting to directory specified by CTIUtilities.getExportDirPath(), typically C:\Yukon\Client\Export.
     SCHEDULE_PARAMETERS_EXPORT_PATH(GlobalSettingSubCategory.DATA_EXPORT, stringType(), CtiUtilities.getExportDirPath()),
     HISTORY_CLEANUP_DAYS_TO_KEEP(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 0),
     HISTORY_CLEANUP_FILES_TO_KEEP(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 0),
-    
+
     // AMI  (may fit better for future under Misc.?)
     DEVICE_DISPLAY_TEMPLATE(GlobalSettingSubCategory.AMI, InputTypeFactory.enumType(MeterDisplayFieldEnum.class), MeterDisplayFieldEnum.DEVICE_NAME),
     // This may eventually be a "Device" setting, just just "AMR", This is to disable "route lookup" during the OLD bulk importer process; reduces comms
@@ -171,6 +174,10 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     public InputType<?> getType() {
         return type;
+    }
+
+    public boolean isSensitiveInformation() {
+        return this == ECOBEE_PASSWORD || this == ECOBEE_USERNAME;
     }
 
     public Object getDefaultValue() {

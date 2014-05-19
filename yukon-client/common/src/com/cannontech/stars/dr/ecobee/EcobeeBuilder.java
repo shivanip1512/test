@@ -28,7 +28,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     @Override
     public void createDevice(Hardware hardware) {
         try {
-            ecobeeCommunicationService.registerDevice(hardware.getSerialNumber(), hardware.getEnergyCompanyId());
+            ecobeeCommunicationService.registerDevice(hardware.getSerialNumber());
 
             CompleteDevice ecobeePao = new CompleteDevice();
             ecobeePao.setPaoName(hardware.getSerialNumber());
@@ -36,8 +36,8 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
 
             // Update the Stars table with the device id
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), ecobeePao.getPaObjectId());
-            ecobeeCommunicationService.moveDeviceToSet(hardware.getSerialNumber(), 
-                                   EcobeeCommunicationService.UNENROLLED_SET, hardware.getEnergyCompanyId());
+            ecobeeCommunicationService.moveDeviceToSet(hardware.getSerialNumber(),
+                                   EcobeeCommunicationService.UNENROLLED_SET);
         } catch (EcobeeException e) {
             throw new DeviceCreationException(e.getMessage(), e);
         }
@@ -62,19 +62,19 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
         // Nothing extra to do
     }
-    
+
     @Override
     public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
-        // Nothing extra to do 
+        // Nothing extra to do
     }
 
     @Override
     public void retrieveDevice(Hardware hardware) {
-        // Nothing extra to do 
+        // Nothing extra to do
     }
 
     @Override
     public void validateDevice(Hardware hardware, Errors errors) {
-        // Nothing extra to do 
+        // Nothing extra to do
     }
 }

@@ -1,16 +1,13 @@
 package com.cannontech.stars.energyCompany.dao.impl;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jdom.JDOMException;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -31,9 +28,6 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.encryption.CryptoException;
-import com.cannontech.encryption.CryptoUtils;
-import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
@@ -49,7 +43,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     private final Logger log = YukonLogManager.getLogger(EnergyCompanySettingDaoImpl.class);
     private SimpleTableAccessTemplate<EnergyCompanySetting> insertTemplate;
     private final LeastRecentlyUsedCacheMap<ECSettingCacheKey, EnergyCompanySetting> cache = new LeastRecentlyUsedCacheMap<>(100);
-    
+
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -60,17 +54,9 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
         @Override
         public void extractValues(MapSqlParameterSource parameterHolder, EnergyCompanySetting setting) {
             parameterHolder.addValue("EnergyCompanyId", setting.getEnergyCompanyId());
-            Object value = setting.getValue();
-            if (setting.getType().isSensitiveInformation()) {
-                try {
-                    value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).encryptToHexStr((String) value);
-                } catch (CryptoException | IOException | JDOMException e) {
-                    throw new RuntimeException("Unable to encrypt value for setting " + setting.getType(), e);
-                }
-            }
             parameterHolder.addValue("Name", setting.getType());
             parameterHolder.addValue("Enabled", YNBoolean.valueOf(setting.isEnabled()));
-            parameterHolder.addValue("Value", value);
+            parameterHolder.addValue("Value", setting.getValue());
             parameterHolder.addValue("Comments", setting.getComments());
             parameterHolder.addValue("LastChangedDate", setting.getLastChanged());
         }
@@ -201,17 +187,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
             EnergyCompanySetting setting = new EnergyCompanySetting();
             setting.setType(type);
 
-            Object value = rs.getObjectOfInputType("Value", type.getType());
-            if (type.isSensitiveInformation()) {
-                try {
-                    value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).decryptHexStr((String) value);
-                } catch (CryptoException | IOException | JDOMException |DecoderException e) {
-                    value = type.getDefaultValue();
-                    log.error("Unable to decrypt value for setting " + type + ". Using the default value");
-                }
-            }
-
-            setting.setValue(value);
+            setting.setValue( rs.getObjectOfInputType("Value", type.getType()));
             setting.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
             setting.setId(rs.getInt("EnergyCompanySettingId"));
             setting.setEnabled(rs.getBoolean("Enabled"));
@@ -235,7 +211,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     public void updateSetting(EnergyCompanySetting setting, LiteYukonUser user, int ecId) {
 
         EnergyCompanySetting currentSetting = getSetting(setting.getType(), setting.getEnergyCompanyId());
-        
+
         if (setting.isChanged(currentSetting)) {
             // Only update last changed date on value update
             if (setting.isValueChanged(currentSetting)) {
@@ -257,7 +233,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
                                                 DbChangeCategory.ENERGY_COMPANY_SETTING,
                                                 setting.getEnergyCompanyId());
             }
-            
+
             Object value = setting.getValue();
             Object currentValue = currentSetting.getValue();
             String comments = setting.getComments();
@@ -288,11 +264,11 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     @Override
     public List<EnergyCompanySetting> getAllSettings(int ecId) {
         List<EnergyCompanySetting> settings = new ArrayList<>();
-        
+
         for (EnergyCompanySettingType type : EnergyCompanySettingType.values()) {
             settings.add(getSetting(type, ecId));
         }
-        
+
         return settings;
     }
 
@@ -300,7 +276,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     public boolean isEnabled(EnergyCompanySettingType setting, int ecId) {
         return getSetting(setting, ecId).isEnabled();
     }
-    
+
     @PostConstruct
     public void init() {
         insertTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
@@ -308,7 +284,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
         insertTemplate.setFieldMapper(fieldMapper);
         insertTemplate.setPrimaryKeyField("EnergyCompanySettingId");
         insertTemplate.setPrimaryKeyValidOver(0);
-        
+
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_SETTING, new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {

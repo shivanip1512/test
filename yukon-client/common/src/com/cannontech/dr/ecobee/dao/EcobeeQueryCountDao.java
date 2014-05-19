@@ -11,21 +11,21 @@ import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
  * types.) Query statistics are tracked by month, and separately for each energy company.
  */
 public interface EcobeeQueryCountDao {
-    
+
     /**
      * Increments the query count by one for the specified query type and energy company;
      */
-    public void incrementQueryCount(EcobeeQueryType queryType, int energyCompanyId);
-    
+    public void incrementQueryCount(EcobeeQueryType queryType);
+
     /**
      * Gets a statistics object containing counts for all query types for the specified month and energy company.
      */
-    public EcobeeQueryStatistics getCountsForMonth(MonthYear monthYear, int energyCompanyId);
-    
+    public EcobeeQueryStatistics getCountsForMonth(MonthYear monthYear);
+
     /**
-     * Gets a statistics object containing counts for all query types for the specified range of months and energy 
+     * Gets a statistics object containing counts for all query types for the specified range of months and energy
      * company.
      */
-    public List<EcobeeQueryStatistics> getCountsForRange(Range<MonthYear> dateRange, int energyCompanyId);
-    
+    public List<EcobeeQueryStatistics> getCountsForRange(Range<MonthYear> dateRange);
+
 }

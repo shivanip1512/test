@@ -20,38 +20,36 @@ import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 
 public class EcobeeQueryCountDaoImpl implements EcobeeQueryCountDao {
     @Autowired YukonJdbcTemplate jdbcTemplate;
-    
+
     @Override
-    public void incrementQueryCount(EcobeeQueryType queryType, int energyCompanyId) {
+    public void incrementQueryCount(EcobeeQueryType queryType) {
         DateTime now = new DateTime();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE EcobeeQueryStatistics");
         sql.append("SET QueryCount = QueryCount + 1");
-        sql.append("WHERE EnergyCompanyId").eq_k(energyCompanyId);
-        sql.append("AND MonthIndex").eq_k(now.getMonthOfYear());
+        sql.append("WHERE MonthIndex").eq_k(now.getMonthOfYear());
         sql.append("AND YearIndex").eq_k(now.getYear());
         sql.append("AND QueryType").eq_k(queryType);
         int rowsAffected = jdbcTemplate.update(sql);
-        
+
         //No update means we need a new row. Insert one.
         if (rowsAffected == 0) {
             SqlStatementBuilder insertSql = new SqlStatementBuilder();
             insertSql.append("INSERT INTO EcobeeQueryStatistics");
-            insertSql.append("(EnergyCompanyId, MonthIndex, YearIndex, QueryType, QueryCount)");
-            insertSql.values(energyCompanyId, now.getMonthOfYear(), now.getYear(), queryType, 1);
+            insertSql.append("(MonthIndex, YearIndex, QueryType, QueryCount)");
+            insertSql.values(now.getMonthOfYear(), now.getYear(), queryType, 1);
             jdbcTemplate.update(insertSql);
         }
     }
-    
+
     @Override
-    public EcobeeQueryStatistics getCountsForMonth(MonthYear monthYear, int energyCompanyId) {
+    public EcobeeQueryStatistics getCountsForMonth(MonthYear monthYear) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT QueryType, QueryCount");
         sql.append("FROM EcobeeQueryStatistics");
-        sql.append("WHERE EnergyCompanyId").eq_k(energyCompanyId);
-        sql.append("AND YearIndex").eq_k(monthYear.getYear());
+        sql.append("WHERE YearIndex").eq_k(monthYear.getYear());
         sql.append("AND MonthIndex").eq_k(monthYear.getMonth());
-        
+
         final EcobeeQueryStatistics statistics = new EcobeeQueryStatistics(monthYear.getYear(), monthYear.getMonth());
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
@@ -64,17 +62,16 @@ public class EcobeeQueryCountDaoImpl implements EcobeeQueryCountDao {
         });
         return statistics;
     }
-    
+
     @Override
-    public List<EcobeeQueryStatistics> getCountsForRange(Range<MonthYear> dateRange, int energyCompanyId) {
+    public List<EcobeeQueryStatistics> getCountsForRange(Range<MonthYear> dateRange) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT MonthIndex, YearIndex, QueryType, QueryCount");
         sql.append("FROM EcobeeQueryStatistics");
-        sql.append("WHERE EnergyCompanyId").eq_k(energyCompanyId);
-        sql.append("AND (");
+        sql.append("WHERE (");
         appendMonthYearClauses(sql, dateRange);
         sql.append(")");
-        
+
         final List<EcobeeQueryStatistics> statisticsList = new ArrayList<>();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
@@ -82,11 +79,11 @@ public class EcobeeQueryCountDaoImpl implements EcobeeQueryCountDao {
                 int monthIndex = rs.getInt("MonthIndex");
                 int yearIndex = rs.getInt("YearIndex");
                 EcobeeQueryStatistics statistics = new EcobeeQueryStatistics(yearIndex, monthIndex);
-                
+
                 EcobeeQueryType queryType = rs.getEnum("QueryType", EcobeeQueryType.class);
                 int count = rs.getInt("QueryCount");
                 EcobeeQueryCount queryCount = new EcobeeQueryCount(queryType, count);
-                
+
                 int index = statisticsList.indexOf(statistics);
                 if (index >= 0) {
                     statisticsList.get(index).addQueryCount(queryCount);
@@ -96,10 +93,10 @@ public class EcobeeQueryCountDaoImpl implements EcobeeQueryCountDao {
                 }
             }
         });
-        
+
         return statisticsList;
     }
-    
+
     /**
      * Appends clauses capturing the months in the first year and last year, and the full year for any years in between.
      */
@@ -108,21 +105,21 @@ public class EcobeeQueryCountDaoImpl implements EcobeeQueryCountDao {
         int startMonth = dateRange.getMin().getMonth();
         int endYear = dateRange.getMax().getYear();
         int endMonth = dateRange.getMax().getMonth();
-        
+
         SqlStatementBuilder monthMinClause = new SqlStatementBuilder();
         if (dateRange.isIncludesMaxValue()) {
             monthMinClause.append("AND MonthIndex").gte(startMonth);
         } else {
             monthMinClause.append("AND MonthIndex").gt(startMonth);
         }
-        
+
         SqlStatementBuilder monthMaxClause = new SqlStatementBuilder();
         if(dateRange.isIncludesMinValue()) {
             monthMaxClause.append("AND MonthIndex").lte(endMonth);
         } else {
             monthMaxClause.append("AND MonthIndex").lt(endMonth);
         }
-        
+
         if (startYear == endYear) {
             sql.append("(");
             sql.append("YearIndex").eq_k(startYear);
@@ -134,16 +131,16 @@ public class EcobeeQueryCountDaoImpl implements EcobeeQueryCountDao {
             sql.append("YearIndex").eq_k(startYear);
             sql.append(monthMinClause);
             sql.append(")");
-            
+
             appendMidYearsClause(sql, startYear, endYear);
-            
+
             sql.append("OR (");
             sql.append("YearIndex").eq_k(endYear);
             sql.append(monthMaxClause);
             sql.append(")");
         }
     }
-    
+
     /**
      * Appends a clause for handling any years between the first and last year, if the range covers 3 or more years.
      */
