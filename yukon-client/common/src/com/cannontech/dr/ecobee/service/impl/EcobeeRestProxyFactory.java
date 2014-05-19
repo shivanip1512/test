@@ -1,10 +1,9 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.AUTHENTICATION_EXPIRED;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.AUTHENTICATION_FAILED;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.SUCCESS;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -13,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
+import com.cannontech.dr.ecobee.EcobeeException;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
 import com.cannontech.dr.ecobee.message.AuthenticationResponse;
 import com.cannontech.dr.ecobee.message.BaseResponse;
@@ -44,24 +45,21 @@ public class EcobeeRestProxyFactory {
     public RestOperations createInstance() {
         InvocationHandler invocationHandler = new InvocationHandler() {
             @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            public Object invoke(Object proxy, Method method, Object[] args) throws EcobeeException {
                 try {
-                    // Add token to request
                     addAuthorizationToken(args);
-
-                    BaseResponse response = (BaseResponse) method.invoke(proxiedTemplate, args);
-                    if (response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
+                    Object responseObj = method.invoke(proxiedTemplate, args);
+                    if (didAuthenticationFail(responseObj)) {
                         authToken = null;
                         addAuthorizationToken(args);
-
-                        response = (BaseResponse) method.invoke(proxiedTemplate, args);
-                        if (response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
+                        responseObj = method.invoke(proxiedTemplate, args);
+                        if (didAuthenticationFail(responseObj)) {
                             throw new RuntimeException("Received an authentication exception immediately after "
                                         + "being authenticated successfully. This should not happen.");
                         }
                     }
-                    return response;
-                } catch (RestClientException e) {
+                    return responseObj;
+                } catch (RestClientException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
                 }
             }
@@ -71,6 +69,14 @@ public class EcobeeRestProxyFactory {
             invocationHandler);
 
         return RestOperations.class.cast(obj);
+    }
+
+    private boolean didAuthenticationFail(Object responseObj) {
+        if (responseObj instanceof ResponseEntity) {
+            responseObj = ((ResponseEntity<?>) responseObj).getBody();
+        }
+        BaseResponse response = (BaseResponse) responseObj;
+        return response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED);
     }
 
     /**
