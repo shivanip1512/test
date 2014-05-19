@@ -138,6 +138,7 @@ public class HistoricalReadingsController {
      * @return the i18n'd message for the attribute if it exists, an empty string otherwise.
      */
     private String getAttributeMessage(Integer deviceId, String attribute, int pointId, YukonUserContext context) {
+        
         String attributeMsg = "";
         if (attribute != null) {
             attributeMsg = objectFormattingService.formatObjectAsString(BuiltInAttribute.valueOf(attribute), context);
@@ -148,7 +149,9 @@ public class HistoricalReadingsController {
             if (pointInfo != null) {
                 PaoType paoType = paoDao.getYukonPao(deviceId).getPaoIdentifier().getPaoType();
                 PointIdentifier pointIdentifier = pointInfo.getPointIdentifier();
-                BuiltInAttribute builtInAttribute = paoDefinitionDao.findOneAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(paoType, pointIdentifier));
+                BuiltInAttribute builtInAttribute = 
+                        paoDefinitionDao.findOneAttributeForPaoTypeAndPoint(
+                                PaoTypePointIdentifier.of(paoType, pointIdentifier));
                 if (builtInAttribute != null) {
                     attributeMsg = objectFormattingService.formatObjectAsString(builtInAttribute, context);
                 }
@@ -157,7 +160,9 @@ public class HistoricalReadingsController {
         return attributeMsg;
     }
     
-    private void buildCsv(YukonUserContext userContext, List<List<String>> points, HttpServletResponse response) throws IOException{
+    private void buildCsv(YukonUserContext userContext, List<List<String>> points, HttpServletResponse response) 
+            throws IOException{
+        
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[2];
         headerRow[0] = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");
@@ -175,30 +180,49 @@ public class HistoricalReadingsController {
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "HistoryReadings.csv");
     }
         
-    private List<List<String>> getLimitedPointData(String period, final YukonUserContext context, Order order, OrderBy orderBy, int pointId){
+    private List<List<String>> getLimitedPointData(String period, 
+            final YukonUserContext userContext, 
+            Order order, 
+            OrderBy orderBy, 
+            int pointId) {
+        
         List<PointValueHolder> data = null;
-        if(period.equals(DISPLAY)){
-            DateTime startDate = new DateTime(context.getJodaTimeZone());
+        if (period.equals(DISPLAY)) {
+            DateTime startDate = new DateTime(userContext.getJodaTimeZone());
             startDate = startDate.minusDays(30);
-            DateTime endDate = new DateTime(context.getJodaTimeZone());
-            data = rawPointHistoryDao.getLimitedPointData(pointId, startDate.toDate(), endDate.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, false, order, MAX_ROWS_DISPLAY);
+            DateTime endDate = new DateTime(userContext.getJodaTimeZone());
+            data = rawPointHistoryDao.getLimitedPointData(pointId, 
+                    startDate.toDate(), 
+                    endDate.toDate(), 
+                    Clusivity.INCLUSIVE_EXCLUSIVE, 
+                    false, 
+                    order, 
+                    MAX_ROWS_DISPLAY);
         }
         else if(period.equals(ONE_MONTH)){
-            DateTime startDate = new DateTime(context.getJodaTimeZone());
+            DateTime startDate = new DateTime(userContext.getJodaTimeZone());
             startDate = startDate.minusDays(30);
-            DateTime endDate = new DateTime(context.getJodaTimeZone());
-            data = rawPointHistoryDao.getPointData(pointId, startDate.toDate(), endDate.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, order); 
+            DateTime endDate = new DateTime(userContext.getJodaTimeZone());
+            data = rawPointHistoryDao.getPointData(pointId, 
+                    startDate.toDate(), 
+                    endDate.toDate(), 
+                    Clusivity.INCLUSIVE_EXCLUSIVE, 
+                    order); 
         }else if(period.equals(ALL)){
             Instant startDate = new Instant(0);
-            data = rawPointHistoryDao.getPointData(pointId, startDate.toDate(), null, Clusivity.INCLUSIVE_INCLUSIVE, order);
+            data = rawPointHistoryDao.getPointData(pointId, 
+                    startDate.toDate(), 
+                    null, 
+                    Clusivity.INCLUSIVE_INCLUSIVE, 
+                    order);
         }
         data = sort(data, order, orderBy);
         List<List<String>> points = Lists.transform(data, new Function<PointValueHolder, List<String>>() {
             @Override
             public List<String> apply(PointValueHolder pvh) {
                 List<String> row = Lists.newArrayList();
-                row.add(pointFormattingService.getValueString(pvh, Format.DATE, context));
-                row.add(pointFormattingService.getValueString(pvh, Format.SHORT, context));
+                row.add(pointFormattingService.getValueString(pvh, Format.DATE, userContext));
+                row.add(pointFormattingService.getValueString(pvh, Format.SHORT, userContext));
                 return row;
             }
         });
@@ -206,7 +230,8 @@ public class HistoricalReadingsController {
     }
     
     private String getDownloadUrl(String period, int pointId, Order order, OrderBy orderBy){
-        return "/meter/historicalReadings/download?" + PERIOD +"="+ period+"&pointId="+pointId+"&orderBy="+orderBy+"&order="+order;
+        return "/meter/historicalReadings/download?" 
+                + PERIOD + "=" + period + "&pointId=" + pointId + "&orderBy=" + orderBy + "&order=" + order;
     }
 
     private List<PointValueHolder> sort(List<PointValueHolder> data, final Order order, OrderBy orderBy) {
@@ -237,4 +262,5 @@ public class HistoricalReadingsController {
         }
         return modifiableList;
     }
+    
 }
