@@ -51,16 +51,14 @@ function updateDualBusImage(id) {
     };
 }
 
-function feederDualBus() {
-    return function (data) {
-        var feederInfo = JSON.parse(data.value),
-            icon = jQuery('[data-dual-bus-feeder='+ feederInfo.paoId + ']');
-        if (feederInfo.dualBus) {
-            icon.show();
-        } else {
-            icon.hide();
-        }
-    };
+function feederDualBus(data) {
+    var feederInfo = JSON.parse(data.value),
+        icon = jQuery('[data-dual-bus-feeder='+ feederInfo.paoId + ']');
+    if (feederInfo.dualBus) {
+        icon.show();
+    } else {
+        icon.hide();
+    }
 }
 
 function updateCapBankWarningImage(id) {

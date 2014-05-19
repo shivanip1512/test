@@ -44,7 +44,7 @@
                 <td>
                     <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
                     <cti:icon icon="icon-bullet-orange" classes="thin" data-dual-bus-feeder="${feederId}" />
-                    <cti:dataUpdaterCallback function="feederDualBus()" initialize="true" value="FEEDER/${feederId}/DUALBUS"/>
+                    <cti:dataUpdaterCallback function="feederDualBus" initialize="true" value="FEEDER/${feederId}/DUALBUS"/>
                 </td>
                 <%-- Name --%>
                 <td class="wsnw">
