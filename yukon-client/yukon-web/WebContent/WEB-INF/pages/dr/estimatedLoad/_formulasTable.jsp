@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<cti:url value="listPageAjax" var="sortUrl"/>
+<c:set var="sortUrl" value="listPageAjax"/>
 
 <cti:msgScope paths="modules.dr.estimatedLoad">
     <c:if test="${not empty pagedFormulas.resultList}">

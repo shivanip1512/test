@@ -107,6 +107,6 @@
         </c:forEach>
     </tbody>
 </table>
-<cti:url value="page" var="baseUrl"/>
+<c:set var="baseUrl" value="page"/>
 <tags:pagingResultsControls adjustPageCount="true" baseUrl="${baseUrl}" result="${result}"/>
 </cti:msgScope>

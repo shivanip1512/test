@@ -15,24 +15,7 @@
     <cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
 
     <c:set var="baseUrl" value="/dr/controlArea/list" />
-    <cti:url var="submitUrl" value="${baseUrl}" />
-    <cti:url var="clearFilterUrl" value="${baseUrl}">
-        <c:if test="${!empty param.itemsPerPage}">
-            <cti:param name="itemsPerPage" value="${param.itemsPerPage}" />
-        </c:if>
-        <c:if test="${!empty param.sort}">
-            <cti:param name="sort" value="${param.sort}" />
-        </c:if>
-        <c:if test="${!empty param.descending}">
-            <cti:param name="descending" value="${param.descending}" />
-        </c:if>
-    </cti:url>
-
-    <script type="text/javascript">
-            function clearFilter() {
-                window.location = '${clearFilterUrl}';
-            }
-    </script>
+    <cti:url var="baseUrlWithContextPath" value="${baseUrl}" />
 
     <%-- Control Area filtering popup section --%>
 
@@ -94,7 +77,7 @@
 
             <div class="action-area">
                 <cti:button nameKey="filter" type="submit" classes="action primary"/>
-                <cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
+                <cti:button nameKey="showAll" href="${baseUrlWithContextPath}"/>
             </div>
         </form:form>
     </tags:simplePopup>
@@ -106,7 +89,7 @@
     <tags:pagedBox title="${controlAreaTitle}"
         searchResult="${searchResult}" filterDialog="filterPopup"
         baseUrl="${baseUrl}" isFiltered="${isFiltered}"
-        showAllUrl="${clearFilterUrl}">
+        showAllUrl="${baseUrlWithContextPath}">
         <c:choose>
             <c:when test="${searchResult.hitCount == 0}">
                 <cti:msg key="yukon.web.modules.dr.controlAreaList.noResults" />

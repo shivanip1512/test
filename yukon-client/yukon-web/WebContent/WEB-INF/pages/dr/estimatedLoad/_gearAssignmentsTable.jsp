@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<cti:url value="gearAssignmentsPage" var="sortUrl"/>
+<c:set var="sortUrl" value="gearAssignmentsPage" />
 
 <cti:msgScope paths="modules.dr.estimatedLoad">
     <c:choose>

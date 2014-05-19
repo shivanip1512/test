@@ -14,29 +14,11 @@
     <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
 
     <c:set var="baseUrl" value="/dr/scenario/list" />
-    <cti:url var="submitUrl" value="${baseUrl}" />
-    <cti:url var="clearFilterUrl" value="${baseUrl}">
-    
-        <c:if test="${!empty param.itemsPerPage}">
-            <cti:param name="itemsPerPage" value="${param.itemsPerPage}" />
-        </c:if>
-        <c:if test="${!empty param.sort}">
-            <cti:param name="sort" value="${param.sort}" />
-        </c:if>
-        <c:if test="${!empty param.descending}">
-            <cti:param name="descending" value="${param.descending}" />
-        </c:if>
-    </cti:url>
-    
-<script type="text/javascript">
-function clearFilter() {
-    window.location.href = yukon.url('/dr/scenario/list');
-}
-</script>
+    <cti:url var="baseUrlWithContext" value="${baseUrl}" />
 
     <cti:msg2 var="filterLabel" key=".filters" />
     <tags:simplePopup id="filterPopup" title="${filterLabel}">
-        <form:form action="${submitUrl}" commandName="backingBean" method="get">
+        <form:form action="${baseUrlWithContext}" commandName="backingBean" method="get">
             <tags:sortFields backingBean="${backingBean}" />
             <tags:nameValueContainer>
                 <cti:msg2 var="fieldName" key=".filter.name" />
@@ -46,7 +28,7 @@ function clearFilter() {
             </tags:nameValueContainer>
             <div class="action-area">
                 <cti:button nameKey="filter" classes="primary action" type="submit"/>
-                <cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
+                <cti:button nameKey="showAll" href="${baseUrlWithContext}"/>
             </div>
         </form:form>
     </tags:simplePopup>
@@ -54,7 +36,7 @@ function clearFilter() {
     <cti:msg var="scenarioTitle" key="yukon.web.modules.dr.scenarioList.scenarios" />
     <tags:pagedBox title="${scenarioTitle}" searchResult="${searchResult}"
         filterDialog="filterPopup" baseUrl="${baseUrl}"
-        isFiltered="${isFiltered}" showAllUrl="${clearFilterUrl}">
+        isFiltered="${isFiltered}" showAllUrl="${baseUrlWithContext}">
         <c:choose>
             <c:when test="${searchResult.hitCount == 0}">
                 <cti:msg key="yukon.web.modules.dr.scenarioList.noResults" />

@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:url value="appCatAssignmentsPage" var="sortUrl"/>
+<c:set var="sortUrl" value="appCatAssignmentsPage"/>
 
 <cti:msgScope paths="modules.dr.estimatedLoad">
     <c:choose>

@@ -10,24 +10,24 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:url var="sortUrl" value="page" />
+<c:set var="baseUrl" value="page"/>
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 
 <div class="f-table-container" data-reloadable>
     <table class="compact-results-table sortable-table row-highlighting">
         <thead>
             <tr>
-                <th><tags:sortLink nameKey="serialNumber" baseUrl="${sortUrl}" fieldName="SERIAL_NUM" 
+                <th><tags:sortLink nameKey="serialNumber" baseUrl="${baseUrl}" fieldName="SERIAL_NUM" 
                                    sortParam="sortBy" styleClass="f-sort-link" isDefault="true" /></th>
-                <th><tags:sortLink nameKey="type" baseUrl="${sortUrl}" fieldName="TYPE" 
+                <th><tags:sortLink nameKey="type" baseUrl="${baseUrl}" fieldName="TYPE" 
                                    sortParam="sortBy" styleClass="f-sort-link" /></th>
-                <th><tags:sortLink nameKey="lastCommunication" baseUrl="${sortUrl}" fieldName="LAST_COMM" 
+                <th><tags:sortLink nameKey="lastCommunication" baseUrl="${baseUrl}" fieldName="LAST_COMM" 
                                    sortParam="sortBy" styleClass="f-sort-link" /></th>
-                <th><tags:sortLink nameKey="lastRuntime" baseUrl="${sortUrl}" fieldName="LAST_RUN" 
+                <th><tags:sortLink nameKey="lastRuntime" baseUrl="${baseUrl}" fieldName="LAST_RUN" 
                                    sortParam="sortBy" styleClass="f-sort-link" /></th>
-                <th><tags:sortLink nameKey="appliances" baseUrl="${sortUrl}" fieldName="APPLIANCES" 
+                <th><tags:sortLink nameKey="appliances" baseUrl="${baseUrl}" fieldName="APPLIANCES" 
                                    sortParam="sortBy" styleClass="f-sort-link" /></th>
-                <th><tags:sortLink nameKey="availability" baseUrl="${sortUrl}" fieldName="AVAILABILITY" 
+                <th><tags:sortLink nameKey="availability" baseUrl="${baseUrl}" fieldName="AVAILABILITY" 
                                    sortParam="sortBy" styleClass="f-sort-link" /></th>
             </tr>
         </thead>
@@ -49,7 +49,6 @@
         </tbody>
         <tfoot></tfoot>
     </table>
-    <cti:url value="page" var="baseUrl" />
     <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
 </div>
 </cti:msgScope>

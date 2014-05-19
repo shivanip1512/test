@@ -15,7 +15,7 @@
     <cti:includeScript link="/JavaScript/yukon.surveys.optOut.js"/>
     <cti:msg2 var="addSurveyTitle" key=".addSurveyTitle" javaScriptEscape="true"/>
 
-    <cti:url var="baseUrl" value="/stars/optOutSurvey/list"/>
+    <c:set var="baseUrl" value="/stars/optOutSurvey/list"/>
 
     <cti:msg2 var="boxTitle" key=".optOutSurveys"/>
     <c:if test="${optOutSurveys.hitCount == 0}">

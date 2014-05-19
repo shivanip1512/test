@@ -76,8 +76,7 @@
                 </tbody>
                 <tfoot></tfoot>
             </table>
-            <cti:url value="reviewTable" var="baseUrl">
-            </cti:url>
+            <c:set var="baseUrl" value="reviewTable" />
             <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}" adjustPageCount="true"/>
             <div class="action-area">
                 <cti:button id="saveButton" type="submit" nameKey="saveAndContinue" classes="primary action" busy="true"/>

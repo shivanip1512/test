@@ -88,7 +88,7 @@
                 </c:forEach>
             </tbody>
         </table>
-        <cti:url var="baseUrl" value="/capcontrol/ivvc/zone/voltageDeltasTable" />
+        <c:set var="baseUrl" value="/capcontrol/ivvc/zone/voltageDeltasTable" />
         <tags:pagingResultsControls baseUrl="${baseUrl}"  result="${searchResults}" adjustPageCount="true"/>
     </div>
 </c:if>

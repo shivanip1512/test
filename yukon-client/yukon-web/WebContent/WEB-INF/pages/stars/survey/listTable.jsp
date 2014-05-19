@@ -30,7 +30,7 @@
             </c:forEach>
         </tbody>
     </table>
-    <cti:url var="baseUrl" value="listTable" />
-    <tags:pagingResultsControls baseUrl="${baseUrl}"  result="${surveys}" adjustPageCount="true"/>
+    <c:set var="baseUrl" value="listTable" />
+    <tags:pagingResultsControls baseUrl="${baseUrl}" result="${surveys}" adjustPageCount="true"/>
 </c:if>
 </cti:msgScope>

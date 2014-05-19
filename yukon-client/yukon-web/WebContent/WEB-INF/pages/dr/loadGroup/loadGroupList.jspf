@@ -8,17 +8,8 @@
 
 <cti:msgScope paths="modules.dr.loadGroupList">
 
-<cti:url var="submitUrl" value="${baseUrl}" />
-<cti:url var="clearFilterUrl" value="${baseUrl}">
-    <c:if test="${!empty param.itemsPerPage}">
-        <cti:param name="itemsPerPage" value="${param.itemsPerPage}" />
-    </c:if>
-    <c:if test="${!empty param.sort}">
-        <cti:param name="sort" value="${param.sort}" />
-    </c:if>
-    <c:if test="${!empty param.descending}">
-        <cti:param name="descending" value="${param.descending}" />
-    </c:if>
+<cti:url var="baseUrlWithContext" value="${baseUrl}" />
+<cti:url var="baseUrlWithIdentifier" value="${baseUrl}">
     <c:if test="${!empty param.programId}">
         <cti:param name="programId" value="${param.programId}" />
     </c:if>
@@ -27,19 +18,13 @@
     </c:if>
 </cti:url>
 
-<script type="text/javascript">
-    function clearFilter() {
-        window.location = '${clearFilterUrl}';
-    }
-</script>
-
 <%-- Load Group filtering popup section --%>
 
 <cti:msg2 var="filterLabel" key=".filters"/>
 <tags:simplePopup id="filterPopup" title="${filterLabel}">
     <cti:flashScopeMessages/>
 
-    <form:form action="${submitUrl}" commandName="backingBean" method="get">
+    <form:form action="${baseUrlWithContext}" commandName="backingBean" method="get">
         <c:if test="${!empty param.programId}">
             <input type="hidden" name="programId" value="${param.programId}"/>
         </c:if>
@@ -77,7 +62,7 @@
 
         <div class="action-area">
             <cti:button nameKey="filter" classes="primary action" type="submit"/>
-            <cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
+            <cti:button nameKey="showAll" href="${baseUrlWithIdentifier }"/>
         </div>
     </form:form>
 </tags:simplePopup>
@@ -87,7 +72,7 @@
 <cti:msg2 var="loadGroupTitle" key=".loadGroups" />
 <tags:pagedBox title="${loadGroupTitle}" searchResult="${searchResult}"
     filterDialog="filterPopup" baseUrl="${baseUrl}"
-    isFiltered="${isFiltered}" showAllUrl="${clearFilterUrl}">
+    isFiltered="${isFiltered}" showAllUrl="${baseUrlWithIdentifier}">
     <c:choose>
         <c:when test="${searchResult.hitCount == 0}">
             <cti:msg2 key=".noResults" />

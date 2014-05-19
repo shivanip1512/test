@@ -54,7 +54,7 @@
                 <div><cti:msg2 key="${result.summary}" blankIfMissing="true"/></div>
             </div>
         </c:forEach>
-        <cti:url value="/search" var="baseUrl"/>
+        <c:set value="/search" var="baseUrl"/>
         <tags:pagingResultsControls baseUrl="${baseUrl}" result="${results}" adjustPageCount="true"/>
     </c:if>
 </cti:standardPage>

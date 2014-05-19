@@ -53,7 +53,7 @@
             </tbody>
         </table>
     </c:if>
-    <tags:pagingResultsControls baseUrl="scheduledJobsTable"  result="${scheduledJobsSearchResult}" adjustPageCount="true"/>
+    <tags:pagingResultsControls baseUrl="scheduledJobsTable" result="${scheduledJobsSearchResult}" adjustPageCount="true"/>
 </tags:sectionContainer2>
 <div id="scheduledJobsConfirmDeleteDialog" class="dn">
     <i:inline key="modules.tools.scheduledFileExport.jobs.deleteSchedule.message"/>

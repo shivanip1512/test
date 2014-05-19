@@ -15,22 +15,13 @@
 
 <tags:simpleDialog id="acDialog"/>
 
-<cti:url var="baseUrl" value="edit"/>
+<c:set var="baseUrl" value="edit"/>
 <cti:displayForPageEditModes modes="VIEW">
-    <cti:url var="baseUrl" value="view"/>
+    <c:set var="baseUrl" value="view"/>
 </cti:displayForPageEditModes>
 <c:set var="applianceCategoryId" value="${param.applianceCategoryId}"/>
 <cti:url var="clearFilterUrl" value="${baseUrl}">
     <cti:param name="ecId" value="${param.ecId}"/>
-    <c:if test="${!empty param.itemsPerPage}">
-        <cti:param name="itemsPerPage" value="${param.itemsPerPage}"/>
-    </c:if>
-    <c:if test="${!empty param.sort}">
-        <cti:param name="sort" value="${param.sort}"/>
-    </c:if>
-    <c:if test="${!empty param.descending}">
-        <cti:param name="descending" value="${param.descending}"/>
-    </c:if>
     <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
 </cti:url>
 
@@ -69,11 +60,6 @@ $(function() {
 </cti:displayForPageEditModes>
 
 <cti:displayForPageEditModes modes="VIEW">
-<script type="text/javascript">
-function clearFilter() {
-    window.location = '${clearFilterUrl}';
-}
-</script>
 
 <c:if test="${isEditable}">
 <script type="text/javascript">
@@ -98,7 +84,8 @@ function assignPrograms(devices) {
 </c:if>
 
     <i:simplePopup id="filterDialog" titleKey=".filters">
-        <form:form action="${baseUrl}" commandName="backingBean" method="get">
+        <cti:url var="baseUrlWithContextPath" value="${baseUrl}" />
+        <form:form action="${baseUrlWithContextPath}" commandName="backingBean" method="get">
             <input type="hidden" name="ecId" value="${param.ecId}">
             <input type="hidden" name="applianceCategoryId" value="${applianceCategoryId}"/>
             <tags:sortFields backingBean="${backingBean}"/>
@@ -112,7 +99,7 @@ function assignPrograms(devices) {
 
             <div class="action-area">
                 <cti:button type="submit" nameKey="filterButton" classes="primary action"/>
-                <cti:button nameKey="showAllButton" onclick="clearFilter();"/>
+                <cti:button nameKey="showAllButton" href="${clearFilterUrl}"/>
             </div>
         </form:form>
     </i:simplePopup>
