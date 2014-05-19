@@ -16,6 +16,18 @@ yukon.dr.dashboard = (function() {
             
         init: function() {
             
+            /** 
+             * Initializes a jquery slider to represent an amount of time in minutes.
+             * 
+             * @param opts - Object that should contain the following:
+             *               htmlSelector {string} - The css selector of the element containing the human readable time.
+             *               timeSelector {string} - The css selector of the hidden input storing the time value.
+             *               sliderSelector {string} - The css selector of the element to use as the jquery slider.
+             *               max {number} - The maximum value of the slider.
+             *               min {number} - The minimum value of the slider.
+             *               value {number} - The initial value of the slider.
+             *               step {number} - The amount between valid values.
+             */
             var _sliderInit = function (opts) {
                     var slideOrChange = function (event, ui) {
                         var curTime = timeFormatter.formatTime(ui.value, 0);

@@ -41,6 +41,9 @@ public interface DateFormattingService {
         LONG_DATE(MidnightMode.NORMAL),
         LONG_DATE_TIME(MidnightMode.NORMAL),
         VERY_SHORT(MidnightMode.NORMAL),
+        SHORT_MONTH_YEAR(MidnightMode.NORMAL),
+        MONTH_YEAR(MidnightMode.NORMAL),
+        MONTH_DAY_HM(MidnightMode.NORMAL),
         ;
         
         private MidnightMode midnightMode = null;

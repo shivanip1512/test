@@ -20,6 +20,9 @@
 <entry key="yukon.common.dateFormatting.LONG_DATE">MMMM d, yyyy</entry>
 <entry key="yukon.common.dateFormatting.LONG_DATE_TIME">MMMM d, yyyy hh:mm a</entry>
 <entry key="yukon.common.dateFormatting.VERY_SHORT">MM/dd HH:mm</entry>
+<entry key="yukon.common.dateFormatting.SHORT_MONTH_YEAR">MMM yyyy</entry>
+<entry key="yukon.common.dateFormatting.MONTH_YEAR">MMMM yyyy</entry>
+<entry key="yukon.common.dateFormatting.MONTH_DAY_HM">MMM dd HH:mm a</entry>
 
 <!-- 
      Please see http://keith-wood.name/datetimeEntryRef.html for the following formats

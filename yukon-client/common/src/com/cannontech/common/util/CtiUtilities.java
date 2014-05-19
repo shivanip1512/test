@@ -909,4 +909,8 @@ public final class CtiUtilities {
                 ? DEFAULT_ITEMS_PER_PAGE : Math.min(MAX_ITEMS_PER_PAGE, specifiedItemsPerPage);
     }
     
+    public final static double calculatePercentage(int count, int total) {
+        return ((double)count / total) * 100;
+    }
+
 }

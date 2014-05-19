@@ -153,33 +153,20 @@
                 <tags:sectionContainer2 nameKey="ecobee">
                     <div class="stacked">
                         <tags:nameValueContainer2 naturalWidth="false">
-                            <tr>
-                                <td class="name">Queries (${month}):</td>
-                                <td class="value full-width">
-                                    <div class="progress query-statistics" style="width: 80px;float:left;"
-                                        data-query-counts='{ "currentMonthDataCollectionCount": "${currentMonthDataCollectionCount}",
-                                            "currentMonthDemandResponseCount": "${currentMonthDemandResponseCount}",
-                                            "currentMonthSystemCount": "${currentMonthSystemCount}" }'>
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 27.0%"></div>
-                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 50.0%"></div>
-                                        <div class="progress-bar progress-bar-default" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 23.0%"></div>
-                                    </div>
-                                    <div class="fl query-counts" style="margin-left: 10px;" title="<cti:msg2 key=".ecobee.details.statistics.title"/>">
-                                        <span class="query-total" style="margin-right: 10px;width:48px;display: inline-block;">15200</span>
-                                        <span class="label label-success">4104</span>
-                                        <span class="label label-info">7600</span>
-                                        <span class="label label-default">3496</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="dn">
-                                <td class="name">Issues:</td>
-                                <td class="value full-width"><span class="label label-danger">6</span> devices, <span class="label label-danger">8</span> groups</td>
-                            </tr>
-                            <tr>
-                                <td class="name"></td>
-                                <td class="value full-width"></td>
-                            </tr>
+                        
+                            <cti:formatDate type="SHORT_MONTH_YEAR" value="${ecobeeStats.month}" var="currentMonth"/>
+                            <tags:nameValue2 nameKey=".ecobee.queries" argument="${currentMonth}" valueClass="full-width">
+                                <dr:ecobeeStats value="${ecobeeStats}"/>
+                            </tags:nameValue2>
+                            
+                            <tags:nameValue2 nameKey=".ecobee.issues">
+                                <c:set var="deviceClass" value="${deviceIssues > 0 ? 'label-danger' : ''}"/>
+                                <c:set var="groupClass" value="${groupIssues > 0 ? 'label-danger' : ''}"/>
+                                <span class="label ${deviceClass}">${deviceIssues}</span>&nbsp;
+                                <i:inline key=".ecobee.devices"/>&nbsp;
+                                <span class="label ${groupClass}">${groupIssues}</span>&nbsp;
+                                <i:inline key=".ecobee.groups"/>&nbsp;
+                            </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </div>
                     <div class="action-area">

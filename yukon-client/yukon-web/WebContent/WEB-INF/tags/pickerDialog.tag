@@ -53,14 +53,13 @@
     // jQuery dialogs get moved to the end of the body. When pickers are ajaxed
     // in and replaced, the dialogs might still be left over. Here we will remove any
     // still hanging around.
+
     $(document.getElementById('${id}')).remove();
     try {
         try {
             ${id} = new Picker('${okText}', '${cancelText}', '${noneSelectedText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
         } catch(pickerException) {
-            if (console) {
-                console.log('pickerDialog.tag: new Picker failed: ' + pickerException);
-            }
+            debug.log('pickerDialog.tag: new Picker failed: ' + pickerException);
         }
         <c:if test="${pageScope.multiSelectMode}">
             ${id}.multiSelectMode = true;
@@ -97,10 +96,9 @@
             ${id}.useInitialIdsIfEmpty = true;
         </c:if>
     } catch (pickerEx) {
-        if (console) {
-            console.log("Could not create Picker: " + pickerEx);
-        }
+            debug.log("Could not create Picker: " + pickerEx);
     }
+
 </script>
 
 <c:if test="${pageScope.linkType != 'selection' && !empty pageScope.selectionProperty}">
@@ -175,7 +173,10 @@
 <script type="text/javascript">
 try {
     yukon.ui.util.callAfterMainWindowLoad(${id}.init.bind(${id}, ${viewMode}));
-} catch (callAfterLoadex) { alert("pickerDialog.tag: callAfterMainWindowLoad exception: " + callAfterLoadex); }
+} catch (callAfterLoadex) {
+    debug.log('exception for picker: ' + "${id}" + ': ' + callAfterLoadex);
+    alert("pickerDialog.tag: callAfterMainWindowLoad exception: " + callAfterLoadex);
+}
 
 if (${!empty excludeIds}) {
     ${id}.excludeIds = ${cti:jsonString(excludeIds)};

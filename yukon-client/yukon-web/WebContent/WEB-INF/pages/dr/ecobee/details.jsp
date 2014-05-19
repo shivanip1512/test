@@ -3,47 +3,26 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="ecobee.details">
+
 <cti:includeScript link="/JavaScript/yukon.picker.js"/>
 <cti:includeScript link="YUKON_TIME_FORMATTER"/>
 <cti:includeScript link="/JavaScript/yukon.dr.ecobee.js"/>
-
-    <script type="text/javascript">
-        $(function () {
-            try {
-                loadGroupPicker.show.call(loadGroupPicker, true);
-            } catch (pickerException) {
-                debug.log('pickerException: ' + pickerException);
-            };
-        });
-    </script>
 
     <div class="column-12-12">
         <div class="column one">
             <tags:sectionContainer2 nameKey="queryStats" styleClass="stacked">
                 <tags:nameValueContainer2 naturalWidth="false">
-                        <c:forEach items="${ecobeeStatsList}" var="ecobeeStat">
+                        <c:forEach items="${statsList}" var="stats">
                         <tr>
-                            <td class="name">${ecobeeStat.monthYearStr}:</td>
+                            <td class="name"><cti:formatDate type="MONTH_YEAR" value="${stats.month}"/>:</td>
                             <td class="value full-width">
-                                <div class="progress query-statistics" style="width: 80px;float:left;"
-                                    data-query-counts='{ "currentMonthDataCollectionCount": "${ecobeeStat.dataCollectionCount}",
-                                        "currentMonthDemandResponseCount": "${ecobeeStat.demandResponseCount}",
-                                        "currentMonthSystemCount": "${ecobeeStat.systemCount}" }'>
-                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 27.0%"></div>
-                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 50.0%"></div>
-                                    <div class="progress-bar progress-bar-default" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 23.0%"></div>
-                                </div>
-                                <div class="fl query-counts" style="margin-left: 10px;" title="<cti:msg2 key=".ecobee.details.statistics.title"/>">
-                                    <span class="query-total" style="margin-right: 10px;width:48px;display: inline-block;">42</span>
-                                    <span class="label label-success">${ecobeeStat.demandResponseCount}</span>
-                                    <span class="label label-info">${ecobeeStat.dataCollectionCount}</span>
-                                    <span class="label label-default">${ecobeeStat.systemCount}</span>
-                                </div>
+                                <dr:ecobeeStats value="${stats}"/>
                             </td>
                         </tr>
                     </c:forEach>
@@ -57,26 +36,36 @@
                     <tfoot></tfoot>
                     <tbody>
                         <tr>
-                            <td>2014-04-09 11:32 AM</td>
+                            <td><cti:formatDate type="MONTH_DAY_HM" value="${startDownLoad}"/></td>
                             <td class="half-width">
-                                <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 60.0%"></div></div>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 60.0%">
+                                    </div>
+                                </div>
                             </td>
                             <td style="width:54px;">60.0%</td>
                         </tr>
                         <tr>
-                            <td>2014-04-06 10:02 AM</td>
+                            <td><cti:formatDate type="MONTH_DAY_HM" value="${startDate}"/></td>
                             <td colspan="2">
-                                <span class="success">Finished</span><span>&nbsp;(2014-04-06 10:02 AM)</span>
+                            <c:if test="${downLoadFinished}">
+                                <span class="success"><cti:msg2 key=".download.finished"/></span>
+                                <span>&nbsp;(<cti:formatDate type="MONTH_DAY_HM" value="${endDate}"/>)</span>
+                            </c:if>
+                            <c:if test="${not downLoadFinished}">
+                                <span class="success"><cti:msg2 key=".download.inProgress"/></span>
+                                <span>&nbsp;()</span>
+                            </c:if>
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="action-area">
                     <cti:button nameKey="download" popup="#ecobee-download" icon="icon-page-white-excel"/>
-                    <div dialog data-form id="ecobee-download" data-width="800" data-title="Download Stuff" class="dn">
+                    <div dialog data-form id="ecobee-download" data-width="800" data-title=<cti:msg2 key=".dataDownloads.title"/> class="dn">
                         <form:form action="ecobee/download" method="POST" commandName="ecobeeDownload">
                             <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
-                                <tags:nameValue2 nameKey=".ecobee.details.download.time" rowId="ecobee-download-schedule" valueClass="full-width">
+                                <tags:nameValue2 nameKey=".download.time" rowId="ecobee-download-schedule" valueClass="full-width">
                                     <div class="column-6-18 clearfix stacked">
                                         <div class="column one">
                                             <span class="f-time-label fwb">&nbsp;</span>
@@ -89,8 +78,7 @@
                                         </div>
                                     </div>
                                 </tags:nameValue2>
-                                <tags:nameValue2 nameKey="yukon.web.modules.dr.ecobee.details.loadGroupPicker" rowId="loadGroupPickerContainer"/>
-                                <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
+                                <tags:nameValue2 nameKey=".loadGroupPicker" rowId="loadGroupPickerContainer">
                                     <div id="loadGroup">
                                         <input type="hidden" id="loadGroupId" name="loadGroupId">
                                         <tags:pickerDialog
@@ -101,7 +89,7 @@
                                             multiSelectMode="true"
                                             destinationFieldId="loadGroupId"/>
                                     </div>
-                                </tags:nameValueContainer2>
+                                </tags:nameValue2>
                             </tags:nameValueContainer2>
                         </form:form>
                     </div>
@@ -118,10 +106,10 @@
                     <tbody>
                         <c:forEach items="${issues}" var="issue">
                             <tr>
-                                <td><cti:msg2 key="${issue.type}"/></td>
+                                <td><i:inline key="${issue.type}"/></td>
                                 <td>
-                                    <c:if test="${issue.type.deviceIssue}">SN: ${issue.serialNumber}</c:if>
-                                    <c:if test="${!issue.type.deviceIssue}">Group: ${issue.loadGroupName}</c:if>
+                                    <c:if test="${issue.type.deviceIssue}"><cti:msg2 key=".issues.serialNumber"/>&nbsp;${issue.serialNumber}</c:if>
+                                    <c:if test="${!issue.type.deviceIssue}"><cti:msg2 key=".issues.group"/>&nbsp;${issue.loadGroupName}</c:if>
                                     <c:if test="${issue.type.fixable}"><cti:button renderMode="buttonImage" classes="fr" icon="icon-wrench"/></c:if>
                                 </td>
                             </tr>
@@ -129,7 +117,8 @@
                     </tbody>
                 </table>
                 <div class="action-area">
-                    <cti:button label="Fix All" icon="icon-wrench"/>
+                    <cti:msg2 key=".issues.fixAllButton" var="fixAllButton"/>
+                    <cti:button label="${fixAllButton}" icon="icon-wrench"/>
                 </div>
             </tags:sectionContainer2>
         </div>

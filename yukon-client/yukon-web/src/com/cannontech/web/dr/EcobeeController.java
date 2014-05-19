@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.YearMonth;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.dr.model.EcobeeQueryStats;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
@@ -144,8 +146,6 @@ public class EcobeeController {
 
         model.addAttribute("issues", issues);
 
-        LiteYukonUser user = userContext.getYukonUser();
-
         //get stats across a range of months
         MonthYear currentMonth = MonthYear.now();
         MonthYear yearAgoMonth = currentMonth.minus(0, 1);
@@ -153,40 +153,52 @@ public class EcobeeController {
 
         List<EcobeeQueryStatistics> rangeOfStatsList = ecobeeQueryCountDao.getCountsForRange(range);
         List<EcobeeQueryStats> queryStatsList = new ArrayList<>();
-        for(EcobeeQueryStatistics stats : rangeOfStatsList) {
+        for (EcobeeQueryStatistics stats : rangeOfStatsList) {
             int statsMonth = stats.getMonth();
             int statsYear = stats.getYear();
+            YearMonth month = new YearMonth().withYear(statsYear).withMonthOfYear(statsMonth);
             int demandResponseCount = stats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
             int dataCollectionCount = stats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
             int systemCount = stats.getQueryCountByType(EcobeeQueryType.SYSTEM);
             EcobeeQueryStats queryStats =
-                new EcobeeQueryStats(statsMonth, statsYear, demandResponseCount, dataCollectionCount, systemCount);
+                    new EcobeeQueryStats(month, demandResponseCount, dataCollectionCount, systemCount);
             queryStatsList.add(queryStats);
         }
         // begin unit test
-        if (0 == rangeOfStatsList.size()) {
+        if (rangeOfStatsList.isEmpty()) {
             // fake data for testing
             Random rand = new Random();
             DateTime dateTime = new DateTime();
             int maxTestVal = 100000;
-            for(int i = 0; i < 11; i += 1) {
+            for (int i = 0; i < 12; i += 1) {
                 int demandResponseCount = rand.nextInt(maxTestVal);
-                int dataCollectionCount = rand.nextInt(maxTestVal-demandResponseCount);
-                int systemCount = rand.nextInt(maxTestVal-demandResponseCount-dataCollectionCount);
+                int dataCollectionCount = rand.nextInt(maxTestVal - demandResponseCount);
+                int systemCount = rand.nextInt(maxTestVal - demandResponseCount - dataCollectionCount);
+                int month = dateTime.minusMonths(i).getMonthOfYear();
+                int year = dateTime.minusMonths(i).getYear();
+                YearMonth yearMonth = new YearMonth().withYear(year).withMonthOfYear(month);
                 EcobeeQueryStats queryStats =
-                    new EcobeeQueryStats(dateTime.minusMonths(i).getMonthOfYear(), dateTime.minusMonths(i).getYear(),
-                        demandResponseCount, dataCollectionCount, systemCount);
+                    new EcobeeQueryStats(yearMonth, demandResponseCount, dataCollectionCount, systemCount);
                 queryStatsList.add(queryStats);
             }
         }
-        for(EcobeeQueryStats stats : queryStatsList){
-            log.debug("statsMonth: " + stats.statsMonth + " statsYear: " + stats.statsYear + " demandResponseCount: " +
-                stats.demandResponseCount +
-                " dataCollectionCount: " + stats.dataCollectionCount + " systemCount: " + stats.systemCount +
-                " monthYearStr: " + stats.monthYearStr);
+        log.debug("queryStatsList.size(): " + queryStatsList.size());
+        for (EcobeeQueryStats stats : queryStatsList) {
+            log.debug(stats);
         }
         // end unit test, debug logging
-        model.addAttribute("ecobeeStatsList", queryStatsList);
+        model.addAttribute("statsList", queryStatsList);
+        // TODO: fetch data download info
+        // begin unit test for data downloads history and in-progress
+        // TODO: this should return a list of historical entries
+        DateTime startDate = new DateTime(2014, 5, 2, 21, 45, 00);
+        DateTime endDate = new DateTime(2014, 5, 2, 22, 00, 00);
+        Boolean downLoadFinished = true;
+        DateTime startDownLoad = new DateTime(2014, 5, 16, 22, 00, 00);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        model.addAttribute("downLoadFinished", downLoadFinished);
+        model.addAttribute("startDownLoad", startDownLoad);
 
         return "dr/ecobee/details.jsp";
     }
@@ -249,61 +261,6 @@ public class EcobeeController {
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.dr.ecobee.details." + name();
-        }
-    }
-
-    public class EcobeeQueryStats {
-        private int statsMonth;
-        private int statsYear;
-        private int demandResponseCount;
-        private int dataCollectionCount;
-        private int systemCount;
-        private String monthYearStr;
-
-        public EcobeeQueryStats(int month, int year, int demandCount, int dataCount, int sysCount) {
-            statsMonth = month;
-            statsYear = year;
-            DateTime date = new DateTime(statsYear, statsMonth, 1, 0, 0);
-            monthYearStr = date.toString("MMMM (YYYY)");
-            demandResponseCount = demandCount;
-            dataCollectionCount = dataCount;
-            systemCount = sysCount;
-        }
-        public int getStatsMonth() {
-            return statsMonth;
-        }
-        public void setStatsMonth(int month ) {
-            statsMonth = month;
-        }
-        public int getStatsYear() {
-            return statsYear;
-        }
-        public void setStatsYear(int year) {
-            statsYear = year;
-        }
-        public int getDemandResponseCount() {
-            return demandResponseCount;
-        }
-        public void setDemandResponseCount(int count) {
-            demandResponseCount = count;
-        }
-        public int getDataCollectionCount() {
-            return dataCollectionCount;
-        }
-        public void setDataCollectionCount(int count) {
-            dataCollectionCount = count;
-        }
-        public int getSystemCount() {
-            return systemCount;
-        }
-        public void setSystemCount(int count) {
-            systemCount = count;
-        }
-        public String getMonthYearStr() {
-            return monthYearStr;
-        }
-        public void setMonthYearStr(String monthYear) {
-            monthYearStr = monthYear;
         }
     }
 }

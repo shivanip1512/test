@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
+import org.apache.log4j.Logger;
+import org.joda.time.YearMonth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.userpage.dao.UserPageDao;
@@ -41,6 +43,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.OnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.dr.model.EcobeeQueryStats;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.dr.model.RfPerformanceSettings;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -53,6 +56,7 @@ import com.google.common.collect.Ordering;
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public class HomeController {
 
+    private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
@@ -156,7 +160,6 @@ public class HomeController {
 //        boolean showEcobeeStats = (ecobee == OnOff.ON);
         boolean showEcobeeStats = true;
         model.addAttribute("showEcobeeStats", showEcobeeStats);
-        model.addAttribute("month", new DateTime().toString("MMM YYYY"));
 
         EcobeeSettings ecobeeSettings = new EcobeeSettings();
         ecobeeSettings.setCheckErrors(true);
@@ -165,9 +168,12 @@ public class HomeController {
         model.addAttribute("ecobeeSettings", ecobeeSettings);
 
         EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now());
+        int statsMonth = currentMonthStats.getMonth();
+        int statsYear = currentMonthStats.getYear();
         int currentMonthDataCollectionQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
         int currentMonthDemandResponseQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
         int currentMonthSystemQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
+        EcobeeQueryStats queryStats;
         // begin test
         if(0 == currentMonthDataCollectionQueryCount && 0 == currentMonthDemandResponseQueryCount &&
             0 == currentMonthSystemQueryCount) {
@@ -175,20 +181,27 @@ public class HomeController {
             Random rand = new Random();
             int maxTestVal = 10000;
             currentMonthDemandResponseQueryCount = rand.nextInt(maxTestVal);
-            currentMonthDataCollectionQueryCount = rand.nextInt(maxTestVal-currentMonthDemandResponseQueryCount);
-            currentMonthSystemQueryCount = rand.nextInt(maxTestVal-currentMonthDemandResponseQueryCount-
+            currentMonthDataCollectionQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount);
+            currentMonthSystemQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount -
                 currentMonthDataCollectionQueryCount);
+            YearMonth month = new YearMonth().withYear(statsYear).withMonthOfYear(statsMonth);
+            queryStats =
+                new EcobeeQueryStats(month, currentMonthDemandResponseQueryCount, currentMonthDataCollectionQueryCount, currentMonthSystemQueryCount);
+        } else {
+            queryStats = new EcobeeQueryStats(currentMonthStats);
         }
         // end test
-        model.addAttribute("currentMonthDataCollectionCount", currentMonthDataCollectionQueryCount);
-        model.addAttribute("currentMonthDemandResponseCount", currentMonthDemandResponseQueryCount);
-        model.addAttribute("currentMonthSystemCount", currentMonthSystemQueryCount);
+        model.addAttribute("ecobeeStats", queryStats);
+        model.addAttribute("deviceIssues", 3);
+        model.addAttribute("groupIssues", 6);
+        
+        log.debug(queryStats);
         return "dr/home.jsp";
     }
 
     @RequestMapping("/details")
     public String details(LiteYukonUser user) {
-
+        
         boolean showControlAreas =
                 rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CONTROL_AREAS, user);
         boolean showScenarios =
@@ -198,8 +211,8 @@ public class HomeController {
         // goes to scenarios, if they are hidden goes to programs
 
         String link = "/dr/controlArea/list";
-        if(!showControlAreas) {
-            if(showScenarios) {
+        if (!showControlAreas) {
+            if (showScenarios) {
                 link = "/dr/scenario/list";
             } else {
                 link = "/dr/program/list";
