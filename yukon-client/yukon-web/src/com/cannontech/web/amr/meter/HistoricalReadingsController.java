@@ -68,18 +68,21 @@ public class HistoricalReadingsController {
     private static final String DISPLAY = "display";
 
     @RequestMapping("view")
-    public String view(ModelMap model, HttpServletRequest request, Integer deviceId, String attribute,
-                       @RequestParam(value="div_id", required=true) String dialogId, int pointId,
-                       @RequestParam(value="sort", required=false) String sortBy,
-                       @RequestParam(value="descending", required=false, defaultValue="false") Boolean isDescending,
-                       final YukonUserContext context) throws ServletRequestBindingException {
+    public String view(ModelMap model, 
+            Integer deviceId, 
+            String attribute,
+            int pointId,
+            @RequestParam(value="sort", required=false) String sortBy,
+            @RequestParam(value="descending", required=false, defaultValue="false") Boolean isDescending,
+            final YukonUserContext context) throws ServletRequestBindingException {
+        
         //default sort
         OrderBy orderBy =  OrderBy.TIMESTAMP;   
         Order order = Order.REVERSE;
         
         if (!StringUtils.isEmpty(sortBy)) {
             //change the sort order
-            orderBy = OrderBy.valueOf(sortBy);         
+            orderBy = OrderBy.valueOf(sortBy);
             if (isDescending) {
                 order = Order.FORWARD;
             } else {
@@ -93,14 +96,13 @@ public class HistoricalReadingsController {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
-        String attributeMsg = getAttributeMessage(deviceId, attribute, pointId, context);      
+        String attributeMsg = getAttributeMessage(deviceId, attribute, pointId, context);
         String readings = accessor.getMessage(baseKey+"readings");
         String title = StringUtils.isBlank(attributeMsg) ? readings : attributeMsg + " " + readings;
         
         //setup ModelMap
         model.addAttribute("points", points);
         model.addAttribute("pointId", pointId);
-        model.addAttribute("dialogId", dialogId);
         model.addAttribute("resultLimit", accessor.getMessage(baseKey + "resultLimit", MAX_ROWS_DISPLAY));
         model.addAttribute("attribute", attribute);
         model.addAttribute(ALL, accessor.getMessage(baseKey + ALL));

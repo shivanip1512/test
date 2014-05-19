@@ -466,10 +466,12 @@ yukon.ui = (function () {
                     dialog = popup.is('[dialog]'),
                     options = {
                         width: popup.is('[data-width]') ? popup.data('width') : 'auto',
-                        height: popup.is('[data-height]') ? popup.data('height') : 'auto',
-                        title: popup.data('title')
+                        height: popup.is('[data-height]') ? popup.data('height') : 'auto'
                     },
                     buttonOptions = {};
+                
+                if (popup.is('[data-title]')) options.title = popup.data('title');
+                if (popup.is('[title]')) options.title = popup.attr('title');
                 
                 if (dialog) {
                     if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
@@ -480,6 +482,11 @@ yukon.ui = (function () {
                 
                 if (popup.is('[data-url]')) {
                     popup.load(popup.data('url'), function() {
+                        // if no title provided, try to find one hidden in the popup contents
+                        if (!options.title) {
+                            var title = popup.find('.f-popup-title');
+                            if (title[0]) options.title = title[0].value;
+                        }
                         popup.dialog(options);
                     });
                 } else {

@@ -1,5 +1,7 @@
-<%@ attribute name="device" required="true" type="com.cannontech.common.pao.YukonDevice"%>
-<%@ attribute name="attribute" required="true" type="com.cannontech.common.pao.attribute.model.Attribute"%>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
+
+<%@ attribute name="device" required="true" type="com.cannontech.common.pao.YukonDevice" %>
+<%@ attribute name="attribute" required="true" type="com.cannontech.common.pao.attribute.model.Attribute" %>
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -19,18 +21,13 @@
         <span class="wsnw">
             <c:choose>
                 <c:when test="${empty pageScope.showHistoricalReadings || pageScope.showHistoricalReadings}">
-                    <cti:uniqueIdentifier var="uid" prefix="historicalReadings_" />
-                    <cti:url var="showHistoricalReadingsUrl" value="/meter/historicalReadings/view">
-                        <cti:param name="div_id" value="${uid}" />
-                        <cti:param name="pointId" value="${pointId}" />
-                        <cti:param name="attribute" value="${attribute}" />
+                    <cti:uniqueIdentifier var="popupId" prefix="attribute-values-"/>
+                    <cti:url var="valuesUrl" value="/meter/historicalReadings/view">
+                        <cti:param name="pointId" value="${pointId}"/>
+                        <cti:param name="attribute" value="${attribute}"/>
                     </cti:url>
-                    <a class="f-ajaxPage" 
-                        data-selector="#${uid}" 
-                        href="${showHistoricalReadingsUrl}">
-                        <cti:pointValue pointId="${pointId}"/>
-                    </a>
-                    <div id="${uid}"></div>
+                    <a href="javascript:void(0);" popup="#${popupId}"><cti:pointValue pointId="${pointId}"/></a>
+                    <div id="${popupId}" data-width="500" data-height="400" data-url="${valuesUrl}"></div>
                 </c:when>
                 <c:otherwise><cti:pointValue pointId="${pointId}"/></c:otherwise>
             </c:choose>
