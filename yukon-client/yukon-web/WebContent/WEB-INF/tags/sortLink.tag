@@ -4,7 +4,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <%@ attribute name="fieldName" required="true" %>
-<%@ attribute name="baseUrl" required="true" %>
+<%@ attribute name="baseUrl" required="true" description="URL without context path." %>
 <%@ attribute name="nameKey" required="true" %>
 <%@ attribute name="styleClass"%>
 <%@ attribute name="moreAttributes"%>

@@ -1,7 +1,7 @@
 <%@ tag body-content="empty" %>
 
 <%@ attribute name="result" required="true" type="com.cannontech.common.search.result.SearchResults" %>
-<%@ attribute name="baseUrl" required="true" %>
+<%@ attribute name="baseUrl" required="true" description="URL without context path." %>
 <%@ attribute name="adjustPageCount" description="When 'true', the items per page options appear. Default: false." %>
 <%@ attribute name="overrideParams" type="java.lang.Boolean" description="Ignores params from the previous request. Set to true if they are specified in the baseUrl"%>
 

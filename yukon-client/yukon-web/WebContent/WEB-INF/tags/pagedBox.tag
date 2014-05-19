@@ -1,13 +1,13 @@
 <%@ tag trimDirectiveWhitespaces="true"%>
 
-<%@ attribute name="baseUrl" required="true"%>
+<%@ attribute name="baseUrl" required="true" description="URL without context path." %>
 <%@ attribute name="defaultFilterInput"%>
 <%@ attribute name="filterDialog"%>
 <%@ attribute name="id"%>
 <%@ attribute name="isFiltered" type="java.lang.Boolean"%>
 <%@ attribute name="pageByHundereds"%>
 <%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.result.SearchResults"%>
-<%@ attribute name="showAllUrl"%>
+<%@ attribute name="showAllUrl" description="URL with context path." %>
 <%@ attribute name="styleClass"%>
 <%@ attribute name="title" required="true"%>
 <%@ attribute name="titleLinkHtml" required="false" type="java.lang.String"%>
