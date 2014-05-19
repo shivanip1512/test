@@ -44,7 +44,7 @@ public class ReferrerPageFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) req;
 
-        boolean excludedRequest = ServletUtil.isExcludedRequest(request, excludedPages);
+        boolean excludedRequest = ServletUtil.isPathMatch(request, excludedPages);
         boolean isAjaxRequest = ServletUtil.isAjaxRequest( req );
         if (excludedRequest || isAjaxRequest) {
             chain.doFilter(req, resp);

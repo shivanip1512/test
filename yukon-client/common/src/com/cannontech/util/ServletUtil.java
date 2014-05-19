@@ -61,107 +61,107 @@ public class ServletUtil {
     private static final PathMatcher pathMatcher = new AntPathMatcher();
     private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
-	//Session attributes.
-	public static final String ATT_ERROR_MESSAGE = "ERROR_MESSAGE";
-	public static final String ATT_CONFIRM_MESSAGE = "CONFIRM_MESSAGE";
-	public static final String ATT_YUKON_USER = "YUKON_USER";
-	
-	public static final String ATT_REDIRECT = "REDIRECT";
-	public static final String ATT_REDIRECT2 = "REDIRECT2";
-	public static final String ATT_REFERRER = "REFERRER";
-	public static final String ATT_REFERRER2 = "REFERRER2";
+    //Session attributes.
+    public static final String ATT_ERROR_MESSAGE = "ERROR_MESSAGE";
+    public static final String ATT_CONFIRM_MESSAGE = "CONFIRM_MESSAGE";
+    public static final String ATT_YUKON_USER = "YUKON_USER";
+    
+    public static final String ATT_REDIRECT = "REDIRECT";
+    public static final String ATT_REDIRECT2 = "REDIRECT2";
+    public static final String ATT_REFERRER = "REFERRER";
+    public static final String ATT_REFERRER2 = "REFERRER2";
 
-	/**
+    /**
      * if used in session, this attribute should be passed a CtiNavObject
-	 */
-	public static final String NAVIGATE = "CtiNavObject";
-	
+     */
+    public static final String NAVIGATE = "CtiNavObject";
+    
     /**
      * if used in session, this attribute should be passed an ArrayList of FilterWrappers
      */
     public static final String FILTER_INVEN_LIST = "InventoryFilters";
     public static final String FILTER_WORKORDER_LIST = "WorkOrderFilters";
     
-	public static final String ATT_GRAPH_BEAN = "GRAPH_BEAN";
-	public static final String ATT_REPORT_BEAN = "REPORT_BEAN";
-	public static final String ATT_BILLING_BEAN = "BILLING_BEAN";
-	public static final String ATT_YC_BEAN = "YC_BEAN";
-	// Valid periods
-	public static final String ONEDAY = "1 Day";
-	public static final String THREEDAYS = "3 Days";
-	public static final String FIVEDAYS = "5 Days";
-	public static final String ONEWEEK = "1 Week";
-	public static final String ONEMONTH = "1 Month";	
-	public static final String FOURWEEKS = "4 Weeks";
-	public static final String FIVEWEEKS = "5 Weeks";
+    public static final String ATT_GRAPH_BEAN = "GRAPH_BEAN";
+    public static final String ATT_REPORT_BEAN = "REPORT_BEAN";
+    public static final String ATT_BILLING_BEAN = "BILLING_BEAN";
+    public static final String ATT_YC_BEAN = "YC_BEAN";
+    // Valid periods
+    public static final String ONEDAY = "1 Day";
+    public static final String THREEDAYS = "3 Days";
+    public static final String FIVEDAYS = "5 Days";
+    public static final String ONEWEEK = "1 Week";
+    public static final String ONEMONTH = "1 Month";    
+    public static final String FOURWEEKS = "4 Weeks";
+    public static final String FIVEWEEKS = "5 Weeks";
 
-	public static final String TODAY = "Today";
-	public static final String YESTERDAY = "Yesterday";
-	public static final String PREVTWODAYS= "Prev 2 Days";
-	public static final String PREVTHREEDAYS= "Prev 3 Days";
-	public static final String PREVFIVEDAYS = "Prev 5 Days";
-	public static final String PREVSEVENDAYS= "Prev 7 Days";
-	public static final String PREVONEWEEK= "Prev 1 Week";
+    public static final String TODAY = "Today";
+    public static final String YESTERDAY = "Yesterday";
+    public static final String PREVTWODAYS= "Prev 2 Days";
+    public static final String PREVTHREEDAYS= "Prev 3 Days";
+    public static final String PREVFIVEDAYS = "Prev 5 Days";
+    public static final String PREVSEVENDAYS= "Prev 7 Days";
+    public static final String PREVONEWEEK= "Prev 1 Week";
     public static final String PREVTHIRTYDAYS= "Prev 30 Days";
     public static final String EVENT = "Event";
     public static final String SESSION_INFO = "Session Info";
     
-	// if periods is modified, final ints representing the periods index need to be updated also, in Graph class
-	public static String[] historicalPeriods = 
-	{
-		ONEDAY,
-		THREEDAYS,
-		ONEWEEK,
-		FOURWEEKS,
-		FIVEWEEKS,
-		ONEMONTH,
+    // if periods is modified, final ints representing the periods index need to be updated also, in Graph class
+    public static String[] historicalPeriods = 
+    {
+        ONEDAY,
+        THREEDAYS,
+        ONEWEEK,
+        FOURWEEKS,
+        FIVEWEEKS,
+        ONEMONTH,
         EVENT
-	};
+    };
 
-	public static String[] currentPeriods =
-	{
-		TODAY,
-		PREVTWODAYS,
-		PREVTHREEDAYS,
-		//PREVFIVEDAYS,
-		PREVSEVENDAYS,
+    public static String[] currentPeriods =
+    {
+        TODAY,
+        PREVTWODAYS,
+        PREVTHREEDAYS,
+        //PREVFIVEDAYS,
+        PREVSEVENDAYS,
         EVENT
-	};
+    };
 
-		
-	// Date/Time pattern strings that will be tried when
-	// attempting to interprate starting dates
-	private static final SimpleDateFormat[] dateFormat =
-	{
-		new SimpleDateFormat("MM:dd:yyyy:HH:mm:ss"),
-		new SimpleDateFormat("MM/dd/yyyy HH:mm:ss"),
-		new SimpleDateFormat("MM/dd/yyyy HH:mm"),
-		new SimpleDateFormat("MM/dd/yy"),
-		new SimpleDateFormat("MM-dd-yy"),
-		new SimpleDateFormat("MM.dd.yy"),
-		new SimpleDateFormat("MM/dd/yyyy"),
-		new SimpleDateFormat("MM-dd-yyyy"),
-		new SimpleDateFormat("MM.dd.yyyy"),
-		new SimpleDateFormat("HH:mm:ss"),
-		new SimpleDateFormat("HH:mm")		
-	};
+        
+    // Date/Time pattern strings that will be tried when
+    // attempting to interprate starting dates
+    private static final SimpleDateFormat[] dateFormat =
+    {
+        new SimpleDateFormat("MM:dd:yyyy:HH:mm:ss"),
+        new SimpleDateFormat("MM/dd/yyyy HH:mm:ss"),
+        new SimpleDateFormat("MM/dd/yyyy HH:mm"),
+        new SimpleDateFormat("MM/dd/yy"),
+        new SimpleDateFormat("MM-dd-yy"),
+        new SimpleDateFormat("MM.dd.yy"),
+        new SimpleDateFormat("MM/dd/yyyy"),
+        new SimpleDateFormat("MM-dd-yyyy"),
+        new SimpleDateFormat("MM.dd.yyyy"),
+        new SimpleDateFormat("HH:mm:ss"),
+        new SimpleDateFormat("HH:mm")        
+    };
 
-	//Ever seen this before? hehe
-	//this static initializer sets all the simpledateformat to lenient
-	static
-	{
-		for( int i = 0; i < dateFormat.length; i++ ) {
+    //Ever seen this before? hehe
+    //this static initializer sets all the simpledateformat to lenient
+    static
+    {
+        for( int i = 0; i < dateFormat.length; i++ ) {
             dateFormat[i].setLenient(true);
         }
-	}
-	
-	// Values of the "format" property of the <cti:getProperty> tag
-	public static final String FORMAT_UPPER = "upper";
-	public static final String FORMAT_LOWER = "lower";
-	public static final String FORMAT_CAPITAL = "capital";
-	public static final String FORMAT_ALL_CAPITAL = "all_capital";
-	public static final String FORMAT_ADD_ARTICLE = "add_article";
-	
+    }
+    
+    // Values of the "format" property of the <cti:getProperty> tag
+    public static final String FORMAT_UPPER = "upper";
+    public static final String FORMAT_LOWER = "lower";
+    public static final String FORMAT_CAPITAL = "capital";
+    public static final String FORMAT_ALL_CAPITAL = "all_capital";
+    public static final String FORMAT_ADD_ARTICLE = "add_article";
+    
 /**
  * Creation date: (6/7/2001 3:09:18 PM)
  * @return java.lang.Object[][]
@@ -169,125 +169,125 @@ public class ServletUtil {
  * @param query java.lang.String
  */
 public static Object[][] executeSQL(String dbAlias, String query, Class<? extends Object>[] types) {
-	java.sql.Connection connection = null;
-	java.sql.Statement statement = null;
-	java.sql.ResultSet resultSet = null;
-	Object[][] data = null;
-	
-	try
-	{
-		connection = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
-		statement = connection.createStatement();
-		resultSet = statement.executeQuery( query );
-		Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
-		int columnCount = 0;		
-		ResultSetMetaData metaData = resultSet.getMetaData();		
-		columnCount = metaData.getColumnCount();
-		
-		while( resultSet.next() )
-		{
-			Vector<Object> rowData = new Vector<Object>();
-			boolean nonNullRow = false;
-						
-			for( int i = 1; i <= columnCount; i++ )
-			{
-				Class<? extends Object> thisColumn = types[i-1];
-				Object o;
-				
-				if( thisColumn == Integer.class )
-				{
-					o = new Integer( resultSet.getInt(i) );
-				}
-				else
-				if( thisColumn == Double.class )
-				{
-					o = new Double( resultSet.getDouble(i) );
-				}
-				else
-				if( thisColumn == Float.class )
-				{
-					o = new Float( resultSet.getFloat(i) );
-				}
-				else
-				if( thisColumn == java.util.Date.class )
-				{
-					java.sql.Timestamp t = resultSet.getTimestamp(i);
+    java.sql.Connection connection = null;
+    java.sql.Statement statement = null;
+    java.sql.ResultSet resultSet = null;
+    Object[][] data = null;
+    
+    try
+    {
+        connection = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
+        statement = connection.createStatement();
+        resultSet = statement.executeQuery( query );
+        Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
+        int columnCount = 0;        
+        ResultSetMetaData metaData = resultSet.getMetaData();        
+        columnCount = metaData.getColumnCount();
+        
+        while( resultSet.next() )
+        {
+            Vector<Object> rowData = new Vector<Object>();
+            boolean nonNullRow = false;
+                        
+            for( int i = 1; i <= columnCount; i++ )
+            {
+                Class<? extends Object> thisColumn = types[i-1];
+                Object o;
+                
+                if( thisColumn == Integer.class )
+                {
+                    o = new Integer( resultSet.getInt(i) );
+                }
+                else
+                if( thisColumn == Double.class )
+                {
+                    o = new Double( resultSet.getDouble(i) );
+                }
+                else
+                if( thisColumn == Float.class )
+                {
+                    o = new Float( resultSet.getFloat(i) );
+                }
+                else
+                if( thisColumn == java.util.Date.class )
+                {
+                    java.sql.Timestamp t = resultSet.getTimestamp(i);
 
-					if( t != null ) {
+                    if( t != null ) {
                         o = new java.util.Date( t.getTime() );
                     } else {
                         o = null;
                     }
-					
-				}
-				else
-				if( thisColumn == String.class )
-				{
-					o = resultSet.getString(i);
-				}
-				else
-				{
+                    
+                }
+                else
+                if( thisColumn == String.class )
+                {
+                    o = resultSet.getString(i);
+                }
+                else
+                {
                     o = SqlUtils.getResultObject(resultSet, i);                    
-				}
+                }
 
-				if( o != null )
+                if( o != null )
                  {
                     nonNullRow = true; // at least 1 value in the row is not null
                 }
-						
-				rowData.addElement( o );							
-			}
-											
-			if( rowData.size() > 0 && nonNullRow ) {
+                        
+                rowData.addElement( o );                            
+            }
+                                            
+            if( rowData.size() > 0 && nonNullRow ) {
                 rows.addElement( rowData );
             }
-		}
-		
+        }
+        
 
-		data = new Object[ rows.size() ][columnCount];
-		for( int i = 0; i < rows.size(); i++ )
-		{
-			Vector<Object> temp = rows.elementAt(i);
-			data[i] = temp.toArray();//temp.copyInto( data[i] );
-		}
-	}
-	catch( java.sql.SQLException e )
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( resultSet != null ) {
+        data = new Object[ rows.size() ][columnCount];
+        for( int i = 0; i < rows.size(); i++ )
+        {
+            Vector<Object> temp = rows.elementAt(i);
+            data[i] = temp.toArray();//temp.copyInto( data[i] );
+        }
+    }
+    catch( java.sql.SQLException e )
+    {
+        CTILogger.error( e.getMessage(), e );
+    }
+    finally
+    {
+        try
+        {
+            if( resultSet != null ) {
                 resultSet.close();
             }
-		}
-		catch( java.sql.SQLException e )
-		{}
+        }
+        catch( java.sql.SQLException e )
+        {}
 
-		try
-		{
-			if( statement != null ) {
+        try
+        {
+            if( statement != null ) {
                 statement.close();
             }
-		}
-		catch( java.sql.SQLException e )
-		{}
+        }
+        catch( java.sql.SQLException e )
+        {}
 
-		try
-		{
-			if( connection != null ) {
+        try
+        {
+            if( connection != null ) {
                 connection.close();
             }
-		}
-		catch( java.sql.SQLException e )
-		{
-			// didnt work
-		}
-	}
-	
-	return data;
+        }
+        catch( java.sql.SQLException e )
+        {
+            // didnt work
+        }
+    }
+    
+    return data;
 }
 
 /**
@@ -301,15 +301,15 @@ public static Object[][] executeSQL(String dbAlias, String query, Class<? extend
 @Deprecated
 public static Date getDate(int dayOffset) {
 
-	GregorianCalendar cal = new GregorianCalendar();
-	cal.setTime(new Date());
-	
-	cal.add( Calendar.DAY_OF_YEAR, dayOffset ); 
- 	cal.set( Calendar.HOUR_OF_DAY, 0 );
-	cal.set( Calendar.MINUTE, 0 );
-	cal.set( Calendar.SECOND, 0 );
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.setTime(new Date());
+    
+    cal.add( Calendar.DAY_OF_YEAR, dayOffset ); 
+     cal.set( Calendar.HOUR_OF_DAY, 0 );
+    cal.set( Calendar.MINUTE, 0 );
+    cal.set( Calendar.SECOND, 0 );
 
-	return cal.getTime();
+    return cal.getTime();
 }
 /**
  * Insert the method's description here.
@@ -319,75 +319,75 @@ public static Date getDate(int dayOffset) {
  * @param period java.lang.String
  */
 public static Date getEndingDateOfInterval(Date startingDate, String period) {
-	
-	int numDays;
-	period = period.trim();
-		
-	if( period.equalsIgnoreCase(ONEDAY) 		||
-		period.equalsIgnoreCase(TODAY)			||		
-		period.equalsIgnoreCase(PREVTWODAYS) 	||
-		period.equalsIgnoreCase(PREVTHREEDAYS) 	||
-		period.equalsIgnoreCase(PREVFIVEDAYS) 	||
-		period.equalsIgnoreCase(PREVSEVENDAYS) 	||
-		period.equalsIgnoreCase(PREVONEWEEK)    ||
+    
+    int numDays;
+    period = period.trim();
+        
+    if( period.equalsIgnoreCase(ONEDAY)         ||
+        period.equalsIgnoreCase(TODAY)            ||        
+        period.equalsIgnoreCase(PREVTWODAYS)     ||
+        period.equalsIgnoreCase(PREVTHREEDAYS)     ||
+        period.equalsIgnoreCase(PREVFIVEDAYS)     ||
+        period.equalsIgnoreCase(PREVSEVENDAYS)     ||
+        period.equalsIgnoreCase(PREVONEWEEK)    ||
         period.equalsIgnoreCase(PREVTHIRTYDAYS) )
-	{
-		numDays = 1;
-	}
-	else
-	if( period.equalsIgnoreCase(YESTERDAY) )
-	{
-		numDays = 0;
-	}
-	else
-	if( period.equalsIgnoreCase(THREEDAYS) )
-	{
-		numDays = 3;
-	}
-	else
-	if( period.equalsIgnoreCase(FIVEDAYS) )
-	{
-		numDays = 5;
-	}
-	else
-	if( period.equalsIgnoreCase(ONEWEEK) )
-	{
-		numDays = 7;
-	}
-	else
-	if( period.equalsIgnoreCase(FOURWEEKS) )
-	{
-		numDays = 28;
-	}
-	else
-	if( period.equalsIgnoreCase(FIVEWEEKS) )
-	{
-		numDays = 35;
-	}
-	else
-	if( period.equalsIgnoreCase(ONEMONTH) )
-	{
-		GregorianCalendar c = new GregorianCalendar();
-		c.setTime(startingDate);
-		c.add( Calendar.MONTH, 1 );
+    {
+        numDays = 1;
+    }
+    else
+    if( period.equalsIgnoreCase(YESTERDAY) )
+    {
+        numDays = 0;
+    }
+    else
+    if( period.equalsIgnoreCase(THREEDAYS) )
+    {
+        numDays = 3;
+    }
+    else
+    if( period.equalsIgnoreCase(FIVEDAYS) )
+    {
+        numDays = 5;
+    }
+    else
+    if( period.equalsIgnoreCase(ONEWEEK) )
+    {
+        numDays = 7;
+    }
+    else
+    if( period.equalsIgnoreCase(FOURWEEKS) )
+    {
+        numDays = 28;
+    }
+    else
+    if( period.equalsIgnoreCase(FIVEWEEKS) )
+    {
+        numDays = 35;
+    }
+    else
+    if( period.equalsIgnoreCase(ONEMONTH) )
+    {
+        GregorianCalendar c = new GregorianCalendar();
+        c.setTime(startingDate);
+        c.add( Calendar.MONTH, 1 );
 
-		Date endOfInterval = c.getTime();
+        Date endOfInterval = c.getTime();
 
-		numDays = TimeUtil.absDifferenceInDays(startingDate, endOfInterval);		
-	}
-	else
+        numDays = TimeUtil.absDifferenceInDays(startingDate, endOfInterval);        
+    }
+    else
     if( period.equalsIgnoreCase(EVENT) )
     {
         return startingDate;
-	} else {
+    } else {
         return null;
     }
-		
-	GregorianCalendar cal = new GregorianCalendar();
-	cal.setTime(startingDate);
-	cal.add( Calendar.DAY_OF_YEAR, numDays );
+        
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.setTime(startingDate);
+    cal.add( Calendar.DAY_OF_YEAR, numDays );
 
-	return cal.getTime();
+    return cal.getTime();
 }
 
 
@@ -398,14 +398,14 @@ public static Date getEndingDateOfInterval(Date startingDate, String period) {
  */
 public static synchronized String getHTMLColor( Color c )
 {
-	String r = Integer.toHexString(c.getRed());
-	String g = Integer.toHexString(c.getGreen());
-	String b = Integer.toHexString(c.getBlue());
+    String r = Integer.toHexString(c.getRed());
+    String g = Integer.toHexString(c.getGreen());
+    String b = Integer.toHexString(c.getBlue());
 
-	return
-			(r.length() <= 1 ? "0"+r : r) + 
-			(g.length() <= 1 ? "0"+g : g) +
-			(b.length() <= 1 ? "0"+b : b);
+    return
+            (r.length() <= 1 ? "0"+r : r) + 
+            (g.length() <= 1 ? "0"+g : g) +
+            (b.length() <= 1 ? "0"+b : b);
 }
 
 /**
@@ -417,44 +417,44 @@ public static synchronized String getHTMLColor( Color c )
  */
 public static String getPeriodFromDates(Date start, Date end) {
 
-	long startTime = start.getTime();
-	long endTime = end.getTime();
+    long startTime = start.getTime();
+    long endTime = end.getTime();
 
-	//TimeUtil.differenceInDays NOT used becuase it returns and abs value
-	int numDays = (int) Math.round(((double) (endTime-startTime)) / (double) 86400000 );
+    //TimeUtil.differenceInDays NOT used becuase it returns and abs value
+    int numDays = (int) Math.round(((double) (endTime-startTime)) / (double) 86400000 );
 
-	//figure out the closest/most reasonable period we have to numDays
+    //figure out the closest/most reasonable period we have to numDays
     if( numDays <= -29 ) {
         return PREVTHIRTYDAYS;
     } else
-	if( numDays <= -6 ) {
+    if( numDays <= -6 ) {
         return PREVSEVENDAYS;
     } else
-	if( numDays <= -4) {
+    if( numDays <= -4) {
         return PREVFIVEDAYS;
     } else
-	if( numDays <= -2) {
+    if( numDays <= -2) {
         return PREVTHREEDAYS;
     } else
-	if( numDays <= -1) {
+    if( numDays <= -1) {
         return PREVTWODAYS;
     } else
-	if( numDays <= 1 ) {
-        return ONEDAY;	//or return TODAY;
+    if( numDays <= 1 ) {
+        return ONEDAY;    //or return TODAY;
     } else
-	if( numDays <= 3 ) {
+    if( numDays <= 3 ) {
         return THREEDAYS;
     } else
-	if( numDays <= 5 ) {
+    if( numDays <= 5 ) {
         return FIVEDAYS;
     } else
-	if( numDays <= 7 ) {
+    if( numDays <= 7 ) {
         return ONEWEEK;
     } else
-	if( numDays <=28 ) {
+    if( numDays <=28 ) {
         return FOURWEEKS;
     } else
-	if( numDays <= 35 ) {
+    if( numDays <= 35 ) {
         return FIVEWEEKS;
     } else {
         return ONEDAY;
@@ -468,35 +468,35 @@ public static String getPeriodFromDates(Date start, Date end) {
  * @param period java.lang.String
  */
 public static java.util.Date getStartingDateOfInterval(Date startingDate, String period) {
-	
-	int numDays;
-	period = period.trim();
-	
-	if( period.equalsIgnoreCase(TODAY) )
-	{
-		return startingDate;
-	}
-	else
-	if( period.equalsIgnoreCase(PREVTWODAYS) ||
-		period.equalsIgnoreCase(YESTERDAY) )
-	{
-		numDays = -1;
-	}
-	else
-	if( period.equalsIgnoreCase(PREVTHREEDAYS) )
-	{
-		numDays = -2;	//we want the previous three days including today so we really only need 2 previous ones.
-	}
-	else
-	if( period.equalsIgnoreCase(PREVFIVEDAYS) )
-	{
-		numDays = -4;
-	}
-	else
-	if( period.equalsIgnoreCase(PREVSEVENDAYS)  || period.equalsIgnoreCase(PREVONEWEEK))
-	{
-		numDays = -6;
-	}
+    
+    int numDays;
+    period = period.trim();
+    
+    if( period.equalsIgnoreCase(TODAY) )
+    {
+        return startingDate;
+    }
+    else
+    if( period.equalsIgnoreCase(PREVTWODAYS) ||
+        period.equalsIgnoreCase(YESTERDAY) )
+    {
+        numDays = -1;
+    }
+    else
+    if( period.equalsIgnoreCase(PREVTHREEDAYS) )
+    {
+        numDays = -2;    //we want the previous three days including today so we really only need 2 previous ones.
+    }
+    else
+    if( period.equalsIgnoreCase(PREVFIVEDAYS) )
+    {
+        numDays = -4;
+    }
+    else
+    if( period.equalsIgnoreCase(PREVSEVENDAYS)  || period.equalsIgnoreCase(PREVONEWEEK))
+    {
+        numDays = -6;
+    }
     else
     if( period.equalsIgnoreCase(PREVTHIRTYDAYS) )
     {
@@ -509,12 +509,12 @@ public static java.util.Date getStartingDateOfInterval(Date startingDate, String
     } else {
         return startingDate;
     }
-		
-	GregorianCalendar cal = new GregorianCalendar();
-	cal.setTime(startingDate);
-	cal.add( Calendar.DAY_OF_YEAR, numDays );
+        
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.setTime(startingDate);
+    cal.add( Calendar.DAY_OF_YEAR, numDays );
 
-	return cal.getTime();
+    return cal.getTime();
 }
 /**
  * Returns a Date that represents the beginning of today.
@@ -524,7 +524,7 @@ public static java.util.Date getStartingDateOfInterval(Date startingDate, String
  */
 @Deprecated
 public static java.util.Date getToday() {
-	return getToday(TimeZone.getDefault());
+    return getToday(TimeZone.getDefault());
 }
 
 /**
@@ -535,13 +535,13 @@ public static java.util.Date getToday() {
  */
 @Deprecated
 public static Date getToday(TimeZone tz) {
-	GregorianCalendar cal = new GregorianCalendar();
-	cal.setTimeZone(tz);
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.setTimeZone(tz);
 
-	cal.set(Calendar.HOUR_OF_DAY, 0);
-	cal.set(Calendar.MINUTE, 0);
-	cal.set(Calendar.SECOND, 0);
-	return cal.getTime();
+    cal.set(Calendar.HOUR_OF_DAY, 0);
+    cal.set(Calendar.MINUTE, 0);
+    cal.set(Calendar.SECOND, 0);
+    return cal.getTime();
 }
 /**
  * Returns a Date that represents the beginning of tomorrow.
@@ -551,8 +551,8 @@ public static Date getToday(TimeZone tz) {
  */
 @Deprecated
 public static java.util.Date getTomorrow() {
-	return getTomorrow(TimeZone.getDefault());
-	
+    return getTomorrow(TimeZone.getDefault());
+    
 }
 
 /**
@@ -563,15 +563,15 @@ public static java.util.Date getTomorrow() {
  */
 @Deprecated
 public static Date getTomorrow(TimeZone tz) {
-	GregorianCalendar cal = new GregorianCalendar();
-	cal.setTimeZone(tz);
-	cal.setTime(new Date());
-	
-	cal.add( Calendar.DAY_OF_YEAR, 1 );
-	cal.set( Calendar.HOUR_OF_DAY, 0 );
-	cal.set( Calendar.MINUTE, 0 );
-	cal.set( Calendar.SECOND, 0 );
-	return cal.getTime();
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.setTimeZone(tz);
+    cal.setTime(new Date());
+    
+    cal.add( Calendar.DAY_OF_YEAR, 1 );
+    cal.set( Calendar.HOUR_OF_DAY, 0 );
+    cal.set( Calendar.MINUTE, 0 );
+    cal.set( Calendar.SECOND, 0 );
+    return cal.getTime();
 }
 
 /**
@@ -582,7 +582,7 @@ public static Date getTomorrow(TimeZone tz) {
  */
 @Deprecated
 public static java.util.Date getYesterday() {
-	return getYesterday(TimeZone.getDefault());
+    return getYesterday(TimeZone.getDefault());
 }
 
 /**
@@ -593,16 +593,16 @@ public static java.util.Date getYesterday() {
  */
 @Deprecated
 public static Date getYesterday(TimeZone tz) {
-	GregorianCalendar cal = new GregorianCalendar();
-	cal.setTimeZone(tz);
-	cal.setTime(new Date());
-	
-	cal.add( Calendar.DAY_OF_YEAR, -1 ); 
-	cal.set( Calendar.HOUR_OF_DAY, 0 );
-	cal.set( Calendar.MINUTE, 0 );
-	cal.set( Calendar.SECOND, 0 );
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.setTimeZone(tz);
+    cal.setTime(new Date());
+    
+    cal.add( Calendar.DAY_OF_YEAR, -1 ); 
+    cal.set( Calendar.HOUR_OF_DAY, 0 );
+    cal.set( Calendar.MINUTE, 0 );
+    cal.set( Calendar.SECOND, 0 );
 
-	return cal.getTime();
+    return cal.getTime();
 }
 /**
  * Create a Date object using the given String and TimeZone
@@ -611,7 +611,7 @@ public static Date getYesterday(TimeZone tz) {
  * @param str java.lang.String
  */
 public static synchronized java.util.Date parseDateStringLiberally(String dateStr) {
-	return parseDateStringLiberally(dateStr, TimeZone.getDefault());
+    return parseDateStringLiberally(dateStr, TimeZone.getDefault());
 }
 
 /**
@@ -622,34 +622,34 @@ public static synchronized java.util.Date parseDateStringLiberally(String dateSt
  * @return Date
  */
 public static synchronized Date parseDateStringLiberally(String dateStr, TimeZone tz) {
-	java.util.Date retVal = null;
-	
-	for( int i = 0; i < dateFormat.length; i++ )
-	{
-		try
-		{
-			DateFormat df = dateFormat[i];
-			df.setTimeZone(tz);
-			retVal = df.parse(dateStr);
-			break;
-		}
-		catch( java.text.ParseException pe )
-		{
-		}
-	}
+    java.util.Date retVal = null;
+    
+    for( int i = 0; i < dateFormat.length; i++ )
+    {
+        try
+        {
+            DateFormat df = dateFormat[i];
+            df.setTimeZone(tz);
+            retVal = df.parse(dateStr);
+            break;
+        }
+        catch( java.text.ParseException pe )
+        {
+        }
+    }
 
-	return retVal;	
+    return retVal;    
 }
 
-	/**
-	 * Used to return NULL for a param if it is not found OR if it is not set
-	 * @param req_
-	 * @param name_
-	 * @return
-	 */
-	public synchronized static String getParameter( HttpServletRequest req_, String name_ ) {
+    /**
+     * Used to return NULL for a param if it is not found OR if it is not set
+     * @param req_
+     * @param name_
+     * @return
+     */
+    public synchronized static String getParameter( HttpServletRequest req_, String name_ ) {
         return getParameter(req_, name_, null);
-	}
+    }
 
     /**
      * Convenience method to get a servlet parameter.
@@ -669,7 +669,7 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      * @param word String
      */
     public static String capitalize(String word) {
-    	return word.substring(0,1).toUpperCase().concat( word.substring(1).toLowerCase() );
+        return word.substring(0,1).toUpperCase().concat( word.substring(1).toLowerCase() );
     }
         
     /**
@@ -678,102 +678,102 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      * @param phrase String
      */
     public static String capitalizeAll(String phrase) {
-    	StringTokenizer st = new StringTokenizer( phrase, " ", true );
-    	StringBuffer sb = new StringBuffer();
-    	while (st.hasMoreTokens()) {
-    		String word = st.nextToken();
-    		if (word.equals(" ")) {
+        StringTokenizer st = new StringTokenizer( phrase, " ", true );
+        StringBuffer sb = new StringBuffer();
+        while (st.hasMoreTokens()) {
+            String word = st.nextToken();
+            if (word.equals(" ")) {
                 sb.append( word );
             } else {
                 sb.append( capitalize(word) );
             }
-    	}
-    	
-    	return sb.toString();
+        }
+        
+        return sb.toString();
     }
-	
-	/**
-	 * Add an indefinite article in front of a word
-	 * @param word
-	 * @return
-	 */
-	public static String addArticle(String word) {
-		if (word.charAt(0) == 'a' || word.charAt(0) == 'A'
-			|| word.charAt(0) == 'e' || word.charAt(0) == 'E'
-			|| word.charAt(0) == 'i' || word.charAt(0) == 'I'
-			|| word.charAt(0) == 'o' || word.charAt(0) == 'O'
-			|| word.charAt(0) == 'u' || word.charAt(0) == 'U') {
+    
+    /**
+     * Add an indefinite article in front of a word
+     * @param word
+     * @return
+     */
+    public static String addArticle(String word) {
+        if (word.charAt(0) == 'a' || word.charAt(0) == 'A'
+            || word.charAt(0) == 'e' || word.charAt(0) == 'E'
+            || word.charAt(0) == 'i' || word.charAt(0) == 'I'
+            || word.charAt(0) == 'o' || word.charAt(0) == 'O'
+            || word.charAt(0) == 'u' || word.charAt(0) == 'U') {
             return "an " + word;
         }
 
-		return "a " + word;
-	}
+        return "a " + word;
+    }
 
-	/**
-	 * Returns the current Yukon user object found in the session.
-	 *
-	 */
-	public static LiteYukonUser getYukonUser( HttpSession session ) {
-	    if (session == null) {
+    /**
+     * Returns the current Yukon user object found in the session.
+     *
+     */
+    public static LiteYukonUser getYukonUser( HttpSession session ) {
+        if (session == null) {
             return null;
         }
-		return (LiteYukonUser) session.getAttribute(ATT_YUKON_USER);
-	}
+        return (LiteYukonUser) session.getAttribute(ATT_YUKON_USER);
+    }
 
-	/**
-	 * Returns the current Yukon user object found in the request.
-	 * @throws NotLoggedInException if no session exists
-	 */
-	public static LiteYukonUser getYukonUser(ServletRequest request) throws NotLoggedInException
-	{
-	    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    /**
+     * Returns the current Yukon user object found in the request.
+     * @throws NotLoggedInException if no session exists
+     */
+    public static LiteYukonUser getYukonUser(ServletRequest request) throws NotLoggedInException
+    {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpSession session = httpRequest.getSession(false);
         if (session == null) {
             throw new NotLoggedInException();
         }
-	    LiteYukonUser yukonUser = getYukonUser(session);
+        LiteYukonUser yukonUser = getYukonUser(session);
         if (yukonUser == null) {
             throw new NotLoggedInException();
         }
         return yukonUser;
-	}
-	
+    }
+    
 
-	/**
-	 * Returns the fully qualified URL that was requested
-	 *
-	 */
-	public static String getFullURL( HttpServletRequest req )
-	{
-	    if( req == null ) {
+    /**
+     * Returns the fully qualified URL that was requested
+     *
+     */
+    public static String getFullURL( HttpServletRequest req )
+    {
+        if( req == null ) {
             return "";
         }
-	    
-	    String q = "";
-	    if( req.getQueryString() != null ) {
+        
+        String q = "";
+        if( req.getQueryString() != null ) {
             q = "?" + req.getQueryString();
         }
-	    
-	    return req.getRequestURI() + q;		
-	}
-	
-	/**
-	 * Returns the URL for the "host". Could be useful
-	 * for building links that go into emails.
-	 *
-	 */
-	public static URL getHostURL(HttpServletRequest req) {
+        
+        return req.getRequestURI() + q;        
+    }
+    
+    /**
+     * Returns the URL for the "host". Could be useful
+     * for building links that go into emails.
+     *
+     */
+    public static URL getHostURL(HttpServletRequest req) {
         try {
             StringBuffer hostString = req.getRequestURL();
             URL fullHostUrl = new URL(hostString.toString());
-            URL hostUrl = new URL(fullHostUrl.getProtocol(), fullHostUrl.getHost(), fullHostUrl.getPort(), "");	
+            URL hostUrl = new URL(fullHostUrl.getProtocol(), fullHostUrl.getHost(), fullHostUrl.getPort(), "");    
             return hostUrl;
         } catch (MalformedURLException e) {
             throw new RuntimeException("Unable to build host URL", e);
         }
-	}
+    }
     
-	
+    
     public static String createSafeUrl(ServletRequest request, String url) {
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest)request;
@@ -957,7 +957,7 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      * @param newValue the value of the new parameter
      * @return a full path and query string
      */
-	public static String tweakRequestURI(HttpServletRequest request, String newParameter, String newValue) {
+    public static String tweakRequestURI(HttpServletRequest request, String newParameter, String newValue) {
         StringBuffer result = new StringBuffer();
         result.append(request.getRequestURI());
         result.append("?");
@@ -1126,7 +1126,7 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
         return sw.toString();
     }
 
-    public static boolean isExcludedRequest(HttpServletRequest request, List<String> patterns) {
+    public static boolean isPathMatch(HttpServletRequest request, List<String> patterns) {
         String pathWithinApplication = urlPathHelper.getPathWithinApplication(request);
 
         for (String pattern : patterns) {
@@ -1137,17 +1137,17 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
         return false;
     }
 
-	public static boolean isAjaxRequest(ServletRequest req) {
-		if (req instanceof HttpServletRequest) {
-			HttpServletRequest httpReq = (HttpServletRequest) req;
-			String header = httpReq.getHeader("X-Requested-With");
-			if (header != null) {
-				return header.startsWith("XMLHttpRequest");
-			}
-		}
-		return false;
-	}
-	
+    public static boolean isAjaxRequest(ServletRequest req) {
+        if (req instanceof HttpServletRequest) {
+            HttpServletRequest httpReq = (HttpServletRequest) req;
+            String header = httpReq.getHeader("X-Requested-With");
+            if (header != null) {
+                return header.startsWith("XMLHttpRequest");
+            }
+        }
+        return false;
+    }
+    
     public static void deleteAllCookies(final HttpServletRequest request, final HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {

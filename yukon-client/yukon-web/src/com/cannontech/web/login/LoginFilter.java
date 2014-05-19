@@ -100,7 +100,7 @@ public class LoginFilter implements Filter {
         servletRequest.setCharacterEncoding("UTF-8");
 
         boolean isAjaxRequest = ServletUtil.isAjaxRequest(servletRequest);
-        boolean excludedRequest = ServletUtil.isExcludedRequest(request, excludedFilePaths);
+        boolean excludedRequest = ServletUtil.isPathMatch(request, excludedFilePaths);
 
         // For excluded requests, try to attach the userContext, but they may not be logged in.
         if (excludedRequest) {
@@ -187,7 +187,7 @@ public class LoginFilter implements Filter {
      */
     private void doLoginRedirect(boolean isAjaxRequest, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        boolean noRedirect = ServletUtil.isExcludedRequest(request, excludedRedirectedPaths);
+        boolean noRedirect = ServletUtil.isPathMatch(request, excludedRedirectedPaths);
 
         if (isAjaxRequest || noRedirect) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Authenticated!");

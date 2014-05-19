@@ -9,30 +9,48 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.util.UrlPathHelper;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.navigation.CtiNavObject;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 public class FacesFilter implements Filter {
+    
     private final Logger log = YukonLogManager.getLogger(getClass());
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
     private final static ImmutableList<String> excludedFilePaths = 
         ImmutableList.of("/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/prototype.PrototypeResourceLoader/*",
                          "/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/calendar.HtmlCalendarRenderer/popcalendar.js");
+    
+    private final static String capcontrolFacesPath = "/editor/cbcBase.jsf*";
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
+        HttpSession session = request.getSession();
 
-        boolean excludedRequest = ServletUtil.isExcludedRequest(request, excludedFilePaths);
+        // Block any undesirable resources
+        boolean excludedRequest = ServletUtil.isPathMatch(request, excludedFilePaths);
         if (excludedRequest) {
             log.debug("Filtering out unneeded resource: " + urlPathHelper.getPathWithinApplication(request));
             return;
+        }
+        
+        // Add navigation bean to session for capcontrol jsf if not present
+        if (ServletUtil.isPathMatch(request, Lists.newArrayList(capcontrolFacesPath))) {
+            CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
+            if (nav == null) {
+                nav = new CtiNavObject();
+                session.setAttribute(ServletUtils.NAVIGATE, nav);
+            }
         }
 
         chain.doFilter(req, resp);
