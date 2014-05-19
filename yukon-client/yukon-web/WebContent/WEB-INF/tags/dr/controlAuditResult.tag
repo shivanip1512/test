@@ -54,9 +54,8 @@
         </tbody>
     </table>
 </div>
-<cti:url value="page" var="baseUrl">
-    <c:if test="${empty param.type}">
-        <cti:param name="type" value="${type}"/>
-    </c:if>
-</cti:url>
+<c:set var="baseUrl" value="page" />
+<c:if test="${empty param.type}">
+    <c:set var="baseUrl" value="${baseUrl}?type=${type}" />
+</c:if>
 <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
