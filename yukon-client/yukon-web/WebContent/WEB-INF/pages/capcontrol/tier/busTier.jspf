@@ -54,6 +54,9 @@
                 <td>
                     <capTags:warningImg paoId="${subbusId}" type="SUBBUS"/>
                     <capTags:verificationImg paoId="${subbusId}" type="SUBBUS"/>
+                    <a href="${dualBusLink}" class="tierIconLink">
+                        <capTags:dualBusImg paoId="${subbusId}" type="SUBBUS"/>
+                    </a>
                 </td>
                 <%-- Name --%>
                 <td id="anc_${subbusId}"  class="wsnw">
@@ -66,9 +69,6 @@
                         ${fn:escapeXml(viewableSubBus.subBus.ccName)}
                     </a>
 
-                    <a href="${dualBusLink}" class="tierIconLink">
-                        <capTags:dualBusImg paoId="${subbusId}" type="SUBBUS"/>
-                    </a>
                 </td>
 
                 <%-- State --%>

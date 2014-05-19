@@ -1,8 +1,13 @@
 package com.cannontech.web.updater.capcontrol;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.user.YukonUserContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FeederFormattingService extends AbstractFormattingService<Feeder> {
 
@@ -131,9 +136,18 @@ public class FeederFormattingService extends AbstractFormattingService<Feeder> {
 
     @Override
     protected String getDualBus(final Feeder latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
-        if (latestValue.getOriginalParentId() > 0) {
-            return "true";
+
+        Map<String,Object> data = new HashMap<String,Object>();
+
+        data.put("paoId", latestValue.getCcId());
+        //This is how we determine if a feeder is moved (by dual bus) in CapControlWebUtilsServiceImpl.createViewableFeeder
+        data.put("dualBus", latestValue.getOriginalParentId() > 0);
+
+        try {
+            return new ObjectMapper().writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            //Writing this simple object to JSON should not throw an exception.
+            throw new RuntimeException(e);
         }
-        return "false";
     }
 }

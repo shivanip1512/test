@@ -51,11 +51,11 @@ function updateDualBusImage(id) {
     };
 }
 
-function feederDualBus(id) {
+function feederDualBus() {
     return function (data) {
-        var icon = jQuery('[data-dual-bus-feeder='+ id + ']');
-        dualBus = data.value;
-        if (dualBus === 'true') {
+        var feederInfo = JSON.parse(data.value),
+            icon = jQuery('[data-dual-bus-feeder='+ feederInfo.paoId + ']');
+        if (feederInfo.dualBus) {
             icon.show();
         } else {
             icon.hide();
