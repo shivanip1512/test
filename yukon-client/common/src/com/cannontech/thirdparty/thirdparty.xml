@@ -25,6 +25,7 @@
     <bean id="zigbeeControlEventDao" class="com.cannontech.thirdparty.digi.dao.impl.ZigbeeControlEventDaoImpl"/>
     
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <qualifier value="digi"/>
         <constructor-arg>
             <bean class="com.cannontech.thirdparty.digi.DigiClientHttpRequestFactory"/>
         </constructor-arg>

@@ -3,11 +3,10 @@ package com.cannontech.cbc.cyme.impl;
 import java.util.List;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.log4j.Logger;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.client.RestOperations;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
@@ -23,11 +22,9 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 
 public class CymeWebServiceImpl implements CymeWebService {
-    
-    private RestOperations cymeRestTemplate;    /*Autowired by Setter*/
-    @Autowired private ConfigurationSource configurationSource;
-    
-    private String BASE_CYME_URL;
+    @Autowired private @Qualifier("cyme") RestOperations cymeRestTemplate;
+
+    private final String baseCymeUrl;
     private static final String SIMULATION_URL_PART = "/CYMDIST/SimulationsService.svc/rest/Simulation";
     private static final String RUN_STUDY_URL_END = "/Run/Study/";
     private static final String CHECK_REPORT_STATUS_URL_END = "/Status/";
@@ -45,17 +42,18 @@ public class CymeWebServiceImpl implements CymeWebService {
         cymeDcProperties.put(cymeDtoNamespace.getPrefix(), cymeDtoNamespace.getURI());
     }
 
-    @PostConstruct
-    public void initialize() {
-        BASE_CYME_URL = configurationSource.getString(MasterConfigStringKeysEnum.CYME_DIST_BASE_URL, "http://localhost:8866");
-        log.info(BASE_CYME_URL);
+    @Autowired
+    public CymeWebServiceImpl(ConfigurationSource configurationSource) {
+        baseCymeUrl =
+            configurationSource.getString(MasterConfigStringKeysEnum.CYME_DIST_BASE_URL, "http://localhost:8866");
+        log.info(baseCymeUrl);
     }
 
     @Override
     public String runSimulation(String xmlData) {
-        String response = cymeRestTemplate.postForObject(BASE_CYME_URL + SIMULATION_URL_PART + RUN_STUDY_URL_END, xmlData, String.class);
-        log.info("Simulation ran on CYME"); 
-        log.debug(response); 
+        String response = cymeRestTemplate.postForObject(baseCymeUrl + SIMULATION_URL_PART + RUN_STUDY_URL_END, xmlData, String.class);
+        log.info("Simulation ran on CYME");
+        log.debug(response);
 
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(response);
@@ -67,46 +65,46 @@ public class CymeWebServiceImpl implements CymeWebService {
 
     @Override
     public CymeSimulationStatus getSimulationReportStatus(String simulationId) {
-        log.info("Checking Simulation Status with CYME"); 
+        log.info("Checking Simulation Status with CYME");
 
-        String response = cymeRestTemplate.getForObject(BASE_CYME_URL + SIMULATION_URL_PART + "/" + simulationId + CHECK_REPORT_STATUS_URL_END, String.class);
-        
+        String response = cymeRestTemplate.getForObject(baseCymeUrl + SIMULATION_URL_PART + "/" + simulationId + CHECK_REPORT_STATUS_URL_END, String.class);
+
         log.debug(response);
-        
+
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(response);
         template.setNamespaces(cymeDcProperties);
 
-        String statusStr = template.evaluateAsString("/ns1:GetSimulationStatusResponse/ns1:Status");   
+        String statusStr = template.evaluateAsString("/ns1:GetSimulationStatusResponse/ns1:Status");
         CymeSimulationStatus status = CymeSimulationStatus.getFromCymeValue(statusStr);
         log.info("Simulation Status is " + status.getCymeValue());
-        
+
         return status;
     }
 
     private static ObjectMapper<Node, SimulationResultSummaryData> simulationResultSummaryDataRowMapper = new ObjectMapper<Node,SimulationResultSummaryData>() {
 
         @Override
-        public SimulationResultSummaryData map(Node node) throws DOMException {                            
+        public SimulationResultSummaryData map(Node node) throws DOMException {
             SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(node);
             template.setNamespaces(cymeDcProperties);
-            
+
             String networkId = template.evaluateAsString("//ns1:NetworkId");
             String reportId = template.evaluateAsString("//ns1:ReportId");
             String simulationId = template.evaluateAsString("//ns1:SimulationId");
 
             SimulationResultSummaryData data = new SimulationResultSummaryData(networkId,reportId,simulationId);
-            
+
             return data;
         }
     };
-    
+
     @Override
     public List<SimulationResultSummaryData> generateResultSummary(String simulationId) {
         // Generate Reports
-        String summary = cymeRestTemplate.getForObject(BASE_CYME_URL + SIMULATION_URL_PART + "/" + simulationId + GENERATE_RESULT_SUMMARY_URL_END, String.class);
+        String summary = cymeRestTemplate.getForObject(baseCymeUrl + SIMULATION_URL_PART + "/" + simulationId + GENERATE_RESULT_SUMMARY_URL_END, String.class);
 
-        log.info("Generate reports command sent to CYME"); 
+        log.info("Generate reports command sent to CYME");
         log.debug(summary);
 
         SimpleXPathTemplate template = new SimpleXPathTemplate();
@@ -114,25 +112,20 @@ public class CymeWebServiceImpl implements CymeWebService {
         template.setNamespaces(cymeDcProperties);
 
         List<SimulationResultSummaryData> results = template.evaluate("//ns1:SimulationResultSummaries", simulationResultSummaryDataRowMapper);
-        
-        return results;        
+
+        return results;
     }
-    
+
     @Override
     public String getSimulationReport(SimulationResultSummaryData simulationSummary) {
         // Retrieve report
-        String response = cymeRestTemplate.getForObject(BASE_CYME_URL + SIMULATION_URL_PART + "/" + simulationSummary.getSimulationId()
+        String response = cymeRestTemplate.getForObject(baseCymeUrl + SIMULATION_URL_PART + "/" + simulationSummary.getSimulationId()
                                                     + GENERATE_REPORT_URL_PART + simulationSummary.getReportId() + "/" + simulationSummary.getNetworkId()
                                                     + "/", String.class);
-        
-        log.info("Retrieved report from CYME"); 
-        log.debug(response);
-        
-        return response;
-    }
 
-    @Autowired
-    public void setCymeRestTemplate(RestOperations cymeRestTemplate) {
-        this.cymeRestTemplate = cymeRestTemplate;
+        log.info("Retrieved report from CYME");
+        log.debug(response);
+
+        return response;
     }
 }

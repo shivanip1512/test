@@ -35,6 +35,7 @@
     </bean>
     
     <bean id="cymeRestTemplate" class="org.springframework.web.client.RestTemplate">
+        <qualifier value="cyme"/>
         <property name="errorHandler" ref="digiErrorHandler"/>
         <property name="messageConverters">
             <list>

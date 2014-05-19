@@ -1,6 +1,9 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.NOT_AUTHORIZED;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.PROCESSING_ERROR;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.SUCCESS;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.VALIDATION_ERROR;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,8 +18,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.JsonUtils;
@@ -55,12 +57,13 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationService {
+    private static final Logger log = YukonLogManager.getLogger(EcobeeCommunicationServiceImpl.class);
+
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
-    @Autowired @Qualifier("Ecobee") private RestTemplate restTemplate;
+    @Autowired private @Qualifier("ecobee") RestOperations restTemplate;
     @Autowired private EcobeeAuthenticationCache authenticationCache;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
-    private static final Logger log = YukonLogManager.getLogger(EcobeeCommunicationServiceImpl.class);
-    
+
     private static final String modifySetUrlPart = "hierarchy/set?format=json";
     private static final String modifyThermostatUrlPart = "hierarchy/thermostat?format=json";
     private static final String demandResponseUrlPart = "demandResponse?format=json";
@@ -93,7 +96,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
             //device already exists
             return true;
         }
-        
+
         return response.getSuccess();
     }
 
@@ -144,7 +147,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         int startInterval = dateRange.getMin().get(DateTimeFieldType.minuteOfDay()) / 5;
         int endInterval = dateRange.getMax().get(DateTimeFieldType.minuteOfDay()) / 5;
 
-        RuntimeReportRequest request = new RuntimeReportRequest(dateRange.getMin(), startInterval, 
+        RuntimeReportRequest request = new RuntimeReportRequest(dateRange.getMin(), startInterval,
                   dateRange.getMax(), endInterval, serialNumbers, deviceReadColumns);
 
         DeviceDataResponse response = queryEcobeeGet(url, requestEntity, request, EcobeeQueryType.DATA_COLLECTION, ecId,
@@ -155,10 +158,10 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
             List<EcobeeDeviceReading> readings = new ArrayList<>();
             for (RuntimeReportRow reportRow : runtimeReport.getRuntimeReports()) {
                 // TODO: only using HeatRuntime here not CoolRuntime since EcobeeDeviceReading only has one runtime
-                // property. Need to figure out if EcobeeDeviceReading should have both as a runtime or if some other 
+                // property. Need to figure out if EcobeeDeviceReading should have both as a runtime or if some other
                 // value is needed
                 EcobeeDeviceReading reading = new EcobeeDeviceReading(reportRow.getOutdoorTemp(),
-                    reportRow.getIndoorTemp(), reportRow.getCoolSetPoint(), reportRow.getHeatSetPoint(), 
+                    reportRow.getIndoorTemp(), reportRow.getCoolSetPoint(), reportRow.getHeatSetPoint(),
                     reportRow.getHeatRuntime(), reportRow.getEventName(), reportRow.getDate());
                 readings.add(reading);
             }
@@ -171,7 +174,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     public boolean createManagementSet(String managementSetName, int ecId) throws EcobeeException {
         HttpHeaders headers = getHeadersWithAuthentication(ecId);
         String url = getUrlBase(ecId) + modifySetUrlPart;
-        
+
         CreateSetRequest request = new CreateSetRequest(managementSetName);
         HttpEntity<CreateSetRequest> requestEntity = new HttpEntity<>(request, headers);
 
@@ -181,19 +184,19 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
             //set already exists
             return true;
         }
-        
+
         return response.getSuccess();
     }
-    
+
     @Override
     public boolean deleteManagementSet(String managementSetName, int ecId) throws EcobeeException {
 
         HttpHeaders headers = getHeadersWithAuthentication(ecId);
         String url = getUrlBase(ecId) + modifySetUrlPart;
-        
+
         DeleteSetRequest request = new DeleteSetRequest(managementSetName);
         HttpEntity<DeleteSetRequest> requestEntity = new HttpEntity<>(request, headers);
-        
+
         log.info("Deleting set " + managementSetName + ", energy company id " + ecId + " URL: " + url);
         StandardResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.SYSTEM, ecId, StandardResponse.class);
 
@@ -205,7 +208,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
         HttpHeaders headers = getHeadersWithAuthentication(ecId);
         String url = getUrlBase(ecId) + modifySetUrlPart;
-        
+
         MoveSetRequest request = new MoveSetRequest(currentPath, newPath);
         HttpEntity<MoveSetRequest> requestEntity = new HttpEntity<>(request, headers);
 
@@ -255,44 +258,44 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         ListHierarchyRequest request = new ListHierarchyRequest();
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        HierarchyResponse response = queryEcobeeGet(url, requestEntity, request, EcobeeQueryType.SYSTEM, ecId, 
+        HierarchyResponse response = queryEcobeeGet(url, requestEntity, request, EcobeeQueryType.SYSTEM, ecId,
                                          HierarchyResponse.class);
 
         return response.getSets();
     }
-    
+
     private <E extends BaseResponse> E queryEcobeeGet(String url, HttpEntity<?> requestEntity, Object request,
-        EcobeeQueryType queryType, int ecId, Class<E> responseType) 
+        EcobeeQueryType queryType, int ecId, Class<E> responseType)
             throws EcobeeCommunicationException, EcobeeNotAuthenticatedException {
 
         ecobeeQueryCountDao.incrementQueryCount(queryType, ecId);
         try {
-            ResponseEntity<E> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType, 
+            ResponseEntity<E> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType,
                                                    Collections.singletonMap("bodyJson", JsonUtils.toJson(request)));
             E response = responseEntity.getBody();
-            if (response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
-                // causes EcobeeCommunicationAopAuthenticator to log us back in and try again
-                throw new EcobeeNotAuthenticatedException(ecId);
-            }
+//            if (response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
+//                // causes EcobeeCommunicationAopAuthenticator to log us back in and try again
+//                throw new EcobeeNotAuthenticatedException(ecId);
+//            }
             return response;
-        } catch (RestClientException | JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
         }
     }
 
-    private <E extends BaseResponse> E queryEcobee(String url, HttpEntity<?> request, EcobeeQueryType queryType, 
+    private <E extends BaseResponse> E queryEcobee(String url, HttpEntity<?> request, EcobeeQueryType queryType,
         int ecId, Class<E> responseType) throws EcobeeCommunicationException, EcobeeNotAuthenticatedException {
         ecobeeQueryCountDao.incrementQueryCount(queryType, ecId);
-        try {
+//        try {
             E response = restTemplate.postForObject(url, request, responseType);
-            if (response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
-                // causes EcobeeCommunicationAopAuthenticator to log us back in and try again
-                throw new EcobeeNotAuthenticatedException(ecId);
-            }
+//            if (response.hasCode(AUTHENTICATION_EXPIRED) || response.hasCode(AUTHENTICATION_FAILED)) {
+//                // causes EcobeeCommunicationAopAuthenticator to log us back in and try again
+//                throw new EcobeeNotAuthenticatedException(ecId);
+//            }
             return response;
-        } catch (RestClientException e) {
-            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
-        }
+//        } catch (RestClientException e) {
+//            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
+//        }
     }
 
     /**
@@ -300,15 +303,15 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
      * @throws EcobeeNotAuthenticatedException if there is no cached authentication token for the energy company.
      */
     private HttpHeaders getHeadersWithAuthentication(int energyCompanyId) throws EcobeeException {
-        //Attempt to get stored authentication token
-        String authToken = authenticationCache.get(energyCompanyId);
-        if (authToken == null) {
-            //throw exception - EcobeeCommunicationAopAuthenticator will log us in and try again
-            throw new EcobeeNotAuthenticatedException(energyCompanyId);
-        }
+//        //Attempt to get stored authentication token
+//        String authToken = authenticationCache.get(energyCompanyId);
+//        if (authToken == null) {
+//            //throw exception - EcobeeCommunicationAopAuthenticator will log us in and try again
+//            throw new EcobeeNotAuthenticatedException(energyCompanyId);
+//        }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + authToken);
+        headers.add("EnergyCompanyId", Integer.toString(energyCompanyId));
         return headers;
     }
 
