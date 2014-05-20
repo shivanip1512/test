@@ -55,7 +55,7 @@ public interface EnergyCompanyService {
     /** 
      * Returns true if the user has the appropriate privileges to create member energy companies.
      */
-    boolean canCreateMembers(LiteYukonUser yukonUser);
+    boolean canCreateDeleteMembers(LiteYukonUser yukonUser);
 
     /** 
      * Determine if the user has the appropriate privileges to delete this energy company.

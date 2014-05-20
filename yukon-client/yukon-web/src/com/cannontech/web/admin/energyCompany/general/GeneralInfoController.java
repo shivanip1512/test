@@ -226,7 +226,7 @@ public class GeneralInfoController {
     public String createMember(ModelMap model, YukonUserContext context, FlashScope flash, int ecId) throws NotAuthorizedException {
         
         LiteYukonUser user = context.getYukonUser();
-        if (!energyCompanyService.canCreateMembers(user)) {
+        if (!energyCompanyService.canCreateDeleteMembers(user)) {
             throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to create member energy companies");
         }
         
@@ -305,12 +305,9 @@ public class GeneralInfoController {
         EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
         GeneralInfo generalInfo = generalInfoService.getGeneralInfo(energyCompany);
         model.addAttribute("generalInfo", generalInfo);
-        
-        if (energyCompanyService.canManageMembers(user)) {
-            model.addAttribute("members", starsDatabaseCache.getEnergyCompany(ecId).getChildren());
-            model.addAttribute("memberCandidates", energyCompanyService.getMemberCandidates(ecId));
-        }
-
+        model.addAttribute("members", starsDatabaseCache.getEnergyCompany(ecId).getChildren());
+        model.addAttribute("memberCandidates", energyCompanyService.getMemberCandidates(ecId));
+    
         Function<LiteUserGroup, Integer> idFromUserGroup = new Function<LiteUserGroup, Integer>() {
             @Override
             public Integer apply(LiteUserGroup liteUserGroup) {
@@ -354,9 +351,9 @@ public class GeneralInfoController {
         return ecDao.getAllRoutes(ecDao.getEnergyCompany(ecId));
     }
     
-    @ModelAttribute("canCreateMembers")
-    public boolean getCanCreateMembers(YukonUserContext context) {
-        return energyCompanyService.canCreateMembers(context.getYukonUser());
+    @ModelAttribute("canCreateDeleteMembers")
+    public boolean getCanCreateDeleteMembers(YukonUserContext context) {
+        return energyCompanyService.canCreateDeleteMembers(context.getYukonUser());
     }
     
     @ModelAttribute("canDelete")

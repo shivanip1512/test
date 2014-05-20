@@ -83,11 +83,12 @@ public class EnergyCompanyController {
         }
 
         LiteYukonUser user = userContext.getYukonUser();
-        boolean superUser = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_SUPER_USER, user);
+        boolean isSuperUser = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_SUPER_USER, user);
+        List<EnergyCompany> companies = null;
         
-        if (superUser) {
+        if (isSuperUser) {
             /* For super users show all energy companies. */
-            List<EnergyCompany> companies =
+            companies =
                 Lists.newArrayList(ecDao.getAllEnergyCompanies());
             if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
                 Iterator<EnergyCompany> iter = companies.iterator();
@@ -99,18 +100,18 @@ public class EnergyCompanyController {
                     }
                 }
             }
-            setupHomeModelMap(modelMap, user, companies);
-            return "energyCompany/home.jsp";
         }
-
-        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
-
-        List<EnergyCompany> companies = Lists.newArrayList();
-        if (ecDao.getOperatorUserIds(energyCompany).contains(user.getUserID())) {
-            /* If they belong to an energy company and are an operator, show energy company and all descendants. */
-            companies.addAll(energyCompany.getDescendants(true));
-        }
-        
+        else {
+            boolean isAdminEditECUser = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
+            companies = Lists.newArrayList();
+            if(isAdminEditECUser) {
+                EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);                
+                if (ecDao.getOperatorUserIds(energyCompany).contains(user.getUserID())) {
+                    /* If they belong to an energy company and are an operator, show energy company and all descendants. */
+                    companies.addAll(energyCompany.getDescendants(true));
+                }            
+            }            
+        }        
         setupHomeModelMap(modelMap, user, companies);
         return "energyCompany/home.jsp";
     }

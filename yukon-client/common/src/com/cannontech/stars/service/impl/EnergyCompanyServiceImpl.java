@@ -230,12 +230,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     }
     
     @Override
-    public boolean canCreateMembers(LiteYukonUser user) {
+    public boolean canCreateDeleteMembers(LiteYukonUser user) {
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
-        boolean manageMembers = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
-        boolean createAndDelete = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_CREATE_DELETE_ENERGY_COMPANY, user);
+        boolean manageMembers = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);        
         
-        return superUser || (manageMembers && createAndDelete);
+        return superUser && manageMembers;
     }
     
     @Override
@@ -245,11 +244,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             return false;
         }
 
-        boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
-        boolean isOperator = ecDao.getOperatorUserIds(energyCompany).contains(user.getUserID()); 
-        
-        // Can delete IF user is a 'super user' and is not an operator of the energy company.
-        return superUser && !isOperator;
+        return rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);       
     }
     
     @Override

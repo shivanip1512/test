@@ -105,7 +105,7 @@ $(function() {
                                             <thead>
                                                 <tr>
                                                     <th><i:inline key=".companyName"/></th>
-                                                    <c:if test="${canManageMembers}">
+                                                    <c:if test="${canCreateDeleteMembers}">
                                                         <th class="remove-column"><i:inline key=".remove"/></th>
                                                     </c:if>
                                                 </tr>
@@ -117,14 +117,21 @@ $(function() {
                                                         <cti:param name="ecId" value="${company.energyCompanyId}"/>
                                                     </cti:url>
                                                     <tr>
-                                                        <td><a href="${viewEcUrl}">${fn:escapeXml(company.name)}</a></td>
-                                                        <c:if test="${canManageMembers}">
+                                                        <c:choose>
+                                                            <c:when test="${canManageMembers}">
+                                                                <td><a href="${viewEcUrl}">${fn:escapeXml(company.name)}</a></td>                                                                
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <td>${fn:escapeXml(company.name)}</td>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                        <c:if test="${canCreateDeleteMembers}">
                                                             <td class="remove-column">
-                                                                <div class="dib">
-                                                                    <cti:button nameKey="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image" icon="icon-cross"/>
-                                                                </div>
+                                                                    <div class="dib">
+                                                                        <cti:button nameKey="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image" icon="icon-cross"/>
+                                                                    </div>
                                                             </td>
-                                                        </c:if>
+                                                        </c:if>                                                      
                                                     </tr>
                                                 </c:forEach>
                                             </tbody>
@@ -134,7 +141,7 @@ $(function() {
                             </c:choose>
                             
                             <div class="action-area" style="min-width: 380px;">
-                                <c:if test="${canCreateMembers}">
+                                <c:if test="${canCreateDeleteMembers}">
                                     <cti:button nameKey="create" icon="icon-plus-green" type="submit" name="create" classes="fl"/>
                                 </c:if>
                                 <c:if test="${canManageMembers && !empty memberCandidates}">
