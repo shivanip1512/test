@@ -11,6 +11,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
+import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.DeviceRequestType;
@@ -48,11 +49,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
-    @Autowired private DeviceDao deviceDao;
-    
-    private final String CONTROL_CONNECT_COMMAND = "control connect";
-    private final String CONTROL_DISCONNECT_COMMAND = "control disconnect";
-    
+    @Autowired private DeviceDao deviceDao;    
     
     private Set<? extends Attribute> disconnectAttribute = Collections.singleton(BuiltInAttribute.DISCONNECT_STATUS);
     private enum DisconnectState {
@@ -168,7 +165,11 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
     	YukonMeter meter = getMeter(request);
     	
-        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, user);
+        CommandResultHolder result =
+            commandRequestExecutor.execute(meter,
+                                           DisconnectCommand.CONNECT.getPlcCommand(),
+                                           DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET,
+                                           user);
         
         ModelAndView mav = getControlModelAndView(request, result);
         
@@ -182,7 +183,11 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
     	YukonMeter meter = getMeter(request);
     	
-        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, user);
+        CommandResultHolder result =
+            commandRequestExecutor.execute(meter,
+                                           DisconnectCommand.DISCONNECT.getPlcCommand(),
+                                           DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET,
+                                           user);
         
         ModelAndView mav = getControlModelAndView(request, result);
         

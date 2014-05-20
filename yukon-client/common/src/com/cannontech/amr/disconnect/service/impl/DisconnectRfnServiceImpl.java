@@ -30,6 +30,7 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.service.NetworkManagerError;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -45,26 +46,6 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     private Executor executor;
 
     private Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
-
-    private enum ErrorType {
-        COMMUNICATION(1027),
-        UNKNOWN(1026),
-        YUKON_SYSTEM(2000);
-
-        private final Integer errorCode;
-
-        private ErrorType() {
-            errorCode = null;
-        }
-
-        private ErrorType(int errorCode) {
-            this.errorCode = errorCode;
-        }
-
-        public Integer getErrorCode() {
-            return errorCode;
-        }
-    }
 
     @Override
     public void cancel(DisconnectResult result, YukonUserContext userContext) {
@@ -82,20 +63,6 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                 Iterable<YukonMeter> yukonMeters = meterDao.getMetersForYukonPaos(meters);
                 int deviceCount = Lists.newArrayList(meters).size();
                 PendingRequests pendingRequests = new PendingRequests(deviceCount);
-                RfnMeterDisconnectStatusType type = null;
-                switch (command) {
-                case ARM:
-                    type = RfnMeterDisconnectStatusType.ARM;
-                    break;
-                case CONNECT:
-                    type = RfnMeterDisconnectStatusType.RESUME;
-                    break;
-                case DISCONNECT:
-                    type = RfnMeterDisconnectStatusType.TERMINATE;
-                    break;
-                default:
-                    throw new UnsupportedOperationException(command + " is not supported");
-                }
                 for (YukonMeter meter : yukonMeters) {
                     Callback callback =
                         new Callback(meter, disconnectCallback, pendingRequests, execution, userContext);
@@ -103,9 +70,9 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                         callback.cancel();
                     } else {
                         if (log.isDebugEnabled()) {
-                            log.debug("RFN send " + type + " to "+meter);
+                            log.debug("RFN send " + command.getRfnMeterDisconnectStatusType() + " to "+meter);
                         }
-                        rfnMeterDisconnectService.send((RfnMeter) meter, type, callback);
+                        rfnMeterDisconnectService.send((RfnMeter) meter, command.getRfnMeterDisconnectStatusType(), callback);
                     }
                 }
             }
@@ -168,7 +135,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
         @Override
         public void processingExceptionOccured(MessageSourceResolvable message) {
             log.debug("RFN exception (RfnMeterDisconnectCallback)");
-            SpecificDeviceErrorDescription error = getErrorDescription(ErrorType.COMMUNICATION, message);
+            SpecificDeviceErrorDescription error = getErrorDescription(NetworkManagerError.FAILURE, message);
             callback.failed(meter, error);
         }
 
@@ -184,9 +151,9 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
             }
         }
 
-        private SpecificDeviceErrorDescription getErrorDescription(ErrorType errorType, MessageSourceResolvable message) {
+        private SpecificDeviceErrorDescription getErrorDescription(NetworkManagerError errorType, MessageSourceResolvable message) {
             String detail = messageSourceAccessor.getMessage(message);
-            DeviceErrorDescription desc = new DeviceErrorDescription(errorType.getErrorCode(), "", "", "", detail);
+            DeviceErrorDescription desc = new DeviceErrorDescription(errorType.getErrorCode(), "", "",  detail, "");
             SpecificDeviceErrorDescription errorDescription = new SpecificDeviceErrorDescription(desc, detail);
             return errorDescription;
         }
@@ -195,37 +162,52 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
             if (log.isDebugEnabled()) {
                 log.debug("RFN proccessState:" + meter + " State:" + state);
             }
-            Instant timestamp = pointData == null ? null : new Instant(pointData.getPointDataTimeStamp());
+            /*
+             * message is null if the state == UNKNOWN
+             * state is null if there was an error sending the command
+             */
+            
+            if (message == null) {
+                message =
+                    YukonMessageSourceResolvable
+                        .createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.confirmError",
+                                                       state);
+            }
+            SpecificDeviceErrorDescription error = getErrorDescription(NetworkManagerError.FAILURE, message);
             int errorCode = 0;
-            switch (state) {
-            case UNKNOWN:
-                // devices with "UNKNOWN" state should be counted as failed
-                if(message == null){
-                    message = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.confirmError",
-                                                               state);
-                }
-                SpecificDeviceErrorDescription error = getErrorDescription(ErrorType.UNKNOWN, message);
-                errorCode = error.getErrorCode();
+            if (state == null) {
                 callback.failed(meter, error);
-                break;
-            case DISCONNECTED:
-                callback.disconnected(meter, timestamp);
-                break;
-            case ARMED:
-                callback.armed(meter, timestamp);
-                break;
-            case CONNECTED:
-                callback.connected(meter, timestamp);
-                break;
-            default:
-                throw new UnsupportedOperationException(state + " is not supported");
+                errorCode = error.getErrorCode();
+            } else {
+                Instant timestamp = pointData == null ? null : new Instant(pointData.getPointDataTimeStamp());
+                switch (state) {
+                case UNKNOWN:
+                    // devices with "UNKNOWN" state should be counted as failed
+                    callback.failed(meter, error);
+                    errorCode = error.getErrorCode();
+                    break;
+                case DISCONNECTED:
+                case DISCONNECTED_DEMAND_THRESHOLD_ACTIVE:
+                case CONNECTED_DEMAND_THRESHOLD_ACTIVE:
+                case DISCONNECTED_CYCLING_ACTIVE:
+                case CONNECTED_CYCLING_ACTIVE:
+                    callback.disconnected(meter, timestamp);
+                    break;
+                case ARMED:
+                    callback.armed(meter, timestamp);
+                    break;
+                case CONNECTED:
+                    callback.connected(meter, timestamp);
+                    break;
+                default:
+                    throw new UnsupportedOperationException(state + " is not supported");
+                }
             }
             saveCommandRequestExecutionResult(execution, meter.getDeviceId(), errorCode);
         }
     }
     
     private void saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode) {
-
         CommandRequestExecutionResult result = new CommandRequestExecutionResult();
         result.setCommandRequestExecutionId(execution.getId());
         result.setCommand(execution.getCommandRequestExecutionType().getShortName());

@@ -112,18 +112,15 @@ public enum DisconnectResultFields {
                 resolvableTemplate =
                     new ResolvableTemplate("yukon.web.modules.tools.bulk.disconnect.results.error");
                 resolvableTemplate.addData("exceptionReason", result.getExceptionReason());
-            } else if (result.isComplete()) {
-                resolvableTemplate =
-                    new ResolvableTemplate("yukon.web.modules.tools.bulk.disconnect.results.complete");
             } else {
                 resolvableTemplate =
-                    new ResolvableTemplate("yukon.web.modules.tools.bulk.disconnect.results.inProgress");
+                    new ResolvableTemplate(result.getCommandRequestExecution().getCommandRequestExecutionStatus()
+                        .getFormatKey());
             }
-
             return resolvableTemplate;
         }
     }),
-
+    
     STATUS_CLASS(new ResultAccessor<DisconnectResult>() {
         @Override
         public Object getValue(DisconnectResult result) {

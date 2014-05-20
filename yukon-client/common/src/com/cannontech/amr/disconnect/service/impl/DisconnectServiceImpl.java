@@ -178,6 +178,7 @@ public class DisconnectServiceImpl implements DisconnectService {
 
                 @Override
                 public void processingExceptionOccured(String reason) {
+                    completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.FAILED);
                     result.setExceptionReason(reason);
                 }
 
@@ -257,7 +258,7 @@ public class DisconnectServiceImpl implements DisconnectService {
             if (meters.isEmpty()) {
                 disconnectCallback.complete();
             } else {
-                requestCount =+ meters.size();
+                requestCount += meters.size();
                 log(meters, resolvedCommand, userContext.getYukonUser());
                 // send command to the valid devices
                 strategy.execute(command, meters, disconnectCallback, execution, userContext);
@@ -266,6 +267,9 @@ public class DisconnectServiceImpl implements DisconnectService {
         
         //update request count
         execution.setRequestCount(requestCount);
+        if (log.isDebugEnabled()) {
+            log.debug("updating request count =" + requestCount);
+        }
         commandRequestExecutionDao.saveOrUpdate(execution);
         
         return result;
@@ -330,7 +334,7 @@ public class DisconnectServiceImpl implements DisconnectService {
         
         DisconnectResult result = getResult(key);
         CommandRequestExecution execution = result.getCommandRequestExecution();
-        execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.CANCELLING);
+        execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.CANCELING);
         commandRequestExecutionDao.saveOrUpdate(execution);
         result.getDisconnectCallback().cancel();
         for (DisconnectStrategy strategy : strategies) {
@@ -340,8 +344,11 @@ public class DisconnectServiceImpl implements DisconnectService {
 
     private void completeCommandRequestExecutionRecord(CommandRequestExecution commandRequestExecution,
                                                        CommandRequestExecutionStatus executionStatus) {
-        commandRequestExecution.setStopTime(new Date());
-        commandRequestExecution.setCommandRequestExecutionStatus(executionStatus);
-        commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
+        // If one execution failed and one succeeded (PLC or RFN), consider the execution failed.
+        if (commandRequestExecution.getCommandRequestExecutionStatus() != CommandRequestExecutionStatus.FAILED) {
+            commandRequestExecution.setStopTime(new Date());
+            commandRequestExecution.setCommandRequestExecutionStatus(executionStatus);
+            commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
+        }
     }
 }

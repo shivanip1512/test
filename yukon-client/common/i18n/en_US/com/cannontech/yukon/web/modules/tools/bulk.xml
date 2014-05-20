@@ -952,8 +952,6 @@
     <entry key="yukon.web.modules.tools.bulk.disconnect.results.disconnect.help">The selected devices will be disconnected. Any additional options, such as demand threshold or cycling, will be controlled by each individual device’s configuration.</entry>
     <entry key="yukon.web.modules.tools.bulk.disconnect.results.connect.help">The selected devices will be connected. Any additional options, such as Arm, will be controlled by each individual device’s configuration.</entry>
     <entry key="yukon.web.modules.tools.bulk.disconnect.results.arm.help">The selected devices will be connected in Arm mode. For devices that do not support Arm command, a Connect command will be sent instead, such that any arm options will be controlled by each individual device’s configuration.</entry>
-    <entry key="yukon.web.modules.tools.bulk.disconnect.results.inProgress">In Progress</entry>
-    <entry key="yukon.web.modules.tools.bulk.disconnect.results.complete">Complete</entry>
     <entry key="yukon.web.modules.tools.bulk.disconnect.results.error">Error: {exceptionReason}</entry>
     <entry key="yukon.web.modules.tools.bulk.disconnect.results.progressLabel">Progress</entry>
     <entry key="yukon.web.modules.tools.bulk.disconnect.results.newOperationAll">Choose New Operation For All Devices</entry>

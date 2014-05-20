@@ -84,35 +84,33 @@
                         identifier="${result.key}/CONNECTED_COUNT" /></span>
             </div>
             <div class="dn js-action">
-                <c:if test="${result.connectedCollection.deviceCount > 0}">
-                    <div>
-                        <cti:url var="connectedUrl" value="/bulk/collectionActions">
-                            <cti:mapParam value="${result.connectedCollection.collectionParameters}" />
-                        </cti:url>
-                        <a href="${connectedUrl}"><i:inline key=".bulk.disconnect.results.newOperation" /></a>
-                        <tags:selectedDevicesPopup deviceCollection="${result.connectedCollection}" />
-                    </div>
-                    <div>
-                        <i:inline key=".bulk.disconnect.results.view" />
-                        <cti:simpleReportLinkFromNameTag state="CONNECTED"
-                            definitionName="disconnectSuccessResultDefinition" viewType="extView"
-                            resultKey="${result.key}" module="amr" showMenu="true">
-                            <i:inline key="yukon.common.html" />
-                        </cti:simpleReportLinkFromNameTag>
-                        |
-                        <cti:simpleReportLinkFromNameTag state="CONNECTED"
-                            definitionName="disconnectSuccessResultDefinition" resultKey="${result.key}"
-                            viewType="csvView">
-                            <i:inline key="yukon.common.csv" />
-                        </cti:simpleReportLinkFromNameTag>
-                        |
-                        <cti:simpleReportLinkFromNameTag state="CONNECTED"
-                            definitionName="disconnectSuccessResultDefinition" resultKey="${result.key}"
-                            viewType="pdfView">
-                            <i:inline key="yukon.common.pdf" />
-                        </cti:simpleReportLinkFromNameTag>
-                    </div>
-                </c:if>
+                <div>
+                    <cti:url var="connectedUrl" value="/bulk/collectionActions">
+                        <cti:mapParam value="${result.connectedCollection.collectionParameters}" />
+                    </cti:url>
+                    <a href="${connectedUrl}"><i:inline key=".bulk.disconnect.results.newOperation" /></a>
+                    <tags:selectedDevicesPopup deviceCollection="${result.connectedCollection}" />
+                </div>
+                <div>
+                    <i:inline key=".bulk.disconnect.results.view" />
+                    <cti:simpleReportLinkFromNameTag state="CONNECTED"
+                        definitionName="disconnectSuccessResultDefinition" viewType="extView"
+                        resultKey="${result.key}" module="amr" showMenu="true">
+                        <i:inline key="yukon.common.html" />
+                    </cti:simpleReportLinkFromNameTag>
+                    |
+                    <cti:simpleReportLinkFromNameTag state="CONNECTED"
+                        definitionName="disconnectSuccessResultDefinition" resultKey="${result.key}"
+                        viewType="csvView">
+                        <i:inline key="yukon.common.csv" />
+                    </cti:simpleReportLinkFromNameTag>
+                    |
+                    <cti:simpleReportLinkFromNameTag state="CONNECTED"
+                        definitionName="disconnectSuccessResultDefinition" resultKey="${result.key}"
+                        viewType="pdfView">
+                        <i:inline key="yukon.common.pdf" />
+                    </cti:simpleReportLinkFromNameTag>
+                </div>
             </div>
         </div>
         

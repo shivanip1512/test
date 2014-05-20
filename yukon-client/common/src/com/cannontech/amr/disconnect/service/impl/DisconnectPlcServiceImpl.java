@@ -40,8 +40,6 @@ import com.google.common.collect.Maps;
 
 public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     
-    private static final String CONTROL_CONNECT_COMMAND = "control connect";
-    private static final String CONTROL_DISCONNECT_COMMAND = "control disconnect";
     
     private Logger log = YukonLogManager.getLogger(DisconnectPlcServiceImpl.class);
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
@@ -59,36 +57,16 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     }
     
     @Override
-    public void execute(DisconnectCommand command, Iterable<SimpleDevice> meters, DisconnectCallback callback,
+    public void execute(final DisconnectCommand command, Iterable<SimpleDevice> meters, DisconnectCallback callback,
                         CommandRequestExecution execution, YukonUserContext userContext) {
-        switch (command) {
-        case ARM:
-            executeCommand(meters, CONTROL_CONNECT_COMMAND, new Callback(callback, meters), execution, userContext);
-            break;
-        case CONNECT:
-            executeCommand(meters, CONTROL_CONNECT_COMMAND, new Callback(callback, meters), execution, userContext);
-            break;
-        case DISCONNECT:
-            executeCommand(meters, CONTROL_DISCONNECT_COMMAND, new Callback(callback, meters), execution, userContext);
-            break;
-        default:
-            throw new UnsupportedOperationException(command + " is not supported");
-        }
-    }
 
-    /**
-     * Creates and executes connect/disconnect commands
-     */
-    private void executeCommand(Iterable<SimpleDevice> meters, final String command,
-                                Callback callback, CommandRequestExecution execution,
-                                YukonUserContext userContext) {
         List<CommandRequestDevice> commands =
             Lists.transform(Lists.newArrayList(meters), new Function<SimpleDevice, CommandRequestDevice>() {
                 @Override
                 public CommandRequestDevice apply(SimpleDevice meter) {
                     CommandRequestDevice request = new CommandRequestDevice();
                     request.setDevice(new SimpleDevice(meter));
-                    request.setCommandCallback(new CommandCallbackBase(command));
+                    request.setCommandCallback(new CommandCallbackBase(command.getPlcCommand()));
                     return request;
                 }
             });
@@ -100,7 +78,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
         CommandRequestExecutionTemplate<CommandRequestDevice> template =
             commandRequestDeviceExecutor.getExecutionTemplate(DeviceRequestType.GROUP_CONNECT_DISCONNECT,
                                                               userContext.getYukonUser());
-        template.execute(commands, callback, execution);
+        template.execute(commands, new Callback(callback, meters), execution);
     }
 
     private class Callback implements CommandCompletionCallback<CommandRequestDevice> {
@@ -150,7 +128,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
                     for (SimpleDevice meter : meters.keySet()) {
                         callback.canceled(meter);
                     }
-                    log.debug("PLC Complete (CommandCompletionCallback)");
+                    log.debug("PLC Cancel Complete (CommandCompletionCallback)");
                     callback.complete();
                 }
             };
