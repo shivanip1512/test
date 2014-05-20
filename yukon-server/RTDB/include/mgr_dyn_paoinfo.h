@@ -134,7 +134,7 @@ private:
 extern IM_EX_DYNPAOINFO std::auto_ptr<DynamicPaoInfoManager> gDynamicPaoInfoManager;  //  auto_ptr so it can be overridden for unit tests
 
 // explicit instantiation
-template IM_EX_DYNPAOINFO void DynamicPaoInfoManager::setInfo<std::string> (const long paoId, PaoInfoKeysIndexed k, const std::vector<std::string> &values);
-template IM_EX_DYNPAOINFO boost::optional<std::vector<std::string>> DynamicPaoInfoManager::getInfo<std::string> (const long paoId, PaoInfoKeysIndexed k);
+template IM_EX_DYNPAOINFO void DynamicPaoInfoManager::setInfo<unsigned long> (const long paoId, PaoInfoKeysIndexed k, const std::vector<unsigned long> &values);
+template IM_EX_DYNPAOINFO boost::optional<std::vector<unsigned long>> DynamicPaoInfoManager::getInfo<unsigned long> (const long paoId, PaoInfoKeysIndexed k);
 
 }

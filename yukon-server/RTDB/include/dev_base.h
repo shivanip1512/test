@@ -264,7 +264,7 @@ public:
     }
 
 	// set indexed dynamic info
-    void setDynamicInfo(PaoInfoKeysIndexed k, const std::vector<std::string> &values);
+    void setDynamicInfo(PaoInfoKeysIndexed k, const std::vector<unsigned long> &values);
 
 	// get indexed dynamic info
     template <typename T>
@@ -352,7 +352,7 @@ template<> IM_EX_DEVDB boost::optional<unsigned char> CtiDeviceBase::findDynamic
 template<> IM_EX_DEVDB boost::optional<bool>          CtiDeviceBase::findDynamicInfo<bool>          (PaoInfoKeys k) const;
 
 // explicit instantiation
-template IM_EX_DEVDB boost::optional<std::vector<std::string>> CtiDeviceBase::findDynamicInfo<std::string> (PaoInfoKeysIndexed k) const;
+template IM_EX_DEVDB boost::optional<std::vector<unsigned long>> CtiDeviceBase::findDynamicInfo<unsigned long> (PaoInfoKeysIndexed k) const;
 
 namespace Cti {
 namespace Devices {

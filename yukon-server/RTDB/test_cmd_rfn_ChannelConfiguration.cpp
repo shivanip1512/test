@@ -32,16 +32,16 @@ bool operator==( const RfnCommand::CommandException & lhs, const RfnCommand::Com
 
 namespace std {
 
-ostream & operator<<( ostream & os, const RfnChannelConfigurationCommand::MetricList& metrics )
+ostream & operator<<( ostream & os, const RfnChannelConfigurationCommand::MetricIds& metrics )
 {
-    RfnChannelConfigurationCommand::MetricList::const_iterator itr = metrics.begin();
+    RfnChannelConfigurationCommand::MetricIds::const_iterator itr = metrics.begin();
 
     if( itr != metrics.end() )
     {
-        os << *(itr++);
+        os << "("<< *(itr++) << ")";
         while( itr != metrics.end() )
         {
-            os << ", " << *(itr++);
+            os << ",(" << *(itr++) << ")";
         }
     }
     return os;
@@ -55,114 +55,19 @@ BOOST_AUTO_TEST_SUITE( test_cmd_rfn_ChannelConfiguration )
 
 const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 
-const RfnChannelConfigurationCommand::MetricList allMetrics = list_of
-        ( "WattHourDel"              )
-        ( "WattHourRec"              )
-        ( "WattHourTotal"            )
-        ( "WattHourNet"              )
-        ( "WattsDelCurrentDemand"    )
-        ( "WattsRecCurrentDemand"    )
-        ( "WattsDelPeakDemand"       )
-        ( "WattsRecPeakDemand"       )
-        ( "WattsDelPeakDemandFrozen" )
-        ( "WattsRecPeakDemandFrozen" )
-        ( "WattHourDelFrozen"        )
-        ( "WattHourRecFrozen"        )
-
-        ( "VarHourDel"               )
-        ( "VarHourRec"               )
-        ( "VarHourTotal"             )
-        ( "VarHourNet"               )
-        ( "VarHourQ1"                )
-        ( "VarHourQ2"                )
-        ( "VarHourQ3"                )
-        ( "VarHourQ4"                )
-        ( "VarHourQ1+Q4"             )
-        ( "VarHourQ2+Q3"             )
-        ( "VarHourQ1-Q4"             )
-        ( "VarDelCurrentDemand"      )
-        ( "VarRecCurrentDemand"      )
-        ( "VarDelPeakDemand"         )
-        ( "VarRecPeakDemand"         )
-        ( "VarDelPeakDemandCoinci"   )
-        ( "VarRecPeakDemandCoinci"   )
-
-        ( "VaHourDel"                )
-        ( "VaHourRec"                )
-        ( "VaHourTotal"              )
-        ( "VaHourNet"                )
-        ( "VaHourQ1"                 )
-        ( "VaHourQ2"                 )
-        ( "VaHourQ3"                 )
-        ( "VaHourQ4"                 )
-        ( "VaDelCurrentDemand"       )
-        ( "VaRecCurrentDemand"       )
-        ( "VaRecPeakDemand"          )
-        ( "VaDelPeakDemand"          )
-
-        ( "QHourDel"                 )
-        ( "QHourRec"                 )
-        ( "QHourTotal"               )
-        ( "QHourNet"                 )
-        ( "QDelCurrentDemand"        )
-        ( "QRecCurrentDemand"        )
-        ( "QDelPeakDemand"           )
-        ( "QRecPeakDemand"           )
-        ( "QDelPeakDemandCoinci"     )
-        ( "QRecPeakDemandCoinci"     )
-
-        ( "PfKWhDel"                 )
-        ( "PfKWhRec"                 )
-        ( "PfKWhTotal"               )
-
-        ( "VoltagePhaseA"            )
-        ( "VoltagePhaseB"            )
-        ( "VoltagePhaseC"            )
-        ( "CurrentPhaseA"            )
-        ( "CurrentPhaseB"            )
-        ( "CurrentPhaseC"            )
-        ( "VoltageAnglePhaseA"       )
-        ( "VoltageAnglePhaseB"       )
-        ( "VoltageAnglePhaseC"       )
-        ( "CurrentAnglePhaseA"       )
-        ( "CurrentAnglePhaseB"       )
-        ( "CurrentAnglePhaseC"       )
-        ( "VoltageMin"               )
-        ( "VoltageAvg"               )
-        ( "VoltageMax"               )
-        ( "Voltage"                  )
-        ( "VoltageMinPhaseA"         )
-        ( "VoltageMinPhaseB"         )
-        ( "VoltageMinPhaseC"         )
-        ( "VoltageAvgPhaseA"         )
-        ( "VoltageAvgPhaseB"         )
-        ( "VoltageAvgPhaseC"         )
-        ( "VoltageMaxPhaseA"         )
-        ( "VoltageMaxPhaseB"         )
-        ( "VoltageMaxPhaseC"         )
-
-        ( "WattsPhaseA"              )
-        ( "WattsPhaseB"              )
-        ( "WattsPhaseC"              )
-        ( "VarPhaseA"                )
-        ( "VarPhaseB"                )
-        ( "VarPhaseC"                )
-        ( "VaPhaseA"                 )
-        ( "VaPhaseB"                 )
-        ( "VaPhaseC"                 )
-        ( "PfDegreePhaseA"           )
-        ( "PfDegreePhaseB"           )
-        ( "PfDegreePhaseC"           )
-        ( "PfPhaseA"                 )
-        ( "PfPhaseB"                 )
-        ( "PfPhaseC"                 )
-
-        ( "TimeSeconds"              )
-        ( "TemperatureCentigrade"    );
+const RfnChannelConfigurationCommand::MetricIds allMetrics = list_of
+        (   1 )(   2 )(   3 )(   4 )(   5 )(   6 )(   7 )(   8 )(   9 )(  10 )(  11 )(  12 )
+        (  21 )(  22 )(  23 )(  24 )(  25 )(  26 )(  27 )(  28 )(  29 )(  30 )(  31 )(  32 )(  33 )(  34 )(  35 )(  36 )(  37 )
+        (  41 )(  42 )(  43 )(  44 )(  45 )(  46 )(  47 )(  48 )(  49 )(  50 )(  51 )(  52 )
+        (  61 )(  62 )(  63 )(  64 )(  65 )(  66 )(  67 )(  68 )(  69 )(  70 )
+        (  81 )(  82 )(  83 )
+        ( 100 )( 101 )( 102 )( 103 )( 104 )( 105 )( 106 )( 107 )( 108 )( 109 )( 110 )( 111 )( 112 )( 113 )( 114 )( 115 )( 116 )( 117 )( 118 )( 119 )( 120 )( 121 )( 122 )( 123 )( 124 )
+        ( 150 )( 151 )( 152 )( 153 )( 154 )( 155 )( 156 )( 157 )( 158 )( 159 )( 160 )( 161 )( 162 )( 163 )( 164 )
+        ( 256 )( 257 );
 
 BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_allMetrics )
 {
-    RfnChannelConfigurationCommand::MetricList metrics = allMetrics;
+    RfnChannelConfigurationCommand::MetricIds metrics = allMetrics;
 
     RfnSetChannelSelectionCommand cmd( metrics );
 
@@ -474,7 +379,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_allMetrics )
 
 BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand )
 {
-    RfnChannelConfigurationCommand::MetricList metrics = allMetrics;
+    RfnChannelConfigurationCommand::MetricIds metrics = allMetrics;
 
     RfnGetChannelSelectionCommand cmd;
 
@@ -633,7 +538,7 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand )
 
 BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand )
 {
-    RfnChannelConfigurationCommand::MetricList zeroMetrics;
+    RfnChannelConfigurationCommand::MetricIds zeroMetrics;
 
     RfnGetChannelSelectionFullDescriptionCommand cmd;
 
@@ -738,15 +643,10 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
 {
     // execute exceptions
     {
-        const RfnChannelConfigurationCommand::MetricList metrics = list_of
-                ( "WattHourDel"              )
-                ( "WattHourRec"              )
-                ( "WattHourTotal"            )
-                ( "WALDO"                    ) // where's Waldo??
-                ( "WattHourNet"              )
-                ( "WattsDelCurrentDemand"    );
-
-        const RfnCommand::CommandException expected( BADPARAM, "Unknown metric \"WALDO\"" );
+        const RfnChannelConfigurationCommand::MetricIds metrics = list_of
+                (  1 )(  2 )(  3 )(  4 )(  5 )( 13 ); // invalid Metric
+                
+        const RfnCommand::CommandException expected( BADPARAM, "Invalid metric id (13)" );
 
         boost::optional<RfnCommand::CommandException> actual;
 
@@ -814,7 +714,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) );
 
 
-        const RfnChannelConfigurationCommand::MetricList metrics;
+        const RfnChannelConfigurationCommand::MetricIds metrics;
         RfnSetChannelSelectionCommand cmd( metrics );
 
         std::vector< RfnCommand::CommandException > actual;
@@ -974,22 +874,9 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand_exceptio
 
 BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand )
 {
-    RfnChannelConfigurationCommand::MetricList metrics = list_of
-            ( "WattHourDel"              )
-            ( "WattHourRec"              )
-            ( "WattHourTotal"            )
-            ( "WattHourNet"              )
-            ( "WattsDelCurrentDemand"    )
-            ( "WattsRecCurrentDemand"    )
-            ( "WattsDelPeakDemand"       )
-            ( "WattsRecPeakDemand"       )
-            ( "WattsDelPeakDemandFrozen" )
-            ( "WattsRecPeakDemandFrozen" )
-            ( "WattHourDelFrozen"        )
-            ( "WattHourRecFrozen"        )
-            ( "VarHourDel"               )
-            ( "VarHourRec"               )
-            ( "VarHourTotal"             );
+    RfnChannelConfigurationCommand::MetricIds metrics = list_of
+            (  1 )(  2 )(  3 )(  4 )(  5 )(  6 )(  7 )(  8 )(  9 )( 10 )( 11 )( 12 )
+            ( 21 )( 22 )( 23 );
 
     const unsigned intervalRecordingSeconds = 0x12345678;
     const unsigned intervalReportingSeconds = 0xa5a5a5a5;
@@ -1105,7 +992,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand )
 
 BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand )
 {
-    RfnChannelConfigurationCommand::MetricList zeroMetrics;
+    RfnChannelConfigurationCommand::MetricIds zeroMetrics;
 
     RfnGetChannelIntervalRecordingCommand cmd;
 
@@ -1157,43 +1044,23 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
 {
     // execute exceptions
     {
-        const std::vector<RfnChannelConfigurationCommand::MetricList> metrics = list_of
+        const std::vector<RfnChannelConfigurationCommand::MetricIds> metrics = list_of
                 // invalid metric
-                (list_of( "WattHourDel"              )
-                        ( "WattHourRec"              )
-                        ( "WattHourTotal"            )
-                        ( "WALDO"                    )
-                        ( "WattHourNet"              )
-                        ( "WattsDelCurrentDemand"    ) )
+                (list_of(  1 )(  2 )(  3 )(  4 )(  5 )( 38 ))
                 // 16 metrics
-                (list_of( "WattHourDel"              )
-                        ( "WattHourRec"              )
-                        ( "WattHourTotal"            )
-                        ( "WattHourNet"              )
-                        ( "WattsDelCurrentDemand"    )
-                        ( "WattsRecCurrentDemand"    )
-                        ( "WattsDelPeakDemand"       )
-                        ( "WattsRecPeakDemand"       )
-                        ( "WattsDelPeakDemandFrozen" )
-                        ( "WattsRecPeakDemandFrozen" )
-                        ( "WattHourDelFrozen"        )
-                        ( "WattHourRecFrozen"        )
-                        ( "VarHourDel"               )
-                        ( "VarHourRec"               )
-                        ( "VarHourTotal"             )
-                        ( "VarHourNet"               ) );
+                (list_of(  1 )(  2 )(  3 )(  4 )(  5 )(  6 )(  7 )(  8 )(  9 )( 10 )( 11 )( 12 )( 21 )( 22 )( 23 )( 24 ));
 
         const std::vector<RfnCommand::CommandException> expected = list_of
-                ( RfnCommand::CommandException( BADPARAM, "Unknown metric \"WALDO\"" ) )
+                ( RfnCommand::CommandException( BADPARAM, "Invalid metric id (38)" ) )
                 ( RfnCommand::CommandException( BADPARAM, "Number of metrics 16, expected <= 15" ) );
 
         std::vector< RfnCommand::CommandException > actual;
 
-        for each ( const RfnChannelConfigurationCommand::MetricList & m in metrics )
+        for each ( const RfnChannelConfigurationCommand::MetricIds & metricIds in metrics )
         {
             try
             {
-                RfnSetChannelIntervalRecordingCommand cmd( m, 0, 0 );
+                RfnSetChannelIntervalRecordingCommand cmd( metricIds, 0, 0 );
             }
             catch ( const RfnCommand::CommandException & ex )
             {
@@ -1256,7 +1123,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) );
 
 
-        const RfnChannelConfigurationCommand::MetricList metrics;
+        const RfnChannelConfigurationCommand::MetricIds metrics;
         RfnSetChannelIntervalRecordingCommand cmd( metrics, 0, 0 );
 
         std::vector< RfnCommand::CommandException > actual;

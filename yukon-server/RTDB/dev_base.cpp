@@ -955,7 +955,7 @@ boost::optional<bool> CtiDeviceBase::findDynamicInfo<bool>(PaoInfoKeys k) const
 }
 
 
-void CtiDeviceBase::setDynamicInfo(PaoInfoKeysIndexed k, const std::vector<std::string> &values)
+void CtiDeviceBase::setDynamicInfo(PaoInfoKeysIndexed k, const std::vector<unsigned long> &values)
 {
     Cti::DynamicPaoInfoManager::setInfo(getID(), k, values);
 }

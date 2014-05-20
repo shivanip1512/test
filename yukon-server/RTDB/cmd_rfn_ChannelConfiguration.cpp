@@ -8,172 +8,116 @@
 #include <boost/assign/list_of.hpp>
 #include <boost/optional.hpp>
 
-
 namespace Cti      {
 namespace Devices  {
 namespace Commands {
 
 namespace { // anonymous
 
-struct MetricItem
-{
-    const unsigned    _id;
-    const std::string _name;
-    const std::string _description;
-};
+const std::map<unsigned, std::string> metricIdResolver = boost::assign::map_list_of
+        (   1, "Watt hour delivered"                   )
+        (   2, "Watt hour received"                    )
+        (   3, "Watt hour total/sum"                   )
+        (   4, "Watt hour net"                         )
+        (   5, "Watts delivered, current demand"       )
+        (   6, "Watts received, current demand"        )
+        (   7, "Watts delivered, peak demand"          )
+        (   8, "Watts received, peak demand"           )
+        (   9, "Watts delivered, peak demand (Frozen)" )
+        (  10, "Watts received, peak demand (Frozen)"  )
+        (  11, "Watt hour delivered (Frozen)"          )
+        (  12, "Watt hour received (Frozen)"           )
 
-const MetricItem metricItems[] = {
-        {   1, "WattHourDel",              "Watt hour delivered"                   },
-        {   2, "WattHourRec",              "Watt hour received"                    },
-        {   3, "WattHourTotal",            "Watt hour total/sum"                   },
-        {   4, "WattHourNet",              "Watt hour net"                         },
-        {   5, "WattsDelCurrentDemand",    "Watts delivered, current demand"       },
-        {   6, "WattsRecCurrentDemand",    "Watts received, current demand"        },
-        {   7, "WattsDelPeakDemand",       "Watts delivered, peak demand"          },
-        {   8, "WattsRecPeakDemand",       "Watts received, peak demand"           },
-        {   9, "WattsDelPeakDemandFrozen", "Watts delivered, peak demand (Frozen)" },
-        {  10, "WattsRecPeakDemandFrozen", "Watts received, peak demand (Frozen)"  },
-        {  11, "WattHourDelFrozen",        "Watt hour delivered (Frozen)"          },
-        {  12, "WattHourRecFrozen",        "Watt hour received (Frozen)"           },
+        (  21, "Var hour delivered"                    )
+        (  22, "Var hour received"                     )
+        (  23, "Var hour total/sum"                    )
+        (  24, "Var hour net"                          )
+        (  25, "Var hour Q1"                           )
+        (  26, "Var hour Q2"                           )
+        (  27, "Var hour Q3"                           )
+        (  28, "Var hour Q4"                           )
+        (  29, "Var hour Q1 + Q4"                      )
+        (  30, "Var hour Q2 + Q3"                      )
+        (  31, "Var hour Q1 - Q4"                      )
+        (  32, "Var delivered, current demand"         )
+        (  33, "Var received, current demand"          )
+        (  34, "Var delivered, peak demand"            )
+        (  35, "Var received, peak demand"             )
+        (  36, "Var delivered, peak demand coincident" )
+        (  37, "Var received, peak demand coincident"  )
 
-        {  21, "VarHourDel",               "Var hour delivered"                    },
-        {  22, "VarHourRec",               "Var hour received"                     },
-        {  23, "VarHourTotal",             "Var hour total/sum"                    },
-        {  24, "VarHourNet",               "Var hour net"                          },
-        {  25, "VarHourQ1",                "Var hour Q1"                           },
-        {  26, "VarHourQ2",                "Var hour Q2"                           },
-        {  27, "VarHourQ3",                "Var hour Q3"                           },
-        {  28, "VarHourQ4",                "Var hour Q4"                           },
-        {  29, "VarHourQ1+Q4",             "Var hour Q1 + Q4"                      },
-        {  30, "VarHourQ2+Q3",             "Var hour Q2 + Q3"                      },
-        {  31, "VarHourQ1-Q4",             "Var hour Q1 - Q4"                      },
-        {  32, "VarDelCurrentDemand",      "Var delivered, current demand"         },
-        {  33, "VarRecCurrentDemand",      "Var received, current demand"          },
-        {  34, "VarDelPeakDemand",         "Var delivered, peak demand"            },
-        {  35, "VarRecPeakDemand",         "Var received, peak demand"             },
-        {  36, "VarDelPeakDemandCoinci",   "Var delivered, peak demand coincident" },
-        {  37, "VarRecPeakDemandCoinci",   "Var received, peak demand coincident"  },
+        (  41, "VA hour delivered"                     )
+        (  42, "VA hour received"                      )
+        (  43, "VA hour total/sum"                     )
+        (  44, "VA hour net"                           )
+        (  45, "VA hour Q1"                            )
+        (  46, "VA hour Q2"                            )
+        (  47, "VA hour Q3"                            )
+        (  48, "VA hour Q4"                            )
+        (  49, "VA delivered, current demand"          )
+        (  50, "VA received, current demand"           )
+        (  51, "VA received, peak demand"              )
+        (  52, "VA delivered, peak demand"             )
 
-        {  41, "VaHourDel",                "VA hour delivered"                     },
-        {  42, "VaHourRec",                "VA hour received"                      },
-        {  43, "VaHourTotal",              "VA hour total/sum"                     },
-        {  44, "VaHourNet",                "VA hour net"                           },
-        {  45, "VaHourQ1",                 "VA hour Q1"                            },
-        {  46, "VaHourQ2",                 "VA hour Q2"                            },
-        {  47, "VaHourQ3",                 "VA hour Q3"                            },
-        {  48, "VaHourQ4",                 "VA hour Q4"                            },
-        {  49, "VaDelCurrentDemand",       "VA delivered, current demand"          },
-        {  50, "VaRecCurrentDemand",       "VA received, current demand"           },
-        {  51, "VaRecPeakDemand",          "VA received, peak demand"              },
-        {  52, "VaDelPeakDemand",          "VA delivered, peak demand"             },
+        (  61, "Q hour delivered"                      )
+        (  62, "Q hour received"                       )
+        (  63, "Q hour total/sum"                      )
+        (  64, "Q hour net"                            )
+        (  65, "Q delivered, current demand"           )
+        (  66, "Q received, current demand"            )
+        (  67, "Q delivered, peak demand"              )
+        (  68, "Q received, peak demand"               )
+        (  69, "Q delivered, peak demand coincident"   )
+        (  70, "Q received, peak demand coincident"    )
 
-        {  61, "QHourDel",                 "Q hour delivered"                      },
-        {  62, "QHourRec",                 "Q hour received"                       },
-        {  63, "QHourTotal",               "Q hour total/sum"                      },
-        {  64, "QHourNet",                 "Q hour net"                            },
-        {  65, "QDelCurrentDemand",        "Q delivered, current demand"           },
-        {  66, "QRecCurrentDemand",        "Q received, current demand"            },
-        {  67, "QDelPeakDemand",           "Q delivered, peak demand"              },
-        {  68, "QRecPeakDemand",           "Q received, peak demand"               },
-        {  69, "QDelPeakDemandCoinci",     "Q delivered, peak demand coincident"   },
-        {  70, "QRecPeakDemandCoinci",     "Q received, peak demand coincident"    },
+        (  81, "Power Factor kWh(del)/kVar(del)"       )
+        (  82, "Power Factor kWh(rec)/kVar(rec)"       )
+        (  83, "Power Factor kWh(total)/kVar(total)"   )
 
-        {  81, "PfKWhDel",                 "Power Factor kWh(del)/kVar(del)"       },
-        {  82, "PfKWhRec",                 "Power Factor kWh(rec)/kVar(rec)"       },
-        {  83, "PfKWhTotal",               "Power Factor kWh(total)/kVar(total)"   },
+        ( 100, "Voltage Phase A"                       )
+        ( 101, "Voltage Phase B"                       )
+        ( 102, "Voltage Phase C"                       )
+        ( 103, "Current Phase A"                       )
+        ( 104, "Current Phase B"                       )
+        ( 105, "Current Phase C"                       )
+        ( 106, "Voltage Angle Phase A"                 )
+        ( 107, "Voltage Angle Phase B"                 )
+        ( 108, "Voltage Angle Phase C"                 )
+        ( 109, "Current Angle Phase A"                 )
+        ( 110, "Current Angle Phase B"                 )
+        ( 111, "Current Angle Phase C"                 )
+        ( 112, "Voltage Min"                           )
+        ( 113, "Voltage Average"                       )
+        ( 114, "Voltage Max"                           )
+        ( 115, "Voltage"                               )
+        ( 116, "Voltage Min Phase A"                   )
+        ( 117, "Voltage Min Phase B"                   )
+        ( 118, "Voltage Min Phase C"                   )
+        ( 119, "Voltage Average Phase A"               )
+        ( 120, "Voltage Average Phase B"               )
+        ( 121, "Voltage Average Phase C"               )
+        ( 122, "Voltage Max Phase A"                   )
+        ( 123, "Voltage Max Phase B"                   )
+        ( 124, "Voltage Max Phase C"                   )
 
-        { 100, "VoltagePhaseA",            "Voltage Phase A"                       },
-        { 101, "VoltagePhaseB",            "Voltage Phase B"                       },
-        { 102, "VoltagePhaseC",            "Voltage Phase C"                       },
-        { 103, "CurrentPhaseA",            "Current Phase A"                       },
-        { 104, "CurrentPhaseB",            "Current Phase B"                       },
-        { 105, "CurrentPhaseC",            "Current Phase C"                       },
-        { 106, "VoltageAnglePhaseA",       "Voltage Angle Phase A"                 },
-        { 107, "VoltageAnglePhaseB",       "Voltage Angle Phase B"                 },
-        { 108, "VoltageAnglePhaseC",       "Voltage Angle Phase C"                 },
-        { 109, "CurrentAnglePhaseA",       "Current Angle Phase A"                 },
-        { 110, "CurrentAnglePhaseB",       "Current Angle Phase B"                 },
-        { 111, "CurrentAnglePhaseC",       "Current Angle Phase C"                 },
-        { 112, "VoltageMin",               "Voltage Min"                           },
-        { 113, "VoltageAvg",               "Voltage Average"                       },
-        { 114, "VoltageMax",               "Voltage Max"                           },
-        { 115, "Voltage",                  "Voltage"                               },
-        { 116, "VoltageMinPhaseA",         "Voltage Min Phase A"                   },
-        { 117, "VoltageMinPhaseB",         "Voltage Min Phase B"                   },
-        { 118, "VoltageMinPhaseC",         "Voltage Min Phase C"                   },
-        { 119, "VoltageAvgPhaseA",         "Voltage Average Phase A"               },
-        { 120, "VoltageAvgPhaseB",         "Voltage Average Phase B"               },
-        { 121, "VoltageAvgPhaseC",         "Voltage Average Phase C"               },
-        { 122, "VoltageMaxPhaseA",         "Voltage Max Phase A"                   },
-        { 123, "VoltageMaxPhaseB",         "Voltage Max Phase B"                   },
-        { 124, "VoltageMaxPhaseC",         "Voltage Max Phase C"                   },
+        ( 150, "Watts Phase A"                         )
+        ( 151, "Watts Phase B"                         )
+        ( 152, "Watts Phase C"                         )
+        ( 153, "Var Phase A"                           )
+        ( 154, "Var Phase B"                           )
+        ( 155, "Var Phase C"                           )
+        ( 156, "VA Phase A"                            )
+        ( 157, "VA Phase B"                            )
+        ( 158, "VA Phase C"                            )
+        ( 159, "PF degree Phase A"                     )
+        ( 160, "PF degree Phase A"                     )
+        ( 161, "PF degree Phase C"                     )
+        ( 162, "PF Phase A"                            )
+        ( 163, "PF Phase B"                            )
+        ( 164, "PF Phase C"                            )
 
-        { 150, "WattsPhaseA",              "Watts Phase A"                         },
-        { 151, "WattsPhaseB",              "Watts Phase B"                         },
-        { 152, "WattsPhaseC",              "Watts Phase C"                         },
-        { 153, "VarPhaseA",                "Var Phase A"                           },
-        { 154, "VarPhaseB",                "Var Phase B"                           },
-        { 155, "VarPhaseC",                "Var Phase C"                           },
-        { 156, "VaPhaseA",                 "VA Phase A"                            },
-        { 157, "VaPhaseB",                 "VA Phase B"                            },
-        { 158, "VaPhaseC",                 "VA Phase C"                            },
-        { 159, "PfDegreePhaseA",           "PF degree Phase A"                     },
-        { 160, "PfDegreePhaseB",           "PF degree Phase A"                     },
-        { 161, "PfDegreePhaseC",           "PF degree Phase C"                     },
-        { 162, "PfPhaseA",                 "PF Phase A"                            },
-        { 163, "PfPhaseB",                 "PF Phase B"                            },
-        { 164, "PfPhaseC",                 "PF Phase C"                            },
-
-        { 256, "TimeSeconds",              "Time in Seconds"                       },
-        { 257, "TemperatureCentigrade",    "Temperature in Centigrade"             }};
-
-
-template <typename T,unsigned Size>
-unsigned arraySize(const T (&arr)[Size]) { return Size; }
-
-const unsigned totalMetricItems = arraySize( metricItems );
-
-std::map<unsigned, const MetricItem*> initializeMetricIdResolver()
-{
-    std::map<unsigned, const MetricItem*> m;
-    for(int itemNbr = 0 ; itemNbr < totalMetricItems; itemNbr++)
-    {
-        const MetricItem &metric = metricItems[itemNbr];
-        m[metric._id] = &metric;
-    }
-    return m;
-}
-
-std::map<std::string, const MetricItem*> initializeMetricNameResolver()
-{
-    std::map<std::string, const MetricItem*> m;
-    for(int itemNbr = 0 ; itemNbr < totalMetricItems; itemNbr++)
-    {
-        const MetricItem &metric = metricItems[itemNbr];
-        m[metric._name] = &metric;
-    }
-    return m;
-}
-
-const std::map<unsigned,    const MetricItem*> metricIdResolver   = initializeMetricIdResolver();
-const std::map<std::string, const MetricItem*> metricNameResolver = initializeMetricNameResolver();
-
-std::set<unsigned> resolveMetrics( const RfnChannelConfigurationCommand::MetricList& metrics )
-{
-    std::set<unsigned> metricsIds;
-
-    for each( RfnChannelConfigurationCommand::MetricList::value_type metricName in metrics )
-    {
-        const boost::optional<const MetricItem*> metric = mapFind( metricNameResolver, metricName );
-
-        validate( Condition( metric, BADPARAM )
-                << "Unknown metric \"" << metricName << "\"" );
-
-        metricsIds.insert( (*metric)->_id );
-    }
-
-    return metricsIds;
-}
+        ( 256, "Time in Seconds"                       )
+        ( 257, "Temperature in Centigrade"             );
 
 const std::map<unsigned, std::string> responseStatusResolver = boost::assign::map_list_of
         ( 0, "Success" )
@@ -353,7 +297,7 @@ struct MetricQualifierFields
 // Class RfnChannelConfigurationCommand
 //----------------------------------------------------------------------------
 
-RfnChannelConfigurationCommand::MetricList RfnChannelConfigurationCommand::getMetricsReceived() const
+RfnChannelConfigurationCommand::MetricIds RfnChannelConfigurationCommand::getMetricsReceived() const
 {
     return _metricsReceived;
 }
@@ -419,16 +363,16 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
         const unsigned metricId = getValueFromBytes_bEndian( response, offset, 2 );
         offset += 2;
 
-        boost::optional<const MetricItem*> metric = mapFind( metricIdResolver, metricId );
+        boost::optional<std::string> metricDescription = mapFind( metricIdResolver, metricId );
 
-        validate( Condition( metric, ErrorInvalidData )
+        validate( Condition( metricDescription, ErrorInvalidData )
                 << "Received unknown metric id (" << metricId << ")" );
 
-        result.description += (*metric)->_description + " (" + CtiNumStr(metricId) + ")\n";
+        result.description += *metricDescription + " (" + CtiNumStr(metricId) + ")\n";
 
-        const bool isNewInsert = _metricsReceived.insert((*metric)->_name).second;
+        const bool isNewInsert = _metricsReceived.insert(metricId).second;
         validate( Condition( isNewInsert, ErrorInvalidData )
-                << "Received unexpected duplicated metric: " << (*metric)->_description << " (" << metricId << ")" );
+                << "Received unexpected duplicated metric: " << *metricDescription << " (" << metricId << ")" );
     }
 }
 
@@ -461,16 +405,16 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
         const unsigned metricId = getValueFromBytes_bEndian( response, offset, 2 );
         offset += 2;
 
-        boost::optional<const MetricItem*> metric = mapFind( metricIdResolver, metricId );
+        boost::optional<std::string> metricDescription = mapFind( metricIdResolver, metricId );
 
-        validate( Condition( metric, ErrorInvalidData )
+        validate( Condition( metricDescription, ErrorInvalidData )
                 << "Received unknown metric id (" << metricId << ")" );
 
-        const bool isNewInsert = metricsIdsReceived.insert((*metric)->_id).second;
+        const bool isNewInsert = metricsIdsReceived.insert(metricId).second;
         validate( Condition( isNewInsert, ErrorInvalidData )
-                << "Received unexpected duplicated metric: " << (*metric)->_description << " (" << metricId << ")" );
+                << "Received unexpected duplicated metric: " << *metricDescription << " (" << metricId << ")" );
 
-        result.description += (*metric)->_description + " (" + CtiNumStr(metricId) + "): ";
+        result.description += *metricDescription + " (" + CtiNumStr(metricId) + "): ";
 
         const unsigned metricQualifier = getValueFromBytes_bEndian( response, offset, 2 );
         offset += 2;
@@ -564,7 +508,7 @@ void RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResu
 // Class RfnSetChannelSelectionCommand
 //----------------------------------------------------------------------------
 
-RfnSetChannelSelectionCommand::RfnSetChannelSelectionCommand( const MetricList& metrics )
+RfnSetChannelSelectionCommand::RfnSetChannelSelectionCommand( const MetricIds& metrics )
 {
     const unsigned maxMetrics = std::numeric_limits<unsigned char>::max();
 
@@ -573,10 +517,11 @@ RfnSetChannelSelectionCommand::RfnSetChannelSelectionCommand( const MetricList& 
 
     _setChannelSelectionTlvPayload.push_back( metrics.size() );
 
-    std::set<unsigned> metricsIds = resolveMetrics( metrics );
-
-    for each( unsigned metricId in metricsIds )
+    for each( unsigned metricId in metrics )
     {
+        validate( Condition( metricIdResolver.count(metricId), BADPARAM )
+                << "Invalid metric id (" << metricId << ")" );
+
         insertValue_bEndian<2> ( _setChannelSelectionTlvPayload, metricId );
     }
 }
@@ -712,7 +657,7 @@ unsigned RfnChannelIntervalRecordingCommand::getIntervalReportingSecondsReceived
 // Class RfnSetChannelIntervalRecordingCommand
 //----------------------------------------------------------------------------
 
-RfnSetChannelIntervalRecordingCommand::RfnSetChannelIntervalRecordingCommand( const MetricList& metrics,
+RfnSetChannelIntervalRecordingCommand::RfnSetChannelIntervalRecordingCommand( const MetricIds& metrics,
                                                                               unsigned intervalRecordingSeconds,
                                                                               unsigned intervalReportingSeconds )
 {
@@ -726,10 +671,11 @@ RfnSetChannelIntervalRecordingCommand::RfnSetChannelIntervalRecordingCommand( co
 
     _setIntervalRecordingTlvPayload.push_back( metrics.size() );
 
-    std::set<unsigned> metricsIds = resolveMetrics( metrics );
-
-    for each( unsigned metricId in metricsIds )
+    for each( unsigned metricId in metrics )
     {
+        validate( Condition( metricIdResolver.count(metricId), BADPARAM )
+                << "Invalid metric id (" << metricId << ")" );
+
         insertValue_bEndian<2> ( _setIntervalRecordingTlvPayload, metricId );
     }
 }

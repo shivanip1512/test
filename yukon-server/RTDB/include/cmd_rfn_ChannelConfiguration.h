@@ -19,9 +19,9 @@ public:
     virtual ~RfnChannelConfigurationCommand()
     {};
 
-    typedef std::set<std::string> MetricList;
+    typedef std::set<unsigned> MetricIds;
 
-    MetricList getMetricsReceived() const;
+    MetricIds getMetricsReceived() const;
 
 protected:
 
@@ -31,7 +31,7 @@ protected:
     typedef std::vector<TypeLengthValue> TlvList;
 
     // contains list of metrics for channel selection tlv type 1 or interval recording tlv type 1
-    MetricList _metricsReceived;
+    MetricIds _metricsReceived;
 
     virtual TlvList       getTlvsToSend() const;
     virtual unsigned char getResponseCommandCode() const = 0;
@@ -99,7 +99,7 @@ class IM_EX_DEVDB RfnSetChannelSelectionCommand : public RfnChannelSelectionComm
     unsigned char getOperation() const;
 
 public:
-    RfnSetChannelSelectionCommand( const MetricList& metrics );
+    RfnSetChannelSelectionCommand( const MetricIds& metrics );
 
 };
 
@@ -180,7 +180,7 @@ class IM_EX_DEVDB RfnSetChannelIntervalRecordingCommand : public RfnChannelInter
     unsigned char getOperation() const;
 
 public:
-    RfnSetChannelIntervalRecordingCommand( const MetricList& metrics,
+    RfnSetChannelIntervalRecordingCommand( const MetricIds& metrics,
                                            unsigned intervalRecordingSeconds,
                                            unsigned intervalReportingSeconds );
 };
