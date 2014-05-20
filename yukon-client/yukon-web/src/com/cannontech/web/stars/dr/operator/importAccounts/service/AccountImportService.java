@@ -824,7 +824,7 @@ public class AccountImportService {
                          * to only consider the accountnumber itself.  The number of digits to consider
                          * as valid comparable, non-rotation digits of the account number is expressed in a role property. 
                          */
-                        liteAcctInfo = starsSearchService.searchAccountByAccountNo(lsec, custFields[ImportFields.IDX_ACCOUNT_ID]);
+                        liteAcctInfo = starsSearchService.searchAccountByAccountNo(lsec, hwFields[ImportFields.IDX_ACCOUNT_ID]);
                         if (liteAcctInfo == null) {
                             if (hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
                                 importLog.println("WARNING at " + result.getPosition() + ": account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " doesn't exist, record ignored");
