@@ -14,16 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
-import com.cannontech.stars.core.dao.EnergyCompanyDao;
 
 /**
  * Listens for ActiveMQ messages from Load Management, parses them, and passes DR messages to the
  * EcobeeCommunicationService, which will send them to the Ecobee servers and the end devices.
  */
 public class EcobeeMessageListener {
-    @Autowired EcobeeCommunicationService ecobeeCommunicationService;
-    @Autowired EnergyCompanyDao energyCompanyDao;
     private static final Logger log = YukonLogManager.getLogger(EcobeeMessageListener.class);
+
+    @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
+
     private static final Map<Integer, String> groupToDrIdentifierMap = new HashMap<>();
 
     /**
