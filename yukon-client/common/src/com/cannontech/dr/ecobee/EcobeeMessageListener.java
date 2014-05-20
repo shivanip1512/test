@@ -1,7 +1,6 @@
 package com.cannontech.dr.ecobee;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.jms.JMSException;
@@ -42,13 +41,10 @@ public class EcobeeMessageListener {
                 return;
             }
 
-            List<Integer> ecIds = energyCompanyDao.getEnergyCompanyIdsByGroupEnrollment(parameters.getGroupId());
             try {
-                for(Integer ecId : ecIds) {
-                    String drIdentifier = ecobeeCommunicationService.sendDutyCycleDR(parameters);
-                    //store the most recent dr handle for each group, so we can cancel
-                    groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
-                }
+                String drIdentifier = ecobeeCommunicationService.sendDutyCycleDR(parameters);
+                //store the most recent dr handle for each group, so we can cancel
+                groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
             } catch (EcobeeException e) {
                 log.error("Unable to send control messages due to ecobee error.", e);
             }
