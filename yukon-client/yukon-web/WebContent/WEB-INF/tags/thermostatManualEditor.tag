@@ -4,7 +4,7 @@
 <%@ attribute name="thermostatIds" required="true" type="java.lang.String" description="id(s) of the thermostat(s) we are sending manual commands to."%>
 <%@ attribute name="accountId" required="true" type="java.lang.String" description="ID of the account we are operating on." %>
 <%@ attribute name="temperatureUnit" required="true" type="java.lang.String" description="Acceptable units are: ['F', 'C'] determines the initial unit." %>
-<%@ attribute name="actionPath" required="true" type="java.lang.String" description="Where to submit the manual thermostat form to."%>
+<%@ attribute name="actionPath" required="true" type="java.lang.String" description="Application context will be handled inside the tag. Just pass a bare url."%>
 <%@ attribute name="autoEnabledMode" required="false" type="java.lang.Boolean" description="Turns on the auto mode functionality and changes the gui to take deadbands into account" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -140,8 +140,8 @@
 
 <%-- Confirm Dialog for send settings --%>
 <i:simplePopup titleKey=".sendConfirm.title" on="#sendSettingsSubmit" id="confirmPopup_${event.eventId}">
-    
-    <form action="${actionPath}" method="post">
+    <cti:url var="postUrl" value="${actionPath}"/>
+    <form action="${postUrl}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="accountId"  value="${accountId}" />
         <input type="hidden" name="thermostatIds"  value="${thermostatIds}" />
