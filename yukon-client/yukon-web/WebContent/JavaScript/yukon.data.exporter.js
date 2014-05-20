@@ -40,7 +40,6 @@ yukon.dataExporter = (function () {
         buttons.push({'text' : _config.text.cancel, 'click' : function() { $(this).dialog('close'); }});
         var dialogOpts = {
                   'title' : titleMsg,
-                  'position' : 'center',
                   'width' : 'auto',
                   'height' : 'auto',
                   'modal' : true,
