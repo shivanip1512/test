@@ -255,13 +255,13 @@
                         
                         <tags:nameValueContainer2 id="serviceAddressTable">
                         
-                            <tags:inputNameValue nameKey=".address1Label" path="accountDto.streetAddress.locationAddress1"/>
-                            <tags:inputNameValue nameKey=".address2Label" path="accountDto.streetAddress.locationAddress2"/>
-                            <tags:inputNameValue nameKey=".cityLabel" path="accountDto.streetAddress.cityName"/>
+                            <tags:inputNameValue nameKey=".address1Label" path="accountDto.streetAddress.locationAddress1" maxlength="100"/>
+                            <tags:inputNameValue nameKey=".address2Label" path="accountDto.streetAddress.locationAddress2" maxlength="100"/>
+                            <tags:inputNameValue nameKey=".cityLabel" path="accountDto.streetAddress.cityName" maxlength="32"/>
                             <tags:inputNameValue nameKey=".stateLabel" path="accountDto.streetAddress.stateCode" size="3" maxlength="2"/>
-                            <tags:inputNameValue nameKey=".zipLabel" path="accountDto.streetAddress.zipCode"/>
+                            <tags:inputNameValue nameKey=".zipLabel" path="accountDto.streetAddress.zipCode" maxlength="12"/>
                             <tags:inputNameValue nameKey=".mapNumberLabel" path="accountDto.mapNumber"/>
-                            <tags:inputNameValue nameKey=".countyLabel" path="accountDto.streetAddress.county"/>
+                            <tags:inputNameValue nameKey=".countyLabel" path="accountDto.streetAddress.county" maxlength="30"/>
                             <tags:textareaNameValue nameKey=".addressNotesLabel" path="accountDto.propertyNotes" rows="3" cols="20"/>                            
                         
                         </tags:nameValueContainer2>
@@ -278,12 +278,12 @@
                                                         onclick="toggleBillingAddress();" checkBoxDescriptionNameKey=".usePrimaryAddressForBillingLabel" excludeColon="true"/>
                             </cti:displayForPageEditModes>
                             
-                            <tags:inputNameValue nameKey=".billingAddress1Label" path="accountDto.billingAddress.locationAddress1"/>
-                            <tags:inputNameValue nameKey=".billingAddress2Label" path="accountDto.billingAddress.locationAddress2"/>
-                            <tags:inputNameValue nameKey=".billingCityLabel" path="accountDto.billingAddress.cityName"/>
+                            <tags:inputNameValue nameKey=".billingAddress1Label" path="accountDto.billingAddress.locationAddress1" maxlength="100"/>
+                            <tags:inputNameValue nameKey=".billingAddress2Label" path="accountDto.billingAddress.locationAddress2" maxlength="100"/>
+                            <tags:inputNameValue nameKey=".billingCityLabel" path="accountDto.billingAddress.cityName" maxlength="32"/>
                             <tags:inputNameValue nameKey=".billingStateLabel" path="accountDto.billingAddress.stateCode" size="3" maxlength="2"/>
-                            <tags:inputNameValue nameKey=".billingZipLabel" path="accountDto.billingAddress.zipCode"/>
-                            <form:hidden path="accountDto.billingAddress.county"/>
+                            <tags:inputNameValue nameKey=".billingZipLabel" path="accountDto.billingAddress.zipCode" maxlength="12"/>
+                            <form:hidden path="accountDto.billingAddress.county" maxlength="30"/>
                             
                             <%-- for temporary storage of billing previous values, has no impact on actual form processing --%>
                             <input type="hidden" id="temp_accountDto.billingAddress.locationAddress1" value="${fn:escapeXml(accountGeneral.accountDto.billingAddress.locationAddress1)}"/> 

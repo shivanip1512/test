@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/15/2014 2:23:11 PM                         */
+/* Created on:     5/20/2014 10:55:38 AM                        */
 /*==============================================================*/
 
 
@@ -86,8 +86,8 @@ create table ActivityLog  (
 /*==============================================================*/
 create table Address  (
    AddressID            NUMBER                          not null,
-   LocationAddress1     VARCHAR2(40)                    not null,
-   LocationAddress2     VARCHAR2(40)                    not null,
+   LocationAddress1     VARCHAR2(100)                   not null,
+   LocationAddress2     VARCHAR2(100)                   not null,
    CityName             VARCHAR2(32)                    not null,
    StateCode            CHAR(2)                         not null,
    ZipCode              VARCHAR2(12)                    not null,

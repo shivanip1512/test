@@ -38,8 +38,8 @@ $(function() {
                         <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="60"/>
                         
                         <cti:displayForPageEditModes modes="EDIT">
-                            <tags:inputNameValue nameKey=".streetAddress1" path="address.locationAddress1" size="35" maxlength="40"/>
-                            <tags:inputNameValue nameKey=".streetAddress2" path="address.locationAddress2" size="35" maxlength="40"/>
+                            <tags:inputNameValue nameKey=".streetAddress1" path="address.locationAddress1" size="35" maxlength="100"/>
+                            <tags:inputNameValue nameKey=".streetAddress2" path="address.locationAddress2" size="35" maxlength="100"/>
                             <tags:inputNameValue nameKey=".city" path="address.cityName" size="32" maxlength="32"/>
                             <tags:inputNameValue nameKey=".stateCode" path="address.stateCode" size="3" maxlength="2"/>
                             <tags:inputNameValue nameKey=".zipCode" path="address.zipCode" size="12" maxlength="12"/>

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/15/2014 2:22:17 PM                         */
+/* Created on:     5/19/2014 12:21:29 PM                        */
 /*==============================================================*/
 
 
@@ -88,8 +88,8 @@ go
 /*==============================================================*/
 create table Address (
    AddressID            numeric              not null,
-   LocationAddress1     varchar(40)          not null,
-   LocationAddress2     varchar(40)          not null,
+   LocationAddress1     varchar(100)         not null,
+   LocationAddress2     varchar(100)         not null,
    CityName             varchar(32)          not null,
    StateCode            char(2)              not null,
    ZipCode              varchar(12)          not null,
