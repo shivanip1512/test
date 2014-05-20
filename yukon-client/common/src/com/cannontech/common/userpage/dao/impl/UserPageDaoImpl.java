@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.pao.DisplayablePao;
@@ -19,6 +20,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
+import com.cannontech.common.userpage.model.UserPage.Key;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -29,10 +31,22 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 
+/**
+ * DAO for reading and writing UserPage and UserPageParam tables.  Some important things to note:
+ * 
+ * The UserPage table is most easily understood if you thinks of it as a history table.  If the "favorite" column
+ * is set to true (1), the page is also a "favorite".
+ * 
+ * The UserPageParam table does not store URL parameters but rather "label arguments" used in module_config.xml.
+ * The URL parameters are stored as part of the path in the UserPage table.
+ */
 public class UserPageDaoImpl implements UserPageDao {
     @Autowired private PaoDao paoDao;
     @Autowired private PaoLoadingService paoLoadingService;
@@ -40,51 +54,138 @@ public class UserPageDaoImpl implements UserPageDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     private static SimpleTableAccessTemplate<UserPage> userPageTemplate;
-    private static SimpleTableAccessTemplate<UserPageParameterEntry> userPageParamTemplate;
+
+    /**
+     * Since the UserPage class has a few convenience columns that basically duplicate the key, this class represents
+     * the "value" or "state" of a user page.  That is to say, the things that can change for any specific given page.
+     */
+    private static class PageData {
+        Integer userPageId = null;
+        boolean isFavorite = false;
+        Instant lastAccess = new Instant();
+    };
+
+    private static YukonRowMapper<PageData> pageDataRowMapper = new YukonRowMapper<PageData>() {
+        @Override
+        public PageData mapRow(YukonResultSet rs) throws SQLException {
+            PageData pageData = new PageData();
+            pageData.userPageId = rs.getInt("UserPageId");
+            pageData.isFavorite = rs.getBoolean("Favorite");
+            pageData.lastAccess = rs.getInstant("LastAccess");
+            return pageData;
+        };
+    };
 
     @Override 
     @Transactional
-    public boolean toggleFavorite(UserPage page) {
-        UserPage dbPage = findPage(page);
-        if (dbPage == null) {
-            page = page.withFavorite(true);
-        } else {
-            page = dbPage.withFavorite( ! dbPage.isFavorite());
-        }
-        UserPage afterUpdate = save(page);
-        return afterUpdate.isFavorite();
+    public boolean toggleFavorite(Key userPageKey, SiteModule module, String name, List<String> arguments) {
+        PageData pageData = findPageData(userPageKey);
+
+        UserPage page = new UserPage(pageData.userPageId, userPageKey, module, name, arguments, !pageData.isFavorite,
+            pageData.lastAccess);
+        page = save(page);
+        return page.isFavorite();
     }
 
     @Override
-    public boolean isFavorite(UserPage page) {
-        UserPage dbPage = findPage(page);
-        if (dbPage == null) {
+    public boolean isFavorite(Key userPageKey) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select Favorite from UserPage");
+        sql.append(buildUniquenessCriterion(userPageKey));
+        try {
+            boolean isFavorite = jdbcTemplate.queryForObject(sql, RowMapper.BOOLEAN);
+            return isFavorite;
+        } catch (EmptyResultDataAccessException erdae) {
+            // No history at all...it's not a favorite.
             return false;
         }
-        return dbPage.isFavorite();
     }
 
     @Override
     @Transactional
-    public void updateHistory(UserPage page) {
-        UserPage dbPage = findPage(page);
-        if (dbPage != null) {
-            page = dbPage.withLastAccess(page.getLastAccess());
-        }
-        save(page);
+    public void updateHistory(Key userPageKey, SiteModule module, String name, List<String> arguments) {
+        PageData pageData = findPageData(userPageKey);
+
+        UserPage page = new UserPage(pageData.userPageId, userPageKey, module, name, arguments, pageData.isFavorite,
+            new Instant());
+        page = save(page);
+
         maintainHistory(page.getUserId());
+    }
+
+    private PageData findPageData(Key userPageKey) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select UserPageId, Favorite, LastAccess");
+        sql.append("from UserPage");
+        sql.append(buildUniquenessCriterion(userPageKey));
+
+        PageData pageData;
+        try {
+            pageData = jdbcTemplate.queryForObject(sql, pageDataRowMapper);
+        } catch (EmptyResultDataAccessException erdae) {
+            pageData = new PageData();
+        }
+        return pageData;
     }
 
     @Override
     public List<UserPage> getPagesForUser(LiteYukonUser user) {
+        SqlStatementBuilder whereClause = new SqlStatementBuilder();
+        whereClause.append("where UserId").eq(user.getUserID());
+
+        return getPages(whereClause, "order by LastAccess desc");
+    }
+
+    private List<UserPage> getPages(SqlFragmentSource whereClause, String orderBy) {
+        final ListMultimap<Integer, String> labelArgumentsByUserPageId = ArrayListMultimap.create();
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Favorite, LastAccess");
-        sql.append("FROM UserPage");
-        sql.append("WHERE UserId").eq(user.getUserID());
-        sql.append("ORDER BY LastAccess DESC");
+        sql.append("select UserPageId, Parameter");
+        sql.append("from UserPageParam");
+        if (whereClause != null) {
+            sql.append("where UserPageId in (");
+            sql.append(    "select UserPageId from UserPage").append(whereClause);
+            sql.append(")");
+        }
+        sql.append("order by ParamNumber");
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                labelArgumentsByUserPageId.put(rs.getInt("UserPageId"), rs.getString("Parameter"));
+            }
+        });
+
+        sql = new SqlStatementBuilder();
+        sql.append("select UserPageId, UserId, PagePath, PageName, Module, Favorite, LastAccess");
+        sql.append("from UserPage");
+        if (whereClause != null) {
+            sql.append(whereClause);
+        }
+        if (orderBy != null) {
+            sql.append(orderBy);
+        }
+
+        YukonRowMapper<UserPage> userPageRowMapper = new YukonRowMapper<UserPage>() {
+            @Override
+            public UserPage mapRow(YukonResultSet rs) throws SQLException {
+                int id = rs.getInt("UserPageId");
+                int userId = rs.getInt("UserId");
+                String pagePath = rs.getString("PagePath");
+                String pageName = rs.getString("PageName");
+                SiteModule module = rs.getEnum("Module", SiteModule.class);
+                boolean isFavorite = rs.getBoolean("Favorite");
+                Instant lastAccess = rs.getInstant("LastAccess");
+
+                List<String> params = labelArgumentsByUserPageId.get(id);
+
+                Key key = new Key(userId, pagePath);
+                UserPage userPage = new UserPage(id, key, module, pageName, params, isFavorite, lastAccess);
+
+                return userPage;
+            }
+        };
 
         List<UserPage> results = jdbcTemplate.query(sql, userPageRowMapper);
-
         return results;
     }
 
@@ -95,131 +196,82 @@ public class UserPageDaoImpl implements UserPageDao {
      */
     private UserPage save(UserPage page) {
         int userPageId = userPageTemplate.save(page);
-        page = page.withId(userPageId);
+        List<String> labelArguments = page.getArguments();
+        page = new UserPage(userPageId, page.getKey(), page.getModule(), page.getName(), labelArguments,
+            page.isFavorite(), page.getLastAccess());
 
-        clearParameters(page);
-        List<UserPageParameterEntry> params = UserPageParameterEntry.getParamEntries(page);
-        for (UserPageParameterEntry entry : params) {
-            userPageParamTemplate.save(entry);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("delete from UserPageParam");
+        sql.append("where UserPageId").eq(page.getId());
+        jdbcTemplate.update(sql);
+
+        for (int index = 0; index < labelArguments.size(); index++) {
+            String labelArgument = labelArguments.get(index);
+            sql = new SqlStatementBuilder();
+            int id = nextValueHelper.getNextValue("UserPageParam");
+            sql.append("insert into UserPageParam");
+            sql.append("(UserPageParamId, UserPageId, ParamNumber, Parameter)");
+            sql.values(id, page.getId(), index, labelArgument);
+            jdbcTemplate.update(sql);
         }
 
         return page;
     }
 
-    private void delete(UserPage page) {
+    private void delete(Key userPageKey) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM UserPage");
-        sql.appendFragment(buildUniquenessCriterion(page));
+        sql.append(buildUniquenessCriterion(userPageKey));
         jdbcTemplate.update(sql);
     }
 
     /**
-     * Finds a page with the specified userId and path. If none is found, null is returned.
-     */
-    private UserPage findPage(UserPage page) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Favorite, LastAccess");
-        sql.append("FROM UserPage");
-        sql.appendFragment(buildUniquenessCriterion(page));
-        List<UserPage> pages = jdbcTemplate.query(sql, userPageRowMapper);
-
-        switch(pages.size()){
-        case 0: return null;
-        default: return pages.get(0);
-        }
-    }
-
-    /**
-     * Deletes all but the most recent MAX_HISTORY elements for a userId that are not favorited
+     * Deletes all but the most recent MAX_HISTORY elements for a userId that are not favorites.
      */
     private void maintainHistory(int userId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM UserPage");
-        sql.append("WHERE UserId").eq(userId);
-        sql.append("AND UserPageId NOT IN (");
-        sql.append("  SELECT T.UserPageId FROM (");
-        sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY LastAccess DESC) RowNumber, UP.UserPageId, UP.Favorite");
-        sql.append("    FROM UserPage UP");
-        sql.append("    WHERE UP.UserId").eq(userId);
-        sql.append("  ) T");
-        sql.append("  WHERE T.RowNumber").lte(MAX_HISTORY);
-        sql.append("  OR T.Favorite").eq(true);
-        sql.append("  UNION");
-        sql.append("  SELECT T2.UserPageId FROM (");
-        sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY LastAccess DESC) RowNumber, UP.UserPageId");
-        sql.append("    FROM UserPage UP");
-        sql.append("    WHERE UP.UserId").eq(userId);
-        sql.append("    AND UP.Module").eq("dr");
-        sql.append("    AND UP.PageName").contains("Detail");
-        sql.append("  ) T2");
-        sql.append("  WHERE T2.RowNumber").lte(MAX_DR_RECENT_VIEWED);
+        sql.append("delete from UserPage");
+        sql.append("where UserId").eq(userId);
+        sql.append("and UserPageId not in (");
+        sql.append("  select t.UserPageId from (");
+        sql.append("    select row_number() over (order by LastAccess desc) RowNumber, up.UserPageId, up.Favorite");
+        sql.append("    from UserPage up");
+        sql.append("    where up.UserId").eq(userId);
+        sql.append("  ) t");
+        sql.append("  where t.RowNumber").lte(MAX_HISTORY);
+        sql.append("  or t.Favorite").eq(true);
+        sql.append("  union");
+        sql.append("  select t2.UserPageId from (");
+        sql.append("    select row_number() over (order by LastAccess desc) RowNumber, up.UserPageId");
+        sql.append("    from UserPage up");
+        sql.append("    where up.UserId").eq(userId);
+        sql.append("    and up.Module").eq("dr");
+        sql.append("    and up.PageName").contains("Detail");
+        sql.append("  ) t2");
+        sql.append("  where t2.RowNumber").lte(MAX_DR_RECENT_VIEWED);
         sql.append(")");
         jdbcTemplate.update(sql);
-    }
-
-    /**
-     * Removes references to specified UserPage in the UserPageParams table
-     */
-    private void clearParameters(UserPage page) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM UserPageParam");
-        sql.append("WHERE UserPageId").eq(page.getId());
-        jdbcTemplate.update(sql);
-
     }
 
    /**
      * @return WHERE clause for path and UserId
      */
-    private static SqlFragmentSource buildUniquenessCriterion(UserPage page) {
+    private static SqlFragmentSource buildUniquenessCriterion(Key userPageKey) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("WHERE PagePath").eq(page.getPath());
-        sql.append("AND UserId").eq(page.getUserId());
+        sql.append("where PagePath").eq(userPageKey.getPath());
+        sql.append("and UserId").eq(userPageKey.getUserId());
         return sql;
     }
 
-   /**
-     * @return labelArgs for page to generate i18n display title
-     */
-    private List<String> getParameters(Integer pageId) {
-       SqlStatementBuilder sql = new SqlStatementBuilder();
-       sql.append("SELECT Parameter");
-       sql.append("FROM UserPageParam");
-       sql.append("WHERE UserPageId").eq(pageId);
-       sql.append("ORDER BY Parameter");
-       List<String> params = jdbcTemplate.query(sql, RowMapper.STRING);
-       return params;
-   }
-
-    private YukonRowMapper<UserPage> userPageRowMapper = new YukonRowMapper<UserPage>() {
-        @Override
-        public UserPage mapRow(YukonResultSet rs) throws SQLException {
-            int id = rs.getInt("UserPageId");
-            int userId = rs.getInt("UserId");
-            String pagePath = rs.getString("PagePath");
-            String pageName = rs.getString("PageName");
-            String module = rs.getString("Module");
-            boolean isFavorite = rs.getBoolean("Favorite");
-            Instant lastAccess = rs.getInstant("LastAccess");
-
-            List<String> params = getParameters(id);
-
-            UserPage userPage = new UserPage(userId, pagePath, isFavorite, SiteModule.getByName(module), pageName,
-                params, lastAccess, id);
-
-            return userPage;
-        }
-    };
-
     private static AdvancedFieldMapper<UserPage> userPageMapper = new AdvancedFieldMapper<UserPage>() {
         @Override
-        public void extractValues(SqlParameterChildSink p, UserPage page) {
-            p.addValue("UserId", page.getUserId());
-            p.addValue("PagePath", page.getPath());
-            p.addValue("PageName", page.getTitle());
-            p.addValue("Module", page.getModule());
-            p.addValue("Favorite", page.isFavorite());
-            p.addValue("LastAccess", page.getLastAccess());
+        public void extractValues(SqlParameterChildSink sink, UserPage page) {
+            sink.addValue("UserId", page.getUserId());
+            sink.addValue("PagePath", page.getPath());
+            sink.addValue("PageName", page.getName());
+            sink.addValue("Module", page.getModule());
+            sink.addValue("Favorite", page.isFavorite());
+            sink.addValue("LastAccess", page.getLastAccess());
         }
 
         @Override
@@ -233,87 +285,12 @@ public class UserPageDaoImpl implements UserPageDao {
         }
     };
 
-    private static AdvancedFieldMapper<UserPageParameterEntry> userPageParamMapper =
-    		new AdvancedFieldMapper<UserPageParameterEntry>() {
-        @Override
-        public void extractValues(SqlParameterChildSink p, UserPageParameterEntry paramEntry) {
-            p.addValue("UserPageId", paramEntry.getUserPageId());
-            p.addValue("ParamNumber", paramEntry.getParamNumber());
-            p.addValue("Parameter", paramEntry.getParameter());
-        }
-
-        @Override
-        public Number getPrimaryKey(UserPageParameterEntry page) {
-            return page.getId();
-        }
-
-        @Override
-        public void setPrimaryKey(UserPageParameterEntry page, int value) {
-            // Immutable object
-        }
-    };
-
-    private static class UserPageParameterEntry {
-        private final Integer id;
-        private final Integer userPageId;
-        private final Integer paramNumber;
-        private final String parameter;
-
-        public UserPageParameterEntry(Integer id, Integer userPageId, Integer paramNumber, String parameter) {
-            this.id = id;
-            this.userPageId = userPageId;
-            this.paramNumber = paramNumber;
-            this.parameter = parameter;
-        }
-
-        public static List<UserPageParameterEntry> getParamEntries(UserPage page) {
-            List<UserPageParameterEntry> result = new ArrayList<>();
-            int i=0;
-            for (String parameter : page.getArguments()) {
-                result.add( new UserPageParameterEntry(null, page.getId(), i, parameter));
-                i++;
-            }
-
-            return result;
-        }
-
-        public final Integer getId() {
-            return id;
-        }
-
-        public final Integer getUserPageId() {
-            return userPageId;
-        }
-
-        public final Integer getParamNumber() {
-            return paramNumber;
-        }
-
-        public final String getParameter() {
-            return parameter;
-        }
-    }
-
-    private List<UserPage> getAllPages() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Favorite, LastAccess");
-        sql.append("FROM UserPage");
-
-        List<UserPage> results = jdbcTemplate.query(sql, userPageRowMapper);
-        return results;
-    }
-
     @PostConstruct
     public void init() throws Exception {
         userPageTemplate = new SimpleTableAccessTemplate<UserPage>(jdbcTemplate, nextValueHelper);
         userPageTemplate.setTableName("UserPage");
         userPageTemplate.setPrimaryKeyField("UserPageId");
         userPageTemplate.setAdvancedFieldMapper(userPageMapper);
-
-        userPageParamTemplate = new SimpleTableAccessTemplate<UserPageParameterEntry>(jdbcTemplate, nextValueHelper);
-        userPageParamTemplate.setTableName("UserPageParam");
-        userPageParamTemplate.setPrimaryKeyField("UserPageParamId");
-        userPageParamTemplate.setAdvancedFieldMapper(userPageParamMapper);
     }
 
     private static List<Pattern> paoUrls = new ArrayList<>();
@@ -327,27 +304,27 @@ public class UserPageDaoImpl implements UserPageDao {
     }
 
     static {
-        drFavoritesUrls.add( compileUrlParam("/dr/program/detail", "programId"));
-        drFavoritesUrls.add( compileUrlParam("/dr/scenario/detail", "scenarioId"));
-        drFavoritesUrls.add( compileUrlParam("/dr/loadGroup/detail", "loadGroupId"));
-        drFavoritesUrls.add( compileUrlParam("/dr/controlArea/detail", "controlAreaId"));
+        drFavoritesUrls.add(compileUrlParam("/dr/program/detail", "programId"));
+        drFavoritesUrls.add(compileUrlParam("/dr/scenario/detail", "scenarioId"));
+        drFavoritesUrls.add(compileUrlParam("/dr/loadGroup/detail", "loadGroupId"));
+        drFavoritesUrls.add(compileUrlParam("/dr/controlArea/detail", "controlAreaId"));
 
         paoUrls.addAll(drFavoritesUrls);
 
-        capControlUrls.add( compileUrlParam("/capcontrol/tier/substations", "bc_areaId"));
-        capControlUrls.add( compileUrlParam("/capcontrol/tier/feeders", "substationId"));
-        capControlUrls.add( compileUrlParam("/capcontrol/ivvc/bus/detail", "subBusId"));
+        capControlUrls.add(compileUrlParam("/capcontrol/tier/substations", "bc_areaId"));
+        capControlUrls.add(compileUrlParam("/capcontrol/tier/feeders", "substationId"));
+        capControlUrls.add(compileUrlParam("/capcontrol/ivvc/bus/detail", "subBusId"));
 
         paoUrls.addAll(capControlUrls);
 
-        meterUrls.add( compileUrlParam("/meter/home", "deviceId"));
-        meterUrls.add( compileUrlParam("/meter/moveIn", "deviceId"));
-        meterUrls.add( compileUrlParam("/meter/moveOut", "deviceId"));
-        meterUrls.add( compileUrlParam("/meter/highBill/view", "deviceId"));
-        meterUrls.add( compileUrlParam("/amr/profile/home", "deviceId"));
-        meterUrls.add( compileUrlParam("/amr/voltageAndTou/home", "deviceId"));
-        meterUrls.add( compileUrlParam("/common/device/points", "deviceId"));
-        meterUrls.add( compileUrlParam("/amr/manualCommand/home", "deviceId"));
+        meterUrls.add(compileUrlParam("/meter/home", "deviceId"));
+        meterUrls.add(compileUrlParam("/meter/moveIn", "deviceId"));
+        meterUrls.add(compileUrlParam("/meter/moveOut", "deviceId"));
+        meterUrls.add(compileUrlParam("/meter/highBill/view", "deviceId"));
+        meterUrls.add(compileUrlParam("/amr/profile/home", "deviceId"));
+        meterUrls.add(compileUrlParam("/amr/voltageAndTou/home", "deviceId"));
+        meterUrls.add(compileUrlParam("/common/device/points", "deviceId"));
+        meterUrls.add(compileUrlParam("/amr/manualCommand/home", "deviceId"));
         meterUrls.add(Pattern.compile("/bulk/routeLocate/home\\?.*?idList.ids=(\\d+(?:,\\d+)).*?"));
 
         paoUrls.addAll(meterUrls);
@@ -355,25 +332,26 @@ public class UserPageDaoImpl implements UserPageDao {
 
     @Override
     public void deletePagesForPao(PaoIdentifier paoIdentifier) {
-        List<UserPage> pages = getAllPages();
+        List<UserPage> pages = getPages(null, null);
 
         for (UserPage page : pages) {
             Integer pagePaoId = paoIdInPath(page.getPath(), paoUrls);
             if ( pagePaoId != null && pagePaoId == paoIdentifier.getPaoId() ) {
-                delete(page);
+                delete(page.getKey());
             }
         }
     }
     
     @Override
     public void updatePagesForPao(PaoIdentifier paoIdentifier, String paoName) {
-        List<UserPage> pages = getAllPages();
+        List<UserPage> pages = getPages(null, null);
 
         for (UserPage page : pages) {
             Integer pagePaoId = paoIdInPath(page.getPath(), paoUrls);
             if ( pagePaoId != null && pagePaoId == paoIdentifier.getPaoId() ) {
                 List<String> args = Arrays.asList(paoName);
-                page = page.withArguments(args);
+                page = new UserPage(page.getId(), page.getKey(), page.getModule(), page.getName(), args,
+                    page.isFavorite(), page.getLastAccess());
                 save(page);
             }
         }

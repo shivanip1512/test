@@ -1,36 +1,54 @@
 package com.cannontech.common.userpage.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.Instant;
 
 public final class UserPage {
+    public static final class Key {
+        private final int userId;
+        private final String path;
+
+        public Key(int userId, String path) {
+            this.userId = userId;
+            this.path = path;
+        }
+
+        public int getUserId() {
+            return userId;
+        }
+
+        public String getPath() {
+            return path;
+        }
+    }
+
+    // The database primary key.
     private final Integer id;
-    private final int userId;
-    private final String path;
-    private final SiteModule module;
-    private final String title;
-    private final List<String> arguments;
+
+    // The real primary key.
+    private final Key key;
+
+    // Variables that map to things <page> tag in module_config.xml.  These are just here (and in the database)
+    // for convenience...they could all be derived from the path in the key.
+    private final SiteModule module; // the name attribute of the parent <module> tag
+    private final String name; // name attribute (of the page itself) of course
+    private final List<String> arguments; // a list of <labelArgument> inside the <page> tag
+
+    // Variable data...the "state" of the UserPage.
     private final boolean favorite;
     private final Instant lastAccess;
 
-    public UserPage(int userId, String path, boolean isFavorite) {
-        this(userId, path, isFavorite, null, null, new ArrayList<String>(), new Instant(), null);
-    }
-
-    public UserPage(int userId, String path, boolean category, SiteModule module, String name, List<String> arguments) {
-        this(userId, path, category, module, name, arguments, new Instant(), null);
-    }
-
-    public UserPage(int userId, String path, boolean isFavorite, SiteModule module, String title,
-            List<String> arguments, Instant lastAccess, Integer id) {
+    /**
+     * As a rule, these should not need to be created outside the DAO.
+     */
+    public UserPage(Integer id, Key key, SiteModule module, String name, List<String> arguments, boolean isFavorite,
+            Instant lastAccess) {
         this.id = id;
-        this.userId = userId;
-        this.path = path;
+        this.key = key;
         this.favorite = isFavorite;
         this.module = module;
-        this.title = title;
+        this.name = name;
         this.arguments = arguments;
         this.lastAccess = lastAccess;
     }
@@ -39,12 +57,16 @@ public final class UserPage {
         return id;
     }
 
+    public Key getKey() {
+        return key;
+    }
+
     public int getUserId() {
-        return userId;
+        return key.userId;
     }
 
     public String getPath() {
-        return path;
+        return key.path;
     }
 
     public SiteModule getModule() {
@@ -55,8 +77,8 @@ public final class UserPage {
         return module == null ? "" : module.getName();
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
     public List<String> getArguments() {
@@ -69,33 +91,5 @@ public final class UserPage {
 
     public Instant getLastAccess() {
         return lastAccess;
-    }
-
-    public UserPage withId(Integer newId) {
-        if (id == newId) {
-            return this;
-        }
-        return new UserPage(userId, path, favorite, module, title, arguments, lastAccess, newId);
-    }
-
-    public UserPage withFavorite(boolean newFavorite) {
-        if (favorite == newFavorite) {
-            return this;
-        }
-        return new UserPage(userId, path, newFavorite, module, title, arguments, lastAccess, id);
-    }
-
-    public UserPage withLastAccess(Instant newLastAccess) {
-        if (lastAccess == newLastAccess) {
-            return this;
-        }
-        return new UserPage(userId, path, favorite, module, title, arguments, newLastAccess, id);
-    }
-
-    public UserPage withArguments(List<String> newArguments) {
-        if (arguments == newArguments) {
-            return this;
-        }
-        return new UserPage(userId, path, favorite, module, title, newArguments, lastAccess, id);
     }
 }

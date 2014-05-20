@@ -85,7 +85,7 @@ public final class Page {
             return legacyPage.summary;
         }
         return new YukonMessageSourceResolvable(baseKey + userPage.getModule().getName() + "."
-                + userPage.getTitle() + ".summary", summaryArgs);
+                + userPage.getName() + ".summary", summaryArgs);
     }
 
     public Object[] getSummaryArgs() {

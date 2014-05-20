@@ -23,38 +23,37 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import junit.framework.Assert;
-
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class ServletUtilTest {
     private HttpServletRequest request;
-    
+
     @Before
     public void setUp() {
         request = createMockRequest();
     }
-    
+
     @After
     public void tearDown() {
         request = null;
     }
-    
+
     @Test
     public void test_safeUrls_createSafeRedirectUrl() {
         String[] safeUrls = new String[] {
                 "/stars/consumer/general",
                 "/Operations.jsp"
         };
-        
+
         for (final String safeUrl : safeUrls) {
             String actual = ServletUtil.createSafeRedirectUrl(request, safeUrl);
             Assert.assertEquals(safeUrl, actual);
-        }    
+        }
     }
-    
+
     @Test
     public void test_unsafeUrls_createSafeRedirectUrl() {
         String[] unSafeUrls = new String[] {
@@ -64,27 +63,27 @@ public class ServletUtilTest {
                 "http://10.106.36.84/evil.jsp",
                 "ftp://10.106.36.84/evil.jsp"
         };
-        
+
         for (final String unSafeUrl : unSafeUrls) {
             String expected = "/evil.jsp";
             String actual = ServletUtil.createSafeRedirectUrl(request, unSafeUrl);
             Assert.assertEquals(expected, actual);
         }
-        
+
         unSafeUrls = new String[] {
                 "http://10.106.36.84:8080/",
                 "http://10.106.36.84:8080",
                 "http://10.106.36.84/",
                 "http://10.106.36.84"
         };
-        
+
         for (final String unSafeUrl : unSafeUrls) {
             String expected = "/";
             String actual = ServletUtil.createSafeRedirectUrl(request, unSafeUrl);
             Assert.assertEquals(expected, actual);
         }
     }
-    
+
     @Test
     public void test_unsafeNameUrls_createSafeRedirectUrl() {
         String[] unSafeUrls = new String[] {
@@ -94,27 +93,27 @@ public class ServletUtilTest {
                 "http://www.abc.pqr.xyz.net/evil.jsp",
                 "ftp://www.abc.pqr.xyz.net/evil.jsp"
         };
-        
+
         for (final String unSafeUrl : unSafeUrls) {
             String expected = "/evil.jsp";
             String actual = ServletUtil.createSafeRedirectUrl(request, unSafeUrl);
             Assert.assertEquals(expected, actual);
         }
-        
+
         unSafeUrls = new String[] {
                 "http://www.abc.com:8080/",
                 "http://www.abc.pqr.xyz.net.edu.org:8080",
                 "http://www.abc.com/",
                 "http://www.abc.pqr.xyz.net"
         };
-        
+
         for (final String unSafeUrl : unSafeUrls) {
             String expected = "/";
             String actual = ServletUtil.createSafeRedirectUrl(request, unSafeUrl);
             Assert.assertEquals(expected, actual);
         }
     }
-    
+
     private HttpServletRequest createMockRequest() {
         return new HttpServletRequest() {
 
@@ -375,18 +374,17 @@ public class ServletUtilTest {
 
             @Override
             public void removeAttribute(String name) {
-                
+                // mock
             }
 
             @Override
             public void setAttribute(String name, Object o) {
-                
+                // mock
             }
 
             @Override
-            public void setCharacterEncoding(String env)
-                    throws UnsupportedEncodingException {
-                
+            public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
+                // mock
             }
 
             @Override
@@ -400,8 +398,7 @@ public class ServletUtilTest {
             }
 
             @Override
-            public AsyncContext startAsync(ServletRequest servletRequest,
-                                           ServletResponse servletResponse) {
+            public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) {
                 return null;
             }
 
@@ -426,31 +423,29 @@ public class ServletUtilTest {
             }
 
             @Override
-            public boolean authenticate(HttpServletResponse response) throws IOException,
-                    ServletException {
+            public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
                 return false;
             }
 
             @Override
             public void login(String username, String password) throws ServletException {
+                // mock
             }
 
             @Override
             public void logout() throws ServletException {
+                // mock
             }
 
             @Override
-            public Collection<Part> getParts() throws IOException, IllegalStateException,
-                    ServletException {
+            public Collection<Part> getParts() throws IOException, IllegalStateException, ServletException {
                 return null;
             }
 
             @Override
-            public Part getPart(String name) throws IOException, IllegalStateException,
-                    ServletException {
+            public Part getPart(String name) throws IOException, IllegalStateException, ServletException {
                 return null;
             }
         };
     }
-    
 }

@@ -22,7 +22,7 @@ public class UserPageServiceImpl implements UserPageService {
         Module moduleBase = moduleBuilder.getModule(userPage.getModule().getName());
 
         String pageTitle = null;
-        PageInfo pageInfo = moduleBase.getPageInfo(userPage.getTitle());
+        PageInfo pageInfo = moduleBase.getPageInfo(userPage.getName());
         if (pageInfo == null) {
             // This shouldn't _normally_ happen but can in a development environment when switching workspaces
             // where one workspace has a new page the other doesn't.  (The new page will be in the user history

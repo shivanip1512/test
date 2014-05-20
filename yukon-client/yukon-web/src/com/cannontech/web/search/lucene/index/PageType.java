@@ -7,6 +7,7 @@ import org.apache.lucene.document.Document;
 
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
+import com.cannontech.common.userpage.model.UserPage.Key;
 import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.support.SiteMapPage;
 
@@ -19,9 +20,8 @@ public enum PageType {
             List<String> pageArgs = getListFromDocument(document, "pageArg");
             List<String> summaryArgs = new ArrayList<>(pageArgs);
             summaryArgs.addAll(getListFromDocument(document, "summaryArg"));
-            String module = document.get("module");
-            UserPage userPage =
-                    new UserPage(0, path, false, SiteModule.getByName(module), pageName, pageArgs, null, null);
+            SiteModule module = SiteModule.getByName(document.get("module"));
+            UserPage userPage = new UserPage(null, new Key(0, path), module, pageName, pageArgs, false, null);
             Page page = new Page(userPage, summaryArgs);
             return page;
         }

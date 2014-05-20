@@ -28,7 +28,7 @@
                                         arguments="${favoritePageName}"/>
                                     <li class="favorite" data-removed-text="${removedText}">
                                         <cti:button classes="b-favorite remove" nameKey="favorite" renderMode="image" icon="icon-star" 
-                                            data-name="${favorite.title}"
+                                            data-name="${favorite.name}"
                                             data-module="${favorite.moduleName}"
                                             data-path="${favorite.path}"
                                             data-label-args="${com.cannontech.common.util.StringUtils.listAsJsSafeString(favorite.arguments)}"/>

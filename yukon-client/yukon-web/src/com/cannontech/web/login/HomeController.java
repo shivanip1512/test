@@ -17,6 +17,7 @@ import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.model.SiteMapCategory;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
+import com.cannontech.common.userpage.model.UserPage.Key;
 import com.cannontech.common.userpage.model.UserSubscription;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.CtiUtilities;
@@ -103,15 +104,15 @@ public class HomeController {
     public @ResponseBody Map<String, Boolean> toggleFavorite(String module, String name, String labelArgs,
             String path, YukonUserContext userContext) {
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
-        UserPage page = new UserPage(userContext.getYukonUser().getUserID(), path, true,
+        boolean isFavorite = userPageDao.toggleFavorite(new Key(userContext.getYukonUser().getUserID(), path),
             SiteModule.getByName(module), name, arguments);
-        return Collections.singletonMap("isFavorite", userPageDao.toggleFavorite(page));
+        return Collections.singletonMap("isFavorite", isFavorite);
     }
 
     @RequestMapping("/isFavorite")
     public @ResponseBody Map<String, Boolean> isFavorite(String path, YukonUserContext userContext) {
-        UserPage page = new UserPage(userContext.getYukonUser().getUserID(), path, true);
-        return Collections.singletonMap("isFavorite", userPageDao.isFavorite(page));
+        Key userPageKey = new Key(userContext.getYukonUser().getUserID(), path);
+        return Collections.singletonMap("isFavorite", userPageDao.isFavorite(userPageKey));
     }
 
     @RequestMapping("/addToHistory")
@@ -119,9 +120,8 @@ public class HomeController {
             YukonUserContext userContext) {
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
 
-        UserPage page = new UserPage(userContext.getYukonUser().getUserID(), path, false,
-            SiteModule.getByName(module), name, arguments);
-        userPageDao.updateHistory(page);
+        userPageDao.updateHistory(new Key(userContext.getYukonUser().getUserID(), path), SiteModule.getByName(module),
+            name, arguments);
 
         return Collections.emptyMap();
     }
