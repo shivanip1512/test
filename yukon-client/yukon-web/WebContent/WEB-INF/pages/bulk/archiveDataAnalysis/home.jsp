@@ -9,7 +9,8 @@
 <cti:standardPage module="tools" page="bulk.analysis.home">
 
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.analysis.home" deviceCollection="${deviceCollection}">
-        <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="/bulk/archiveDataAnalysis/home/analyze">
+        <cti:url var="analyzeUrl" value="/bulk/archiveDataAnalysis/home/analyze" />
+        <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="${analyzeUrl}">
             <cti:deviceCollection deviceCollection="${deviceCollection}" />            
             
             <div class="stacked">
