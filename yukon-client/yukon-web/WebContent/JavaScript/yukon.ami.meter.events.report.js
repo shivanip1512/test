@@ -129,7 +129,7 @@ yukon.ami.meterEventsReport = (function () {
     }
     
     function _createScheduleReportDialog(title) {
-        $("#scheduleDialog").dialog({'title' : title, 'modal' : true, 'position' : 'center', 'height' : 'auto',
+        $("#scheduleDialog").dialog({'title' : title, 'modal' : true, 'height' : 'auto',
             'width' : 'auto'});
     }
     
@@ -194,7 +194,7 @@ yukon.ami.meterEventsReport = (function () {
                 event.preventDefault();
                 var jobId = $(this).closest("[data-job-id]").data("job-id");
                 $("#scheduledJobsConfirmDeleteDialog").dialog({'title' : _modelData.confirmScheduleDeletion,
-                    'modal': true, 'position' : 'center', 'height' : 'auto', 'width' : 'auto',
+                    'modal': true, 'height' : 'auto', 'width' : 'auto',
                     'buttons': 
                         [{
                              text: _modelData.cancelBtnLbl, 
