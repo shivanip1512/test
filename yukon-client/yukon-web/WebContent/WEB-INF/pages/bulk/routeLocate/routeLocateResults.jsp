@@ -3,26 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="bulk.routeLocateResults">
-
-<script type="text/javascript">
-    function enableButton() {
-        return function(data) {
-            var isComplete = data.isComplete;
-            var isCanceled = data.isCanceled;
-
-            if (isComplete == 'true') {
-                $('#setViewRoutesButton').removeAttr("disabled");
-                $('#cancelLocateDiv').hide();
-            }
-
-            if (isCanceled == 'true') {
-                $('#setViewRoutesButton').removeAttr("disabled");
-                $('#cancelLocateDiv').hide();
-                $('#commandsCanceledDiv').show();
-            }
-        };
-    }
-</script>
+    <cti:includeScript link="/JavaScript/yukon.bulk.routeLocate.results.js"/>
     
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.routeLocateResults" deviceCollection="${result.deviceCollection}">
         
@@ -38,17 +19,17 @@
               <input type="hidden" name="resultId" value="${resultId}">
               
               <%-- cancel commands --%>
-              <div id="cancelLocateDiv" class="action-area">
-                  <c:url var="cancelUrl" value="/bulk/routeLocate/cancelCommands" />
+              <div id="cancelLocateDiv" class="clearfix stacked">
+                  <cti:url var="cancelUrl" value="/bulk/routeLocate/cancelCommands" />
                   <cti:msg var="cancelText" key="yukon.web.modules.tools.bulk.routeLocateResults.cancelLocateButton.label" />
                   <tags:cancelCommands resultId="${resultId}" cancelUrl="${cancelUrl}" cancelButtonText="${cancelText}"/>
               </div>
               <c:choose>
                   <c:when test="${result.autoUpdateRoute}">
-                      <cti:button nameKey="viewRoutesButton" type="submit" classes="f-disable-after-click" disabled="${not result.complete}"/>
+                      <cti:button nameKey="viewRoutesButton" type="submit" classes="f-disable-after-click f-routes-button" disabled="${not result.complete}"/>
                   </c:when>
                   <c:otherwise>
-                      <cti:button nameKey="setRoutesButton" type="submit" classes="f-disable-after-click" disabled="${not result.complete}"/>
+                      <cti:button nameKey="setRoutesButton" type="submit" classes="f-disable-after-click f-routes-button" disabled="${not result.complete}"/>
                   </c:otherwise>
               </c:choose>
           </form>
@@ -79,11 +60,9 @@
         
         
         <%-- FAILURE --%>
-        <br>
         <div class="fwb"><cti:msg key="yukon.web.modules.tools.bulk.routeLocateResults.failureLabel" />: <span class="error"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/NOT_FOUND_COUNT"/></span></div>
-        <div id="commandsCanceledDiv" style="display:none;">
-            <br>
-            <span class="error"><cti:msg key="yukon.web.modules.tools.bulk.routeLocateResults.commandsCanceled" /></span>
+        <div id="commandsCanceledDiv" class="dn error">
+            <cti:msg key="yukon.web.modules.tools.bulk.routeLocateResults.commandsCanceled" />
         </div>
         <div id="errorActionsDiv" class="clearfix stacked">
         
@@ -97,7 +76,7 @@
                     
     </tags:bulkActionContainer>
     
-    <cti:dataUpdaterCallback function="enableButton()" initialize="true" isComplete="ROUTELOCATE/${resultId}/IS_COMPLETE" isCanceled="ROUTELOCATE/${resultId}/IS_CANCELED"/>
+    <cti:dataUpdaterCallback function="yukon.bulk.routeLocate.results.complete" initialize="true" isComplete="ROUTELOCATE/${resultId}/IS_COMPLETE" isCanceled="ROUTELOCATE/${resultId}/IS_CANCELED"/>
     <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['AllDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_COMPLETE" />
     <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['AllDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_CANCELED" />
     
