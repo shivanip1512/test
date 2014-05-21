@@ -1,99 +1,117 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="bulk.home">
+<cti:msgScope paths="yukon.common.device.bulk.bulkHome">
 
-    <cti:msg var="headerTitle" key="yukon.common.device.bulk.bulkHome.header"/>
-    <tags:sectionContainer title="${headerTitle}" id="bulkHomeContainer" hideEnabled="false">
+    <table class="link-table stacked">
+        
         <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
             <cti:checkRolesAndProperties value="BULK_IMPORT_OPERATION">
-                <div class="stacked clear">
-                    <a href="<cti:url value="/bulk/import/upload"/>" class="described">
-                        <i:inline key="yukon.common.device.bulk.bulkHome.bulkImportButton"/>
-                    </a>
-                    <i:inline key="yukon.common.device.bulk.bulkHome.bulkImportButton.description"/>
-                </div>
+                <tr>
+                    <td>
+                        <a href="<cti:url value="/bulk/import/upload"/>">
+                            <i:inline key=".bulkImportButton"/>
+                        </a>
+                    </td>
+                    <td><i:inline key=".bulkImportButton.description"/></td>
+                </tr>
             </cti:checkRolesAndProperties>
             
             <cti:checkRolesAndProperties value="BULK_UPDATE_OPERATION">
-                <div class="stacked clear">
-                    <a href="<cti:url value="/bulk/update/upload"/>" class="described">
-                        <i:inline key="yukon.common.device.bulk.bulkHome.bulkUpdateButton"/>
-                    </a>
-                    <i:inline key="yukon.common.device.bulk.bulkHome.bulkUpdateButton.description"/>
-                </div>
+                <tr>
+                    <td>
+                        <a href="<cti:url value="/bulk/update/upload"/>">
+                            <i:inline key=".bulkUpdateButton"/>
+                        </a>
+                    </td>
+                    <td><i:inline key=".bulkUpdateButton.description"/></td>
+                </tr>
             </cti:checkRolesAndProperties>
             
             <cti:checkRolesAndProperties value="ADD_REMOVE_POINTS">
-                <div class="stacked clear">
-                    <a href="<cti:url value="/bulk/pointImport/upload"/>" class="described">
-                        <i:inline key="yukon.common.device.bulk.bulkHome.bulkPointImportButton"/>
-                    </a>
-                    <i:inline key="yukon.common.device.bulk.bulkHome.bulkPointImportButton.description"/>
-                </div>
+                <tr>
+                    <td>
+                        <a href="<cti:url value="/bulk/pointImport/upload"/>">
+                            <i:inline key=".bulkPointImportButton"/>
+                        </a>
+                    </td>
+                    <td><i:inline key=".bulkPointImportButton.description"/></td>
+                </tr>
             </cti:checkRolesAndProperties>
         </cti:checkRolesAndProperties>
             
         <cti:checkRolesAndProperties value="FDR_TRANSLATION_MANAGER">
-            <div class="stacked clear">
-                <a href="<cti:url value="/bulk/fdrTranslationManager/home"/>" class="described">
-                    <i:inline key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton"/>
-                </a>
-                <i:inline key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton.description"/>
-            </div>
+            <tr>
+                <td>
+                    <a href="<cti:url value="/bulk/fdrTranslationManager/home"/>">
+                        <i:inline key=".manageFDRTranslationsButton"/>
+                    </a>
+                </td>
+                <td><i:inline key=".manageFDRTranslationsButton.description"/></td>
+            </tr>
         </cti:checkRolesAndProperties>
         
         <cti:checkRolesAndProperties value="IMPORTER_ENABLED">
-            <div class="stacked clear">
-                <a href="<cti:url value="/amr/bulkimporter/home"/>" class="described">
-                    <i:inline key="yukon.common.device.bulk.bulkHome.legacyImporter"/>
-                </a>
-                <i:inline key="yukon.common.device.bulk.bulkHome.legacyImporter.description"/>
-            </div>
+            <tr>
+                <td>
+                    <a href="<cti:url value="/amr/bulkimporter/home"/>">
+                        <i:inline key=".legacyImporter"/>
+                    </a>
+                </td>
+                <td><i:inline key=".legacyImporter.description"/></td>
+            </tr>
         </cti:checkRolesAndProperties>
         
         <cti:checkRolesAndProperties value="CAP_CONTROL_IMPORTER">
-            <div class="stacked clear">
-                <a href="<cti:url value="/capcontrol/import/view"/>" class="described">
-                    <i:inline key="yukon.common.device.bulk.bulkHome.voltVarImporter"/>
-                </a>
-                <i:inline key="yukon.common.device.bulk.bulkHome.voltVarImporter.description"/>
-            </div>
+            <tr>
+                <td>
+                    <a href="<cti:url value="/capcontrol/import/view"/>">
+                        <i:inline key=".voltVarImporter"/>
+                    </a>
+                </td>
+                <td><i:inline key=".voltVarImporter.description"/></td>
+            </tr>
         </cti:checkRolesAndProperties>
         
         <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
-            <div class="stacked clear">
-                <a href="<cti:url value="/stars/operator/account/accountImport"/>" class="described">
-                    <i:inline key="yukon.common.device.bulk.bulkHome.assetsImporter"/>
-                </a>
-                <i:inline key="yukon.common.device.bulk.bulkHome.assetsImporter.description"/>
-            </div>
+            <tr>
+                <td>
+                    <a href="<cti:url value="/stars/operator/account/accountImport"/>">
+                        <i:inline key=".assetsImporter"/>
+                    </a>
+                </td>
+                <td><i:inline key=".assetsImporter.description"/></td>
+            </tr>
         </cti:checkRolesAndProperties>
-    </tags:sectionContainer>
+    
+    </table>
     
     <%-- BULK UPDATE RESULTS --%>
     <c:if test="${not empty resultsList}">
     
-        <cti:msg var="recentBulkOperationsHeaderTitle" key="yukon.common.device.bulk.bulkHome.recentBulkOperations.header"/>
+        <cti:msg var="recentBulkOperationsHeaderTitle" key=".recentBulkOperations.header"/>
         <tags:boxContainer title="${recentBulkOperationsHeaderTitle}" id="recentBulkOperationsContainer" hideEnabled="false">
         
-            <cti:msg var="performNewActionLinkTitle" key="yukon.common.device.bulk.bulkHome.recentBulkOperations.performNewActionLinkTitle"/>
+            <cti:msg var="performNewActionLinkTitle" key=".recentBulkOperations.performNewActionLinkTitle"/>
             <table class="compact-results-table">
                 <thead>
                     <tr>
-                        <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.operationType"/></th>
-                        <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.updateTime"/></th>
-                        <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.success"/></th>
-                        <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.processingException"/></th>
+                        <th><cti:msg key=".recentBulkOperations.operationType"/></th>
+                        <th><cti:msg key=".recentBulkOperations.updateTime"/></th>
+                        <th><cti:msg key=".recentBulkOperations.success"/></th>
+                        <th><cti:msg key=".recentBulkOperations.processingException"/></th>
                         <th></th>
-                        <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.fields"/></th>
+                        <th><cti:msg key=".recentBulkOperations.fields"/></th>
                         <c:if test="${hasBulkImportRP || hasBulkUpdateRP || hasMassChangeRP}">
-                            <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailHeader"/></th>
+                            <th><cti:msg key=".recentBulkOperations.detailHeader"/></th>
                         </c:if>
-                        <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.status"/></th>
+                        <th><cti:msg key=".recentBulkOperations.status"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -198,7 +216,7 @@
                                     <cti:param name="resultsId" value="${resultsId}" />
                                 </cti:url>
                                 <td>
-                                    <a href="${resultDetailUrl}"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailLink"/></a>
+                                    <a href="${resultDetailUrl}"><cti:msg key=".recentBulkOperations.detailLink"/></a>
                                 </td>
                             </c:when>
                             <c:when test="${hasBulkImportRP || hasBulkUpdateRP || hasMassChangeRP}">
@@ -235,4 +253,5 @@ function hideShowErrorList(id) {
   }
 }
 </script>
+</cti:msgScope>
 </cti:standardPage>

@@ -5,7 +5,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="changeServiceCompany">
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
     <div class="note stacked">
         <table>

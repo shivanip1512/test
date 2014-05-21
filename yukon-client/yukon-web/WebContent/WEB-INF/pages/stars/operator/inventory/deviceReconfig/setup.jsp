@@ -7,7 +7,6 @@
 
 <cti:url value="/stars/operator/inventory/deviceReconfig/save" var="deviceReconfigOptionsURl"/>
 <cti:standardPage module="operator" page="deviceReconfig">
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
 
     <div class="column-12-12">
         <div class="column one">

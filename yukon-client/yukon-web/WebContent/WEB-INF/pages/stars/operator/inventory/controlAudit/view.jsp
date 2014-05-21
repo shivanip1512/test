@@ -12,7 +12,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="controlAudit">
-<cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
 
 <div class="column-12-12">
     <div class="column one">

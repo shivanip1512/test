@@ -8,10 +8,9 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="resendConfig">
-<cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
 
 <script type="text/javascript">
-$(document).on('click', 'a.failedItems', function() {
+$(document).on('click', 'a.f-failed-items', function() {
     $.ajax({
         url: 'viewFailed',
         data: {"taskId": '${task.taskId}'}
@@ -60,11 +59,7 @@ function taskFinished() {
                         </cti:url>
                         <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="success fwb"/>
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
-                            <ul class="resultList">
-                                <li>
-                                    <a href="${newOperationSuccess}" class="small"><i:inline key=".newOperation"/></a>
-                                </li>
-                            </ul>
+                            <a href="${newOperationSuccess}"><i:inline key=".newOperation"/></a>
                         </cti:classUpdater>
                     </tags:nameValue2>
                     
@@ -75,11 +70,7 @@ function taskFinished() {
                         </cti:url>
                         <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warning fwb"/>
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
-                            <ul class="resultList">
-                                <li>
-                                    <a href="${newOperationUnsupported}" class="small"><i:inline key=".newOperation"/></a>
-                                </li>
-                            </ul>
+                            <a href="${newOperationUnsupported}"><i:inline key=".newOperation"/></a>
                         </cti:classUpdater>
                     </tags:nameValue2>
                     
@@ -91,14 +82,8 @@ function taskFinished() {
                         <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="error fwb"/>
                         
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_FAILED">
-                            <ul class="resultList">
-                                <li>
-                                    <a href="javascript:void(0);" class="small failedItems"><i:inline key=".viewFailureReasons"/></a>
-                                </li>
-                                <li>
-                                    <a href="${newOperationFailed}" class="small"><i:inline key=".newOperation"/></a>
-                                </li>
-                            </ul>
+                            <a href="javascript:void(0);" class="f-failed-items stacked"><i:inline key=".viewFailureReasons"/></a><br>
+                            <a href="${newOperationFailed}"><i:inline key=".newOperation"/></a>
                         </cti:classUpdater>
                     </tags:nameValue2>
                     

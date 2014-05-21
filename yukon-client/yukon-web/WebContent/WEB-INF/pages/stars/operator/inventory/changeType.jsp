@@ -5,7 +5,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="changeType">
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
     <div class="note">
         <table>
@@ -58,23 +57,15 @@
                 <tags:updateableProgressBar totalCount="${task.totalItems}" countKey="INVENTORY_TASK/${task.taskId}/ITEMS_PROCESSED"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".successful">
-                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="success fwb"/>
+                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="success fwb"/>&nbsp;
                 <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
-                    <ul class="resultList">
-                        <li>
-                            <a href="${newOperationSuccess}" class="small"><i:inline key=".newOperation"/></a>
-                        </li>
-                    </ul>
+                    <a href="${newOperationSuccess}"><i:inline key=".newOperation"/></a>
                 </cti:classUpdater>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".unsupported">
-                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warning fwb"/>
+                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warning fwb"/>&nbsp;
                 <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
-                    <ul class="resultList">
-                        <li>
-                            <a href="${newOperationUnsupported}" class="small"><i:inline key=".newOperation"/></a>
-                        </li>
-                    </ul>
+                    <a href="${newOperationUnsupported}"><i:inline key=".newOperation"/></a>
                 </cti:classUpdater>
             </tags:nameValue2>
         </tags:nameValueContainer2>

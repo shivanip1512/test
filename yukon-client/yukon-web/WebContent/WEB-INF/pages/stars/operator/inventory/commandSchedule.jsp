@@ -9,7 +9,6 @@
 <cti:url value="/stars/operator/inventory/updateSchedule" var="updateFormURL"/>
 <cti:standardPage module="operator" page="commandSchedule.${mode}">
     <tags:setFormEditMode mode="${mode}"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
     <form:form id="updateForm" commandName="schedule" action="${updateFormURL}">
         <form:hidden path="commandSchedule.commandScheduleId"/>

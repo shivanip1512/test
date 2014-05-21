@@ -5,8 +5,6 @@
     <entry key="yukon.web.modules.tools.bulk.home.pageName">Bulk Operations</entry>
     
     <!-- BULK OPERATIONS HOME PAGE bulkHome.jsp -->
-    <entry key="yukon.common.device.bulk.bulkHome.header">Choose Type Of Bulk Operation:</entry>
-
     <entry key="yukon.common.device.bulk.bulkHome.bulkImportButton">Bulk Import</entry>
     <entry key="yukon.common.device.bulk.bulkHome.bulkImportButton.description">Import a file to create meters.</entry>
     <entry key="yukon.common.device.bulk.bulkHome.bulkUpdateButton">Bulk Update</entry>

@@ -34,100 +34,100 @@
 
   <!-- Start of user/role/roleproperty tags -->
   <tag>
-  	<name>breadCrumbs</name>
-  	<tag-class>com.cannontech.web.taglib.nav.BreadCrumbsTag</tag-class>
+      <name>breadCrumbs</name>
+      <tag-class>com.cannontech.web.taglib.nav.BreadCrumbsTag</tag-class>
     <body-content>JSP</body-content>
-  	<attribute>
-  		<name>seperator</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
+      <attribute>
+          <name>seperator</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
   </tag>
   <tag>
-  	<name>crumbLink</name>
-  	<tag-class>com.cannontech.web.taglib.nav.CrumbLinkTag</tag-class>
+      <name>crumbLink</name>
+      <tag-class>com.cannontech.web.taglib.nav.CrumbLinkTag</tag-class>
     <body-content>scriptless</body-content>
-  	<attribute>
-  		<name>url</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
-  	<attribute>
-  		<name>title</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
+      <attribute>
+          <name>url</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
+      <attribute>
+          <name>title</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
   </tag>
 
   <tag>
-  	<name>displayForPageEditModes</name>
-  	<tag-class>com.cannontech.web.taglib.DisplayForPageEditModesTag</tag-class>
-  	<body-content>scriptless</body-content>
-  	<attribute>
-  		<name>modes</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
+      <name>displayForPageEditModes</name>
+      <tag-class>com.cannontech.web.taglib.DisplayForPageEditModesTag</tag-class>
+      <body-content>scriptless</body-content>
+      <attribute>
+          <name>modes</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
   </tag>
 
   <tag>
-  	<name>enumName</name>
-  	<tag-class>com.cannontech.web.taglib.EnumNameTag</tag-class>
-  	<body-content>scriptless</body-content>
-  	<attribute>
-  		<name>var</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
-  	<attribute>
-  		<name>value</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
+      <name>enumName</name>
+      <tag-class>com.cannontech.web.taglib.EnumNameTag</tag-class>
+      <body-content>scriptless</body-content>
+      <attribute>
+          <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>value</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
   </tag>
 
   <tag>
-  	<name>checklogin</name>
-	<tag-class>com.cannontech.web.taglib.CheckLoginTag</tag-class>		
+      <name>checklogin</name>
+    <tag-class>com.cannontech.web.taglib.CheckLoginTag</tag-class>        
   </tag>
 
   <tag>
-  	<name>checkPaoAuthorization</name>
-  	<tag-class>com.cannontech.web.taglib.CheckPaoAuthorizationTag</tag-class>
+      <name>checkPaoAuthorization</name>
+      <tag-class>com.cannontech.web.taglib.CheckPaoAuthorizationTag</tag-class>
     <body-content>scriptless</body-content>
-  	<attribute>
-  		<name>pao</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
+      <attribute>
+          <name>pao</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
         <description>YukonPao to check permission for</description>
-  	</attribute>	
-  	<attribute>
-  		<name>permission</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
+      </attribute>    
+      <attribute>
+          <name>permission</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
         <description>String value of Permission to check</description>
-  	</attribute>	
-  	<attribute>
-  		<name>invert</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
+      </attribute>    
+      <attribute>
+          <name>invert</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
         <description>Set to true to check if the user does NOT have authorization</description>
-  	</attribute>	
+      </attribute>    
   </tag>  
 
   <tag>
-  	<name>checkCommandAuthorization</name>
-  	<tag-class>com.cannontech.web.taglib.CheckCommandAuthorization</tag-class>
-  	<attribute>
-  		<name>device</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
-  	<attribute>
-  		<name>command</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
+      <name>checkCommandAuthorization</name>
+      <tag-class>com.cannontech.web.taglib.CheckCommandAuthorization</tag-class>
+      <attribute>
+          <name>device</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
+      <attribute>
+          <name>command</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
   </tag>  
   
   <tag>
@@ -137,13 +137,13 @@
   </tag>
   
   <tag>
-  	<name>checkGlobalSetting</name>
-  	<tag-class>com.cannontech.web.taglib.CheckGlobalSetting</tag-class>
-  	<attribute>
-  		<name>setting</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
+      <name>checkGlobalSetting</name>
+      <tag-class>com.cannontech.web.taglib.CheckGlobalSetting</tag-class>
+      <attribute>
+          <name>setting</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
   </tag>
   
   <tag>
@@ -196,11 +196,11 @@
     <name>checkUserChecker</name>
     <tag-class>com.cannontech.web.taglib.CheckUserCheckerTag</tag-class>
     <attribute>
- 		<name>var</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
         <name>userChecker</name>
         <required>true</required>
         <rtexprvalue>true</rtexprvalue>
@@ -220,8 +220,8 @@
   </tag>
   
    <tag>
-  	<name>getProperty</name>
-	<tag-class>com.cannontech.web.taglib.RoleProperty</tag-class>	
+      <name>getProperty</name>
+    <tag-class>com.cannontech.web.taglib.RoleProperty</tag-class>    
     <tei-class>com.cannontech.web.taglib.RolePropertyTEI</tei-class>
     <attribute>
         <name>propertyid</name>
@@ -233,50 +233,50 @@
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>
     </attribute>
-	<attribute>
-		<name>defaultvalue</name>
-		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>format</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>var</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
+    <attribute>
+        <name>defaultvalue</name>
+        <required>false</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>format</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
   
   <tag>
-  	<name>isPropertyTrue</name>
-  	<tag-class>com.cannontech.web.taglib.IsPropertyTrue</tag-class>
-  	<attribute>
-  		<name>propertyid</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
-  	<attribute>
-  		<name>property</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
+      <name>isPropertyTrue</name>
+      <tag-class>com.cannontech.web.taglib.IsPropertyTrue</tag-class>
+      <attribute>
+          <name>propertyid</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>property</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
   </tag>
   <tag>
-  	<name>isPropertyFalse</name>
-  	<tag-class>com.cannontech.web.taglib.IsPropertyFalse</tag-class>
-  	<attribute>
-  		<name>propertyid</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
-  	<attribute>
-  		<name>property</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
+      <name>isPropertyFalse</name>
+      <tag-class>com.cannontech.web.taglib.IsPropertyFalse</tag-class>
+      <attribute>
+          <name>propertyid</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>property</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
   </tag>
    
     <tag>
@@ -598,7 +598,7 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-	<attribute>
+    <attribute>
       <name>var</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
@@ -770,46 +770,46 @@
   </tag>
 
   <tag>
-  	<name>formatDate</name>
-  	<tag-class>com.cannontech.web.taglib.FormatDateTag</tag-class>
-  	<body-content>empty</body-content>
-	<attribute>
- 		<name>value</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>	
-	</attribute>
- 	<attribute>
- 		<name>var</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
- 		<name>type</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
- 		<name>nullText</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  		<description>Text to be displayed in place of formatted date if date is null.</description>
-	</attribute>
+      <name>formatDate</name>
+      <tag-class>com.cannontech.web.taglib.FormatDateTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>value</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>    
+    </attribute>
+     <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+         <name>type</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+         <name>nullText</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>Text to be displayed in place of formatted date if date is null.</description>
+    </attribute>
   </tag>
 
   <tag>
-  	<name>formatCron</name>
-  	<tag-class>com.cannontech.web.taglib.FormatCronTag</tag-class>
-  	<body-content>empty</body-content>
-	<attribute>
- 		<name>value</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>	
-	</attribute>
- 	<attribute>
- 		<name>var</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-	</attribute>
+      <name>formatCron</name>
+      <tag-class>com.cannontech.web.taglib.FormatCronTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>value</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>    
+    </attribute>
+     <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
 
   <tag>
@@ -861,29 +861,29 @@
   </tag>
   
     <tag>
-  	<name>formatMillis</name>
-  	<tag-class>com.cannontech.web.taglib.FormatMillisTag</tag-class>
-  	<body-content>empty</body-content>
-	<attribute>
- 		<name>value</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>	
-	</attribute>
- 	<attribute>
- 		<name>var</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
- 		<name>type</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-	</attribute>
- 	<attribute>
- 		<name>invalidStr</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-	</attribute>
+      <name>formatMillis</name>
+      <tag-class>com.cannontech.web.taglib.FormatMillisTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>value</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>    
+    </attribute>
+     <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+         <name>type</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+     <attribute>
+         <name>invalidStr</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
   
   <tag>
@@ -1016,14 +1016,14 @@
   </tag>
   
   <tag>
-  	<name>renderInput</name>
-  	<tag-class>com.cannontech.web.taglib.RenderInputTag</tag-class>
-  	<body-content>empty</body-content>
-	<attribute>
- 		<name>input</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>	
-	</attribute>
+      <name>renderInput</name>
+      <tag-class>com.cannontech.web.taglib.RenderInputTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>input</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>    
+    </attribute>
   </tag>
   
   <tag>
@@ -1098,61 +1098,61 @@
   </tag>
   
   <tag>
-  	<name>userName</name>
-  	<tag-class>com.cannontech.web.taglib.UserNameTag</tag-class>
-  	<body-content>empty</body-content>
-	<attribute>
- 		<name>userId</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>	
-	</attribute>
- 	<attribute>
- 		<name>var</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-	</attribute>
+      <name>userName</name>
+      <tag-class>com.cannontech.web.taglib.UserNameTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>userId</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>    
+    </attribute>
+     <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
   
   <tag>
-  	<name>yukonListEntryList</name>
-  	<tag-class>com.cannontech.web.taglib.YukonListEntryListTag</tag-class>
-  	<body-content>empty</body-content>
-	<attribute>
- 		<name>var</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  		<description>var where List of YukonListEntry will be placed</description>
-	</attribute>
- 	<attribute>
- 		<name>energyCompanyId</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  		<description>Energy Company Id</description>
-	</attribute>
-	<attribute>
- 		<name>listName</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  		<description>String. See YukonSelectionListEnum. Example: "YUK_LIST_NAME_LM_CUSTOMER_EVENT".</description>
-	</attribute>
+      <name>yukonListEntryList</name>
+      <tag-class>com.cannontech.web.taglib.YukonListEntryListTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>var</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>var where List of YukonListEntry will be placed</description>
+    </attribute>
+     <attribute>
+         <name>energyCompanyId</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>Energy Company Id</description>
+    </attribute>
+    <attribute>
+         <name>listName</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>String. See YukonSelectionListEnum. Example: "YUK_LIST_NAME_LM_CUSTOMER_EVENT".</description>
+    </attribute>
   </tag>
 
   <tag>
-  	<name>yukonListEntryValue</name>
-  	<tag-class>com.cannontech.web.taglib.YukonListEntryValueTag</tag-class>
-  	<body-content>empty</body-content>
-	<attribute>
- 		<name>var</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  		<description>var where List of YukonListEntry EntryText will be placed (optional)</description>
-	</attribute>
- 	<attribute>
- 		<name>entryId</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  		<description>Yukon List Entry Id</description>
-	</attribute>
+      <name>yukonListEntryValue</name>
+      <tag-class>com.cannontech.web.taglib.YukonListEntryValueTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>var where List of YukonListEntry EntryText will be placed (optional)</description>
+    </attribute>
+     <attribute>
+         <name>entryId</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>Yukon List Entry Id</description>
+    </attribute>
   </tag>
 
   <tag>
@@ -1705,9 +1705,9 @@
     
     <tag>
         <name>operationsSetup</name>
-	    <tag-class>com.cannontech.web.taglib.OperationsSetupTag</tag-class>
-    	<body-content>empty</body-content>
-	</tag>
+        <tag-class>com.cannontech.web.taglib.OperationsSetupTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
 
     <tag>
         <name>dataUpdaterValue</name>
@@ -1739,10 +1739,10 @@
         <tag-class>com.cannontech.web.taglib.ClassUpdaterTag</tag-class>
         <body-content>scriptless</body-content>
         <description>
-        	Creates a span that updates it's class name.
-        	Use by passing an updater type/identifier pair, or a full type+identifier key.
-        	type/identifier pair will be used if they are passed in (over key if it also happens to be passed).
-        	If a value is unavailable at render time, initialClassName will be used if passed.
+            Creates a span that updates it's class name.
+            Use by passing an updater type/identifier pair, or a full type+identifier key.
+            type/identifier pair will be used if they are passed in (over key if it also happens to be passed).
+            If a value is unavailable at render time, initialClassName will be used if passed.
         </description>
         <attribute>
             <name>type</name>
@@ -1774,7 +1774,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-            	Type of element that will enclose the body of te tag. Defaults to 'span'.
+                Type of element that will enclose the body of te tag. Defaults to 'span'.
             </description>
         </attribute>
         <attribute>
@@ -1782,7 +1782,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-            	Class name that should always be on the element in addition to whatever class the updater appends.
+                Class name that should always be on the element in addition to whatever class the updater appends.
             </description>
         </attribute>
     </tag>
@@ -2037,9 +2037,9 @@
         <rtexprvalue>true</rtexprvalue>
         <description>The id to use for the top-level HTML element.</description>
     </attribute>
-   	<description>
+       <description>
         Organizes content into columns using cti:dataGridCell tags.
-    	</description>
+        </description>
   </tag>
   
   <tag>

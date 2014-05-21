@@ -5,8 +5,6 @@
 
 <cti:standardPage module="operator" page="deviceReconfigStatus">
 
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
-    
     <cti:url var="newOperationFailed" value="/stars/operator/inventory/deviceReconfig/newOperation">
         <cti:param name="type" value="FAIL"/>
         <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
@@ -28,18 +26,16 @@
         <tags:nameValue2 nameKey=".progress">
             <div>
                 <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_CLASS">
-                    <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_TEXT" styleClass="statusPart"/>
+                    <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_TEXT"/>
                 </cti:classUpdater>
             </div>
         </tags:nameValue2>
     
     </tags:nameValueContainer2>
     
-    <ul class="resultList stacked">
-        <li>
-            <tags:updateableProgressBar totalCount="${task.numberOfItems}" countKey="DEVICE_RECONFIG/${task.inventoryConfigTaskId}/ITEMS_PROCESSED"/>
-        </li>
-    </ul>
+    <div class="stacked">
+        <tags:updateableProgressBar totalCount="${task.numberOfItems}" countKey="DEVICE_RECONFIG/${task.inventoryConfigTaskId}/ITEMS_PROCESSED"/>
+    </div>
     
     <tags:nameValueContainer2>
         
@@ -49,13 +45,11 @@
         
     </tags:nameValueContainer2>
 
-    <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_SUCCESS">
-        <ul class="resultList">
-            <li>
-                <a href="${newOperationSuccess}" class="small"><i:inline key=".newOperation"/></a>
-            </li>
-        </ul>
-    </cti:classUpdater>
+    <div>
+        <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_SUCCESS">
+            <a href="${newOperationSuccess}"><i:inline key=".newOperation"/></a>
+        </cti:classUpdater>
+    </div>
     
     <tags:nameValueContainer2>
         
@@ -65,13 +59,12 @@
         
     </tags:nameValueContainer2>
     
-    <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_FAILED">
-        <ul class="resultList">
-            <li>
-                <a href="${newOperationFailed}" class="small"><i:inline key=".newOperation"/></a>
-            </li>
-        </ul>
-    </cti:classUpdater>
+    <div>
+        <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_FAILED">
+            <a href="${newOperationFailed}"><i:inline key=".newOperation"/></a>
+        </cti:classUpdater>
+    </div>
+    
     <cti:url value="/stars/operator/inventory/inventoryActions/deviceReconfig/delete" var="deleteURL"/>
     <div class="page-action-area">
         <form action="${deleteURL}" method="post">

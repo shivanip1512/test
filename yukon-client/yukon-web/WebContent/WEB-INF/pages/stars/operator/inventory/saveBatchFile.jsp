@@ -6,29 +6,28 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="operator" page="saveToFile">
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
     <script type="text/javascript">
         $(document).ready(function() {
-        	$(document).on('change', '#routes input:radio', function(e){
-        		var currentTarget = $(this);
-        		
-        		currentTarget.closest('div').siblings().addClass('disabled').find('input[type!=radio], select, textarea, button').attr('disabled', 'disabled');
-        		currentTarget.closest('div').removeClass('disabled').find('input,select,textarea,button').removeAttr('disabled');
-        	});
-        	$("#routes input:radio:checked").trigger("change");
-        	
-        	var singleHwConfigType = ${uniformHardwareConfigType};
+            $(document).on('change', '#routes input:radio', function(e){
+                var currentTarget = $(this);
+                
+                currentTarget.closest('div').siblings().addClass('disabled').find('input[type!=radio], select, textarea, button').attr('disabled', 'disabled');
+                currentTarget.closest('div').removeClass('disabled').find('input,select,textarea,button').removeAttr('disabled');
+            });
+            $("#routes input:radio:checked").trigger("change");
+            
+            var singleHwConfigType = ${uniformHardwareConfigType};
             if(!singleHwConfigType) {
                 $('#groups').addClass('disabled').find(':input').attr('disabled', 'disabled');
             } else {
-            	$(document).on('change', '#groups input:radio', function(e){
+                $(document).on('change', '#groups input:radio', function(e){
                     var currentTarget = $(this);
                     
                     currentTarget.closest('div').siblings().addClass('disabled').find('input[type!=radio],select,textarea,button').attr('disabled', 'disabled');
                     currentTarget.closest('div').removeClass('disabled').find('input,select,textarea,button').removeAttr('disabled');
                 });
-        	    $('#groups input:radio:checked').trigger('change');
+                $('#groups input:radio:checked').trigger('change');
             }
         });
     </script>
@@ -68,19 +67,19 @@
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".route">
                             <div id="routes">
-                                <div class="saveToBatchOption" id="currentRoute">
+                                <div class="stacked" id="currentRoute">
                                     <form:radiobutton id="useCurrentRoutes" path="useRoutes" value="current"/>
                                     <label for="useCurrentRoutes">
                                         <i:inline key=".useCurrentRoutes"/>
                                     </label>
                                 </div>
-                                <div class="saveToBatchOption" id="defaultRoute">
+                                <div class="stacked" id="defaultRoute">
                                     <form:radiobutton id="useDefaultRoute" path="useRoutes" value="default"/>
                                     <label for="useDefaultRoute">
                                         <i:inline key=".useDefaultRoute"/>${fn:escapeXml(ecDefaultRoute)} 
                                     </label>
                                 </div>
-                                <div class="saveToBatchOption" id="newRoute">
+                                <div class="stacked" id="newRoute">
                                     <form:radiobutton id="useNewRoute" path="useRoutes" value="new"/>
                                     <label for="useNewRoute">
                                         <i:inline key=".selectRoute"/>
@@ -95,13 +94,13 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".group">
                             <div id="groups"> 
-                                <div class="saveToBatchOption">
+                                <div class="stacked">
                                     <form:radiobutton id="useCurrentGroup" path="useGroups" value="current"/>
                                     <label for="useCurrentGroup">
                                         <i:inline key=".useCurrentConfiguration"/>
                                     </label>
                                 </div>
-                                <div class="saveToBatchOption">
+                                <div class="stacked">
                                     <form:radiobutton id="useNewGroup" path="useGroups" value="new"/>
                                     <label for="useNewGroup">
                                         <i:inline key=".selectGroup"/>

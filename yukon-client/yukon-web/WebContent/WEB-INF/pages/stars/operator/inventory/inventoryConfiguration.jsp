@@ -6,8 +6,6 @@
 
 <cti:standardPage module="operator" page="inventoryConfiguration">
 
-	<cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css" />
-
     <div class="note stacked clearfix">
         <div>
             <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection" />

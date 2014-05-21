@@ -8,7 +8,6 @@
 <cti:standardPage module="operator" page="inventory.home">
 
 <cti:checkEnergyCompanyOperator showError="true" >
-<cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
 <cti:url var="action" value="/stars/operator/inventory/setupFilterRules"/>
 
 <cti:msg2 key="yukon.web.defaults.upload" var="uploadText"/>
@@ -97,7 +96,7 @@ function showFileUpload() {
             <div class="one column">
                 <cti:checkRolesAndProperties value="INVENTORY">
                     <tags:sectionContainer2 nameKey="deviceSelection" hideEnabled="false" styleClass="stacked">
-                        <table class="inventoryActionsTable">
+                        <table class="link-table">
                             <%-- INVENTORY PICKER--%>
                             <tr>
                                 <td>

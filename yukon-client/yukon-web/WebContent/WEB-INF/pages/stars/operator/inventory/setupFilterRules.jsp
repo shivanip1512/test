@@ -9,7 +9,6 @@
 
 <cti:standardPage module="operator" page="filterSelection">
 
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
     <cti:includeScript link="/JavaScript/yukon.tables.js" />
     <cti:includeScript link="/JavaScript/yukon.picker.js" />
