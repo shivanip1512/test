@@ -458,6 +458,10 @@ public enum BuiltInAttribute implements Attribute {
                 TOTAL_LUF_COUNT,
                 TOTAL_LUV_COUNT,
                 TEMPERATURE,
+                INDOOR_TEMPERATURE,
+                OUTDOOR_TEMPERATURE,
+                COOL_SET_TEMPERATURE,
+                HEAT_SET_TEMPERATURE,
                 HUMIDITY);
 
         demandAttributes = ImmutableSet.of(
