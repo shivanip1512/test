@@ -193,7 +193,7 @@
     <entry key="yukon.common.events.amr.disconnect.groupDisconnectAttempted">User {1} initiated a {2} Command collection action</entry>
     <entry key="yukon.common.events.amr.disconnect.disconnectAttempted">User {1} attempted to {2} device {3}</entry>
     <entry key="yukon.common.events.amr.disconnect.groupCancelAttempted">User {1} canceled a {2} Command collection action.</entry>
-    <entry key="yukon.common.events.amr.disconnect.groupActionCompleted">User {1} initiated a {2} Command collection action. {3} devices selected (Success:{4} Failure:{5} Not Attempted:{6}).</entry>
+    <entry key="yukon.common.events.amr.disconnect.groupActionCompleted">User {1} initiated a {2} Command collection action. {7} devices selected (Success:{8} Failure:{9} Not Attempted:{10})</entry>
 
 <!-- Hardware -->
     <!-- Hardware -->

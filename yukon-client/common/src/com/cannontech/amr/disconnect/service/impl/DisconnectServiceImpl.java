@@ -71,7 +71,7 @@ public class DisconnectServiceImpl implements DisconnectService {
                                     final SimpleCallback<DisconnectResult> callback,
                                     final YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        final String resolvedCommand = accessor.getMessage(command).toLowerCase();
+        final String resolvedCommand = accessor.getMessage(command);
         disconnectEventLogService.groupDisconnectAttempted(userContext.getYukonUser(), resolvedCommand);
         
         final DisconnectResult result = new DisconnectResult();

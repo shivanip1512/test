@@ -1,5 +1,8 @@
 package com.cannontech.common.rfn.service;
 
+/**
+ *  This enum lists error codes from error-code.xml with the category of Network Manager.
+ */
 public enum NetworkManagerError {
     
     NO_NODE(1024),

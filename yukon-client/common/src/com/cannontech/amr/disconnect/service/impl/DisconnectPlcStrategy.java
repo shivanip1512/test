@@ -3,6 +3,8 @@ package com.cannontech.amr.disconnect.service.impl;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
@@ -29,28 +31,14 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
     @Autowired private MeterDao meterDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DisconnectPlcService disconnectPlcService;
+    
+    private Map<PaoType, PaoDefinition> integratedTypes;
+    private Map<PaoType, PaoDefinition> collarTypes;
 
     @Override
     public FilteredDevices filter(Iterable<SimpleDevice> meters) {
         FilteredDevices filteredDevices = new FilteredDevices();
 
-        Set<PaoDefinition> collar =
-            paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
-
-        Set<PaoDefinition> supportDisconnect =
-            paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_410,
-                                                   PaoTag.DISCONNECT_213,
-                                                   PaoTag.DISCONNECT_310);
-
-        Set<PaoDefinition> integrated = Sets.difference(supportDisconnect, collar);
-
-        // devices with integrated disconnect
-        final Map<PaoType, PaoDefinition> integratedTypes =
-            Maps.uniqueIndex(integrated, new Function<PaoDefinition, PaoType>() {
-                public PaoType apply(PaoDefinition daoDefinition) {
-                    return daoDefinition.getType();
-                }
-            });
         Iterable<SimpleDevice> metersWithIntegratedDisconnect =
             Iterables.filter(meters, new Predicate<SimpleDevice>() {
                 public boolean apply(SimpleDevice d) {
@@ -61,13 +49,7 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
         // add valid meters
         filteredDevices.addValid(metersWithIntegratedDisconnect);
 
-        // devices with collar
-        final Map<PaoType, PaoDefinition> collarTypes =
-            Maps.uniqueIndex(collar, new Function<PaoDefinition, PaoType>() {
-                public PaoType apply(PaoDefinition daoDefinition) {
-                    return daoDefinition.getType();
-                }
-            });
+
         Iterable<SimpleDevice> metersWithDiconnectCollar =
             Iterables.filter(meters, new Predicate<SimpleDevice>() {
                 public boolean apply(SimpleDevice d) {
@@ -122,5 +104,34 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
     public void execute(DisconnectCommand command, Iterable<SimpleDevice> meters, DisconnectCallback callback,
                         CommandRequestExecution execution, YukonUserContext userContext) {
         disconnectPlcService.execute(command, meters, callback, execution, userContext);
+    }
+    
+    @PostConstruct
+    public void init() {
+        Set<PaoDefinition> collar =
+            paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
+
+        Set<PaoDefinition> supportDisconnect =
+            paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_410,
+                                                   PaoTag.DISCONNECT_213,
+                                                   PaoTag.DISCONNECT_310);
+
+        Set<PaoDefinition> integrated = Sets.difference(supportDisconnect, collar);
+
+        // devices with integrated disconnect
+        integratedTypes =
+            Maps.uniqueIndex(integrated, new Function<PaoDefinition, PaoType>() {
+                public PaoType apply(PaoDefinition daoDefinition) {
+                    return daoDefinition.getType();
+                }
+            });
+
+        // devices with collar
+        collarTypes =
+            Maps.uniqueIndex(collar, new Function<PaoDefinition, PaoType>() {
+                public PaoType apply(PaoDefinition daoDefinition) {
+                    return daoDefinition.getType();
+                }
+            });
     }
 }

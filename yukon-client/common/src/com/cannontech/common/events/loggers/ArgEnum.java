@@ -48,11 +48,10 @@ public enum ArgEnum {
     globalSettingValue,
     energyCompanySettingType,
     energyCompanySettingValue,
-    command,
-    sent,
-    total,
-    success,
-    failure,
-    notAttempted
+    commandRequestString,
+    totalRequests,
+    successRequests,
+    failureRequests,
+    notAttemptedRequests
     ;
 }

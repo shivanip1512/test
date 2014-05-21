@@ -3,6 +3,8 @@ package com.cannontech.amr.disconnect.service.impl;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
@@ -25,19 +27,12 @@ import com.google.common.collect.Maps;
 public class DisconnectRfnStrategy implements DisconnectStrategy {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DisconnectRfnService disconnectRfnService;
+    
+    private Map<PaoType, PaoDefinition> disconnectTypes;
 
     @Override
     public FilteredDevices filter(Iterable<SimpleDevice> meters) {
         FilteredDevices filteredDevices = new FilteredDevices();
-
-        Set<PaoDefinition> paoDefinitions =
-            paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_RFN);
-        final Map<PaoType, PaoDefinition> disconnectTypes =
-            Maps.uniqueIndex(paoDefinitions, new Function<PaoDefinition, PaoType>() {
-                public PaoType apply(PaoDefinition daoDefinition) {
-                    return daoDefinition.getType();
-                }
-            });
 
         Iterable<SimpleDevice> metersWithIntegratedDisconnect =
             Iterables.filter(meters, new Predicate<SimpleDevice>() {
@@ -46,6 +41,7 @@ public class DisconnectRfnStrategy implements DisconnectStrategy {
 
                 }
             });
+        
         filteredDevices.addValid(metersWithIntegratedDisconnect);
         return filteredDevices;
     }
@@ -61,5 +57,17 @@ public class DisconnectRfnStrategy implements DisconnectStrategy {
     public void execute(DisconnectCommand command, Iterable<SimpleDevice> meters, DisconnectCallback callback,
                         CommandRequestExecution execution, YukonUserContext userContext) {
         disconnectRfnService.execute(command, meters, callback, execution, userContext);
+    }
+    
+    @PostConstruct
+    public void init() {
+        Set<PaoDefinition> paoDefinitions =
+            paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_RFN);
+        disconnectTypes =
+            Maps.uniqueIndex(paoDefinitions, new Function<PaoDefinition, PaoType>() {
+                public PaoType apply(PaoDefinition daoDefinition) {
+                    return daoDefinition.getType();
+                }
+            });
     }
 }
