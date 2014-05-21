@@ -558,7 +558,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
         paoInfo_displayDigits   = paoInfo_displayParams & 0x70;
         paoInfo_cycleTime       = paoInfo_displayParams & 0x0f;
 
-        if( paoInfo_displayDisabled == *disconnectDisplayDisabled && paoInfo_cycleTime == *cycleTime )
+        if( paoInfo_displayDisabled == disconnectDisplayDisabled && paoInfo_cycleTime == cycleTime )
         {
             if( displayDigitsSupported )
             {

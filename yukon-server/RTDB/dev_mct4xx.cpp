@@ -2430,12 +2430,12 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
             {
                 *timezoneOffset *= 4; //The timezone offset in the mct is in 15 minute increments.
                 if(parse.isKeyValid("force")
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != *timezoneOffset)
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
                 {
                     if( !parse.isKeyValid("verify") )
                     {
                         //  the bstruct IO is set above by getOperation()
-                        OutMessage->Buffer.BSt.Message[0] = (*timezoneOffset);
+                        OutMessage->Buffer.BSt.Message[0] = *timezoneOffset;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                         nRet = NORMAL;
                     }
@@ -2497,12 +2497,12 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
             {
 
                 if(parse.isKeyValid("force")
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != *spid)
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != spid)
                 {
                     if( !parse.isKeyValid("verify") )
                     {
                         //the bstruct IO is set above by getOperation()
-                        OutMessage->Buffer.BSt.Message[0] = (*spid);
+                        OutMessage->Buffer.BSt.Message[0] = *spid;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                         nRet = NORMAL;
@@ -2578,7 +2578,7 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
             return NoConfigData;
         }
 
-        if( dynamicPaoConfigByte == *configuration )
+        if( dynamicPaoConfigByte == configuration )
         {
             if( ! parse.isKeyValid("force") )
             {
@@ -2634,7 +2634,7 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
             else
             {
                 if (parse.isKeyValid("force") ||
-                    CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != *timeAdjustTolerance )
+                    CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
