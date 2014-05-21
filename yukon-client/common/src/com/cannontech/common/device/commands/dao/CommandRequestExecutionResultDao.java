@@ -30,9 +30,4 @@ public interface CommandRequestExecutionResultDao {
 	
 	public List<CommandRequestExecutionResult> getResultsByExecutionId(int commandRequestExecutionId, CommandRequestExecutionResultsFilterType reportFilterType);
     public void saveUnsupported(CommandRequestUnsupported unsupportedCmd);
-    
-    /**
-     * Create command request for unsupported and not configured devices
-     */
-    public void create(Iterable<CommandRequestUnsupported> unsupported);
 }

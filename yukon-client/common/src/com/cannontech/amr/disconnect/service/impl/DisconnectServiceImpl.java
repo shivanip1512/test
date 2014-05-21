@@ -143,11 +143,8 @@ public class DisconnectServiceImpl implements DisconnectService {
                         if (canceled) {
                             log.debug("Command Canceled");
                             if (result.getCanceledCollection().getDeviceCount() > 0) {
-                                Collection<CommandRequestUnsupported> canceled =
-                                    getCommandRequestUnsupported(result.getCanceledCollection().getDeviceList(),
-                                                                 result.getCommandRequestExecution().getId(),
-                                                                 CommandRequestUnsupportedType.CANCELED);
-                                commandRequestExecutionResultDao.create(canceled);
+                                saveUnsupported(result.getCanceledCollection().getDeviceList(), result
+                                    .getCommandRequestExecution().getId(), CommandRequestUnsupportedType.CANCELED);
                                 execution.setRequestCount(result.getCompletedCount());
                             }
                             completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.CANCELLED);
@@ -236,21 +233,10 @@ public class DisconnectServiceImpl implements DisconnectService {
         deviceGroupMemberEditorDao.addDevices(unsupportedGroup, unsupportedDevices);
         deviceGroupMemberEditorDao.addDevices(notConfiguredGroup, notConfiguredDevices);
 
-        // combine unsupported and not configured devices
-        List<CommandRequestUnsupported> unsupported = new ArrayList<CommandRequestUnsupported>();
-        if (!unsupportedDevices.isEmpty()) {
-            unsupported.addAll(getCommandRequestUnsupported(unsupportedDevices,
-                                                            result.getCommandRequestExecution().getId(),
-                                                            CommandRequestUnsupportedType.UNSUPPORTED));
-        }
-        if (!notConfiguredDevices.isEmpty()) {
-            unsupported.addAll(getCommandRequestUnsupported(notConfiguredDevices,
-                                                            result.getCommandRequestExecution().getId(),
-                                                            CommandRequestUnsupportedType.NOT_CONFIGURED));
-        }
-
-        // save unsupported and not configured device information
-        commandRequestExecutionResultDao.create(unsupported);
+        saveUnsupported(unsupportedDevices, result
+            .getCommandRequestExecution().getId(), CommandRequestUnsupportedType.UNSUPPORTED);
+        saveUnsupported(notConfiguredDevices, result
+            .getCommandRequestExecution().getId(), CommandRequestUnsupportedType.NOT_CONFIGURED);
 
         int requestCount = 0;
         for (DisconnectStrategy strategy : strategies) {
@@ -282,20 +268,15 @@ public class DisconnectServiceImpl implements DisconnectService {
         }
     }
 
-    private Collection<CommandRequestUnsupported> getCommandRequestUnsupported(List<SimpleDevice> devices,
-                                                                               final int commandRequestExecutionId,
-                                                                               final CommandRequestUnsupportedType type) {
-        return Collections2.transform(devices,
-                                      new Function<SimpleDevice, CommandRequestUnsupported>() {
-                                          @Override
-                                          public CommandRequestUnsupported apply(final SimpleDevice device) {
-                                              CommandRequestUnsupported unsupported = new CommandRequestUnsupported();
-                                              unsupported.setCommandRequestExecId(commandRequestExecutionId);
-                                              unsupported.setDeviceId(device.getDeviceId());
-                                              unsupported.setType(type);
-                                              return unsupported;
-                                          }
-                                      });
+    private void saveUnsupported(List<SimpleDevice> devices, final int commandRequestExecutionId,
+                                 final CommandRequestUnsupportedType type) {
+        for (SimpleDevice device : devices) {
+            CommandRequestUnsupported unsupported = new CommandRequestUnsupported();
+            unsupported.setCommandRequestExecId(commandRequestExecutionId);
+            unsupported.setDeviceId(device.getDeviceId());
+            unsupported.setType(type);
+            commandRequestExecutionResultDao.saveUnsupported(unsupported);
+        }
     }
 
     private CommandRequestExecution createExecution(LiteYukonUser user) {

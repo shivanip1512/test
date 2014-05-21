@@ -169,23 +169,6 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
     }
     
     @Override
-    public void create(Iterable<CommandRequestUnsupported> unsupported) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("INSERT INTO CommandRequestUnsupported");
-        sql.append(" (CommandRequestUnsupportedId, CommandRequestExecId, DeviceId, Type) ");
-        sql.append("VALUES (?,?,?,?) ");
-        List<Object[]> batchArgs = Lists.newArrayList();
-
-        for (CommandRequestUnsupported commandRequestUnsupported : unsupported) {
-            int id = nextValueHelper.getNextValue("CommandRequestUnsupported");
-            batchArgs.add(new Object[] {
-                    id, commandRequestUnsupported.getCommandRequestExecId(), commandRequestUnsupported.getDeviceId(),
-                    commandRequestUnsupported.getType().getDatabaseRepresentation() });
-        }
-        jdbcTemplate.batchUpdate(sql.getSql(), batchArgs);
-    }
-
-    @Override
     public int getUnsupportedCountByExecutionId(int commandRequestExecutionId, CommandRequestUnsupportedType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
