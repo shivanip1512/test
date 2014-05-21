@@ -155,7 +155,8 @@ CtiDeviceBase *makeLcu()
     return new CtiDeviceLCU(LcuType);
 }
 
-typedef std::map<int, boost::function<CtiDeviceBase *()>> DeviceLookup;
+typedef boost::function<CtiDeviceBase *()> MakeDeviceFunc;
+typedef std::map<int, MakeDeviceFunc> DeviceLookup;
 
 const DeviceLookup deviceFactory = boost::assign::map_list_of
     //  RTUs

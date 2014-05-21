@@ -655,7 +655,8 @@ CtiPort *makeDialablePort()
     return new Port(new Dialable);
 }
 
-typedef std::map<int, boost::function<CtiPort *()>> PortLookup;
+typedef boost::function<CtiPort *()> MakePortFunc;
+typedef std::map<int, MakePortFunc> PortLookup;
 
 const PortLookup portFactory = boost::assign::map_list_of
     (PortTypeLocalDirect,     makePort<CtiPortDirect>)
