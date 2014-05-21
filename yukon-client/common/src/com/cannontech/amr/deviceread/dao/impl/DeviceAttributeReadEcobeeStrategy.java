@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
@@ -137,7 +138,7 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
                 setPointValue(paoIdentifier, BuiltInAttribute.INDOOR_TEMPERATURE, startDate, indoorTempToUpdate);
             }
             if (shouldUpdateRuntime) {
-                setPointValue(paoIdentifier, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, startDate, runtime);
+                setPointValue(paoIdentifier, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, startDate, TimeUnit.SECONDS.toMinutes(runtime));
             }
         }
     }
