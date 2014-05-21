@@ -16,4 +16,4 @@ ALTER TABLE InventoryToAcctThermostatSch
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.1', '31-MAY-2014', 'Latest Update', 4, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('6.1', '21-MAY-2014', 'Latest Update', 4, GETDATE());
