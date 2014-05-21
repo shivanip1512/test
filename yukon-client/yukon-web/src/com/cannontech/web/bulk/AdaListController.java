@@ -73,7 +73,7 @@ public class AdaListController {
         int startIndex = (page - 1) * itemsPerPage;
         int endIndex = startIndex + itemsPerPage;
         if(endIndex >= analyses.size()) {
-            endIndex = analyses.size() - 1;
+            endIndex = analyses.size();
         }
         
         List<AnalysisWithDeviceCount> analysisSublist = Lists.newArrayList();
