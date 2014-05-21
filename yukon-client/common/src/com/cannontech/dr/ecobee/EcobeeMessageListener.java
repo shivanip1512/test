@@ -41,13 +41,9 @@ public class EcobeeMessageListener {
                 return;
             }
 
-            try {
-                String drIdentifier = ecobeeCommunicationService.sendDutyCycleDR(parameters);
-                //store the most recent dr handle for each group, so we can cancel
-                groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
-            } catch (EcobeeCommunicationException e) {
-                log.error("Unable to send control messages due to ecobee error.", e);
-            }
+            String drIdentifier = ecobeeCommunicationService.sendDutyCycleDR(parameters);
+            //store the most recent dr handle for each group, so we can cancel
+            groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
         }
     }
 
