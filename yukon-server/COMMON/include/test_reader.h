@@ -13,7 +13,11 @@ struct StringRow {
         return T;
     }
 
-    std::string operator[](int i)
+    std::string & operator[](int i)
+    {
+        return strArray[i];
+    }
+    const std::string & operator[](int i) const
     {
         return strArray[i];
     }
