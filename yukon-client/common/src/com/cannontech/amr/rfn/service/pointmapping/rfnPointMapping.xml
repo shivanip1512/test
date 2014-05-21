@@ -1189,7 +1189,6 @@
 			<modifiers match="equal">
 				<modifier>Max</modifier>
 				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 2</modifier>
 				<modifier>Quadrant 4</modifier>
 				<modifier>TOU Rate A</modifier>
 			</modifiers>
@@ -1208,7 +1207,6 @@
 			<modifiers match="equal">
 				<modifier>Max</modifier>
 				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 2</modifier>
 				<modifier>Quadrant 4</modifier>
 				<modifier>TOU Rate B</modifier>
 			</modifiers>
@@ -1227,7 +1225,6 @@
 			<modifiers match="equal">
 				<modifier>Max</modifier>
 				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 2</modifier>
 				<modifier>Quadrant 4</modifier>
 				<modifier>TOU Rate C</modifier>
 			</modifiers>
@@ -1246,7 +1243,6 @@
 			<modifiers match="equal">
 				<modifier>Max</modifier>
 				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 2</modifier>
 				<modifier>Quadrant 4</modifier>
 				<modifier>TOU Rate D</modifier>
 			</modifiers>
