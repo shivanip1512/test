@@ -1,7 +1,7 @@
 package com.cannontech.dr.ecobee;
 
 
-public class EcobeeSetDoesNotExistException extends EcobeeException {
+public class EcobeeSetDoesNotExistException extends Exception {
     
     public EcobeeSetDoesNotExistException(String setName) {
         this(setName, "");

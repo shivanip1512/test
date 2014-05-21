@@ -72,12 +72,13 @@ public class HardwareController {
         if (result.isSuccess()) {
             resultMap.put("message", accessor.getMessage(keyBase + "readNowSuccess"));
         } else {
-            Set<DeviceAttributeReadErrorType> errors = new HashSet<>();
+            Set<String> errors = new HashSet<>();
             for (DeviceAttributeReadError error : result.getMessages()) {
-                errors.add(error.getType());
+                errors.add(accessor.getMessage(error.getSummary()));
             }
-            log.info("Read failed for " + device.getPaoIdentifier() + " with errors: " +Joiner.on(',').join(errors));
-            resultMap.put("message", accessor.getMessage(keyBase + "error.readNowFailed", Joiner.on(',').join(errors)));
+
+            log.info("Read failed for " + device.getPaoIdentifier() + " with errors: " + Joiner.on(',').join(errors));
+            resultMap.put("message", Joiner.on(',').join(errors));
         }
         return resultMap;
     }

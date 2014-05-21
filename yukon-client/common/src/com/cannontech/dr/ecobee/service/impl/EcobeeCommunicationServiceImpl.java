@@ -1,9 +1,6 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.NOT_AUTHORIZED;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.PROCESSING_ERROR;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.SUCCESS;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.VALIDATION_ERROR;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,10 +25,8 @@ import org.springframework.web.client.RestOperations;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
-import com.cannontech.dr.ecobee.EcobeeAuthenticationCache;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
-import com.cannontech.dr.ecobee.EcobeeException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
@@ -66,7 +61,6 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
     @Autowired private @Qualifier("ecobee") RestOperations restTemplate;
-    @Autowired private EcobeeAuthenticationCache authenticationCache;
     @Autowired private GlobalSettingDao settingDao;
 
     private static final String modifySetUrlPart = "hierarchy/set?format=json";
@@ -85,8 +79,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         "compHeat1"); // heat runtime
 
     @Override
-    public boolean registerDevice(String serialNumber) throws EcobeeException {
-
+    public boolean registerDevice(String serialNumber) {
         String url = getUrlBase() + modifyThermostatUrlPart;
 
         RegisterDeviceRequest request = new RegisterDeviceRequest(serialNumber);
@@ -103,7 +96,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public boolean moveDeviceToSet(String serialNumber, String setPath) throws EcobeeException {
+    public boolean moveDeviceToSet(String serialNumber, String setPath) 
+            throws EcobeeDeviceDoesNotExistException, EcobeeSetDoesNotExistException {
         boolean success = false;
         try {
             success = attemptMoveDeviceToSet(serialNumber, setPath);
@@ -114,7 +108,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         return success;
     }
 
-    private boolean attemptMoveDeviceToSet(String serialNumber, String setPath) throws EcobeeException {
+    private boolean attemptMoveDeviceToSet(String serialNumber, String setPath) 
+            throws EcobeeSetDoesNotExistException, EcobeeDeviceDoesNotExistException {
 
         String url = getUrlBase() + modifyThermostatUrlPart;
 
@@ -134,8 +129,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange)
-            throws EcobeeException {
+    public List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange) {
         DateTimeFormatter ecobeeDateTimeFormatter =
                 DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
 
@@ -182,7 +176,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public boolean createManagementSet(String managementSetName) throws EcobeeException {
+    public boolean createManagementSet(String managementSetName) {
         String url = getUrlBase() + modifySetUrlPart;
 
         CreateSetRequest request = new CreateSetRequest(managementSetName);
@@ -199,8 +193,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public boolean deleteManagementSet(String managementSetName) throws EcobeeException {
-
+    public boolean deleteManagementSet(String managementSetName) {
         String url = getUrlBase() + modifySetUrlPart;
 
         DeleteSetRequest request = new DeleteSetRequest(managementSetName);
@@ -213,8 +206,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public boolean moveManagementSet(String currentPath, String newPath) throws EcobeeException {
-
+    public boolean moveManagementSet(String currentPath, String newPath) {
         String url = getUrlBase() + modifySetUrlPart;
 
         MoveSetRequest request = new MoveSetRequest(currentPath, newPath);
@@ -226,7 +218,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters) throws EcobeeException {
+    public String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters) {
         String url = getUrlBase() + demandResponseUrlPart;
 
         String groupIdString = Integer.toString(parameters.getGroupId());
@@ -242,7 +234,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public boolean sendRestore(String drIdentifier) throws EcobeeException {
+    public boolean sendRestore(String drIdentifier) {
 
         String url = getUrlBase() + demandResponseUrlPart;
 
@@ -255,7 +247,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public List<SetNode> getHierarchy() throws EcobeeException {
+    public List<SetNode> getHierarchy() {
 
         //Create base url
         String url = getUrlBase() + modifySetUrlPart + "&body={bodyJson}";
@@ -278,7 +270,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                                                    Collections.singletonMap("bodyJson", JsonUtils.toJson(request)));
             return responseEntity.getBody();
         } catch (JsonProcessingException e) {
-            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
+            throw new EcobeeCommunicationException("Unable to parse request object into valid JSON.", e);
         }
     }
 

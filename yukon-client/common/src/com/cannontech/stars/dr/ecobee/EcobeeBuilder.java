@@ -1,8 +1,10 @@
 package com.cannontech.stars.dr.ecobee;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
@@ -11,13 +13,16 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteDevice;
 import com.cannontech.common.pao.service.PaoPersistenceService;
-import com.cannontech.dr.ecobee.EcobeeException;
+import com.cannontech.dr.ecobee.EcobeeCommunicationException;
+import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
+import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.google.common.collect.ImmutableSet;
 
 public class EcobeeBuilder implements HardwareTypeExtensionProvider {
+    private static final Logger log = YukonLogManager.getLogger(EcobeeBuilder.class);
 
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
@@ -38,7 +43,8 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), ecobeePao.getPaObjectId());
             ecobeeCommunicationService.moveDeviceToSet(hardware.getSerialNumber(),
                                    EcobeeCommunicationService.UNENROLLED_SET);
-        } catch (EcobeeException e) {
+        } catch (EcobeeCommunicationException | EcobeeDeviceDoesNotExistException | EcobeeSetDoesNotExistException e) {
+            log.error("Unable to create device.", e);
             throw new DeviceCreationException(e.getMessage(), e);
         }
     }

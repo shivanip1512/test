@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
-import com.cannontech.dr.ecobee.EcobeeException;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
 import com.cannontech.dr.ecobee.message.AuthenticationResponse;
 import com.cannontech.dr.ecobee.message.BaseResponse;
@@ -45,7 +44,7 @@ public class EcobeeRestProxyFactory {
     public RestOperations createInstance() {
         InvocationHandler invocationHandler = new InvocationHandler() {
             @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws EcobeeException {
+            public Object invoke(Object proxy, Method method, Object[] args) {
                 try {
                     addAuthorizationToken(args);
                     Object responseObj = method.invoke(proxiedTemplate, args);
@@ -54,18 +53,19 @@ public class EcobeeRestProxyFactory {
                         addAuthorizationToken(args);
                         responseObj = method.invoke(proxiedTemplate, args);
                         if (didAuthenticationFail(responseObj)) {
-                            throw new RuntimeException("Received an authentication exception immediately after "
+                            throw new EcobeeCommunicationException("Received an authentication exception immediately after "
                                         + "being authenticated successfully. This should not happen.");
                         }
                     }
                     return responseObj;
-                } catch (RestClientException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                } catch (RestClientException | IllegalAccessException | IllegalArgumentException | 
+                        InvocationTargetException | EcobeeAuthenticationException e) {
                     throw new EcobeeCommunicationException("Unable to communicate with Ecobee API", e);
                 }
             }
         };
 
-        Object obj = Proxy.newProxyInstance(RestOperations.class.getClassLoader(), new Class[] { RestOperations.class },
+        Object obj = Proxy.newProxyInstance(RestOperations.class.getClassLoader(), new Class[] {RestOperations.class},
             invocationHandler);
 
         return RestOperations.class.cast(obj);
@@ -82,8 +82,7 @@ public class EcobeeRestProxyFactory {
     /**
      * Searches arguments for an HttpHeader. If one is found  an ecobee authorization header will be added.
      */
-    private void addAuthorizationToken(Object[] args)
-            throws EcobeeCommunicationException, EcobeeAuthenticationException {
+    private void addAuthorizationToken(Object[] args) throws EcobeeAuthenticationException {
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
             if (arg instanceof HttpEntity) {
@@ -96,7 +95,7 @@ public class EcobeeRestProxyFactory {
         }
     }
 
-    private String getAuthenticationToken() throws EcobeeCommunicationException, EcobeeAuthenticationException {
+    private String getAuthenticationToken() throws EcobeeAuthenticationException {
         if (authToken != null) {
             return authToken;
         }

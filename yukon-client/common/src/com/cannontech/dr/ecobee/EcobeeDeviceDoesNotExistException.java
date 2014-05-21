@@ -1,7 +1,7 @@
 package com.cannontech.dr.ecobee;
 
 
-public class EcobeeDeviceDoesNotExistException extends EcobeeException {
+public class EcobeeDeviceDoesNotExistException extends Exception {
 
     public EcobeeDeviceDoesNotExistException(String serialNumber) {
         this(serialNumber, "");

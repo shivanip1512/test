@@ -11,7 +11,8 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.ecobee.EcobeeException;
+import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
+import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -77,7 +78,7 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
             default:
                 break;
             }
-        } catch (EcobeeException e) {
+        } catch (EcobeeDeviceDoesNotExistException | EcobeeSetDoesNotExistException e) {
             log.error("Unable to send command.", e);
             throw new CommandCompletionException("Unable to send command.", e);
         }

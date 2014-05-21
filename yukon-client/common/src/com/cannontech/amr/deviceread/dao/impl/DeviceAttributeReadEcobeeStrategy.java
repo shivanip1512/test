@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.MutableDateTime;
@@ -16,6 +17,7 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -29,7 +31,7 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
-import com.cannontech.dr.ecobee.EcobeeException;
+import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
@@ -40,6 +42,8 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Iterables;
 
 public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStrategy {
+    private static final Logger log = YukonLogManager.getLogger(DeviceAttributeReadEcobeeStrategy.class);
+
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private DynamicDataSource dynamicDataSource;
@@ -88,10 +92,12 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
                     updatePointData(ecobeeDevices.get(deviceReadings.getSerialNumber()), deviceReadings);
                 }
             }
-        } catch (EcobeeException e) {
+        } catch (EcobeeCommunicationException e) {
                 MessageSourceResolvable summary =
                         YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.general.readError", e.getMessage());
-                DeviceAttributeReadError exceptionError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, summary);
+                DeviceAttributeReadError exceptionError = 
+                        new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, summary);
+                log.error("Unable to read device.", e);
                 delegateCallback.receivedException(exceptionError);
         }
         delegateCallback.complete();

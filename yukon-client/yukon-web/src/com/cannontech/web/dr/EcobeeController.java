@@ -31,7 +31,6 @@ import com.cannontech.common.util.Range;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
-import com.cannontech.dr.ecobee.EcobeeException;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
@@ -69,8 +68,7 @@ public class EcobeeController {
 
     // TODO: Mark: set requestMapping values
     //@RequestMapping(value="/ecobeeCsv", method=RequestMethod.GET)
-    public void ecobeeDataReportCsv(HttpServletResponse response, LiteYukonUser user)
-            throws IOException, EcobeeException {
+    public void ecobeeDataReportCsv(HttpServletResponse response, LiteYukonUser user) throws IOException {
         response.setContentType("text/csv");
         // TODO: Mark: figure out good name for file
         response.setHeader("Content-Disposition","filename=\"ecobee_data_report.csv\"");

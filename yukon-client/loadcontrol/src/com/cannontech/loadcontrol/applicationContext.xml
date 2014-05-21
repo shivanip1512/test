@@ -89,7 +89,6 @@
     <bean class="com.cannontech.loadcontrol.weather.impl.NoaaWeatherDataServiceImpl"/>
     
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeQueryCountDaoImpl"/>
-    <bean class="com.cannontech.dr.ecobee.EcobeeAuthenticationCache"/>
 
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceImpl"/>
 
