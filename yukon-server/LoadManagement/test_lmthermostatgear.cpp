@@ -110,19 +110,19 @@ struct thermostat_gear_settings_helper
             "20",
             "3.4",
             "<uninitialized>",
-            "0",
-            "0",
-            "0",
-            "0",
-            "0",
-            "0",
-            "0",
-            "0",
-            "0",
-            "0",
-            "0",
-            "0",
-            "0"
+            "1",
+            "255",
+            "-1",
+            "3",
+            "-2",
+            "60",
+            "30",
+            "60",
+            "45",
+            "120",
+            "75",
+            "90",
+            "1"
         };
 
         columnValues = temp_columnValues;
@@ -134,7 +134,6 @@ BOOST_AUTO_TEST_SUITE( test_lmthermostatgear )
 
 /*
     Thermostat Ramping
-        Profile values are all 0 to avoid the profile section of the command string
 */
 BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_delta, thermostat_gear_settings_helper )
 {
@@ -166,7 +165,8 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_delta, thermost
                                             gear->getRestoreTime(),
                                             12 ) );
 
-    BOOST_CHECK_EQUAL( "control xcom setpoint delta celsius mode heat ",
+    BOOST_CHECK_EQUAL( "control xcom setpoint delta celsius mode heat "
+                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2 ",
                        m->CommandString() );
 }
 
@@ -201,7 +201,8 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_delta, therm
                                             gear->getRestoreTime(),
                                             12 ) );
 
-    BOOST_CHECK_EQUAL( "control xcom setpoint celsius mode heat ",
+    BOOST_CHECK_EQUAL( "control xcom setpoint celsius mode heat "
+                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2 ",
                        m->CommandString() );
 }
 
@@ -236,7 +237,8 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_celsius, the
                                             gear->getRestoreTime(),
                                             12 ) );
 
-    BOOST_CHECK_EQUAL( "control xcom setpoint mode heat ",
+    BOOST_CHECK_EQUAL( "control xcom setpoint mode heat "
+                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2 ",
                        m->CommandString() );
 }
 
@@ -271,7 +273,8 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_cool_mode, ther
                                             gear->getRestoreTime(),
                                             12 ) );
 
-    BOOST_CHECK_EQUAL( "control xcom setpoint mode cool ",
+    BOOST_CHECK_EQUAL( "control xcom setpoint mode cool "
+                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2 ",
                        m->CommandString() );
 }
 
@@ -306,7 +309,8 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_both_modes, the
                                             gear->getRestoreTime(),
                                             12 ) );
 
-    BOOST_CHECK_EQUAL( "control xcom setpoint mode both ",
+    BOOST_CHECK_EQUAL( "control xcom setpoint mode both "
+                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2 ",
                        m->CommandString() );
 }
 
@@ -347,14 +351,11 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_mode, thermo
 
 /*
     Simple Thermostat Ramping
-        Minimal profile values are required to generate a control string
 */
 BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_heat, thermostat_gear_settings_helper )
 {
     columnValues[ controlMethodIndex ] = "SimpleThermostatRamping";
     columnValues[ settingsIndex      ] = "--H-";
-    columnValues[ settingsIndex + 4  ] = "1";   // "ValueD"
-    columnValues[ settingsIndex + 13 ] = "1";   // "RampRate"
 
     LMGearReader reader( columnNames,
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
@@ -375,13 +376,13 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_heat, th
                                            gear->getPrecoolTime(),
                                            gear->getPrecoolHoldTime(),
                                            gear->getControlTemp(),
-                                           120,
+                                           300,
                                            gear->getRestoreTime(),
                                            30,
                                            12 ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint delta mode heat "
-                       "td 0 dsd 1 te 120 dsf -1 bump stage 30 ",
+                       "min 1 max 255 tr 60 tb 60 dsb -1 tc 45 td 0 dsd 1 te 105 tf 90 dsf 0 bump stage 30 ",
                        m->CommandString() );
 }
 
@@ -390,8 +391,6 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_cool, th
 {
     columnValues[ controlMethodIndex ] = "SimpleThermostatRamping";
     columnValues[ settingsIndex      ] = "---I";
-    columnValues[ settingsIndex + 4  ] = "1";   // "ValueD"
-    columnValues[ settingsIndex + 13 ] = "1";   // "RampRate"
 
     LMGearReader reader( columnNames,
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
@@ -412,13 +411,13 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_cool, th
                                            gear->getPrecoolTime(),
                                            gear->getPrecoolHoldTime(),
                                            gear->getControlTemp(),
-                                           120,
+                                           300,
                                            gear->getRestoreTime(),
                                            30,
                                            12 ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint delta mode cool "
-                       "td 0 dsd 1 te 120 dsf -1 bump stage 30 ",
+                       "min 1 max 255 tr 60 tb 60 dsb -1 tc 45 td 0 dsd 1 te 105 tf 90 dsf 0 bump stage 30 ",
                        m->CommandString() );
 }
 
@@ -427,8 +426,6 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_none_err
 {
     columnValues[ controlMethodIndex ] = "SimpleThermostatRamping";
     columnValues[ settingsIndex      ] = "----";
-    columnValues[ settingsIndex + 4  ] = "1";   // "ValueD"
-    columnValues[ settingsIndex + 13 ] = "1";   // "RampRate"
 
     LMGearReader reader( columnNames,
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
@@ -462,8 +459,6 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_both_err
 {
     columnValues[ controlMethodIndex ] = "SimpleThermostatRamping";
     columnValues[ settingsIndex      ] = "--HI";
-    columnValues[ settingsIndex + 4  ] = "1";   // "ValueD"
-    columnValues[ settingsIndex + 13 ] = "1";   // "RampRate"
 
     LMGearReader reader( columnNames,
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
