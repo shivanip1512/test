@@ -1,17 +1,25 @@
 package com.cannontech.system.dao.impl;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.log4j.Logger;
+import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.encryption.CryptoException;
+import com.cannontech.encryption.CryptoUtils;
+import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.system.GlobalSettingSubCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingEditorDao;
@@ -21,6 +29,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
+    private final Logger log = YukonLogManager.getLogger(GlobalSettingEditorDaoImpl.class);
 
     @Autowired private YukonJdbcOperations yukonJdbcOperations;
     
@@ -37,11 +46,19 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
         final Map<GlobalSettingType, GlobalSetting> settings = Maps.newHashMap();
         
         yukonJdbcOperations.query(sql, new YukonRowCallbackHandler() {
+            @Override
             public void processRow(YukonResultSet rs) throws SQLException {
 
                 GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
                 Object value = InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value"));
-
+                if (type.isSensitiveInformation()) {
+                    try {
+                        value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).decryptHexStr((String) value);
+                    } catch (CryptoException | IOException | JDOMException |DecoderException e) {
+                        value = type.getDefaultValue();
+                        log.error("Unable to decrypt value for setting " + type + ". Using the default value");
+                    }
+                }
                 GlobalSetting setting = new GlobalSetting(type,value);
 
                 setting.setId(rs.getInt("GlobalSettingId"));

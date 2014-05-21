@@ -528,6 +528,10 @@ public enum PaoType implements DatabaseRepresentationSource {
         return cbcTypes.contains(this);
     }
     
+    public boolean isEcobee() {
+        return this == PaoType.ECOBEE_SMART_SI;
+    }
+    
     public boolean isMeter() {
         return meterTypes.contains(this);
     }

@@ -23,7 +23,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
     private long millis;
 
     //Tags from yukon-server common/include/pointdefs.h
-  //private static final long TAG_POINT_DATA_TIMESTAMP_VALID = 0x00000100;  // This point data message's timestamp comes from the device! (SOE data)
+    private static final long TAG_POINT_DATA_TIMESTAMP_VALID = 0x00000100;  // This point data message's timestamp comes from the device! (SOE data)
   //private static final long TAG_POINT_DATA_UNSOLICITED     = 0x00000200;  // This point data message was an unsolicited report from a device
   //private static final long TAG_POINT_MOA_REPORT           = 0x00000400;  // This point data message is the result of a registration
   //private static final long TAG_POINT_DELAYED_UPDATE       = 0x00000800;  // Dispatch delay this point data until the time specified in the message!
@@ -49,6 +49,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         return forced;
     }
 
+    @Override
     public int getId() {
         return id;
     }
@@ -61,10 +62,12 @@ public class PointData extends com.cannontech.message.util.Message implements Po
      * Time that this point read/gathered. This is NOT the time this message was created!
      * @return java.util.Date
      */
+    @Override
     public java.util.Date getPointDataTimeStamp() {
         return time;
     }
 
+    @Override
     public PointQuality getPointQuality() {
         return pointQuality;
     }
@@ -81,6 +84,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         return (tags & TAG_POINT_OLD_TIMESTAMP) != 0;
     }
 
+    @Override
     public int getType() {
         return type;
     }
@@ -90,6 +94,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         return PointType.getForId(type);
     }
 
+    @Override
     public double getValue() {
         return value;
     }
@@ -138,6 +143,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         value = newValue;
     }
 
+    @Override
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("id", getId());
@@ -169,6 +175,14 @@ public class PointData extends com.cannontech.message.util.Message implements Po
             tags |= TAG_POINT_LOAD_PROFILE_DATA;
         } else {
             tags &= ~TAG_POINT_LOAD_PROFILE_DATA;
+        }
+    }
+    
+    public void setTagsDataTimestampValid(boolean b) {
+        if (b) {
+            tags |= TAG_POINT_DATA_TIMESTAMP_VALID;
+        } else {
+            tags &= ~TAG_POINT_DATA_TIMESTAMP_VALID;
         }
     }
 }

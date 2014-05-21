@@ -1,17 +1,19 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.NOT_AUTHORIZED;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.PROCESSING_ERROR;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.SUCCESS;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.VALIDATION_ERROR;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
+import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -27,7 +29,6 @@ import com.cannontech.dr.ecobee.EcobeeAuthenticationCache;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeException;
-import com.cannontech.dr.ecobee.EcobeeNotAuthenticatedException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
@@ -72,12 +73,12 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     static {
         // If the order is changed here or something is added or removed we need to update
         // JsonSerializers.EcobeeRuntimeReportRow and RuntimeReport
-        deviceReadColumns.add("zoneCalendarEvent"); //currently running event
+        deviceReadColumns.add("zoneCalendarEvent"); //currently running event CONTROL_STATUS
         deviceReadColumns.add("zoneAveTemp"); // indoor temp
         deviceReadColumns.add("outdoorTemp"); // outdoor temp
         deviceReadColumns.add("zoneCoolTemp"); // cool set point
         deviceReadColumns.add("zoneHeatTemp"); // heat set point
-        deviceReadColumns.add("compCool1"); // cool runtime
+        deviceReadColumns.add("compCool1"); // cool runtime combined with compHeat1 for RELAY_1_RUN_TIME_DATA_LOG
         deviceReadColumns.add("compHeat1"); // heat runtime
     }
 
@@ -133,7 +134,9 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     @Override
     public List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange)
             throws EcobeeException {
-
+        DateTimeFormatter ecobeeDateTimeFormatter = 
+                DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
+        
         HttpEntity<RuntimeReportRequest> requestEntity = new HttpEntity<>(new HttpHeaders());
         //Build base url
         //RestTemplate could do the parameter substitution for us, except it chokes on the JSON that ecobee, in their
@@ -153,13 +156,22 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         List<EcobeeDeviceReadings> deviceData = new ArrayList<>();
         for (RuntimeReport runtimeReport : response.getReportList()) {
             List<EcobeeDeviceReading> readings = new ArrayList<>();
-            for (RuntimeReportRow reportRow : runtimeReport.getRuntimeReports()) {
-                // TODO: only using HeatRuntime here not CoolRuntime since EcobeeDeviceReading only has one runtime
-                // property. Need to figure out if EcobeeDeviceReading should have both as a runtime or if some other
-                // value is needed
+            List<RuntimeReportRow> sortedReports = new ArrayList<>(runtimeReport.getRuntimeReports());
+            Collections.sort(sortedReports, new Comparator<RuntimeReportRow>() {
+                @Override
+                public int compare(RuntimeReportRow rowA, RuntimeReportRow rowB) {
+                    return rowA.getDateStr().compareTo(rowB.getDateStr());
+                }
+            });
+
+            DateTime firstRowDateTime = ecobeeDateTimeFormatter.parseDateTime(sortedReports.get(0).getDateStr());
+            int timeZoneHoursOffset = new Period(dateRange.getMin(), firstRowDateTime.toInstant()).getHours();
+            for (RuntimeReportRow reportRow : sortedReports) {
+                DateTime rowDateTime = ecobeeDateTimeFormatter.parseDateTime(reportRow.getDateStr());
+                Instant date = rowDateTime.minusHours(timeZoneHoursOffset).toInstant();
                 EcobeeDeviceReading reading = new EcobeeDeviceReading(reportRow.getOutdoorTemp(),
                     reportRow.getIndoorTemp(), reportRow.getCoolSetPoint(), reportRow.getHeatSetPoint(),
-                    reportRow.getHeatRuntime(), reportRow.getEventName(), reportRow.getDate());
+                    reportRow.getRuntime(), reportRow.getEventName(), date);
                 readings.add(reading);
             }
             deviceData.add(new EcobeeDeviceReadings(runtimeReport.getThermostatIdentifier(), dateRange, readings));
@@ -256,8 +268,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     private <E extends BaseResponse> E queryEcobeeGet(String url, HttpEntity<?> requestEntity, Object request,
-        EcobeeQueryType queryType, Class<E> responseType)
-            throws EcobeeCommunicationException, EcobeeNotAuthenticatedException {
+        EcobeeQueryType queryType, Class<E> responseType) throws EcobeeCommunicationException {
 
         ecobeeQueryCountDao.incrementQueryCount(queryType);
         try {
@@ -270,7 +281,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     private <E extends BaseResponse> E queryEcobee(String url, HttpEntity<?> request, EcobeeQueryType queryType,
-            Class<E> responseType) throws EcobeeCommunicationException, EcobeeNotAuthenticatedException {
+            Class<E> responseType) {
         ecobeeQueryCountDao.incrementQueryCount(queryType);
         return restTemplate.postForObject(url, request, responseType);
     }

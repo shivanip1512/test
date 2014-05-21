@@ -12,6 +12,9 @@ $(function() {
     <c:if test="${hardware.hardwareType.twoWayPlcLcr}">
         setupClickHandler('#plcReadNow', '<cti:url value="/stars/operator/hardware/plc/readNow"/>');
     </c:if>
+    <c:if test="${hardware.hardwareType.ecobee}">
+        setupClickHandler('#ecobeeReadNow', '<cti:url value="/stars/operator/hardware/ecobee/readNow"/>');
+    </c:if>
     
     function setupClickHandler(selector, url) {
         $(document).on('click', selector, function(event) {
@@ -51,7 +54,8 @@ $(function() {
             </div>
         </c:if>
     </c:forEach>
-        <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr}">
+        <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr 
+                        or hardware.hardwareType.ecobee}">
             <div id="commandStatus" class="dn error"></div>
         </c:if>
     <div class="action-area">
@@ -62,6 +66,9 @@ $(function() {
         <a href="${pointsUrl}"><i:inline key="yukon.web.defaults.showAll"/></a>
         <c:if test="${hardware.hardwareType.rf}">
             <cti:button id="rfReadNow" nameKey="readNow" busy="true" icon="icon-read"/>
+        </c:if>
+        <c:if test="${hardware.hardwareType.ecobee}">
+            <cti:button id="ecobeeReadNow" nameKey="readNow" busy="true" icon="icon-read"/>
         </c:if>
         <c:if test="${hardware.hardwareType.twoWayPlcLcr}">
             <cti:button id="plcReadNow" nameKey="readNow" busy="true" icon="icon-read"/>

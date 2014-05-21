@@ -141,6 +141,10 @@ public enum BuiltInAttribute implements Attribute {
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
     TERMINAL_BLOCK_COVER_REMOVAL_FLAG("Terminal Block Cover Removal"),
+    INDOOR_TEMPERATURE("Indoor Temperature"),
+    OUTDOOR_TEMPERATURE("Outdoor Temperature"),
+    COOL_SET_TEMPERATURE("Cool Set Temperature"),
+    HEAT_SET_TEMPERATURE("Heat Set Temperature"),
 
     DELIVERED_KWH("Delivered kWh"),
     // Delivered Rate x kWh is currently using USAGE_RATE_X attributes

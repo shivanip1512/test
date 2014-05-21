@@ -114,6 +114,7 @@
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadServiceImpl"/>
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadRfnStrategy"/>
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadPlcStrategy"/>
+    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadEcobeeStrategy"/>
 
     <bean class="com.cannontech.amr.demandreset.service.impl.PlcDemandResetServiceImpl"/>
     <bean class="com.cannontech.amr.demandreset.service.impl.DemandResetPlcStrategy"/>

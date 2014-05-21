@@ -4,6 +4,7 @@
     <entry key="yukon.common.device.attributeRead.general.success">Successful Read</entry>
     <entry key="yukon.common.device.attributeRead.general.errorHeading">There was an error reading the meter:</entry>
     <entry key="yukon.common.device.attributeRead.general.noStrategy">No read strategy for type {0}</entry>
+    <entry key="yukon.common.device.attributeRead.general.readError">Read error: {0}</entry>
 
     <entry key="yukon.common.device.attributeRead.plc.errorSummary">{1} ({2})</entry>
     <entry key="yukon.common.device.attributeRead.plc.exception">Unknown error: {0}</entry>

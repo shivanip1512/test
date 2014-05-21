@@ -1,31 +1,27 @@
 package com.cannontech.dr.ecobee.message.partial;
 
-import org.joda.time.Instant;
-
 import com.cannontech.common.util.JsonSerializers;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(using=JsonSerializers.EcobeeRuntimeReportRow.class)
 public class RuntimeReportRow {
-    private final Instant date;
+    private final String dateStr;
     private final String eventName;
     private final Float indoorTemp;
     private final Float outdoorTemp;
     private final Float coolSetPoint;
     private final Float heatSetPoint;
-    private final Integer coolRuntime;
-    private final Integer heatRuntime;
+    private final int runtime;
 
-    public RuntimeReportRow(Instant date, String eventName, Float indoorTemp, Float outdoorTemp, Float coolSetPoint,
-                            Float heatSetPoint, Integer coolRuntime, Integer heatRuntime) {
-        this.date = date;
+    public RuntimeReportRow(String dateStr, String eventName, Float indoorTemp, Float outdoorTemp, Float coolSetPoint,
+                            Float heatSetPoint, int runtime) {
+        this.dateStr = dateStr;
         this.eventName = eventName;
         this.indoorTemp = indoorTemp;
         this.outdoorTemp = outdoorTemp;
         this.coolSetPoint = coolSetPoint;
         this.heatSetPoint = heatSetPoint;
-        this.coolRuntime = coolRuntime;
-        this.heatRuntime = heatRuntime;
+        this.runtime = runtime;
     }
 
     public String getEventName() {
@@ -48,15 +44,11 @@ public class RuntimeReportRow {
         return heatSetPoint;
     }
 
-    public Integer getCoolRuntime() {
-        return coolRuntime;
+    public int getRuntime() {
+        return runtime;
     }
 
-    public Integer getHeatRuntime() {
-        return heatRuntime;
-    }
-
-    public Instant getDate() {
-        return date;
+    public String getDateStr() {
+        return dateStr;
     }
 }

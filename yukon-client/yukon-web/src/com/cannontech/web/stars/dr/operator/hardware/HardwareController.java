@@ -51,6 +51,37 @@ public class HardwareController {
     @Autowired private DeviceDao deviceDao;
     @Autowired private AttributeService attributeService;
 
+    @RequestMapping("ecobee/readNow")
+    @ResponseBody
+    public Map<String, Object> ecobeeReadNow(int deviceId, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        Set<BuiltInAttribute> allAttributes = Sets.newHashSet(BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG,
+                BuiltInAttribute.CONTROL_STATUS, BuiltInAttribute.INDOOR_TEMPERATURE,
+                BuiltInAttribute.OUTDOOR_TEMPERATURE, BuiltInAttribute.COOL_SET_TEMPERATURE,
+                BuiltInAttribute.HEAT_SET_TEMPERATURE);
+
+        CollectingDeviceAttributeReadCallback result = 
+                attributeReadingHelper.initiateReadAndWait(device, allAttributes,
+                                             DeviceRequestType.LM_DEVICE_DETAILS_ATTRIBUTE_READ,
+                                             userContext.getYukonUser());
+        
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", result.isSuccess());
+        if (result.isSuccess()) {
+            resultMap.put("message", accessor.getMessage(keyBase + "readNowSuccess"));
+        } else {
+            Set<DeviceAttributeReadErrorType> errors = new HashSet<>();
+            for (DeviceAttributeReadError error : result.getMessages()) {
+                errors.add(error.getType());
+            }
+            log.info("Read failed for " + device.getPaoIdentifier() + " with errors: " +Joiner.on(',').join(errors));
+            resultMap.put("message", accessor.getMessage(keyBase + "error.readNowFailed", Joiner.on(',').join(errors)));
+        }
+        return resultMap;
+    }
+    
     @RequestMapping("plc/readNow")
     @ResponseBody
     public Map<String, Object> plcReadNow(int deviceId, YukonUserContext userContext) {
