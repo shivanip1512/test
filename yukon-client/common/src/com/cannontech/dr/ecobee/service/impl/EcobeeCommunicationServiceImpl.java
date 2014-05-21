@@ -1,6 +1,9 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.NOT_AUTHORIZED;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.PROCESSING_ERROR;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.SUCCESS;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.VALIDATION_ERROR;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,6 +59,7 @@ import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableList;
 
 public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationService {
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommunicationServiceImpl.class);
@@ -69,18 +73,16 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     private static final String modifyThermostatUrlPart = "hierarchy/thermostat?format=json";
     private static final String demandResponseUrlPart = "demandResponse?format=json";
     private static final String runtimeReportUrlPart = "runtimeReport?format=json";
-    private static final List<String> deviceReadColumns = new ArrayList<>();
-    static {
+    private static final List<String> deviceReadColumns = ImmutableList.of(
         // If the order is changed here or something is added or removed we need to update
         // JsonSerializers.EcobeeRuntimeReportRow and RuntimeReport
-        deviceReadColumns.add("zoneCalendarEvent"); //currently running event CONTROL_STATUS
-        deviceReadColumns.add("zoneAveTemp"); // indoor temp
-        deviceReadColumns.add("outdoorTemp"); // outdoor temp
-        deviceReadColumns.add("zoneCoolTemp"); // cool set point
-        deviceReadColumns.add("zoneHeatTemp"); // heat set point
-        deviceReadColumns.add("compCool1"); // cool runtime combined with compHeat1 for RELAY_1_RUN_TIME_DATA_LOG
-        deviceReadColumns.add("compHeat1"); // heat runtime
-    }
+        "zoneCalendarEvent", //currently running event
+        "zoneAveTemp", // indoor temp
+        "outdoorTemp", // outdoor temp
+        "zoneCoolTemp", // cool set point
+        "zoneHeatTemp", // heat set point
+        "compCool1", // cool runtime
+        "compHeat1"); // heat runtime
 
     @Override
     public boolean registerDevice(String serialNumber) throws EcobeeException {
@@ -134,9 +136,9 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     @Override
     public List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange)
             throws EcobeeException {
-        DateTimeFormatter ecobeeDateTimeFormatter = 
+        DateTimeFormatter ecobeeDateTimeFormatter =
                 DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
-        
+
         HttpEntity<RuntimeReportRequest> requestEntity = new HttpEntity<>(new HttpHeaders());
         //Build base url
         //RestTemplate could do the parameter substitution for us, except it chokes on the JSON that ecobee, in their
