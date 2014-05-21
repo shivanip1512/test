@@ -38,7 +38,7 @@
     </c:choose>
     <div class="action-area">
         <cti:formatDate value="${defaultStartInstant}" type="DATE" var="fromInstant"/>
-        <cti:url value="/amr/meterEventsReport/report" var="meterEventsReportUrl">
+        <cti:url value="/amr/meterEventsReport/home" var="meterEventsReportUrl">
             <cti:param name="collectionType" value="idList"/>
             <cti:param name="idList.ids" value="${deviceId}"/>
             <cti:param name="includeDisabledPaos" value="${meter.disabled}"/>
