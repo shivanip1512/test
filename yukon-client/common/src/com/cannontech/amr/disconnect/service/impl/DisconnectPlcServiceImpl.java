@@ -40,13 +40,13 @@ import com.google.common.collect.Maps;
 
 public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     
-    
     private Logger log = YukonLogManager.getLogger(DisconnectPlcServiceImpl.class);
+    private static final int MINUTES_TO_WAIT = 1;
+    
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     @Autowired private AttributeService attributeService;
     @Autowired private StateDao stateDao;
     @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
-    private static final int MINUTES_TO_WAIT = 1;
     
     @Override
     public void cancel(DisconnectResult result, YukonUserContext userContext) {
@@ -163,11 +163,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
             }
             meters.remove(command.getDevice());
         }
-
-        @Override
-        public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-        }
-
+        
         @Override
         public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
             if (log.isDebugEnabled()) {
@@ -176,13 +172,16 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
             callback.failed(command.getDevice(), error);
             meters.remove(command.getDevice());
         }
+        
+        @Override
+        public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {}
 
         @Override
-        public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
-        }
+        public void receivedIntermediateResultString(CommandRequestDevice command, String value) {}
 
         @Override
-        public void receivedLastResultString(CommandRequestDevice command, String value) {
-        }
+        public void receivedLastResultString(CommandRequestDevice command, String value) {}
+        
     }
+    
 }
