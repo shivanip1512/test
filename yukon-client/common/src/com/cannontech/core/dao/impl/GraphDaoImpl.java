@@ -23,7 +23,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public final class GraphDaoImpl implements GraphDao {
     
     @Autowired private IDatabaseCache databaseCache;
-    @Autowired private YukonJdbcTemplate template;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
     
@@ -118,7 +118,7 @@ public final class GraphDaoImpl implements GraphDao {
         sql.append("and co.LoginId").eq(userId);
         sql.append("order by gd.Name");
 
-        List<LiteGraphDefinition> graphs = template.query(sql, liteGraphMapper);
+        List<LiteGraphDefinition> graphs = jdbcTemplate.query(sql, liteGraphMapper);
 
         return graphs;
     }
@@ -134,7 +134,7 @@ public final class GraphDaoImpl implements GraphDao {
         sql.append("where eccl.EnergyCompanyId").eq(ecId);
         sql.append("order by gd.Name");
         
-        List<LiteGraphDefinition> graphs = template.query(sql, liteGraphMapper);
+        List<LiteGraphDefinition> graphs = jdbcTemplate.query(sql, liteGraphMapper);
         
         return graphs;
     }
@@ -147,7 +147,7 @@ public final class GraphDaoImpl implements GraphDao {
         sql.append("from GraphDefinition");
         sql.append("order by Name");
         
-        List<LiteGraphDefinition> graphs = template.query(sql, liteGraphMapper);
+        List<LiteGraphDefinition> graphs = jdbcTemplate.query(sql, liteGraphMapper);
         
         return graphs;
     }
@@ -163,7 +163,7 @@ public final class GraphDaoImpl implements GraphDao {
         sql.append("where gds.GraphDefinitionId").eq(graphDefinitionId);
         sql.append("order by p.PointOffset");
         
-        List<GraphDataSeries> series = template.query(sql, new YukonRowMapper<GraphDataSeries>() {
+        List<GraphDataSeries> series = jdbcTemplate.query(sql, new YukonRowMapper<GraphDataSeries>() {
             @Override
             public GraphDataSeries mapRow(YukonResultSet rs) throws SQLException {
                 

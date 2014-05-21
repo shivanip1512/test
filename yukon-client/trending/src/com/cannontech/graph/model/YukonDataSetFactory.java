@@ -217,7 +217,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 						}
 						catch(SeriesException se)
 						{
-							com.cannontech.clientutils.CTILogger.debug("Serie ["+serie.getLabel()+"] Exception:  PERIOD = " + new Date( ((Long)timeAndValue.getFirst()).longValue())  + " VALUE = " + ((Double)timeAndValue.getSecond()).doubleValue());
+							com.cannontech.clientutils.CTILogger.error("Serie ["+serie.getLabel()+"] Exception:  PERIOD = " + new Date( ((Long)timeAndValue.getFirst()).longValue())  + " VALUE = " + ((Double)timeAndValue.getSecond()).doubleValue());
 						}
 					}
 				}

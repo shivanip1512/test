@@ -40,7 +40,7 @@ import com.google.common.collect.ImmutableSet;
 public class TrendDataController {
     
     @Autowired private GraphDao graphDao;
-    @Autowired private RawPointHistoryDao rphDao;
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     public enum LegacySeriesType {
@@ -106,7 +106,7 @@ public class TrendDataController {
             valueMap.put("name", serie.getLabel());
             List<Object[]> values = new ArrayList<>();
             
-            List<PointValueHolder> data = rphDao.getPointData(serie.getPointID(), 
+            List<PointValueHolder> data = rawPointHistoryDao.getPointData(serie.getPointID(), 
                     new Instant().minus(Duration.standardDays(365 * 2)).toDate(), 
                     new Instant().toDate(), 
                     Clusivity.INCLUSIVE_INCLUSIVE, 
