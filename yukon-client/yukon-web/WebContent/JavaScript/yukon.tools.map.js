@@ -13,19 +13,35 @@ yukon.tools.map = (function() {
     
     var
     _initialized = false,
-    _updater = -1, /** {number} - The setTimeout reference for periodic updating of device collection. */
-    _updateInterval = 4000, /** {number} - The ms interval to wait before updating the device collection. */
-    _destProjection = 'EPSG:3857', /** {string} - The default projection code of our map tiles. */
-    _icons = {}, /** {Object.<number, {ol.Feature}>} - Map of pao id to feature for all device icons. */
-    _visibility = {}, /** {Object.<number, boolean>} - Map of pao id to boolean to keep track of device icon visibility. */
-    _map = {}, /** {ol.Map} - The openlayers map object. */
-    _styles = { /** {Object.<string, {ol.style.Style}>} - A cache of styles to avoid creating lots of objects using lots of memory. */
+    
+    /** @type {number} - The setTimeout reference for periodic updating of device collection. */
+    _updater = -1, 
+    
+    /** @type {number} - The ms interval to wait before updating the device collection. */
+    _updateInterval = 4000,
+    
+    /** @type {string} - The default projection code of our map tiles. */
+    _destProjection = 'EPSG:3857',
+    
+    /** @type {Object.<number, {ol.Feature}>} - Map of pao id to feature for all device icons. */
+    _icons = {}, 
+    
+    /** @type {Object.<number, boolean>} - Map of pao id to boolean to keep track of device icon visibility. */
+    _visibility = {},
+    
+    /** @type {ol.Map} - The openlayers map object. */
+    _map = {}, 
+    
+    /** @type {Object.<string, {ol.style.Style}>} - A cache of styles to avoid creating lots of objects using lots of memory. */
+    _styles = { 
         'electric': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-electric.png'), anchor: [0.5, 1.0] }) }),
         'water': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-water.png'), anchor: [0.5, 1.0] }) }),
         'gas': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-gas.png'), anchor: [0.5, 1.0] }) }),
         'generic': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png'), anchor: [0.5, 1.0] }) })
     },
-    _tiles = [ /** {Array.<{ol.Layer.Tile|ol.layer.Group}>} - Array of tile layers for our map. */
+    
+    /** @type {Array.<{ol.Layer.Tile|ol.layer.Group}>} - Array of tile layers for our map. */
+    _tiles = [ 
         new ol.layer.Tile({ name: 'mqosm', source: new ol.source.MapQuest({ layer: 'osm' }) }),
         new ol.layer.Tile({ name: 'mqsat', source: new ol.source.MapQuest({ layer: 'sat' }), visible: false }),
         new ol.layer.Group({
