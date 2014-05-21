@@ -110,7 +110,7 @@ public class EcobeeController {
     }
 
     private static String formatNullable(Float num) {
-        return num == null ? "-" : new DecimalFormat("#.#").format(num);
+        return num == null ? "" : new DecimalFormat("#.#").format(num);
     }
 
     @RequestMapping(value="/ecobee", method=RequestMethod.GET)
