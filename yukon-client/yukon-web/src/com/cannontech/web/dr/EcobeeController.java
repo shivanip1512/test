@@ -3,6 +3,7 @@ package com.cannontech.web.dr;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -81,7 +82,7 @@ public class EcobeeController {
         List<String> allSerialNumbers = drGroupDeviceMappingDao.getInventorySerialNumbersForLoadGroups(loadGroupIds);
 
         String headerFormat = "%s,%s,%s,%s,%s,%s,%s,%s\n";
-        String dataFormat = "%s,%s,%.1f,%.1f,%.1f,%.1f,%d,%s\n";
+        String dataFormat = "%s,%s,%s,%s,%s,%s,%d,%s\n";
 
         BufferedWriter output = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
         output.write(String.format(headerFormat, "Serial Number", "Date", "Outdoor Temp",
@@ -97,15 +98,21 @@ public class EcobeeController {
                 for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
                     String dateStr = timeFormatter.print(deviceReading.getDate());
                     String line = String.format(dataFormat, serialNumber, dateStr,
-                        deviceReading.getOutdoorTempInF(), deviceReading.getIndoorTempInF(),
-                        deviceReading.getSetCoolTempInF(), deviceReading.getSetHeatTempInF(),
-                        deviceReading.getRuntimeSeconds(), deviceReading.getEventActivity());
+                            formatNullable(deviceReading.getOutdoorTempInF()),
+                            formatNullable(deviceReading.getIndoorTempInF()),
+                            formatNullable(deviceReading.getSetCoolTempInF()),
+                            formatNullable(deviceReading.getSetHeatTempInF()),
+                            deviceReading.getRuntimeSeconds(), deviceReading.getEventActivity());
                     output.write(line);
                 }
             }
         }
 
         output.flush();
+    }
+
+    private static String formatNullable(Float num) {
+        return num == null ? "-" : new DecimalFormat("#.#").format(num);
     }
 
     @RequestMapping(value="/ecobee", method=RequestMethod.GET)
