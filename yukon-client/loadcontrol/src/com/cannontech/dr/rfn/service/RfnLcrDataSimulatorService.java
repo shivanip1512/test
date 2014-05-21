@@ -13,20 +13,25 @@ import com.cannontech.dr.rfn.model.SimulatorSettings;
  * By default the simulator starts up with 100,000 RFN-6200 devices and 20,000 RFN-6600 devices, though this is
  * configurable by the user at startup.  The simulator can not be started automatically at launch and must
  * be initiated manually by the user.
- * 
- * @author E9815731 - Garrett DeZeeuw
  */
 public interface RfnLcrDataSimulatorService {
-
     /**
-     * Starts the RFN LCR data simulator. 
+     * Starts the RFN LCR data simulator.
      * @param settings Defines the parameters of the simulation, particularly the device serial number ranges.
      */
-    public void startSimulator(SimulatorSettings settings);
+    void startSimulator(SimulatorSettings settings);
 
     /**
      * Stops the RFN LCR data simulator.
      */
-    public void stopSimulator();
+    void stopSimulator();
 
+    boolean isRunning();
+
+    /**
+     * Get the current settings if the simulator has been running. Otherwise, null is returned. If the
+     * simulator was previously run (since web server startup) but is not running, this will return the
+     * settings previously used.
+     */
+    SimulatorSettings getCurrentSettings();
 }

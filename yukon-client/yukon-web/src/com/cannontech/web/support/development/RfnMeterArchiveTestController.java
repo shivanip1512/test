@@ -87,32 +87,32 @@ public class RfnMeterArchiveTestController {
     }
 
     @RequestMapping("viewLcrDataSimulator")
-    public String viewLcrDataSimulator() {
+    public String viewLcrDataSimulator(ModelMap model) {
+        model.addAttribute("isRunning", dataSimulator.isRunning());
+        SimulatorSettings currentSettings = dataSimulator.getCurrentSettings();
+        if (currentSettings == null) {
+            currentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 123456789, 1390000000);
+        }
+        model.addAttribute("currentSettings", currentSettings);
         return "development/rfn/dataSimulator.jsp";
     }
 
-    @RequestMapping(value="startDataSimulator", method=RequestMethod.GET)
-    public String startDataSimulator(
-            @RequestParam(value = "lcr6200serialFrom", required = true) String lcr6200serialFrom,
-            @RequestParam(value = "lcr6200serialTo", required = true) String lcr6200serialTo,
-            @RequestParam(value = "lcr6600serialTo", required = true) String lcr6600serialTo,
-            @RequestParam(value = "lcr6600serialFrom", required = true) String lcr6600serialFrom,
-            @RequestParam(value = "messageId", required = true) String messageId,
-            @RequestParam(value = "messageIdTimestamp", required = true) String messageIdTimestamp) {
-        SimulatorSettings settings = new SimulatorSettings(
-                Integer.parseInt(lcr6200serialFrom), Integer.parseInt(lcr6200serialTo), 
-                Integer.parseInt(lcr6600serialFrom), Integer.parseInt(lcr6600serialTo),
-                Long.parseLong(messageId), Long.parseLong(messageIdTimestamp));
-        
+    @RequestMapping(value="startDataSimulator", method=RequestMethod.POST)
+    public String startDataSimulator(@RequestParam int lcr6200serialFrom, @RequestParam int lcr6200serialTo,
+            @RequestParam int lcr6600serialFrom, @RequestParam int lcr6600serialTo,
+            @RequestParam long messageId, @RequestParam long messageIdTimestamp) {
+        SimulatorSettings settings = new SimulatorSettings(lcr6200serialFrom, lcr6200serialTo,
+            lcr6600serialFrom, lcr6600serialTo, messageId, messageIdTimestamp);
+
         dataSimulator.startSimulator(settings);
-        
-        return "development/rfn/dataSimulator.jsp";
+
+        return "redirect:viewLcrDataSimulator";
     }
 
     @RequestMapping("stopDataSimulator")
     public String stopDataSimulator() {
         dataSimulator.stopSimulator();
-        return "development/rfn/dataSimulator.jsp";
+        return "redirect:viewLcrDataSimulator";
     }
 
     private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event) {

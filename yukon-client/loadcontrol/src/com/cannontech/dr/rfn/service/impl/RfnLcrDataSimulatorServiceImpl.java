@@ -50,11 +50,12 @@ import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorService {
     private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
+
     private final static String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";  
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ExiParsingService exiParsingService;
-    @Autowired private RfnEventTestingService testingService;
+    @Autowired private RfnEventTestingService rfnEventTestingService;
     @Autowired private ConnectionFactory connectionFactory;
 
     private Simulator simulator = new Simulator();
@@ -79,6 +80,16 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         if (simulatorFuture != null) {
             simulatorFuture.cancel(true);
         }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return simulator.isRunning;
+    }
+
+    @Override
+    public SimulatorSettings getCurrentSettings() {
+        return simulator.simulatorSettings;
     }
 
     private class Simulator implements Runnable {
@@ -383,5 +394,4 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         relay.getIntervalData().add(intervalData);
         return relay;
     }
-
 }

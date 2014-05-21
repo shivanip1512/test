@@ -3,51 +3,37 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="dev" page="rfnTest.viewDataSimulator">
+<cti:standardPage module="support" page="rfnTest.viewDataSimulator">
 
-<script type="text/javascript">
-$(function() {
-    $('#start').click(function(event) {
-        var data = { 'lcr6200serialFrom': $("input[name='Lcr6200serialFrom']").val(),
-                'lcr6200serialTo': $("input[name='Lcr6200serialTo']").val(),
-                'lcr6600serialFrom': $("input[name='Lcr6600serialFrom']").val(),
-                'lcr6600serialTo': $("input[name='Lcr6600serialTo']").val(),
-                'messageId': $("input[name='messageId']").val(),
-                'messageIdTimestamp': $("input[name='messageIdTimestamp']").val()};
-        $.ajax({
-            url: '/support/development/rfn/startDataSimulator',
-            type: 'GET',
-            data: data 
-        });
-    });
-    
-    $('#stop').click(function(event) {
-        $.ajax({
-            url: '/support/development/rfn/stopDataSimulator',
-            type: 'GET'
-        });
-    });
-});
-</script>
+<c:if test="${isRunning}">
+    <p>The simulator is running.</p>
+</c:if>
 
+<form action="startDataSimulator" method="post">
+<cti:csrfToken/>
 <tags:sectionContainer2 nameKey="lcrDataSimulator">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.serialNumberRangeLcr6200">
-            <input name="Lcr6200serialFrom" type="text" value="100000"> <i:inline key="yukon.common.to"/> <input name="Lcr6200serialTo" type="text" value="200000">
+            <input name="lcr6200serialFrom" type="text" value="${currentSettings.lcr6200serialFrom}">
+            <i:inline key="yukon.common.to"/>
+            <input name="lcr6200serialTo" type="text" value="${currentSettings.lcr6200serialTo}">
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.serialNumberRangeLcr6600">
-            <input name="Lcr6600serialFrom" type="text" value="300000"> <i:inline key="yukon.common.to"/> <input name="Lcr6600serialTo" type="text" value="320000">
+            <input name="lcr6600serialFrom" type="text" value="${currentSettings.lcr6600serialFrom}">
+            <i:inline key="yukon.common.to"/>
+            <input name="lcr6600serialTo" type="text" value="${currentSettings.lcr6600serialTo}">
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.messageId">
-            <input name="messageId" type="text" value="123456789">
+            <input name="messageId" type="text" value="${currentSettings.messageId}">
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.messageIdTimestamp">
-            <input name="messageIdTimestamp" type="text" value="1390000000">
+            <input name="messageIdTimestamp" type="text" value="${currentSettings.messageIdTimestamp}">
         </tags:nameValue2>
     </tags:nameValueContainer2>
     <div>
-        <cti:button nameKey="start" id="start"/>
-        <cti:button nameKey="stop" id="stop"/>
+        <cti:button nameKey="start" type="submit"/>
+        <cti:button nameKey="stop" href="stopDataSimulator"/>
     </div>
 </tags:sectionContainer2>
+</form>
 </cti:standardPage>
