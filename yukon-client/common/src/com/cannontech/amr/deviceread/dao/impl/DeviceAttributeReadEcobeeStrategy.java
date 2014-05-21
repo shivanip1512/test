@@ -43,17 +43,17 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private AttributeService attributeService;
-    
+
     @Override
     public StrategyType getType() {
         return StrategyType.ECOBEE;
     }
-    
+
     @Override
     public boolean canRead(PaoType paoType) {
         return paoType.isEcobee();
     }
-    
+
     @Override
     public boolean isReadable(Iterable<PaoMultiPointIdentifier> devices, LiteYukonUser user) {
         // TODO decide if anything more is required
@@ -76,19 +76,19 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
         Instant end = new Instant().minus(Duration.standardMinutes(15));
         MutableDateTime mutableDateTime = new MutableDateTime(end.minus(Duration.standardHours(24)));
         // Start request at top of hour requested. This makes some point archiving calculations easier
-        mutableDateTime.setMinuteOfHour(0); 
+        mutableDateTime.setMinuteOfHour(0);
         Instant start = mutableDateTime.toInstant();
         Range<Instant> lastTwentyFourHours = Range.inclusive(start, end);
         try {
             for (List<String> serialNumbers : Iterables.partition(ecobeeDevices.keySet(), 25)) {
-                List<EcobeeDeviceReadings> allDeviceReadings = 
+                List<EcobeeDeviceReadings> allDeviceReadings =
                         ecobeeCommunicationService.readDeviceData(serialNumbers, lastTwentyFourHours);
                 for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
                     updatePointData(ecobeeDevices.get(deviceReadings.getSerialNumber()), deviceReadings);
                 }
             }
         } catch (EcobeeException e) {
-                MessageSourceResolvable summary = 
+                MessageSourceResolvable summary =
                         YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.general.readError", e.getMessage());
                 DeviceAttributeReadError exceptionError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, summary);
                 delegateCallback.receivedException(exceptionError);
@@ -165,7 +165,6 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     public void initiateRead(Iterable<PaoMultiPointIdentifier> points,
                              final GroupCommandCompletionCallback groupCallback, DeviceRequestType type,
                              final YukonUserContext userContext) {
-        // We cannot do group command reads
-        throw new UnsupportedOperationException("Group reads not supported for ecobee devices");
+        initiateRead(points, groupCallback, type, userContext);
     }
 }
