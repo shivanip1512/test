@@ -36,6 +36,7 @@ public class EcobeeQueryCountDaoImpl implements EcobeeQueryCountDao {
         if (rowsAffected == 0) {
             SqlStatementBuilder insertSql = new SqlStatementBuilder();
             insertSql.append("INSERT INTO EcobeeQueryStatistics");
+            // TODO remove energy company
             insertSql.append("(EnergyCompanyId, MonthIndex, YearIndex, QueryType, QueryCount)");
             insertSql.values(4, now.getMonthOfYear(), now.getYear(), queryType, 1);
             jdbcTemplate.update(insertSql);
