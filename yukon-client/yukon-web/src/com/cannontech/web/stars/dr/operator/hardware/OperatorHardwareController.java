@@ -125,7 +125,7 @@ public class OperatorHardwareController {
     @Autowired private ContactDao contactDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DefaultRouteService defaultRouteService;
-    @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private HardwareModelHelper hardwareModelHelper;
@@ -268,8 +268,7 @@ public class OperatorHardwareController {
                 }
                 
             } else {
-                boolean invCheckingCreate = rolePropertyDao.getPropertyBooleanValue(
-                    YukonRoleProperty.OPERATOR_INVENTORY_CHECKING_CREATE, userContext.getYukonUser());
+                boolean invCheckingCreate = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INVENTORY_CHECKING_CREATE, accountInfoFragment.getEnergyCompanyId());
                 if (invCheckingCreate) {
                     // Return to the list page with the confirm creation popup.
                     model.addAttribute("confirmCreateSerial", serialNumber.getSerialNumber());
@@ -712,7 +711,8 @@ public class OperatorHardwareController {
             YukonUserContext userContext) {
         boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         boolean tstatAccess = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT, userContext.getYukonUser());
-        boolean inventoryChecking = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, userContext.getYukonUser());
+        
+        boolean inventoryChecking = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INVENTORY_CHECKING, accountInfoFragment.getEnergyCompanyId());
         model.addAttribute("allowAccountEditing", allowAccountEditing);
         model.addAttribute("inventoryChecking", inventoryChecking);
         
@@ -910,12 +910,11 @@ public class OperatorHardwareController {
         model.addAttribute("meterClass", HardwareClass.METER);
         model.addAttribute("gatewayClass", HardwareClass.GATEWAY);
         
-        MeteringType meterDesignation = ecSettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION,
-            MeteringType.class, ec.getId());
+        MeteringType meterDesignation = energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getEnergyCompanyId());
         boolean starsMeters = meterDesignation == MeteringType.stars; 
         model.addAttribute("starsMeters", starsMeters);
         
-        boolean inventoryChecking = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, userContext.getYukonUser());
+        boolean inventoryChecking = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INVENTORY_CHECKING, accountInfoFragment.getEnergyCompanyId());
         model.addAttribute("inventoryChecking", inventoryChecking);
     }
     

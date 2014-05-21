@@ -74,7 +74,7 @@ function changeStatus(form) {
                   <tr> 
                     <td valign="top" bgcolor="#FFFFFF"> 
                       <table width="360" border="0" cellspacing="0" cellpadding="3" align="center" class="TableCell">
-                        <cti:checkRolesAndProperties value="OPERATOR_ORDER_NUMBER_AUTO_GEN">
+                        <cti:checkRolesAndProperties value="WORK_ORDER_NUMBER_AUTO_GEN">
                             <tr> 
                               <td width="100" class="SubtitleHeader"> 
                                 <div align="right">*Work Order #:</div>

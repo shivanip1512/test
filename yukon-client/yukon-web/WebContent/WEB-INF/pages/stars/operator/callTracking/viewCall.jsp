@@ -8,7 +8,9 @@
 <cti:standardPage module="operator" page="viewCall.${mode}">
 <tags:setFormEditMode mode="${mode}"/>
 
-    <form id="delete-call" action="/stars/operator/callTracking/deleteCall" method="post" class="dn">
+    <cti:url var="deleteUrl" value="/stars/operator/callTracking/deleteCall"/>
+
+    <form id="delete-call" action="${deleteUrl}" method="post" class="dn">
         <cti:csrfToken/>
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="deleteCallId" value="${callReport.callId}">

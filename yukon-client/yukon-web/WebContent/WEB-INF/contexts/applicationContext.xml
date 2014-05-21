@@ -1814,4 +1814,5 @@
     <bean class="com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper"/>
     <bean id="userPageService" class="com.cannontech.web.common.userpage.service.impl.UserPageServiceImpl"/>
     <bean class="com.cannontech.web.dr.loadcontrol.FormulaBeanValidator"/>
+    <bean class="com.cannontech.web.stars.dr.operator.validator.WorkOrderValidator"/>
 </beans>

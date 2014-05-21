@@ -50,6 +50,8 @@ import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationExce
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -71,6 +73,7 @@ public class InventoryController {
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DefaultRouteService defaultRouteService;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private HardwareModelHelper hardwareModelHelper;
     @Autowired private HardwareService hardwareService;
@@ -337,8 +340,7 @@ public class InventoryController {
     }
     
     public void setupModel(ModelMap model, YukonUserContext context, Hardware hardware) {
-        boolean inventoryChecking =
-                rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, context.getYukonUser());
+        boolean inventoryChecking = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INVENTORY_CHECKING, hardware.getEnergyCompanyId());
 
         int inventoryId = hardware.getInventoryId();
         model.addAttribute("hardware", hardware);

@@ -24,12 +24,12 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CallReportDao;
 import com.cannontech.stars.dr.account.model.CallReport;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -47,10 +47,11 @@ import com.google.common.collect.Lists;
 public class OperatorCallTrackingController {
 
     @Autowired private CallReportDao callReportDao;
-    @Autowired private YukonListDao yukonListDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonListDao yukonListDao;
 
     private final String baseKey = "yukon.web.modules.operator.viewCall.";
     
@@ -119,12 +120,12 @@ public class OperatorCallTrackingController {
         model.addAttribute("callReport", callReport);
     }
 
-    private synchronized String getNextCallNumberStr(int ecId, LiteYukonUser user) {
-        long maxCallNum = callReportDao.getLargestNumericCallNumber(ecId);
+    private synchronized String getNextCallNumberStr(int energyCompanyId) {
+        long maxCallNum = callReportDao.getLargestNumericCallNumber(energyCompanyId);
 
         long nextCallNum = maxCallNum + 1;
         if (maxCallNum == 0) {
-            String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_CALL_NUMBER_AUTO_GEN, user);
+            String value = energyCompanySettingDao.getString(EnergyCompanySettingType.CALL_TRACKING_NUMBER_AUTO_GEN, energyCompanyId);
             if (value != null && !value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
                 try {
                     long callNumberFromRoleProperty = Long.parseLong(value);
@@ -132,7 +133,7 @@ public class OperatorCallTrackingController {
                         nextCallNum = callNumberFromRoleProperty;
                     }
                 } catch (NumberFormatException e) {
-                    // OPERATOR_CALL_NUMBER_AUTO_GEN can also be 'true', or 'false'.
+                    // CALL_TRACKING_NUMBER_AUTO_GEN can also be 'true', or 'false'.
                 }
             }
         }
@@ -146,11 +147,10 @@ public class OperatorCallTrackingController {
             AccountInfoFragment accountInfoFragment) {
 
         setupCallReportModel(accountInfoFragment, modelMap, userContext, callReport.getCallId());
+        boolean isAutoGen = shouldAutoGenerateCallNumber(accountInfoFragment.getEnergyCompanyId());
         
-        if (callReport.getCallId() == null && shouldAutoGenerateCallNumber(userContext.getYukonUser())) {
-            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-
-            String nextCallNum = getNextCallNumberStr(accountInfoFragment.getEnergyCompanyId(), energyCompany.getUser());
+        if (callReport.getCallId() == null && isAutoGen) {
+            String nextCallNum = getNextCallNumberStr(accountInfoFragment.getEnergyCompanyId());
             callReport.setCallNumber(nextCallNum);
         }
 
@@ -160,7 +160,7 @@ public class OperatorCallTrackingController {
         
         if (bindingResult.hasErrors()) {
             // custom message for those that do not have a call number field to correct
-            if (shouldAutoGenerateCallNumber(userContext.getYukonUser()) && callReportValidator.isHasDuplicateCallNumberError()) {
+            if (isAutoGen && callReportValidator.isHasDuplicateCallNumberError()) {
                 bindingResult.reject("callNumberCollision");
             }
             
@@ -185,7 +185,7 @@ public class OperatorCallTrackingController {
 
     @RequestMapping("deleteCall")
     @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
-    public String deleteCall(int deleteCallId, ModelMap modelMap, FlashScope flashScope, 
+    public String deleteCall(Integer deleteCallId, ModelMap modelMap, FlashScope flashScope, 
             AccountInfoFragment accountInfoFragment) {
         callReportDao.delete(deleteCallId);
 
@@ -196,14 +196,17 @@ public class OperatorCallTrackingController {
     }
     
     /**
-     * Checks if OPERATOR_CALL_NUMBER_AUTO_GEN is set to "true" or some number. 
+     * Checks if CALL_TRACKING_NUMBER_AUTO_GEN is set to "true" or some number. 
      * If it is, that signals to us that the call number should be auto generated.
      */
-    private boolean shouldAutoGenerateCallNumber(LiteYukonUser user) {
-        String callNumAutoGenstr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_CALL_NUMBER_AUTO_GEN, user);
-        Boolean callNumAutoGenBoolean = BooleanUtils.toBooleanObject(callNumAutoGenstr);
+    private boolean shouldAutoGenerateCallNumber(int energyCompanyId) {
+        String value = energyCompanySettingDao.getString(EnergyCompanySettingType.CALL_TRACKING_NUMBER_AUTO_GEN, energyCompanyId);
         
-        return (callNumAutoGenBoolean != null && callNumAutoGenBoolean.booleanValue()) || NumberUtils.isDigits(callNumAutoGenstr);
+        if (NumberUtils.isDigits(value)) {
+            return true;
+        } else {    //returns true for true, on, yes
+            return BooleanUtils.toBoolean(value);
+        }
     }
     
     private void setupCallReportModel(AccountInfoFragment accountInfoFragment, ModelMap modelMap, YukonUserContext userContext, Integer callId) {
@@ -212,7 +215,7 @@ public class OperatorCallTrackingController {
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
-        boolean shouldAutoGenerateCallNumber = shouldAutoGenerateCallNumber(userContext.getYukonUser());
+        boolean shouldAutoGenerateCallNumber = shouldAutoGenerateCallNumber(accountInfoFragment.getEnergyCompanyId());
         modelMap.addAttribute("shouldAutoGenerateCallNumber", shouldAutoGenerateCallNumber);
         
         if (callId != null) {

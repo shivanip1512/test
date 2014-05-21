@@ -20,6 +20,7 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     ACCOUNT_NUMBER_LENGTH(ACCOUNT, integerType(), 0),
     ALTERNATE_PROGRAM_ENROLLMENT(ACCOUNT, booleanType(), false),
     APPLICABLE_POINT_TYPE_KEY(ACCOUNT, true, stringType(), null),
+    AUTO_CREATE_LOGIN_FOR_ACCOUNT(ACCOUNT, booleanType(), false),
     AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS(ACCOUNT, booleanType(), true),
     ROTATION_DIGIT_LENGTH(ACCOUNT, integerType(), 0),
 
@@ -29,10 +30,14 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND(HARDWARE, booleanType(), false),
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY(HARDWARE, booleanType(), false),
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL(HARDWARE, booleanType(), true),
+    CALL_TRACKING_NUMBER_AUTO_GEN(HARDWARE, stringType(), null),    // valid values are boolean OR actual number to start with
     DEFAULT_TEMPERATURE_UNIT(HARDWARE,  InputTypeFactory.enumType(TemperatureUnit.class), TemperatureUnit.FAHRENHEIT),
+    INVENTORY_CHECKING(HARDWARE, booleanType(), true),
+    INVENTORY_CHECKING_CREATE(HARDWARE, booleanType(), true),
     METER_MCT_BASE_DESIGNATION(HARDWARE, InputTypeFactory.enumType(MeteringType.class), MeteringType.stars),
     SERIAL_NUMBER_VALIDATION(HARDWARE, InputTypeFactory.enumType(SerialNumberValidation.class), SerialNumberValidation.NUMERIC),
     TRACK_HARDWARE_ADDRESSING(HARDWARE, booleanType(), false),
+    WORK_ORDER_NUMBER_AUTO_GEN(HARDWARE, booleanType(), false),
 
     // MISC
     ADMIN_EMAIL_ADDRESS(MISC, stringType(), "info@cannontech.com"),

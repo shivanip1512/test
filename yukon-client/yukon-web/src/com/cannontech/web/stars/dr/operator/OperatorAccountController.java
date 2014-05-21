@@ -73,6 +73,8 @@ import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.stars.dr.general.service.AccountSearchResultHolder;
 import com.cannontech.stars.dr.general.service.OperatorGeneralSearchService;
 import com.cannontech.stars.dr.general.service.impl.AccountSearchResult;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
@@ -111,28 +113,29 @@ public class OperatorAccountController {
     private RecentResultsCache<AccountImportResult> recentResultsCache;
 
     @Autowired private AccountEventLogService accountEventLogService;
-    @Autowired private OperatorGeneralSearchService operatorGeneralSearchService;
-    @Autowired private OperatorAccountService operatorAccountService;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private AccountService accountService;
     @Autowired private AccountGeneralValidator accountGeneralValidator;
-    @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private SubstationDao substationDao;
     @Autowired private AccountImportDataValidator accountImportDataValidator;
     @Autowired private AccountImportService accountImportService;
-    @Autowired private YukonUserDao userDao;
+    @Autowired private AccountService accountService;
     @Autowired private AuthenticationService authenticationService;
-    @Autowired private ResidentialLoginService residentialLoginService;
-    @Autowired private TransactionOperations transactionTemplate;
-    @Autowired private LoginValidatorFactory loginValidatorFactory;
-    @Autowired private SystemEventLogService systemEventLogService;
+    @Autowired private CsrfTokenService csrfTokenService;
+    @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private LoginValidatorFactory loginValidatorFactory;
+    @Autowired private OperatorAccountService operatorAccountService;
+    @Autowired private OperatorGeneralSearchService operatorGeneralSearchService;
     @Autowired private PasswordPolicyService passwordPolicyService;
+    @Autowired private ResidentialLoginService residentialLoginService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private SubstationDao substationDao;
+    @Autowired private SystemEventLogService systemEventLogService;
+    @Autowired private TransactionOperations transactionTemplate;
     @Autowired private UserGroupDao userGroupDao;
-    @Autowired private CsrfTokenService csrfTokenService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserDao userDao;
     
     static private enum LoginModeEnum {
         CREATE,
@@ -429,7 +432,9 @@ public class OperatorAccountController {
             
             accountGeneralValidator.validate(accountGeneral, bindingResult);
             /* This role property forces the creation of a login with the creation of an account. */
-            final boolean createLogin = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user)
+            final boolean isAutoCreateLogin = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ACCOUNT, yukonEnergyCompany.getEnergyCompanyId());
+            
+            final boolean createLogin = isAutoCreateLogin
                     && (StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword1()) 
                             || StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword2())
                             || StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getUsername()));
@@ -883,7 +888,7 @@ public class OperatorAccountController {
     private void setupAccountCreationModelMap(ModelMap modelMap, LiteYukonUser user) {
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getId());
-        boolean showLoginSection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user);
+        boolean showLoginSection = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ACCOUNT, energyCompany.getId());
         
         List<Substation> substations = substationDao.getAllSubstationsByEnergyCompanyId(energyCompany.getId());
         modelMap.addAttribute("substations", substations);

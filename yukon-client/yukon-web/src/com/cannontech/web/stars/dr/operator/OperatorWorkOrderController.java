@@ -38,6 +38,8 @@ import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.workOrder.model.WorkOrderCurrentStateEnum;
 import com.cannontech.stars.dr.workOrder.model.WorkOrderDto;
 import com.cannontech.stars.dr.workOrder.service.WorkOrderService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -56,11 +58,13 @@ public class OperatorWorkOrderController {
 
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private SelectionListService selectionListService;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WorkOrderService workOrderService;
-    @Autowired private SelectionListService selectionListService;
+    @Autowired private WorkOrderValidator workOrderValidator;
     
     private final String baseKey = "yukon.web.modules.operator.workOrder.";
     
@@ -94,6 +98,7 @@ public class OperatorWorkOrderController {
         
         WorkOrderDto workOrderDto = new WorkOrderDto();
         workOrderDto.getWorkOrderBase().setAccountId(fragment.getAccountId());
+        workOrderDto.getWorkOrderBase().setEnergyCompanyId(fragment.getEnergyCompanyId());
         
         model.addAttribute("workOrderDto", workOrderDto);
         
@@ -134,7 +139,6 @@ public class OperatorWorkOrderController {
         setupWorkOrderModel(accountInfoFragment, modelMap, userContext, workOrderDto.getWorkOrderBase().getOrderId());
 
         // validate
-        WorkOrderValidator workOrderValidator = new WorkOrderValidator(rolePropertyDao, userContext);
         workOrderValidator.validate(workOrderDto, bindingResult);
         
         if (bindingResult.hasErrors()) {
@@ -239,7 +243,7 @@ public class OperatorWorkOrderController {
                 selectionListService.getListEntry(energyCompany, WorkOrderCurrentStateEnum.ASSIGNED.getDefinitionId());
         model.addAttribute("assignedEntryId", yukonListEntry.getEntryID());
         
-        boolean showWorkOrderNumberField = !rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_ORDER_NUMBER_AUTO_GEN, context.getYukonUser());
+        boolean showWorkOrderNumberField = !energyCompanySettingDao.getBoolean(EnergyCompanySettingType.WORK_ORDER_NUMBER_AUTO_GEN, fragment.getEnergyCompanyId());
         model.addAttribute("showWorkOrderNumberField", showWorkOrderNumberField);
 
     }

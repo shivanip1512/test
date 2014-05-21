@@ -64,6 +64,7 @@
         <input type="hidden" name="accountId" value="${accountId}">
         <form:hidden path="workOrderBase.accountId"/>
         <form:hidden path="workOrderBase.orderId"/>
+        <form:hidden path="workOrderBase.energyCompanyId"/>
 
         <div class="column-12-12 clearfix">
             <div class="column one">

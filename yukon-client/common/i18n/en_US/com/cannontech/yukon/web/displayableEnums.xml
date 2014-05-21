@@ -361,8 +361,20 @@
     <entry key="yukon.common.energyCompanySetting.ALTERNATE_PROGRAM_ENROLLMENT.description">Enables the use of alternate program enrollments.</entry>
     <entry key="yukon.common.energyCompanySetting.APPLICABLE_POINT_TYPE_KEY">Applicable point type key</entry>
     <entry key="yukon.common.energyCompanySetting.APPLICABLE_POINT_TYPE_KEY.description">The name of the set of CICustomerPointData TYPES that should be set for customers.</entry>
+    <entry key="yukon.common.energyCompanySetting.AUTO_CREATE_LOGIN_FOR_ACCOUNT">Auto create login for account</entry>
+    <entry key="yukon.common.energyCompanySetting.AUTO_CREATE_LOGIN_FOR_ACCOUNT.description">Automatically create a login for the primary contact on a STARS account.</entry>
     <entry key="yukon.common.energyCompanySetting.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS">Auto create login for additional contacts</entry>
     <entry key="yukon.common.energyCompanySetting.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS.description">Automatically create a default login for each additional contact created on a STARS account.</entry>
+    
+    <entry key="yukon.common.energyCompanySetting.INVENTORY_CHECKING">Inventory Checking</entry>
+    <entry key="yukon.common.energyCompanySetting.INVENTORY_CHECKING.description">Controls whether to perform inventory checking while creating or updating hardware information.</entry>
+    <entry key="yukon.common.energyCompanySetting.INVENTORY_CHECKING_CREATE">Inventory Checking Create</entry>
+    <entry key="yukon.common.energyCompanySetting.INVENTORY_CHECKING_CREATE.description">Allow creation of inventory if not found during Inventory Checking.</entry>
+    
+    <entry key="yukon.common.energyCompanySetting.CALL_TRACKING_NUMBER_AUTO_GEN">Call Tracking Number Auto Generation</entry>
+    <entry key="yukon.common.energyCompanySetting.CALL_TRACKING_NUMBER_AUTO_GEN.description">Controls whether the call number is automatically generated or entered by user. Value may be true (start at 0) or the number to actually start with.</entry>
+    <entry key="yukon.common.energyCompanySetting.WORK_ORDER_NUMBER_AUTO_GEN">Work Order Auto Generation</entry>
+    <entry key="yukon.common.energyCompanySetting.WORK_ORDER_NUMBER_AUTO_GEN.description">Controls whether the work order number is automatically generated or entered by user.</entry>
     <entry key="yukon.common.energyCompanySetting.ROTATION_DIGIT_LENGTH">Rotation Digit Length</entry>
     <entry key="yukon.common.energyCompanySetting.ROTATION_DIGIT_LENGTH.description">Specifies the number of rotation digit characters to ignore during the customer account import process.</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY">Allow 5/1/1 Thermostat Schedules</entry>
