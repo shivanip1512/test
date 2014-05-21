@@ -139,10 +139,10 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
             } catch (BadTemplateDeviceCreationException e) {
                 log.warn("Creation failed for " + identifier + ". Manufacture, Model and Serial Number combination do "
                     + "not match the template. This could be caused by an existing device with the same serial and "
-                    + "manufacturer as the new device.  " + e);
+                    + "manufacturer as the new device.", e);
                 throw new RuntimeException("Creation failed for " + identifier, e);
             } catch (Exception e) {
-                log.warn("Creation failed for " + identifier + ": " + e);
+                log.warn("Creation failed for " + identifier, e);
                 throw new RuntimeException("Creation failed for " + identifier, e);
             }
         }

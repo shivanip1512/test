@@ -83,7 +83,7 @@ public class ConnPool
 	 * Creates a new Dispatch connection.
 	 * 
 	 */
-	private IServerConnection createDispatchConn()
+	private DispatchClientConnection createDispatchConn()
 	{		
 		DispatchClientConnection connToDispatch = clientConnectionFactory.createDispatchConn();
 		
@@ -104,7 +104,7 @@ public class ConnPool
 	 * connected state. Notice that no PointRegistration is done here.
 	 * 
 	 */
-	public IServerConnection getDefDispatchConn() {
+	public DispatchClientConnection getDefDispatchConn() {
 
 	    //check our master Map of existing connections
 	    DispatchClientConnection connToDispatch =
@@ -112,7 +112,7 @@ public class ConnPool
 
 	    if( connToDispatch == null ) {
 
-	        connToDispatch = (DispatchClientConnection)createDispatchConn();
+	        connToDispatch = createDispatchConn();
 	        
 	        CTILogger.info("Attempting Dispatch connection to " + connToDispatch.toString());
 	        connToDispatch.connectWithoutWait();

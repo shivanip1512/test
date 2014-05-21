@@ -1,7 +1,6 @@
 package com.cannontech.common.config;
 
 public enum MasterConfigBooleanKeysEnum {
-
     BULK_IMPORTER_SINGLE_GROUP,    //option to limit membership to only 1 child group per parent group.
     CYME_ENABLED,
     DEFAULT_ENERGY_COMPANY_EDIT,
@@ -23,6 +22,7 @@ public enum MasterConfigBooleanKeysEnum {
     MSP_ENABLE_ALTGROUP_EXTENSION,          //YUK-10787
     MSP_ENABLE_SUBSTATIONNAME_EXTENSION,    //YUK-10787
     MSP_EXACT_SEARCH_PAONAME,    //YUK-12369
+    PAUSE_FOR_DISPATCH_MESSAGE_BACKUP,
     USE_OLD_FORGOTTEN_PASSWORD_PAGE,
     USER_FEEDBACK_ENABLED,
     VIRTUAL_PROGRAMS,

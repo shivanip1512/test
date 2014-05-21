@@ -27,14 +27,14 @@ import com.cannontech.yukon.IServerConnection;
  */
 /* package */ class DynamicDataCache implements MessageListener {
     // Stores current PointData messages by PointID
-    private Map<Integer, PointData> pointData = new ConcurrentHashMap<Integer, PointData>();
+    private Map<Integer, PointData> pointData = new ConcurrentHashMap<>();
 
     // Stores current Signal messages by PointID
     // Only signals with a category > 1 will be stored
-    private Map<Integer, Set<Signal>> pointSignals = new ConcurrentHashMap<Integer, Set<Signal>>();
+    private Map<Integer, Set<Signal>> pointSignals = new ConcurrentHashMap<>();
 
     // Stores the current Signal message by Alarm Category ID
-    private Map<Integer, Set<Signal>> categorySignalsMap = new ConcurrentHashMap<Integer, Set<Signal>>();
+    private Map<Integer, Set<Signal>> categorySignalsMap = new ConcurrentHashMap<>();
 
     @Autowired
     public DynamicDataCache(@Qualifier("dispatch") IServerConnection dispatchConnection) {

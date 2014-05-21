@@ -201,21 +201,19 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
     @Override
     public void onMessage(javax.jms.Message message) {
         try {
-            byte[] data;
             BytesMessage byteMsg = (BytesMessage) message;
-            data = new byte[(int) byteMsg.getBodyLength()];
+            byte[] data = new byte[(int) byteMsg.getBodyLength()];
             byteMsg.readBytes(data);
 
             SerializationResult result = getMessageFactory().decodeMessage(byteMsg.getJMSType(), data);
 
             if (!result.isValid()) {
-                Exception e = result.getException();
-                if (e == null) {
-                    e =
-                        new SerializationException("Unable to deserialize message of type '" + result.getMessageType() +
-                                                   "'");
+                Exception exception = result.getException();
+                if (exception == null) {
+                    exception = new SerializationException("Unable to deserialize message of type '"
+                        + result.getMessageType() + "'");
                 }
-                safeDisconnect(e);
+                safeDisconnect(exception);
                 return;
             }
 
@@ -231,7 +229,6 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
      * disconnected
      * @param message Advisory message notifying us of a consumer being disconnect
      */
-
     public void onAdvisoryMessage(javax.jms.Message message) {
         if (connectionMonitor != null) {
             connectionMonitor.setListener(null); // We don't want to be notified anymore            
@@ -269,9 +266,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             if (isManagedConnection()) {
                 return URI.create(getConnectionService().getBrokerUrl());
             }
-            else {
-                return URI.create(connection.getBrokerInfo().getBrokerURL());
-            }
+            return URI.create(connection.getBrokerInfo().getBrokerURL());
         }
         catch (Exception e) {
             throw new ConnectionException("Error while retrieving broker URI");

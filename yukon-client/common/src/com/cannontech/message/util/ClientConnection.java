@@ -173,19 +173,19 @@ public abstract class ClientConnection extends Observable implements IServerConn
             write(msg);
         }
 
-        MessageEvent e = new MessageEvent(this, msg);
+        MessageEvent messageEvent = new MessageEvent(this, msg);
         if (logger.isDebugEnabled()) {
-            logger.debug("sending MessageEvent to " + messageListeners.size() + " listeners: " + e);
+            logger.debug("sending MessageEvent to " + messageListeners.size() + " listeners: " + messageEvent);
         }
         // At one time, the listeners were processed in reverse so that the messageReceived
         // implementation could remove itself as a listener without causing a concurrent
         // modification problem. That is no longer a problem, but just in case there is some code
         // that relies on the reverse ordering, we'll keep it.
-        for (MessageListener ml : Lists.reverse(messageListeners)) {
+        for (MessageListener messageListener : Lists.reverse(messageListeners)) {
             if (logger.isDebugEnabled()) {
-                logger.debug("sending MessageEvent to " + ml);
+                logger.debug("sending MessageEvent to " + messageListener);
             }
-            ml.messageReceived(e);
+            messageListener.messageReceived(messageEvent);
             totalFiredEvents.incrementAndGet();
         }
     }

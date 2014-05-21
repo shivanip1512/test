@@ -9,12 +9,15 @@ import javax.annotation.PreDestroy;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -31,6 +34,7 @@ import com.cannontech.dr.rfn.service.ExiParsingService;
 import com.cannontech.dr.rfn.service.ExiParsingService.Schema;
 import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
@@ -51,6 +55,8 @@ import com.google.common.collect.Lists;
 public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnLcrArchiveRequest> {
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
 
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private DispatchClientConnection dispatchClientConnection;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private EnrollmentDao enrollmentService;
@@ -67,6 +73,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
+    private final AtomicInteger numPausedQueues = new AtomicInteger();
 
     public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
@@ -75,6 +82,26 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 
         @Override
         public void processData(RfnDevice rfnDevice, RfnLcrArchiveRequest archiveRequest) {
+            Instant startTime = new Instant();
+
+            // Make sure dispatch message handling isn't blocked up.
+            if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.PAUSE_FOR_DISPATCH_MESSAGE_BACKUP, true)
+                    && dispatchClientConnection.isBehind()) {
+                numPausedQueues.incrementAndGet();
+                log.warn("dispatch message handling is behind...sleeping");
+                int msSlept = 0;
+                while (dispatchClientConnection.isBehind()) {
+                    try {
+                        Thread.sleep(250);
+                        msSlept += 250;
+                    } catch (InterruptedException e) {
+                        log.warn("Interrupted waiting for dispatch message handling to catch up.");
+                    }
+                }
+                log.warn("slept for " + msSlept + "ms waiting for dispatch message handling to catch up");
+                numPausedQueues.decrementAndGet();
+            }
+
             if (archiveRequest instanceof RfnLcrReadingArchiveRequest) {
                 RfnLcrReadingArchiveRequest readingArchiveRequest = ((RfnLcrReadingArchiveRequest) archiveRequest);
                 SimpleXPathTemplate decodedPayload = null;
@@ -153,6 +180,10 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             }
 
             sendAcknowledgement(archiveRequest);
+            if (log.isInfoEnabled()) {
+                Duration processingDuration = new Duration(startTime, new Instant());
+                log.info("It took " + processingDuration + " to process a request");
+            }
         }
     }
 
@@ -194,6 +225,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             response.setType(readRequest.getType());
             return response;
         }
+
         RfnLcrArchiveResponse response = new RfnLcrArchiveResponse();
         response.setSensorId(archiveRequest.getSensorId());
         return response;
@@ -207,5 +239,10 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @ManagedAttribute
     public int getArchivedReadings() {
         return archivedReadings.get();
+    }
+
+    @ManagedAttribute
+    public int getNumPausedQueues() {
+        return numPausedQueues.get();
     }
 }
