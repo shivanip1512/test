@@ -135,7 +135,7 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
                 }
                 runtime += reading.getRuntimeSeconds();
                 TrueFalse controlStatus = StringUtils.isBlank(reading.getEventActivity()) ? TrueFalse.FALSE : TrueFalse.TRUE;
-                setPointValue(paoIdentifier, BuiltInAttribute.CONTROL_STATUS, startDate, controlStatus.getRawState());
+                setPointValue(paoIdentifier, BuiltInAttribute.CONTROL_STATUS, reading.getDate(), controlStatus.getRawState());
             }
             if (outdoorTempToUpdate != null) {
                 setPointValue(paoIdentifier, BuiltInAttribute.OUTDOOR_TEMPERATURE, startDate, outdoorTempToUpdate);
