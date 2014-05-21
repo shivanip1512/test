@@ -1121,7 +1121,6 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                 else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) )
                 {
                     CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
-                    string settings = thermostatGearObject->getSettings();
                     LONG minValue = thermostatGearObject->getMinValue();
                     LONG maxValue = thermostatGearObject->getMaxValue();
                     LONG valueB = thermostatGearObject->getPrecoolTemp();
@@ -1151,7 +1150,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             if(isExpresscomGroup(currentLMGroup->getPAOType()))
                             {
                                 // XXX thermostat constraints??
-                                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
+                                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(thermostatGearObject->getMode(), minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
                                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                                 if( currentGearObject->getPercentReduction() > 0.0 )
@@ -1913,7 +1912,6 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
             else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod) )
             {
                 CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
-                string settings = thermostatGearObject->getSettings();
                 LONG minValue = thermostatGearObject->getMinValue();
                 LONG maxValue = thermostatGearObject->getMaxValue();
                 LONG valueB = thermostatGearObject->getPrecoolTemp();
@@ -1942,7 +1940,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
                         {
                             // thermo constraints?? XXX
 
-                            CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
+                            CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(thermostatGearObject->getMode(), minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             if( currentGearObject->getPercentReduction() > 0.0 )
@@ -3313,7 +3311,6 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
         else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod) )
         {
             CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
-            string settings = thermostatGearObject->getSettings();
             LONG minValue = thermostatGearObject->getMinValue();
             LONG maxValue = thermostatGearObject->getMaxValue();
             LONG valueB = thermostatGearObject->getPrecoolTemp();
@@ -3340,7 +3337,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                 {
                     if( isExpresscomGroup(currentLMGroup->getPAOType()) )
                     {
-                        CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
+                        CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(thermostatGearObject->getMode(), minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
                         startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                         if( currentGearObject->getPercentReduction() > 0.0 )
@@ -6084,7 +6081,6 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
 {
     bool retVal = false;
     CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
-    string settings = thermostatGearObject->getSettings();
     LONG minValue = thermostatGearObject->getMinValue();
     LONG maxValue = thermostatGearObject->getMaxValue();
     LONG precoolTemp = thermostatGearObject->getPrecoolTemp();
@@ -6132,7 +6128,7 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
             if( isExpresscomGroup(currentLMGroup->getPAOType()) )
             {
                 // XXX thermostat constraints??
-                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointSimpleMsg(settings, minValue, maxValue, precoolTemp, random, rampRate, precoolTime, precoolHoldTime, maxTempChange, totalControlMinutes, rampOutTime, minutesFromBegin, defaultLMStartPriority);
+                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointSimpleMsg(thermostatGearObject->getMode(), minValue, maxValue, precoolTemp, random, rampRate, precoolTime, precoolHoldTime, maxTempChange, totalControlMinutes, rampOutTime, minutesFromBegin, defaultLMStartPriority);
                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
               /*if( refreshRate > 0 ) BUMP_COMMAND_REMOVED
                 {

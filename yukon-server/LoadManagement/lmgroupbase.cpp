@@ -956,7 +956,7 @@ CtiRequestMsg* CtiLMGroupBase::createTargetCycleRequestMsg(LONG percent, LONG pe
 
     .
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(string settings, LONG minValue, LONG maxValue,
+CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(string mode, LONG minValue, LONG maxValue,
                                                         LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                         LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                         LONG valueTE, LONG valueTF, int priority) const
@@ -970,7 +970,7 @@ CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(string settings, LONG mi
 
 // CreateSetPointSimpleMessage
 // Only in expresscom.
-CtiRequestMsg* CtiLMGroupBase::createSetPointSimpleMsg(string settings, LONG minValue, LONG maxValue,
+CtiRequestMsg* CtiLMGroupBase::createSetPointSimpleMsg(string mode, LONG minValue, LONG maxValue,
                                                        LONG precoolTemp, LONG random, float rampRate,
                                                        LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
                                                        LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,

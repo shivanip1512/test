@@ -9,6 +9,8 @@
 #include "logger.h"
 #include "loadmanager.h"
 
+#include <sstream>
+
 using std::string;
 
 extern ULONG _LM_DEBUG;
@@ -117,5 +119,85 @@ void CtiLMProgramThermoStatGear::restore(Cti::RowReader &rdr)
     rdr["valuete"] >> _valuete;
     rdr["valuetf"] >> _valuetf;
     rdr["ramprate"] >> _rampRate;
+}
+
+
+/*
+    Looks at the internal type of thermostat gear and builds the appropriate mode string
+        based on its internal settings.
+        Returns an empty string on error.
+*/
+std::string CtiLMProgramThermoStatGear::getMode() const
+{
+    // Validate
+
+    std::string settings( _settings );
+    CtiToUpper( settings );
+
+    if ( settings.length() != 4 )
+    {
+        return "";
+    }
+
+    if ( getControlMethod() == CtiLMProgramDirectGear::ThermostatRampingMethod )
+    {
+        //  settings is a string of the form '(A|D)(F|C)(H|-)(I|-)'
+        //      where either 'H' or 'I' or both are required.  It must not be '??--'
+
+        if ( settings[ 2 ] == '-' && settings[ 3 ] == '-' )
+        {
+            return "";
+        }
+    }
+    else if ( getControlMethod() == CtiLMProgramDirectGear::SimpleThermostatRampingMethod )
+    {
+        //  settings is a string of the form '--H-' or '---I'
+        //      '--H-' is 'delta mode heat'
+        //      '---I' is 'delta mode cool'
+
+        if ( ! ( settings[ 2 ] == '-' ^ settings[ 3 ] == '-' ) )    // either-or but not both or neither
+        {
+            return "";
+        }
+
+        // set our required fields
+        settings[ 0 ] = 'D';    // delta
+        settings[ 1 ] = 'F';    // fahrenheit
+    }
+    else
+    {
+        //  something is wrong here...
+
+        return "";
+    }
+
+    // Build mode string
+
+    std::ostringstream  mode;
+
+    if ( settings[ 0 ] == 'D' )
+    {
+        mode << " delta";
+    }
+
+    if ( settings[ 1 ] == 'C' )
+    {
+        mode << " celsius";
+    }
+
+    if ( settings[ 2 ] == 'H' && settings[ 3 ] == 'I' )
+    {
+        mode << " mode both";
+    }
+    else if ( settings[ 2 ] == 'H' )
+    {
+        mode << " mode heat";
+    }
+    else    // settings[ 3 ] == 'I'
+    {
+        mode << " mode cool";
+    }
+
+    return mode.str();
 }
 

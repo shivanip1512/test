@@ -317,34 +317,24 @@ CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, L
     Creates a new CtiRequestMsg pointer for a thermostat program gear with
     all the appropriate settings.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(string settings, LONG minValue, LONG maxValue,
+CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(string mode, LONG minValue, LONG maxValue,
                                                               LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                               LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                               LONG valueTE, LONG valueTF, int priority) const
 {
-    string controlString("control xcom setpoint ");
+    if ( mode.empty() )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
 
-    std::transform(settings.begin(), settings.end(), settings.begin(), tolower);
-    if( settings.length() > 0 && settings[(size_t)0]=='d' )
-    {
-        controlString += "delta ";
+        dout << CtiTime() << " *** CHECKPOINT *** LM Group " << getPAOName()
+             << " has improperly configured thermostat gear mode." << std::endl;
+
+        return 0;
     }
-    if( settings.length() > 1 && settings[(size_t)1]=='c' )
-    {
-        controlString += "celsius ";
-    }
-    if( settings.length() > 3 && settings[(size_t)2]=='h' && settings[(size_t)3]=='i' )
-    {
-        controlString += "mode both ";
-    }
-    if( settings.length() > 2 && settings[(size_t)2]=='h' )
-    {
-        controlString += "mode heat ";
-    }
-    if( settings.length() > 3 && settings[(size_t)3]=='i' )
-    {
-        controlString += "mode cool ";
-    }
+
+    string controlString("control xcom setpoint");
+
+    controlString += mode + " ";
 
     if( minValue != 0 )
     {
@@ -461,7 +451,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(string settings, L
 
 //Create a setpoint message using slopes instead of absolute values.
 //Sends a bump message only when minutesFromBegin is > 0.
-CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string settings, LONG minValue, LONG maxValue,
+CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string mode, LONG minValue, LONG maxValue,
                                                               LONG precoolTemp, LONG random, float rampRate,
                                                               LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
                                                               LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
@@ -478,26 +468,20 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string settings, LO
         dout << CtiTime() << " *** CHECKPOINT *** LM Group " << getPAOName() << " improperly configured time, not enough ramp time " << endl;
         retFlag = false;
     }
-    string controlString("control xcom setpoint ");
-    controlString += "delta "; //Simple setpoint is always in delta format. This should really be the default!!!!!
 
-    std::transform(settings.begin(), settings.end(), settings.begin(), tolower);
-    if( settings.length() > 1 && settings[(size_t)1]=='c' )
+    if ( mode.empty() )
     {
-        controlString += "celsius ";
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+        dout << CtiTime() << " *** CHECKPOINT *** LM Group " << getPAOName()
+             << " has improperly configured thermostat gear mode." << std::endl;
+
+        return 0;
     }
-    if( settings.length() > 3 && settings[(size_t)2]=='h' && settings[(size_t)3]=='i' )
-    {
-        controlString += "mode both ";
-    }
-    else if( settings.length() > 2 && settings[(size_t)2]=='h' )
-    {
-        controlString += "mode heat ";
-    }
-    else if( settings.length() > 3 && settings[(size_t)3]=='i' )
-    {
-        controlString += "mode cool ";
-    }
+
+    string controlString("control xcom setpoint");
+
+    controlString += mode + " ";
 
     if( minValue != 0 )
     {

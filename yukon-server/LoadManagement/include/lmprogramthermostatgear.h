@@ -28,6 +28,8 @@ public:
 
     virtual CtiLMProgramDirectGear* replicate() const;
 
+    std::string getMode() const;
+
 protected:
     void restore(Cti::RowReader &rdr);
 
