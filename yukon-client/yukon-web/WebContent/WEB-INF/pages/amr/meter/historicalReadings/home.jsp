@@ -7,10 +7,11 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings">
+<div data-reloadable>
 
     <input class="f-popup-title" type="hidden" value="${fn:escapeXml(title)}"> 
 
-    <cti:url var="viewUrl" value="/meter/historicalReadings/view"/>
+    <c:set var="viewUrl" value="/meter/historicalReadings/view"/>
     <div class="form-control">
     <c:if test="${points.size() > 0}">
         <span class="detail">${resultLimit}</span>
@@ -56,5 +57,5 @@
             </table>
         </c:otherwise>
     </c:choose>
-    
+</div>
 </cti:msgScope>
