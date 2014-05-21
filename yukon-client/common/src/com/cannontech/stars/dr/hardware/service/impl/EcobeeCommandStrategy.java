@@ -18,7 +18,6 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
-import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
@@ -75,8 +74,6 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
             case CONFIG:
             case PERFORMANCE_VERIFICATION:
             case READ_NOW:
-                // TODO
-                //ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange);
             default:
                 break;
             }
@@ -93,16 +90,6 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                                             + " groups. Ecobee only supports one and only one group per device.");
         }
         return hardwareConfig.get(0).getAddressingGroupId();
-    }
-
-    private boolean hasActiveEnrollments(int groupId) {
-        List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByLMGroupId(groupId);
-        for (LMHardwareControlGroup enrollment : enrollments) {
-            if (enrollment.getType() == LMHardwareControlGroup.ENROLLMENT_ENTRY && enrollment.isActiveEnrollment()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
