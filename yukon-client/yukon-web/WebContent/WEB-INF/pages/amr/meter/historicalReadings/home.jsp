@@ -12,7 +12,7 @@
     <input class="f-popup-title" type="hidden" value="${fn:escapeXml(title)}"> 
 
     <c:set var="viewUrl" value="/meter/historicalReadings/view"/>
-    <div class="form-control">
+    <div class="form-control clearfix">
     <c:if test="${points.size() > 0}">
         <span class="detail">${resultLimit}</span>
     </c:if>
@@ -23,7 +23,7 @@
     </div>
 
     <c:choose>
-        <c:when test="${points.size() == 0}">
+        <c:when test="${empty points}">
             <div class="empty-list"><i:inline key=".notFound"/></div>
         </c:when>
         <c:otherwise>
@@ -34,7 +34,7 @@
                             <tags:sortLink nameKey="tableHeader.timestamp" 
                                 baseUrl="${viewUrl}" 
                                 fieldName="TIMESTAMP"
-                                isDefault="${points.size() > 0}" 
+                                isDefault="true" 
                                 descendingByDefault="true"/>
                         </th>
                         <th>
