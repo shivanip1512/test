@@ -43,21 +43,21 @@
         <div id="user">
             <input type="hidden" id="userId" name="userId">
             <tags:sectionContainer2 nameKey="userPicker" id="userPickerContainer"/>
-            <tags:pickerDialog type="userPicker" id="userPicker" linkType="none" containerDiv="userPickerContainer_content" 
+            <tags:pickerDialog type="userPicker" id="userPicker" linkType="none" container="userPickerContainer_content" 
                 immediateSelectMode="true" destinationFieldId="userId" endAction="editUser"/>
         </div>
 
         <div id="userGroup">
             <input type="hidden" id="userGroupId" name="userGroupId">
             <tags:sectionContainer2 nameKey="userGroupPicker" id="userGroupPickerContainer"/>
-            <tags:pickerDialog type="userGroupPicker" id="userGroupPicker" linkType="none" containerDiv="userGroupPickerContainer_content" 
+            <tags:pickerDialog type="userGroupPicker" id="userGroupPicker" linkType="none" container="userGroupPickerContainer_content" 
                 immediateSelectMode="true" destinationFieldId="userGroupId" endAction="editUserGroup"/>
         </div>
 
         <div id="roleGroup">
             <input type="hidden" id="roleGroupId" name="roleGroupId">
             <tags:sectionContainer2 nameKey="roleGroupPicker" id="roleGroupPickerContainer"/>
-            <tags:pickerDialog type="loginGroupPicker" id="roleGroupPicker" linkType="none" containerDiv="roleGroupPickerContainer_content" 
+            <tags:pickerDialog type="loginGroupPicker" id="roleGroupPicker" linkType="none" container="roleGroupPickerContainer_content" 
                 immediateSelectMode="true" destinationFieldId="roleGroupId" endAction="editRoleGroup"/>
         </div>
     </div>

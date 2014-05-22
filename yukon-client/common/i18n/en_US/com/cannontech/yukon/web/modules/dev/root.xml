@@ -290,7 +290,12 @@
     
     <!-- Style Guide Pages -->
     <entry key="yukon.web.modules.dev.jsTesting.pageName">JavaScript Testing</entry>
-    <entry key="yukon.web.modules.dev.grid.pageName">Grids</entry>
+    <entry key="yukon.web.modules.dev.grids.pageName">Grids</entry>
+    <entry key="yukon.web.modules.dev.tables.pageName">Tables</entry>
+    <entry key="yukon.web.modules.dev.tables.name">Name</entry>
+    <entry key="yukon.web.modules.dev.tables.type">Type</entry>
+    <entry key="yukon.web.modules.dev.tables.enabled">Enabled</entry>
+    <entry key="yukon.web.modules.dev.tables.notes">Notes</entry>
     <entry key="yukon.web.modules.dev.containers.pageName">Containers</entry>
     <entry key="yukon.web.modules.dev.buttons.pageName">Buttons</entry>
     <entry key="yukon.web.modules.dev.dialogs.pageName">Dialogs</entry>

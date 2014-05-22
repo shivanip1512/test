@@ -80,27 +80,20 @@ $(document).ready(function() {
 });
 </script>
 
-<p>
-This page should be tested at 1024x768.
-</p>
-
-<br><br>
-
 <form id="picker-select-form" action="<cti:url value="/dev/styleguide/pickers"/>">
-    <select name="pickerType" onchange="$('#picker-select-form').submit()">
-        <option value="pointPicker"<c:if test="${pickerType == 'pointPicker'}"> selected</c:if>>Point Picker</option>
-        <option value="paoPicker"<c:if test="${pickerType == 'paoPicker'}"> selected</c:if>>PAO Picker (Lucene)</option>
-        <option value="assignedProgramPicker"<c:if test="${pickerType == 'assignedProgramPicker'}"> selected</c:if>>Assigned Program Picker (Database)</option>
-        <option value="customerAccountPicker"<c:if test="${pickerType == 'customerAccountPicker'}"> selected</c:if>>Customer Account Picker (Lucene)</option>
-        <option value="userPicker"<c:if test="${pickerType == 'userPicker'}"> selected</c:if>>User Picker (Lucene)</option>
-        <option value="userGroupPicker"<c:if test="${pickerType == 'userGroupPicker'}"> selected</c:if>>User Group Picker (Lucene)</option>
-        <option value="loginGroupPicker"<c:if test="${pickerType == 'loginGroupPicker'}"> selected</c:if>>Role Group Picker (Lucene)</option>
-        <option value="notificationGroupPicker"<c:if test="${pickerType == 'notificationGroupPicker'}"> selected</c:if>>Notification Group Picker (Custom)</option>
-    </select>
+    <label>Item Type:
+        <select name="pickerType" onchange="$('#picker-select-form').submit()">
+            <option value="pointPicker"<c:if test="${pickerType == 'pointPicker'}"> selected</c:if>>Point Picker</option>
+            <option value="paoPicker"<c:if test="${pickerType == 'paoPicker'}"> selected</c:if>>PAO Picker (Lucene)</option>
+            <option value="assignedProgramPicker"<c:if test="${pickerType == 'assignedProgramPicker'}"> selected</c:if>>Assigned Program Picker (Database)</option>
+            <option value="customerAccountPicker"<c:if test="${pickerType == 'customerAccountPicker'}"> selected</c:if>>Customer Account Picker (Lucene)</option>
+            <option value="userPicker"<c:if test="${pickerType == 'userPicker'}"> selected</c:if>>User Picker (Lucene)</option>
+            <option value="userGroupPicker"<c:if test="${pickerType == 'userGroupPicker'}"> selected</c:if>>User Group Picker (Lucene)</option>
+            <option value="loginGroupPicker"<c:if test="${pickerType == 'loginGroupPicker'}"> selected</c:if>>Role Group Picker (Lucene)</option>
+            <option value="notificationGroupPicker"<c:if test="${pickerType == 'notificationGroupPicker'}"> selected</c:if>>Notification Group Picker (Custom)</option>
+        </select>
+    </label>
 </form>
-
-
-<br><br>
 
 <%-- LINK PICKERS --%>
 <tags:sectionContainer2 nameKey="linkPickers">
@@ -203,7 +196,6 @@ This page should be tested at 1024x768.
 </tr>
 </table>
 </tags:sectionContainer2>
-<br>
 
 <%-- BUTTON PICKERS --%>
 <tags:sectionContainer2 nameKey="buttonPickers">
@@ -315,7 +307,6 @@ This page should be tested at 1024x768.
 </tr>
 </table>
 </tags:sectionContainer2>
-<br>
 
 <%-- MEMORY GROUPED PICKERS --%>
 <tags:sectionContainer2 nameKey="memoryGroupedPickers">
@@ -381,7 +372,6 @@ This page should be tested at 1024x768.
 </tr>
 </table>
 </tags:sectionContainer2>
-<br>
 
 <%-- SELECTION PICKERS --%>
 <tags:sectionContainer2 nameKey="selectionPickers">
@@ -490,13 +480,10 @@ This page should be tested at 1024x768.
 </tr>
 </table>
 </tags:sectionContainer2>
-<br>
 
 <tags:sectionContainer2 nameKey="rememberingPickers">
   With this picker, you can make a selection and submit the form and the selection should be
   reselected when the page reloads.
-  <br>
-  <br>
 
   <form action="<cti:url value="/dev/styleguide/pickers"/>">
     <c:if test="${!empty param.pickerType}">
@@ -514,20 +501,19 @@ This page should be tested at 1024x768.
     <cti:button type="submit" label="Submit"/>
   </form>
 </tags:sectionContainer2>
-<br>
 
 <tags:sectionContainer2 nameKey="inlinePickers">
-    <div id="inlinePickerContainer"></div>
+    <div id="inline-picker-container"></div>
     <tags:pickerDialog
          id="inlinePicker"
          type="${pickerType}"
          destinationFieldName="inlineId"
          linkType="none"
-         containerDiv="inlinePickerContainer" 
+         container="inline-picker-container" 
          immediateSelectMode="true"
          endAction="inlinePickerSelectionMade"/>
+     <script>$(function() { window['inlinePicker'].show(); });</script>
  </tags:sectionContainer2>
-<br>
 
 </cti:msgScope>
 

@@ -5,8 +5,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="dev" page="grid">
-<tags:styleguide page="grid">
+<cti:standardPage module="dev" page="grids">
+<tags:styleguide page="grids">
 
 <style type="text/css">
 .grid-example .column {padding: 10px;background-color: #efefef;min-height: 89px;}

@@ -23,12 +23,21 @@ public class StyleGuideController {
     
     @RequestMapping({"/styleguide", "/styleguide/"})
     public String root() {
-        return "redirect:styleguide/grid";
+        return "redirect:styleguide/grids";
     }
     
-    @RequestMapping("/styleguide/grid")
-    public String grid() {
-        return "styleguide/grid.jsp";
+    @RequestMapping("/styleguide/grids")
+    public String grids() {
+        return "styleguide/grids.jsp";
+    }
+    
+    @RequestMapping("/styleguide/tables")
+    public String tables(ModelMap model) {
+        
+        model.addAttribute("signup", new Signup());
+        model.addAttribute("signupTypes", SignupType.values());
+        
+        return "styleguide/tables.jsp";
     }
     
     @RequestMapping("/styleguide/containers")
@@ -104,4 +113,37 @@ public class StyleGuideController {
         model.addAttribute("sprites32Array", sprites32Array);
     }
     
+    public class Signup {
+        
+        private String name = "Bob Vila";
+        private SignupType type;
+        private boolean enabled = true;
+        private String notes = "wow such name much value many gap very checkbox so textfield";
+        public String getName() {
+            return name;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
+        public SignupType getType() {
+            return type;
+        }
+        public void setType(SignupType type) {
+            this.type = type;
+        }
+        public boolean isEnabled() {
+            return enabled;
+        }
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+        public String getNotes() {
+            return notes;
+        }
+        public void setNotes(String notes) {
+            this.notes = notes;
+        }
+        
+    }
+    public enum SignupType {MONTHY, YEARLY} 
 }

@@ -11,8 +11,10 @@
 <div class="column-4-20">
     <div class="column one side-nav">
         <ul>
-            <c:set var="clazz" value="${page == 'grid' ? 'selected' : ''}"/>
-            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/grid"/>">Grids</a></li>
+            <c:set var="clazz" value="${page == 'grids' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/grids"/>">Grids</a></li>
+            <c:set var="clazz" value="${page == 'tables' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/tables"/>">Tables</a></li>
             <c:set var="clazz" value="${page == 'containers' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/containers"/>">Containers</a></li>
             <c:set var="clazz" value="${page == 'buttons' ? 'selected' : ''}"/>

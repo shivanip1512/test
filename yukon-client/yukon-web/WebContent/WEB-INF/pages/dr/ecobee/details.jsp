@@ -85,7 +85,7 @@
                                             type="ecobeeGroupPicker"
                                             id="loadGroupPicker"
                                             linkType="none"
-                                            containerDiv="loadGroup" 
+                                            container="loadGroup" 
                                             multiSelectMode="true"
                                             destinationFieldId="loadGroupId"/>
                                     </div>

@@ -23,7 +23,7 @@
 <%@ attribute name="initialId" description="Id of item selected at the start." rtexprvalue="true"%>
 <%@ attribute name="initialIds" type="java.lang.Object" description="Ids of items selected at the start." rtexprvalue="true"%>
 <%@ attribute name="useInitialIdsIfEmpty" type="java.lang.Boolean" description="Clears selection if initial id(s) is empty." rtexprvalue="true"%>
-<%@ attribute name="containerDiv" description="causes picker to be inlined; placed in this div" rtexprvalue="true"%>
+<%@ attribute name="container" description="The id of the container element. Used for placing a picker on the page rather than loaded into a dialog." rtexprvalue="true"%>
 <%@ attribute name="viewOnlyMode" type="java.lang.Boolean" description="causes picker display the value only; only usable with selection linkType" rtexprvalue="true"%>
 <%@ attribute name="buttonRenderMode" description="passes the render mode to the cti:button tag; only usable with button linkType" rtexprvalue="true"%>
 
@@ -36,9 +36,9 @@
 <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
 <cti:includeScript link="/JavaScript/yukon.tables.js"/>
 
-<c:set var="containerDivArg" value="null"/>
-<c:if test="${!empty  pageScope.containerDiv}">
-    <c:set var="containerDivArg" value="$('#${pageScope.containerDiv}')"/>
+<c:set var="containerArg" value="null"/>
+<c:if test="${!empty  pageScope.container}">
+    <c:set var="containerArg" value="$('#${pageScope.container}')"/>
 </c:if>
 
 <cti:msg2 var="okText" key="yukon.common.okButton"/>
@@ -57,7 +57,7 @@
     $(document.getElementById('${id}')).remove();
     try {
         try {
-            ${id} = new Picker('${okText}', '${cancelText}', '${noneSelectedText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
+            ${id} = new Picker('${okText}', '${cancelText}', '${noneSelectedText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerArg});
         } catch(pickerException) {
             debug.log('pickerDialog.tag: new Picker failed: ' + pickerException);
         }

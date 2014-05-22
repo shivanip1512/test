@@ -1,6 +1,6 @@
 
 // prototype for Picker, from which all Picker instances are derived
-yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
+yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, container) {
     /**
      * Reset things that need to be reset when first popping up the picker
      * or when clearing it.
@@ -34,7 +34,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
      *   and property specifies a property of the data to be placed into
      *   this HTML element (using innerHTML).
      */
-    initialize = function (okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
+    initialize = function (okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, container) {
         var index,
             pairs,
             pair,
@@ -72,8 +72,8 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         this.errorHolderId = 'picker_' + this.pickerId + '_errorHolder';
         this.primed = false;
         this.useInitialIdsIfEmpty = false;
-        this.containerDiv = containerDiv;
-        this.inline = (containerDiv === null || typeof containerDiv === 'undefined') ? false : true;
+        this.container = container;
+        this.inline = (container === null || typeof container === 'undefined') ? false : true;
     },
 
     block = function () {
@@ -131,7 +131,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             }
 
             if (updateOutsideFields.call(this, false)) {
-                if (!this.containerDiv) {
+                if (!this.container) {
                     dialogElem = document.getElementById(this.pickerId);
                     $(dialogElem).dialog('close');
                 }
@@ -491,7 +491,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
      */
     cancel = function () {
         this.selectedItems = this.lastSelectedItems;
-        if (!this.containerDiv) {
+        if (!this.container) {
             $(document.getElementById(this.pickerId)).dialog('close');
         }
         if (this.cancelAction) {
@@ -513,7 +513,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         that = this;
         doSearch.call(this, false, false, null, function () {
             var buttons;
-            if (!this.containerDiv) {
+            if (!this.container) {
                 buttons = [{'text' : that.cancelText, 'click' : function () {cancel.call(that);}},
                            {'text' : that.okText, 'click' : function () {okPressed.call(that);}, 'class': 'primary action'}];
                 if (!that.inline) {
@@ -576,8 +576,8 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
                 'immediateSelectMode' : this.immediateSelectMode
             },
             onCompleteBind;
-        if (this.containerDiv) {
-            pickerDialogDivContainer = this.containerDiv;
+        if (this.container) {
+            pickerDialogDivContainer = this.container;
         } else {
             pickerDialogDivContainer = document.createElement('div');
             bodyElem.appendChild(pickerDialogDivContainer);
@@ -585,7 +585,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         if (this.extraArgs) {
             parameters.extraArgs = this.extraArgs;
         }
-        if (this.containerDiv) {
+        if (this.container) {
             parameters.mode = 'inline';
         }
 
@@ -895,7 +895,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         yukon.protoPicker.rememberedSearches = {};
     }
 
-    initialize.call(this, okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv);
+    initialize.call(this, okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, container);
 
     // circumvent default processing of ctrl-left-click and shift-left-click events
     $(document).on('click', '#' + this.pickerId, function (ev) {
@@ -908,8 +908,8 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
 
 // constructor for Picker
 // could add functions and variables to this
-function Picker (okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
-    yukon.protoPicker.call(this, okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv);
+function Picker (okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, container) {
+    yukon.protoPicker.call(this, okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, container);
 };
 
 // called once to assign methods and properties accessible to all

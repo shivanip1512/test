@@ -1437,7 +1437,8 @@
           <page name="styleguide" type="BASIC">
             <link>/dev/styleguide</link>
             <pages>
-              <page name="grid" type="BASIC"/>
+              <page name="grids" type="BASIC"/>
+              <page name="tables" type="BASIC"/>
               <page name="containers" type="BASIC"/>
               <page name="buttons" type="BASIC"/>
               <page name="pickers" type="BASIC"/>
