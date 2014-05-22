@@ -29,7 +29,6 @@ import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements
@@ -979,7 +978,7 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
         String newName = getJTextFieldName().getText();
 
         if (lmGroup == null
-            || isUniquePao(newName, lmGroup.getPAOCategory(), lmGroup.getPAOClass(), lmGroup.getPAObjectID())) {
+            || isUniquePao(newName, lmGroup.getPaoType(), lmGroup.getPAObjectID())) {
             setErrorString("");
             isValid = true;
         } else {
@@ -1036,30 +1035,29 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
         }
     }
 
-    public void setSwitchType(String type) {
-        getJTextFieldType().setText(type);
+    public void setSwitchType(PaoType paoType) {
+        getJTextFieldType().setText(paoType.getPaoTypeName());
 
         // do not show the route panel if the type is one of the following
-        int deviceType = PaoType.getPaoTypeId(type);
-        getCommunicationPanel() .setVisible(!(deviceType == PAOGroups.MACRO_GROUP
-                          || deviceType == PAOGroups.LM_GROUP_POINT
-                          || deviceType == PAOGroups.LM_GROUP_DIGI_SEP
-                          || deviceType == PAOGroups.LM_GROUP_ECOBEE
-                          || deviceType == PAOGroups.LM_GROUP_RFN_EXPRESSCOMM));
+        getCommunicationPanel() .setVisible(!(paoType == PaoType.MACRO_GROUP
+                          || paoType == PaoType.LM_GROUP_POINT
+                          || paoType == PaoType.LM_GROUP_DIGI_SEP
+                          || paoType == PaoType.LM_GROUP_ECOBEE
+                          || paoType == PaoType.LM_GROUP_RFN_EXPRESSCOMM));
 
         // dont show the following options if this group is a MACRO
-        getJLabelKWCapacity() .setVisible(!(deviceType == PAOGroups.MACRO_GROUP));
-        getJTextFieldKWCapacity().setVisible(!(deviceType == PAOGroups.MACRO_GROUP));
+        getJLabelKWCapacity() .setVisible(!(paoType == PaoType.MACRO_GROUP));
+        getJTextFieldKWCapacity().setVisible(!(paoType == PaoType.MACRO_GROUP));
 
-        getJCheckBoxDisable().setVisible(!(deviceType == PAOGroups.MACRO_GROUP));
-        getJCheckBoxDisableControl().setVisible(!(deviceType == PAOGroups.MACRO_GROUP));
+        getJCheckBoxDisable().setVisible(!(paoType == PaoType.MACRO_GROUP));
+        getJCheckBoxDisableControl().setVisible(!(paoType == PaoType.MACRO_GROUP));
 
-        getJCheckBoxHistory().setVisible(getJCheckBoxHistory().isVisible() && !(deviceType == PAOGroups.MACRO_GROUP));
+        getJCheckBoxHistory().setVisible(getJCheckBoxHistory().isVisible() && !(paoType == PaoType.MACRO_GROUP));
 
-        getJPanelHistory().setVisible(getJCheckBoxHistory().isVisible() && !(deviceType == PAOGroups.MACRO_GROUP));
+        getJPanelHistory().setVisible(getJCheckBoxHistory().isVisible() && !(paoType == PaoType.MACRO_GROUP));
 
-        if (deviceType != PAOGroups.LM_GROUP_EXPRESSCOMM &&
-            deviceType != PAOGroups.LM_GROUP_RFN_EXPRESSCOMM) {
+        if (paoType != PaoType.LM_GROUP_EXPRESSCOMM &&
+                paoType != PaoType.LM_GROUP_RFN_EXPRESSCOMM) {
             getPriorityCombo().setVisible(false);
             getPriorityLabel().setVisible(false);
         }
@@ -1071,7 +1069,7 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
         lmGroup = (LMGroup) val;
 
         String name = lmGroup.getPAOName();
-        String type = lmGroup.getPAOType();
+        String type = lmGroup.getPaoType().getPaoTypeName();
 
         getJTextFieldName().setText(name);
         getJTextFieldType().setText(type);
@@ -1103,6 +1101,6 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
         }
 
         // show the needed entry fields only
-        setSwitchType(lmGroup.getPAOType());
+        setSwitchType(lmGroup.getPaoType());
     }
 }

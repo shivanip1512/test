@@ -1,7 +1,9 @@
 package com.cannontech.dbeditor.editor.route;
 
+import java.util.Vector;
+
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.database.data.pao.RouteTypes;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.route.RouteBase;
 
 /**
@@ -12,27 +14,27 @@ public class RouteEditorPanel extends com.cannontech.common.editor.PropertyPanel
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
 
-	private static final String [][] EDITOR_TYPES =
+	private static final PaoType [][] EDITOR_TYPES =
 	{
 		{  //0 - CommunicationRouteEditorPanel
-			RouteTypes.STRING_CCU, RouteTypes.STRING_TCU, RouteTypes.STRING_LCU, 
-			RouteTypes.STRING_TAP_PAGING, RouteTypes.STRING_WCTP_TERMINAL_ROUTE,
-			RouteTypes.STRING_VERSACOM, RouteTypes.STRING_SERIES_5_LMI_ROUTE,
-			RouteTypes.STRING_RTC_ROUTE, RouteTypes.STRING_SNPP_TERMINAL_ROUTE,
-			RouteTypes.STRING_INTEGRATION_ROUTE, RouteTypes.STRING_TNPP_TERMINAL_ROUTE,
-			RouteTypes.STRING_RDS_TERMINAL_ROUTE
+			PaoType.ROUTE_CCU, PaoType.ROUTE_TCU, PaoType.ROUTE_LCU, 
+			PaoType.ROUTE_TAP_PAGING, PaoType.ROUTE_WCTP_TERMINAL,
+			PaoType.ROUTE_VERSACOM, PaoType.ROUTE_SERIES_5_LMI,
+			PaoType.ROUTE_RTC, PaoType.ROUTE_SNPP_TERMINAL,
+			PaoType.ROUTE_TNPP_TERMINAL,
+			PaoType.ROUTE_RDS_TERMINAL
 		},
 		{  //1 - RepeaterSetupEditorPanel
-			RouteTypes.STRING_CCU
+			PaoType.ROUTE_CCU
 		},
 		{  //2 - MacroRouteEditorPanel
-			RouteTypes.STRING_MACRO
+			PaoType.ROUTE_MACRO
 		},
 		{  //3 - VersacomAddressingEditorPanel
-			RouteTypes.STRING_VERSACOM
+			PaoType.ROUTE_VERSACOM
 		},
 		{  //4 - VersacomCCUSettingsEditorPanel
-			RouteTypes.STRING_VERSACOM
+			PaoType.ROUTE_VERSACOM
 		}
 	};
 	private javax.swing.JTabbedPane ivjRouteEditorTabbedPane = null;
@@ -49,6 +51,7 @@ public RouteEditorPanel() {
  *   Object[0] is a DataInputPanel
  *   Object[1] is a String (Tab Name)
  */
+@Override
 public Object[] createNewPanel(int panelIndex)
 {
 	Object[] objs = new Object[2];
@@ -87,6 +90,7 @@ public Object[] createNewPanel(int panelIndex)
  * This method was created in VisualAge.
  * @return DataInputPanel[]
  */
+@Override
 public DataInputPanel[] getInputPanels() {
 	return this.inputPanels;
 }
@@ -94,6 +98,7 @@ public DataInputPanel[] getInputPanels() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public java.awt.Dimension getPreferredSize() {
 	return new java.awt.Dimension( 400, 450 );
 }
@@ -120,6 +125,7 @@ private javax.swing.JTabbedPane getRouteEditorTabbedPane() {
  * This method was created in VisualAge.
  * @return java.lang.String[]
  */
+@Override
 public String[] getTabNames() {
 	if( this.inputPanelTabNames == null )
 		this.inputPanelTabNames = new String[0];
@@ -155,23 +161,24 @@ private void initialize() {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) {
 	
     //Vector to hold the panels temporarily
-	java.util.Vector panels = new java.util.Vector();
-	java.util.Vector tabs = new java.util.Vector();
+	Vector<DataInputPanel> panels = new Vector<DataInputPanel>();
+	Vector<Object> tabs = new Vector<Object>();
 	
 	DataInputPanel tempPanel;
 
 	//We must assume that val is an instance of RouteBase	
 	RouteBase route = (RouteBase) val;
-	String type = route.getPAOType();
+	PaoType type = route.getPaoType();
 
  	for( int i = 0; i < EDITOR_TYPES.length; i++ )
  	{
 	 	for( int j = 0; j < EDITOR_TYPES[i].length; j++ )
 	 	{
-		 	if( type.equalsIgnoreCase(EDITOR_TYPES[i][j]) )
+		 	if( type == EDITOR_TYPES[i][j])
 			{
 				Object[] panelTabs = createNewPanel(i);
 
@@ -197,6 +204,7 @@ public void setValue(Object val) {
  * This method was created in VisualAge.
  * @return java.lang.String
  */
+@Override
 public String toString() {
 	return "Route Editor";
 }

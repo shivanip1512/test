@@ -14,19 +14,20 @@ import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteLMConstraint;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjJLabelName = null;
 	//This is for the timed operational state
 	private boolean isAWizardOp = false;
-	private javax.swing.JComboBox ivjJComboBoxOperationalState = null;
+	private javax.swing.JComboBox<String> ivjJComboBoxOperationalState = null;
 	private javax.swing.JLabel ivjJLabelOperationalState = null;
 	private javax.swing.JTextField ivjJTextFieldName = null;
 	private javax.swing.JLabel ivjJLabelActualProgType = null;
 	private javax.swing.JLabel ivjJLabelProgramType = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
-	private javax.swing.JComboBox ivjJComboBoxConstraint = null;
+	private javax.swing.JComboBox<LiteLMConstraint> ivjJComboBoxConstraint = null;
 	private javax.swing.JLabel ivjJLabelConstraint = null;
 	private javax.swing.JButton ivjActionPasser = null;
 	private javax.swing.JPanel ivjJPanelTriggerThreshold = null;
@@ -40,7 +41,8 @@ public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInput
 	private PaoType programType;
 
 	class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
-		public void actionPerformed(java.awt.event.ActionEvent e) {
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == LMProgramBasePanel.this.getJComboBoxOperationalState()) 
 				connEtoC1(e);
 			if (e.getSource() == LMProgramBasePanel.this.getJComboBoxConstraint()) 
@@ -48,7 +50,8 @@ public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInput
 			
 		};
 		
-		public void caretUpdate(javax.swing.event.CaretEvent e) {
+		@Override
+        public void caretUpdate(javax.swing.event.CaretEvent e) {
 			if (e.getSource() == LMProgramBasePanel.this.getJTextFieldName()) 
 				connEtoC2(e);
 			if (e.getSource() == LMProgramBasePanel.this.getJTextFieldTriggerOffset()) 
@@ -80,6 +83,7 @@ public void setProgramType(PaoType programType) {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -93,6 +97,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -227,16 +232,16 @@ public boolean getIsAWizardOp()
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 @SuppressWarnings("unchecked")
-private javax.swing.JComboBox getJComboBoxConstraint() {
+private javax.swing.JComboBox<LiteLMConstraint> getJComboBoxConstraint() {
 	if (ivjJComboBoxConstraint == null) {
 		try {
-			ivjJComboBoxConstraint = new javax.swing.JComboBox();
+			ivjJComboBoxConstraint = new javax.swing.JComboBox<LiteLMConstraint>();
 			ivjJComboBoxConstraint.setName("JComboBoxConstraint");
 			ivjJComboBoxConstraint.setPreferredSize(new java.awt.Dimension(204, 23));
 			ivjJComboBoxConstraint.setMinimumSize(new java.awt.Dimension(204, 23));
 			// user code begin {1}
 			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-			java.util.List constraints = cache.getAllLMProgramConstraints();
+			java.util.List<LiteLMConstraint> constraints = cache.getAllLMProgramConstraints();
 			Collections.sort( constraints, LiteComparators.liteStringComparator );
 			for( int i = 0; i < constraints.size(); i++ )
 				ivjJComboBoxConstraint.addItem( constraints.get(i) );
@@ -254,10 +259,10 @@ private javax.swing.JComboBox getJComboBoxConstraint() {
  * @return javax.swing.JComboBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxOperationalState() {
+private javax.swing.JComboBox<String> getJComboBoxOperationalState() {
 	if (ivjJComboBoxOperationalState == null) {
 		try {
-			ivjJComboBoxOperationalState = new javax.swing.JComboBox();
+			ivjJComboBoxOperationalState = new javax.swing.JComboBox<String>();
 			ivjJComboBoxOperationalState.setName("JComboBoxOperationalState");
 			// user code begin {1}
 			ivjJComboBoxOperationalState.addItem( LMProgramBase.OPSTATE_AUTOMATIC );
@@ -537,11 +542,12 @@ private javax.swing.JTextField getJTextFieldTriggerOffset() {
 	return ivjJTextFieldTriggerOffset;
 }
 
+@Override
 public Object getValue(Object o) 
 {
     LMProgramBase  program;
 	if (isAWizardOp) {
-	    program = (LMProgramBase)LMFactory.createLoadManagement(programType.getDeviceTypeId());
+	    program = (LMProgramBase)LMFactory.createLoadManagement(programType);
     }else {
         program = (LMProgramBase)o;
     }
@@ -617,6 +623,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	if( getJTextFieldName().getText() == null || getJTextFieldName().getText().length() <= 0 )
@@ -644,7 +651,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aLMProgramBasePanel);
 		frame.setSize(aLMProgramBasePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -664,6 +672,7 @@ public void setIsAWizardOp(boolean wizard)
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	LMProgramBase program = (LMProgramBase)o;
@@ -673,10 +682,10 @@ public void setValue(Object o)
     
     	getJLabelProgramType().setVisible( true );
     	getJLabelActualProgType().setVisible( true );
-    	getJLabelActualProgType().setText( program.getPAOType() );
+    	getJLabelActualProgType().setText( program.getPaoType().getPaoTypeName() );
     
     	for( int i = 0; i < getJComboBoxConstraint().getItemCount(); i++ )
-    		if( ((com.cannontech.database.data.lite.LiteLMConstraint)getJComboBoxConstraint().getItemAt(i)).getConstraintID()
+    		if( getJComboBoxConstraint().getItemAt(i).getConstraintID()
     			== program.getProgram().getConstraintID().intValue() )
     			{
     				getJComboBoxConstraint().setSelectedIndex(i);
@@ -691,11 +700,13 @@ public void setValue(Object o)
     }
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getJTextFieldName().requestFocus(); 

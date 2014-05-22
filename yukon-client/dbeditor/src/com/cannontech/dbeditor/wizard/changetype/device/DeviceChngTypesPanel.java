@@ -31,14 +31,12 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService.PointTemplateTransferPair;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
@@ -73,6 +71,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      * This method was created in VisualAge.
      * @return Dimension
      */
+    @Override
     public Dimension getMinimumSize() {
         return getPreferredSize();
     }
@@ -81,6 +80,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      * This method was created in VisualAge.
      * @return Dimension
      */
+    @Override
     public Dimension getPreferredSize() {
         return new Dimension(350, 200);
     }
@@ -90,6 +90,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      * @return java.lang.Object
      * @param val java.lang.Object
      */
+    @Override
     public Object getValue(Object val) {
 
         PaoDefinition newDefinition = (PaoDefinition) getJListDevices().getSelectedValue();
@@ -101,21 +102,24 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         return deviceUpdateService.changeDeviceType(currentDevice, newDefinition);
     }
 
+    @Override
     public void setValue(Object val) {
     }
 
+    @Override
     public void valueChanged(ListSelectionEvent ev) {
         // make sure we have the last event in a sequence of events.
         if (!ev.getValueIsAdjusting()) {
             if (ev.getSource() == getJListDevices()) {
                 getJTextPaneNotes().setText("generating type differences...");
                 new Thread(new Runnable() {
+                    @Override
                     public void run() {
                         PaoDefinition paoDefinition = (PaoDefinition) getJListDevices().getSelectedValue();
                         String text = generateDeviceChangeText(paoDefinition);
                         if (((PaoDefinition) getJListDevices().getSelectedValue()).equals(paoDefinition)) {
 
-                            int currentDeviceType = PaoType.getPaoTypeId(currentDevice.getPAOType());
+                            int currentDeviceType = currentDevice.getPaoType().getDeviceTypeId();
                             int newType = paoDefinition.getType().getDeviceTypeId();
                             
                             if (DeviceTypesFuncs.isDisconnectMCT(currentDeviceType) && (DeviceTypesFuncs.isMCT410(newType)) ) {
@@ -241,7 +245,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         // Add text to explain what type the current device is and what it is
         // changing to
-        buffer.append("Change from " + device.getPAOType() + " to "
+        buffer.append("Change from " + device.getPaoType() + " to "
                 + paoDefinition.getDisplayName() + "\n\n");
 
         // Add text for point additions

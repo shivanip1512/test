@@ -1,146 +1,87 @@
 package com.cannontech.database.data.device.lm;
 
-/**
- * Insert the type's description here.
- * Creation date: (2/18/2002 9:38:37 AM)
- * @author: 
- */
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.pao.YukonPAObject;
 
 public final class LMFactory {
-/**
- * LMFactory constructor comment.
- */
-private LMFactory() {
-    super();
-}
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.data.pao.YukonPAObject
- * @param lmType int
- */
-public final static com.cannontech.database.data.pao.YukonPAObject createLoadManagement(int lmType)
-{
 
-    com.cannontech.database.data.pao.YukonPAObject retLm = null;
-    PaoType type = PaoType.getForId(lmType);
+    public final static YukonPAObject createLoadManagement(PaoType paoType) {
 
-    switch( lmType )
-    {
-        case PAOGroups.LM_GROUP_EMETCON:
+        YukonPAObject retLm = null;
+
+        switch (paoType) {
+        case LM_GROUP_EMETCON:
             retLm = new LMGroupEmetcon();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass( DeviceClasses.STRING_CLASS_GROUP );
             break;
-        case PAOGroups.LM_GROUP_DIGI_SEP:
+        case LM_GROUP_DIGI_SEP:
             retLm = new LMGroupDigiSep();
-            retLm.setPAOCategory(PaoCategory.getPaoCategory(type.getPaoCategory().getPaoCategoryId()));
-            retLm.setPAOClass(type.getPaoClass().getDbString());
             break;
-        case PAOGroups.LM_GROUP_ECOBEE:
+        case LM_GROUP_ECOBEE:
             retLm = new LMGroupEcobee();
-            retLm.setPAOCategory(PaoCategory.getPaoCategory(type.getPaoCategory().getPaoCategoryId()));
-            retLm.setPAOClass(type.getPaoClass().getDbString());
             break;
-        case PAOGroups.LM_GROUP_VERSACOM:
+        case LM_GROUP_VERSACOM:
             retLm = new LMGroupVersacom();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_EXPRESSCOMM:
+        case LM_GROUP_EXPRESSCOMM:
             retLm = new LMGroupPlcExpressCom();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_RFN_EXPRESSCOMM:
+        case LM_GROUP_RFN_EXPRESSCOMM:
             retLm = new LMGroupRfnExpressCom();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_POINT:
+        case LM_GROUP_POINT:
             retLm = new LMGroupPoint();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_RIPPLE:
+        case LM_GROUP_RIPPLE:
             retLm = new LMGroupRipple();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_MCT:
+        case LM_GROUP_MCT:
             retLm = new LMGroupMCT();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_SA305:
+        case LM_GROUP_SA305:
             retLm = new LMGroupSA305();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_SA205:
+        case LM_GROUP_SA205:
             retLm = new LMGroupSA205();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_SADIGITAL:
+        case LM_GROUP_SADIGITAL:
             retLm = new LMGroupSADigital();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_GOLAY:
+        case LM_GROUP_GOLAY:
             retLm = new LMGroupGolay();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.MACRO_GROUP:
+        case MACRO_GROUP:
             retLm = new MacroGroup();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_DIRECT_PROGRAM:
-            retLm = new LMProgramDirect();            
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
+        case LM_DIRECT_PROGRAM:
+            retLm = new LMProgramDirect(PaoType.LM_DIRECT_PROGRAM);
             break;
-        case PAOGroups.LM_SEP_PROGRAM:
+        case LM_SEP_PROGRAM:
             retLm = new LmProgramSep();
-            retLm.setPAOClass(type.getPaoClass().getDbString());
             break;
-        case PAOGroups.LM_ECOBEE_PROGRAM:
+        case LM_ECOBEE_PROGRAM:
             retLm = new LmProgramEcobee();
-            retLm.setPAOClass(type.getPaoClass().getDbString());
             break;
-        case PAOGroups.LM_CURTAIL_PROGRAM:
+        case LM_CURTAIL_PROGRAM:
             retLm = new LMProgramCurtailment();
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
             break;
-        case PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM:
+        case LM_ENERGY_EXCHANGE_PROGRAM:
             retLm = new LMProgramEnergyExchange();
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
             break;
-        case PAOGroups.LM_CONTROL_AREA:
+        case LM_CONTROL_AREA:
             retLm = new LMControlArea();
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
             break;
-        case PAOGroups.LM_SCENARIO:
+        case LM_SCENARIO:
             retLm = new LMScenario();
-            retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
             break;
-    }
+        }
 
-    //Set a couple reasonable defaults
-    if( retLm.getPAOCategory() == null )
-        retLm.setPAOCategory( PAOGroups.STRING_CAT_LOADMANAGEMENT );
+        if (retLm instanceof DeviceBase) {
+            ((DeviceBase) retLm).setDisableFlag(new Character('N'));
+            ((DeviceBase) retLm).getDevice().setAlarmInhibit(new Character('N'));
+            ((DeviceBase) retLm).getDevice().setControlInhibit(new Character('N'));
+        }
 
-    if( retLm instanceof com.cannontech.database.data.device.DeviceBase )
-    {
-        ((com.cannontech.database.data.device.DeviceBase)retLm).setDisableFlag( new Character('N') );
-        ((com.cannontech.database.data.device.DeviceBase)retLm).getDevice().setAlarmInhibit(new Character('N') );
-        ((com.cannontech.database.data.device.DeviceBase)retLm).getDevice().setControlInhibit(new Character('N') );
+        return retLm;
     }
-    
-    return retLm;
-}
 }

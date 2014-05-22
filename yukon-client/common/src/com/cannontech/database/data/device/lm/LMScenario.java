@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import com.cannontech.common.editor.EditorPanel;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.NestedDBPersistent;
@@ -20,7 +20,7 @@ public class LMScenario extends YukonPAObject implements CTIDbChange, EditorPane
     private Vector<LMControlScenarioProgram> allThePrograms;
 
     public LMScenario() {
-        getYukonPAObject().setType(PAOGroups.STRING_LM_SCENARIO[0]);
+        super(PaoType.LM_SCENARIO);
     }
 
     @Override

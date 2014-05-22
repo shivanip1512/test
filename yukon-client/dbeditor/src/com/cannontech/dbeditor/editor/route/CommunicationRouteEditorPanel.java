@@ -39,6 +39,7 @@ public CommunicationRouteEditorPanel() {
  * Method to handle events for the CaretListener interface.
  * @param e javax.swing.event.CaretEvent
  */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	if (e.getSource() == getRouteNameTextField()) 
 		connEtoC1(e);
@@ -342,6 +343,7 @@ private javax.swing.JLabel getSignalTransmitterLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) {
 	String routeName = getRouteNameTextField().getText();
 	Integer injectorID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getYukonID());
@@ -431,6 +433,7 @@ private void initialize() {
  * Method to handle events for the ItemListener interface.
  * @param e java.awt.event.ItemEvent
  */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
 	if (e.getSource() == getSignalTransmitterComboBox()) 
 		connEtoC2(e);
@@ -441,9 +444,8 @@ public void itemStateChanged(java.awt.event.ItemEvent e) {
  * This method was created in VisualAge.
  * @param routeType int
  */
-private void loadSignalTransmitterComboBox(String routeType) {
+private void loadSignalTransmitterComboBox(PaoType routePaoType) {
 
-	PaoType routePaoType = PaoType.getForDbString(routeType);
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
@@ -574,6 +576,7 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) {
 	getBusNumberSpinner().setVisible(false);
 
@@ -587,7 +590,7 @@ public void setValue(Object val) {
 	if( routeName != null )
 		getRouteNameTextField().setText(routeName);
 
-	loadSignalTransmitterComboBox( rb.getPAOType() );
+	loadSignalTransmitterComboBox(rb.getPaoType());
 
 	for( int i = 0; i < getSignalTransmitterComboBox().getItemCount(); i++ )
 	{
@@ -643,6 +646,7 @@ public void setValue(Object val) {
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 	if (arg1.getSource() == getBusNumberSpinner()) 
@@ -652,6 +656,7 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 }

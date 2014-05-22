@@ -33,7 +33,6 @@ import com.cannontech.database.data.device.IEDMeter;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.device.DeviceMeterGroup;
@@ -1029,7 +1028,7 @@ public static void main(java.lang.String[] args) {
 @SuppressWarnings("deprecation")
 public void setValue(Object val) 
 {
-	int deviceType = PaoType.getPaoTypeId( ((DeviceBase)val).getPAOType() );
+    PaoType deviceType = ((DeviceBase)val).getPaoType();
 	
 	DeviceConfigurationDao deviceConfigDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
 	
@@ -1038,10 +1037,10 @@ public void setValue(Object val)
 	getLoadProfileCollectionPanel().setVisible( val instanceof MCTBase );
 		
 	//are we a voltage channel?
-	getJComboBoxlVoltInterval().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType) );
-	getJComboBoxlVoltRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType) );		
-	getJLabelVoltDmdRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType) );
-	getJLabelVoltIntervalDmdRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType) );
+	getJComboBoxlVoltInterval().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType.getDeviceTypeId()));
+	getJComboBoxlVoltRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType.getDeviceTypeId()));
+	getJLabelVoltDmdRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType.getDeviceTypeId()));
+	getJLabelVoltIntervalDmdRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType.getDeviceTypeId()));
 
 	//The default object is either a MCT or a IEDmeter
 	if( val instanceof MCTBase )
@@ -1062,19 +1061,19 @@ public void setValue(Object val)
 		SwingUtil.setIntervalComboBoxSelectedItem(
 			getJComboBoxlVoltInterval(), dlp.getVoltageDmdInterval().intValue() );
 
-		if( deviceType == PAOGroups.DCT_501 
-			 || deviceType == PAOGroups.LMT_2 )
+		if( deviceType == PaoType.DCT_501 
+			 || deviceType == PaoType.LMT_2 )
 		{
 			//the last interval demand rate can not be edited for DCT_501 & LMT-2
 			getLastIntervalDemandRateComboBox().setVisible(false);
 			getLastIntervalDemandRateLabel().setVisible(false);
 		}
 		
-		if(DeviceTypesFuncs.isMCT4XX(deviceType)) {
+		if(DeviceTypesFuncs.isMCT4XX(deviceType.getDeviceTypeId())) {
 			getChannel2CheckBox().setEnabled(true);
 			getChannel3CheckBox().setEnabled(true);
 			
-			if(deviceType == PAOGroups.MCT470 || DeviceTypesFuncs.isMCT430(deviceType)){
+			if(deviceType == PaoType.MCT470 || DeviceTypesFuncs.isMCT430(deviceType.getDeviceTypeId())){
 				
 				getJLabelVoltDmdRate().setEnabled(false);
 				getJLabelVoltDmdRate().setVisible(false);
@@ -1121,20 +1120,20 @@ public void setValue(Object val)
         SwingUtil.setIntervalComboBoxSelectedItem(getLoadProfileDemandRateComboBox(), dlp
             .getLoadProfileDemandRate().intValue());
 
-		if( DeviceTypesFuncs.isLoadProfile1Channel(deviceType) )
+		if( DeviceTypesFuncs.isLoadProfile1Channel(deviceType.getDeviceTypeId()))
 		{
 			SwingUtil.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
 			getChannel2CheckBox().setVisible(false);
 			getChannel3CheckBox().setVisible(false);
 			getChannel4CheckBox().setVisible(false);
 		}
-	  else if( DeviceTypesFuncs.isLoadProfile3Channel(deviceType) )
+	  else if( DeviceTypesFuncs.isLoadProfile3Channel(deviceType.getDeviceTypeId()))
 	  {
 		 SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
 		 SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
 		 SwingUtil.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
 		 getChannel4CheckBox().setVisible(false);
-	  } else if( deviceType == PAOGroups.MCT470 || DeviceTypesFuncs.isMCT430(deviceType) ) {
+	  } else if( deviceType == PaoType.MCT470 || DeviceTypesFuncs.isMCT430(deviceType.getDeviceTypeId())) {
 	      SimpleDevice device = new SimpleDevice(mctBase.getPAObjectID(), deviceType);
           SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
           SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
@@ -1162,13 +1161,13 @@ public void setValue(Object val)
               getLastIntervalDemandRateComboBox().setEnabled(false);
               getLoadProfileDemandRateComboBox().setEnabled(false);
           }
-	  } else if( DeviceTypesFuncs.isLoadProfile4Channel(deviceType) ) {
+	  } else if( DeviceTypesFuncs.isLoadProfile4Channel(deviceType.getDeviceTypeId())) {
 			SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
 			SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
 			SwingUtil.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
 			SwingUtil.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
 			
-			if( DeviceTypesFuncs.isLoadProfileVoltage(deviceType) )
+			if( DeviceTypesFuncs.isLoadProfileVoltage(deviceType.getDeviceTypeId()))
 			{
 				getChannel4CheckBox().setText("Channel #4 (Volts)");
 			}

@@ -1,151 +1,112 @@
 package com.cannontech.database.data.device;
 
-import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.db.DBCopiable;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceRoutes;
 
-/**
- * This type was created in VisualAge.
- */
-public class CarrierBase extends TwoWayDevice implements com.cannontech.database.db.DBCopiable
-{
+public class CarrierBase extends TwoWayDevice implements DBCopiable {
 
-	private DeviceRoutes deviceRoutes = null;
+    private DeviceRoutes deviceRoutes = null;
 
-	private DeviceCarrierSettings deviceCarrierSettings = null;
-   
-   /**
-    * CarrierBase constructor comment.
-    */
-   public CarrierBase() {
-   	super();
-   	setDeviceClass( DeviceClasses.STRING_CLASS_CARRIER );
-   }
+    private DeviceCarrierSettings deviceCarrierSettings = null;
 
-   public Integer getAddress() 
-   {
-      return getDeviceCarrierSettings().getAddress();
-   }
+    public CarrierBase(PaoType paoType) {
+        super(paoType);
+    }
 
-   public void setAddress( Integer newAddress )
-   {
-      getDeviceCarrierSettings().setAddress( newAddress );
-   }
+    @Override
+    public Integer getAddress() {
+        return getDeviceCarrierSettings().getAddress();
+    }
 
-/**
- * This method was created in VisualAge.
- */
-public void add() throws java.sql.SQLException {
-	super.add();
+    @Override
+    public void setAddress(Integer newAddress) {
+        getDeviceCarrierSettings().setAddress(newAddress);
+    }
 
-	getDeviceCarrierSettings().add();
-	getDeviceRoutes().add();
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/15/2001 9:46:43 AM)
- * @param deviceID int
- * @exception java.sql.SQLException The exception description.
- */
-public void addPartial() throws java.sql.SQLException {
-	super.addPartial();
+    @Override
+    public void add() throws java.sql.SQLException {
+        super.add();
 
-	getDeviceCarrierSettings().add();
-	getDeviceRoutes().add();
-	
-	
-	
-	}
-/**
- * This method was created in VisualAge.
- */
-public void delete() throws java.sql.SQLException {
+        getDeviceCarrierSettings().add();
+        getDeviceRoutes().add();
+    }
 
-	getDeviceRoutes().delete();
-	getDeviceCarrierSettings().delete();
-	super.delete();
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/14/2001 11:11:50 AM)
- * @exception java.sql.SQLException The exception description.
- */
-public void deletePartial() throws java.sql.SQLException {
+    @Override
+    public void addPartial() throws java.sql.SQLException {
+        super.addPartial();
 
-	super.deletePartial();
+        getDeviceCarrierSettings().add();
+        getDeviceRoutes().add();
 
-}
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.device.DeviceCarrierSettings
- */
-public DeviceCarrierSettings getDeviceCarrierSettings() {
- 	if( deviceCarrierSettings == null )
- 		deviceCarrierSettings = new DeviceCarrierSettings();
- 		
-	return deviceCarrierSettings;
-}
-/**
- * This method was created in VisualAge.
- * @return java.util.Vector
- */
-public DeviceRoutes getDeviceRoutes() {
+    }
 
-	if( deviceRoutes == null )
-		deviceRoutes = new DeviceRoutes();
-	
-	return deviceRoutes;
-}
-/**
- * This method was created in VisualAge.
- */
-public void retrieve() throws java.sql.SQLException {
+    @Override
+    public void delete() throws java.sql.SQLException {
 
-	super.retrieve();
-	getDeviceCarrierSettings().retrieve();
-	getDeviceRoutes().retrieve();	
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/4/00 3:30:12 PM)
- * @param conn java.sql.Connection
- */
-public void setDbConnection(java.sql.Connection conn) 
-{
-	super.setDbConnection(conn);
-	getDeviceCarrierSettings().setDbConnection(conn);
-	getDeviceRoutes().setDbConnection(conn);
-}
-/**
- * This method was created in VisualAge.
- * @param newValue com.cannontech.database.db.device.DeviceCarrierSettings
- */
-public void setDeviceCarrierSettings(DeviceCarrierSettings newValue) {
-	this.deviceCarrierSettings = newValue;
-}
-/**
- * This method was created in VisualAge.
- * @param deviceID java.lang.Integer
- */
-public void setDeviceID(Integer deviceID) {
-	super.setDeviceID(deviceID);
-	getDeviceCarrierSettings().setDeviceID(deviceID);
-	getDeviceRoutes().setDeviceID(deviceID);
-}
-/**
- * This method was created in VisualAge.
- * @param newValue java.util.Vector
- */
-public void setDeviceRoutes(DeviceRoutes newValue) {
-	this.deviceRoutes = newValue;
-}
-/**
- * This method was created in VisualAge.
- */
-public void update() throws java.sql.SQLException{
-	super.update();
+        getDeviceRoutes().delete();
+        getDeviceCarrierSettings().delete();
+        super.delete();
+    }
 
-	getDeviceCarrierSettings().update();
-	getDeviceRoutes().update();
-}
+    @Override
+    public void deletePartial() throws java.sql.SQLException {
+
+        super.deletePartial();
+
+    }
+
+    public DeviceCarrierSettings getDeviceCarrierSettings() {
+        if (deviceCarrierSettings == null)
+            deviceCarrierSettings = new DeviceCarrierSettings();
+
+        return deviceCarrierSettings;
+    }
+
+    public DeviceRoutes getDeviceRoutes() {
+
+        if (deviceRoutes == null)
+            deviceRoutes = new DeviceRoutes();
+
+        return deviceRoutes;
+    }
+
+    @Override
+    public void retrieve() throws java.sql.SQLException {
+
+        super.retrieve();
+        getDeviceCarrierSettings().retrieve();
+        getDeviceRoutes().retrieve();
+    }
+
+    @Override
+    public void setDbConnection(java.sql.Connection conn) {
+        super.setDbConnection(conn);
+        getDeviceCarrierSettings().setDbConnection(conn);
+        getDeviceRoutes().setDbConnection(conn);
+    }
+
+    public void setDeviceCarrierSettings(DeviceCarrierSettings newValue) {
+        this.deviceCarrierSettings = newValue;
+    }
+
+    @Override
+    public void setDeviceID(Integer deviceID) {
+        super.setDeviceID(deviceID);
+        getDeviceCarrierSettings().setDeviceID(deviceID);
+        getDeviceRoutes().setDeviceID(deviceID);
+    }
+
+    public void setDeviceRoutes(DeviceRoutes newValue) {
+        this.deviceRoutes = newValue;
+    }
+
+    @Override
+    public void update() throws java.sql.SQLException {
+        super.update();
+
+        getDeviceCarrierSettings().update();
+        getDeviceRoutes().update();
+    }
 }

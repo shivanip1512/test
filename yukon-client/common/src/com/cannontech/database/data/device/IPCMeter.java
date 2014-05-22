@@ -2,6 +2,7 @@ package com.cannontech.database.data.device;
 
 import java.sql.SQLException;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.port.TerminalServerSharedPort;
 import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
@@ -15,6 +16,11 @@ import com.cannontech.database.db.port.PortTerminalServer;
 public class IPCMeter extends IEDMeter {
     private TerminalServerSharedPort comms;
     
+    public IPCMeter(PaoType paoType) {
+        super(paoType);
+    }
+    
+    @Override
     public void add() throws SQLException {
         //add comm channel
         comms.setPortName(getPAOName());

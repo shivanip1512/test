@@ -3,20 +3,20 @@ package com.cannontech.dbeditor.wizard.device;
 import java.awt.Dimension;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RDSTerminal;
 import com.cannontech.database.data.device.TNPPTerminal;
-import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * This type was created in VisualAge.
  */
  
 public class DeviceTapTerminalPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
-    int deviceType;
+    PaoType deviceType;
 	private javax.swing.JLabel ivjNameLabel = null;
 	private javax.swing.JTextField ivjNameTextField = null;
 	private javax.swing.JPanel ivjJPanel1 = null;
@@ -38,6 +38,7 @@ public DeviceTapTerminalPanel() {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -188,6 +189,7 @@ private javax.swing.JPanel getJPanel1() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getMinimumSize() {
 	return getPreferredSize();
 }
@@ -356,6 +358,7 @@ private javax.swing.JTextField getPasswordTextField() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getPreferredSize() {
 	return new Dimension( 350, 200);
 }
@@ -364,6 +367,7 @@ public Dimension getPreferredSize() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) 
 {
     IEDBase iedBase = (IEDBase)val;
@@ -434,6 +438,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() {
 	if( getNameTextField().getText() == null   ||
 		getNameTextField().getText().length() < 1 )
@@ -442,7 +447,7 @@ public boolean isInputValid() {
 		return false;
 	}
 
-	if (deviceType == PAOGroups.TAPTERMINAL) {
+	if (deviceType == PaoType.TAPTERMINAL) {
     	if( getPagerNumberTextField().getText() == null 	||
     			getPagerNumberTextField().getText().length() < 1 )
     	{
@@ -466,6 +471,7 @@ public boolean isInputValid() {
  * @param e java.awt.event.ItemEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
 	// user code begin {1}
 	// user code end
@@ -515,26 +521,29 @@ public void passwordCheckBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val ) {
     IEDBase iedBase = (IEDBase)val;
 
     if (iedBase instanceof PagingTapTerminal) {
-        deviceType = PAOGroups.TAPTERMINAL;
+        deviceType = PaoType.TAPTERMINAL;
     }
     if (iedBase instanceof TNPPTerminal){
-        deviceType = PAOGroups.TNPP_TERMINAL;
+        deviceType = PaoType.TNPP_TERMINAL;
     }
     if (iedBase instanceof RDSTerminal){
-        deviceType = PAOGroups.RDS_TERMINAL;
+        deviceType = PaoType.RDS_TERMINAL;
     }
     return;
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getNameTextField().requestFocus(); 
@@ -542,9 +551,9 @@ public void setFirstFocus()
     });    
 }
 
-public void setDeviceType(int deviceType){
+public void setDeviceType(PaoType deviceType){
     this.deviceType = deviceType;
-    if (deviceType == PAOGroups.TAPTERMINAL) {
+    if (deviceType == PaoType.TAPTERMINAL) {
         getPagerNumberLabel().setVisible(true);
         getPagerNumberTextField().setVisible(true);
     } else {

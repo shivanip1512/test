@@ -1,15 +1,10 @@
 package com.cannontech.database.data.device;
 
-/**
- * This type was created in VisualAge.
- */
-public class WCTPTerminal extends PagingTapTerminal 
-{
+import com.cannontech.common.pao.PaoType;
 
-/**
- * TwoWayDevice constructor comment.
- */
-public WCTPTerminal() {
-	super();
-}
+public class WCTPTerminal extends PagingTapTerminal {
+
+    public WCTPTerminal() {
+        super(PaoType.WCTP_TERMINAL);
+    }
 }

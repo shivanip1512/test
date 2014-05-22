@@ -56,7 +56,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         DeviceBase templateDevice = retrieveExistingDeviceByTemplate(templateName);
         
         int templateDeviceId = templateDevice.getPAObjectID();
-        PaoType paoType = PaoType.getForDbString(templateDevice.getPAOType());
+        PaoType paoType = templateDevice.getPaoType();
         PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, paoType);
         
         //copy device from a template
@@ -79,10 +79,10 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
         
         int templateDeviceId = templateDevice.getPAObjectID();
-        PaoType paoType = PaoType.getForDbString(templateDevice.getPAOType());
+        PaoType paoType = templateDevice.getPaoType();
         PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, paoType);
         
-        if (PaoClass.getForDbString(templateDevice.getPAOClass()) != PaoClass.RFMESH) {
+        if (templateDevice.getPaoType().getPaoClass() != PaoClass.RFMESH) {
             throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'. Template '%s' must be an RFN Device",
                                                             newDeviceName,
                                                             templateName));
@@ -187,7 +187,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             dbPersistentDao.performDBChangeWithNoMsg(newDevice, TransactionType.INSERT);
 
             // MAKE new, template YukonDevice
-            PaoType paoType = PaoType.getForDbString(newDevice.getPAOType());
+            PaoType paoType = newDevice.getPaoType();
             PaoIdentifier paoIdentifier =
                 new PaoIdentifier(newDevice.getDevice().getDeviceID(), paoType);
             SimpleDevice newYukonDevice = new SimpleDevice(paoIdentifier);

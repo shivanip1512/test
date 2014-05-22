@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
@@ -36,7 +37,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.estimatedload.ApplianceCategoryAssignment;
 import com.cannontech.dr.estimatedload.Formula;
@@ -350,7 +350,7 @@ public class EstimatedLoadController {
      */
     private Map<Integer, LiteYukonPAObject> getGearPrograms() {
         Map<Integer, LiteYukonPAObject> gearPrograms = new HashMap<>();
-        List<LiteYukonPAObject> programs = paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_DIRECT_PROGRAM);
+        List<LiteYukonPAObject> programs = paoDao.getLiteYukonPAObjectByType(PaoType.LM_DIRECT_PROGRAM);
         for(LiteYukonPAObject program : programs) {
             gearPrograms.put(program.getLiteID(), program);
         }

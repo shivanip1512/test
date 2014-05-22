@@ -42,7 +42,7 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
     @Override
     public void start() {
         Instant start = new Instant();
-        List<LiteYukonPAObject> weatherLocations = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION.getDeviceTypeId());
+        List<LiteYukonPAObject> weatherLocations = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION);
         Map<String, WeatherStation> weatherStationMap = noaaWeatherService.getAllWeatherStations();
 
         for (LiteYukonPAObject weatherPao : weatherLocations) {

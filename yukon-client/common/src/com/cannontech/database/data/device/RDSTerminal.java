@@ -2,9 +2,8 @@ package com.cannontech.database.data.device;
 
 import java.sql.SQLException;
 
-
 import com.cannontech.common.pao.PaoInfo;
-import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.pao.StaticPaoInfo;
 
 public class RDSTerminal extends IEDBase {
@@ -18,8 +17,7 @@ public class RDSTerminal extends IEDBase {
     private StaticPaoInfo aidRepeatPeriod = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_AID_REPEAT_PERIOD);
     
     public RDSTerminal(){
-        super();
-        setDeviceClass(DeviceClasses.STRING_CLASS_TRANSMITTER);
+        super(PaoType.RDS_TERMINAL);
     }
     
     @Override

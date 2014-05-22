@@ -32,10 +32,7 @@ import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.device.Repeater921;
 import com.cannontech.database.data.device.Series5Base;
-import com.cannontech.database.data.device.XmlTransmitter;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
@@ -78,6 +75,7 @@ public DeviceNameAddressPanel() {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -322,6 +320,7 @@ private javax.swing.JPanel getJPanelNameAddy() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getMinimumSize() {
 	return getPreferredSize();
 }
@@ -404,6 +403,7 @@ private javax.swing.JLabel getPhysicalAddressLabel() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getPreferredSize() {
 	return new Dimension( 350, 200);
 }
@@ -414,6 +414,7 @@ public Dimension getPreferredSize() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val)
 {
 	//The name is easy, the address is more difficult
@@ -459,25 +460,22 @@ public Object getValue(Object val)
 		else {
 			carrierBase.getDeviceCarrierSettings().setAddress( address );
 		}
-	} else if (val instanceof XmlTransmitter) {
-        //This is empty because nothing special needs to be done, 
-    	//but we don't want to throw an error since it is valid
     } else  { //didn't find it
 		throw new Error("Unable to determine device type when attempting to set the address");
 	}
 
-	int deviceType = PaoType.getPaoTypeId(deviceBase.getPAOType());
-	if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType) || DeviceTypesFuncs.isTwoWayLcr(deviceType)) {
+	PaoType deviceType = deviceBase.getPaoType();
+	if (deviceType.isMct() || DeviceTypesFuncs.isRepeater(deviceType.getDeviceTypeId()) || deviceType.isTwoWayRfnLcr() || deviceType.isTwoWayPlcLcr()) {
 
         // Check for unique address
 	    checkPaoAddresses(address.intValue());
         
         if (this.createPointsCheck.isSelected()) {
-            PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
+            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
             deviceBase.setDeviceID(paoDao.getNextPaoId());
 
-            PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
-            DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+            PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
+            DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
             SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
             List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(yukonDevice);
 
@@ -561,6 +559,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	String deviceName = getNameTextField().getText();
@@ -575,7 +574,7 @@ public boolean isInputValid()
 	}
 
 	int address = Integer.parseInt( getAddress());
-	PaoType paoType = PaoType.getForDbString(deviceBase.getPAOType());
+	PaoType paoType = deviceBase.getPaoType();
     IntegerRange range = dlcAddressRangeService.getEnforcedAddressRangeForDevice(paoType);
 	if (!range.isWithinRange(address)) {
 		setErrorString("Invalid address. Device address range: " + range);
@@ -585,7 +584,7 @@ public boolean isInputValid()
 		return false;
 	}
 
-	if( !isUniquePao(deviceName, deviceBase.getPAOCategory(), deviceBase.getPAOClass())) {
+	if( !isUniquePao(deviceName, deviceBase.getPaoType())) {
 		setErrorString("Name '" + deviceName + "' is already in use.");
      	getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
      	getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
@@ -624,24 +623,24 @@ public static void main(java.lang.String[] args) {
  * Creation date: (4/30/2002 10:02:36 AM)
  * @param newDeviceType int
  */
-public void setDeviceType(int deviceType) 
+public void setDeviceType(PaoType deviceType) 
 {
 	deviceBase = DeviceFactory.createDevice(deviceType);
-   if( DeviceTypesFuncs.hasMasterAddress(deviceType) )
+   if( DeviceTypesFuncs.hasMasterAddress(deviceType.getDeviceTypeId()) )
       getPhysicalAddressLabel().setText("Master Address:");
-   else if( DeviceTypesFuncs.hasSlaveAddress(deviceType) || DeviceTypes.CCU721 == deviceType )
+   else if( DeviceTypesFuncs.hasSlaveAddress(deviceType.getDeviceTypeId()) || deviceType == PaoType.CCU721)
       getPhysicalAddressLabel().setText("Slave Address:");
-   else if( deviceType == DeviceTypes.MCTBROADCAST )
+   else if( deviceType == PaoType.MCTBROADCAST )
       getPhysicalAddressLabel().setText("Lead Meter Address:");
-   else if( deviceType == DeviceTypes.SERIES_5_LMI )
+   else if( deviceType == PaoType.SERIES_5_LMI )
 	  getPhysicalAddressLabel().setText("Address:");
-   else if(DeviceTypesFuncs.isTwoWayLcr(deviceType))
+   else if(DeviceTypesFuncs.isTwoWayLcr(deviceType.getDeviceTypeId()))
 		  getPhysicalAddressLabel().setText("Serial Number:");
    else
       getPhysicalAddressLabel().setText("Physical Address:");
    
-   if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType)
-            || DeviceTypesFuncs.isCCU(deviceType) || DeviceTypesFuncs.isTwoWayLcr(deviceType)) {
+   if (deviceType.isMct() || DeviceTypesFuncs.isRepeater(deviceType.getDeviceTypeId())
+            || DeviceTypesFuncs.isCCU(deviceType.getDeviceTypeId()) || DeviceTypesFuncs.isTwoWayLcr(deviceType.getDeviceTypeId())) {
         this.createPointsCheck.setVisible(true);
         this.createPointsCheck.setSelected(true);
     } else {
@@ -656,15 +655,18 @@ public void setDeviceType(int deviceType)
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val ) {
 	return;
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getNameTextField().requestFocus(); 

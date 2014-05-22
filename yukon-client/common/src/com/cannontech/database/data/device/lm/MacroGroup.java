@@ -2,141 +2,100 @@ package com.cannontech.database.data.device.lm;
 
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.macro.GenericMacro;
+import com.cannontech.database.db.macro.MacroTypes;
 
-/**
- * This type was created in VisualAge.
- */
-public class MacroGroup extends LMGroup
-{
-	//will contain only instances of com.cannontech.database.db.macro.GenericMacro
-	private Vector<GenericMacro> macroGroupVector = null;
+public class MacroGroup extends LMGroup {
 
-/**
- * MacroRoute constructor comment.
- */
-public MacroGroup() {
-	super();
+    private Vector<GenericMacro> macroGroupVector = null;
 
-	getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_MACRO_GROUP[0] );
-}
-/**
- * This method was created in VisualAge.
- */
-public void add() throws java.sql.SQLException 
-{
-	super.add();
+    public MacroGroup() {
+        super(PaoType.MACRO_GROUP);
+    }
 
-	for( int i = 0; i < getMacroGroupVector().size(); i++ ) {
-		((com.cannontech.database.db.macro.GenericMacro) getMacroGroupVector().elementAt(i)).setOwnerID( getPAObjectID() );
-		((com.cannontech.database.db.macro.GenericMacro) getMacroGroupVector().elementAt(i)).add();
-	}
+    @Override
+    public void add() throws java.sql.SQLException {
+        super.add();
 
-}
-/**
- * This method was created in VisualAge.
- */
-public void delete() throws java.sql.SQLException
-{
-	com.cannontech.database.db.macro.GenericMacro.deleteAllGenericMacros( 
-			getDevice().getDeviceID(), 
-			com.cannontech.database.db.macro.MacroTypes.GROUP,
-			getDbConnection() );
+        for (int i = 0; i < getMacroGroupVector().size(); i++) {
+            getMacroGroupVector().elementAt(i).setOwnerID(getPAObjectID());
+            getMacroGroupVector().elementAt(i).add();
+        }
 
-	super.delete();
-}
-/**
- * This method was created in VisualAge.
- * @return java.util.Vector
- */
-public Vector<GenericMacro> getMacroGroupVector() {
+    }
 
-	if( macroGroupVector == null )
-		macroGroupVector = new Vector<GenericMacro>();
-	
-	return macroGroupVector;
-}
-/**
- * This method was created in VisualAge.
- */
-public void retrieve() throws java.sql.SQLException
-{
-	super.retrieve();
+    @Override
+    public void delete() throws java.sql.SQLException {
+        GenericMacro.deleteAllGenericMacros(getDevice().getDeviceID(), MacroTypes.GROUP, getDbConnection());
+        super.delete();
+    }
 
-		macroGroupVector = new java.util.Vector();
+    public Vector<GenericMacro> getMacroGroupVector() {
 
-		try
-		{
-			
-			com.cannontech.database.db.macro.GenericMacro rArray[] = 
-				com.cannontech.database.db.macro.GenericMacro.getGenericMacros( 
-					getDevice().getDeviceID(),
-					com.cannontech.database.db.macro.MacroTypes.GROUP,
-					getDbConnection() );
+        if (macroGroupVector == null)
+            macroGroupVector = new Vector<GenericMacro>();
 
-			for( int i = 0; i < rArray.length; i++ )
-			{
-				//Since we are in the process of doing a retrieve
-				//we need to make sure the new macro routes have a database connection to use
-				//otherwise we bomb below
-				rArray[i].setDbConnection( getDbConnection() );
-				macroGroupVector.addElement( rArray[i] );
-			}
-		
-		}
-		catch(java.sql.SQLException e )
-		{
-			//not necessarily an error
-		}
-	
-	//This necessary??
-	for( int i = 0; i < getMacroGroupVector().size(); i++ )
-		((com.cannontech.database.db.macro.GenericMacro) getMacroGroupVector().elementAt(i)).retrieve();
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/4/00 3:32:03 PM)
- * @param conn java.sql.Connection
- */
-public void setDbConnection(java.sql.Connection conn) 
-{
-	super.setDbConnection(conn);
+        return macroGroupVector;
+    }
 
-	for( int i = 0; i < getMacroGroupVector().size(); i++ )
-		((com.cannontech.database.db.macro.GenericMacro) getMacroGroupVector().elementAt(i)).setDbConnection(conn);
+    @Override
+    public void retrieve() throws java.sql.SQLException {
+        super.retrieve();
 
-}
-/**
- * This method was created in VisualAge.
- * @param routeID java.lang.Integer
- */
-public void setDeviceID(Integer deviceID) {
+        macroGroupVector = new Vector<GenericMacro>();
 
-	super.setDeviceID(deviceID);
+        try {
 
-	for( int i = 0; i < getMacroGroupVector().size(); i++ )
-		((com.cannontech.database.db.macro.GenericMacro) getMacroGroupVector().elementAt(i)).setOwnerID(deviceID);
-}
-/**
- * This method was created in VisualAge.
- * @param newValue java.util.Vector
- */
-public void setMacroGroupVector(java.util.Vector newValue) {
-	this.macroGroupVector = newValue;
-}
-/**
- * This method was created in VisualAge.
- */
-public void update() throws java.sql.SQLException
-{
-	super.update();
+            GenericMacro rArray[] = GenericMacro.getGenericMacros(getDevice().getDeviceID(), MacroTypes.GROUP, getDbConnection());
 
-	com.cannontech.database.db.macro.GenericMacro.deleteAllGenericMacros(
-			getDevice().getDeviceID(), 
-			com.cannontech.database.db.macro.MacroTypes.GROUP,
-			getDbConnection() );
-	
-	for( int i = 0; i < getMacroGroupVector().size(); i++ )
-		((com.cannontech.database.db.macro.GenericMacro) getMacroGroupVector().elementAt(i)).add();
-}
+            for (int i = 0; i < rArray.length; i++) {
+                // Since we are in the process of doing a retrieve
+                // we need to make sure the new macro routes have a database
+                // connection to use
+                // otherwise we bomb below
+                rArray[i].setDbConnection(getDbConnection());
+                macroGroupVector.addElement(rArray[i]);
+            }
+
+        } catch (java.sql.SQLException e) {
+            // not necessarily an error
+        }
+
+        // This necessary??
+        for (int i = 0; i < getMacroGroupVector().size(); i++)
+            getMacroGroupVector().elementAt(i).retrieve();
+    }
+
+    @Override
+    public void setDbConnection(java.sql.Connection conn) {
+        super.setDbConnection(conn);
+
+        for (int i = 0; i < getMacroGroupVector().size(); i++)
+            getMacroGroupVector().elementAt(i).setDbConnection(conn);
+
+    }
+
+    @Override
+    public void setDeviceID(Integer deviceID) {
+
+        super.setDeviceID(deviceID);
+
+        for (int i = 0; i < getMacroGroupVector().size(); i++)
+            getMacroGroupVector().elementAt(i).setOwnerID(deviceID);
+    }
+
+    public void setMacroGroupVector(Vector<GenericMacro> newValue) {
+        this.macroGroupVector = newValue;
+    }
+
+    @Override
+    public void update() throws java.sql.SQLException {
+        super.update();
+
+        GenericMacro.deleteAllGenericMacros(getDevice().getDeviceID(), MacroTypes.GROUP, getDbConnection());
+
+        for (int i = 0; i < getMacroGroupVector().size(); i++)
+            getMacroGroupVector().elementAt(i).add();
+    }
 }

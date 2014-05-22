@@ -1,6 +1,6 @@
 package com.cannontech.core.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -144,7 +144,7 @@ public class LongLoadProfileServiceImplTest {
 
             @Override
             public DBPersistent retrieveDBPersistent(LiteBase liteObject) {
-                    return new MCTBase(){
+                    return new MCTBase(PaoType.MCT410IL){
                         @Override
                         public DeviceLoadProfile getDeviceLoadProfile() {
                            

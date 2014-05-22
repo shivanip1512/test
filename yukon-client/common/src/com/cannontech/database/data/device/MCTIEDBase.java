@@ -1,5 +1,7 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.common.pao.PaoType;
+
 /**
  * This type was created in VisualAge.
  */
@@ -8,12 +10,13 @@ public class MCTIEDBase extends MCTBase {
 /**
  * MCT360 constructor comment.
  */
-public MCTIEDBase() {
-	super();
+public MCTIEDBase(PaoType paoType) {
+	super(paoType);
 }
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void add() throws java.sql.SQLException {
 	super.add();
 	getDeviceMCTIEDPort().add();
@@ -24,6 +27,7 @@ public void add() throws java.sql.SQLException {
  * @param deviceID int
  * @exception java.sql.SQLException The exception description.
  */
+@Override
 public void addPartial() throws java.sql.SQLException {
 	super.addPartial();
 	getDeviceMCTIEDPortDefaults().add();
@@ -33,6 +37,7 @@ public void addPartial() throws java.sql.SQLException {
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void delete() throws java.sql.SQLException {
 	getDeviceMCTIEDPort().delete();
 	super.delete();
@@ -41,6 +46,7 @@ public void delete() throws java.sql.SQLException {
  * Insert the method's description here.
  * Creation date: (6/14/2001 11:02:35 AM)
  */
+@Override
 public void deletePartial() throws java.sql.SQLException {
 
 	super.deletePartial();
@@ -75,6 +81,7 @@ public com.cannontech.database.db.device.DeviceMCTIEDPort getDeviceMCTIEDPortDef
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void retrieve() throws java.sql.SQLException {
 	super.retrieve();
 	getDeviceMCTIEDPort().retrieve();
@@ -84,6 +91,7 @@ public void retrieve() throws java.sql.SQLException {
  * Creation date: (1/4/00 3:32:03 PM)
  * @param conn java.sql.Connection
  */
+@Override
 public void setDbConnection(java.sql.Connection conn) 
 {
 	super.setDbConnection(conn);
@@ -93,6 +101,7 @@ public void setDbConnection(java.sql.Connection conn)
  * This method was created in VisualAge.
  * @param deviceID java.lang.Integer
  */
+@Override
 public void setDeviceID(Integer deviceID) {
 	super.setDeviceID(deviceID);
 	getDeviceMCTIEDPort().setDeviceID(deviceID);
@@ -100,6 +109,7 @@ public void setDeviceID(Integer deviceID) {
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void update() throws java.sql.SQLException {
 	super.update();
 	getDeviceMCTIEDPort().update();

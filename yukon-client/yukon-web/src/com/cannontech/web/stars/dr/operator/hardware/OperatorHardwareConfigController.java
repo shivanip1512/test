@@ -45,7 +45,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.LmReportedAddress;
 import com.cannontech.dr.dao.SepReportedAddressDao;
@@ -469,7 +468,7 @@ public class OperatorHardwareConfigController {
         model.addAttribute("meter", meter);
         model.addAttribute("displayName", meter.getName());
 
-        List<LiteYukonPAObject> routes = Lists.newArrayList(paoDao.getRoutesByType(new int[]{RouteTypes.ROUTE_CCU,RouteTypes.ROUTE_MACRO}));
+        List<LiteYukonPAObject> routes = Lists.newArrayList(paoDao.getRoutesByType(new PaoType[]{PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO}));
         model.addAttribute("routes", routes);
 
         return "operator/hardware/config/meterConfig.jsp";
@@ -496,7 +495,7 @@ public class OperatorHardwareConfigController {
         } else {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            List<LiteYukonPAObject> routes = Lists.newArrayList(paoDao.getRoutesByType(new int[]{RouteTypes.ROUTE_CCU,RouteTypes.ROUTE_MACRO}));
+            List<LiteYukonPAObject> routes = Lists.newArrayList(paoDao.getRoutesByType(new PaoType[]{PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO}));
             model.addAttribute("routes", routes);
             return "operator/hardware/config/meterConfig.jsp";
         }

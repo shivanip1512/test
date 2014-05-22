@@ -20,6 +20,7 @@ public class MeterServiceImpl implements MeterService {
     private DBPersistentDao dbPersistentDao = null;
     private AttributeService attributeService = null;
 
+    @Override
     public void addDisconnectAddress(SimpleDevice device, int disconnectAddress) throws IllegalArgumentException, TransactionException, IllegalUseOfAttribute {
         
         // must be 410 type to set disconnect
@@ -28,9 +29,9 @@ public class MeterServiceImpl implements MeterService {
         }
         
         // get heavy meter
-        MCT400SeriesBase mct400 = new MCT400SeriesBase();
+        MCT400SeriesBase mct400 = new MCT400SeriesBase(device.getDeviceType());
         mct400.setDeviceID(device.getDeviceId());
-        mct400 = (MCT400SeriesBase)Transaction.createTransaction(Transaction.RETRIEVE, mct400).execute();
+        mct400 = Transaction.createTransaction(Transaction.RETRIEVE, mct400).execute();
 
         // set disconnect address and update
         mct400.getDeviceMCT400Series().setDisconnectAddress(disconnectAddress);
@@ -43,6 +44,7 @@ public class MeterServiceImpl implements MeterService {
         }
     }
     
+    @Override
     public void removeDisconnectAddress(SimpleDevice device) throws IllegalArgumentException, TransactionException, IllegalUseOfAttribute {
         
         // must be 410 type to remove disconnect
@@ -51,9 +53,9 @@ public class MeterServiceImpl implements MeterService {
         }
         
         // get heavy meter
-        MCT400SeriesBase mct400 = new MCT400SeriesBase();
+        MCT400SeriesBase mct400 = new MCT400SeriesBase(device.getDeviceType());
         mct400.setDeviceID(device.getDeviceId());
-        mct400 = (MCT400SeriesBase)Transaction.createTransaction(Transaction.RETRIEVE, mct400).execute();
+        mct400 = Transaction.createTransaction(Transaction.RETRIEVE, mct400).execute();
     
         // set to remove disconnect and update
         mct400.deleteAnAddress();

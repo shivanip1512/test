@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
@@ -59,6 +60,7 @@ public LMControlAreaBasePanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -78,6 +80,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -648,19 +651,21 @@ private com.cannontech.common.gui.util.JTextFieldTimeEntry getJTextFieldTimeEntr
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getPreferredSize() {
 	return null;
 }
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	//first panel for any LMControlArea, so create a new instance
 	LMControlArea controlArea = null;
 	
 	if( o == null )
-		controlArea = (LMControlArea)com.cannontech.database.data.device.lm.LMFactory.createLoadManagement( com.cannontech.database.data.pao.PAOGroups.LM_CONTROL_AREA );
+		controlArea = (LMControlArea)com.cannontech.database.data.device.lm.LMFactory.createLoadManagement(PaoType.LM_CONTROL_AREA );
 	else
 		controlArea = (LMControlArea)o;
 
@@ -845,6 +850,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	if( getJTextFieldName().getText() == null || getJTextFieldName().getText().length() <= 0 )
@@ -877,7 +883,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aLMControlAreaBasePanel);
 		frame.setSize(aLMControlAreaBasePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -893,6 +900,7 @@ public static void main(java.lang.String[] args) {
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	if( o != null )
@@ -932,11 +940,13 @@ public void setValue(Object o)
 	
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getJTextFieldName().requestFocus(); 

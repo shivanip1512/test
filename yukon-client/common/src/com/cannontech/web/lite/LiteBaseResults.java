@@ -33,10 +33,11 @@ public class LiteBaseResults {
 		if (getCriteria() != null && getCriteria().length() > 0) {
 
 			//Objects and points of Class CAPCONTROL
-            final List<LiteYukonPAObject> paoListCC = YukonSpringHook.getBean(PaoDao.class).searchByName(getCriteria(), PaoClass.CAPCONTROL.getDbString());
-            final List<LitePoint> pointListCC = YukonSpringHook.getBean(PointDao.class).searchByName(getCriteria(), PaoClass.CAPCONTROL.getDbString());
+            final List<LiteYukonPAObject> paoListCC = YukonSpringHook.getBean(PaoDao.class).searchByName(getCriteria(), PaoClass.CAPCONTROL);
+            final List<LitePoint> pointListCC = YukonSpringHook.getBean(PointDao.class).searchByName(getCriteria(), PaoClass.CAPCONTROL);
             
             final Function<LiteBase, LiteWrapper> toLiteWrapper = new Function<LiteBase, LiteWrapper>() {
+                @Override
                 public LiteWrapper apply(LiteBase liteBase) {
                     return new LiteWrapper(liteBase);
                 }};

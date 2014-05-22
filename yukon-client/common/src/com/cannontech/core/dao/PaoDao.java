@@ -74,40 +74,15 @@ public interface PaoDao {
     public Map<PaoIdentifier, LiteYukonPAObject> getLiteYukonPaosById(Iterable<PaoIdentifier> paos);
 
     /**
-     * Will find a device based on the four parameters that make up its unique key.
-     * @param deviceName
-     * @param category
-     * @param paoClass
-     * @param type
-     * @return the LiteYukonPaoObject that matches the criteria
-     * @throws NotFoundException
-     */
-    public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
-            int category, int paoClass, int type);
-
-    /**
      * Helper method to return a paobject that exist for the paoName, category, paoClass.
      * These are the three fields that make up Unique Index Indx_PAO
      * Returns null if no object exists, otherwise returns the liteYukonPaobject that was found.
      * @param paoName
      * @param category
      * @param paoClass
-     * @return true when no object is found for paoName, category, paoClass
-     * @deprecated Use findUnique(String paoName, PaoCategory category, PaoClass paoClass)
+     * @return true when no object is found for paoName, category, paoClass (via paoType)
      */
-    @Deprecated
-    public LiteYukonPAObject findUnique(final String paoName, final String category, final String paoClass);
-    
-    /**
-     * Helper method to return a paobject that exist for the paoName, category, paoClass.
-     * These are the three fields that make up Unique Index Indx_PAO
-     * Returns null if no object exists, otherwise returns the liteYukonPaobject that was found.
-     * @param paoName
-     * @param category
-     * @param paoClass
-     * @return true when no object is found for paoName, category, paoClass
-     */
-    public LiteYukonPAObject findUnique(String paoName, PaoCategory category, PaoClass paoClass);
+    public LiteYukonPAObject findUnique(String paoName, PaoType paoType);
     
     /**
      * Returns a list of lite pao objects by type
@@ -116,7 +91,7 @@ public interface PaoDao {
      * @return
      * @see com.cannontech.database.data.pao.DeviceTypes
      */
-    public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType);
+    public List<LiteYukonPAObject> getLiteYukonPAObjectByType(PaoType paoType);
     
     /**
      * Return a list of LiteYukonPAObject that satisified the given criteria.
@@ -158,13 +133,13 @@ public interface PaoDao {
     
     public LiteYukonPAObject[] getAllLiteRoutes();
     
-    public LiteYukonPAObject[] getRoutesByType(int[] routeTypes);
+    public LiteYukonPAObject[] getRoutesByType(PaoType[] routeTypes);
 
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch);
     public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address);
     public List<PaoIdentifier> getPaosByAddressRange(int startAddress, int endAddress);
 
-    public List<LiteYukonPAObject> searchByName(String name, String paoClass);
+    public List<LiteYukonPAObject> searchByName(String name, PaoClass paoClass);
 
     public Map<Integer, PaoIdentifier> findPaoIdentifiersByCarrierAddress(Iterable<Integer> carrierAddresses);
     public Map<String, PaoIdentifier> findPaoIdentifiersByMeterNumber(Iterable<String> meterNumbers);

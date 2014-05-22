@@ -2,322 +2,205 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import java.awt.Dimension;
 
-/**
- * This type was created in VisualAge.
- */
-public class GroupTypePanel extends com.cannontech.common.gui.util.DataInputPanel {
-	private javax.swing.JLabel ivjSelectLabel = null;
-	private javax.swing.ButtonGroup ivjGroupTypeButtonGroup = null;
-	private javax.swing.JRadioButton ivjLoadGroupRadioButton = null;
-	private javax.swing.JRadioButton ivjMacroLoadGroupRadioButton = null;
-public GroupTypePanel() {
-	super();
-	initialize();
-}
-/**
- * connEtoM1:  (RouteTypePanel.initialize() --> RouteTypeButtonGroup.add(Ljavax.swing.AbstractButton;)V)
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoM1() {
-	try {
-		// user code begin {1}
-		// user code end
-		getGroupTypeButtonGroup().add(getLoadGroupRadioButton());
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoM2:  (RouteTypePanel.initialize() --> RouteTypeButtonGroup.add(Ljavax.swing.AbstractButton;)V)
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoM2() {
-	try {
-		// user code begin {1}
-		// user code end
-		getGroupTypeButtonGroup().add(getMacroLoadGroupRadioButton());
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoM3:  (RouteTypePanel.initialize() --> RouteTypeButtonGroup.setSelected(Ljavax.swing.ButtonModel;Z)V)
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoM3() {
-	try {
-		// user code begin {1}
-		// user code end
-		getGroupTypeButtonGroup().setSelected(getLoadGroupRadioButton().getModel(), true);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * Return the RouteTypeButtonGroup property value.
- * @return javax.swing.ButtonGroup
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.ButtonGroup getGroupTypeButtonGroup() {
-	if (ivjGroupTypeButtonGroup == null) {
-		try {
-			ivjGroupTypeButtonGroup = new javax.swing.ButtonGroup();
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjGroupTypeButtonGroup;
-}
-/**
- * Return the CommunicationRouteRadioButton property value.
- * @return javax.swing.JRadioButton
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getLoadGroupRadioButton() {
-	if (ivjLoadGroupRadioButton == null) {
-		try {
-			ivjLoadGroupRadioButton = new javax.swing.JRadioButton();
-			ivjLoadGroupRadioButton.setName("LoadGroupRadioButton");
-			ivjLoadGroupRadioButton.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjLoadGroupRadioButton.setText("Load Group");
-			ivjLoadGroupRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjLoadGroupRadioButton;
-}
-/**
- * Return the MacroRouteRadioButton property value.
- * @return javax.swing.JRadioButton
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getMacroLoadGroupRadioButton() {
-	if (ivjMacroLoadGroupRadioButton == null) {
-		try {
-			ivjMacroLoadGroupRadioButton = new javax.swing.JRadioButton();
-			ivjMacroLoadGroupRadioButton.setName("MacroLoadGroupRadioButton");
-			ivjMacroLoadGroupRadioButton.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjMacroLoadGroupRadioButton.setText("Macro Load Group (multiple load groups)");
-			ivjMacroLoadGroupRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjMacroLoadGroupRadioButton;
-}
-/**
- * This method was created in VisualAge.
- * @return java.awt.Dimension
- */
-public Dimension getMinimumSize() {
-	return getPreferredSize();
-}
-/**
- * This method was created in VisualAge.
- * @return java.awt.Dimension
- */
-public Dimension getPreferredSize() {
-	return new Dimension(350, 200);
-}
-/**
- * Return the SelectLabel property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getSelectLabel() {
-	if (ivjSelectLabel == null) {
-		try {
-			ivjSelectLabel = new javax.swing.JLabel();
-			ivjSelectLabel.setName("SelectLabel");
-			ivjSelectLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjSelectLabel.setText("Select the type of Group:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjSelectLabel;
-}
-/**
- * This method was created in VisualAge.
- * @return java.lang.Object
- * @param val java.lang.Object
- */
-public Object getValue(Object val)
-{
-	if (getMacroLoadGroupRadioButton().isSelected())
-	{
-		val = com.cannontech.database.data.device.lm.LMFactory.createLoadManagement(com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP);
-	}
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.lm.LMFactory;
 
-	return val;
-}
-/**
- * Called whenever the part throws an exception.
- * @param exception java.lang.Throwable
- */
-private void handleException(Throwable exception) {
+public class GroupTypePanel extends DataInputPanel {
+    private javax.swing.JLabel ivjSelectLabel = null;
+    private javax.swing.ButtonGroup ivjGroupTypeButtonGroup = null;
+    private javax.swing.JRadioButton ivjLoadGroupRadioButton = null;
+    private javax.swing.JRadioButton ivjMacroLoadGroupRadioButton = null;
 
-	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-}
-/**
- * Initializes connections
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
-	// user code end
-}
-/**
- * Initialize the class.
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initialize() {
-	try {
-		// user code begin {1}
-		// user code end
-		setName("GroupTypePanel");
-		setLayout(new java.awt.GridBagLayout());
-		setSize(350, 200);
+    public GroupTypePanel() {
+        super();
+        initialize();
+    }
 
-		java.awt.GridBagConstraints constraintsSelectLabel = new java.awt.GridBagConstraints();
-		constraintsSelectLabel.gridx = 1; constraintsSelectLabel.gridy = 1;
-		constraintsSelectLabel.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsSelectLabel.insets = new java.awt.Insets(4, 4, 4, 4);
-		add(getSelectLabel(), constraintsSelectLabel);
+    private void connEtoM1() {
+        try {
+            getGroupTypeButtonGroup().add(getLoadGroupRadioButton());
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
 
-		java.awt.GridBagConstraints constraintsLoadGroupRadioButton = new java.awt.GridBagConstraints();
-		constraintsLoadGroupRadioButton.gridx = 1; constraintsLoadGroupRadioButton.gridy = 2;
-		constraintsLoadGroupRadioButton.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsLoadGroupRadioButton.insets = new java.awt.Insets(4, 4, 4, 4);
-		add(getLoadGroupRadioButton(), constraintsLoadGroupRadioButton);
+    private void connEtoM2() {
+        try {
+            getGroupTypeButtonGroup().add(getMacroLoadGroupRadioButton());
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
 
-		java.awt.GridBagConstraints constraintsMacroLoadGroupRadioButton = new java.awt.GridBagConstraints();
-		constraintsMacroLoadGroupRadioButton.gridx = 1; constraintsMacroLoadGroupRadioButton.gridy = 3;
-		constraintsMacroLoadGroupRadioButton.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsMacroLoadGroupRadioButton.insets = new java.awt.Insets(4, 4, 4, 4);
-		add(getMacroLoadGroupRadioButton(), constraintsMacroLoadGroupRadioButton);
-		initConnections();
-		connEtoM1();
-		connEtoM2();
-		connEtoM3();
-	} catch (java.lang.Throwable ivjExc) {
-		handleException(ivjExc);
-	}
-	// user code begin {2}
+    private void connEtoM3() {
+        try {
+            getGroupTypeButtonGroup().setSelected(getLoadGroupRadioButton().getModel(), true);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
 
-	// user code end
-}
-/**
- * This method was created in VisualAge.
- * @return boolean
- */
-public boolean isGroupMacro() {
-	return getMacroLoadGroupRadioButton().isSelected();
-}
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		java.awt.Frame frame = new java.awt.Frame();
-		GroupTypePanel aGroupTypePanel;
-		aGroupTypePanel = new GroupTypePanel();
-		frame.add("Center", aGroupTypePanel);
-		frame.setSize(aGroupTypePanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.ibm.uvm.abt.edit.DeletedClassView");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
-/**
- * This method was created in VisualAge.
- * @param val java.lang.Object
- */
-public void setValue(Object val) {
-}
+    private javax.swing.ButtonGroup getGroupTypeButtonGroup() {
+        if (ivjGroupTypeButtonGroup == null) {
+            try {
+                ivjGroupTypeButtonGroup = new javax.swing.ButtonGroup();
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjGroupTypeButtonGroup;
+    }
 
-public void setFirstFocus() 
-{
-    // Make sure that when its time to display this panel, the focus starts in the top component
-    javax.swing.SwingUtilities.invokeLater( new Runnable() 
-        { 
-        public void run() 
-            { 
-            getLoadGroupRadioButton().requestFocus(); 
-        } 
-    });    
-}
+    private javax.swing.JRadioButton getLoadGroupRadioButton() {
+        if (ivjLoadGroupRadioButton == null) {
+            try {
+                ivjLoadGroupRadioButton = new javax.swing.JRadioButton();
+                ivjLoadGroupRadioButton.setName("LoadGroupRadioButton");
+                ivjLoadGroupRadioButton.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjLoadGroupRadioButton.setText("Load Group");
+                ivjLoadGroupRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                // user code begin {1}
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return ivjLoadGroupRadioButton;
+    }
 
-/**
- * 
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private static void getBuilderData() {
-/*V1.1
-**start of data**
-	D0CB838494G88G88G89F954ACGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E14DBB8BF0D457F58284889B4CA7CA22925AE202DD924B35D3138EF56818E81C845BF86C5422E6DCE213A9095589EE69044CE08C495587C946E084423630852C798ADBDDFD90359034C6A0BE825996C8C8ABA3AC5E6E3E5DFD526E3E555B3752CA6253F36E676D53EAD78BCCBBD3E60E6E3EF3BF67FF6E3977BD480EBD33B7E6676CA0A4FBA3617FBE4BA6247C88A1E94FEE3EA9F0C9F2C6BEB17D7B98E09B
-	A9294D03F69A74E5FEB7A33F085CAAAB046739703CE6C6C67E87703B180CABEB788F789107CEA9747DE841D1FDF4BACF3689BA8574B95F3E995AF78166818E5BB5B2525FEDAF6178A59CAFA0BB071065AE9CF34CDE4AF135705C8C1086106EE2631F0676EDCAF9FCDDAD9F57B9FDB6D9736C211CAD380EE9CD817B5DEC6EF95EDA48E3592B5DC84BCE7944B9C9703CGG054FA5FF2CBD866D09669E77FFBBD41F55A1797D2ADF179D9EEB3FB2A8E9CE2BD36ED39C32556BF3EBEAA8D0D7F78E1B5601005CAC79E5
-	AF4C75FAF07D9F5A8B69FA04544073DA0A33DB11666370FBB1408A835FDE017893CAC6FEAB00D791F27E572193DC8E5B50E3E47D4B7E5C2DF164CCD618FC69CAC44E54503A021D54A66B5AD177D9503739BBA35F8250G6084C88678087AC2F67BA750565B75532A4F277A6B8301D3DE2776056A143D703B2E8EFAB86E326CD0B5A7A14C5E9EFBF98CFEC683B62F6F2E67B11D4CBBA2EC1FFE79E1327C090BB985B1F432FCDEE54E2CEE260B795D911DB05A0F45251D59BD5CB70753EEA7E65A2BA628399BE3501E
-	3F74F0CE96DFE73D09F6E58F5A7A9F298F1442EF1C0773997E57942F1B704CCFBD940F4FA950372AC778066DDD41CBD35ECCD2D45594D38FE99975B94DDE4603479B4D4B8B546FD23D0C66960317D7A9FE01894FF839C671783C9C7A4E7BB27219FFEDE846381D8F4FAF82E48190BF7899408900E63F70318B6D95F768E34D12261F8AA9DE272C91B6B75776BE34F2D85724C6FFD0177C8E39CD5294496E1503040F59ECC39D58074D5BE6C35FF7G0DF332DF56A4DDD17D303A6413F5D98B32B19F5A366198CD26
-	3D2D0ACF86823EG916B6E3595E3DCCBC17DCA40A969F2E4846B7F4406B669135AE0C5D8GFEB33DFCF2997595G79D3G528CBDBCC4573BA8EB10B06A6A1AD43587B288CAC2327C28671F535C118E3F1F768B9D9FECC1DC398A312B0AF5165B361B56E9D09C483E248D0898DBEE45B9B6982F2B42EF7E55A67C26E14BC324FC690518FE03102A721C22C6474F6BF4DD64ADD395F95FEF355DE19C6B6A48983345400D4C99936F18464698385C84F3181ED3DB51E6EB001F22C0C6FEE5C068FADB3305796EA9A9A8
-	8BEF7DCA83C7131D914DB3BE17D614F01D66F2DE900F7AFF4710E5A59DF39E568FG2481AC824882A86A95BAF5D4DC9FE51D3B491D09F5FB0B520AC5E74B7FA2AD264B02CB380F49FD32DFEF1083325F89BF023C6F5DCBC8174739CBB5666C2078G6405539008C1837F61A50CDDC957B5459E526596D957953FBB523F17528A066C01C8CA91348EDFC2D955FE488B46F86BA50CA9076A774B542846945EDFC9E3DA764ABEE07A349A726B8C7F1F17318E6A1187F8CE293B0C45D21F648DE1FEE2354563926AB320
-	A9BEF095CCF1E4D6AF467B2F0C5A882196F0D8A38520CD6E95F15B3FCF446D7E418749222E83B931761E34079AF2D67632D8DA5B9B09DB465327AD31F92F2239056303399457D908F3230B9B56575231435CF7AA246B2A1FBE3298FA7E8A52A951B2724B819AB491C30F36E03F48D7BCF8CE2BDEAFD3B57425E8280FCFABF618E46A5418BEA27EB3333588EDAA7706E45886B0F1DEB4747EE06B76283EB6EE83567F03D634015714F3AB03C87343CAD1FB3E28313C1B25317CC6020CF6A69D17E90C3B814F983F29
-	504E85F89A408AF8365E1CAAB14E220F36DEDB35D1736AAC8FB4C3FBDD0FDE4FF2C40CCB0ADAAF8D1E17G5406F05C159AB1EE054E7249DA1D71D798E2F419AF96F4E18D942B4EF50794EBC8D7F0C711F48842C0C82756E7F56DB9C7A1DFA3B9A46A57208B6D3D901EB381D605044F7EF20B28DFD3FBE613955F7FB0EE1D1E5747F8AB6B0B782CE51C28DFBFE8C71A9E688B7789DF5AFF453C075687032AC3215BB73773CBD74CBE4DF04B2EEC025625E8C13D9112CED878442BD710DF5C5FB91A6BE803F51750D1
-	3754A7052D41FE48ADF5F5A607A722B63CF956AC6B422D55B96F4411F5B217B15DA4EBB9546A2C46BADD391930B8DB857D7B7BB372D94C7D1062953F22AB12D799144B8EB39EAB7DFBB17FB91DE5CDA69E2D7576A0E4D0074ED8BDFE38CD7079686E131C0FA5FFBD1394CAF5B9314E94137F25B427331F71175C9F61F3F266AF8AE683B0DEB7983CAE01B1F9E1412B338AF32124392BD8BCD7541A6379C418792F4798BF190E57BDCA1071F823C3701834A41D14941F0A49A30D41B063EDEEB8422368E3BCBED7A5
-	F8DC83E34A87B272997EF63540BB81B7EBC070725B6A613C5B0BE3711EE92C53F8C45467D900338C0AF3E4EFE9994DC3FA0B0C69CD0E328F338BADFD0FFFFD380D4556EBC7441951B6A8563FD5A3781C86384503024F5F5488BE993DBD9776C16B16F53AE659613854389F6835C247697F70A831F51F0E2BE3B244E3F3E8240ED96D506408BECF69C311FAAEE5E8E4ED474E992F533CB1EB081DB38A8C7C6FA9FE3E894FF4B1C071783C847AAAEF085A78BB9D38FF26427363G0B81D6G101BE00F1BA2DF385A0E
-	1084E70FC648FF1ADF72368CAB96F80EA8EDC73D437E4E1FAD6D28F73A3F93D1BB66DDC5DFB981B4EDG81009400F9868FFF551E1007B36118BCB0BDB7D6A6BAB3AF3EB9DC57ECDEFB42F92B2266B1F93E6E443DA46F96689120962095A08C108A306016106B8F6D47934A0545DE2BDACFB77A5351559567B3376A5E645B16F05E32DB43673118F97F54EE92AB3FDF38ACB99515850D384FF155E2ECE26C2C3EA57C6E15EB281F325BD063GF4820481E681ACGD8FEDB68671C6DD4A27D98C7D2501128E5C72A09
-	4B7B4BFB5453EB89672D399DEB5E786AFB23772D0473B6A78D1F47F47DE745C2577B1344D9682BA351EBF5C64D0D4D433591732CD14F6124D873D60E18B79ACCB378CC2E39B7DD4DC8B8EFEED22C9835F5218FAE043EE5G2B81B60F015C8850849098A3FCF0266D733B7141B8F14A6EA79C34861C86EB4F85E03813B2629643730AB1C297EF50FC1DB7B6A33F946044D801FF13621DE3D9DD0A35AE435FF6A5BA5F63DA717ACE4468ABB561980D3404B4C63BA7A80801B35FB5B0DD7FE5C77C736D439D314F3769
-	9D314F37FF53310D61E18D732D1868FF32E37473EFC6C77C736F662B7179AC3E9A1B4F1DD7E37339676A68FC9E3A9A0F4FDDD4672F6B6F1198676EAF41A309B8F7A6D53E4D471C5155AF2A0C351D1D716568690CADC7EFA71EC502EAC8F348513C06BBCB0C3EC88CB46A328F59E1E3465079BA94E07288D9D368FC5697EF7E744EF87AE03256D53D43E5EDF6E92A2F390A7BEFCF2DB9CFA4F37FCE63EDBAEF97197C1E51DBF9AD3E0EFEF7AD360E7E7DDAFC9D2D3D16D8C7595F4457D161B709F5346D9B5401DDF1
-	AA9A3FA1E03AA92CB67BC1352133055543F5D64DF5769745E61DE5F25DE471F6BDEF0B46C5F446FC72197737D21F8E8665A0ADE070C04CE9CDB8E266816BBA16875F22B57CFED82BE61C2855FFD2B30CAF70DCA61F3DAB3ECD142E58B6D13B625B242FAB31CDEEF7453749042E44B6195AB53A5F8EBA705E4BAB8D28A19DEA78F12813698EF13FF59E1E2F8324G4C9A474ED22C967BD1BF6A4885BB90AC5792109DE4DAB2FDB7A60B396BF1AD40D582B483841205FEEF6C45396C2055A459E5AF676563FC2C471B
-	D449C94F6A262A0E75FF77AC6E21DFC88ECD0DB508087B28F237798C38AC19713DBED96CFDE3E9EDD8B49E6A6471827754C5445540F3030133B409BD325940ED580E3859703C48407D38D82C17E960BED144FAD9866EFEC52C3746409D321A57E3F2EE97E7456A5689B8262CC61CB39BA608F3665FB9447B50B4403DB8C158256ABA5697C60DEC157AF5FC6729B8CFC96EA6EAE5D633E5BB8B797C420962DE284209EB1E04E79BC0E02238978A9F94F7A5698F4FA4CDC997E35E8B2DE82D4EC91948735A444859F3
-	DEE8DD8123F9D396B433205F120238C7E4332DD04669592C66E37D3F9A560F3E7CB2B177EFF5197B115F3F4FB177578F6BC79D9D617319EC4F9D90322DFFEE9E717E78D85CBBAFCF8A13E9B2EF1B5B76117D773DD540747EFBD78909F9B6218E4E64F738D1FE4CF1CF2788DBFF470D36F629F05A2236FE047A66FA68AF1CA4464881FA5F824925F6923E535F60C24E9F1F0463BFEBEA607C5D18B4321E926F87F2B9CC03B1887B380CF3A731B33BF8E7D1CCF69463BD1DC75514C160C97256FB95379F6F6488634F
-	EA547AEBE1AE433DCAF17B6F03D887E0BC8EFAA2BC4ED1840F576F0B4DE341A8BC6A77C57378B90D8FDD8B494C06337B4D5F9754EE7AAC66DDBBC292271F4A5B05937771BD672991F7A209004DFB7E9E6765BB6FF69E3BEB4916B1C61718F442701BA8FE19894F7244D1274893AB216F7C7D62ACBCD7C1FFCD076745GABG568214CC06FDF032B803D4DF2FA4894EA02DEA2089B6C42F2904E4720D156F6DFB011F9608F81C7F649C32E0421B59716EE54FCF666F49F91B553A4FF44E7A2C8765CB033E79G4BG
-	D68364CD01334D94A15F6075F2A65F99272243B1DEF2F8686D33902ECD117BA3E85C6478B794EE33EC15D3987D865E5A260C74F1969387717A197B709397719E58AF77DBC41A361E0500AB5B6BD4A42F6A5EDBEE29AC37D4559C96FAF9612A59470BE6FE1C139DC7AFDECEBFBCA51203D97E71B409F781695037077281791FC47EB1BE1F6CA506BDFE3DD9582374116F1106175F4C5E97076ECACE2F6601885D2C6E7585CC5EB34596E84D171CAD78974A967CB8C08FDAAFB71EBB5F4A684BFD91BD6DD66ED4CFCC
-	461794A1237781110BD27A096197C743743BAA68DB7400700327BC1FC25BA6F5F38FC7F7D0B56A8500EC5654002C69838CCB5FCE7198AE40238E7FDDE47AFD5CF9276F3D6F85980D567FD39A7C7D1F923F5E1D2F442EF71FD4E21FB797A9231FFB97AB714F3DAFA866773E4C0EAD83382F2FG9B2E8730CC053C85F0FE2A306935EE749B7CC2E5E4DC1FF13AE561F8027E491E78321E6BC97CADCBF38F3E2B322BD0087AF0FD01EF6BC1FB69EA00A2996EEA8F6AC8D35C9E1D8D65F82987FD53AB3BA81A5507375D
-	2236F4CE95B5631781D1DB068D5C9381D1DBA6CF95B9BEB0C80C353B83876279B8E864824456D776EE2847DBA53761E33E26E167B024B5F5746FBE985D6F8D61FE3F9E4616CC4B48BF81508A6081C882C88518873090A093E095G191E113F83208C20962089607AF4E14BBF759E9EA5BEF9F1CB8D2AC98A1A14733FCCB1732F43FAA953C7671FFF8B90FE576C2BAC64F9DFFD987D4EF82FC7DFE13640C03F1B5BF6A03E9F5987927BD14FGFD8F8A7647D7758C979840B31A6AF285E543DFC383C5862EB1582C86
-	957AAD942D4752294F4C82D967CD97B9F0AC7D7E1455E34F86C4BD36AC06BEF223A03A9EDBB5BDD2E3B05FCB267B4ADA0EE738C994D7B40361984F0F8D45574D5F8EA5564DD3C331E36CE7C3A3E36C592158B1766210B94698EE69906697B778114D98770A016BB0F02F51B591572EB8F50F017F8D658B7167E5A4A8703F23FC75D31C0D63D61BF09D9C7707A134AF088CE537183BEE081E8B942F17BD7F110ED17CE0EEC39F39B710C7A5A01978AEB4F09D06AD7ECD99E91FB50A59BE4CC7706D0A58F7CF856EEE
-	5FFDABA0765D729942676AF1E9FE7E108E1A5E07D375B1FCE9F8CB84AF54476317741A6357896B06E70C9E3FCC368FFAC74ADB5AEB1617FDCFBD6768CB206474B748C61DEC429B858B3DD25049A1FA47E00920ACE53E10D7D782DE5962C5A47D16B8F8B82811AD43547333870F7EF6492BED41DC125FC8F662292EC5565887GCE3C0C62DF9C1EA5EF87D448D4AD00EFA4F9C15AEC8C6A83DE39096CF0DD462FE1023A6CB4DEAD85F5729EFDC3DC01DFFAD41C17029E9DC363F893497363CBG321DF5FBA53F3B02
-	652363E1ACB7336B2FD32B22F68870DBCC7945D52C46AA45BF59FA60638BAB9764121C33E4938AF8D6F2C006EDA4EF6B9ECD8EFAD42FB39C787CA4DD28309F9509C5F9AEAC7711A1BE8AEBED05GB6186E897F7964ADD9DB4E42F9BC2C118ABA928F31D6E3047334C7422F9EE42DD147EFBDD5ED3F51B7E637FE7079F39FF46610ECAEE4AF39C57242E01EFC1764D33C837003B9E390FB8AF560D6137CC1172A7900B3CB94E7224BA0E07D56B3155F7E413A2FA90148D41D6CE12A042995EED975D5543BDC0ADFB6
-	96G3D42723B0C65F10CB5EA4C76707477AEAC7D139D7C2001647AAAAB695FAA7A379A7FD6D1CC9545D4D503F2D713D17FC57707054C54F9001F2D149FB43F75ACD8D0FF650DE7667C5309552BC03A33E4A3FD6F8DC6A80A0C7AB264334B5A0474EF6FFAA7F5457DE823G3ACA98575D9CB6D6C4899BE956D951F724AE771F3F1F1BC3729AC9BE4B42603C18CA41F9E926EDA4391005295F651901B21BB3429B911BBF522D903D49B0AEBEED21C337523F5B6FDAD5B8EB871D7B3EA161AE26401D511C6AE4A73B17
-	34689E59224396ECD1DDAC87547D7F1362C09CA978596D70ED7319F16D78123877A2A5E9AC2F1627C54EEE2C165BFA0CFE4B857864B4D10FF55562FFC309D7CB3678A42FD7173CBD75FEA756152786F4B9D2676FB8066B8745985E497ABEBA06FCF71B667C8FD0CB8788E0BB6A987C92GGD4B3GGD0CB818294G94G88G88G89F954ACE0BB6A987C92GGD4B3GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGGB693GGGG
-**end of data**/
-}
+    private javax.swing.JRadioButton getMacroLoadGroupRadioButton() {
+        if (ivjMacroLoadGroupRadioButton == null) {
+            try {
+                ivjMacroLoadGroupRadioButton = new javax.swing.JRadioButton();
+                ivjMacroLoadGroupRadioButton.setName("MacroLoadGroupRadioButton");
+                ivjMacroLoadGroupRadioButton.setFont(new java.awt.Font("dialog",
+                                                                       0,
+                                                                       14));
+                ivjMacroLoadGroupRadioButton.setText("Macro Load Group (multiple load groups)");
+                ivjMacroLoadGroupRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjMacroLoadGroupRadioButton;
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(350, 200);
+    }
+
+    private javax.swing.JLabel getSelectLabel() {
+        if (ivjSelectLabel == null) {
+            try {
+                ivjSelectLabel = new javax.swing.JLabel();
+                ivjSelectLabel.setName("SelectLabel");
+                ivjSelectLabel.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjSelectLabel.setText("Select the type of Group:");
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjSelectLabel;
+    }
+
+    @Override
+    public Object getValue(Object val) {
+        if (getMacroLoadGroupRadioButton().isSelected()) {
+            val = LMFactory.createLoadManagement(PaoType.MACRO_GROUP);
+        }
+
+        return val;
+    }
+
+    private void handleException(Throwable exception) {
+    }
+
+    private void initialize() {
+        try {
+            // user code begin {1}
+            // user code end
+            setName("GroupTypePanel");
+            setLayout(new java.awt.GridBagLayout());
+            setSize(350, 200);
+
+            java.awt.GridBagConstraints constraintsSelectLabel = new java.awt.GridBagConstraints();
+            constraintsSelectLabel.gridx = 1;
+            constraintsSelectLabel.gridy = 1;
+            constraintsSelectLabel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsSelectLabel.insets = new java.awt.Insets(4, 4, 4, 4);
+            add(getSelectLabel(), constraintsSelectLabel);
+
+            java.awt.GridBagConstraints constraintsLoadGroupRadioButton = new java.awt.GridBagConstraints();
+            constraintsLoadGroupRadioButton.gridx = 1;
+            constraintsLoadGroupRadioButton.gridy = 2;
+            constraintsLoadGroupRadioButton.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsLoadGroupRadioButton.insets = new java.awt.Insets(4, 4, 4, 4);
+            add(getLoadGroupRadioButton(), constraintsLoadGroupRadioButton);
+
+            java.awt.GridBagConstraints constraintsMacroLoadGroupRadioButton = new java.awt.GridBagConstraints();
+            constraintsMacroLoadGroupRadioButton.gridx = 1;
+            constraintsMacroLoadGroupRadioButton.gridy = 3;
+            constraintsMacroLoadGroupRadioButton.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsMacroLoadGroupRadioButton.insets = new java.awt.Insets(4, 4, 4, 4);
+            add(getMacroLoadGroupRadioButton(), constraintsMacroLoadGroupRadioButton);
+            
+            connEtoM1();
+            connEtoM2();
+            connEtoM3();
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+
+    public boolean isGroupMacro() {
+        return getMacroLoadGroupRadioButton().isSelected();
+    }
+
+    public static void main(java.lang.String[] args) {
+        try {
+            java.awt.Frame frame = new java.awt.Frame();
+            GroupTypePanel aGroupTypePanel;
+            aGroupTypePanel = new GroupTypePanel();
+            frame.add("Center", aGroupTypePanel);
+            frame.setSize(aGroupTypePanel.getSize());
+            frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                };
+            });
+            frame.setVisible(true);
+        } catch (Throwable exception) {
+            System.err.println("Exception occurred in main() of com.ibm.uvm.abt.edit.DeletedClassView");
+            CTILogger.error(exception.getMessage(), exception);
+            ;
+        }
+    }
+
+    @Override
+    public void setValue(Object val) {
+    }
+
+    @Override
+    public void setFirstFocus() {
+        // Make sure that when its time to display this panel, the focus starts
+        // in the top component
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                getLoadGroupRadioButton().requestFocus();
+            }
+        });
+    }
+
 }

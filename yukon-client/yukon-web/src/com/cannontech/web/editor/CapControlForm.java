@@ -109,7 +109,6 @@ import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.season.SeasonSchedule;
-import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.model.Season;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -560,7 +559,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
            }
            
            initDataModel(pao);
-           initPanels(PaoType.getPaoTypeId(pao.getPAOType()));
+           initPanels(pao.getPaoType().getDeviceTypeId());
            
         } else if (getDbPersistent() instanceof PointBase) {
             

@@ -6,12 +6,19 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.database.db.device.*;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.db.device.Device;
+import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
 
 public class GridAdvisorBase extends TwoWayDevice {
     private static final Logger log = YukonLogManager.getLogger(GridAdvisorBase.class);
     private DeviceDirectCommSettings deviceDirectCommSettings = null;
     private DeviceAddress deviceAddress = null;
+    
+    public GridAdvisorBase(PaoType paoType) {
+        super(paoType);
+    }
     
     @Override
     public void add() throws SQLException {
@@ -81,11 +88,6 @@ public class GridAdvisorBase extends TwoWayDevice {
     }
 
     @Override
-    public void setDeviceClass(String devClass) {
-        super.setDeviceClass(devClass);
-    }
-
-    @Override
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
         getDeviceDirectCommSettings().setDeviceID( deviceID);
@@ -106,10 +108,6 @@ public class GridAdvisorBase extends TwoWayDevice {
         {
             log.debug("Exception in Setting Default port:" + e);
         }        
-    }
-    @Override
-    public void setDeviceType(String devType) {
-        super.setDeviceType(devType);
     }
 
     @Override

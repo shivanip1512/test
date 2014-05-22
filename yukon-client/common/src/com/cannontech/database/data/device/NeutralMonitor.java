@@ -1,52 +1,52 @@
 package com.cannontech.database.data.device;
 
-import com.cannontech.database.data.pao.DeviceClasses;
-
+import com.cannontech.common.pao.PaoType;
 
 public class NeutralMonitor extends GridAdvisorBase {
 
-public NeutralMonitor() {
-	super();
-	setDeviceClass( DeviceClasses.STRING_CLASS_GRID );
-}
+    public NeutralMonitor() {
+        super(PaoType.NEUTRAL_MONITOR);
+    }
 
-public void add() throws java.sql.SQLException {
-	super.add();
-}
+    @Override
+    public void add() throws java.sql.SQLException {
+        super.add();
+    }
 
-public void addPartial() throws java.sql.SQLException {
-	super.addPartial();
-	
-	
-	}
+    @Override
+    public void addPartial() throws java.sql.SQLException {
+        super.addPartial();
 
-public void delete() throws java.sql.SQLException{
-	super.delete();
-}
+    }
 
-public void deletePartial() throws java.sql.SQLException {
-	super.deletePartial();
-	
-	
-	}
+    @Override
+    public void delete() throws java.sql.SQLException {
+        super.delete();
+    }
 
-public void retrieve() throws java.sql.SQLException
-{
-	super.retrieve();
-}
+    @Override
+    public void deletePartial() throws java.sql.SQLException {
+        super.deletePartial();
 
-public void setDbConnection(java.sql.Connection conn) 
-{
-	super.setDbConnection(conn);
-}
+    }
 
-public void setDeviceID(Integer deviceID) 
-{
-	super.setDeviceID(deviceID);
-}
+    @Override
+    public void retrieve() throws java.sql.SQLException {
+        super.retrieve();
+    }
 
-public void update() throws java.sql.SQLException
-{
-	super.update();
-}
+    @Override
+    public void setDbConnection(java.sql.Connection conn) {
+        super.setDbConnection(conn);
+    }
+
+    @Override
+    public void setDeviceID(Integer deviceID) {
+        super.setDeviceID(deviceID);
+    }
+
+    @Override
+    public void update() throws java.sql.SQLException {
+        super.update();
+    }
 }

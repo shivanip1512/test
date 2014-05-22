@@ -7,7 +7,10 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.MCTIEDBase;
+import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.DeviceGroupMember;
@@ -1007,7 +1010,7 @@ public boolean processLoadGroups()
 		
 		com.cannontech.database.data.device.lm.LMGroup lmGroupDevice = null;
 
-		lmGroupDevice = (com.cannontech.database.data.device.lm.LMGroup)com.cannontech.database.data.device.lm.LMFactory.createLoadManagement(PaoType.getPaoTypeId( deviceType ) );
+		lmGroupDevice = (com.cannontech.database.data.device.lm.LMGroup)com.cannontech.database.data.device.lm.LMFactory.createLoadManagement(PaoType.getForDbString(deviceType));
 		
 		//set our unique own deviceID
 		lmGroupDevice.setDeviceID(deviceID);
@@ -1132,15 +1135,12 @@ public boolean processMCTDevices()
 		//}
 		//else
 		//{
-		device = (com.cannontech.database.data.device.MCTBase)com.cannontech.database.data.device.DeviceFactory.createDevice( PaoType.getPaoTypeId( deviceType ) );
+		PaoType paoType = PaoType.getForDbString(deviceType); 
+		device = (MCTBase) DeviceFactory.createDevice(paoType);
 		//}
 		
 		//set our unique deviceID
 		device.setDeviceID(deviceID);
-		
-		device.setDeviceClass( "CARRIER" );
-
-		device.setDeviceType( deviceType );
 
 	    device.setPAOName( tokenizer.nextElement().toString() );
 
@@ -1260,19 +1260,19 @@ public boolean processPortFile()
 		//set our unique own portID
 		port.setPortID(portID);
 
-		int portType = PaoType.getPaoTypeId(port.getPAOType());
+		PaoType portType = port.getPaoType();
 
-		if( portType == com.cannontech.database.data.pao.PAOGroups.LOCAL_DIALUP
-			 || portType == com.cannontech.database.data.pao.PAOGroups.LOCAL_DIRECT
-			 || portType == com.cannontech.database.data.pao.PAOGroups.LOCAL_SHARED
-			 || portType == com.cannontech.database.data.pao.PAOGroups.LOCAL_RADIO )
+		if( portType == PaoType.LOCAL_DIALUP
+			 || portType == PaoType.LOCAL_DIRECT
+			 || portType == PaoType.LOCAL_SHARED
+			 || portType == PaoType.LOCAL_RADIO )
 		{
 			handleLocalDirectPort( (com.cannontech.database.data.port.LocalDirectPort)port, tokenizer);
 		}
-		else if( portType == com.cannontech.database.data.pao.PAOGroups.TSERVER_DIALUP
-			 		|| portType == com.cannontech.database.data.pao.PAOGroups.TSERVER_DIRECT
-			 		|| portType == com.cannontech.database.data.pao.PAOGroups.TSERVER_RADIO
-					|| portType == com.cannontech.database.data.pao.PAOGroups.TSERVER_SHARED )
+		else if( portType == PaoType.TSERVER_DIALUP
+			 		|| portType == PaoType.TSERVER_DIRECT
+			 		|| portType == PaoType.TSERVER_RADIO
+					|| portType == PaoType.TSERVER_SHARED )
 		{
 			handleTerminalPort( (com.cannontech.database.data.port.TerminalServerDirectPort)port, tokenizer);
 		}
@@ -1334,18 +1334,11 @@ public boolean processRepeaterFile(int aPassCount)
 		}
 			
 		Integer deviceID = new Integer( Integer.parseInt(tokenizer.nextElement().toString()) );
-		String deviceType = tokenizer.nextElement().toString();
 		
-		com.cannontech.database.data.device.Repeater900 device = (com.cannontech.database.data.device.Repeater900)com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.database.data.pao.PAOGroups.REPEATER);
+		Repeater900 device = (Repeater900) DeviceFactory.createDevice(PaoType.REPEATER);
 
 		//set our unique own deviceID
 		device.setDeviceID(deviceID);
-		
-		int deviceInt = com.cannontech.common.pao.PaoType.getPaoTypeId( deviceType );
-		
-		device.setDeviceClass( "CARRIER" );
-
-		device.setDeviceType( deviceType );
 		device.setPAOName( tokenizer.nextElement().toString() );
 
 		// set the repeater address
@@ -1405,8 +1398,8 @@ public boolean processRouteMacro()
 			
 		Integer routeID = new Integer( Integer.parseInt(tokenizer.nextElement().toString()) );
 		String routeType = tokenizer.nextElement().toString();
-
-		com.cannontech.database.data.route.MacroRoute route = (com.cannontech.database.data.route.MacroRoute)com.cannontech.database.data.route.RouteFactory.createRoute(routeType);
+		PaoType routePaoType = PaoType.getForDbString(routeType);
+		com.cannontech.database.data.route.MacroRoute route = (com.cannontech.database.data.route.MacroRoute)com.cannontech.database.data.route.RouteFactory.createRoute(routePaoType);
 
 		//set our unique own routeID
 		route.setRouteID(routeID);
@@ -1507,8 +1500,8 @@ public boolean processRptRouteFile(int aPassCount)
 		Integer routeID = new Integer( Integer.parseInt(tokenizer.nextElement().toString()) );
 		
 		String routeType = tokenizer.nextElement().toString();
-			
-		route = com.cannontech.database.data.route.RouteFactory.createRoute( routeType );
+		PaoType routePaoType = PaoType.getForDbString(routeType);
+		route = com.cannontech.database.data.route.RouteFactory.createRoute(routePaoType);
 		
 		//set our unique own routeID
 		route.setRouteID(routeID);
@@ -1683,12 +1676,11 @@ public boolean processSingleRouteFile()
 
 		int routeInt = PaoType.getPaoTypeId(routeType);
 			
-		route = com.cannontech.database.data.route.RouteFactory.createRoute( PaoType.getPaoTypeId(routeType));
+		route = com.cannontech.database.data.route.RouteFactory.createRoute(PaoType.getForDbString(routeType));
 
 		//set our unique own routeID
 		route.setRouteID(routeID);
 		route.setRouteName(tokenizer.nextElement().toString());
-		route.setRouteType(routeType);
 			
 		switch(routeInt)
 		{

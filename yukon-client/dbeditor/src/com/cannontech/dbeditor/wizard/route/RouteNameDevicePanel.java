@@ -9,8 +9,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.RouteTypes;
+import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -21,7 +20,7 @@ public class RouteNameDevicePanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JLabel ivjRouteNameLabel = null;
 	private javax.swing.JTextField ivjRouteNameTextField = null;
 	private javax.swing.JLabel ivjSignalTransmitterLabel = null;
-	private javax.swing.JComboBox ivjSignalTransmitterComboBox = null;
+	private javax.swing.JComboBox<LiteYukonPAObject> ivjSignalTransmitterComboBox = null;
 public RouteNameDevicePanel() {
 	super();
 	initialize();
@@ -41,6 +40,7 @@ public boolean allowRebroadcast() {
  * Method to handle events for the CaretListener interface.
  * @param e javax.swing.event.CaretEvent
  */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	if (e.getSource() == getRouteNameTextField()) 
 		connEtoC1(e);
@@ -82,6 +82,7 @@ private void connEtoC2(java.awt.event.ItemEvent arg1) {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getMinimumSize() {
 	return getPreferredSize();
 }
@@ -90,6 +91,7 @@ public Dimension getMinimumSize() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getPreferredSize() {
 	return new Dimension(350, 200 );
 }
@@ -135,10 +137,10 @@ private javax.swing.JTextField getRouteNameTextField() {
  * Return the SignalTransmitterComboBox property value.
  * @return javax.swing.JComboBox
  */
-private javax.swing.JComboBox getSignalTransmitterComboBox() {
+private javax.swing.JComboBox<LiteYukonPAObject> getSignalTransmitterComboBox() {
 	if (ivjSignalTransmitterComboBox == null) {
 		try {
-			ivjSignalTransmitterComboBox = new javax.swing.JComboBox();
+			ivjSignalTransmitterComboBox = new javax.swing.JComboBox<LiteYukonPAObject>();
 			ivjSignalTransmitterComboBox.setName("SignalTransmitterComboBox");
          
          IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
@@ -186,6 +188,7 @@ private javax.swing.JLabel getSignalTransmitterLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) {
 
 	//Determine type of route and its name
@@ -193,57 +196,57 @@ public Object getValue(Object val) {
 
 	String routeName = getRouteNameTextField().getText().trim();
 
-	Integer deviceID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getYukonID());
+	Integer deviceID = new Integer(((LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getYukonID());
 
-	int type = ((LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getPaoType().getDeviceTypeId();
+	PaoType paoType = ((LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getPaoType();
 
-	if( DeviceTypesFuncs.isCCU(type) || DeviceTypesFuncs.isRepeater(type) )
+	if( DeviceTypesFuncs.isCCU(paoType.getDeviceTypeId()) || DeviceTypesFuncs.isRepeater(paoType.getDeviceTypeId()) )
 	{
-		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.STRING_CCU );
+		val = RouteFactory.createRoute(PaoType.ROUTE_CCU);
 	}
-	else if( DeviceTypesFuncs.isTCU(type) )
+	else if( DeviceTypesFuncs.isTCU(paoType.getDeviceTypeId()) )
 	{
-		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.STRING_TCU );
+		val = RouteFactory.createRoute(PaoType.ROUTE_TCU);
 	}
-	else if( DeviceTypesFuncs.isLCU(type) )
+	else if( DeviceTypesFuncs.isLCU(paoType.getDeviceTypeId()) )
 	{
-		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.STRING_LCU );
+		val = RouteFactory.createRoute(PaoType.ROUTE_LCU);
 	}
-	else if( type == PAOGroups.TAPTERMINAL )
+	else if( paoType == PaoType.TAPTERMINAL )
 	{		
-		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.STRING_TAP_PAGING );
+		val = RouteFactory.createRoute(PaoType.ROUTE_TAP_PAGING);
 	}
-	else if( type == PAOGroups.WCTP_TERMINAL )
+	else if( paoType == PaoType.WCTP_TERMINAL )
 	{		
-		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.STRING_WCTP_TERMINAL_ROUTE );
+		val = RouteFactory.createRoute(PaoType.ROUTE_WCTP_TERMINAL);
 	}
-	else if( type == PAOGroups.SNPP_TERMINAL )
+	else if( paoType == PaoType.SNPP_TERMINAL )
 	{		
-		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.STRING_SNPP_TERMINAL_ROUTE );
+		val = RouteFactory.createRoute(PaoType.ROUTE_SNPP_TERMINAL);
 	}
-	else if( type == PAOGroups.TNPP_TERMINAL )
+	else if( paoType == PaoType.TNPP_TERMINAL )
 	{
-	    val = com.cannontech.database.data.route.RouteFactory.createRoute(com.cannontech.database.data.pao.RouteTypes.STRING_TNPP_TERMINAL_ROUTE );
+	    val = RouteFactory.createRoute(PaoType.ROUTE_TNPP_TERMINAL);
 	}
-	else if( type == PAOGroups.RTC )
+	else if( paoType == PaoType.RTC )
 	{
-		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.ROUTE_RTC);
+		val = RouteFactory.createRoute(PaoType.ROUTE_RTC);
 	}
-	else if( type == PAOGroups.SERIES_5_LMI )
+	else if( paoType == PaoType.SERIES_5_LMI )
 	{
-		val = RouteFactory.createRoute( RouteTypes.ROUTE_SERIES_5_LMI);
+		val = RouteFactory.createRoute(PaoType.ROUTE_SERIES_5_LMI);
 	}
-	else if (type == PAOGroups.RDS_TERMINAL)
+	else if (paoType == PaoType.RDS_TERMINAL)
 	{
-	    val = RouteFactory.createRoute( RouteTypes.ROUTE_RDS_TERMINAL);
+	    val = RouteFactory.createRoute(PaoType.ROUTE_RDS_TERMINAL);
 	}
 	else //?
 		throw new Error("RouteType2::getValue() - Unknown transmitter type");
 
-	((com.cannontech.database.data.route.RouteBase) val).setDeviceID(deviceID);	
-	((com.cannontech.database.data.route.RouteBase) val).setDefaultRoute("Y");
+	((RouteBase) val).setDeviceID(deviceID);	
+	((RouteBase) val).setDefaultRoute("Y");
 
-	((com.cannontech.database.data.route.RouteBase) val).setRouteName( routeName );
+	((RouteBase) val).setRouteName( routeName );
 
 	return val;
 }
@@ -313,6 +316,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {	
 	if( getRouteNameTextField().getText().length() <= 0 )
@@ -327,6 +331,7 @@ public boolean isInputValid()
  * Method to handle events for the ItemListener interface.
  * @param e java.awt.event.ItemEvent
  */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
 	if (e.getSource() == getSignalTransmitterComboBox()) 
 		connEtoC2(e);
@@ -344,7 +349,8 @@ public static void main(java.lang.String[] args) {
 		frame.add("Center", aRouteType2Panel);
 		frame.setSize(aRouteType2Panel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -377,15 +383,18 @@ public boolean noRepeaters() {
 	return noRepeaters;
 }
 
+@Override
 public void setValue(Object val) 
 {
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getRouteNameTextField().requestFocus(); 

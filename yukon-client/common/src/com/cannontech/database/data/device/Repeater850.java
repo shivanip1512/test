@@ -1,13 +1,10 @@
 package com.cannontech.database.data.device;
 
-/**
- * This type was created in VisualAge.
- */
+import com.cannontech.common.pao.PaoType;
+
 public class Repeater850 extends RepeaterBase {
-/**
- * Repeater constructor comment.
- */
-public Repeater850() {
-	super();
-}
+
+    public Repeater850() {
+        super(PaoType.REPEATER_850);
+    }
 }

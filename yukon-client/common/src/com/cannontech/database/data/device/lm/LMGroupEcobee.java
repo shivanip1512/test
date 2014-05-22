@@ -7,7 +7,7 @@ public class LMGroupEcobee extends LMGroup {
     private final static long serialVersionUID = 1L;
 
     public LMGroupEcobee() {
-        getYukonPAObject().setType(PaoType.LM_GROUP_ECOBEE.getDbString());
+        super(PaoType.LM_GROUP_ECOBEE);
     }
 
 }

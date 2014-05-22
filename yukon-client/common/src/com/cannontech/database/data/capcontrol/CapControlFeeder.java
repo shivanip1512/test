@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.capcontrol.service.ZoneService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
@@ -28,9 +28,7 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
     private List<CCFeederBankList> ccBankListVector;
 
     public CapControlFeeder() {
-        super();
-        setPAOCategory( PAOGroups.STRING_CAT_CAPCONTROL );
-        setPAOClass( PAOGroups.STRING_CAT_CAPCONTROL );
+        super(PaoType.CAP_CONTROL_FEEDER);
     }
 
     public CapControlFeeder(Integer feedID) {

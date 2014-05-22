@@ -18,7 +18,6 @@ public class ApplianceBase extends DBPersistent {
     private com.cannontech.stars.database.db.appliance.ApplianceCategory applianceCategory = null;
     private com.cannontech.stars.database.db.hardware.LMHardwareConfiguration lmHardwareConfig = null;
     private com.cannontech.stars.database.data.customer.CustomerAccount customerAccount = null;
-    private com.cannontech.database.data.device.lm.LMProgramBase lmProgram = null;
 
     public ApplianceBase() {
         super();
@@ -28,14 +27,15 @@ public class ApplianceBase extends DBPersistent {
         getApplianceBase().setApplianceID(newID);
     }
 
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getApplianceBase().setDbConnection(conn);
         getApplianceCategory().setDbConnection(conn);
         getLMHardwareConfig().setDbConnection(conn);
-        getLMProgram().setDbConnection(conn);
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         // delete from LMHardwareConfiguration
         com.cannontech.stars.database.db.hardware.LMHardwareConfiguration.deleteLMHardwareConfiguration(
@@ -49,6 +49,7 @@ public class ApplianceBase extends DBPersistent {
         getApplianceBase().delete();
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
         getApplianceBase().add();
         if (getLMHardwareConfig().getInventoryID() != null) {
@@ -57,6 +58,7 @@ public class ApplianceBase extends DBPersistent {
         }
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         getApplianceBase().update();
         
@@ -67,6 +69,7 @@ public class ApplianceBase extends DBPersistent {
         	getLMHardwareConfig().add();
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         getApplianceBase().retrieve();
 
@@ -112,16 +115,6 @@ public class ApplianceBase extends DBPersistent {
 	}
 
 	/**
-	 * Returns the lmProgram.
-	 * @return com.cannontech.database.data.device.lm.LMProgramBase
-	 */
-	public com.cannontech.database.data.device.lm.LMProgramBase getLMProgram() {
-		if (lmProgram == null)
-			lmProgram = new com.cannontech.database.data.device.lm.LMProgramDirect();
-		return lmProgram;
-	}
-
-	/**
 	 * Sets the lmHardwareConfig.
 	 * @param lmHardwareConfig The lmHardwareConfig to set
 	 */
@@ -129,14 +122,4 @@ public class ApplianceBase extends DBPersistent {
 		com.cannontech.stars.database.db.hardware.LMHardwareConfiguration lmHardwareConfig) {
 		this.lmHardwareConfig = lmHardwareConfig;
 	}
-
-	/**
-	 * Sets the lmProgram.
-	 * @param lmProgram The lmProgram to set
-	 */
-	public void setLMProgram(
-		com.cannontech.database.data.device.lm.LMProgramBase lmProgram) {
-		this.lmProgram = lmProgram;
-	}
-
 }

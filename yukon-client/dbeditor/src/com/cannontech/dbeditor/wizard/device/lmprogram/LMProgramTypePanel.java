@@ -97,9 +97,10 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
     /**
      * getValue method comment.
      */
+    @Override
     public Object getValue(Object o) {
         //create a new LMBase here
-        return LMFactory.createLoadManagement(getLMSelectedType().getDeviceTypeId() );
+        return LMFactory.createLoadManagement(getLMSelectedType());
     }
     /**
      * Called whenever the part throws an exception.
@@ -164,6 +165,7 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
             frame.setContentPane(aLMProgramBasePanel);
             frame.setSize(aLMProgramBasePanel.getSize());
             frame.addWindowListener(new WindowAdapter() {
+                @Override
                 public void windowClosing(WindowEvent e) {
                     System.exit(0);
                 };
@@ -180,13 +182,16 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
     /**
      * setValue method comment.
      */
+    @Override
     public void setValue(Object o) {
     }
 
+    @Override
     public void setFirstFocus() {
         // Make sure that when its time to display this panel, the focus starts in the top component
         javax.swing.SwingUtilities.invokeLater( new Runnable() 
             { 
+            @Override
             public void run() 
                 { 
                 getJRadioButtonDirectControl().requestFocus(); 

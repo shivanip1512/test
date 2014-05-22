@@ -18,11 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -34,12 +35,13 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
@@ -48,7 +50,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
-import com.cannontech.database.data.device.MCT400SeriesBase;
+import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
@@ -229,7 +231,8 @@ public void runImport(List<ImportData> imps) {
 	
 	ImportData currentEntry = null;
 	ImportFail currentFailure = null;
-    MCT400SeriesBase template400SeriesBase = null;
+	YukonMeter templateMeter = null;
+//    MCT400SeriesBase template400SeriesBase = null;
 	List<ImportFail> failures = new ArrayList<ImportFail>();
 	List<ImportData> successVector = new ArrayList<ImportData>();
 
@@ -244,6 +247,7 @@ public void runImport(List<ImportData> imps) {
     DeviceGroupEditorDao deviceGroupEditorDao = (DeviceGroupEditorDao) YukonSpringHook.getBean("deviceGroupEditorDao");
     RoleDao roleDao = (RoleDao) YukonSpringHook.getBean("roleDao");
 	DlcAddressRangeService dlcAddressRangeService = YukonSpringHook.getBean("dlcAddressRangeService", DlcAddressRangeService.class);
+	MeterDao meterDao = YukonSpringHook.getBean(MeterDao.class);
 	
     StoredDeviceGroup alternateGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ALTERNATE);
     StoredDeviceGroup billingGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
@@ -299,20 +303,26 @@ public void runImport(List<ImportData> imps) {
                 errorMsg.add(error);
             }
         } else {
-            template400SeriesBase = DBFuncs.get410FromTemplateName(templateName);
-            if(template400SeriesBase.getDevice().getDeviceID().intValue() == -12) {
+            try {
+                templateMeter = meterDao.getForPaoName(templateName);
+                
+                if (!templateMeter.getPaoType().isMct()) {
+                    String error = "Template found is not an MCT; unable to process this type of device. " + templateMeter.getPaoType();
+                    log.error(logMsgPrefix + error);
+                    errorMsg.add(error);   
+                }
+                
+                /*Address range check for 400 series*/
+                if (!dlcAddressRangeService.isEnforcedAddress(templateMeter.getPaoType(), Integer.parseInt(address))) {
+                    String error = "Has an incorrect " + templateMeter.getPaoType() + " address ("+address+").  ";
+                    log.error(logMsgPrefix + error);
+                    errorMsg.add(error);
+                }
+            } catch (NotFoundException e) {
                 String error = "Specifies a template MCT ("+templateName+") not in the Yukon database.  ";
                 log.error(logMsgPrefix + error);
                 errorMsg.add(error);
-            } else {
-                /*Address range check for 400 series*/
-            	PaoType paoType = PaoType.getForDbString(template400SeriesBase.getPAOType());
-            	if (!dlcAddressRangeService.isEnforcedAddress(paoType, Integer.parseInt(address))) {
-            		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
-            		log.error(logMsgPrefix + error);
-            		errorMsg.add(error);
-            	}
-            }
+            } 
         }
         
         if(StringUtils.isBlank(name)){
@@ -444,7 +454,7 @@ public void runImport(List<ImportData> imps) {
                 }
                 
                 //update device groups if they changed
-                SimpleDevice yukonDevice = new SimpleDevice(yukonPaobject.getPAObjectID(), PaoType.getForDbString(yukonPaobject.getPAOType()));
+                SimpleDevice yukonDevice = new SimpleDevice(yukonPaobject.getPAObjectID(), yukonPaobject.getPaoType());
                 updateGroup(collectionGroupBase, collectionGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
                 updateGroup(alternateGroupBase, altGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
                 updateGroup(billingGroupBase, billGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
@@ -467,7 +477,7 @@ public void runImport(List<ImportData> imps) {
 				if( updateTransaction) {
                     dbPersistentDao.performDBChange(yukonPaobject, TransactionType.UPDATE); //update transaction and DBChange write
 				}
-                log.info("Updated " + yukonPaobject.getPAOType() + " with name " + name + " with address " + address + ".");
+                log.info("Updated " + yukonPaobject.getPaoType() + " with name " + name + " with address " + address + ".");
                 successCounter++;
             } catch (PersistenceException e) {
                 log.error(e);
@@ -491,9 +501,9 @@ public void runImport(List<ImportData> imps) {
 			Integer deviceID = YukonSpringHook.getBean(PaoDao.class).getNextPaoId();
 			GregorianCalendar now = new GregorianCalendar();
 			lastImportTime = now;
-			Integer templateID = template400SeriesBase.getPAObjectID();
+			Integer templateID = templateMeter.getDeviceId();
 			
-            MCT400SeriesBase current400Series = template400SeriesBase;
+			MCTBase current400Series = (MCTBase)DeviceFactory.createDevice(templateMeter.getPaoType());
 			current400Series.setPAOName(name);
 			current400Series.setDeviceID(deviceID);
 			current400Series.setAddress(new Integer(address));
@@ -536,7 +546,7 @@ public void runImport(List<ImportData> imps) {
                 dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
                 log.debug("Insert into DB with NO DBChangeMessage: " + points.size() + " Points for Device(" + current400Series.getPAObjectID() + ").");
 
-                SimpleDevice yukonDevice = new SimpleDevice(current400Series.getPAObjectID(), PaoType.getForDbString(current400Series.getPAOType()));
+                SimpleDevice yukonDevice = new SimpleDevice(current400Series.getPAObjectID(), current400Series.getPaoType());
                 updateGroup(collectionGroupBase, collectionGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
                 updateGroup(alternateGroupBase, altGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
                 updateGroup(billingGroupBase, billGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
@@ -548,7 +558,7 @@ public void runImport(List<ImportData> imps) {
                 }
                 
 				successVector.add(imps.get(j));
-				log.info(current400Series.getPAOType() + " with name " + name + " with address " + address + " successfully imported.");
+				log.info(current400Series.getPaoType() + " with name " + name + " with address " + address + " successfully imported.");
 				successCounter++;
 			}
 			catch( TransactionException e ) {
@@ -559,7 +569,7 @@ public void runImport(List<ImportData> imps) {
                                                 templateName, tempErrorMsg.toString(), now.getTime(), 
                                                 billGrp, substationName, ImportFuncs.FAIL_DATABASE);
 				failures.add(currentFailure);
-				log.error(current400Series.getPAOType() + " with name " + name + " failed on INSERT into database (ImportPendingComm). ");
+				log.error(current400Series.getPaoType() + " with name " + name + " failed on INSERT into database (ImportPendingComm). ");
 			} catch( PersistenceException e ) {
 			    log.error(e);
                 StringBuffer tempErrorMsg = new StringBuffer(e.toString());
@@ -568,7 +578,7 @@ public void runImport(List<ImportData> imps) {
                                                 templateName, tempErrorMsg.toString(), now.getTime(), 
                                                 billGrp, substationName, ImportFuncs.FAIL_DATABASE);
                 failures.add(currentFailure);
-                log.error(current400Series.getPAOType() + " with name " + name + " failed on INSERT into database. (objectsToAdd)");
+                log.error(current400Series.getPaoType() + " with name " + name + " failed on INSERT into database. (objectsToAdd)");
             }
 			finally {
 				try {
@@ -930,23 +940,21 @@ private void handleSuccessfulLocate(Return returnMsg) {
     Integer routeID = messageIDToRouteIDMap.get(new Long(returnMsg.getUserMessageID()));
     String routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(routeID.intValue());
     
-    MCT400SeriesBase retMCT = new MCT400SeriesBase();
-    retMCT.setDeviceID(new Integer(returnMsg.getDeviceID()));
+    YukonMeter returnMeter = YukonSpringHook.getBean(MeterDao.class).getForId(returnMsg.getDeviceID());
     Request porterRequest = null;
     
     try {
-        porterRequest = new Request( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );
+        porterRequest = new Request(returnMeter.getDeviceId(), INTERVAL_COMMAND, currentMessageID );
         log.info("Successful location of device " + returnMsg.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
-        retMCT = Transaction.createTransaction(TransactionType.RETRIEVE, retMCT).execute();
-        if(routeID != null)
-            retMCT.getDeviceRoutes().setRouteID(routeID);
-        else
+        if(routeID == null) {
             throw new TransactionException("Route not found for a message ID of " + returnMsg.getUserMessageID());
+        }
 
-        log.info(retMCT.getPAOType() + "with name " + retMCT.getPAOName() + " was successfully located on route " + routeName +" ("+ routeID+").");
-        Transaction.createTransaction(TransactionType.UPDATE, retMCT).execute();
-        DBChangeMsg retMCTChange = new DBChangeMsg(retMCT.getPAObjectID().intValue(), DBChangeMsg.CHANGE_PAO_DB, 
-        		retMCT.getPAOCategory(), retMCT.getPAOType(), DbChangeType.UPDATE);
+        log.info(returnMeter.getPaoType() + "with name " + returnMeter.getName() + " was successfully located on route " + routeName +" ("+ routeID+").");
+        
+        YukonSpringHook.getBean(DeviceDao.class).changeRoute(returnMeter, routeID);
+        DBChangeMsg retMCTChange = new DBChangeMsg(returnMeter.getPaoIdentifier().getPaoId(), DBChangeMsg.CHANGE_PAO_DB, 
+        		returnMeter.getPaoType().getPaoCategory().getDbString(), returnMeter.getPaoType().getDbString(), DbChangeType.UPDATE);
 			
 		getDispatchConnection().write(retMCTChange);
 		
@@ -956,8 +964,8 @@ private void handleSuccessfulLocate(Return returnMsg) {
         log.info("Interval write sent to porter: device " + returnMsg.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
     }
     catch( TransactionException e ) {
-        if(DBFuncs.writePendingCommToFail(ImportFuncs.FAIL_DATABASE, e.toString(), retMCT.getPAObjectID()))
-            log.info("Could not assign device " + retMCT.getPAObjectID() + " the route " + routeName +" ("+ routeID+").");
+        if(DBFuncs.writePendingCommToFail(ImportFuncs.FAIL_DATABASE, e.toString(), returnMeter.getDeviceId()))
+            log.info("Could not assign device " + returnMeter.getDeviceId() + " the route " + routeName +" ("+ routeID+").");
         else
             log.error("Could not move pending communication to fail table, but failure occurred assigning device " + porterRequest.getDeviceID() + " the route " + routeName +" ("+ routeID+").");
     }

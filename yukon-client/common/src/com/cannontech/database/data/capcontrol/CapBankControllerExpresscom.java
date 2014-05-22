@@ -1,13 +1,10 @@
 package com.cannontech.database.data.capcontrol;
 
-/**
- * This type was created in VisualAge.
- */
-public class CapBankControllerExpresscom extends CapBankController 
-{
-/**
- */
-public CapBankControllerExpresscom() {
-	super();
-}
+import com.cannontech.common.pao.PaoType;
+
+public class CapBankControllerExpresscom extends CapBankController {
+
+    public CapBankControllerExpresscom() {
+        super(PaoType.CBC_EXPRESSCOM);
+    }
 }

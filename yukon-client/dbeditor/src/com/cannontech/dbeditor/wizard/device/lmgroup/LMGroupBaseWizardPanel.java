@@ -11,8 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
@@ -24,7 +22,6 @@ import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.StatusControlType;
@@ -35,7 +32,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class LMGroupBaseWizardPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JPanel ivjIdentificationPanel = null;
-	private javax.swing.JComboBox ivjRouteComboBox = null;
+	private javax.swing.JComboBox<LiteYukonPAObject> ivjRouteComboBox = null;
 	private javax.swing.JLabel ivjRouteLabel = null;
 	private javax.swing.JPanel ivjCommunicationPanel = null;
 	private javax.swing.JLabel ivjJLabelGroupName = null;
@@ -55,7 +52,7 @@ public class LMGroupBaseWizardPanel extends com.cannontech.common.gui.util.DataI
 	private javax.swing.JPanel ivjJPanelAllHistory = null;
     private JLabel jLabelErrorMessage = null;	
 	private JLabel priorityLabel = null;
-	private JComboBox priorityCombo = null;
+	private JComboBox<Object> priorityCombo = null;
 	
 /**
  * Constructor
@@ -545,9 +542,9 @@ private javax.swing.JPanel getIdentificationPanel() {
 	return ivjIdentificationPanel;
 }
 
-	private JComboBox getPriorityCombo() {
+	private JComboBox<Object> getPriorityCombo() {
 		if(priorityCombo == null) {
-			priorityCombo = new JComboBox(new Object[]{"Default", "Medium", "High", "Highest"});
+			priorityCombo = new JComboBox<Object>(new Object[]{"Default", "Medium", "High", "Highest"});
 			Dimension priorityDimension = new Dimension(210, 25);
 			priorityCombo.setPreferredSize(priorityDimension);
 			priorityCombo.setMinimumSize(priorityDimension);
@@ -992,10 +989,10 @@ private javax.swing.JLabel getJTextFieldType() {
  * @return javax.swing.JComboBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getRouteComboBox() {
+private javax.swing.JComboBox<LiteYukonPAObject> getRouteComboBox() {
 	if (ivjRouteComboBox == null) {
 		try {
-			ivjRouteComboBox = new javax.swing.JComboBox();
+			ivjRouteComboBox = new javax.swing.JComboBox<LiteYukonPAObject>();
 			ivjRouteComboBox.setName("RouteComboBox");
 			ivjRouteComboBox.setPreferredSize(new java.awt.Dimension(210, 25));
 			ivjRouteComboBox.setMinimumSize(new java.awt.Dimension(210, 25));
@@ -1218,7 +1215,8 @@ public boolean isInputValid()
 	boolean isValid;
 	String newName = getJTextFieldName().getText();
     
-    if(isUniquePao(newName, PaoCategory.DEVICE.toString(), PaoClass.GROUP.toString())) {
+	// just pick a PaoType that is a LM Group; only PaoClass and PaoCategory are used to check uniqueness
+    if(isUniquePao(newName, PaoType.LM_GROUP_EXPRESSCOMM)) {
         setErrorString("");
         isValid = true;
     } else {
@@ -1285,35 +1283,34 @@ public static void main(java.lang.String[] args) {
  * Creation date: (2/1/2002 3:26:29 PM)
  * @param type java.lang.String
  */
-public void setSwitchType(String type) 
+public void setSwitchType(PaoType deviceType) 
 {
-	getJTextFieldType().setText( type );
+	getJTextFieldType().setText(deviceType.getPaoTypeName());
 
 	//do not show the route panel if the type is one of the following
-	int deviceType = PaoType.getPaoTypeId(type);
 
 	getCommunicationPanel().setVisible( 
-		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP ||
-	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT ||
-	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_DIGI_SEP ||
-	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_ECOBEE ||
-	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RFN_EXPRESSCOMM) );
+		!(deviceType == PaoType.MACRO_GROUP ||
+	      deviceType == PaoType.LM_GROUP_POINT ||
+	      deviceType == PaoType.LM_GROUP_DIGI_SEP ||
+	      deviceType == PaoType.LM_GROUP_ECOBEE ||
+	      deviceType == PaoType.LM_GROUP_RFN_EXPRESSCOMM) );
 	
 
 	//dont show the following options if this group is a MACRO
 	getJLabelKWCapacity().setVisible( 
-		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
+		!(deviceType == PaoType.MACRO_GROUP) );
 	getJTextFieldKWCapacity().setVisible( 
-		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
+		!(deviceType == PaoType.MACRO_GROUP) );
 
 	getJCheckBoxDisable().setVisible( 
-		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
+		!(deviceType == PaoType.MACRO_GROUP) );
 	getJCheckBoxDisableControl().setVisible( 
-		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
+		!(deviceType == PaoType.MACRO_GROUP) );
 
 
-	if(deviceType != PAOGroups.LM_GROUP_EXPRESSCOMM  &&
-	   deviceType != PAOGroups.LM_GROUP_RFN_EXPRESSCOMM ) {
+	if(deviceType != PaoType.LM_GROUP_EXPRESSCOMM  &&
+	   deviceType != PaoType.LM_GROUP_RFN_EXPRESSCOMM ) {
 		getPriorityCombo().setVisible(false);
 		getPriorityLabel().setVisible(false);
 	}
@@ -1329,7 +1326,7 @@ public void setValue(Object val)
 	LMGroup lmGroup = (LMGroup)val;
 
 	String name = lmGroup.getPAOName();
-	String type = lmGroup.getPAOType();
+	String type = lmGroup.getPaoType().getPaoTypeName();
 
 	getJTextFieldName().setText(name);
 	getJTextFieldType().setText(type);
@@ -1365,7 +1362,7 @@ public void setValue(Object val)
 	}
 	
 	//show the needed entry fields only
-	setSwitchType( lmGroup.getPAOType() );	
+	setSwitchType(lmGroup.getPaoType());	
 }
 
 @Override

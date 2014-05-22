@@ -113,6 +113,7 @@ public class RfnBasePanel extends DataInputPanel implements CaretListener {
     public void setFirstFocus() {
         /* Make sure that when its time to display this panel, the focus starts in the top component */
         SwingUtilities.invokeLater( new Runnable() {
+            @Override
             public void run() {
                 getSerialNumberTextField().requestFocus();
             }
@@ -143,6 +144,7 @@ public class RfnBasePanel extends DataInputPanel implements CaretListener {
         return true;
     }
 
+    @Override
     public void caretUpdate(CaretEvent e) {
         fireInputUpdate();
     }
@@ -158,7 +160,7 @@ public class RfnBasePanel extends DataInputPanel implements CaretListener {
         
         boolean allBlank = StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer) && StringUtils.isBlank(model);
         
-        PaoType type = PaoType.getForDbString(rfnBase.getPAOType());
+        PaoType type = rfnBase.getPaoType();
         if (!type.isMeter()) {
             // For DR devices, only templates are creatable so all fields must be blank.
             if (!allBlank) {
@@ -177,11 +179,11 @@ public class RfnBasePanel extends DataInputPanel implements CaretListener {
         rfnBase.getRfnAddress().setSerialNumber(serialNumber);
         
         if (createPointsCheckBox.isSelected()) {
-            PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
+            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
             rfnBase.setDeviceID(paoDao.getNextPaoId());
 
-            PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
-            DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+            PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
+            DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
             SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(rfnBase);
             List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(yukonDevice);
 

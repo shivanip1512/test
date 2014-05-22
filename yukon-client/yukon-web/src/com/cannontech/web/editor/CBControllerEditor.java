@@ -43,7 +43,6 @@ import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOFactory;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
@@ -96,36 +95,42 @@ public class CBControllerEditor implements ICBControllerModel {
                 if (deviceCBC instanceof CapBankController) {
                     setSerialNumber(((CapBankController) deviceCBC).getDeviceCBC().getSerialNumber().longValue());
                 }
-                this.deviceType = PaoType.getForDbString(deviceCBC.getPAOType()).getDeviceTypeId();
+                this.deviceType = deviceCBC.getPaoType().getDeviceTypeId();
             }
         }
     }
 
     public CBControllerEditor() {}
 
+    @Override
     public boolean isEditingIntegrity() {
         return isTwoWay() && ((TwoWayDevice) getPaoCBC()).getDeviceScanRateMap().containsKey(DeviceScanRate.TYPE_INTEGRITY);
     }
 
+    @Override
     public boolean isEditingException() {
 
         return isTwoWay() && ((TwoWayDevice) getPaoCBC()).getDeviceScanRateMap().containsKey(DeviceScanRate.TYPE_EXCEPTION);
     }
 
+    @Override
     public void setEditingIntegrity(boolean val) {
     }
 
+    @Override
     public void setEditingException(boolean val) {
     }
 
+    @Override
     public boolean isTwoWay() {
         if (getPaoCBC() != null) {
-            int type = PaoType.getForDbString(getPaoCBC().getPAOType()).getDeviceTypeId();
+            int type = getPaoCBC().getPaoType().getDeviceTypeId();
         	return CapControlUtils.isTwoWay(type);
         }
         return false;
     }
     
+    @Override
     public boolean isOneWay() {
         if (getPaoCBC() != null) {
         	if ( !isTwoWay() && (getPaoCBC() instanceof ICapBankController) ) {
@@ -135,14 +140,17 @@ public class CBControllerEditor implements ICBControllerModel {
         return false;
     }
 
+    @Override
     public YukonPAObject getPaoCBC() {
         return deviceCBC;
     }
 
+    @Override
     public void setPaoCBC(YukonPAObject deviceCBC) {
         this.deviceCBC = deviceCBC;
     }
 
+    @Override
     public void retrieveDB() {
         if (getPaoCBC() == null) {
             return;
@@ -169,7 +177,8 @@ public class CBControllerEditor implements ICBControllerModel {
 		
 		        Comparator<LitePoint> pointOffsetComparator = 
 		            new Comparator<LitePoint>(){
-		                public int compare(LitePoint point1, LitePoint point2){
+		                @Override
+                        public int compare(LitePoint point1, LitePoint point2){
 		                    Integer point1Offset = point1.getPointOffset();
 		                    Integer point2Offset = point2.getPointOffset();
 		                    return point1Offset.compareTo(point2Offset);
@@ -210,14 +219,17 @@ public class CBControllerEditor implements ICBControllerModel {
 		return pointList;
     }
 
+    @Override
     public String getSelectedPointFormatString() {
         return "Add Point";
     }
 
+    @Override
     public String getCbcControllerStatusMessage() {
         return cbcControllerStatusMessage;
     }
 
+    @Override
     public void setCbcControllerStatusMessage(String msgStr) {
         this.cbcControllerStatusMessage = msgStr;
     }
@@ -230,14 +242,17 @@ public class CBControllerEditor implements ICBControllerModel {
     	this.pointTree = pointTree;
 	}
 
+    @Override
     public boolean isEditingController() {
         return editingController;
     }
 
+    @Override
     public void setEditingController(boolean editingController) {
         this.editingController = editingController;
     }
 
+    @Override
     public void checkForErrors() throws PortDoesntExistException,
             MultipleDevicesOnPortException, SameMasterSlaveCombinationException, SQLException, SerialNumberExistsException {
         
@@ -440,15 +455,18 @@ public class CBControllerEditor implements ICBControllerModel {
 		this.pointList = pointList;
 	}
 
-	public long getSerialNumber() {
+	@Override
+    public long getSerialNumber() {
 		return serialNumber;
 	}
 
-	public void setSerialNumber(long serialNumber) {
+	@Override
+    public void setSerialNumber(long serialNumber) {
 		this.serialNumber = serialNumber;
 	}
 	
-	public void resetSerialNumber () {  	
+	@Override
+    public void resetSerialNumber () {  	
     	if (deviceCBC != null) {
 			if (deviceCBC instanceof CapBankController702x) {          
 	    		setSerialNumber ( ((CapBankController702x)deviceCBC).getSerialNumber().longValue());
@@ -478,33 +496,37 @@ public class CBControllerEditor implements ICBControllerModel {
         }
 	}
 
-	public boolean isDevice702X() {
+	@Override
+    public boolean isDevice702X() {
 		if (getPaoCBC() != null) {
-			int deviceType = PaoType.getForDbString(getPaoCBC().getPAOType()).getDeviceTypeId();
+			int deviceType = getPaoCBC().getPaoType().getDeviceTypeId();
 			return DeviceTypesFuncs.isCapBankController702X(deviceType);
 		}
 		return false;		
 	}
 	
-	public boolean isDevice802X() {
+	@Override
+    public boolean isDevice802X() {
 	    if(getPaoCBC() != null) {
-	        PaoType paoType = PaoType.getForDbString(getPaoCBC().getPAOType());
+	        PaoType paoType = getPaoCBC().getPaoType();
 	        return CapControlUtils.isCapBankController802X(paoType);
 	    }
 	    return false;
 	}
 
-	public boolean isDeviceDNP() {
+	@Override
+    public boolean isDeviceDNP() {
         if (getPaoCBC() != null) {
-            PaoType paoType = PaoType.getForDbString(getPaoCBC().getPAOType());
+            PaoType paoType = getPaoCBC().getPaoType();
             return paoType == PaoType.CBC_DNP;
         }
         return false;       
 	}
 	
-	public boolean isDevice701X() {
+	@Override
+    public boolean isDevice701X() {
 		if (getPaoCBC() != null) {
-			PaoType paoType = PaoType.getForDbString(getPaoCBC().getPAOType());
+			PaoType paoType = getPaoCBC().getPaoType();
 			return (paoType == PaoType.CBC_7010 || 
 			        paoType == PaoType.CBC_7011 || 
 			        paoType == PaoType.CBC_7012);
@@ -512,17 +534,19 @@ public class CBControllerEditor implements ICBControllerModel {
 		return false;		
 	}
 
-	public int getDeviceType() {
+	@Override
+    public int getDeviceType() {
 		return deviceType;
 	}
 
-	public void setDeviceType(int deviceType) {
+	@Override
+    public void setDeviceType(int deviceType) {
 		this.deviceType = deviceType;
     }
 	
-	public boolean isTcpPort() {
-        String cbcTypeStr = getPaoCBC().getPAOType();
-        PaoType deviceType = PaoType.getForDbString(cbcTypeStr);
+	@Override
+    public boolean isTcpPort() {
+        PaoType deviceType = getPaoCBC().getPaoType();
         
         if (PaoType.isTcpPortEligible(deviceType) && deviceType.isCbc()) {
             return isTcpPort((RemoteBase)getPaoCBC());
@@ -531,7 +555,8 @@ public class CBControllerEditor implements ICBControllerModel {
         return false;
 	}
 	
-	public boolean isTcpPort(RemoteBase cbc) {
+	@Override
+    public boolean isTcpPort(RemoteBase cbc) {
 	    int portId = cbc.getDeviceDirectCommSettings().getPortID();
 	    return DeviceTypesFuncs.isTcpPort(portId);
 	}
@@ -544,7 +569,7 @@ public class CBControllerEditor implements ICBControllerModel {
 	    PaoIdentifier identifier = 
 	        new PaoIdentifier(
 	            deviceCBC.getPAObjectID(), 
-	            PaoType.getForDbString(deviceCBC.getPAOType()));
+	            deviceCBC.getPaoType());
 	    
 	    LightDeviceConfiguration configuration = configurationDao.findConfigurationForDevice(new SimpleDevice(identifier));
 	    DNPConfiguration dnpConfig = 

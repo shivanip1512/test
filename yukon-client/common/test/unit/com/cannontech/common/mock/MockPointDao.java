@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -165,7 +166,7 @@ public class MockPointDao implements PointDao {
     }
 
 	@Override
-    public List<LitePoint> searchByName(String name, String paoClass) {
+    public List<LitePoint> searchByName(String name, PaoClass paoClass) {
 		return null;
 	}
 

@@ -10,13 +10,13 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
-
 import com.cannontech.importer.fdr.ImporterVirtualDevice;
 
 public class ProgressValmetImportParserImpl  implements TranslationParse {
 
     private Logger log = YukonLogManager.getLogger(ProgressValmetImportParserImpl.class); 
     
+    @Override
     public void parse(TranslationBase base) throws IOException{
         StringTokenizer tokenizer = new StringTokenizer(base.getInputString(),",",false);
 
@@ -38,9 +38,7 @@ public class ProgressValmetImportParserImpl  implements TranslationParse {
                 
                 //Create device.
                 ImporterVirtualDevice dev = base.getDevice();
-                dev.setPAOCategory("DEVICE");
                 dev.setPAOName(paoName);
-                dev.setDeviceType("VIRTUAL SYSTEM");
                 
                 //Create Point Parameters
                 Map<String,String> pointParameters = base.getPointParametersMap();

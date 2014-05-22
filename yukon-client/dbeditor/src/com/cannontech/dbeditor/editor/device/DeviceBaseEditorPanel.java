@@ -40,6 +40,7 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -79,7 +80,6 @@ import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 import com.cannontech.database.data.device.lm.LMGroupRipple;
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
@@ -1830,12 +1830,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         deviceBase = (DeviceBase) val;
 
         deviceBase.setPAOName(getNameTextField().getText());
-        int devType = PaoType.getPaoTypeId(deviceBase.getPAOType());
-
-        // just in case, set our String type data to the exact String type
-        // expected
-        // used to ensure the type string in the DB is the same as the code
-        deviceBase.setDeviceType(PaoType.getPaoTypeString(devType));
+        int devType = deviceBase.getPaoType().getDeviceTypeId();
 
         if (getDisableFlagCheckBox().isSelected()) {
             deviceBase.setDisableFlag(new Character('Y'));
@@ -2281,7 +2276,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         }
 
         if (getPhysicalAddressTextField().isVisible()) {
-            PaoType paoType = PaoType.getForDbString(deviceBase.getPAOType());
+            PaoType paoType = deviceBase.getPaoType();
             try {
                 int address = Integer.parseInt(getPhysicalAddressTextField().getText());
                 IntegerRange range =
@@ -2357,12 +2352,11 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             }
         }
 
-        if (!isUniquePao(deviceName, deviceBase.getPAOCategory(), deviceBase.getPAOClass(),
-                         deviceBase.getPAObjectID())) {
+        if (!isUniquePao(deviceName, deviceBase.getPaoType(), deviceBase.getPAObjectID())) {
             setErrorString("Name '" + deviceName
                            + "' is already in use.  Device Name must be unique for Category("
-                           + deviceBase.getPAOCategory() + ") and PAOClass("
-                           + deviceBase.getPAOClass() + ")");
+                           + deviceBase.getPaoType().getPaoCategory() + ") and PAOClass("
+                           + deviceBase.getPaoType().getPaoClass() + ")");
             return false;
         }
 
@@ -2426,7 +2420,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             if (DatabaseEditorUtil.isTagSupported(mctBase,
                                                   ImmutableSet.of(PaoTag.DEVICE_CONFIGURATION))) {
                 int id = mctBase.getPAObjectID();
-                PaoType type = PaoType.getForDbString(mctBase.getPAOType());
+                PaoType type = mctBase.getPaoType();
                 SimpleDevice device = new SimpleDevice(id, type);
                 DeviceConfigurationDao deviceConfigurationDao =
                     YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
@@ -2601,14 +2595,14 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             postCommWait = ((IDLCBase) rBase).getDeviceIDLCRemote().getPostCommWait();
 
             // only show CCUAmpUse when its a CCU-711 or CCU-710A
-            if (PaoType.getPaoTypeId(rBase.getPAOType()) == PAOGroups.CCU711 ||
-                PaoType.getPaoTypeId(rBase.getPAOType()) == PAOGroups.CCU710A) {
+            if (rBase.getPaoType() == PaoType.CCU711 ||
+                rBase.getPaoType() == PaoType.CCU710A) {
                 ampUse = ((IDLCBase) rBase).getDeviceIDLCRemote().getCcuAmpUseType();
                 getJLabelCCUAmpUseType().setVisible(true);
                 getJComboBoxAmpUseType().setVisible(true);
 
                 // add the extra options for CCU-711's only!
-                if (PaoType.getPaoTypeId(rBase.getPAOType()) == PAOGroups.CCU711) {
+                if (rBase.getPaoType() == PaoType.CCU711) {
                     getJComboBoxAmpUseType()
                         .addItem(com.cannontech.database.db.device.DeviceIDLCRemote.AMPUSE_ALTERNATING);
                     getJComboBoxAmpUseType()
@@ -2867,10 +2861,10 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             getSlaveAddressComboBox().setVisible(false);
         }
 
-        if (PaoType.getForDbString(rBase.getPAOType()) == PaoType.RTU_DNP) {
+        if (rBase.getPaoType() == PaoType.RTU_DNP) {
             getDnpConfigPanel().setVisible(true);
             int id = rBase.getPAObjectID();
-            PaoType type = PaoType.getForDbString(rBase.getPAOType());
+            PaoType type = rBase.getPaoType();
             SimpleDevice device = new SimpleDevice(id, type);
             DeviceConfigurationDao deviceConfigurationDao =
                 YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
@@ -2930,12 +2924,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     {
         deviceBase = (DeviceBase) val;
 
-        deviceType = PaoType.getPaoTypeId(deviceBase.getPAOType());
-        PaoType paoType = PaoType.getForDbString(deviceBase.getPAOType());
+        deviceType = deviceBase.getPaoType().getDeviceTypeId();
+        PaoType paoType = deviceBase.getPaoType();
 
-        String typeStr = deviceBase.getPAOType();
+        String typeStr = paoType.getPaoTypeName();
         // Override defalut type string for TapTerminal
-        if (deviceType == PAOGroups.TAPTERMINAL) {
+        if (paoType == PaoType.TAPTERMINAL) {
             typeStr = PAOGroups.STRING_TAP_TERMINAL[2];
         }
         getTypeTextField().setText(typeStr);
@@ -2953,16 +2947,16 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         } else if (val instanceof IDLCBase) {
             setIDLCBaseValue((IDLCBase) val);
         } else {
-            if (deviceBase.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_VIRTUAL) ||
-                deviceBase.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_RFMESH) ||
-                paoType == PaoType.ECOBEE_SMART_SI) {
+            if (paoType.getPaoClass() == PaoClass.VIRTUAL ||
+                    paoType.getPaoClass() == PaoClass.RFMESH ||
+                    paoType == PaoType.ECOBEE_SMART_SI) {
                 getCommunicationPanel().setVisible(false);
             }
 
             getPhysicalAddressLabel().setVisible(false);
             getPhysicalAddressTextField().setVisible(false);
 
-            if (deviceBase.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_RFMESH)) {
+            if (paoType.getPaoClass() == PaoClass.RFMESH) {
                 RfnBase rfnBase = (RfnBase) deviceBase;
                 getSerialNumberLabel().setVisible(true);
                 getSerialNumberTextField().setVisible(true);
@@ -2976,7 +2970,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             }
         }
 
-        if (deviceBase.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_GROUP)) {
+        if (paoType.getPaoClass() == PaoClass.GROUP) {
             getDisableFlagCheckBox().setVisible(false);
         }
         else {

@@ -38,8 +38,6 @@ import com.cannontech.database.data.device.CCUBase;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
@@ -80,7 +78,7 @@ public final class DatabaseEditorUtil {
     public static boolean isDisconnectCollarCompatible(final Object object){
         if (object instanceof YukonPAObject) {
             YukonPAObject yukonPaobject = (YukonPAObject)object;
-            PaoType paoType = PaoType.getForDbString(yukonPaobject.getPAOType());
+            PaoType paoType = yukonPaobject.getPaoType();
             return paoDefinitionDao.isTagSupported(paoType, PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
         } else {
             return false;
@@ -185,11 +183,7 @@ public final class DatabaseEditorUtil {
                 if (oldName.equals(paoObj.getPAOName())) return;
                 
                 try {
-                    final LiteYukonPAObject liteRoutePAObject = paoDao.getLiteYukonPAObject(
-                                                                                            oldName,
-                                                                                            PAOGroups.CAT_ROUTE,
-                                                                                            PAOGroups.CLASS_ROUTE,
-                                                                                            RouteTypes.ROUTE_CCU);
+                    final LiteYukonPAObject liteRoutePAObject = paoDao.findUnique(oldName, PaoType.ROUTE_CCU);
 
                     final String title = "Update Route Name Confirmation";
                     final String message = "Update Route name " + oldName + " to " + paoObj.getPAOName();
@@ -237,7 +231,7 @@ public final class DatabaseEditorUtil {
      * Returns true if yukonPaobject supports at least one of the paoTags, otherwise false.
      */
     public static boolean isTagSupported(final YukonPAObject yukonPAObject, Set<PaoTag> paoTags){
-        PaoType paoType = PaoType.getForDbString(yukonPAObject.getPAOType());
+        PaoType paoType = yukonPAObject.getPaoType();
         for (PaoTag paoTag : paoTags) {
             if (paoDefinitionDao.isTagSupported(paoType, paoTag)) {
                 return true;

@@ -74,7 +74,7 @@ public class CapControlCreationModelValidator extends SimpleValidator<CapControl
         final PaoCategory paoCategory = paoType.getPaoCategory();
 
 
-        if(paoDao.findUnique(name, paoCategory, paoType.getPaoClass()) != null) {
+        if(paoDao.findUnique(name, paoType) != null) {
             if(paoCategory.equals(PaoCategory.CAPCONTROL)){
                 errors.reject("There is already an Area, Substation, Substation Bus, Feeder, or Regulator with the name '" + name + "'");
             }

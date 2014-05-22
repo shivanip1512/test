@@ -754,7 +754,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 	
 	if (selectedObject instanceof DeviceBase)
 	{
-		type = ((DeviceBase) selectedObject).getPAOType();
+		type = ((DeviceBase) selectedObject).getPaoType().getPaoTypeName();
 		currentType = PaoType.getPaoTypeId(type);
 		newType = ((PaoType) p.getValue(null)).getDeviceTypeId();
 		checkConfigs = true;

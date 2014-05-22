@@ -13,10 +13,8 @@ import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceGroupMember;
 import com.cannontech.spring.YukonSpringHook;
  
@@ -26,9 +24,9 @@ public class DeviceMeterGroupPanel extends DataInputPanel {
     private javax.swing.JLabel ivjAreaCodeGroupLabel = null;
     private javax.swing.JLabel ivjCycleGroupLabel = null;
     private JTextArea customGroupsDirectionsLabel = null;
-    private javax.swing.JComboBox alternateGroupComboBox = null;
-    private javax.swing.JComboBox ivjCycleGroupComboBox = null;
-    private javax.swing.JComboBox ivjJComboBoxBillingGroup = null;
+    private javax.swing.JComboBox<String> alternateGroupComboBox = null;
+    private javax.swing.JComboBox<String> ivjCycleGroupComboBox = null;
+    private javax.swing.JComboBox<String> ivjJComboBoxBillingGroup = null;
     private javax.swing.JLabel ivjJLabelBillingGroup = null;
     
     FixedDeviceGroupingHack hacker = (FixedDeviceGroupingHack) YukonSpringHook.getBean("fixedDeviceGroupingHack"); 
@@ -145,10 +143,10 @@ public class DeviceMeterGroupPanel extends DataInputPanel {
      * Return the CycleGroupComboBox property value.
      * @return javax.swing.JComboBox
      */
-    private javax.swing.JComboBox getCycleGroupComboBox() {
+    private javax.swing.JComboBox<String> getCycleGroupComboBox() {
         if (ivjCycleGroupComboBox == null) {
             try {
-                ivjCycleGroupComboBox = new javax.swing.JComboBox();
+                ivjCycleGroupComboBox = new javax.swing.JComboBox<String>();
                 ivjCycleGroupComboBox.setName("CycleGroupComboBox");
                 ivjCycleGroupComboBox.setPreferredSize(new java.awt.Dimension(200, 25));
                 ivjCycleGroupComboBox.setEditable(true);
@@ -196,10 +194,10 @@ public class DeviceMeterGroupPanel extends DataInputPanel {
      * Return the AreaCodeGroupComboBox property value.
      * @return javax.swing.JComboBox
      */
-    private javax.swing.JComboBox getAlternateGroupComboBox() {
+    private javax.swing.JComboBox<String> getAlternateGroupComboBox() {
         if (alternateGroupComboBox == null) {
             try {
-                alternateGroupComboBox = new javax.swing.JComboBox();
+                alternateGroupComboBox = new javax.swing.JComboBox<String>();
                 alternateGroupComboBox.setName("AreaCodeGroupComboBox");
                 alternateGroupComboBox.setPreferredSize(new java.awt.Dimension(200, 25));
                 alternateGroupComboBox.setEditable(true);
@@ -247,10 +245,10 @@ public class DeviceMeterGroupPanel extends DataInputPanel {
      * Return the JComboBoxBillingGroup property value.
      * @return javax.swing.JComboBox
      */
-    private javax.swing.JComboBox getJComboBoxBillingGroup() {
+    private javax.swing.JComboBox<String> getJComboBoxBillingGroup() {
         if (ivjJComboBoxBillingGroup == null) {
             try {
-                ivjJComboBoxBillingGroup = new javax.swing.JComboBox();
+                ivjJComboBoxBillingGroup = new javax.swing.JComboBox<String>();
                 ivjJComboBoxBillingGroup.setName("JComboBoxBillingGroup");
                 ivjJComboBoxBillingGroup.setPreferredSize(new java.awt.Dimension(200, 25));
                 ivjJComboBoxBillingGroup.setEditable(true);
@@ -296,18 +294,19 @@ public class DeviceMeterGroupPanel extends DataInputPanel {
     }
     
     
+    @Override
     public Object getValue(Object val) {
         DeviceBase device = null;
         
         SimpleDevice yd = null;
         if (val instanceof MultiDBPersistent) {
-            if ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0) instanceof DeviceBase) {
-                device = (DeviceBase) ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0));
+            if (((MultiDBPersistent) val).getDBPersistentVector().get(0) instanceof DeviceBase) {
+                device = (DeviceBase) (((MultiDBPersistent) val).getDBPersistentVector().get(0));
             }
         } else {
             device = (DeviceBase) val;
         }
-        yd = new SimpleDevice(device.getPAObjectID(),PaoType.getPaoTypeId(device.getPAOType()));
+        yd = new SimpleDevice(device.getPAObjectID(), device.getPaoType());
         String cycleGroup = (String)getCycleGroupComboBox().getSelectedItem();
         String alternateGroup = (String)getAlternateGroupComboBox().getSelectedItem();
         String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
@@ -319,19 +318,20 @@ public class DeviceMeterGroupPanel extends DataInputPanel {
         
     }
     
+    @Override
     public void setValue(Object o) {
         DeviceBase device = null;
         SimpleDevice yd = null;
         
         if (o instanceof MultiDBPersistent) {
-            if ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0) instanceof DeviceBase) {
-                device = (DeviceBase) ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0));
+            if (((MultiDBPersistent) o).getDBPersistentVector().get(0) instanceof DeviceBase) {
+                device = (DeviceBase) (((MultiDBPersistent) o).getDBPersistentVector().get(0));
             }
         } else {
             device = (DeviceBase) o;
         }
         
-        yd = new SimpleDevice(device.getPAObjectID(),PaoType.getPaoTypeId(device.getPAOType()));
+        yd = new SimpleDevice(device.getPAObjectID(), device.getPaoType());
         String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yd);
         String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yd);
         String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yd);
@@ -340,11 +340,13 @@ public class DeviceMeterGroupPanel extends DataInputPanel {
         getJComboBoxBillingGroup().setSelectedItem( billingGroup );
     }
     
+    @Override
     public void setFirstFocus() 
     {
         // Make sure that when its time to display this panel, the focus starts in the top component
         javax.swing.SwingUtilities.invokeLater( new Runnable() 
             { 
+            @Override
             public void run() 
                 { 
                 getCycleGroupComboBox().requestFocus(); 

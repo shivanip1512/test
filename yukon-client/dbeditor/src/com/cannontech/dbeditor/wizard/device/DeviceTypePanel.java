@@ -3,12 +3,12 @@ package com.cannontech.dbeditor.wizard.device;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
-
 import java.awt.Frame;
 
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.database.data.device.DeviceBase;
@@ -102,8 +102,8 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
      * This method was created in VisualAge.
      * @return int
      */
-    public int getDeviceType() {
-        return ((PaoDefinition) getDeviceTypeList().getSelectedValue()).getType().getDeviceTypeId();
+    public PaoType getDeviceType() {
+        return ((PaoDefinition) getDeviceTypeList().getSelectedValue()).getType();
     }
 
     /**
@@ -188,6 +188,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
      * This method was created in VisualAge.
      * @return java.awt.Dimension
      */
+    @Override
     public Dimension getMinimumSize() {
         return getPreferredSize();
     }
@@ -196,6 +197,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
      * This method was created in VisualAge.
      * @return java.awt.Dimension
      */
+    @Override
     public Dimension getPreferredSize() {
         return new Dimension(350, 200);
     }
@@ -223,6 +225,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
      * @return java.lang.Object
      * @param val java.lang.Object
      */
+    @Override
     public Object getValue(Object val) {
         // Determine the correct type of device and return it
 
@@ -309,6 +312,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
      * This method was created in VisualAge.
      * @return boolean
      */
+    @Override
     public boolean isInputValid() {
         if (getDeviceTypeList().getSelectedValue() == null) {
             setErrorString("A device type must be selected");
@@ -330,6 +334,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
             frame.add("Center", aDeviceTypePanel);
             frame.setSize(aDeviceTypePanel.getSize());
             frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
                     System.exit(0);
                 };
@@ -346,6 +351,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
      * This method was created in VisualAge.
      * @param val java.lang.Object
      */
+    @Override
     public void setValue(Object val) {
         return;
     }
@@ -361,15 +367,18 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
      * Method to handle events for the ListSelectionListener interface.
      * @param e javax.swing.event.ListSelectionEvent
      */
+    @Override
     public void valueChanged(javax.swing.event.ListSelectionEvent e) {
         if (e.getSource() == getDeviceCategoryList())
             connEtoC1(e);
     }
 
+    @Override
     public void setFirstFocus() {
         // Make sure that when its time to display this panel, the focus starts
         // in the top component
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 getDeviceCategoryScrollPane().requestFocus();
             }

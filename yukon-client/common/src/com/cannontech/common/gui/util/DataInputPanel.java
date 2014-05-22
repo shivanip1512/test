@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
@@ -88,9 +89,9 @@ public abstract class DataInputPanel extends JPanel {
      * Helper method to determine if pao is unique.
      * If thisPaobjectId is the same as a paobjectId, then still considered unique.
      */
-    protected boolean isUniquePao(String paoName, String category, String paoClass, int thisPaobjectId) {
+    protected boolean isUniquePao(String paoName, PaoType paoType, int thisPaobjectId) {
         LiteYukonPAObject liteYukonPAObject =
-            YukonSpringHook.getBean(PaoDao.class).findUnique(paoName, category, paoClass);
+            YukonSpringHook.getBean(PaoDao.class).findUnique(paoName, paoType);
 
         // if one is found, compare it to deviceBase to see if its this.
         if (liteYukonPAObject != null) {
@@ -101,8 +102,8 @@ public abstract class DataInputPanel extends JPanel {
         return (liteYukonPAObject == null);
     }
 
-    protected boolean isUniquePao(String paoName, String category, String paoClass) {
-        return isUniquePao(paoName, category, paoClass, -1);
+    protected boolean isUniquePao(String paoName, PaoType paoType) {
+        return isUniquePao(paoName, paoType, -1);
     }
 
     public final static Integer getIntervalSecondsValue(String selectedString) {

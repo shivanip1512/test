@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapBankController;
@@ -70,7 +69,7 @@ public class DBCopyForm extends DBEditorForm {
                     } else if (origObject instanceof YukonPAObject) {
                         YukonPAObject paObject = (YukonPAObject)origObject;
                         PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
-                        if (paoDao.isNameAvailable(paoName, PaoType.getForDbString(paObject.getPAOType()))) {
+                        if (paoDao.isNameAvailable(paoName, paObject.getPaoType())) {
                             ((YukonPAObject) copyObject).setPAOName(paoName);
                             addDBObject(copyObject, message);
                         } else {    // name already in use

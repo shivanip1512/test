@@ -8,7 +8,6 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.device.Repeater850;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dbeditor.wizard.device.DeviceRDSTerminalPanel;
 import com.cannontech.dbeditor.wizard.device.DeviceTNPPTerminalPanel;
 
@@ -20,91 +19,91 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
 	
-	private static final int[][] EDITOR_TYPES =
+	private static final PaoType[][] EDITOR_TYPES =
 	{
 		{   //0 - DeviceBaseEditorPanel
-			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
-			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, PAOGroups.ALPHA_A1, 
-			PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM,
-			PAOGroups.DAVISWEATHER, PAOGroups.LANDISGYRS4, PAOGroups.SIXNET, PAOGroups.MCT310, 
-			PAOGroups.MCT318, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, 
-			PAOGroups.MCT360, PAOGroups.MCT370, PAOGroups.MCT240, PAOGroups.LMT_2, 
-			PAOGroups.MCT248, PAOGroups.MCT250, PAOGroups.MCT210, PAOGroups.MCT213,
-			PAOGroups.REPEATER, PAOGroups.REPEATER_902, PAOGroups.REPEATER_800, PAOGroups.REPEATER_801, PAOGroups.REPEATER_850, PAOGroups.REPEATER_921, PAOGroups.RTUILEX, PAOGroups.RTUWELCO, 
-			PAOGroups.DR_87, PAOGroups.TAPTERMINAL, PAOGroups.TNPP_TERMINAL, PAOGroups.WCTP_TERMINAL, PAOGroups.SNPP_TERMINAL,
-			PAOGroups.VIRTUAL_SYSTEM, PAOGroups.DCT_501, PAOGroups.RTU_DNP, PAOGroups.RTU_DART,
-			PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.RTU_MODBUS,
-			PAOGroups.MCTBROADCAST, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.MCT310IDL,
-			PAOGroups.TRANSDATA_MARKV, PAOGroups.SERIES_5_LMI, 
-			PAOGroups.RTC, PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
-            PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3, 
-            PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.FAULT_CI, PAOGroups.NEUTRAL_MONITOR, PAOGroups.LCR3102, PAOGroups.LCR6200_RFN, PAOGroups.LCR6600_RFN,
-            PAOGroups.RFN410FL, PAOGroups.RFN410FX, PAOGroups.RFN410FD, PAOGroups.RFN420FL, PAOGroups.RFN420FX, PAOGroups.RFN420FD, PAOGroups.RFN420FRX, PAOGroups.RFN420FRD,
-            PAOGroups.RFN410CL, PAOGroups.RFN420CL, PAOGroups.RFN420CD,
-            PAOGroups.RFN430KV, PAOGroups.RFN430A3D, PAOGroups.RFN430A3T, PAOGroups.RFN430A3K, PAOGroups.RFN430A3R, PAOGroups.RDS_TERMINAL,
-//            PAOGroups.RFN440_2131T, PAOGroups.RFN440_2132T, PAOGroups.RFN440_2133T,
-            PAOGroups.RFN440_2131TD, PAOGroups.RFN440_2132TD, PAOGroups.RFN440_2133TD,
-            PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
-            PAOGroups.MCT440_2131B, PAOGroups.MCT440_2132B, PAOGroups.MCT440_2133B,  
-            PAOGroups.RFWMETER,
-            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
-            PAOGroups.RFN430SL0, PAOGroups.RFN430SL1, PAOGroups.RFN430SL2, PAOGroups.RFN430SL3, PAOGroups.RFN430SL4,
-            PAOGroups.RF_DA, PAOGroups.ECOBEE_SMART_SI
+			PaoType.CCU710A, PaoType.CCU711, PaoType.CCU721, PaoType.TCU5000, PaoType.TCU5500, 
+			PaoType.LCU415, PaoType.LCU_T3026, PaoType.LCULG, PaoType.LCU_ER, PaoType.ALPHA_A1, 
+			PaoType.ALPHA_PPLUS, PaoType.FULCRUM, PaoType.VECTRON, PaoType.QUANTUM,
+			PaoType.DAVISWEATHER, PaoType.LANDISGYRS4, PaoType.SIXNET, PaoType.MCT310, 
+			PaoType.MCT318, PaoType.MCT310ID, PaoType.MCT310IL, PaoType.MCT318L, 
+			PaoType.MCT360, PaoType.MCT370, PaoType.MCT240, PaoType.LMT_2, 
+			PaoType.MCT248, PaoType.MCT250, PaoType.MCT210, PaoType.MCT213,
+			PaoType.REPEATER, PaoType.REPEATER_902, PaoType.REPEATER_800, PaoType.REPEATER_801, PaoType.REPEATER_850, PaoType.REPEATER_921, PaoType.RTUILEX, PaoType.RTUWELCO, 
+			PaoType.DR_87, PaoType.TAPTERMINAL, PaoType.TNPP_TERMINAL, PaoType.WCTP_TERMINAL, PaoType.SNPP_TERMINAL,
+			PaoType.VIRTUAL_SYSTEM, PaoType.DCT_501, PaoType.RTU_DNP, PaoType.RTU_DART,
+			PaoType.ION_7700, PaoType.ION_7330, PaoType.ION_8300, PaoType.RTU_MODBUS,
+			PaoType.MCTBROADCAST, PaoType.MCT310CT, PaoType.MCT310IM, PaoType.MCT310IDL,
+			PaoType.TRANSDATA_MARKV, PaoType.SERIES_5_LMI, 
+			PaoType.RTC, PaoType.KV, PaoType.KVII, PaoType.RTM, PaoType.MCT410IL, PaoType.MCT410CL,
+            PaoType.MCT410FL, PaoType.MCT410GL, PaoType.MCT470, PaoType.MCT430A, PaoType.MCT430S4, PaoType.MCT430SL, PaoType.MCT430A3, 
+            PaoType.SENTINEL, PaoType.FOCUS, PaoType.ALPHA_A3, PaoType.FAULT_CI, PaoType.NEUTRAL_MONITOR, PaoType.LCR3102, PaoType.LCR6200_RFN, PaoType.LCR6600_RFN,
+            PaoType.RFN410FL, PaoType.RFN410FX, PaoType.RFN410FD, PaoType.RFN420FL, PaoType.RFN420FX, PaoType.RFN420FD, PaoType.RFN420FRX, PaoType.RFN420FRD,
+            PaoType.RFN410CL, PaoType.RFN420CL, PaoType.RFN420CD,
+            PaoType.RFN430KV, PaoType.RFN430A3D, PaoType.RFN430A3T, PaoType.RFN430A3K, PaoType.RFN430A3R, PaoType.RDS_TERMINAL,
+//            PaoType.RFN440_2131T, PaoType.RFN440_2132T, PaoType.RFN440_2133T,
+            PaoType.RFN440_2131TD, PaoType.RFN440_2132TD, PaoType.RFN440_2133TD,
+            PaoType.MCT420FL, PaoType.MCT420FD, PaoType.MCT420CL, PaoType.MCT420CD,
+            PaoType.MCT440_2131B, PaoType.MCT440_2132B, PaoType.MCT440_2133B,  
+            PaoType.RFWMETER,
+            PaoType.IPC410FL, PaoType.IPC420FD, PaoType.IPC430S4E, PaoType.IPC430SL,
+            PaoType.RFN430SL0, PaoType.RFN430SL1, PaoType.RFN430SL2, PaoType.RFN430SL3, PaoType.RFN430SL4,
+            PaoType.RF_DA, PaoType.ECOBEE_SMART_SI
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
-			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
-			PAOGroups.SIXNET, PAOGroups.LANDISGYRS4, PAOGroups.MCT310, PAOGroups.MCT318, PAOGroups.MCT360,
-			PAOGroups.MCT370, PAOGroups.MCT240, PAOGroups.LMT_2, PAOGroups.MCT248, PAOGroups.MCT250, PAOGroups.MCT210,
-			PAOGroups.DR_87, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, PAOGroups.MCT213,
-			PAOGroups.DCT_501, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.ION_7330,
-			PAOGroups.ION_7700, PAOGroups.ION_8300, PAOGroups.MCT310IDL, 
-			PAOGroups.TRANSDATA_MARKV, PAOGroups.KV, PAOGroups.KVII, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
-            PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3, 
-            PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102,
-            PAOGroups.RFN410FL, PAOGroups.RFN410FX, PAOGroups.RFN410FD, PAOGroups.RFN420FL, PAOGroups.RFN420FX, PAOGroups.RFN420FD, PAOGroups.RFN420FRX, PAOGroups.RFN420FRD,
-            PAOGroups.RFN410CL, PAOGroups.RFN420CL, PAOGroups.RFN420CD,
-            PAOGroups.RFN430KV, PAOGroups.RFN430A3D, PAOGroups.RFN430A3T, PAOGroups.RFN430A3K, PAOGroups.RFN430A3R,
-//          PAOGroups.RFN440_2131T, PAOGroups.RFN440_2132T, PAOGroups.RFN440_2133T,
-          PAOGroups.RFN440_2131TD, PAOGroups.RFN440_2132TD, PAOGroups.RFN440_2133TD,
-            PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
-            PAOGroups.MCT440_2131B, PAOGroups.MCT440_2132B, PAOGroups.MCT440_2133B,
-            PAOGroups.RFWMETER,
-            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
-            PAOGroups.RFN430SL0, PAOGroups.RFN430SL1, PAOGroups.RFN430SL2, PAOGroups.RFN430SL3, PAOGroups.RFN430SL4
+			PaoType.ALPHA_A1, PaoType.ALPHA_PPLUS, PaoType.FULCRUM, PaoType.VECTRON, PaoType.QUANTUM, 
+			PaoType.SIXNET, PaoType.LANDISGYRS4, PaoType.MCT310, PaoType.MCT318, PaoType.MCT360,
+			PaoType.MCT370, PaoType.MCT240, PaoType.LMT_2, PaoType.MCT248, PaoType.MCT250, PaoType.MCT210,
+			PaoType.DR_87, PaoType.MCT310ID, PaoType.MCT310IL, PaoType.MCT318L, PaoType.MCT213,
+			PaoType.DCT_501, PaoType.MCT310CT, PaoType.MCT310IM, PaoType.ION_7330,
+			PaoType.ION_7700, PaoType.ION_8300, PaoType.MCT310IDL, 
+			PaoType.TRANSDATA_MARKV, PaoType.KV, PaoType.KVII, PaoType.MCT410IL, PaoType.MCT410CL,
+            PaoType.MCT410FL, PaoType.MCT410GL, PaoType.MCT470, PaoType.MCT430A, PaoType.MCT430S4, PaoType.MCT430SL, PaoType.MCT430A3, 
+            PaoType.SENTINEL, PaoType.FOCUS, PaoType.ALPHA_A3, PaoType.LCR3102,
+            PaoType.RFN410FL, PaoType.RFN410FX, PaoType.RFN410FD, PaoType.RFN420FL, PaoType.RFN420FX, PaoType.RFN420FD, PaoType.RFN420FRX, PaoType.RFN420FRD,
+            PaoType.RFN410CL, PaoType.RFN420CL, PaoType.RFN420CD,
+            PaoType.RFN430KV, PaoType.RFN430A3D, PaoType.RFN430A3T, PaoType.RFN430A3K, PaoType.RFN430A3R,
+//          PaoType.RFN440_2131T, PaoType.RFN440_2132T, PaoType.RFN440_2133T,
+          PaoType.RFN440_2131TD, PaoType.RFN440_2132TD, PaoType.RFN440_2133TD,
+            PaoType.MCT420FL, PaoType.MCT420FD, PaoType.MCT420CL, PaoType.MCT420CD,
+            PaoType.MCT440_2131B, PaoType.MCT440_2132B, PaoType.MCT440_2133B,
+            PaoType.RFWMETER,
+            PaoType.IPC410FL, PaoType.IPC420FD, PaoType.IPC430S4E, PaoType.IPC430SL,
+            PaoType.RFN430SL0, PaoType.RFN430SL1, PaoType.RFN430SL2, PaoType.RFN430SL3, PaoType.RFN430SL4
 		},
       	{   //2 - CapBankController
-         PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510, PAOGroups.CBC_EXPRESSCOM,
-         PAOGroups.CBC_7010, PAOGroups.CBC_7020
+         PaoType.CAPBANKCONTROLLER, PaoType.CBC_FP_2800, PaoType.DNP_CBC_6510, PaoType.CBC_EXPRESSCOM,
+         PaoType.CBC_7010, PaoType.CBC_7020
      	 },
 	  	{	//3 - Series5SettingsEditorPanel
-		  PAOGroups.SERIES_5_LMI
+		  PaoType.SERIES_5_LMI
 	  	},
 		{	//4 - DeviceScanRateEditorPanel
-			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
-			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER,
-			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, 
-			PAOGroups.QUANTUM, PAOGroups.DAVISWEATHER, PAOGroups.LANDISGYRS4,
-			PAOGroups.MCT310, PAOGroups.MCT318, PAOGroups.MCT360, PAOGroups.MCT370, 
-			PAOGroups.MCT240, PAOGroups.LMT_2, PAOGroups.MCT248, PAOGroups.MCT250, 
-			PAOGroups.MCT210, PAOGroups.MCT213, PAOGroups.REPEATER, PAOGroups.REPEATER_902, PAOGroups.REPEATER_800, PAOGroups.REPEATER_801, PAOGroups.REPEATER_850, PAOGroups.REPEATER_921,
-			PAOGroups.RTUILEX, PAOGroups.RTUWELCO, PAOGroups.DR_87, PAOGroups.SIXNET, 
-			PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, PAOGroups.DCT_501,
-         	PAOGroups.DNP_CBC_6510, PAOGroups.RTU_DNP, PAOGroups.MCT310CT, PAOGroups.MCT310IM,
-         	PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.RTU_DART,
-         	PAOGroups.MCT310IDL, PAOGroups.TRANSDATA_MARKV, PAOGroups.SERIES_5_LMI, PAOGroups.RTU_MODBUS,
-         	PAOGroups.RTC,  PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
-            PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3,
-            PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102,
-            PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
-            PAOGroups.MCT440_2131B, PAOGroups.MCT440_2132B, PAOGroups.MCT440_2133B,
-            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
+			PaoType.CCU710A, PaoType.CCU711, PaoType.CCU721, PaoType.TCU5000, PaoType.TCU5500, 
+			PaoType.LCU415, PaoType.LCU_T3026, PaoType.LCULG, PaoType.LCU_ER,
+			PaoType.ALPHA_A1, PaoType.ALPHA_PPLUS, PaoType.FULCRUM, PaoType.VECTRON, 
+			PaoType.QUANTUM, PaoType.DAVISWEATHER, PaoType.LANDISGYRS4,
+			PaoType.MCT310, PaoType.MCT318, PaoType.MCT360, PaoType.MCT370, 
+			PaoType.MCT240, PaoType.LMT_2, PaoType.MCT248, PaoType.MCT250, 
+			PaoType.MCT210, PaoType.MCT213, PaoType.REPEATER, PaoType.REPEATER_902, PaoType.REPEATER_800, PaoType.REPEATER_801, PaoType.REPEATER_850, PaoType.REPEATER_921,
+			PaoType.RTUILEX, PaoType.RTUWELCO, PaoType.DR_87, PaoType.SIXNET, 
+			PaoType.MCT310ID, PaoType.MCT310IL, PaoType.MCT318L, PaoType.DCT_501,
+         	PaoType.DNP_CBC_6510, PaoType.RTU_DNP, PaoType.MCT310CT, PaoType.MCT310IM,
+         	PaoType.ION_7700, PaoType.ION_7330, PaoType.ION_8300, PaoType.RTU_DART,
+         	PaoType.MCT310IDL, PaoType.TRANSDATA_MARKV, PaoType.SERIES_5_LMI, PaoType.RTU_MODBUS,
+         	PaoType.RTC,  PaoType.KV, PaoType.KVII, PaoType.RTM, PaoType.MCT410IL, PaoType.MCT410CL,
+            PaoType.MCT410FL, PaoType.MCT410GL, PaoType.MCT470, PaoType.MCT430A, PaoType.MCT430S4, PaoType.MCT430SL, PaoType.MCT430A3,
+            PaoType.SENTINEL, PaoType.FOCUS, PaoType.ALPHA_A3, PaoType.LCR3102,
+            PaoType.MCT420FL, PaoType.MCT420FD, PaoType.MCT420CL, PaoType.MCT420CD,
+            PaoType.MCT440_2131B, PaoType.MCT440_2132B, PaoType.MCT440_2133B,
+            PaoType.IPC410FL, PaoType.IPC420FD, PaoType.IPC430S4E, PaoType.IPC430SL,
 		},
 
 		{   //5 - TapTerminalPanel
-			PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL, PAOGroups.SNPP_TERMINAL
+			PaoType.TAPTERMINAL, PaoType.WCTP_TERMINAL, PaoType.SNPP_TERMINAL
 		},
 		{   //6 - MCTIEDPort
-			PAOGroups.MCT360, PAOGroups.MCT370
+			PaoType.MCT360, PaoType.MCT370
 		},
 		/*
 		 * Until the background functionality is there, no point in showing this panel
@@ -125,42 +124,42 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.RTM, PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
 		},*/
 		{   //7 - CapBank
-			PAOGroups.CAPBANK
+		    PaoType.CAPBANK
 		},
 		{   //8 - CapBankSettingsPanel
-			PAOGroups.CAPBANK
+		    PaoType.CAPBANK
 		},
 		{	//9 - MCTBroadcastListEditorPanel
-			PAOGroups.MCTBROADCAST
+			PaoType.MCTBROADCAST
 		},
 		{	//10 - PAOExclusionEditorPanel
-			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
-			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
-			PAOGroups.TAPTERMINAL, PAOGroups.TNPP_TERMINAL, PAOGroups.WCTP_TERMINAL,
-			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL, PAOGroups.RDS_TERMINAL
+			PaoType.CCU710A, PaoType.CCU711, PaoType.CCU721, PaoType.TCU5000, PaoType.TCU5500, 
+			PaoType.LCU415, PaoType.LCU_T3026, PaoType.LCULG, PaoType.LCU_ER, 
+			PaoType.TAPTERMINAL, PaoType.TNPP_TERMINAL, PaoType.WCTP_TERMINAL,
+			PaoType.SERIES_5_LMI, PaoType.RTC, PaoType.SNPP_TERMINAL, PaoType.RDS_TERMINAL
 			
 		},
 		{	//11 - ExclusionTimingEditorPanel
-			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
-			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
-			PAOGroups.TAPTERMINAL, PAOGroups.TNPP_TERMINAL, PAOGroups.WCTP_TERMINAL,
-			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL, PAOGroups.RDS_TERMINAL
+			PaoType.CCU710A, PaoType.CCU711, PaoType.CCU721, PaoType.TCU5000, PaoType.TCU5500, 
+			PaoType.LCU415, PaoType.LCU_T3026, PaoType.LCULG, PaoType.LCU_ER, 
+			PaoType.TAPTERMINAL, PaoType.TNPP_TERMINAL, PaoType.WCTP_TERMINAL,
+			PaoType.SERIES_5_LMI, PaoType.RTC, PaoType.SNPP_TERMINAL, PaoType.RDS_TERMINAL
 		},
 		{	//12 - DeviceVerificationAssignmentPanel
-			PAOGroups.RTM
+			PaoType.RTM
 		},
 		{
 			//13 - DeviceMCT400SeriesOptionPanel
-			PAOGroups.MCT410IL, PAOGroups.MCT410CL, PAOGroups.MCT410FL, PAOGroups.MCT410GL,
-			PAOGroups.MCT420FL
+			PaoType.MCT410IL, PaoType.MCT410CL, PaoType.MCT410FL, PaoType.MCT410GL,
+			PaoType.MCT420FL
 		},
         {
             //14 - TNPPTermOptionPanel
-            PAOGroups.TNPP_TERMINAL
+            PaoType.TNPP_TERMINAL
         },
         {
             //15 - RDSTerminalPanel
-            PAOGroups.RDS_TERMINAL
+            PaoType.RDS_TERMINAL
         }
 
 };
@@ -331,12 +330,9 @@ public void setValue(Object val) {
 
 	//We must assume that val is an instance of DeviceBase	
 	com.cannontech.database.data.device.DeviceBase device = (com.cannontech.database.data.device.DeviceBase) val;
-	int type = PaoType.getPaoTypeId( device.getPAOType() );
+	PaoType type = device.getPaoType();
 	
-	//com.cannontech.database.data.pao.YukonPAObject device = (com.cannontech.database.data.pao.YukonPAObject)val;
-	//int type = DeviceTypes.getType( device.get.getType() );
-
- 	for( int i = 0; i < EDITOR_TYPES.length; i++ )
+	for( int i = 0; i < EDITOR_TYPES.length; i++ )
  	{
 	 	for( int j = 0; j < EDITOR_TYPES[i].length; j++ )
 	 	{

@@ -18,13 +18,13 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commander.YC;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -50,9 +50,9 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	private YukonUserContext userContext = null;
 	
 	/** Valid route types for serial commands to be sent out on */
-	private int [] validRouteTypes = new int[]{
-		RouteTypes.ROUTE_CCU,
-		RouteTypes.ROUTE_MACRO
+	private PaoType [] validRouteTypes = new PaoType[]{
+		PaoType.ROUTE_CCU,
+		PaoType.ROUTE_MACRO
 		};	
 
 	public YCBean()
@@ -90,7 +90,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 * The serialNumber for the LCR commands
 	 * @param serialNumber_ java.lang.String
 	 */
-	public void setSerialNumber(String serialNumber_) {
+	@Override
+    public void setSerialNumber(String serialNumber_) {
 		setSerialNumber(getDeviceType(), serialNumber_);
 	}	
 	
@@ -98,7 +99,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 * Load the data maps with the returned pointData 
 	 * @see com.cannontech.message.util.MessageListener#messageReceived(com.cannontech.message.util.MessageEvent)
 	 */
-	public void messageReceived(MessageEvent e)
+	@Override
+    public void messageReceived(MessageEvent e)
 	{
 		Message in = e.getMessage();
 		if( in instanceof Return) {
@@ -140,13 +142,15 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpSessionBindingListener#valueBound(javax.servlet.http.HttpSessionBindingEvent)
 	 */
-	public void valueBound(HttpSessionBindingEvent arg0) {
+	@Override
+    public void valueBound(HttpSessionBindingEvent arg0) {
 		CTILogger.info("YCBean value bound to session.");
 	}
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpSessionBindingListener#valueUnbound(javax.servlet.http.HttpSessionBindingEvent)
 	 */
-	public void valueUnbound(HttpSessionBindingEvent arg0) {
+	@Override
+    public void valueUnbound(HttpSessionBindingEvent arg0) {
 		CTILogger.info("YCBean value UnBound from session.");
         clearRequestMessage();
         getPilConn().removeMessageListener(this);
@@ -210,6 +214,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     /**
      * @param liteYukonPao
      */
+    @Override
     public void setLiteYukonPao(LiteYukonPAObject liteYukonPao){
         //Only update the liteYukonPaobject if it has changed to prevent
         // history from this paobject from being removed.

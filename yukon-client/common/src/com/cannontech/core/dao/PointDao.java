@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -182,7 +183,7 @@ public interface PointDao {
 
     List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank);
 
-    List<LitePoint> searchByName(String name, String paoClass);
+    List<LitePoint> searchByName(String name, PaoClass paoClass);
 
     /**
      * Returns the point on the given PAO with the name specified.  Case is ignored.  No trimming

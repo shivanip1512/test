@@ -10,8 +10,7 @@ import java.util.List;
 import javax.swing.JLabel;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -37,11 +36,13 @@ public class LMGroupCopyNameRoutePanel extends com.cannontech.common.gui.util.Da
 	private JLabel jLabelErrorMessage = null;
 
 	class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
-		public void actionPerformed(java.awt.event.ActionEvent e) {
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == LMGroupCopyNameRoutePanel.this.getJComboBoxRoutes()) 
 				connEtoC1(e);
 		};
-		public void caretUpdate(javax.swing.event.CaretEvent e) {
+		@Override
+        public void caretUpdate(javax.swing.event.CaretEvent e) {
 			if (e.getSource() == LMGroupCopyNameRoutePanel.this.getJTextFieldName()) 
 				connEtoC2(e);
 		};
@@ -56,6 +57,7 @@ public LMGroupCopyNameRoutePanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {}
 
 /**
@@ -63,6 +65,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {}
  * @param e javax.swing.event.CaretEvent
  */
 
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	if (e.getSource() == getJTextFieldName()) 
 		connEtoC2(e);
@@ -118,7 +121,8 @@ private javax.swing.JComboBox getJComboBoxRoutes() {
 			ivjJComboBoxRoutes.setMinimumSize(new java.awt.Dimension(204, 23));
 			// user code begin {1}
 			ivjJComboBoxRoutes.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
+				@Override
+                public void actionPerformed(java.awt.event.ActionEvent e) {    
 					fireInputUpdate(); 
 				}
 			});
@@ -212,6 +216,7 @@ private javax.swing.JTextField getJTextFieldName() {
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	LMGroup group = (LMGroup)o;
@@ -342,13 +347,15 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	boolean isValid;
 	String newName = getJTextFieldName().getText();
 
     //check to make sure a unique name has been entered
-    if(isUniquePao(newName, PaoCategory.DEVICE.toString(), PaoClass.GROUP.toString())){
+	//just pick a PaoType that is a LM Group; only PaoClass and PaoCategory are used to check uniqueness
+    if(isUniquePao(newName, PaoType.LM_GROUP_EXPRESSCOMM)){
         setErrorString("");
         isValid = true;
     } else {
@@ -377,7 +384,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aLMGroupBasePanel);
 		frame.setSize(aLMGroupBasePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -393,6 +401,7 @@ public static void main(java.lang.String[] args) {
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	LMGroup group = (LMGroup)o;

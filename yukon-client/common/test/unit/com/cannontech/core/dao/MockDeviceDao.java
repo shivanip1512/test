@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.core.service.impl.PaoLoader;
@@ -68,14 +69,7 @@ public class MockDeviceDao implements DeviceDao {
     }
 
     @Override
-    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, int category, int paoClass,
-                                                  int type) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category,
-                                                  String paoClass, String type) {
+    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, PaoType paoType) {
         throw new MethodNotImplementedException();
     }
 

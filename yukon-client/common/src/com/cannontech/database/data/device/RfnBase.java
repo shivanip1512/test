@@ -22,6 +22,10 @@ public class RfnBase extends DeviceBase {
     
     private RfnAddress rfnAddress = null;
     
+    public RfnBase(PaoType paoType) {
+        super(paoType);
+    }
+    
     @Override
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
@@ -49,7 +53,7 @@ public class RfnBase extends DeviceBase {
         getRfnAddress().delete();
         
         /** Clean up stars tables */
-        PaoType paoType = PaoType.getForDbString(getPAOType());
+        PaoType paoType = getPaoType();
         if (paoType.isRfn() && !paoType.isMeter()) {
             HardwareService hardwareService = YukonSpringHook.getBean("hardwareService", HardwareService.class);
             InventoryDao inventoryDao = YukonSpringHook.getBean("inventoryDao", InventoryDao.class);
@@ -96,7 +100,7 @@ public class RfnBase extends DeviceBase {
         /* Use the rfn device dao to do updating since depending on the address arguments
          * we will either be doing a delete, and insert or an update. */
         RfnDeviceDao rfnDeviceDao = YukonSpringHook.getBean("rfnDeviceDao", RfnDeviceDao.class);
-        RfnDevice device = new RfnDevice(new PaoIdentifier(getPAObjectID(), PaoType.getForDbString(getPAOType())), 
+        RfnDevice device = new RfnDevice(new PaoIdentifier(getPAObjectID(), getPaoType()), 
                                       new RfnIdentifier(getRfnAddress().getSerialNumber(), getRfnAddress().getManufacturer(), getRfnAddress().getModel()));
         rfnDeviceDao.updateDevice(device);
     }

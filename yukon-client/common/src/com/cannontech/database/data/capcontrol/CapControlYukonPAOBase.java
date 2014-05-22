@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
@@ -22,8 +23,8 @@ public abstract class CapControlYukonPAOBase extends com.cannontech.database.dat
     private static final HolidayScheduleDao holidayScheduleDao = YukonSpringHook.getBean("holidayScheduleDao", HolidayScheduleDao.class);
     private static final SeasonScheduleDao seasonScheduleDao = YukonSpringHook.getBean("seasonScheduleDao", SeasonScheduleDao.class);
 
-    public CapControlYukonPAOBase() {
-        super();
+    public CapControlYukonPAOBase(PaoType paoType) {
+        super(paoType);
     }
 
     public abstract List<? extends DBPersistent> getChildList();
@@ -114,10 +115,6 @@ public abstract class CapControlYukonPAOBase extends com.cannontech.database.dat
     
     public String getGeoAreaName() {
         return getYukonPAObject().getDescription();
-    }
-    
-    public void setCapControlType(String type) {
-        getYukonPAObject().setType(type);
     }
     
     public void setDisableFlag(Character flag) {

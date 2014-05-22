@@ -18,7 +18,6 @@ public class DeviceMeterNumberPanel extends com.cannontech.common.gui.util.DataI
 	private javax.swing.JLabel ivjMeterNumberLabel = null;
 	private javax.swing.JTextField ivjMeterNumberTextField = null;
 	
-	private int mctType = 0;
 /**
  * Constructor
  */
@@ -32,6 +31,7 @@ public DeviceMeterNumberPanel() {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -148,6 +148,7 @@ private javax.swing.JTextField getMeterNumberTextField() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getMinimumSize() {
 	return getPreferredSize();
 }
@@ -155,6 +156,7 @@ public Dimension getMinimumSize() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getPreferredSize() {
 	return new Dimension( 350, 200);
 }
@@ -163,6 +165,7 @@ public Dimension getPreferredSize() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val)
 {
 	if( val == null )
@@ -229,6 +232,7 @@ private void initialize()
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() {
 	if( getMeterNumberTextField().getText() == null   ||
 		getMeterNumberTextField().getText().length() < 1 )
@@ -268,17 +272,20 @@ public void setDefaultMeterNumber(String defaultValue) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val)
 {
 	getMeterNumberTextField().setText( 
 			new String(com.cannontech.common.util.CtiUtilities.STRING_DEFAULT) );
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getMeterNumberTextField().requestFocus(); 
@@ -286,10 +293,6 @@ public void setFirstFocus()
     });    
 }
 
-public void setMCT400Type(int truth)
-{
-	mctType = truth;
-}
 
 /**
  * Helper method to check meternumber uniqueness

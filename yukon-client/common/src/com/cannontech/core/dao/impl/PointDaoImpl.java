@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -103,6 +104,7 @@ public class PointDaoImpl implements PointDao {
     };
     
     private static final SqlFragmentGenerator<Integer> paoPointFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+        @Override
         public SqlFragmentSource generate(List<Integer> subList) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT PaObjectId, PointId");
@@ -605,6 +607,7 @@ public class PointDaoImpl implements PointDao {
     @Override
     public Multimap<Integer, Integer> getPaoPointMultimap(Iterable<Integer> paoIds) {
         List<int[]> paoPointPairs = chunkingTemplate.query(paoPointFragmentGenerator, paoIds, new YukonRowMapper<int[]>() {
+            @Override
             public int[] mapRow(YukonResultSet rs) throws SQLException {
                 int paObjectId = rs.getInt("PaObjectId");
                 int pointId = rs.getInt("PointId");
@@ -717,10 +720,10 @@ public class PointDaoImpl implements PointDao {
     }
     
     @Override
-    public List<LitePoint> searchByName(final String name, final String paoClass) {
+    public List<LitePoint> searchByName(final String name, final PaoClass paoClass) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder(litePaoPointSql);
-        sql.append("where YPO.PAOClass").eq(paoClass);
+        sql.append("where YPO.PAOClass").eq_k(paoClass);
         sql.append("and upper(PointName) like").appendArgument("%" + name.toUpperCase() + "%");
         
         List<LitePoint> pointList = jdbcTemplate.query(sql, litePointRowMapper);

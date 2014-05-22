@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.core.service.impl.PaoLoader;
@@ -62,15 +63,7 @@ public interface DeviceDao {
      * 
      * @return the LiteYukonPaoObject that matches the criteria
      */
-    LiteYukonPAObject getLiteYukonPAObject(String deviceName, int category, int paoClass, int type);
-
-    /**
-     * Will find a device based on the four parameters that make up its unique key.
-     * This method will return null if a device couldn't be found.
-     * 
-     * @return the LiteYukonPaoObject that matches the criteria
-     */
-    LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category, String paoClass, String type);
+    LiteYukonPAObject getLiteYukonPAObject(String deviceName, PaoType paoType);
 
     List<Integer> getDevicesByPort(int portId);
 

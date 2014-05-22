@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -178,43 +177,12 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public LiteYukonPAObject getLiteYukonPAObject(final String deviceName, final int category, final int paoClass,
-            int paoTypeId) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
-            sql.append("WHERE UPPER(y.PAOName) = UPPER(?) ");
-            sql.append(    "AND y.Category = ? ");
-            sql.append(    "AND y.PAOClass = ? ");
-            sql.append(    "AND y.Type = ? ");
-            String stringCategory = PaoCategory.getPaoCategory(category);
-            String stringClass = PaoClass.getPaoClass(paoClass);
-            String stringType = PaoType.getPaoTypeString(paoTypeId);
-
-            LiteYukonPAObject pao =
-                jdbcOps.queryForObject(sql.getSql(), new Object[] { deviceName,
-                stringCategory, stringClass, stringType }, litePaoRowMapper);
-            return pao;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("A PAObject with deviceName '" + deviceName + "' cannot be found.");
-        }
-    }
-
-    /**
-     * @deprecated Use findUnique(String paoName, PaoCategory category, PaoClass paoClass)
-     */
-    @Override
-    @Deprecated
-    public LiteYukonPAObject findUnique(final String paoName, final String category, final String paoClass) {
-        return findUnique(paoName, PaoCategory.getForDbString(category), PaoClass.getForDbString(paoClass));
-    }
-
-    @Override
-    public LiteYukonPAObject findUnique(String paoName, PaoCategory category, PaoClass paoClass) {
+    public LiteYukonPAObject findUnique(String paoName, PaoType paoType) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
             sql.append("WHERE UPPER(y.PAOName) = UPPER(").appendArgument(paoName).append(")");
-            sql.append(    "AND y.Category").eq(category);
-            sql.append(    "AND y.PAOClass").eq(paoClass);
+            sql.append(    "AND y.Category").eq_k(paoType.getPaoCategory());
+            sql.append(    "AND y.PAOClass").eq_k(paoType.getPaoClass());
             LiteYukonPAObject pao = jdbcTemplate.queryForObject(sql, litePaoRowMapper);
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -225,16 +193,15 @@ public final class PaoDaoImpl implements PaoDao {
 
     @Override
     public boolean isNameAvailable(String paoName, PaoType paoType) {
-        return findUnique(paoName, paoType.getPaoCategory(), paoType.getPaoClass()) == null;
+        return findUnique(paoName, paoType) == null;
     }
 
     @Override
-    public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) {
-        String typeStr = PaoType.getPaoTypeString(paoType);
-        String sql = litePaoSql + "where UPPER(type)=? ";
+    public List<LiteYukonPAObject> getLiteYukonPAObjectByType(PaoType paoType) {
+        SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
+        sql.append("where type").eq_k(paoType);
 
-        List<LiteYukonPAObject> paos =
-            jdbcOps.query(sql, new Object[] { StringUtils.upperCase(typeStr) }, litePaoRowMapper);
+        List<LiteYukonPAObject> paos = jdbcTemplate.query(sql, litePaoRowMapper);
         return paos;
     }
 
@@ -335,7 +302,7 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public LiteYukonPAObject[] getRoutesByType(int[] routeTypes) {
+    public LiteYukonPAObject[] getRoutesByType(PaoType[] routeTypes) {
         List<LiteYukonPAObject> routeList = new ArrayList<>(10);
         synchronized (databaseCache) {
             List<LiteYukonPAObject> routes = databaseCache.getAllRoutes();
@@ -343,7 +310,7 @@ public final class PaoDaoImpl implements PaoDao {
 
             for (LiteYukonPAObject litePao : routes) {
                 for (int j = 0; j < routeTypes.length; j++) {
-                    if (litePao.getPaoType().getDeviceTypeId() != routeTypes[j]) {
+                    if (litePao.getPaoType() != routeTypes[j]) {
                         routeList.add(litePao);
                         break;
                     }
@@ -492,10 +459,13 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public List<LiteYukonPAObject> searchByName(final String name, final String paoClass) {
-        String sql = litePaoSql + " WHERE y.PAOClass = ? AND UPPER(y.PAOName) LIKE ?";
-        List<LiteYukonPAObject> paoList =
-            jdbcOps.query(sql, new Object[] { paoClass, "%" + name.toUpperCase() + "%" }, litePaoRowMapper);
+    public List<LiteYukonPAObject> searchByName(final String name, final PaoClass paoClass) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
+        sql.append("where YPO.PAOClass").eq_k(paoClass);
+        sql.append("and upper(PointName) like").appendArgument("%" + name.toUpperCase() + "%");
+        
+        List<LiteYukonPAObject> paoList = jdbcTemplate.query(sql, litePaoRowMapper);
         return paoList;
     }
 

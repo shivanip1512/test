@@ -33,7 +33,6 @@ import com.cannontech.database.data.device.TCUBase;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.device.DeviceWindow;
 
@@ -111,6 +110,7 @@ public DeviceScanRateEditorPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -150,6 +150,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -1530,6 +1531,7 @@ private javax.swing.JComboBox getPeriodicHealthIntervalComboBox() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object device) 
 {
    TwoWayDevice val = null;
@@ -1787,6 +1789,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	if( getJCheckBoxScanWindow().isSelected() 
@@ -1827,7 +1830,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aDeviceScanRateEditorPanel);
 		frame.setSize(aDeviceScanRateEditorPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -1911,10 +1915,10 @@ private void initComboBoxValues( int type )
  * This method was created in VisualAge.
  * @param type java.lang.Object
  */
-public void setDeviceType(int type)
+public void setDeviceType(PaoType paoType)
 {
    //set some devices domain of possible values to a more limited approach
-   initComboBoxValues( type );
+   initComboBoxValues( paoType.getDeviceTypeId() );
 
 	setAccumulatorObjectsVisible( false );
 	setIntegrityObjectsVisible( false );
@@ -1924,62 +1928,60 @@ public void setDeviceType(int type)
 	getPeriodicHealthGroupComboBox().setEnabled(false);
 	getJComboBoxAltHealthChk().setEnabled(false);
 
-	if( DeviceTypesFuncs.isCCU(type)
-			|| DeviceTypesFuncs.isTCU(type)
-			|| DeviceTypesFuncs.isRepeater(type)
-			|| (type == PAOGroups.TAPTERMINAL)
-			|| (type == PAOGroups.WCTP_TERMINAL) )
+	if( DeviceTypesFuncs.isCCU(paoType.getDeviceTypeId())
+			|| DeviceTypesFuncs.isTCU(paoType.getDeviceTypeId())
+			|| DeviceTypesFuncs.isRepeater(paoType.getDeviceTypeId())
+			|| (paoType == PaoType.TAPTERMINAL)
+			|| (paoType == PaoType.WCTP_TERMINAL) )
 	{
 		getPeriodicHealthCheckBox().setText("Periodic Health Check");
 
-		if( DeviceTypesFuncs.isRepeater(type) )
+		if( DeviceTypesFuncs.isRepeater(paoType.getDeviceTypeId()) )
 			getPeriodicHealthIntervalComboBox().setSelectedItem("1 hour");
 	}
-	else if( type == PAOGroups.DAVISWEATHER 
-				|| DeviceTypesFuncs.isMeter(type) )
+	else if( paoType == PaoType.DAVISWEATHER 
+				|| paoType.isMeter() )
 	{
 		getPeriodicHealthCheckBox().setText("General Data Collection");
 		getPeriodicHealthIntervalComboBox().setSelectedItem("1 hour");
 	}
 
-	PaoType paoType = PaoType.getForId(type);
-
-	if( DeviceTypesFuncs.isRTU(type) || 
-	    DeviceTypesFuncs.isMCT(type) || 
-	    DeviceTypesFuncs.isLCU(type) || 
+	if( DeviceTypesFuncs.isRTU(paoType.getDeviceTypeId()) || 
+	    paoType.isMct() || 
+	    DeviceTypesFuncs.isLCU(paoType.getDeviceTypeId()) || 
 	    paoType.isCbc() || 
-	    (type == PAOGroups.SERIES_5_LMI) || 
-	    DeviceTypesFuncs.isTwoWayLcr(type))
+	    (paoType == PaoType.SERIES_5_LMI) || 
+	    DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId()))
 	{		
 		
-		if (DeviceTypesFuncs.isTwoWayLcr(type)) {
+		if (DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())) {
 			
 			getIntegrityRateCheckBox().setText("Demand & Status Rate");
 		}
-		else if( DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT4XX(type)  )
+		else if( DeviceTypesFuncs.isMCT3xx(paoType.getDeviceTypeId()) || DeviceTypesFuncs.isMCT4XX(paoType.getDeviceTypeId())  )
 		{
-			if(DeviceTypesFuncs.isMCT410(type))
+			if(DeviceTypesFuncs.isMCT410(paoType.getDeviceTypeId()))
 				getIntegrityRateCheckBox().setText("Demand & Voltage Rate");
 			else
 				getIntegrityRateCheckBox().setText("Demand & Status Rate");
 			getAccumulatorRateCheckBox().setText("Accumulator (Energy) Rate");
 		}
-		else if (DeviceTypesFuncs.isMCT(type))
+		else if (paoType.isMct())
 		{
 			getPeriodicHealthCheckBox().setText("Status Rate");
 			getIntegrityRateCheckBox().setText("Demand Rate");
 			getAccumulatorRateCheckBox().setText("Accumulator (Energy) Rate");			
 		}
-		else if( type == PAOGroups.RTUILEX || type == PAOGroups.RTM ) 
+		else if( paoType == PaoType.RTUILEX || paoType == PaoType.RTM ) 
 		{
 			getPeriodicHealthCheckBox().setText("General Scan");
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
 			getAccumulatorRateComboBox().setSelectedItem("15 minute");
 		}		
 		
-		else if( type == PAOGroups.RTU_DNP
-					 || type == PAOGroups.RTU_DART
-                || type == PAOGroups.DNP_CBC_6510 )
+		else if( paoType == PaoType.RTU_DNP
+					 || paoType == PaoType.RTU_DART
+                || paoType == PaoType.DNP_CBC_6510 )
       {
 			getPeriodicHealthCheckBox().setText("Class 1,2,3 Scan");
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");      	
@@ -1987,7 +1989,7 @@ public void setDeviceType(int type)
 			getIntegrityRateCheckBox().setText("Class 0,1,2,3 Scan");
 			getIntegrityRateComboBox().setSelectedItem("5 minute");
       }
-	  else if( type == PAOGroups.RTUWELCO )
+	  else if( paoType == PaoType.RTUWELCO )
 	  {
 			getIntegrityRateCheckBox().setText("Integrity Rate");
 			getIntegrityRateComboBox().setSelectedItem("3 minute");
@@ -1995,19 +1997,19 @@ public void setDeviceType(int type)
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
 			getAccumulatorRateComboBox().setSelectedItem("15 minute");	
 	  }
-	  else if( type == PAOGroups.RTU_MODBUS )
+	  else if( paoType == PaoType.RTU_MODBUS )
 	  {
 			getIntegrityRateCheckBox().setText("Integrity Rate");
 			getIntegrityRateComboBox().setSelectedItem("3 minute");
 	  }
-      else if( type == PAOGroups.LCU415 )
+      else if( paoType == PaoType.LCU415 )
       {
          getPeriodicHealthCheckBox().setText("Status & Analog");
          getAccumulatorRateCheckBox().setText("Accumulator Rate");         
       }
-		else if( type == PAOGroups.ION_7700
-			       || type == PAOGroups.ION_7330
-			       || type == PAOGroups.ION_8300 )
+		else if( paoType == PaoType.ION_7700
+			       || paoType == PaoType.ION_7330
+			       || paoType == PaoType.ION_8300 )
 		{
 			getAccumulatorRateCheckBox().setText("Eventlog Collection");			
 			getAccumulatorRateComboBox().setSelectedItem("1 hour");
@@ -2022,28 +2024,28 @@ public void setDeviceType(int type)
 		}
 
       setIntegrityObjectsVisible(
-         !(type == PAOGroups.RTUILEX
-          || type == PAOGroups.LCU415 || type == PAOGroups.RTM));
+         !(paoType == PaoType.RTUILEX
+          || paoType == PaoType.LCU415 || paoType == PaoType.RTM));
 		
       setHealthObjectsVisible( 
-            !(type == PAOGroups.DCT_501
-              || DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT4XX(type)
-				|| type == PAOGroups.SERIES_5_LMI
-				|| type == PAOGroups.RTU_MODBUS
-				|| DeviceTypesFuncs.isTwoWayLcr(type)));
+            !(paoType == PaoType.DCT_501
+              || DeviceTypesFuncs.isMCT3xx(paoType.getDeviceTypeId()) || DeviceTypesFuncs.isMCT4XX(paoType.getDeviceTypeId())
+				|| paoType == PaoType.SERIES_5_LMI
+				|| paoType == PaoType.RTU_MODBUS
+				|| DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())));
       
 		setAccumulatorObjectsVisible( 
-				!(type == PAOGroups.DCT_501 
-               || type == PAOGroups.DNP_CBC_6510
-	            || type == PAOGroups.RTU_DNP
-	            || type == PAOGroups.RTU_DART
-					|| type == PAOGroups.LCU_T3026
-					|| type == PAOGroups.SERIES_5_LMI
-					|| type == PAOGroups.RTM
-					|| type == PAOGroups.RTU_MODBUS
-					|| DeviceTypesFuncs.isTwoWayLcr(type)));
+				!(paoType == PaoType.DCT_501 
+               || paoType == PaoType.DNP_CBC_6510
+	            || paoType == PaoType.RTU_DNP
+	            || paoType == PaoType.RTU_DART
+					|| paoType == PaoType.LCU_T3026
+					|| paoType == PaoType.SERIES_5_LMI
+					|| paoType == PaoType.RTM
+					|| paoType == PaoType.RTU_MODBUS
+					|| DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())));
 		
-		setScanWindowObjectsVisible(!(DeviceTypesFuncs.isTwoWayLcr(type)));
+		setScanWindowObjectsVisible(!(DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())));
 		
 
 		getAccumulatorRateCheckBox().setSelected(false);
@@ -2100,16 +2102,10 @@ private void setIntegrityObjectsVisible(boolean value)
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val)
 {
-	final int deviceType = PaoType.getPaoTypeId( ((DeviceBase)val).getPAOType() );
-
-	setDeviceType( deviceType );
-	
-	//getAccumulatorRateCheckBox().setText("Accumulator Rate");		
-
-//	DeviceScanRate dScanRate[] = new DeviceScanRate[
-//		((TwoWayDevice) val).getDeviceScanRateVector().size()];
+	setDeviceType(((DeviceBase)val).getPaoType());
 
 	HashMap scanRateMap = ((TwoWayDevice)val).getDeviceScanRateMap();
 
@@ -2268,11 +2264,13 @@ private void updateAltJComboBox(JComboBox box_, JComboBox altBox_)
 	
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
         {
             getIntegrityRateCheckBox().requestFocus();

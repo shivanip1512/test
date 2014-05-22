@@ -7,13 +7,13 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.LMDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -64,8 +64,8 @@ public final class LMDaoImpl implements LMDao {
 
     @Override
     public Set<LiteYukonPAObject> getAllLMDirectPrograms() {
-    	List<LiteYukonPAObject> directPrograms = paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_DIRECT_PROGRAM);
-    	List<LiteYukonPAObject> sepPrograms = paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_SEP_PROGRAM);
+    	List<LiteYukonPAObject> directPrograms = paoDao.getLiteYukonPAObjectByType(PaoType.LM_DIRECT_PROGRAM);
+    	List<LiteYukonPAObject> sepPrograms = paoDao.getLiteYukonPAObjectByType(PaoType.LM_SEP_PROGRAM);
 
         return Sets.newHashSet(Iterables.concat(directPrograms, sepPrograms));
     }

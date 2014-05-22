@@ -1,28 +1,24 @@
 package com.cannontech.database.data.device;
 
-/**
- * This type was created in VisualAge.
- */
+import com.cannontech.common.pao.PaoType;
+
 public class KV extends IEDMeter {
-/**
- * KV constructor comment.
- */
-public KV() {
-	super();
-}
-/**
- * Insert the method's description here.
- * @param conn java.sql.Connection
- */
-public void setDbConnection(java.sql.Connection conn) 
-{
-	super.setDbConnection(conn);
-}
-/**
- * This method was created in VisualAge.
- * @param deviceID java.lang.Integer
- */
-public void setDeviceID(Integer deviceID) {
-	super.setDeviceID(deviceID);
-}
+
+    /**
+     * Valid paoTypes are kV and kvII
+     * @param paoType
+     */
+    public KV(PaoType paoType) {
+        super(paoType);
+    }
+
+    @Override
+    public void setDbConnection(java.sql.Connection conn) {
+        super.setDbConnection(conn);
+    }
+
+    @Override
+    public void setDeviceID(Integer deviceID) {
+        super.setDeviceID(deviceID);
+    }
 }

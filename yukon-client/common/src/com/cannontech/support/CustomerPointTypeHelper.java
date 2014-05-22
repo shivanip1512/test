@@ -17,15 +17,12 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.VirtualDevice;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
@@ -144,7 +141,7 @@ public class CustomerPointTypeHelper {
                                                              StateGroupUtils.STATEGROUP_ANALOG);
             point.getPoint().setArchiveType(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName());
             point.getPoint().setArchiveInterval(7*24*60*60); // 1 week as seconds
-            dbPersistentDao.performDBChange(point, Transaction.INSERT);
+            dbPersistentDao.performDBChange(point, TransactionType.INSERT);
         }
         CICustomerPointData customerPoint = new CICustomerPointData();
         customerPoint.setType(type);
@@ -155,28 +152,19 @@ public class CustomerPointTypeHelper {
     }
     
     protected LiteYukonPAObject getCustomerDevice(CICustomerStub customer) {
-        final String generatedDeviceCategory = PAOGroups.STRING_CAT_DEVICE;
-        final String generatedDeviceClass = DeviceClasses.STRING_CLASS_VIRTUAL;
-        final String generatedDeviceType = PaoType.getPaoTypeString(DeviceTypes.VIRTUAL_SYSTEM);
         String deviceName = customerDevicePrefix + customer.getCompanyName() + customerDeviceSuffix;
         
         // returns null if not found
         //TODO create new search function that looks at category, class, type, and name
-        LiteYukonPAObject yukonPAObject = deviceDao.getLiteYukonPAObject(deviceName,
-                                                                           generatedDeviceCategory, 
-                                                                           generatedDeviceClass,
-                                                                           generatedDeviceType);
+        LiteYukonPAObject yukonPAObject = deviceDao.getLiteYukonPAObject(deviceName, PaoType.VIRTUAL_SYSTEM);
         
         if (yukonPAObject == null) {
             VirtualDevice device;
             // create device
             device = new VirtualDevice();
             device.setPAOName(deviceName);
-            device.setPAOCategory(generatedDeviceCategory);
-            device.setPAOClass(generatedDeviceClass);
-            device.setDeviceType(generatedDeviceType);
             
-            dbPersistentDao.performDBChange(device, Transaction.INSERT);
+            dbPersistentDao.performDBChange(device, TransactionType.INSERT);
             yukonPAObject = (LiteYukonPAObject) LiteFactory.createLite(device);
         }
         

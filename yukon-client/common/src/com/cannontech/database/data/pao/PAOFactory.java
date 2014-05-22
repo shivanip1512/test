@@ -44,7 +44,7 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
 	}
 	else if (paoCategory == PaoCategory.LOADMANAGEMENT)
 	{
-		returnObject = LMFactory.createLoadManagement(litePAObject.getPaoType().getDeviceTypeId());
+		returnObject = LMFactory.createLoadManagement(litePAObject.getPaoType());
 		
 		if( returnObject instanceof com.cannontech.database.data.device.DeviceBase )
 			((com.cannontech.database.data.device.DeviceBase)returnObject).setDeviceID( new Integer( litePAObject.getYukonID() ) );
@@ -61,13 +61,13 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
 	}
 	else if (paoCategory == PaoCategory.ROUTE)
 	{
-		returnObject = RouteFactory.createRoute(litePAObject.getPaoType().getDeviceTypeId());
+		returnObject = RouteFactory.createRoute(litePAObject.getPaoType());
 		((com.cannontech.database.data.route.RouteBase)returnObject).setRouteID( new Integer( litePAObject.getYukonID() ) );
 		((com.cannontech.database.data.route.RouteBase)returnObject).setRouteName( litePAObject.getPaoName() );
 	}
 	else if (paoCategory == PaoCategory.CAPCONTROL)
 	{
-		returnObject = CCYukonPAOFactory.createCapControlPAO(litePAObject.getPaoType().getDeviceTypeId());
+		returnObject = CCYukonPAOFactory.createCapControlPAO(litePAObject.getPaoType());
 		((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setCapControlPAOID( new Integer( litePAObject.getYukonID() ) );
 		((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setName( litePAObject.getPaoName() );
 	}

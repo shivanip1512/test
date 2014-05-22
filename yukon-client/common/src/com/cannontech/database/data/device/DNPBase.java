@@ -18,6 +18,14 @@ import com.google.common.collect.Lists;
 public class DNPBase extends AddressBase implements DBCopiable {
     private DNPConfiguration dnpConfiguration = null;
 
+    /**
+     * Valid paoTypes are RTU-DNP, RTU ModBus, RTU Dart 
+     * @param paoType
+     */
+    public DNPBase(PaoType paoType) {
+        super(paoType);
+    }
+    
     @Override
     public void add() throws java.sql.SQLException {
         super.add();
@@ -32,7 +40,7 @@ public class DNPBase extends AddressBase implements DBCopiable {
         
         DeviceConfigurationDao configurationDao = 
                 YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
-        YukonDevice device = new SimpleDevice(getPAObjectID(), PaoType.getForDbString(getPAOType()));
+        YukonDevice device = new SimpleDevice(getPAObjectID(), getPaoType());
         
         LightDeviceConfiguration configuration = configurationDao.findConfigurationForDevice(device);
         if (configuration != null) {

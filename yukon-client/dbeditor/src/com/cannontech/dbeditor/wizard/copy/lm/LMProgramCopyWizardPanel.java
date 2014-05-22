@@ -1,133 +1,80 @@
 package com.cannontech.dbeditor.wizard.copy.lm;
 
-/**
- * This type was created in VisualAge.
- */
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.wizard.WizardPanel;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.db.DBPersistent;
 
-import com.cannontech.database.data.device.lm.LMProgramDirect;
+/* All Panels used in this WizardPanel MUST be able to handle MultiDBPersistent */
+/* Objects in their getValue(Object o) method!!! */
+public class LMProgramCopyWizardPanel extends WizardPanel {
+    private LMProgramCopyNameSettingsPanel lmProgramCopyNameSettingsPanel;
 
-/* All Panels used in this WizardPanel MUST be able to handle MultiDBPersistent  */
-/*   Objects in their getValue(Object o) method!!! */
-public class LMProgramCopyWizardPanel extends com.cannontech.common.wizard.WizardPanel 
-{
-	private LMProgramCopyNameSettingsPanel lmProgramCopyNameSettingsPanel;
-	
-	private com.cannontech.database.db.DBPersistent copyObject = null;
-	private String programType;
+    private DBPersistent copyObject = null;
 
-/**
- * DeviceWizardPanel constructor comment.
- */
-public LMProgramCopyWizardPanel(com.cannontech.database.db.DBPersistent objectToCopy) 
-{
-	super();
+    public LMProgramCopyWizardPanel(
+            com.cannontech.database.db.DBPersistent objectToCopy) {
+        super();
+        setCopyObject(objectToCopy);
+    }
 
-	setCopyObject( objectToCopy );
-	setProgramType();
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/4/2001 11:11:28 AM)
- * @return java.awt.Dimension
- */
-public java.awt.Dimension getActualSize() 
-{
-	setPreferredSize( new java.awt.Dimension(410, 480) );
+    @Override
+    public java.awt.Dimension getActualSize() {
+        setPreferredSize(new java.awt.Dimension(410, 480));
+        return getPreferredSize();
+    }
 
-	return getPreferredSize();
-}
+    public DBPersistent getCopyObject() {
+        return copyObject;
+    }
 
-/**
- * This method was created in VisualAge.
- */
-public com.cannontech.database.db.DBPersistent getCopyObject() {
-		
-	return copyObject;
-}
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.dbeditor.wizard.device.DeviceNameAddressPanel
- */
-protected LMProgramCopyNameSettingsPanel getLMProgramCopyNameSettingsPanel() {
-	if( lmProgramCopyNameSettingsPanel == null )
-		lmProgramCopyNameSettingsPanel = new LMProgramCopyNameSettingsPanel();
-		
-	return lmProgramCopyNameSettingsPanel;
-}
+    protected LMProgramCopyNameSettingsPanel getLMProgramCopyNameSettingsPanel() {
+        if (lmProgramCopyNameSettingsPanel == null)
+            lmProgramCopyNameSettingsPanel = new LMProgramCopyNameSettingsPanel();
 
-public String getProgramType()
-{
-	return programType;
-}
+        return lmProgramCopyNameSettingsPanel;
+    }
 
-protected String getHeaderText() {
-	return "Copy LM Direct Program";
-}
+    @Override
+    protected String getHeaderText() {
+        return "Copy LM Direct Program";
+    }
 
-/**
- * This method was created in VisualAge.
- * @return java.awt.Dimension
- */
-public java.awt.Dimension getMinimumSize() {
-	return getPreferredSize();
-}
-/**
- * getNextInputPanel method comment.
- */
-protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
-	com.cannontech.common.gui.util.DataInputPanel currentInputPanel)
-{
+    @Override
+    public java.awt.Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
 
-	if (currentInputPanel == null)
-	{
-		return getLMProgramCopyNameSettingsPanel();
-	}	
-	else
-		throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
-}
+    @Override
+    protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel) {
 
-/**
- * getValue method comment.
- */
-public Object getValue(Object o) 
-{
-	return super.getValue( getCopyObject() );
-}
-/**
- * isLastInputPanel method comment.
- */
-protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
-{
-	return currentPanel == getLMProgramCopyNameSettingsPanel();
-}
+        if (currentInputPanel == null) {
+            return getLMProgramCopyNameSettingsPanel();
+        } else
+            throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
+    }
 
-  /**
- * This method was created in VisualAge.
- */
-public void setCopyObject(com.cannontech.database.db.DBPersistent newObject) 
-{
-	try 
-	{ 
-		copyObject = newObject;
-	 	
-		com.cannontech.database.Transaction t = 
-				com.cannontech.database.Transaction.createTransaction(
-					com.cannontech.database.Transaction.RETRIEVE, copyObject);
+    @Override
+    public Object getValue(Object o) {
+        return super.getValue(getCopyObject());
+    }
 
-		copyObject = t.execute();
-	}
-	catch (com.cannontech.database.TransactionException e) 
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
- 	
-}  
-/**
- * Insert the method's description here.
- * Creation date: (6/7/2001 9:31:56 AM)
- */
-public void setProgramType()
-{
-	programType = ((LMProgramDirect)getCopyObject()).getPAOType();
-}
+    @Override
+    protected boolean isLastInputPanel(DataInputPanel currentPanel) {
+        return currentPanel == getLMProgramCopyNameSettingsPanel();
+    }
+
+    public void setCopyObject(DBPersistent newObject) {
+        try {
+            copyObject = newObject;
+
+            Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, copyObject);
+
+            copyObject = t.execute();
+        } catch (TransactionException e) {
+            CTILogger.error(e.getMessage(), e);
+        }
+    }
 }

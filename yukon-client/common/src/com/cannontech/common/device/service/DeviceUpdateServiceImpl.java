@@ -22,7 +22,6 @@ import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
@@ -212,7 +211,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             dbChangeManager.processDbChange(msg);
         }
         
-        return new SimpleDevice(changedDevice.getDevice().getDeviceID(), PaoType.getForDbString(changedDevice.getPAOType()));
+        return new SimpleDevice(changedDevice.getDevice().getDeviceID(), changedDevice.getPaoType());
     }
 
     @Override
@@ -286,7 +285,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             Map<String, RfnManufacturerModel> models =
                 Maps.uniqueIndex(rfnManufacturerModels,
                                  new Function<RfnManufacturerModel, String>() {
-                                     public String apply(RfnManufacturerModel from) {
+                                     @Override
+                                    public String apply(RfnManufacturerModel from) {
                                          return from.getModel();
                                      }
                                  });
@@ -325,8 +325,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             ((MCTBase)newDevice).setConfigMapping(((MCTBase)oldDevice).getConfigMapping());
 
             if ( newDevice instanceof MCT400SeriesBase && oldDevice instanceof MCT400SeriesBase &&
-                    (DeviceTypesFuncs.isMCT410(PaoType.getPaoTypeId(newDevice.getPAOType())) && 
-                     DeviceTypesFuncs.isMCT410(PaoType.getPaoTypeId(oldDevice.getPAOType())))) {
+                    (DeviceTypesFuncs.isMCT410(newDevice.getPaoType().getDeviceTypeId()) && 
+                     DeviceTypesFuncs.isMCT410(oldDevice.getPaoType().getDeviceTypeId()))) {
                 ((MCT400SeriesBase) newDevice).setDeviceMCT400Series(((MCT400SeriesBase)oldDevice).getDeviceMCT400Series());
             }
         }

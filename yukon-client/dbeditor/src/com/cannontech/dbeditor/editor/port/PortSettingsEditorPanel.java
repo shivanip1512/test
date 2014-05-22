@@ -54,6 +54,7 @@ public PortSettingsEditorPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -77,6 +78,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -938,6 +940,7 @@ private javax.swing.JLabel getTypeLabelField() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) 
 {
 	DirectPort dp = ((DirectPort) val);
@@ -1097,6 +1100,7 @@ public boolean isDataComplete() {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val)
 {
 
@@ -1104,7 +1108,6 @@ public void setValue(Object val)
 	CommPort cp = dp.getCommPort();
 	PortSettings ps = dp.getPortSettings();
 
-	String portType = dp.getPAOType();
 	String name = dp.getPortName();
 	Character disableFlag = dp.getPAODisableFlag();
 	Integer baudRate = ps.getBaudRate();
@@ -1182,7 +1185,7 @@ public void setValue(Object val)
         getEncryptionLabel().setVisible(false);
 	}
 
-	getTypeLabelField().setText(portType);
+	getTypeLabelField().setText(dp.getPaoType().getPaoTypeName());
 	getPortDescriptionTextField().setText( name );
 	SwingUtil.setCheckBoxState(getDisableCheckBox(), disableFlag);
 	SwingUtil.setSelectedInComboBox(getBaudRateComboBox(), baudRate.toString());
@@ -1201,6 +1204,7 @@ public void setValue(Object val)
 
 }
 
+@Override
 public boolean isInputValid() {
     
     boolean ret = true;

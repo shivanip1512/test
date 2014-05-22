@@ -1,114 +1,78 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 
-/**
- * @author rneuharth
- * Aug 9, 2002 at 12:43:42 PM
- * 
- * A undefined generated comment
- */
-public class Ion7700 extends AddressBase implements IDeviceMeterGroup
-// implements com.cannontech.database.db.DBCopiable
-{
-	private DeviceMeterGroup deviceMeterGroup = null;
-	
-	/**
-	 * Constructor for Ion7700.
-	 */
-	public Ion7700()
-	{
-		super();
-	}
+public class Ion7700 extends AddressBase implements IDeviceMeterGroup {
+    private DeviceMeterGroup deviceMeterGroup = null;
 
-	public DeviceMeterGroup getDeviceMeterGroup()
-	{
-		if( deviceMeterGroup == null )
-			deviceMeterGroup = new DeviceMeterGroup();
-			
-		return deviceMeterGroup;
-	}
+    /**
+     * Valid paoTypes are Ion 7700, Ion 7330, Ion 8300
+     * @param paoType
+     */
+    public Ion7700(PaoType paoType) {
+        super(paoType);
+    }
+    
+    @Override
+    public DeviceMeterGroup getDeviceMeterGroup() {
+        if (deviceMeterGroup == null)
+            deviceMeterGroup = new DeviceMeterGroup();
 
-	public void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ )
-	{
-		deviceMeterGroup = dvMtrGrp_;
-	}
+        return deviceMeterGroup;
+    }
 
-	/**
-	 * This method was created in VisualAge.
-	 */
-	public void add() throws java.sql.SQLException {
-		super.add();
-		getDeviceMeterGroup().add();
-	}
+    @Override
+    public void setDeviceMeterGroup(DeviceMeterGroup dvMtrGrp_) {
+        deviceMeterGroup = dvMtrGrp_;
+    }
 
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (6/15/2001 9:41:18 AM)
-	 * @param deviceID int
-	 * @exception java.sql.SQLException The exception description.
-	 */
-	public void addPartial() throws java.sql.SQLException 
-	{
-		super.addPartial();
-		getDeviceMeterGroup().add();
-	}
+    @Override
+    public void add() throws java.sql.SQLException {
+        super.add();
+        getDeviceMeterGroup().add();
+    }
 
-	/**
-	 * This method was created in VisualAge.
-	 */
-	public void delete() throws java.sql.SQLException 
-	{
-		getDeviceMeterGroup().delete();
-		super.delete();
-	}
+    @Override
+    public void addPartial() throws java.sql.SQLException {
+        super.addPartial();
+        getDeviceMeterGroup().add();
+    }
 
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (6/14/2001 11:10:07 AM)
-	 * @exception java.sql.SQLException The exception description.
-	 */
-	public void deletePartial() throws java.sql.SQLException {
-	
-		super.deletePartial();	
-	}
+    @Override
+    public void delete() throws java.sql.SQLException {
+        getDeviceMeterGroup().delete();
+        super.delete();
+    }
 
-	/**
-	 * This method was created in VisualAge.
-	 */
-	public void retrieve() throws java.sql.SQLException {
-		super.retrieve();
-		getDeviceMeterGroup().retrieve();
-	}
+    @Override
+    public void deletePartial() throws java.sql.SQLException {
 
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (1/4/00 3:32:03 PM)
-	 * @param conn java.sql.Connection
-	 */
-	public void setDbConnection(java.sql.Connection conn) 
-	{
-		super.setDbConnection(conn);
-		getDeviceMeterGroup().setDbConnection(conn);
-	}
+        super.deletePartial();
+    }
 
-	/**
-	 * This method was created in VisualAge.
-	 * @param deviceID java.lang.Integer
-	 */
-	public void setDeviceID(Integer deviceID) {
-		super.setDeviceID(deviceID);
-		getDeviceMeterGroup().setDeviceID(deviceID);
-	}
+    @Override
+    public void retrieve() throws java.sql.SQLException {
+        super.retrieve();
+        getDeviceMeterGroup().retrieve();
+    }
 
-	/**
-	 * This method was created in VisualAge.
-	 */
-	public void update() throws java.sql.SQLException 
-	{
-		super.update();
+    @Override
+    public void setDbConnection(java.sql.Connection conn) {
+        super.setDbConnection(conn);
+        getDeviceMeterGroup().setDbConnection(conn);
+    }
 
-		getDeviceMeterGroup().update();
-	}
+    @Override
+    public void setDeviceID(Integer deviceID) {
+        super.setDeviceID(deviceID);
+        getDeviceMeterGroup().setDeviceID(deviceID);
+    }
 
+    @Override
+    public void update() throws java.sql.SQLException {
+        super.update();
+
+        getDeviceMeterGroup().update();
+    }
 }

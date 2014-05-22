@@ -26,6 +26,7 @@ public MCTBroadcastGroupTreeModel() {
  * Creation date: (4/17/2002 1:58:45 PM)
  * @param lite com.cannontech.database.data.lite.LiteBase
  */
+@Override
 public boolean insertTreeObject( LiteBase lb ) 
 {
 	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
@@ -42,6 +43,7 @@ public boolean insertTreeObject( LiteBase lb )
  * Creation date: (4/22/2002 2:05:03 PM)
  * @return com.cannontech.database.data.lite.LiteBase[]
  */
+@Override
 public boolean isLiteTypeSupported( int liteType )
 {
 	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_PAOBJECT );
@@ -59,6 +61,7 @@ public boolean isTreePrimaryForObject(LiteBase lb) {
 /**
  * This method was created in VisualAge. (and changed by the minion.)
  */
+@Override
 public void update() {
 
 	IDatabaseCache cache =
@@ -97,21 +100,14 @@ public void update() {
 			DBTreeNode broadcastGroupNode = new DBTreeNode( broadcastersList.get(i));	
 			mctBroadcastID =  ((com.cannontech.database.data.lite.LiteYukonPAObject)broadcastersList.get(i)).getYukonID();
 
-			try
+			mctIDIntList = necessaryEvil.getAllMCTsIDList(new Integer(mctBroadcastID));
+			
+			for( int j = 0; j < mctList.size(); j++ )
 			{
-				mctIDIntList = necessaryEvil.getAllMCTsIDList(new Integer(mctBroadcastID));
-				
-				for( int j = 0; j < mctList.size(); j++ )
-				{
-					if(mctIDIntList.contains(((com.cannontech.database.data.lite.LiteYukonPAObject)mctList.elementAt(j)).getYukonID()))
-						{
-							broadcastGroupNode.add( new DBTreeNode( ((com.cannontech.database.data.lite.LiteYukonPAObject)mctList.elementAt(j) )));
-						}
-				}
-			}
-			catch(java.sql.SQLException e )
-			{
-			//not necessarily an error
+				if(mctIDIntList.contains(((com.cannontech.database.data.lite.LiteYukonPAObject)mctList.elementAt(j)).getYukonID()))
+					{
+						broadcastGroupNode.add( new DBTreeNode( (mctList.elementAt(j) )));
+					}
 			}
 			rootNode.add( broadcastGroupNode );		
 		}
@@ -125,6 +121,7 @@ public void update() {
  * Creation date: (4/17/2002 1:58:45 PM)
  * @param lite com.cannontech.database.data.lite.LiteBase
  */
+@Override
 public boolean updateTreeObject(LiteBase lb) 
 {
 	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )

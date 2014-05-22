@@ -7,8 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
@@ -22,12 +20,10 @@ import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.port.TerminalServerSharedPort;
 import com.cannontech.database.data.route.CCURoute;
-import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
@@ -94,7 +90,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
 
     private void createCommChannel(DevCommChannel commChannel) throws NotFoundException {
         // if this comm channel exists already, then return
-        LiteYukonPAObject existingCommChannel = paoDao.findUnique(commChannel.getName(), PaoCategory.PORT, PaoClass.PORT);
+        LiteYukonPAObject existingCommChannel = paoDao.findUnique(commChannel.getName(), PaoType.TSERVER_SHARED);
         if (existingCommChannel != null) {
             log.debug("Comm Channel with name " + commChannel.getName() + " already exists. Skipping.");
             return;
@@ -116,14 +112,11 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         PortTerminalServer portTerminalServer =
             new PortTerminalServer(directPort.getCommPort().getPortID(), ipAddress, commChannel.getPort());
 
-        TerminalServerSharedPort terminalServerSharedPort = new TerminalServerSharedPort();
+        TerminalServerSharedPort terminalServerSharedPort = new TerminalServerSharedPort(PaoType.TSERVER_SHARED);
         terminalServerSharedPort.setCommPort(directPort.getCommPort());
         terminalServerSharedPort.setPortSettings(portSettings);
         terminalServerSharedPort.setPortTerminalServer(portTerminalServer);
-        terminalServerSharedPort.setPAOCategory(PaoCategory.PORT.toString());
-        terminalServerSharedPort.setPAOClass(PaoClass.PORT.toString());
         terminalServerSharedPort.setPAOName(commChannel.getName());
-        terminalServerSharedPort.setPortType(PaoType.TSERVER_SHARED.getPaoTypeName());
         terminalServerSharedPort.setPortID(directPort.getCommPort().getPortID());
         terminalServerSharedPort.setPortName(commChannel.getName());
         terminalServerSharedPort.setPortTiming(new PortTiming(portTerminalServer.getPortID(),commChannel.getPortTimingPreTxWait(),0,0,0,0));
@@ -147,10 +140,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         try {
             // if this device exists already, then return
             LiteYukonPAObject liteYukonPAObject =
-                deviceDao.getLiteYukonPAObject(devCCU.getName(),
-                                               PaoCategory.DEVICE.getPaoCategoryId(),
-                                               PaoClass.TRANSMITTER.getPaoClassId(),
-                                               PaoType.CCU711.getDeviceTypeId());
+                deviceDao.getLiteYukonPAObject(devCCU.getName(), PaoType.CCU711);
             if (liteYukonPAObject != null) {
                 log.debug("CCU with name " + devCCU.getName() + " already exists. Skipping.");
                 return;
@@ -159,15 +149,11 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
             // ignoring and continuing to create this ccu
         }
 
-        LiteYukonPAObject commChan =
-            paoDao.getLiteYukonPAObject(devCCU.getCommChannel().getName(),
-                                        PaoCategory.PORT.getPaoCategoryId(), PaoClass.PORT.getPaoClassId(),
-                                        PaoType.TSERVER_SHARED.getDeviceTypeId());
+        LiteYukonPAObject commChan = paoDao.findUnique(devCCU.getCommChannel().getName(), PaoType.TSERVER_SHARED);
 
         Integer portID = new Integer(commChan.getYukonID());
 
         CCU711 ccu = new CCU711();
-        ccu.applyTypeToPao(PaoType.CCU711);
         ccu.setPAOName(devCCU.getName());
 
         ((RemoteBase) ccu).getDeviceDirectCommSettings().setPortID(portID);
@@ -181,9 +167,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
 
         ((DeviceBase) ccu).setDeviceID(paoDao.getNextPaoId());
 
-        String routeType = RouteTypes.STRING_CCU;
-
-        RouteBase route = RouteFactory.createRoute(routeType);
+        CCURoute route = (CCURoute) RouteFactory.createRoute(PaoType.ROUTE_CCU);
         Integer routeID = paoDao.getNextPaoId();
 
         // make sure the name will fit in the DB!!
@@ -196,9 +180,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         route.setDeviceID(((DeviceBase) ccu).getDevice().getDeviceID());
         route.setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
 
-        if (routeType.equalsIgnoreCase(RouteTypes.STRING_CCU)) {
-            ((CCURoute) route).setCarrierRoute(new CarrierRoute(routeID));
-        }
+        route.setCarrierRoute(new CarrierRoute(routeID));
 
         SmartMultiDBPersistent newVal = createSmartDBPersistent(ccu);
         newVal.addDBPersistent(route);

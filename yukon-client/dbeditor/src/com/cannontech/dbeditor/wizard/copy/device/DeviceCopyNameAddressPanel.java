@@ -17,6 +17,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.core.dao.PaoDao;
@@ -28,7 +29,6 @@ import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.IEDMeter;
@@ -44,8 +44,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteBase;
@@ -77,7 +75,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
    	private static final Logger log = YukonLogManager.getLogger(DeviceCopyNameAddressPanel.class);
 
 	class IvjEventHandler implements ItemListener, CaretListener {
-		public void caretUpdate(javax.swing.event.CaretEvent e) 
+		@Override
+        public void caretUpdate(javax.swing.event.CaretEvent e) 
 		{
 			if (e.getSource() == DeviceCopyNameAddressPanel.this.getNameTextField()) 
 				connEtoC1(e);
@@ -89,7 +88,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 				connEtoC5(e);
 		};
 	
-		public void itemStateChanged(java.awt.event.ItemEvent e) {
+		@Override
+        public void itemStateChanged(java.awt.event.ItemEvent e) {
 			if (e.getSource() == DeviceCopyNameAddressPanel.this.getPointCopyCheckBox()) 
 				connEtoC3(e);
 		};
@@ -111,7 +111,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 	 * Method to handle events for the CaretListener interface.
 	 * @param e javax.swing.event.CaretEvent
 	 */
-	public void caretUpdate(javax.swing.event.CaretEvent e) {
+	@Override
+    public void caretUpdate(javax.swing.event.CaretEvent e) {
 		if (e.getSource() == getNameTextField()) 
 			connEtoC1(e);
 		if (e.getSource() == getAddressTextField()) 
@@ -360,6 +361,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
     	return ivjJTextFieldPhoneNumber;
     }
 
+    @Override
     public Dimension getMinimumSize() {
 		return getPreferredSize();
 	}
@@ -437,11 +439,13 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 		return ivjPointCopyCheckBox;
 	}
 	
-	public Dimension getPreferredSize() {
+	@Override
+    public Dimension getPreferredSize() {
 		return new Dimension( 350, 200);
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
     public Object getValue(Object val) {
 		deviceBase = ((DeviceBase) val);
 		int previousDeviceID = deviceBase.getDevice().getDeviceID().intValue();
@@ -476,8 +480,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 				}
 				carrierBase.getDeviceCarrierSettings().setAddress(addressHolder);
 
-				int deviceType = PaoType.getPaoTypeId( deviceBase.getPAOType() );
-				if( DeviceTypesFuncs.isMCT(deviceType) ) {
+				if( deviceBase.getPaoType().isMct()) {
 					checkMCTAddresses( new Integer(getAddressTextField().getText()).intValue() );
                     checkMeterNumber(getJTextFieldMeterNumber().getText());
 				}
@@ -505,7 +508,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 			}
 		}
 		
-		if (DeviceClasses.getClass(deviceBase.getPAOClass()) == DeviceClasses.TRANSMITTER){
+		if (deviceBase.getPaoType().getPaoClass() == PaoClass.TRANSMITTER){
 			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			synchronized (cache) {
 				List<LiteYukonPAObject> routes = cache.getAllRoutes();
@@ -524,7 +527,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 					if (oldRoute instanceof RouteBase) {
 						if (((RouteBase) oldRoute).getDeviceID().intValue() == previousDeviceID) {
 							paoType = route.getPaoType();
-							newRoute = RouteFactory.createRoute(paoType.getDeviceTypeId());
+							newRoute = RouteFactory.createRoute(paoType);
 	
 							hasRoute = true;
 							break;
@@ -534,7 +537,6 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 				
 				if (hasRoute)  {
 					newRoute.setRouteID(paoDao.getNextPaoId());
-					newRoute.setRouteType(paoType.getDbString());
 					newRoute.setRouteName(nameString);
 					newRoute.setDeviceID( ((RouteBase) oldRoute).getDeviceID() );
 					newRoute.setDefaultRoute( ((RouteBase) oldRoute).getDefaultRoute() );
@@ -646,7 +648,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 		getJLabelPhoneNumber().setVisible(false);	
 	}
 	
-	public boolean isInputValid() {
+	@Override
+    public boolean isInputValid() {
 		if( getNameTextField().getText() == null   ||
 				getNameTextField().getText().length() < 1 )
 		{
@@ -666,7 +669,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 			try 
 			{
 		      	int addy = Integer.parseInt(getAddressTextField().getText());
-		      	PaoType paoType = PaoType.getForDbString(deviceBase.getPAOType());
+		      	PaoType paoType = deviceBase.getPaoType();
 		      	IntegerRange range = dlcAddressRangeService.getEnforcedAddressRangeForDevice(paoType);
 		      	if (!range.isWithinRange(addy)) {
 		        	setErrorString("Invalid address. Device address range: " + range);
@@ -682,7 +685,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 		}
 	
 		String deviceName = getNameTextField().getText();
-		if( !isUniquePao(deviceName, deviceBase.getPAOCategory(), deviceBase.getPAOClass())) {
+		if( !isUniquePao(deviceName, deviceBase.getPaoType())) {
 			setErrorString("Name '" + deviceName + "' is already in use.");
          	getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
          	getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
@@ -699,22 +702,23 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 	 * Method to handle events for the ItemListener interface.
 	 * @param e java.awt.event.ItemEvent
 	 */
-	public void itemStateChanged(java.awt.event.ItemEvent e) {
+	@Override
+    public void itemStateChanged(java.awt.event.ItemEvent e) {
 		if (e.getSource() == getPointCopyCheckBox()) 
 			connEtoC3(e);
 	}
 	
-	public void setValue(Object val ) {
-		int deviceClass = -1;
+	@Override
+    public void setValue(Object val ) {
 		deviceBase = (DeviceBase)val;
-		deviceClass = DeviceClasses.getClass( deviceBase.getPAOClass() );
+		PaoClass paoClass = deviceBase.getPaoType().getPaoClass();
 
 		//handle all device Address fields
 		boolean showAddress = (val instanceof IEDBase)
-				 || (deviceClass == DeviceClasses.GROUP)
-				 || (deviceClass == DeviceClasses.VIRTUAL)
-                 || (deviceClass == DeviceClasses.GRID)
-                 || (deviceClass == DeviceClasses.RFMESH);
+				 || (paoClass == PaoClass.GROUP)
+				 || (paoClass == PaoClass.VIRTUAL)
+                 || (paoClass == PaoClass.GRID)
+                 || (paoClass == PaoClass.RFMESH);
 	
 		getAddressTextField().setVisible( !showAddress );
 		getPhysicalAddressLabel().setVisible( !showAddress );

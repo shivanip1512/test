@@ -11,9 +11,7 @@ public class LMGroupDigiSep extends LMGroup {
     private LMGroupSep lmGroupSep = null;
 
     public LMGroupDigiSep() {
-        super();
-
-        getYukonPAObject().setType(PaoType.LM_GROUP_DIGI_SEP.getDbString());
+        super(PaoType.LM_GROUP_DIGI_SEP);
     }
 
     @Override

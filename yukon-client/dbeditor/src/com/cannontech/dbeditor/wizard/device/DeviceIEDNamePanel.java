@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
@@ -31,6 +32,7 @@ public DeviceIEDNamePanel() {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -107,6 +109,7 @@ private javax.swing.JPanel getJPanel1() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getMinimumSize() {
 	return getPreferredSize();
 }
@@ -160,6 +163,7 @@ private javax.swing.JTextField getNameTextField() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getPreferredSize() {
 	return new Dimension( 350, 200);
 }
@@ -168,6 +172,7 @@ public Dimension getPreferredSize() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) {
 	IEDBase ied = ((IEDBase) val);
 	
@@ -246,6 +251,7 @@ private javax.swing.JLabel getJLabelErrorMessage() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() {
 	String deviceName = getNameTextField().getText();
 	if( StringUtils.isBlank(deviceName)) {
@@ -253,7 +259,7 @@ public boolean isInputValid() {
 		return false;
 	}
 	
-	if( !isUniquePao(deviceName, deviceBase.getPAOCategory(), deviceBase.getPAOClass())) {
+	if( !isUniquePao(deviceName, deviceBase.getPaoType())) {
 		setErrorString("Name '" + deviceName + "' is already in use.");
      	getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
      	getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
@@ -267,7 +273,7 @@ public boolean isInputValid() {
 	return true;
 }
 
-public void setDeviceType(int deviceType) 
+public void setDeviceType(PaoType deviceType) 
 {
 	deviceBase = DeviceFactory.createDevice(deviceType);
 }
@@ -293,15 +299,18 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val ) {
 	return;
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getNameTextField().requestFocus(); 

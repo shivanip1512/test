@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.dao.PointDao;
@@ -31,6 +32,10 @@ public abstract class YukonPAObject extends DBPersistent implements CTIDbChange 
     // may have zero or more schedules, instance of PAOScheduleAssign
     private List<PAOScheduleAssign> schedules = null;
 
+    public YukonPAObject(PaoType paoType) {
+        getYukonPAObject().setPaoType(paoType);
+    }
+    
     @Override
     public void add() throws SQLException {
         getYukonPAObject().add();
@@ -93,7 +98,7 @@ public abstract class YukonPAObject extends DBPersistent implements CTIDbChange 
         ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
 
         // add the basic change method
-        list.add(new DBChangeMsg(getPAObjectID().intValue(), DBChangeMsg.CHANGE_PAO_DB, getPAOCategory(), getPAOType(),
+        list.add(new DBChangeMsg(getPAObjectID().intValue(), DBChangeMsg.CHANGE_PAO_DB, getPaoType().getPaoCategory().getDbString(), getPaoType().getDbString(),
             dbChangeType));
 
         // if we are deleting this PAO, we need to take in account the Points that also get deleted
@@ -121,14 +126,6 @@ public abstract class YukonPAObject extends DBPersistent implements CTIDbChange 
         return getYukonPAObject().getPaObjectID();
     }
 
-    public String getPAOCategory() {
-        return getYukonPAObject().getCategory();
-    }
-
-    public String getPAOClass() {
-        return getYukonPAObject().getPaoClass();
-    }
-
     public String getPAODescription() {
         return getYukonPAObject().getDescription();
     }
@@ -145,10 +142,10 @@ public abstract class YukonPAObject extends DBPersistent implements CTIDbChange 
         return getYukonPAObject().getPaoStatistics();
     }
 
-    public String getPAOType() {
-        return getYukonPAObject().getType();
+    public PaoType getPaoType() {
+        return getYukonPAObject().getPaoType();
     }
-
+   
     protected com.cannontech.database.db.pao.YukonPAObject getYukonPAObject() {
         if (yukonPAObject == null) {
             yukonPAObject = new com.cannontech.database.db.pao.YukonPAObject();
@@ -205,14 +202,6 @@ public abstract class YukonPAObject extends DBPersistent implements CTIDbChange 
             paoScheduleAssign.setPaoID(id);
         }
 
-    }
-
-    public void setPAOCategory(String category) {
-        getYukonPAObject().setCategory(category);
-    }
-
-    public void setPAOClass(String newPAOClass) {
-        getYukonPAObject().setPaoClass(newPAOClass);
     }
 
     public void setPAOName(String name) {

@@ -1,15 +1,10 @@
 package com.cannontech.database.data.device;
 
-/**
- * This type was created in VisualAge.
- */
-public class SNPPTerminal extends PagingTapTerminal 
-{
+import com.cannontech.common.pao.PaoType;
 
-/**
- * TwoWayDevice constructor comment.
- */
-public SNPPTerminal() {
-	super();
-}
+public class SNPPTerminal extends PagingTapTerminal {
+
+    public SNPPTerminal() {
+        super(PaoType.SNPP_TERMINAL);
+    }
 }

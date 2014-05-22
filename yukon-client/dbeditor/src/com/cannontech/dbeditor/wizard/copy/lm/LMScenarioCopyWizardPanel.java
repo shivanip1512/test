@@ -7,22 +7,19 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.db.DBPersistent;
 
 /**
- * All Panels used in this WizardPanel MUST be able to handle MultiDBPersistent objects in their
- * getValue(Object o) method!!!
+ * All Panels used in this WizardPanel MUST be able to handle MultiDBPersistent
+ * objects in their getValue(Object o) method!!!
  */
 public class LMScenarioCopyWizardPanel extends WizardPanel {
     private LMScenarioCopyNameSettingsPanel lmScenarioCopyNameSettingsPanel;
 
     private DBPersistent copyObject = null;
-    private String scenarioType;
 
     public LMScenarioCopyWizardPanel(DBPersistent objectToCopy) {
         setCopyObject(objectToCopy);
-        setScenarioType();
     }
 
     @Override
@@ -42,10 +39,6 @@ public class LMScenarioCopyWizardPanel extends WizardPanel {
         }
 
         return lmScenarioCopyNameSettingsPanel;
-    }
-
-    public String getScenarioType() {
-        return scenarioType;
     }
 
     @Override
@@ -81,15 +74,12 @@ public class LMScenarioCopyWizardPanel extends WizardPanel {
         try {
             copyObject = newObject;
 
-            Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, copyObject);
+            Transaction t = Transaction.createTransaction(Transaction.RETRIEVE,
+                                                          copyObject);
 
             copyObject = t.execute();
         } catch (TransactionException e) {
             CTILogger.error(e.getMessage(), e);
         }
-    }
-
-    public void setScenarioType() {
-        scenarioType = ((LMScenario) getCopyObject()).getPAOType();
     }
 }

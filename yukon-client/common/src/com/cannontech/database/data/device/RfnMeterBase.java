@@ -3,12 +3,18 @@ package com.cannontech.database.data.device;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 
 public class RfnMeterBase extends RfnBase implements IDeviceMeterGroup {
     
     private DeviceMeterGroup deviceMeterGroup = null;
     
+    public RfnMeterBase(PaoType paoType) {
+        super(paoType);
+    }
+    
+    @Override
     public void setDeviceID(Integer deviceId) {
         super.setDeviceID(deviceId);
         getDeviceMeterGroup().setDeviceID(deviceId);
@@ -49,6 +55,7 @@ public class RfnMeterBase extends RfnBase implements IDeviceMeterGroup {
         getDeviceMeterGroup().update();
     }
     
+    @Override
     public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
         getDeviceMeterGroup().setDbConnection(conn);

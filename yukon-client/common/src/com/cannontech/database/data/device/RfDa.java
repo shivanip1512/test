@@ -3,6 +3,7 @@ package com.cannontech.database.data.device;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.port.CommPort;
@@ -12,7 +13,7 @@ public class RfDa extends RfnBase {
     private CommPort commPort = null;
     
     public RfDa() {
-        super();
+        super(PaoType.RF_DA);
     }
 
     @Override

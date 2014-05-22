@@ -1,11 +1,14 @@
 package com.cannontech.database.data.route;
 
+import com.cannontech.common.pao.PaoType;
+
 public class TNPPTerminalRoute extends RouteBase {
 
     public TNPPTerminalRoute() {
-        super();
+        super(PaoType.TNPP_TERMINAL);
     }
 
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
     }

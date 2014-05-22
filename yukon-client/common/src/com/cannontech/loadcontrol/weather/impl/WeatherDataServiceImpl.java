@@ -28,7 +28,6 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.pao.dao.StaticPaoInfoDao;
 import com.cannontech.loadcontrol.weather.GeographicCoordinate;
 import com.cannontech.loadcontrol.weather.NoaaWeatherDataService;
@@ -91,7 +90,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     @Override
     @Transactional(propagation=Propagation.SUPPORTS)
     public List<WeatherLocation> getAllWeatherLocations() {
-      List<LiteYukonPAObject> paos = paoDao.getLiteYukonPAObjectByType(DeviceTypes.WEATHER_LOCATION);
+      List<LiteYukonPAObject> paos = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION);
       List<WeatherLocation> weatherDevices = new ArrayList<>();
 
       for (LiteYukonPAObject pao : paos) {

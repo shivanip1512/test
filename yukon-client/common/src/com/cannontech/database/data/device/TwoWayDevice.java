@@ -3,6 +3,7 @@ package com.cannontech.database.data.device;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.device.DeviceWindow;
@@ -19,12 +20,13 @@ public class TwoWayDevice extends DeviceBase
 /**
  * TwoWayDevice constructor comment.
  */
-public TwoWayDevice() {
-	super();
+public TwoWayDevice(PaoType paoType) {
+	super(paoType);
 }
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void add() throws java.sql.SQLException {
 	super.add();
 
@@ -40,6 +42,7 @@ public void add() throws java.sql.SQLException {
  * @param deviceID int
  * @exception java.sql.SQLException The exception description.
  */
+@Override
 public void addPartial() throws java.sql.SQLException {
 
     super.addPartial();
@@ -47,6 +50,7 @@ public void addPartial() throws java.sql.SQLException {
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void delete() throws java.sql.SQLException {
 
 	if (!isPartialDelete)
@@ -63,6 +67,7 @@ public void delete() throws java.sql.SQLException {
  * Creation date: (6/14/2001 11:13:30 AM)
  * @exception java.sql.SQLException The exception description.
  */
+@Override
 public void deletePartial() throws java.sql.SQLException {
 
 	super.deletePartial();
@@ -93,6 +98,7 @@ public com.cannontech.database.db.device.DeviceWindow getDeviceWindow()
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void retrieve() throws java.sql.SQLException{
 	super.retrieve();
 
@@ -109,7 +115,7 @@ public void retrieve() throws java.sql.SQLException{
 
 		Iterator<DeviceScanRate> it = getDeviceScanRateMap().values().iterator();
 		while( it.hasNext() ) {
-			DBPersistent o = (DBPersistent)it.next();
+			DBPersistent o = it.next();
 			o.setDbConnection( getDbConnection() );
 			o.retrieve();
 			o.setDbConnection(null);
@@ -127,6 +133,7 @@ public void retrieve() throws java.sql.SQLException{
  * Creation date: (1/4/00 3:32:03 PM)
  * @param conn java.sql.Connection
  */
+@Override
 public void setDbConnection(java.sql.Connection conn) 
 {
 	super.setDbConnection(conn);
@@ -142,6 +149,7 @@ public void setDbConnection(java.sql.Connection conn)
  * This method was created in VisualAge.
  * @param deviceID java.lang.Integer
  */
+@Override
 public void setDeviceID(Integer deviceID) 
 {
 	super.setDeviceID(deviceID);
@@ -173,6 +181,7 @@ public void setDeviceWindow(com.cannontech.database.db.device.DeviceWindow newDe
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void update() throws java.sql.SQLException
 {
 	super.update();

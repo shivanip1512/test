@@ -4,6 +4,7 @@ package com.cannontech.database.data.port;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.db.port.CommPort;
@@ -22,14 +23,12 @@ public static DirectPort createPort( int typeOfPort )
 	switch( typeOfPort )
 	{
 		case PortTypes.LOCAL_DIRECT:
-			LocalDirectPort p = new LocalDirectPort();
-			p.setPortType( PortTypes.STRING_LOCAL_DIRECT );
+			LocalDirectPort p = new LocalDirectPort(PaoType.LOCAL_DIRECT);
 			port = p;
 			break;
 			
 		case PortTypes.LOCAL_SHARED:
-			LocalSharedPort lsp = new LocalSharedPort();			
-			lsp.setPortType( PortTypes.STRING_LOCAL_SERIAL );
+			LocalSharedPort lsp = new LocalSharedPort(PaoType.LOCAL_SHARED);			
 			lsp.getCommPort().setCommonProtocol("IDLC");
 			lsp.getPortTiming().setPreTxWait(new Integer(25));
 			lsp.getPortTiming().setRtsToTxWait(new Integer(0));
@@ -42,16 +41,12 @@ public static DirectPort createPort( int typeOfPort )
 
 		case PortTypes.DIALOUT_POOL:
 			PooledPort pp = new PooledPort();		
-			pp.setPortType( PortTypes.STRING_DIALOUT_POOL );
-
 			port = pp;
 			break;
 			
 		case PortTypes.LOCAL_RADIO:
 			LocalRadioPort lrp = new LocalRadioPort();
 
-			lrp.setPortType( PortTypes.STRING_LOCAL_RADIO );
-			
 			lrp.getPortTiming().setPreTxWait(new Integer(25));
 			lrp.getPortTiming().setRtsToTxWait(new Integer(0));
 			lrp.getPortTiming().setPostTxWait(new Integer(0));
@@ -68,12 +63,13 @@ public static DirectPort createPort( int typeOfPort )
 			
 		case PortTypes.LOCAL_DIALUP:
 		case PortTypes.LOCAL_DIALBACK:
-			LocalDialupPort ldp = new LocalDialupPort();
+			LocalDialupPort ldp;
 
-			if( typeOfPort ==  PortTypes.LOCAL_DIALUP )
-				ldp.setPortType( PortTypes.STRING_LOCAL_DIALUP );
-			else if( typeOfPort == PortTypes.LOCAL_DIALBACK )
-				ldp.setPortType( PortTypes.STRING_LOCAL_DIALBACK );
+			if( typeOfPort ==  PortTypes.LOCAL_DIALUP ) {
+			    ldp = new LocalDialupPort(PaoType.LOCAL_DIALUP);
+			} else {  //typeOfPort == PortTypes.LOCAL_DIALBACK
+			    ldp = new LocalDialupPort(PaoType.LOCAL_DIALBACK);
+			}
 			
 			ldp.getPortTiming().setPreTxWait(new Integer(25));
 			ldp.getPortTiming().setRtsToTxWait(new Integer(0));
@@ -85,23 +81,18 @@ public static DirectPort createPort( int typeOfPort )
 			break;
 
 		case PortTypes.TSERVER_DIRECT:
-		    TerminalServerDirectPort tdp = new TerminalServerDirectPort();
-		    tdp.setPortType( PortTypes.STRING_TERM_SERVER_DIRECT );
-		    
+		    TerminalServerDirectPort tdp = new TerminalServerDirectPort(PaoType.TSERVER_DIRECT);
 			port = tdp;
 			break;
 			
 		case PortTypes.TSERVER_SHARED:
 		case PortTypes.UDPPORT:
-			TerminalServerSharedPort tsp = new TerminalServerSharedPort();
+			TerminalServerSharedPort tsp;
 			//The only difference in these ports is the Type in the database.
-			if (PortTypes.UDPPORT == typeOfPort)
-			{
-			    tsp.setPortType( PortTypes.STRING_UDPPORT );
-			}
-			else
-			{
-			    tsp.setPortType( PortTypes.STRING_TERM_SERVER );
+			if (PortTypes.UDPPORT == typeOfPort) {
+			    tsp = new TerminalServerSharedPort(PaoType.UDPPORT);
+			} else {
+			    tsp = new TerminalServerSharedPort(PaoType.TSERVER_SHARED);
 			}
 			tsp.getCommPort().setCommonProtocol("IDLC");			
 			tsp.getPortTiming().setPreTxWait(new Integer(25));
@@ -114,8 +105,6 @@ public static DirectPort createPort( int typeOfPort )
 			
 		case PortTypes.TSERVER_RADIO:
 			TerminalServerRadioPort trp = new TerminalServerRadioPort();
-
-			trp.setPortType( PortTypes.STRING_TERM_SERVER_RADIO );
 
 			trp.getPortTiming().setPreTxWait(new Integer(25));
 			trp.getPortTiming().setRtsToTxWait(new Integer(0));
@@ -133,7 +122,6 @@ public static DirectPort createPort( int typeOfPort )
 			
 		case PortTypes.TSERVER_DIALUP:
 			TerminalServerDialupPort tp = new TerminalServerDialupPort();
-			tp.setPortType( PortTypes.STRING_TERM_SERVER_DIALUP );
 
 			tp.getPortTiming().setPreTxWait(new Integer(25));
 			tp.getPortTiming().setRtsToTxWait(new Integer(0));
@@ -145,7 +133,6 @@ public static DirectPort createPort( int typeOfPort )
 		case PortTypes.TCPPORT:
 		    TcpPort tcp = new TcpPort();
 		    
-		    tcp.setPortType( PortTypes.STRING_TCPPORT );
 		    tcp.getPortTiming().setPreTxWait(new Integer(25));
 		    tcp.getPortTiming().setRtsToTxWait(new Integer(0));
 		    tcp.getPortTiming().setPostTxWait(new Integer(0));
@@ -160,8 +147,6 @@ public static DirectPort createPort( int typeOfPort )
 	//Grab a unique id
     PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
 	port.setPortID(paoDao.getNextPaoId());
-	port.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_PORT );
-	port.setPAOClass( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_PORT );
 	
 	port.setDisableFlag(new Character('N'));
 	port.getCommPort().setAlarmInhibit(new Character('N'));

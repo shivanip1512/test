@@ -261,30 +261,38 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
 
     @Override
-    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, int category, int paoClass, int type) {
+//    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, int category, int paoClass, int type) {
+//        List<LiteYukonPAObject> allDevices = databaseCache.getAllDevices();
+//        for (Object obj : allDevices) {
+//            LiteYukonPAObject lPao = (LiteYukonPAObject) obj;
+//            boolean foundMatch = true;
+//            foundMatch &= lPao.getPaoName().equalsIgnoreCase(deviceName);
+//            foundMatch &= lPao.getPaoType().getPaoCategory().getPaoCategoryId() == category;
+//            foundMatch &= lPao.getPaoType().getPaoClass().getPaoClassId() == paoClass;
+//            foundMatch &= lPao.getPaoType().getDeviceTypeId() == type;
+//            if (foundMatch) {
+//                return lPao;
+//            }
+//        }
+//        return null;
+//    }
+
+    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, PaoType paoType) {
         List<LiteYukonPAObject> allDevices = databaseCache.getAllDevices();
         for (Object obj : allDevices) {
             LiteYukonPAObject lPao = (LiteYukonPAObject) obj;
             boolean foundMatch = true;
             foundMatch &= lPao.getPaoName().equalsIgnoreCase(deviceName);
-            foundMatch &= lPao.getPaoType().getPaoCategory().getPaoCategoryId() == category;
-            foundMatch &= lPao.getPaoType().getPaoClass().getPaoClassId() == paoClass;
-            foundMatch &= lPao.getPaoType().getDeviceTypeId() == type;
+            foundMatch &= lPao.getPaoType().getPaoCategory() == paoType.getPaoCategory();
+            foundMatch &= lPao.getPaoType().getPaoClass() == paoType.getPaoClass();
+            foundMatch &= lPao.getPaoType() == paoType;
             if (foundMatch) {
                 return lPao;
             }
         }
         return null;
     }
-
-    @Override
-    public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category, String paoClass, String type) {
-        int categoryInt = PaoCategory.getPaoCategory(category);
-        int paoClassInt = PaoClass.getPaoClass(paoClass);
-        int typeInt = PaoType.getPaoTypeId(type);
-        return getLiteYukonPAObject(deviceName, categoryInt, paoClassInt, typeInt);
-    }
-
+    
     @Override
     public List<Integer> getDevicesByPort(int portId) {
         List<Integer> devices = databaseCache.getDevicesByCommPort(portId);
@@ -422,8 +430,7 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
-        String typeStr = oldDevice.getPAOType();
-        PaoType paoType = PaoType.getForDbString(typeStr);
+        PaoType paoType = oldDevice.getPaoType();
         PaoIdentifier paoIdentifier = new PaoIdentifier(oldDevice.getPAObjectID(), paoType);
         SimpleDevice device = new SimpleDevice(paoIdentifier);
 

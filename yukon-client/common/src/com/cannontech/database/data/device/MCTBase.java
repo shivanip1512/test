@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.config.MCTConfigMapping;
 import com.cannontech.database.db.device.DeviceLoadProfile;
@@ -16,12 +17,13 @@ public class MCTBase extends CarrierBase implements IDeviceMeterGroup
 /**
  * MCT constructor comment.
  */
-public MCTBase() {
-	super();
+public MCTBase(PaoType paoType) {
+	super(paoType);
 }
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void add() throws java.sql.SQLException {
 	super.add();
 	getDeviceMeterGroup().add();
@@ -36,6 +38,7 @@ public void add() throws java.sql.SQLException {
  * @param deviceID int
  * @exception java.sql.SQLException The exception description.
  */
+@Override
 public void addPartial() throws java.sql.SQLException 
 {
 	super.addPartial();
@@ -49,6 +52,7 @@ public void addPartial() throws java.sql.SQLException
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void delete() throws java.sql.SQLException 
 {
 	getDeviceMeterGroup().delete();
@@ -63,6 +67,7 @@ public void delete() throws java.sql.SQLException
  * Creation date: (6/14/2001 11:10:07 AM)
  * @exception java.sql.SQLException The exception description.
  */
+@Override
 public void deletePartial() throws java.sql.SQLException 
 {
 	super.deletePartial();
@@ -81,6 +86,7 @@ public DeviceLoadProfile getDeviceLoadProfile() {
  * This method was created in VisualAge.
  * @return com.cannontech.database.db.device.DeviceMeterGroup
  */
+@Override
 public DeviceMeterGroup getDeviceMeterGroup() {
 	if( deviceMeterGroup == null )
 		deviceMeterGroup = new DeviceMeterGroup();
@@ -103,6 +109,7 @@ public void setConfigMapping( Integer conID, Integer mctID) {
 	getConfigMapping().setmctID(mctID);
 }
 
+@Override
 public void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ )
 {
 	deviceMeterGroup = dvMtrGrp_;
@@ -115,6 +122,7 @@ public void setDeviceLoadProfile(DeviceLoadProfile deviceLoadProfile) {
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void retrieve() throws java.sql.SQLException {
 	super.retrieve();
 	getDeviceMeterGroup().retrieve();
@@ -127,6 +135,7 @@ public void retrieve() throws java.sql.SQLException {
  * Creation date: (1/4/00 3:32:03 PM)
  * @param conn java.sql.Connection
  */
+@Override
 public void setDbConnection(java.sql.Connection conn) 
 {
 	super.setDbConnection(conn);
@@ -139,6 +148,7 @@ public void setDbConnection(java.sql.Connection conn)
  * This method was created in VisualAge.
  * @param deviceID java.lang.Integer
  */
+@Override
 public void setDeviceID(Integer deviceID) {
 	super.setDeviceID(deviceID);
 	getDeviceMeterGroup().setDeviceID(deviceID);
@@ -154,6 +164,7 @@ public void setHasConfig(boolean yesno)
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void update() throws java.sql.SQLException {
 	super.update();
 	getDeviceMeterGroup().update();

@@ -1,81 +1,64 @@
 package com.cannontech.database.data.port;
 
-/**
- * This type was created in VisualAge.
- */
- import com.cannontech.database.db.port.PortLocalSerial;
- 
-public class LocalDirectPort extends DirectPort {
-	private PortLocalSerial portLocalSerial = null;
-/**
- * LocalDirectPort constructor comment.
- */
-public LocalDirectPort() {
-	super();
-}
-/**
- * This method was created in VisualAge.
- */
-public void add() throws java.sql.SQLException{
-	super.add();
-	getPortLocalSerial().add();
-	
-}
-/**
- * This method was created in VisualAge.
- */
-public void delete() throws java.sql.SQLException {
-	getPortLocalSerial().delete();
-	super.delete();
-}
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.port.PortLocalSerial
- */
-public PortLocalSerial getPortLocalSerial() {
-	if( portLocalSerial == null )
-		portLocalSerial = new PortLocalSerial();
-		
-	return portLocalSerial;
-}
-/**
- * This method was created in VisualAge.
- */
-public void retrieve() throws java.sql.SQLException {
-	super.retrieve();
-	getPortLocalSerial().retrieve();
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/4/00 3:32:03 PM)
- * @param conn java.sql.Connection
- */
-public void setDbConnection(java.sql.Connection conn) 
-{
-	super.setDbConnection(conn);
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.db.port.PortLocalSerial;
 
-	getPortLocalSerial().setDbConnection(conn);
-}
-/**
- * This method was created in VisualAge.
- * @param portNumber java.lang.Integer
- */
-public void setPortID(Integer portID) {
-	super.setPortID( portID );
-	getPortLocalSerial().setPortID( portID );
-}
-/**
- * This method was created in VisualAge.
- * @param newValue com.cannontech.database.db.port.PortLocalSerial
- */
-public void setPortLocalSerial(PortLocalSerial newValue) {
-	this.portLocalSerial = newValue;
-}
-/**
- * This method was created in VisualAge.
- */
-public void update() throws java.sql.SQLException {
-	super.update();
-	getPortLocalSerial().update();
-}
+public class LocalDirectPort extends DirectPort {
+    private PortLocalSerial portLocalSerial = null;
+
+    /**
+     * Valid PaoTypes are this object; LOCAL_DIRECT, or those that extend this object; LOCAL_SHARED, LOCAL_DIALUP, LOCAL_RADIO 
+     * @param paoType
+     */
+    public LocalDirectPort(PaoType paoType) {
+        super(paoType);
+    }
+
+    @Override
+    public void add() throws java.sql.SQLException {
+        super.add();
+        getPortLocalSerial().add();
+
+    }
+
+    @Override
+    public void delete() throws java.sql.SQLException {
+        getPortLocalSerial().delete();
+        super.delete();
+    }
+
+    public PortLocalSerial getPortLocalSerial() {
+        if (portLocalSerial == null)
+            portLocalSerial = new PortLocalSerial();
+
+        return portLocalSerial;
+    }
+
+    @Override
+    public void retrieve() throws java.sql.SQLException {
+        super.retrieve();
+        getPortLocalSerial().retrieve();
+    }
+
+    @Override
+    public void setDbConnection(java.sql.Connection conn) {
+        super.setDbConnection(conn);
+        getPortLocalSerial().setDbConnection(conn);
+    }
+
+    @Override
+    public void setPortID(Integer portID) {
+        super.setPortID(portID);
+        getPortLocalSerial().setPortID(portID);
+    }
+
+    public void setPortLocalSerial(PortLocalSerial newValue) {
+        this.portLocalSerial = newValue;
+    }
+
+    @Override
+    public void update() throws java.sql.SQLException {
+        super.update();
+        getPortLocalSerial().update();
+    }
 }

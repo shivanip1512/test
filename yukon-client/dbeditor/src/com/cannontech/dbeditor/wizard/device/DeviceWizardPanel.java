@@ -5,8 +5,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dbeditor.editor.device.DeviceScanRateEditorPanel;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -49,6 +47,7 @@ public DeviceWizardPanel() {
  * Creation date: (5/4/2001 11:11:28 AM)
  * @return java.awt.Dimension
  */
+@Override
 public java.awt.Dimension getActualSize() 
 {
 	setPreferredSize( new java.awt.Dimension(410, 480) );
@@ -236,6 +235,7 @@ protected RfnBasePanel getRfnBasePanel() {
  * This method was created in VisualAge.
  * @return java.lang.String
  */
+@Override
 protected String getHeaderText() {
 	return "Device Setup";
 }
@@ -257,6 +257,7 @@ protected MCTBroadcastListEditorPanel getMCTBroadcastListEditorPanel() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public java.awt.Dimension getMinimumSize() {
 	return getPreferredSize();
 }
@@ -265,6 +266,7 @@ public java.awt.Dimension getMinimumSize() {
 /**
  * getNextInputPanel method comment.
  */
+@Override
 protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 {
 	if (currentInputPanel == null)
@@ -274,41 +276,41 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 	}
 	else if (currentInputPanel == getDeviceTypePanel())
 	{
-		int devType = getDeviceTypePanel().getDeviceType();
+		PaoType devType = getDeviceTypePanel().getDeviceType();
 		
-		if( devType == PAOGroups.TAPTERMINAL ||
-		    devType == PAOGroups.TNPP_TERMINAL || 
-		    devType == PAOGroups.RDS_TERMINAL)
+		if( devType == PaoType.TAPTERMINAL ||
+		    devType == PaoType.TNPP_TERMINAL || 
+		    devType == PaoType.RDS_TERMINAL)
 		{
 		    getDeviceTapTerminalPanel().setDeviceType(devType);
 			getDeviceTapTerminalPanel().setFirstFocus();
             return getDeviceTapTerminalPanel();
 		}
-		else if( devType == PAOGroups.WCTP_TERMINAL)
+		else if( devType == PaoType.WCTP_TERMINAL)
         {
             getDeviceTapVerizonPanel().setFirstFocus();
             return getDeviceTapVerizonPanel();
         }
-        else if( devType == PAOGroups.SNPP_TERMINAL )
+        else if( devType == PaoType.SNPP_TERMINAL )
 		{
 			getDeviceTapVerizonPanel().setFirstFocus();
             getDeviceTapVerizonPanel().setIsSNPP(true);
 			return getDeviceTapVerizonPanel();
 		}
-        else if( devType == PAOGroups.VIRTUAL_SYSTEM || DeviceTypesFuncs.isRfn(devType)) {
+        else if( devType == PaoType.VIRTUAL_SYSTEM || devType.isRfn()) {
             getDeviceBaseNamePanel().setDeviceType(devType);
             getDeviceBaseNamePanel().setFirstFocus();
             return getDeviceBaseNamePanel();
         }
-		else if( (DeviceTypesFuncs.isMeter(devType)
-					  && !DeviceTypesFuncs.isIon(devType))
-					  || devType == PAOGroups.DAVISWEATHER)
+		else if( devType.isMeter()
+					  && !DeviceTypesFuncs.isIon(devType.getDeviceTypeId())
+					  || devType == PaoType.DAVISWEATHER)
 		{
 			getDeviceIEDNamePanel().setDeviceType(devType);
 			getDeviceIEDNamePanel().setFirstFocus();
             return getDeviceIEDNamePanel();
 		}
-		else if ( devType == PAOGroups.NEUTRAL_MONITOR || devType == PAOGroups.FAULT_CI )
+		else if ( devType == PaoType.NEUTRAL_MONITOR || devType == PaoType.FAULT_CI )
         {
         	getDeviceGridPanel().setDeviceType(devType);
             getDeviceGridPanel().setFirstFocus();
@@ -322,8 +324,8 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 		}
 	}
 	else if (currentInputPanel == getDeviceBaseNamePanel()) {
-	    int devType = getDeviceTypePanel().getDeviceType();
-	    if (DeviceTypesFuncs.isMeter(devType)) {
+	    PaoType devType = getDeviceTypePanel().getDeviceType();
+	    if (devType.isMeter()) {
     	    getDeviceMeterNumberPanel().setFirstFocus();
             return getDeviceMeterNumberPanel();
 	    } else {
@@ -333,41 +335,38 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 	}
 	else if ((currentInputPanel == getDeviceNameAddressPanel()) || (currentInputPanel == getDeviceIEDNamePanel()))
 	{
-		int devType = getDeviceTypePanel().getDeviceType();
+		PaoType devType = getDeviceTypePanel().getDeviceType();
 
-		if( DeviceTypesFuncs.isMeter(devType) 
-			 || DeviceTypesFuncs.isMCT(devType) )
+		if(devType.isMeter() || devType.isMct() )
 		{
 			getDeviceMeterNumberPanel().setValue(null);
-			getDeviceMeterNumberPanel().setMCT400Type(devType);
-			if( DeviceTypesFuncs.isMCT2XXORMCT310XX(devType) )
+			if( DeviceTypesFuncs.isMCT2XXORMCT310XX(devType.getDeviceTypeId()) )
 			{
 				//Append "10" to the address for the desired default meter number.
 				getDeviceMeterNumberPanel().setDefaultMeterNumber("10" + getDeviceNameAddressPanel().getAddress());
 			}
 			
-			if(DeviceTypesFuncs.isMCT4XX(devType))
+			if(DeviceTypesFuncs.isMCT4XX(devType.getDeviceTypeId()))
 			{
-				getDeviceMeterNumberPanel().setMCT400Type(devType);
 				getDeviceMeterNumberPanel().setDefaultMeterNumber("");	//Default the meterNumber to nothing
 			}
 			getDeviceMeterNumberPanel().setFirstFocus();
 			return getDeviceMeterNumberPanel();
 		}
-		else if( devType == PAOGroups.DAVISWEATHER )
+		else if( devType == PaoType.DAVISWEATHER )
 		{
 			getDeviceScanRatePanel().setDeviceType(getDeviceTypePanel().getDeviceType());
             getDeviceScanRatePanel().setFirstFocus();
 			return getDeviceScanRatePanel();			
 		}
-		else if( com.cannontech.database.data.pao.DeviceTypes.MCTBROADCAST == devType )
+		else if(devType == PaoType.MCTBROADCAST)
 		{
 			MCTBroadcastListEditorPanel temp = getMCTBroadcastListEditorPanel();
 			temp.setValue(null);
             temp.setFirstFocus();
 			return temp;
 		}
-		else if (devType == DeviceTypes.RDS_TERMINAL)
+		else if (devType == PaoType.RDS_TERMINAL)
 		{
 		    return getRDSTerminalPanel();
 		}
@@ -380,8 +379,8 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 	}
 	else if (currentInputPanel == getDeviceMeterNumberPanel())
 	{
-	    int devType = getDeviceTypePanel().getDeviceType();
-	    if(DeviceTypesFuncs.isRfn(devType)) {
+	    PaoType devType = getDeviceTypePanel().getDeviceType();
+	    if(devType.isRfn()) {
 	        getRfnBasePanel().setFirstFocus();
 	        return getRfnBasePanel();
 	    } else {
@@ -392,20 +391,20 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 	}
 	else if (currentInputPanel == getDeviceScanRatePanel())
 	{
-		int devType = getDeviceTypePanel().getDeviceType();
+		PaoType devType = getDeviceTypePanel().getDeviceType();
 
-		if( DeviceTypesFuncs.isCarrier(devType) )
+		if( DeviceTypesFuncs.isCarrier(devType.getDeviceTypeId()) )
 		{
 			getDeviceRoutePanel().setValue(null);
             getDeviceRoutePanel().setFirstFocus();
 			return getDeviceRoutePanel();
 		}
-		else if( devType == PAOGroups.SIXNET)
+		else if( devType == PaoType.SIXNET)
 		{
 			getDeviceSixnetWizardPanel().setFirstFocus();
             return getDeviceSixnetWizardPanel();
 		}
-		else if( DeviceTypesFuncs.isRTU(devType) || DeviceTypesFuncs.isCCU(devType))
+		else if(devType.isRtu() || DeviceTypesFuncs.isCCU(devType.getDeviceTypeId()))
 		{
 			getDeviceCommChannelPanel().setValue(null);
 			getDeviceCommChannelPanel().setAddress(new Integer(getDeviceNameAddressPanel().getAddress()).intValue());
@@ -413,7 +412,7 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
             getDeviceCommChannelPanel().setFirstFocus();
 			return getDeviceCommChannelPanel();
 		}
-		else if(paoDefinitionDao.isTagSupported(PaoType.getForId(devType), PaoTag.IPC_METER)) {
+		else if(paoDefinitionDao.isTagSupported(devType, PaoTag.IPC_METER)) {
 		    getTcpTerminalPanel().setFirstFocus();
 		    return getTcpTerminalPanel();
 		}
@@ -429,18 +428,18 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 	}
 	else if( currentInputPanel == getDeviceTapTerminalPanel())
 	{
-       int devType = getDeviceTypePanel().getDeviceType();
+       PaoType devType = getDeviceTypePanel().getDeviceType();
        
-       if (devType == PAOGroups.TAPTERMINAL) {
+       if (devType == PaoType.TAPTERMINAL) {
            getDeviceCommChannelPanel().setValue(null);
            getDeviceCommChannelPanel().setFirstFocus();
            return getDeviceCommChannelPanel();
        }
-       if (devType == PAOGroups.TNPP_TERMINAL) {
+       if (devType == PaoType.TNPP_TERMINAL) {
            getDeviceTNPPTerminalPanel().setFirstFocus();
            return getDeviceTNPPTerminalPanel();
        }
-       if (devType == PAOGroups.RDS_TERMINAL) {
+       if (devType == PaoType.RDS_TERMINAL) {
            getRDSTerminalPanel().setFirstFocus();
            return getRDSTerminalPanel();
        }
@@ -480,20 +479,21 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 /**
  * isLastInputPanel method comment.
  */
+@Override
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
 	return  ( currentPanel == getDevicePhoneNumberPanel() 
             || (currentPanel == getDeviceCommChannelPanel() && !getDeviceCommChannelPanel().isDialupPort())
             || currentPanel == getDeviceRoutePanel() 
-            || (currentPanel == getDeviceBaseNamePanel() && getDeviceTypePanel().getDeviceType() == PAOGroups.VIRTUAL_SYSTEM)
+            || (currentPanel == getDeviceBaseNamePanel() && getDeviceTypePanel().getDeviceType() == PaoType.VIRTUAL_SYSTEM)
             || currentPanel == getDeviceGridPanel()
             || currentPanel == getRfnBasePanel()
             || currentPanel == getTcpTerminalPanel()
             || (currentPanel == getDeviceCommChannelPanel() 
                 && 
-                (getDeviceTypePanel().getDeviceType() == PAOGroups.ION_7700
-                 || getDeviceTypePanel().getDeviceType() == PAOGroups.ION_7330
-                 || getDeviceTypePanel().getDeviceType() == PAOGroups.ION_8300) ) );
+                (getDeviceTypePanel().getDeviceType() == PaoType.ION_7700
+                 || getDeviceTypePanel().getDeviceType() == PaoType.ION_7330
+                 || getDeviceTypePanel().getDeviceType() == PaoType.ION_8300) ) );
 }
 
 

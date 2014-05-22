@@ -19,7 +19,7 @@ public class LMControlArea extends YukonPAObject implements EditorPanel {
     private Vector<LMControlAreaProgram> lmControlAreaProgramVector = null;
 
     public LMControlArea() {
-        getYukonPAObject().setType(PaoType.LM_CONTROL_AREA.getDbString());
+        super(PaoType.LM_CONTROL_AREA);
     }
 
     @Override

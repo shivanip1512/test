@@ -35,7 +35,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.route.CCURoute;
@@ -70,6 +69,7 @@ public DeviceCommChannelPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -106,6 +106,7 @@ public void deviceVirtualPortPanel_MouseClicked(java.awt.event.MouseEvent mouseE
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getMinimumSize() {
 	return getPreferredSize();
 }
@@ -166,6 +167,7 @@ private javax.swing.JLabel getPortLabel() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getPreferredSize() {
 	return new Dimension(350, 200);
 }
@@ -212,6 +214,7 @@ private void checkAddress()
      * @return java.lang.Object
      * @param val java.lang.Object
      */
+    @Override
     public Object getValue(Object value) {
         
         Object val = null;
@@ -231,7 +234,8 @@ private void checkAddress()
         } else
             portID = new Integer(((LiteYukonPAObject) getPortComboBox().getSelectedItem()).getYukonID());
 
-        int devType = PaoType.getPaoTypeId(((DeviceBase) val).getPAOType());
+        PaoType paoType = ((DeviceBase) val).getPaoType();
+        int devType = paoType.getDeviceTypeId();
 
         if (val instanceof PagingTapTerminal) {
             ((PagingTapTerminal) val).getDeviceDirectCommSettings().setPortID(portID);
@@ -272,30 +276,30 @@ private void checkAddress()
 
             // checks device type and accordingly sets route type
 
-            String routeType;
+            PaoType routeType;
 
             if (DeviceTypesFuncs.isCCU(devType) || DeviceTypesFuncs.isRepeater(devType))
-                routeType = RouteTypes.STRING_CCU;
+                routeType = PaoType.ROUTE_CCU;
             else if (DeviceTypesFuncs.isLCU(devType))
-                routeType = RouteTypes.STRING_LCU;
+                routeType = PaoType.ROUTE_LCU;
             else if (DeviceTypesFuncs.isTCU(devType))
-                routeType = RouteTypes.STRING_TCU;
+                routeType = PaoType.ROUTE_TCU;
             else if (devType == PAOGroups.TAPTERMINAL)
-                routeType = RouteTypes.STRING_TAP_PAGING;
+                routeType = PaoType.ROUTE_TAP_PAGING;
             else if (devType == PAOGroups.TNPP_TERMINAL)
-                routeType = RouteTypes.STRING_TNPP_TERMINAL_ROUTE;
+                routeType = PaoType.ROUTE_TNPP_TERMINAL;
             else if (devType == PAOGroups.WCTP_TERMINAL)
-                routeType = RouteTypes.STRING_WCTP_TERMINAL_ROUTE;
+                routeType = PaoType.ROUTE_WCTP_TERMINAL;
             else if (devType == PAOGroups.SNPP_TERMINAL)
-                routeType = RouteTypes.STRING_SNPP_TERMINAL_ROUTE;
+                routeType = PaoType.ROUTE_SNPP_TERMINAL;
             else if (devType == PAOGroups.SERIES_5_LMI) {
                 Integer devID = ((DeviceBase) val).getDevice().getDeviceID();
                 ((Series5Base) val).setVerification(new DeviceVerification(devID, devID, "N", "N"));
-                routeType = RouteTypes.STRING_SERIES_5_LMI_ROUTE;
+                routeType = PaoType.ROUTE_SERIES_5_LMI;
             } else if (devType == PAOGroups.RTC) {
-                routeType = RouteTypes.STRING_RTC_ROUTE;
+                routeType = PaoType.ROUTE_RTC;
         	} else if (devType == PAOGroups.RDS_TERMINAL){
-        	    routeType = RouteTypes.STRING_RDS_TERMINAL_ROUTE;
+        	    routeType = PaoType.ROUTE_RDS_TERMINAL;
         	} else {
                 return val;
         	}
@@ -315,7 +319,7 @@ private void checkAddress()
             route.setDeviceID(((DeviceBase) val).getDevice().getDeviceID());
             route.setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
 
-            if (routeType.equalsIgnoreCase(RouteTypes.STRING_CCU)) {
+            if (routeType == PaoType.ROUTE_CCU) {
                 ((CCURoute) route).setCarrierRoute(new CarrierRoute(routeID));
             }
 
@@ -449,24 +453,28 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param newEvent java.awt.event.MouseEvent
  */
+@Override
 public void mouseClicked(MouseEvent newEvent) {
 }
 /**
  * This method was created in VisualAge.
  * @param newEvent java.awt.event.MouseEvent
  */
+@Override
 public void mouseEntered(MouseEvent newEvent) {
 }
 /**
  * This method was created in VisualAge.
  * @param newEvent java.awt.event.MouseEvent
  */
+@Override
 public void mouseExited(MouseEvent newEvent) {
 }
 /**
  * This method was created in VisualAge.
  * @param newEvent java.awt.event.MouseEvent
  */
+@Override
 public void mousePressed(MouseEvent newEvent) {
 	
 	
@@ -475,6 +483,7 @@ public void mousePressed(MouseEvent newEvent) {
  * This method was created in VisualAge.
  * @param newEvent java.awt.event.MouseEvent
  */
+@Override
 public void mouseReleased(MouseEvent newEvent) {
 	fireInputUpdate();
 }
@@ -482,14 +491,17 @@ public void mouseReleased(MouseEvent newEvent) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) {
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getPortComboBox().requestFocus(); 
@@ -501,6 +513,7 @@ public void setFirstFocus()
  * This method was created in VisualAge.
  * @param newEvent javax.swing.event.ListSelectionEvent
  */
+@Override
 public void valueChanged(ListSelectionEvent newEvent) {
 	
 	if( newEvent.getValueIsAdjusting() )
@@ -521,15 +534,16 @@ public void setAddress( int addressvar )
 /**
  * Method to set our device type integer
  */
-public void setDeviceType( int deviceTypevar )
+public void setDeviceType( PaoType deviceTypevar )
 {
-	deviceType = deviceTypevar;
+	deviceType = deviceTypevar.getDeviceTypeId();
 }
 
 /**
  * Method checks against physical address duplicates for ccu's and rtu's
  *
  */
+@Override
 public boolean isInputValid()
 {
 	return true;

@@ -368,7 +368,7 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
         LMScenario scenario = (LMScenario) obj;
 
         if (scenario == null) {
-            scenario = (LMScenario) LMFactory.createLoadManagement(PaoType.LM_SCENARIO.getDeviceTypeId());
+            scenario = (LMScenario) LMFactory.createLoadManagement(PaoType.LM_SCENARIO);
         }
 
         scenario.setScenarioName(getNameJTextField().getText());
@@ -756,7 +756,7 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
         LMScenario scenario = (LMScenario) obj;
 
         if (scenario == null) {
-            scenario = (LMScenario) LMFactory.createLoadManagement(PaoType.LM_SCENARIO.getDeviceTypeId());
+            scenario = (LMScenario) LMFactory.createLoadManagement(PaoType.LM_SCENARIO);
         }
 
         getNameJTextField().setText(scenario.getScenarioName());

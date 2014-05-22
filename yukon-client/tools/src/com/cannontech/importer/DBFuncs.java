@@ -22,7 +22,6 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
@@ -65,33 +64,6 @@ public class DBFuncs {
         } catch (IncorrectResultSizeDataAccessException e) {
             return routeID;
         }
-	}
-	
-	/*
-	 * Grab an MCT410 using a PAOName, returns one with an ID of -12 if unsuccessful
-	 * This should be changed to use cache at a later time
-	 */
-	public static MCT400SeriesBase get410FromTemplateName(String name) {
-		MCT400SeriesBase template410 = new MCT400SeriesBase();
-		template410.setDeviceID(-12);
-        Integer id = null;
-        
-		String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = ? " +  
-			" AND TYPE LIKE 'MCT-4%'";
-        
-        try {
-            JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            id = jdbcOps.queryForInt(stmt, name);
-            if(id != null && id > 0) {
-                template410.setDeviceID(id);
-                template410 = Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
-            }
-        }
-        catch( Exception e ) {
-            template410.setDeviceID(new Integer(-12));
-        }
-    
-		return template410;
 	}
 	
 	public static boolean IsDuplicateName(String name) {

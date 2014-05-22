@@ -47,7 +47,8 @@ public class PAOExclusionEditorPanel extends
 	 * @param e java.awt.event.ActionEvent
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	public void actionPerformed( java.awt.event.ActionEvent e )
+	@Override
+    public void actionPerformed( java.awt.event.ActionEvent e )
 	{
 		// user code begin {1}
 		// user code end
@@ -61,7 +62,8 @@ public class PAOExclusionEditorPanel extends
 	 * This method was created by Cannon Technologies Inc.
 	 * @param newEvent java.util.EventObject
 	 */
-	public void addButtonAction_actionPerformed( java.util.EventObject newEvent )
+	@Override
+    public void addButtonAction_actionPerformed( java.util.EventObject newEvent )
 	{
 
 		if ( newEvent.getSource() == getAddRemovePanelPAOExcl() )
@@ -232,7 +234,8 @@ public class PAOExclusionEditorPanel extends
 	 * @return java.lang.Object
 	 * @param val java.lang.Object
 	 */
-	@SuppressWarnings( "unchecked" )
+	@Override
+    @SuppressWarnings( "unchecked" )
 	public Object getValue( Object val )
 	{
 	    
@@ -437,7 +440,8 @@ public class PAOExclusionEditorPanel extends
 	 * Method to handle events for the AddRemovePanelListener interface.
 	 * @param newEvent java.util.EventObject
 	 */
-	public void leftListListSelection_valueChanged(
+	@Override
+    public void leftListListSelection_valueChanged(
 			java.util.EventObject newEvent )
 	{
 		// user code begin {1}
@@ -461,7 +465,8 @@ public class PAOExclusionEditorPanel extends
 			frame.setSize( aPAOExclusionEditorPanel.getSize() );
 			frame.addWindowListener( new java.awt.event.WindowAdapter()
 			{
-				public void windowClosing( java.awt.event.WindowEvent e )
+				@Override
+                public void windowClosing( java.awt.event.WindowEvent e )
 				{
 					System.exit( 0 );
 				};
@@ -482,7 +487,8 @@ public class PAOExclusionEditorPanel extends
 	 * This method was created by Cannon Technologies Inc.
 	 * @param newEvent java.util.EventObject
 	 */
-	public void removeButtonAction_actionPerformed(
+	@Override
+    public void removeButtonAction_actionPerformed(
 			java.util.EventObject newEvent )
 	{
 
@@ -496,7 +502,8 @@ public class PAOExclusionEditorPanel extends
 	 * Method to handle events for the AddRemovePanelListener interface.
 	 * @param newEvent java.util.EventObject
 	 */
-	public void rightListListSelection_valueChanged(
+	@Override
+    public void rightListListSelection_valueChanged(
 			java.util.EventObject newEvent )
 	{
 		// user code begin {1}
@@ -509,7 +516,8 @@ public class PAOExclusionEditorPanel extends
 	 * This method was created by Cannon Technologies Inc.
 	 * @param newEvent java.util.EventObject
 	 */
-	public void rightListMouse_mouseClicked( java.util.EventObject newEvent )
+	@Override
+    public void rightListMouse_mouseClicked( java.util.EventObject newEvent )
 	{
 		// user code begin {1}
 		// user code end
@@ -521,7 +529,8 @@ public class PAOExclusionEditorPanel extends
 	 * This method was created by Cannon Technologies Inc.
 	 * @param newEvent java.util.EventObject
 	 */
-	public void rightListMouse_mouseEntered( java.util.EventObject newEvent )
+	@Override
+    public void rightListMouse_mouseEntered( java.util.EventObject newEvent )
 	{
 		// user code begin {1}
 		// user code end
@@ -533,7 +542,8 @@ public class PAOExclusionEditorPanel extends
 	 * This method was created by Cannon Technologies Inc.
 	 * @param newEvent java.util.EventObject
 	 */
-	public void rightListMouse_mouseExited( java.util.EventObject newEvent )
+	@Override
+    public void rightListMouse_mouseExited( java.util.EventObject newEvent )
 	{
 		// user code begin {1}
 		// user code end
@@ -545,7 +555,8 @@ public class PAOExclusionEditorPanel extends
 	 * This method was created by Cannon Technologies Inc.
 	 * @param newEvent java.util.EventObject
 	 */
-	public void rightListMouse_mousePressed( java.util.EventObject newEvent )
+	@Override
+    public void rightListMouse_mousePressed( java.util.EventObject newEvent )
 	{
 		// user code begin {1}
 		// user code end
@@ -557,7 +568,8 @@ public class PAOExclusionEditorPanel extends
 	 * This method was created by Cannon Technologies Inc.
 	 * @param newEvent java.util.EventObject
 	 */
-	public void rightListMouse_mouseReleased( java.util.EventObject newEvent )
+	@Override
+    public void rightListMouse_mouseReleased( java.util.EventObject newEvent )
 	{
 		// user code begin {1}
 		// user code end
@@ -569,7 +581,8 @@ public class PAOExclusionEditorPanel extends
 	 * This method was created by Cannon Technologies Inc.
 	 * @param newEvent java.util.EventObject
 	 */
-	public void rightListMouseMotion_mouseDragged(
+	@Override
+    public void rightListMouseMotion_mouseDragged(
 			java.util.EventObject newEvent )
 	{
 		// user code begin {1}
@@ -582,11 +595,11 @@ public class PAOExclusionEditorPanel extends
 	 * This method was created in VisualAge.
 	 * @param val java.lang.Object
 	 */
-	public void setValue( Object val )
+	@Override
+    public void setValue( Object val )
 	{
 		YukonPAObject pao = (YukonPAObject) val;
-		PaoType paoType = PaoType.getForDbString(pao.getPAOType());
-		int deviceType = paoType.getDeviceTypeId();
+		int deviceType = pao.getPaoType().getDeviceTypeId();
 		Vector<PAOExclusion> currExcluded = pao.getPAOExclusionVector();
 		Vector<LiteYukonPAObject> assignedPAOs = new Vector<LiteYukonPAObject>();
 		Vector<LiteYukonPAObject> availablePAOs = new Vector<LiteYukonPAObject>();

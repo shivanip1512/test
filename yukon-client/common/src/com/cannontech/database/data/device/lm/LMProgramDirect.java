@@ -12,14 +12,18 @@ import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 
 public class LMProgramDirect extends LMProgramBase {
+
+    /**
+     * Valid PaoTypes are this object; LM_DIRECT_PROGRAM, and those that extend this object; LM_SEP_PROGRAM and LM_ECOBEE_PROGRAM
+     * @param paoType
+     */
+    public LMProgramDirect(PaoType paoType) {
+        super(paoType);
+    }
+
     private com.cannontech.database.db.device.lm.LMProgramDirect directProgram = null;
     private Vector<LMProgramDirectGear> lmProgramDirectGearVector = null;
     private Vector<LMDirectNotificationGroupList> lmProgramDirectNotifyGroupVector = null;
-
-    @Override
-    protected PaoType getProgramPaoType() {
-        return PaoType.LM_DIRECT_PROGRAM;
-    }
 
     @Override
     public void add() throws SQLException {

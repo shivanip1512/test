@@ -2,15 +2,14 @@ package com.cannontech.database.db.pao;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.spring.YukonSpringHook;
 
-public class YukonPAObject extends com.cannontech.database.db.DBPersistent {
+public class YukonPAObject extends com.cannontech.database.db.DBPersistent implements YukonPao {
     private Integer paObjectID = null;
-    private String category = null;
-    private String paoClass = null;
     private String paoName = null;
-    private String type = null;
+    private PaoType paoType = null;
     private String description = com.cannontech.common.util.CtiUtilities.STRING_NONE;
     private Character disableFlag = new Character('N');
     private String paoStatistics = "-----";
@@ -27,13 +26,18 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent {
     }
 
     @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return new PaoIdentifier(getPaObjectID(), getPaoType());
+    }
+    
+    @Override
     public void add() throws java.sql.SQLException {
         Object addValues[] = {
                 getPaObjectID(),
-                getCategory(),
-                getPaoClass(),
-                (getPaoName().length() <= 60 ? getPaoName()
-                        : getPaoName().substring(0, 60)), getType(),
+                getPaoType().getPaoCategory().getDbString(),
+                getPaoType().getPaoClass().getDbString(),
+                (getPaoName().length() <= 60 ? getPaoName() : getPaoName().substring(0, 60)), 
+                getPaoType().getDbString(),
                 getDescription(), getDisableFlag(), getPaoStatistics() };
 
         add(TABLE_NAME, addValues);
@@ -46,12 +50,7 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent {
         delete(TABLE_NAME, CONSTRAINT_COLUMNS, values);
 
         UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
-        userPageDao.deletePagesForPao(new PaoIdentifier(paObjectID,
-                                                        PaoType.getForDbString(type)));
-    }
-
-    public java.lang.String getCategory() {
-        return category;
+        userPageDao.deletePagesForPao(getPaoIdentifier());
     }
 
     public java.lang.String getDescription() {
@@ -66,10 +65,6 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent {
         return paObjectID;
     }
 
-    public java.lang.String getPaoClass() {
-        return paoClass;
-    }
-
     public java.lang.String getPaoName() {
         return paoName;
     }
@@ -82,10 +77,10 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent {
         return getPaObjectID();
     }
 
-    public java.lang.String getType() {
-        return type;
+    public PaoType getPaoType() {
+        return paoType;
     }
-
+    
     @Override
     public void retrieve() throws java.sql.SQLException {
         Object constraintValues[] = { getPaObjectID() };
@@ -95,20 +90,16 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent {
                                     constraintValues);
 
         if (results.length == SETTER_COLUMNS.length) {
-            setCategory((String) results[0]);
-            setPaoClass((String) results[1]);
+//            setCategory((String) results[0]);
+//            setPaoClass((String) results[1]);
             setPaoName((String) results[2]);
-            setType((String) results[3]);
+            PaoType.getForDbString((String) results[3]);
             setDescription((String) results[4]);
             setDisableFlag(new Character(((String) results[5]).charAt(0)));
             setPaoStatistics((String) results[6]);
         } else
             throw new Error(getClass() + " - Incorrect Number of results retrieved");
 
-    }
-
-    public void setCategory(java.lang.String newCategory) {
-        category = newCategory;
     }
 
     public void setDescription(java.lang.String newDescription) {
@@ -123,10 +114,6 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent {
         paObjectID = newPaObjectID;
     }
 
-    public void setPaoClass(java.lang.String newPaoClass) {
-        paoClass = newPaoClass;
-    }
-
     public void setPaoName(java.lang.String newPaoName) {
         paoName = newPaoName;
     }
@@ -135,16 +122,16 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent {
         paoStatistics = newPaoStatistics;
     }
 
-    public void setType(java.lang.String newType) {
-        type = newType;
+    public void setPaoType(PaoType paoType) {
+        this.paoType = paoType;
     }
-
+    
     @Override
     public void update() throws java.sql.SQLException {
         String paoName = getPaoName().length() <= 60 ? getPaoName()
                 : getPaoName().substring(0, 60);
-        Object setValues[] = { getCategory(), getPaoClass(), paoName,
-                getType(), getDescription(), getDisableFlag(),
+        Object setValues[] = { getPaoType().getPaoCategory().getDbString(), getPaoType().getPaoClass().getDbString(), paoName,
+                getPaoType().getDbString(), getDescription(), getDisableFlag(),
                 getPaoStatistics() };
 
         Object constraintValues[] = { getPaObjectID() };
@@ -156,8 +143,6 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent {
                constraintValues);
 
         UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
-        userPageDao.updatePagesForPao(new PaoIdentifier(paObjectID,
-                                                        PaoType.getForDbString(type)),
-                                      paoName);
+        userPageDao.updatePagesForPao(getPaoIdentifier(), paoName);
     }
 }

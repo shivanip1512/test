@@ -1,6 +1,5 @@
 package com.cannontech.database.data.lite;
 
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.users.model.LiteUserGroup;
@@ -435,7 +434,7 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		YukonPAObject yukonPAObject = ((com.cannontech.database.data.pao.YukonPAObject)val);
         LiteYukonPAObject thisLite = new LiteYukonPAObject(yukonPAObject.getPAObjectID().intValue(),
         													yukonPAObject.getPAOName(), 
-        													PaoType.getForDbString(yukonPAObject.getPAOType()),
+        													yukonPAObject.getPaoType(),
         													yukonPAObject.getPAODescription(),
         													String.valueOf(yukonPAObject.getPAODisableFlag()));
         returnLite = thisLite;

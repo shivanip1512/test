@@ -17,12 +17,12 @@ public abstract class LMGroupExpressCom extends LMGroup {
     private LMGroupExpressComAddress splinterAddress = null;
 
     public LMGroupExpressCom(PaoType paoType) {
-        super();
+        super(paoType);
         //we must always have our ExpressComm group not null
         lmGroupExpressComm = new com.cannontech.database.db.device.lm.LMGroupExpressCom();
-        getYukonPAObject().setType(paoType.getDbString());
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
         super.add();
 
@@ -76,6 +76,7 @@ public abstract class LMGroupExpressCom extends LMGroup {
      * PM)
      * @exception java.sql.SQLException The exception description.
      */
+    @Override
     public void addPartial() throws java.sql.SQLException {
         super.addPartial();
 
@@ -93,6 +94,7 @@ public abstract class LMGroupExpressCom extends LMGroup {
 
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         getLMGroupExpressComm().delete();
 
@@ -218,6 +220,7 @@ public abstract class LMGroupExpressCom extends LMGroup {
         return substationAddress;
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         super.retrieve();
         getLMGroupExpressComm().retrieve();
@@ -263,6 +266,7 @@ public abstract class LMGroupExpressCom extends LMGroup {
         }
     }
 
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
 
@@ -279,6 +283,7 @@ public abstract class LMGroupExpressCom extends LMGroup {
 
     }
 
+    @Override
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
         getLMGroupExpressComm().setLmGroupID(deviceID);
@@ -333,6 +338,7 @@ public abstract class LMGroupExpressCom extends LMGroup {
         getLMGroupExpressComm().setZipID(getZipCodeAddress().getAddressID());
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         super.update();
 

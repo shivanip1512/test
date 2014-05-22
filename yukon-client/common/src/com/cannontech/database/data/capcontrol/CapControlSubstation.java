@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.editor.EditorPanel;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
@@ -21,10 +21,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
 
     @SuppressWarnings("static-access")
     public CapControlSubstation() {
-        super();
-        setPAOCategory(PAOGroups.STRING_CAT_CAPCONTROL);
-        setPAOClass(PAOGroups.STRING_CAT_CAPCONTROL);
-        getYukonPAObject().setType(PAOGroups.STRING_CAPCONTROL_SUBSTATION);
+        super(PaoType.CAP_CONTROL_SUBSTATION);
     }
 
     @Override

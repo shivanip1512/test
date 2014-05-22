@@ -12,6 +12,7 @@ import com.cannontech.importer.fdr.ImporterVirtualDevice;
 
 public class ProgressOpcImportParserImpl implements TranslationParse {
 
+    @Override
     public void parse(TranslationBase base) throws IOException{
         String parseValue;
         String pointName;
@@ -57,9 +58,7 @@ public class ProgressOpcImportParserImpl implements TranslationParse {
              
         //Create device.
         ImporterVirtualDevice dev = base.getDevice();
-        dev.setPAOCategory("DEVICE");
         dev.setPAOName(paoName);
-        dev.setDeviceType("VIRTUAL SYSTEM");
         
         //Create Point Parameters
         Map<String,String> pointParameters = base.getPointParametersMap();

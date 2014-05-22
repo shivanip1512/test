@@ -27,7 +27,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.enums.Phase;
 import com.cannontech.enums.RegulatorPointMapping;
 
@@ -107,12 +106,9 @@ public class CymeSimulationHelper {
     }
     
     private void processLoadTapChanger(SerializableDictionaryData cymeObject, PaoType paoType, Instant simulationTime) {
-        LiteYukonPAObject pao = null;
+        YukonPao pao = null;
         try {
-            pao = paoDao.getLiteYukonPAObject(cymeObject.getEqNo(),
-                                              paoType.getPaoCategory().getPaoCategoryId(),
-                                              paoType.getPaoClass().getPaoClassId(),
-                                              paoType.getDeviceTypeId());
+            pao = paoDao.getYukonPao(cymeObject.getEqNo(), paoType);
         } catch (NotFoundException e) {
             log.error("Pao not found with Name: " + cymeObject.getEqNo() + " and PaoType: " + paoType.getPaoTypeName() + ". Skipping.");
             return;
@@ -127,18 +123,15 @@ public class CymeSimulationHelper {
     }
     
     private void processCapBank(SerializableDictionaryData cymeObject, PaoType paoType, Instant simulationTime) {
-        LiteYukonPAObject pao = null;
+        YukonPao pao = null;
         try {
-            pao = paoDao.getLiteYukonPAObject(cymeObject.getEqNo(),
-                                              paoType.getPaoCategory().getPaoCategoryId(),
-                                              paoType.getPaoClass().getPaoClassId(),
-                                              paoType.getDeviceTypeId());
+            pao = paoDao.getYukonPao(cymeObject.getEqNo(), paoType);
         } catch (NotFoundException e) {
             log.error("Pao not found with Name: " + cymeObject.getEqNo() + " and PaoType: " + paoType.getPaoTypeName() + ". Skipping.");
             return;
         }
         
-        Map<Integer, Phase> phaseSetMap = zoneDao.getMonitorPointsForBankAndPhase(pao.getLiteID());
+        Map<Integer, Phase> phaseSetMap = zoneDao.getMonitorPointsForBankAndPhase(pao.getPaoIdentifier().getPaoId());
         
         if (phaseSetMap.size() == 0) {
             log.warn("CYME CONFIG: Missing Voltage monitoring points on CapBank " + cymeObject.getEqNo() );
@@ -160,12 +153,10 @@ public class CymeSimulationHelper {
     }
     
     private void processBusAndFeeder(SerializableDictionaryData cymeObject, PaoType paoType, Instant simulationTime) {
-        LiteYukonPAObject pao = null;
+        YukonPao pao = null;
         try {
-            pao = paoDao.getLiteYukonPAObject(cymeObject.getEqNo(),
-                                              paoType.getPaoCategory().getPaoCategoryId(),
-                                              paoType.getPaoClass().getPaoClassId(),
-                                              paoType.getDeviceTypeId());
+            pao = paoDao.getYukonPao(cymeObject.getEqNo(), paoType);
+
         } catch (NotFoundException e) {
             log.error("Pao not found with Name: " + cymeObject.getEqNo() + " and PaoType: " + paoType.getPaoTypeName() + ". Skipping.");
             return;
@@ -174,11 +165,11 @@ public class CymeSimulationHelper {
         PointIdContainer pointIds;
         String objectType;
         if (paoType == PaoType.CAP_CONTROL_SUBBUS) {
-            pointIds = substationBusDao.getSubstationBusPointIds(pao.getLiteID());
+            pointIds = substationBusDao.getSubstationBusPointIds(pao.getPaoIdentifier().getPaoId());
             objectType = "Subbus";
         } else {
             //Feeder
-            pointIds = feederDao.getFeederPointIds(pao.getLiteID());
+            pointIds = feederDao.getFeederPointIds(pao.getPaoIdentifier().getPaoId());
             objectType = "Feeder";
         }
         

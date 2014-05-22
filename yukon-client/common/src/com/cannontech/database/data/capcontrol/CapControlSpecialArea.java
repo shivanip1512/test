@@ -8,12 +8,12 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.common.editor.EditorPanel;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -23,10 +23,7 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
 
     @SuppressWarnings("static-access")
     public CapControlSpecialArea() {
-        super();
-        setPAOCategory(PAOGroups.STRING_CAT_CAPCONTROL);
-        setPAOClass(PAOGroups.STRING_CAT_CAPCONTROL);
-        getYukonPAObject().setType(PAOGroups.STRING_CAPCONTROL_SPECIAL_AREA);
+        super(PaoType.CAP_CONTROL_SPECIAL_AREA);
         setDisabled(true);
     }
 
@@ -145,7 +142,7 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         builder.append("select areaid from capcontrolspecialarea, yukonpaobject");
         builder.append("where areaid = paobjectid and paoname like "  + "'" +name+ "'");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return (Integer) yukonTemplate.queryForObject(builder.toString(), Integer.class);
+        return yukonTemplate.queryForObject(builder.toString(), Integer.class);
     }
 
 }

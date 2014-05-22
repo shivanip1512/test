@@ -11,18 +11,16 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.data.device.CCU711;
 import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PortTypes;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.port.LocalDialupPort;
-import com.cannontech.database.data.port.LocalDirectPort;
 import com.cannontech.database.data.port.LocalSharedPort;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.route.CCURoute;
@@ -97,11 +95,13 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 		super();
 	}
 
-	public String getName() {
+	@Override
+    public String getName() {
 		return "Central Maine DB Converter";
 	}
 
-	public String getParamText() {
+	@Override
+    public String getParamText() {
 		return "Src-Directory:";
 	}
 
@@ -109,7 +109,8 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 	 * Executes all db inserts that are needed. If a failure occurs,
 	 * then execution stops.
 	 */
-	public void run() {
+	@Override
+    public void run() {
 
 		boolean s = processPortFile();
 
@@ -140,7 +141,8 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 
 	}
 
-	public String getDefaultValue() {
+	@Override
+    public String getDefaultValue() {
 		return CtiUtilities.CURRENT_DIR;
 	}
 
@@ -282,7 +284,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 		port.setPortName("Port #" + (portID.intValue() - PORTID_OFFSET));
 		port.setPortID(portID);
 
-		handleLocalDialupPort((LocalDirectPort) port);
+		handleLocalDialupPort(port);
 
 
 		return port;
@@ -332,7 +334,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 			ts.nextToken();
 			ts.nextToken();
 
-			LocalSharedPort port = (LocalSharedPort) createDirectPort(portID);
+			LocalSharedPort port = createDirectPort(portID);
 			port.getPortLocalSerial().setPhysicalPort(
 				"Com" + ts.nextToken().trim().toString());
 
@@ -573,7 +575,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 			System.out.println("crtAdd : " + crtAdd);
 			String ccuID = ts.nextToken().trim();
 			System.out.println("CCU ID:  " + ccuID);
-			String routeType = RouteTypes.STRING_CCU;
+			PaoType routeType = PaoType.ROUTE_CCU;
 			CCURoute route = null;
 			Integer deviceID =
 				new Integer(
@@ -587,7 +589,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 						.data
 						.route
 						.RouteFactory
-						.createRoute(PaoType.getPaoTypeId(routeType));
+						.createRoute(routeType);
 			route.setDeviceID(deviceID);
 
 			//replace all blanks with a single space
@@ -647,7 +649,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 
 			CTILogger.info("MACRO ROUTE line: " + lines.get(i).toString());
 
-			String routeType = RouteTypes.STRING_MACRO;
+			PaoType routeType = PaoType.ROUTE_MACRO;
 
 			com.cannontech.database.data.route.MacroRoute route =
 				(com.cannontech.database.data.route.MacroRoute) com
@@ -792,30 +794,13 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 			if (deviceType == DeviceTypes.STRING_DCT_501[0]) {
 				// do something
 			} else {
-				com.cannontech.database.data.device.MCTBase device = null;
+				MCTBase device = null;
 
-				device =
-					(com.cannontech.database.data.device.MCTBase) com
-						.cannontech
-						.database
-						.data
-						.device
-						.DeviceFactory
-						.createDevice(
-							com
-								.cannontech
-								.common
-								.pao
-								.PaoType
-								.getPaoTypeId(
-								deviceType));
+				PaoType paoType = PaoType.getForDbString(deviceType);
+				device = (MCTBase) DeviceFactory.createDevice(paoType);
 
 				//set our unique deviceID
 				device.setDeviceID(deviceID);
-
-				device.setDeviceClass("CARRIER");
-
-				device.setDeviceType(deviceType);
 
 				device.setPAOName(devID);
 
@@ -1107,7 +1092,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 	private boolean writeToSQLDatabase(MultiDBPersistent multi) {
 		//write all the collected data to the SQL database
 		try {
-			multi =(MultiDBPersistent) com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.INSERT,multi).execute();
+			multi =com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.INSERT,multi).execute();
 
 			return true;
 		} catch (com.cannontech.database.TransactionException t) {

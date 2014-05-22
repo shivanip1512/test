@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.device.DeviceVerification;
@@ -11,6 +12,10 @@ import com.cannontech.database.db.device.DeviceVerification;
 public class RTM extends IEDBase {
     private Vector<DeviceVerification> deviceVerificationVector;
 
+    public RTM() {
+        super(PaoType.RTM);
+    }
+    
     @Override
     public void add() throws SQLException {
         super.add();

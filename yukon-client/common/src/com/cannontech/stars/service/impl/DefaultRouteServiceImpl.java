@@ -131,7 +131,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
             }
 
             int groupId = routeGroupIds.get(0);
-            LMGroupExpressCom expresscomGroup = (LMGroupExpressCom)LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM.getDeviceTypeId());
+            LMGroupExpressCom expresscomGroup = (LMGroupExpressCom)LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM);
             expresscomGroup.setLMGroupID(groupId);
             dbPersistentDao.performDBChange(expresscomGroup, TransactionType.RETRIEVE);
 
@@ -166,7 +166,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         LMGroupPlcExpressCom expresscomGroup;
         if (paoObjectIds.size() == 0) {
             //  Creates the expresscom if it doesn't exist.
-            expresscomGroup = (LMGroupPlcExpressCom) LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM.getDeviceTypeId());
+            expresscomGroup = (LMGroupPlcExpressCom) LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM);
             expresscomGroup.setPAOName(nameOfDefaultRoute);  
             expresscomGroup.setRouteID(newRouteId);
             dbPersistentDao.performDBChange(expresscomGroup, TransactionType.INSERT);
@@ -188,7 +188,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         PaoType macroGroupType = PaoType.MACRO_GROUP;
         if (macroGroupIds.size() == 0) {
             // Creates a macrogroup if it doesn't exist.
-            serialGroup = (MacroGroup) LMFactory.createLoadManagement(macroGroupType.getDeviceTypeId());  
+            serialGroup = (MacroGroup) LMFactory.createLoadManagement(macroGroupType);  
             serialGroup.setPAOName(nameOfSerialGroup);
             GenericMacro macro = new GenericMacro();
             macro.setChildID(expresscomGroup.getPAObjectID());  
@@ -248,11 +248,11 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
                     PaoIdentifier pao = new PaoIdentifier(serialGroupId, paoType);
                     paoPermissionService.removePermission(energyCompany.getUser(), pao, Permission.DEFAULT_ROUTE);
                     
-                    MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement(PaoType.MACRO_GROUP.getDeviceTypeId());
+                    MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement(PaoType.MACRO_GROUP);
                     grpSerial.setDeviceID(serialGroupId);
                     dbPersistentDao.performDBChange(grpSerial, TransactionType.DELETE);
                     
-                    LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM.getDeviceTypeId());
+                    LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM);
                     grpDftRoute.setLMGroupID(defaultRouteGroupId);
                     dbPersistentDao.performDBChange(grpDftRoute, TransactionType.DELETE);
                 }

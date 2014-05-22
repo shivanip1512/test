@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.db.device.DeviceMCT400Series;
@@ -18,8 +19,8 @@ public class MCT400SeriesBase extends MCTBase
 /**
  * MCT constructor comment.
  */
-public MCT400SeriesBase() {
-	super();
+public MCT400SeriesBase(PaoType paoType) {
+	super(paoType);
 }
 
 @Override

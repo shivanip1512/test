@@ -25,9 +25,7 @@ import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PortTypes;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
@@ -164,7 +162,8 @@ public class GREDBConverter extends MessageFrameAdaptor
 			super(ptid);
 		}
 
-		public int hashCode()
+		@Override
+        public int hashCode()
 		{
 			if( this.getStatesVector().size() == 2 )
 			{
@@ -177,7 +176,8 @@ public class GREDBConverter extends MessageFrameAdaptor
 		}
 
 		//very custom equals method!!!
-		public boolean equals(Object o )
+		@Override
+        public boolean equals(Object o )
 		{
 			if( o instanceof GroupState )
 			{
@@ -216,16 +216,19 @@ public GREDBConverter()
 	super();
 }
 
+@Override
 public String getName()
 {
 	return "GRE Converter";
 }
 
+@Override
 public String getParamText()
 {
 	return "Src-Directory:";
 }
 
+@Override
 public void run()
 {
 //	boolean s = true;
@@ -281,6 +284,7 @@ public void run()
 
 }
 
+@Override
 public String getDefaultValue()
 {
 	return CtiUtilities.CURRENT_DIR;
@@ -518,7 +522,7 @@ public boolean processLoadPrograms()
 
 
 		LMProgramDirect lmProgram =
-			(LMProgramDirect)LMFactory.createLoadManagement( DeviceTypes.LM_DIRECT_PROGRAM );
+			(LMProgramDirect)LMFactory.createLoadManagement(PaoType.LM_DIRECT_PROGRAM);
 
 		lmProgram.setName( line[4].trim() + " " + line[0].trim() );
 		lmProgram.getProgram().setControlType( LMProgramBase.OPSTATE_MANUALONLY );
@@ -649,7 +653,7 @@ public boolean processLoadGroups()
 
 
 		LMGroupGolay lmGroupGolay = null;
-		lmGroupGolay = (LMGroupGolay)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_GOLAY );
+		lmGroupGolay = (LMGroupGolay)LMFactory.createLoadManagement(PaoType.LM_GROUP_GOLAY);
 		
 		//set our unique own deviceID
 		lmGroupGolay.setDeviceID( new Integer(START_GROUP_ID++) );
@@ -1091,7 +1095,7 @@ public boolean processRouteMacro()
 		tokenizer.nextToken();
 
 		Integer tempUserID = pInt(tokenizer.nextToken());
-		MacroRoute macRoute = (MacroRoute)RouteFactory.createRoute(RouteTypes.ROUTE_MACRO);
+		MacroRoute macRoute = (MacroRoute)RouteFactory.createRoute(PaoType.ROUTE_MACRO);
 
 		macRoute.setRouteID( new Integer(ROUTE_MACRO_OFFSET++) );
 		macRoute.setRouteName( "@" + tokenizer.nextToken().trim() + " #" + ROUTE_MACRO_OFFSET );
@@ -1445,7 +1449,7 @@ public boolean processTransmitterFile()
 		
 		//create a route
 		RouteBase route = null;
-		route = RouteFactory.createRoute( RouteTypes.ROUTE_SERIES_5_LMI );
+		route = RouteFactory.createRoute(PaoType.ROUTE_SERIES_5_LMI);
 
 		route.setRouteID( new Integer(START_ROUTE_ID++) );
 		route.setRouteName( device.getPAOName() + " Rt");
@@ -1683,7 +1687,7 @@ public boolean processUnxRTCFile()
 
 		//create a route
 		RouteBase route = null;
-		route = RouteFactory.createRoute( RouteTypes.ROUTE_RTC );
+		route = RouteFactory.createRoute(PaoType.ROUTE_RTC );
 
 		route.setRouteID( new Integer(START_ROUTE_ID++) );
 		route.setRouteName( device.getPAOName() + " Rt");
@@ -1709,7 +1713,7 @@ public boolean processUnxRTCFile()
 	{
 		String macName = macIt.next().toString();
 
-		MacroRoute macRoute = (MacroRoute)RouteFactory.createRoute(RouteTypes.ROUTE_MACRO);	
+		MacroRoute macRoute = (MacroRoute)RouteFactory.createRoute(PaoType.ROUTE_MACRO);	
 		macRoute.setRouteID( new Integer(ROUTE_MACRO_OFFSET++) );
 		macRoute.setRouteName( "@" + macName + " #" + macRoute.getRouteID() );
 		macRoute.setDeviceID( new Integer(0) );
@@ -1907,7 +1911,7 @@ public boolean processUnxPrograms()
 			continue;
 
 		LMProgramDirect lmProgram =
-			(LMProgramDirect)LMFactory.createLoadManagement( DeviceTypes.LM_DIRECT_PROGRAM );
+			(LMProgramDirect)LMFactory.createLoadManagement(PaoType.LM_DIRECT_PROGRAM);
 
 		String progName = line[0].trim();
 		String gearName = line[1].trim();
@@ -2024,7 +2028,7 @@ public boolean processUnxLoadScenarios()
 		LMScenario lmScenario = null;
 		if( !scenarioMap.containsKey(scenName) )
 		{
-			lmScenario = (LMScenario)LMFactory.createLoadManagement( PAOGroups.LM_SCENARIO );
+			lmScenario = (LMScenario)LMFactory.createLoadManagement(PaoType.LM_SCENARIO);
 			lmScenario.setScenarioName( scenName );
 			scenarioMap.put( scenName, lmScenario );
 			multi.getDBPersistentVector().add( lmScenario );
@@ -2088,7 +2092,7 @@ private int setScenarioOffset( LMScenario scen, boolean isStart )
 	for( int i = 0; i < scen.getAllThePrograms().size(); i++ )
 	{
 		LMControlScenarioProgram progScen = 
-			(LMControlScenarioProgram)scen.getAllThePrograms().get(i);
+			scen.getAllThePrograms().get(i);
 
 		int currSecs = 
 			(isStart ? progScen.getStartOffset().intValue()
@@ -2101,7 +2105,7 @@ private int setScenarioOffset( LMScenario scen, boolean isStart )
 	for( int i = 0; i < scen.getAllThePrograms().size(); i++ )
 	{
 		LMControlScenarioProgram progScen =
-			(LMControlScenarioProgram)scen.getAllThePrograms().get(i);
+			scen.getAllThePrograms().get(i);
 
 		if( isStart )
 		{
@@ -2173,7 +2177,7 @@ public boolean processUnxLoadGroups()
 		if( typeStr.equalsIgnoreCase("SA205") )
 		{
 			LMGroupSA205 temp =
-				(LMGroupSA205)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_SA205 );
+				(LMGroupSA205)LMFactory.createLoadManagement(PaoType.LM_GROUP_SA205);
 			
 			String lNum = getSAFunction( pInt(line[1].trim()).intValue() );
 			temp.getLMGroupSA205105().setLoadNumber( lNum );
@@ -2183,7 +2187,7 @@ public boolean processUnxLoadGroups()
 		else if( typeStr.equalsIgnoreCase("GOLAY") || typeStr.equalsIgnoreCase("GOLAT") )
 		{
 			LMGroupGolay temp =
-				(LMGroupGolay)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_GOLAY );
+				(LMGroupGolay)LMFactory.createLoadManagement(PaoType.LM_GROUP_GOLAY);
 
 			temp.getLMGroupSASimple().setNominalTimeout(
 					new Integer(pInt(line[3].trim()).intValue()) );
@@ -2193,7 +2197,7 @@ public boolean processUnxLoadGroups()
 		else if( typeStr.equalsIgnoreCase("SADIG") || typeStr.equalsIgnoreCase("SALAT") )
 		{
 			LMGroupSADigital temp =
-				(LMGroupSADigital)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_SADIGITAL );
+				(LMGroupSADigital)LMFactory.createLoadManagement(PaoType.LM_GROUP_SADIGITAL);
 
 			temp.getLMGroupSASimple().setNominalTimeout(
 					new Integer(pInt(line[3].trim()).intValue()) );
@@ -2404,10 +2408,9 @@ private boolean writeToSQLDatabase(MultiDBPersistent multi)
 	//write all the collected data to the SQL database
 	try
 	{
-      multi = (MultiDBPersistent)
-   		com.cannontech.database.Transaction.createTransaction(
-               com.cannontech.database.Transaction.INSERT, 
-               multi).execute();
+      multi = com.cannontech.database.Transaction.createTransaction(
+           com.cannontech.database.Transaction.INSERT, 
+           multi).execute();
 
 		return true;
 	}

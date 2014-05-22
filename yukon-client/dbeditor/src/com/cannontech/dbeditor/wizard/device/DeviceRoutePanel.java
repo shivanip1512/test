@@ -34,8 +34,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.MacroRoute;
@@ -53,7 +51,7 @@ import com.google.common.collect.Lists;
 public class DeviceRoutePanel
 	extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JLabel ivjRouteLabel = null;
-	private javax.swing.JComboBox ivjRouteComboBox = null;
+	private javax.swing.JComboBox<LiteYukonPAObject> ivjRouteComboBox = null;
     private java.awt.Frame owner = SwingUtil.getParentFrame(this);
 	
     public DeviceRoutePanel() {
@@ -103,24 +101,26 @@ public class DeviceRoutePanel
 	 * This method was created in VisualAge.
 	 * @return java.awt.Dimension
 	 */
-	public Dimension getMinimumSize() {
+	@Override
+    public Dimension getMinimumSize() {
 		return getPreferredSize();
 	}
 	/**
 	 * This method was created in VisualAge.
 	 * @return java.awt.Dimension
 	 */
-	public Dimension getPreferredSize() {
+	@Override
+    public Dimension getPreferredSize() {
 		return new Dimension(350, 200);
 	}
 	/**
 	 * Return the RouteComboBox property value.
 	 * @return javax.swing.JComboBox
 	 */
-	private javax.swing.JComboBox getRouteComboBox() {
+	private javax.swing.JComboBox<LiteYukonPAObject> getRouteComboBox() {
 		if (ivjRouteComboBox == null) {
 			try {
-				ivjRouteComboBox = new javax.swing.JComboBox();
+				ivjRouteComboBox = new javax.swing.JComboBox<LiteYukonPAObject>();
 				ivjRouteComboBox.setName("RouteComboBox");
 			} catch (java.lang.Throwable ivjExc) {
 				handleException(ivjExc);
@@ -174,6 +174,7 @@ public class DeviceRoutePanel
      * @param val java.lang.Object
 	 * @throws EditorInputValidationException 
      */
+    @Override
     public Object getValue(Object val) throws EditorInputValidationException {
 
         Object value = null;
@@ -191,7 +192,7 @@ public class DeviceRoutePanel
             // The default value for DeviceLoadProfile.loadProfileDemandRate was changed to 3600, therefore, 
             //   all "legacy" mcts should be set to 300.  This is just to keep the DBEditor code working the same for these meter types.
             // New bulk operations will not have this check it it, we're assuming these legacy devices are not being added using those tools.
-            int deviceType = PaoType.getPaoTypeId( ((MCTBase)value).getPAOType() );
+            int deviceType = ((MCTBase)value).getPaoType().getDeviceTypeId();
             if( DeviceTypesFuncs.isMCT2XXORMCT310XX(deviceType) || DeviceTypesFuncs.isMCT3xx(deviceType)) {
                 ((MCTBase) value).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(300));
             }
@@ -216,8 +217,8 @@ public class DeviceRoutePanel
             ((DeviceBase) value).setDeviceID(paoDao.getNextPaoId());
 
             // Automatically add default points
-            PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
-            DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+            PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
+            DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
             SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice((DeviceBase)value);
             List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(yukonDevice);
             for (PointBase point : defaultPoints) {
@@ -229,7 +230,7 @@ public class DeviceRoutePanel
             // the first route in the macro
             if (chosenRoute instanceof MacroRoute) {
                 if (((MacroRoute) chosenRoute).getMacroRouteVector().size() > 0) {
-                    com.cannontech.database.db.route.MacroRoute firstRoute = (com.cannontech.database.db.route.MacroRoute) ((MacroRoute) chosenRoute).getMacroRouteVector()
+                    com.cannontech.database.db.route.MacroRoute firstRoute = ((MacroRoute) chosenRoute).getMacroRouteVector()
                                                                                                                                                      .firstElement();
 
                     IDatabaseCache cache = DefaultDatabaseCache.getInstance();
@@ -239,7 +240,7 @@ public class DeviceRoutePanel
                         for (int i = 0; i < routes.size(); i++) {
 
                             if (firstRoute.getSingleRouteID().intValue() == ((LiteBase) routes.get(i)).getLiteID()) {
-                                chosenRoute = LiteFactory.createDBPersistent((LiteBase) routes.get(i));
+                                chosenRoute = LiteFactory.createDBPersistent(routes.get(i));
                                 break;
                             }
                         }
@@ -279,7 +280,7 @@ public class DeviceRoutePanel
             // create new route to be added - copy from the chosen route and add new repeater to it
             // A route is automatically added to each transmitter
             if (chosenRoute instanceof CCURoute) {
-                RouteBase route = RouteFactory.createRoute(RouteTypes.STRING_CCU);
+                RouteBase route = RouteFactory.createRoute(PaoType.ROUTE_CCU);
 
                 route.setRouteName(((DeviceBase) value).getPAOName());
 
@@ -334,7 +335,7 @@ public class DeviceRoutePanel
                     int rptVarBit = role.getVarbit();
 
                     for (int j = 0; j < ((CCURoute) route).getRepeaterVector().size(); j++) {
-                        RepeaterRoute rpt = ((RepeaterRoute) ((CCURoute) route).getRepeaterVector().get(j));
+                        RepeaterRoute rpt = (((CCURoute) route).getRepeaterVector().get(j));
                         if (rptVarBit + 1 <= 7) rptVarBit++;
                         if (j+1 == ((CCURoute) route).getRepeaterVector().size()) rptVarBit = 7;  // Last repeater's variable bit is always lucky 7.
                         rpt.setVariableBits(new Integer(rptVarBit));
@@ -351,7 +352,7 @@ public class DeviceRoutePanel
                          ((CCURoute) route).getCarrierRoute().setCcuVariableBits(new Integer(frame.getRole().getVarbit()));
                          int rptVarBit = frame.getRole().getVarbit();
                          for (int j = 0; j < ((CCURoute) route).getRepeaterVector().size(); j++) {
-                             RepeaterRoute rpt = ((RepeaterRoute) ((CCURoute) route).getRepeaterVector().get(j));
+                             RepeaterRoute rpt = (((CCURoute) route).getRepeaterVector().get(j));
                              if (rptVarBit + 1 <= 7) {
                                  rptVarBit++;
                              }
@@ -443,7 +444,8 @@ public class DeviceRoutePanel
 	 * This method was created in VisualAge.
 	 * @param val java.lang.Object
 	 */
-	public void setValue(Object val) {
+	@Override
+    public void setValue(Object val) {
 		IDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache) {
@@ -461,11 +463,13 @@ public class DeviceRoutePanel
 		}
 	}
     
+    @Override
     public void setFirstFocus() 
     {
         // Make sure that when its time to display this panel, the focus starts in the top component
         javax.swing.SwingUtilities.invokeLater( new Runnable() 
             { 
+            @Override
             public void run() 
                 { 
                 getRouteComboBox().requestFocus(); 

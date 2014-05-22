@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 
 /**
@@ -20,6 +21,7 @@ public RouteMacroNamePanel() {
  * Method to handle events for the CaretListener interface.
  * @param e javax.swing.event.CaretEvent
  */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	if (e.getSource() == getMacroNameTextBox()) 
 		connEtoC1(e);
@@ -74,6 +76,7 @@ private javax.swing.JTextField getMacroNameTextBox() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getMinimumSize() {
 	return getPreferredSize();
 }
@@ -81,6 +84,7 @@ public Dimension getMinimumSize() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getPreferredSize() {
 	return new Dimension(350, 200);
 }
@@ -89,12 +93,13 @@ public Dimension getPreferredSize() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) 
 {
 	String macroName = getMacroNameTextBox().getText().trim();
 
 	//Create a Macro Route object
-	val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.STRING_MACRO );
+	val = com.cannontech.database.data.route.RouteFactory.createRoute(PaoType.ROUTE_MACRO);
 	((com.cannontech.database.data.route.RouteBase) val).setRouteName(macroName);
 	((com.cannontech.database.data.route.RouteBase) val).setDeviceID( new Integer(
 							com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID) );
@@ -154,6 +159,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() {
 	if( getMacroNameTextBox().getText().length() < 1 )
 	{
@@ -183,7 +189,8 @@ public static void main(java.lang.String[] args) {
 		frame.add("Center", aRouteMacroNamePanel);
 		frame.setSize(aRouteMacroNamePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -197,14 +204,17 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) {
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getMacroNameTextBox().requestFocus();

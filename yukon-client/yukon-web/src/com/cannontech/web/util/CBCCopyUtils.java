@@ -86,7 +86,7 @@ public class CBCCopyUtils {
 
 	private static DBPersistent handleCBC(CapBankController controller) {
 		CapBankController cbc = null;
-		PaoType paoType = PaoType.getForDbString(controller.getPAOType());
+		PaoType paoType = controller.getPaoType();
 		cbc = (CapBankController) DeviceFactory.createDevice(paoType);
 		cbc.setAddress(0);
 		cbc.setCommID(controller.getCommID());
@@ -98,7 +98,7 @@ public class CBCCopyUtils {
 
 	private static DBPersistent handleCBC702x(CapBankController702x controller) {
 		CapBankController702x cbc702 = null;
-		PaoType paoType = PaoType.getForDbString(controller.getPAOType());
+		PaoType paoType = controller.getPaoType();
 		cbc702 = (CapBankController702x) DeviceFactory.createDevice(paoType);
 		cbc702.setAddress(controller.getAddress());
 		cbc702.setCommID(controller.getCommID());
@@ -111,7 +111,7 @@ public class CBCCopyUtils {
 	
     private static DBPersistent handleCBCDNP(CapBankControllerDNP controller) {
         CapBankControllerDNP cbcDNP = null;
-        PaoType paoType = PaoType.getForDbString(controller.getPAOType());
+        PaoType paoType = controller.getPaoType();
         cbcDNP = (CapBankControllerDNP) DeviceFactory.createDevice(paoType);
         cbcDNP.setAddress(controller.getAddress());
         cbcDNP.setCommID(controller.getCommID());

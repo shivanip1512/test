@@ -7,12 +7,10 @@ import java.util.List;
 
 import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.service.ZoneService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * This type was created in VisualAge.
- */
 public class CapBank extends CapControlDeviceBase {
     // OPStates that a CapBank can be in
     public final static String SWITCHED_OPSTATE = BankOpState.SWITCHED.getDbString();
@@ -43,22 +41,17 @@ public class CapBank extends CapControlDeviceBase {
     public static final String ENABLE_OPSTATE = "capEnabled";
     public static final String DISABLE_OPSTATE = "capDisabled";
 
-
     public static final String ENABLE_OVUV_OPSTATE = "capOVUVEnabled";
     public static final String DISABLE_OVUV_OPSTATE = "capOVUVDisabled";
 
     private com.cannontech.database.db.capcontrol.CapBank capBank = null;
     private List<CCMonitorBankList> ccMonitorBankList = new ArrayList<CCMonitorBankList>();
-    
-    /**
-     */
+
     public CapBank() {
-        super();
+        super(PaoType.CAPBANK);
     }
 
-    /**
-     * This method was created in VisualAge.
-     */
+    @Override
     public void add() throws java.sql.SQLException {
         super.add();
         getCapBank().add();
@@ -69,17 +62,16 @@ public class CapBank extends CapControlDeviceBase {
         }
     }
 
-    /**
-     * This method was created in VisualAge.
-     */
+    @Override
     public void delete() throws java.sql.SQLException {
         // remove all the associations this CapBank to any Feeder
         com.cannontech.database.db.capcontrol.CCFeederBankList.deleteCapBanksFromFeederList(null,
                                                                                             getCapBank().getDeviceID(),
                                                                                             getDbConnection());
-        ZoneService zoneService = YukonSpringHook.getBean("zoneService",ZoneService.class);
+        ZoneService zoneService = YukonSpringHook.getBean("zoneService",
+                                                          ZoneService.class);
         zoneService.unassignBank(getPAObjectID());
-        
+
         // Delete from all dynamic CabBank tables here
         deleteMonitorPoints();
         delete("DynamicCCOperationStatistics", "PaobjectId", getPAObjectID());
@@ -95,9 +87,6 @@ public class CapBank extends CapControlDeviceBase {
 
     }
 
-    /**
-     * This method was created in VisualAge.
-     */
     public com.cannontech.database.db.capcontrol.CapBank getCapBank() {
         if (capBank == null) {
             capBank = new com.cannontech.database.db.capcontrol.CapBank();
@@ -106,16 +95,11 @@ public class CapBank extends CapControlDeviceBase {
         return capBank;
     }
 
-    /**
-     * This method was created in VisualAge.
-     */
     public String getLocation() {
         return getPAODescription();
     }
 
-    /**
-     * This method was created in VisualAge.
-     */
+    @Override
     public void retrieve() throws java.sql.SQLException {
         super.retrieve();
         getCapBank().retrieve();
@@ -123,18 +107,12 @@ public class CapBank extends CapControlDeviceBase {
         ccMonitorBankList = CCMonitorBankList.getMonitorPointsOnCapBankList(getCapBank().getDeviceID());
     }
 
-    /**
-     * This method was created in VisualAge.
-     */
     public void setCapBank(
             com.cannontech.database.db.capcontrol.CapBank newValue) {
         this.capBank = newValue;
     }
 
-    /**
-     * Insert the method's description here. Creation date: (1/4/00 3:32:03 PM)
-     * @param conn java.sql.Connection
-     */
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getCapBank().setDbConnection(conn);
@@ -145,25 +123,17 @@ public class CapBank extends CapControlDeviceBase {
         }
     }
 
-    /**
-     * This method was created in VisualAge.
-     * @param deviceID java.lang.Integer
-     */
+    @Override
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
         getCapBank().setDeviceID(deviceID);
     }
 
-    /**
-     * This method was created in VisualAge.
-     */
     public void setLocation(String loc) {
         getYukonPAObject().setDescription(loc);
     }
 
-    /**
-     * This method was created in VisualAge.
-     */
+    @Override
     public void update() throws java.sql.SQLException {
         super.update();
         getCapBank().update();
@@ -196,6 +166,7 @@ public class CapBank extends CapControlDeviceBase {
             }
         }
     }
+
     public static boolean isOpstate(String tagStateName) {
 
         for (int i = 0; i < OPSTATES.length; i++) {

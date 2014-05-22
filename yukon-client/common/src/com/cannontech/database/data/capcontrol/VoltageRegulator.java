@@ -14,8 +14,6 @@ import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -37,17 +35,14 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     private int keepAliveConfig;
     private double voltChangePerTap;
 
-    public VoltageRegulator() {
-        super();
-        setPAOCategory( PaoCategory.CAPCONTROL.getDbString() );
-        setPAOClass( PaoClass.CAPCONTROL.getDbString() );
+    /**
+     * Valid PaoTypes are LOAD_TAP_CHANGER, GANG_OPERATED, PHASE_OPERATED
+     * @param paoType
+     */
+    public VoltageRegulator(PaoType paoType) {
+        super(PaoType.LOAD_TAP_CHANGER);
     }
 
-    public VoltageRegulator(Integer regulatorId) {
-        this();
-        setCapControlPAOID( regulatorId );
-    }
-        
     @Override
     public void add() throws SQLException {
         if (getPAObjectID() == null) {
@@ -152,9 +147,8 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
             ccMonitorBankListDao.removeByDeviceId(getPAObjectID(), null);
         }
         
-        PaoType paoType = PaoType.getForDbString(getPAOType());
-        ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao = YukonSpringHook.getBean("extraPaoPointAssignmentDao", ExtraPaoPointAssignmentDao.class);
-        extraPaoPointAssignmentDao.saveAssignments(new PaoIdentifier(getPAObjectID(), paoType) , eppMappings);
+        ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao = YukonSpringHook.getBean(ExtraPaoPointAssignmentDao.class);
+        extraPaoPointAssignmentDao.saveAssignments(new PaoIdentifier(getPAObjectID(), getPaoType()) , eppMappings);
         pointMappings = null;
         
         //add voltage_y CcMonitorBankList entry, if a point is assigned
@@ -233,18 +227,16 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     }
 
     public boolean isDisplayTimer() {
-        PaoType paoType = PaoType.getForDbString(getPAOType());
-        return paoType == PaoType.LOAD_TAP_CHANGER;
+        return getPaoType() == PaoType.LOAD_TAP_CHANGER;
     }
     
     public boolean isDisplayConfig() {
-        PaoType paoType = PaoType.getForDbString(getPAOType());
-        return paoType == PaoType.LOAD_TAP_CHANGER;
+        return getPaoType() == PaoType.LOAD_TAP_CHANGER;
     }
     
     @Override
     public PaoIdentifier getPaoIdentifier() {
-        return new PaoIdentifier(getPAObjectID(),PaoType.getForDbString(getPAOType()));
+        return new PaoIdentifier(getPAObjectID(), getPaoType());
     }
 
 }
