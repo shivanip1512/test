@@ -280,12 +280,11 @@ public class OptOutServiceImpl implements OptOutService {
                             this.cancelOptOut(Collections.singletonList(request.getEventId()), user);                            
                         } 
                         return;
-                    } else {
-                        if (!overdueEvent.getState().equals(OptOutEventState.SCHEDULED)) {
-                            return;
-                        }
-                        event.setScheduledDate(overdueEvent.getScheduledDate());
                     }
+                    if (!overdueEvent.getState().equals(OptOutEventState.SCHEDULED)) {
+                        return;
+                    }
+                    event.setScheduledDate(overdueEvent.getScheduledDate());
                 }
                 event.setState(OptOutEventState.START_OPT_OUT_SENT);
                 
@@ -521,18 +520,19 @@ public class OptOutServiceImpl implements OptOutService {
 	public void cancelAllOptOuts(LiteYukonUser user) {
 	    logger.debug("Cancel all opt outs command initiated by user: " + user.getUsername());
 	    
-		YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
-		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts((EnergyCompany) energyCompany);
+		EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
+		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts(energyCompany);
 
-		boolean broadCastSpidEnabled 
-		= energyCompanySettingDao.isEnabled(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID, energyCompany.getEnergyCompanyId());
+        boolean broadCastSpidEnabled = energyCompanySettingDao.isEnabled(
+            EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID, energyCompany.getId());
 
 		boolean validSpid;
 		int broadcastSpid = 0;
 		if (!broadCastSpidEnabled) {
 		    validSpid = false;
 		} else {
-		    broadcastSpid = energyCompanySettingDao.getInteger(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID, energyCompany.getEnergyCompanyId());
+		    broadcastSpid = energyCompanySettingDao.getInteger(
+		        EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID, energyCompany.getId());
 		    validSpid = rawExpressComCommandBuilder.isValidBroadcastSpid(broadcastSpid);
 		}
 
@@ -601,7 +601,6 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	@Override
 	public void cancelAllOptOutsByProgramName(String programName, LiteYukonUser user) throws ProgramNotFoundException {
-
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
     	Program program = programService.getByProgramName(programName, energyCompany);
     	int programId = program.getProgramId();
