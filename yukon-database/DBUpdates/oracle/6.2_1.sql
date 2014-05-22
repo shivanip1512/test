@@ -55,7 +55,7 @@ BEGIN
        
     IF 0 < v_count
     THEN
-        RAISE_APPLICATION_ERROR(-20001, 'There was a proble converting some role properties into energy company settings for one or more energy companies. Multiple role groups contained different values for a role property being converted.  One value must be chosen to become the value for the energy company-wide setting. Please see YUK-13191 for instructions on how to resolve the problem.');
+        RAISE_APPLICATION_ERROR(-20001, 'There was a problem converting some role properties into energy company settings for one or more energy companies. Multiple role groups contained different values for a role property being converted.  One value must be chosen to become the value for the energy company-wide setting. Please see YUK-13191 for instructions on how to resolve the problem.');
     END IF;
 END;
 /

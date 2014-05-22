@@ -910,11 +910,13 @@ public class OperatorHardwareController {
         model.addAttribute("meterClass", HardwareClass.METER);
         model.addAttribute("gatewayClass", HardwareClass.GATEWAY);
         
-        MeteringType meterDesignation = energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getEnergyCompanyId());
+        MeteringType meterDesignation = energyCompanySettingDao.getEnum(
+                EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getId());
         boolean starsMeters = meterDesignation == MeteringType.stars; 
         model.addAttribute("starsMeters", starsMeters);
         
-        boolean inventoryChecking = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INVENTORY_CHECKING, accountInfoFragment.getEnergyCompanyId());
+        boolean inventoryChecking = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INVENTORY_CHECKING,
+                accountInfoFragment.getEnergyCompanyId());
         model.addAttribute("inventoryChecking", inventoryChecking);
     }
     
