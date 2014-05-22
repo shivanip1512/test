@@ -938,7 +938,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     public PointValueQualityHolder getPointValueQualityForChangeId(long changeId) {
     
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT");
+    	sql.append("SELECT DISTINCT");
     	sql.append("rph.pointId,");
     	sql.append("rph.timestamp,");
     	sql.append("rph.value,");
@@ -957,7 +957,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     throws NotFoundException {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT");
+        sql.append("SELECT DISTINCT");
         sql.append("rph.pointId,");
         sql.append("rph.timestamp,");
         sql.append("rph.value,");
@@ -1011,7 +1011,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         PointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(pao, attribute).getPointIdentifier();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT rph.PointId, rph.TimeStamp, rph.Quality, rph.Value, p.PointType");
+        sql.append("SELECT DISTINCT rph.PointId, rph.TimeStamp, rph.Quality, rph.Value, p.PointType");
         sql.append("FROM RawPointHistory rph");
         sql.append("JOIN Point p ON rph.PointId = p.PointId");
         sql.append("WHERE p.PointOffset").eq_k(identifier.getOffset());
