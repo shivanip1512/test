@@ -262,7 +262,6 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     setRoleProperty(group, YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_FAQ,true);
                     setRoleProperty(group, YukonRoleProperty.OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL,true);
                     setRoleProperty(group, YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD,true);
-                    setRoleProperty(group, YukonRoleProperty.OPERATOR_INVENTORY_CHECKING,true);
                     setRoleProperty(group, YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,true);
                     setRoleProperty(group, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,true);
                     setRoleProperty(group, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,true);
