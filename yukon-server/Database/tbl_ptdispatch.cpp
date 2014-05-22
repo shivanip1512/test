@@ -179,7 +179,7 @@ bool CtiTablePointDispatch::writeToDB(Cti::Database::DatabaseConnection &conn)
     {
         _pointIdInvalid = true;
     }
-    catch( Cti::Database::DBException& )
+    catch( Cti::Database::DatabaseException& )
     {
         // logging is done inside executeUpsert()
     }

@@ -50,7 +50,7 @@ bool DatabaseWriter::execute()
     return retVal;
 }
 
-void DatabaseWriter::executeAndThrowOnError()
+void DatabaseWriter::executeWithDatabaseException()
 {
     try
     {
@@ -65,7 +65,7 @@ void DatabaseWriter::executeAndThrowOnError()
             dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
         }
 
-        DatabaseConnection::resolveErrorCodeAndThrow(_command.Connection(), x);
+        DatabaseConnection::throwDatabaseException(_command.Connection(), x);
     }
 }
 

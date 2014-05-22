@@ -3,17 +3,17 @@
 namespace Cti {
 namespace Database {
 
-class DBException : public std::exception
+class DatabaseException : public std::exception
 {
     const std::string description;
 
 public:
 
-    DBException(const std::string& desc)
+    DatabaseException(const std::string& desc)
     :   description(desc)
     {}
 
-    virtual ~DBException()
+    virtual ~DatabaseException()
     {}
 
     const char* what() const
@@ -22,24 +22,24 @@ public:
     }
 };
 
-class PrimaryKeyViolationException : public DBException
+class PrimaryKeyViolationException : public DatabaseException
 {
 public:
 
     PrimaryKeyViolationException(const std::string& desc)
-    :   DBException(std::string("Primary Key Violation: ") + desc)
+    :   DatabaseException(std::string("Primary Key Violation: ") + desc)
     {}
 
     ~PrimaryKeyViolationException()
     {}
 };
 
-class ForeignKeyViolationException : public DBException
+class ForeignKeyViolationException : public DatabaseException
 {
 public:
 
     ForeignKeyViolationException(const std::string& desc)
-    :   DBException(std::string("Foreign Key Violation: ") + desc)
+    :   DatabaseException(std::string("Foreign Key Violation: ") + desc)
     {}
 
     ~ForeignKeyViolationException()

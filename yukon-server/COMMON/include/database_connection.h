@@ -33,7 +33,8 @@ protected:
     bool rollbackTransaction();
     bool commitTransaction();
 
-    static void resolveErrorCodeAndThrow(const SAConnection *conn, const SAException &x);
+    // Throws a DatabaseException translated from the SAException
+    static void throwDatabaseException(const SAConnection *conn, const SAException &x);
 
 public:
     DatabaseConnection();

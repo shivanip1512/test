@@ -105,28 +105,28 @@ void throwForeignKeyViolationException(const SAException &x)
 //  oracle = ORA-00001
 //  sqlsvr = 2627 - Violation of %ls constraint '%.*ls'. Cannot insert duplicate key in object '%.*ls'.
 
-typedef void (*ThrowDBExceptionFunc) (const SAException &);
-typedef std::map<int, ThrowDBExceptionFunc> VendorErrorMap;
+typedef boost::function<void (const SAException &)> ThrowDatabaseExceptionFunc;
+typedef std::map<int, ThrowDatabaseExceptionFunc> VendorErrorMap;
 
 const VendorErrorMap sqlServerErrors = boost::assign::map_list_of
-    ( 547, &throwForeignKeyViolationException)
-    (2627, &throwPrimaryKeyViolationException);
+    ( 547, ThrowDatabaseExceptionFunc(throwForeignKeyViolationException))
+    (2627, ThrowDatabaseExceptionFunc(throwPrimaryKeyViolationException));
 
 const VendorErrorMap oracleErrors = boost::assign::map_list_of
-    (2291, &throwForeignKeyViolationException)
-    (   1, &throwPrimaryKeyViolationException);
+    (2291, ThrowDatabaseExceptionFunc(throwForeignKeyViolationException))
+    (   1, ThrowDatabaseExceptionFunc(throwPrimaryKeyViolationException));
 
 } // anonymous namespace
 
-void DatabaseConnection::resolveErrorCodeAndThrow(const SAConnection *conn, const SAException &x)
+void DatabaseConnection::throwDatabaseException(const SAConnection *conn, const SAException &x)
 {
     if( ! conn )
     {
         std::string description = "Unexpected SAConnection is Null: " + x.ErrText();
-        throw DBException(description);
+        throw DatabaseException(description);
     }
 
-    boost::optional<ThrowDBExceptionFunc> throwFunc;
+    boost::optional<ThrowDatabaseExceptionFunc> throwFunc;
 
     switch( conn->Client() )
     {
@@ -137,7 +137,7 @@ void DatabaseConnection::resolveErrorCodeAndThrow(const SAConnection *conn, cons
     if( ! throwFunc )
     {
         std::string description = "Other Error: " + x.ErrText();
-        throw DBException(description);
+        throw DatabaseException(description);
     }
 
     (*throwFunc)(x); // throw the exception found

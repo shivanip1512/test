@@ -99,9 +99,9 @@ bool IM_EX_CTIBASE executeUpdater( DatabaseWriter& updater, const char* file, co
 
 /**
  * Execute a database insert command
- * @throws Cti::Database::DBException
+ * @throws DatabaseException
  */
-IM_EX_CTIBASE void executeDBWriter( DatabaseWriter &dbWriter, const char* file, const int line, const LogDebug::Options logDebug );
+IM_EX_CTIBASE void executeWriter( DatabaseWriter &writer, const char* file, const int line, const LogDebug::Options logDebug );
 
 /**
  * Helper method to create a string of the format
@@ -113,7 +113,7 @@ std::string IM_EX_CTIBASE createIdSqlClause(const id_set &paoids, const std::str
 
 /**
  * Execute an Upsert operation
- * @throws Cti::Database::DBException
+ * @throws DatabaseException
  */
 IM_EX_CTIBASE void executeUpsert(
         DatabaseConnection &conn,

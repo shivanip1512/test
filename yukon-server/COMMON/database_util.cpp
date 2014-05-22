@@ -101,11 +101,11 @@ bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, 
  * Execute a database insert command
  * @return normalized error code, or null if no error
  */
-void executeDBWriter( DatabaseWriter &dbWriter, const char* file, const int line, const LogDebug::Options logDebug )
+void executeWriter( DatabaseWriter &writer, const char* file, const int line, const LogDebug::Options logDebug )
 {
     if( logDebug == LogDebug::Enable )
     {
-        std::string loggedSQLstring = dbWriter.asString();
+        std::string loggedSQLstring = writer.asString();
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << CtiTime() << " **** DEBUG **** DB command : " << file << " (" << line << ")" << std::endl
@@ -115,11 +115,11 @@ void executeDBWriter( DatabaseWriter &dbWriter, const char* file, const int line
 
     try
     {
-        dbWriter.executeAndThrowOnError();
+        writer.executeWithDatabaseException();
     }
-    catch( DBException& )
+    catch( DatabaseException& )
     {
-        std::string loggedSQLstring = dbWriter.asString();
+        std::string loggedSQLstring = writer.asString();
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << CtiTime() << " **** ERROR **** DB command : " << file << " (" << line << ")" << std::endl
@@ -187,7 +187,7 @@ void executeUpsert(DatabaseConnection &conn,
             DatabaseWriter inserter(conn);
             initInserter( inserter );
 
-            executeDBWriter(inserter, file, line, logDebug);
+            executeWriter(inserter, file, line, logDebug);
         }
         catch( PrimaryKeyViolationException& ex )
         {
@@ -206,7 +206,7 @@ void executeUpsert(DatabaseConnection &conn,
         DatabaseWriter updater(conn);
         initUpdater( updater );
 
-        executeDBWriter(updater, file, line, logDebug);
+        executeWriter(updater, file, line, logDebug);
 
         if( ! updater.rowsAffected() )
         {
@@ -219,7 +219,7 @@ void executeUpsert(DatabaseConnection &conn,
             DatabaseWriter inserter(conn);
             initInserter( inserter );
 
-            executeDBWriter(inserter, file, line, logDebug);
+            executeWriter(inserter, file, line, logDebug);
         }
     }
 }
