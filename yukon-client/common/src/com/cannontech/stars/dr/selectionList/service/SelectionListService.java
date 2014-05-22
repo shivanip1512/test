@@ -43,37 +43,13 @@ public interface SelectionListService {
      */
     List<YukonDefinition> getValidDefinitions(int ecId, YukonSelectionListEnum listType);
 
-    /**
-     * Returns a selection list.  The user has the option to use inherited or default lists 
-     * if the current energy company doesn't have one
-     * @param energyCompany The energy company that contains the list.
-     * @param listName The name of the list being requested.
-     * @param useInherited Should inherited selection lists be returned?
-     * @param useDefault Should default selection lists be returned?
-     */
     YukonSelectionList getSelectionList(YukonEnergyCompany energyCompany, String listName, boolean useInherited,
         boolean useDefault);
-
-    /**
-     * Returns a selection list.  The user has the option to use inherited or default lists 
-     * if the current energy company doesn't have one
-     * @param energyCompanyId The id of the energy company that contains the list.
-     * @param listName The name of the list being requested.
-     * @param useInherited Should inherited selection lists be returned?
-     * @param useDefault Should default selection lists be returned?
-     */
-    YukonSelectionList getSelectionList(int energyCompanyId, String listName, boolean useInherited,
-            boolean useDefault);
 
     /**
      * Returns inherited or default lists if the current energy company doesn't have one
      */
     YukonSelectionList getSelectionList(YukonEnergyCompany energyCompany, String listName);
-
-    /**
-     * Returns inherited or default lists if the current energy company doesn't have one
-     */
-    YukonSelectionList getSelectionList(int energyCompanyId, String listName);
 
     YukonListEntry getListEntry(YukonEnergyCompany energyCompany, int yukonDefId);
 }

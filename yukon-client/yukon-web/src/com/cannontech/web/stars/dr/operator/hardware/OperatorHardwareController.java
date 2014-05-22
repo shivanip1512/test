@@ -156,12 +156,13 @@ public class OperatorHardwareController {
     public String list(YukonUserContext userContext, ModelMap model, AccountInfoFragment accountInfoFragment) {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         model.addAttribute("serialNumberSwitch", new SerialNumber());
         model.addAttribute("serialNumberThermostat", new SerialNumber());
         model.addAttribute("serialNumberGateway", new SerialNumber());
         model.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         
-        setupListModel(accountInfoFragment, model, userContext);
+        setupListModel(accountInfoFragment, model, energyCompany, userContext);
         return "operator/hardware/hardwareList.jsp";
     }
 
@@ -213,7 +214,8 @@ public class OperatorHardwareController {
                 model.addAttribute("showGatewayCheckingPopup", true);
             }
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-            setupListModel(accountInfoFragment, model, userContext);
+            EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+            setupListModel(accountInfoFragment, model, energyCompany, userContext);
             return "operator/hardware/hardwareList.jsp"; 
         }
         
@@ -283,7 +285,8 @@ public class OperatorHardwareController {
             model.addAttribute("anotherEC", StringEscapeUtils.escapeHtml4(e.getYukonEnergyCompany().getName()));
         }
         
-        setupListModel(accountInfoFragment, model, userContext);
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+        setupListModel(accountInfoFragment, model, energyCompany, userContext);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         return "operator/hardware/hardwareList.jsp";
     }
@@ -869,11 +872,12 @@ public class OperatorHardwareController {
         
     }
 
-    private void setupListModel(AccountInfoFragment accountInfoFragment, ModelMap model, YukonUserContext userContext) {
-        // Add device types for dropdown menus
+    private void setupListModel(AccountInfoFragment accountInfoFragment, ModelMap model, EnergyCompany ec,
+            YukonUserContext userContext) {
         int energyCompanyId = accountInfoFragment.getEnergyCompanyId();
+        // Add device types for dropdown menus
         ListMultimap<String, DeviceTypeOption> deviceTypeMap = ArrayListMultimap.create();
-        List<YukonListEntry> deviceTypeList = selectionListService.getSelectionList(energyCompanyId,
+        List<YukonListEntry> deviceTypeList = selectionListService.getSelectionList(ec,
                                     YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE).getYukonListEntries();
         
         for (YukonListEntry deviceTypeEntry : deviceTypeList) {

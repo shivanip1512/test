@@ -214,26 +214,9 @@ public class SelectionListServiceImpl implements SelectionListService {
     }
 
     @Override
-    public YukonSelectionList getSelectionList(int energyCompanyId, String listName) {
-        return getSelectionList(energyCompanyId, listName, true, true);
-    }
-
-    @Override
     public YukonSelectionList getSelectionList(YukonEnergyCompany energyCompany, String listName, boolean useInherited,
             boolean useDefault) {
         EnergyCompany ec = ecDao.getEnergyCompany(energyCompany.getEnergyCompanyId());
-        return getSelectionList(energyCompany, listName, useInherited, useDefault);
-    }
-
-    @Override
-    public YukonSelectionList getSelectionList(int energyCompanyId, String listName, boolean useInherited,
-            boolean useDefault) {
-        EnergyCompany ec = ecDao.getEnergyCompany(energyCompanyId);
-        return getSelectionList(ec, listName, useInherited, useDefault);
-    }
-
-    private YukonSelectionList getSelectionList(EnergyCompany ec, String listName, boolean useInherited,
-            boolean useDefault) {
         YukonSelectionList yukonSelectionList =
             listDao.findSelectionListByEnergyCompanyIdAndListName(ec.getId(), listName);
         if (yukonSelectionList != null) {
