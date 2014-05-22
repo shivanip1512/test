@@ -1412,7 +1412,7 @@
     <pages>
       <page name="home" type="BASIC">
         <requireRoleProperty value="DEVELOPMENT_MODE"/>
-        <link>/support/development/main</link>
+        <link>/dev/main</link>
         <pages>
           <page name="webServices.eimTest" type="BASIC"/>
           <page name="webServices.loadControl" type="BASIC"/>
@@ -1424,7 +1424,7 @@
           <page name="setupDatabase" type="BASIC"/>
           <page name="miscellaneousMethod" type="BASIC"/>
           <page name="rfnTest" type="BASIC">
-            <link>/support/development/rfn/viewBase</link>
+            <link>/dev/rfn/viewBase</link>
             <pages>
               <page name="rfnTest.viewMeterReadArchive" type="DETAIL"/>
               <page name="rfnTest.viewEventArchive" type="DETAIL"/>

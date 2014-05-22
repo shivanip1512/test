@@ -5,8 +5,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.support.development.DevDbSetupTask;
-import com.cannontech.web.support.development.database.service.DevDatabasePopulationService;
+import com.cannontech.web.dev.DevDbSetupTask;
+import com.cannontech.web.dev.database.service.DevDatabasePopulationService;
 import com.cannontech.web.updater.UpdateBackingService;
 
 public class DevBackingService implements UpdateBackingService {

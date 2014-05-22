@@ -2,8 +2,8 @@ package com.cannontech.web.updater.development;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.cannontech.web.support.development.DevDbSetupTask;
-import com.cannontech.web.support.development.database.objects.DevObject;
+import com.cannontech.web.dev.DevDbSetupTask;
+import com.cannontech.web.dev.database.objects.DevObject;
 import com.cannontech.web.updater.ResultAccessor;
 
 
