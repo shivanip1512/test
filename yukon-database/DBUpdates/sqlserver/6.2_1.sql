@@ -123,6 +123,10 @@ ALTER TABLE EcobeeReconReportError
 ALTER COLUMN SerialNumber VARCHAR(30) NULL;
 /* End YUK-13365 */
 
+/* Start YUK-13377 */
+INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Show ecobee','false','Allows ecobee-related actions and visibility of ecobee information on the DR pages.');
+/* End YUK-13377 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
