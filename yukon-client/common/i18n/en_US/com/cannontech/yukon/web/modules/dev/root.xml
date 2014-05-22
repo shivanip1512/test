@@ -244,7 +244,8 @@
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.messageIdTimestamp">MessageId Timestamp</entry>
     
     <!-- I18N Demo -->
-    <entry key="yukon.web.modules.dev.i18nDemo.pageName">I18N Demo</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.pageName">Localization</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.scopes.pageName">Localization Scoping</entry>
     <entry key="yukon.web.modules.dev.i18nDemo.defaultEscapingExampleCode"><![CDATA[<cti:msg2 key=".awesomeKey"/>]]></entry>
     <entry key="yukon.web.modules.dev.i18nDemo.defaultEscapingExampleMsg"><![CDATA[<entry key="yukon.web.modules.module.page.awesomeKey"><![CDATA[Your thing: <span class="error">{0}</span>!]]]]><![CDATA[></entry>]]></entry>
     <entry key="yukon.web.modules.dev.i18nDemo.defaultEscapingExample"><![CDATA[Your thing: <span class="error">{0}</span>!]]></entry>
