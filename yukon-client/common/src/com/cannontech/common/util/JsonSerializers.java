@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -42,7 +43,7 @@ public interface JsonSerializers {
     }
 
     class EcobeeRuntimeReportRow extends JsonDeserializer<RuntimeReportRow> {
-
+        private static final DateTimeFormatter localDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         @Override
         public RuntimeReportRow deserialize(JsonParser parser, DeserializationContext context)
                 throws IOException, JsonProcessingException {
@@ -50,10 +51,11 @@ public interface JsonSerializers {
             // "2010-01-01,00:00:00,heatOff,70,92,..."
             String str = parser.getValueAsString();
             String[] split = str.split(",", -1);
-
-            // order comes from deviceReadColumns in EcobeeCommunicationServiceImpl
-            // We choose not to parse the date here since we have no way of determining the timezone (thanks ecobee)
+            // Arguments contain: [date, time, <deviceReadColumns>] 
+            // deviceReadColumns defined in EcobeeCommunicationServiceImpl, returned in the same order
             String dateStr = split[0] + " " + split[1];
+            LocalDateTime thermostatTime = localDateFormatter.parseLocalDateTime(dateStr);
+
             String eventName = split[2];
             Float indoorTemp = StringUtils.isEmpty(split[3]) ? null : Float.parseFloat(split[3]);
             Float outdoorTemp = StringUtils.isEmpty(split[4]) ? null : Float.parseFloat(split[4]);
@@ -62,7 +64,7 @@ public interface JsonSerializers {
             int coolRuntime = StringUtils.isEmpty(split[7]) ? 0 : Integer.parseInt(split[7]);
             int heatRuntime = StringUtils.isEmpty(split[8]) ? 0 : Integer.parseInt(split[8]);
 
-            return new RuntimeReportRow(dateStr, eventName, indoorTemp, outdoorTemp, coolSetPoint, heatSetPoint, 
+            return new RuntimeReportRow(thermostatTime, eventName, indoorTemp, outdoorTemp, coolSetPoint, heatSetPoint, 
                                         coolRuntime + heatRuntime);
         }
     }

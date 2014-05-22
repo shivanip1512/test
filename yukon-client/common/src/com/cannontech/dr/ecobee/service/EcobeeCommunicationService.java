@@ -1,5 +1,6 @@
 package com.cannontech.dr.ecobee.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.joda.time.Instant;
@@ -51,7 +52,7 @@ public interface EcobeeCommunicationService {
      * @param dateRange Must span no more than 7 days.
      * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
-    List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange);
+    List<EcobeeDeviceReadings> readDeviceData(Collection<String> serialNumbers, Range<Instant> dateRange);
 
     /**
      * Creates a new manaagement hierarchy set with teh specified name, directly beneath the root set "/"

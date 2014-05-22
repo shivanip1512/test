@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Function;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class RuntimeReport {
@@ -32,4 +33,11 @@ public class RuntimeReport {
     public List<RuntimeReportRow> getRuntimeReports() {
         return runtimeReports;
     }
+    
+    public static Function<RuntimeReport, String> ToSerialNumbers = new Function<RuntimeReport, String>() {
+        @Override
+        public String apply(RuntimeReport report) {
+            return report.getThermostatIdentifier();
+        }
+    };
 }

@@ -3,17 +3,18 @@ package com.cannontech.dr.ecobee.service.impl;
 import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
+import org.joda.time.LocalDateTime;
+import org.joda.time.MutableDateTime;
 import org.joda.time.Period;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -55,6 +56,8 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationService {
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommunicationServiceImpl.class);
@@ -129,48 +132,53 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public List<EcobeeDeviceReadings> readDeviceData(Iterable<String> serialNumbers, Range<Instant> dateRange) {
-        DateTimeFormatter ecobeeDateTimeFormatter =
-                DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
+    public List<EcobeeDeviceReadings> readDeviceData(Collection<String> serialNumbers, Range<Instant> dateRange) {
+        MutableDateTime mutableStartDate = new MutableDateTime(dateRange.getMin());
+        mutableStartDate.setMillisOfSecond(0);
+        mutableStartDate.setSecondOfMinute(0);
+        mutableStartDate.setMinuteOfHour(mutableStartDate.getMinuteOfHour() % 5);
+        Instant requestStartDate = mutableStartDate.toInstant();
+        Instant requestStopDate = dateRange.getMax();
 
-        HttpEntity<RuntimeReportRequest> requestEntity = new HttpEntity<>(new HttpHeaders());
-        //Build base url
-        //RestTemplate could do the parameter substitution for us, except it chokes on the JSON that ecobee, in their
-        //infinite wisdom, forces us to use in the URL.
         String url = getUrlBase() + runtimeReportUrlPart + "&body={bodyJson}";
+        RuntimeReportRequest request =
+                new RuntimeReportRequest(requestStartDate, requestStopDate, serialNumbers, deviceReadColumns);
 
-        //Add url parameters
-        int startInterval = dateRange.getMin().get(DateTimeFieldType.minuteOfDay()) / 5;
-        int endInterval = dateRange.getMax().get(DateTimeFieldType.minuteOfDay()) / 5;
+        DeviceDataResponse response = queryEcobeeGet(url, new HttpEntity<>(new HttpHeaders()), request,
+                                              EcobeeQueryType.DATA_COLLECTION, DeviceDataResponse.class);
 
-        RuntimeReportRequest request = new RuntimeReportRequest(dateRange.getMin(), startInterval,
-                  dateRange.getMax(), endInterval, serialNumbers, deviceReadColumns);
+        Set<String> missingSerialNumbers = new HashSet<>(serialNumbers);
+        if (response.getReportList() != null) {
+            Iterables.removeAll(missingSerialNumbers, 
+                                Lists.transform(response.getReportList(), RuntimeReport.ToSerialNumbers));
+        }
 
-        DeviceDataResponse response = queryEcobeeGet(url, requestEntity, request, EcobeeQueryType.DATA_COLLECTION,
-                                          DeviceDataResponse.class);
+        for (String missingSerialNumber : missingSerialNumbers) {
+            log.error("Unable to read Serial number: " + missingSerialNumber 
+                      + ". It may have been removed from ecobee's system.");
+        }
 
         List<EcobeeDeviceReadings> deviceData = new ArrayList<>();
-        for (RuntimeReport runtimeReport : response.getReportList()) {
-            List<EcobeeDeviceReading> readings = new ArrayList<>();
-            List<RuntimeReportRow> sortedReports = new ArrayList<>(runtimeReport.getRuntimeReports());
-            Collections.sort(sortedReports, new Comparator<RuntimeReportRow>() {
-                @Override
-                public int compare(RuntimeReportRow rowA, RuntimeReportRow rowB) {
-                    return rowA.getDateStr().compareTo(rowB.getDateStr());
-                }
-            });
+        if (response.getReportList() != null) {
+            for (RuntimeReport runtimeReport : response.getReportList()) {
+                List<RuntimeReportRow> sortedReports = new ArrayList<>(runtimeReport.getRuntimeReports());
+                Collections.sort(sortedReports, RuntimeReportRow.OnThermostatTime);
 
-            DateTime firstRowDateTime = ecobeeDateTimeFormatter.parseDateTime(sortedReports.get(0).getDateStr());
-            int timeZoneHoursOffset = new Period(dateRange.getMin(), firstRowDateTime.toInstant()).getHours();
-            for (RuntimeReportRow reportRow : sortedReports) {
-                DateTime rowDateTime = ecobeeDateTimeFormatter.parseDateTime(reportRow.getDateStr());
-                Instant date = rowDateTime.minusHours(timeZoneHoursOffset).toInstant();
-                EcobeeDeviceReading reading = new EcobeeDeviceReading(reportRow.getOutdoorTemp(),
-                    reportRow.getIndoorTemp(), reportRow.getCoolSetPoint(), reportRow.getHeatSetPoint(),
-                    reportRow.getRuntime(), reportRow.getEventName(), date);
-                readings.add(reading);
+                LocalDateTime reportStartDate = sortedReports.get(0).getThermostatTime();
+                Period offsetPeriod = new Period(requestStartDate, reportStartDate.toDateTime(DateTimeZone.UTC));
+                DateTimeZone thermostatDateTime = 
+                        DateTimeZone.forOffsetHoursMinutes(offsetPeriod.getHours(), offsetPeriod.getMinutes());
+
+                List<EcobeeDeviceReading> readings = new ArrayList<>();
+                for (RuntimeReportRow reportRow : sortedReports) {
+                    Instant date = reportRow.getThermostatTime().toDateTime(thermostatDateTime).toInstant();
+                    EcobeeDeviceReading reading = new EcobeeDeviceReading(reportRow.getOutdoorTemp(),
+                        reportRow.getIndoorTemp(), reportRow.getCoolSetPoint(), reportRow.getHeatSetPoint(),
+                        reportRow.getRuntime(), reportRow.getEventName(), date);
+                    readings.add(reading);
+                }
+                deviceData.add(new EcobeeDeviceReadings(runtimeReport.getThermostatIdentifier(), dateRange, readings));
             }
-            deviceData.add(new EcobeeDeviceReadings(runtimeReport.getThermostatIdentifier(), dateRange, readings));
         }
         return deviceData;
     }
@@ -262,7 +270,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     private <E extends BaseResponse> E queryEcobeeGet(String url, HttpEntity<?> requestEntity, Object request,
-        EcobeeQueryType queryType, Class<E> responseType) throws EcobeeCommunicationException {
+        EcobeeQueryType queryType, Class<E> responseType) {
 
         ecobeeQueryCountDao.incrementQueryCount(queryType);
         try {

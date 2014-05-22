@@ -16,7 +16,6 @@ public class DeviceDataResponse extends BaseResponse {
     private final int endInterval;
     private final String columns;
     private final List<RuntimeReport> reportList;
-    private final List<String> sensorList;
     
     @JsonCreator
     public DeviceDataResponse(@JsonProperty("status") Status status,
@@ -25,8 +24,7 @@ public class DeviceDataResponse extends BaseResponse {
                               @JsonProperty("endDate") String endDate,
                               @JsonProperty("endInterval") int endInterval,
                               @JsonProperty("columns") String columns,
-                              @JsonProperty("reportList") List<RuntimeReport> reportList,
-                              @JsonProperty("sensorList") List<String> sensorList) {
+                              @JsonProperty("reportList") List<RuntimeReport> reportList) {
         super(status);
         this.startDate = startDate;
         this.startInterval = startInterval;
@@ -34,7 +32,6 @@ public class DeviceDataResponse extends BaseResponse {
         this.endInterval = endInterval;
         this.columns = columns;
         this.reportList = reportList;
-        this.sensorList = sensorList;
     }
 
     public String getStartDate() {
@@ -59,9 +56,5 @@ public class DeviceDataResponse extends BaseResponse {
 
     public List<RuntimeReport> getReportList() {
         return reportList;
-    }
-
-    public List<String> getSensorList() {
-        return sensorList;
     }
 }

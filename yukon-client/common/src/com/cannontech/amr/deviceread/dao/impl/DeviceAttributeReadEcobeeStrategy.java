@@ -79,10 +79,10 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
         }
 
         Instant end = new Instant().minus(Duration.standardMinutes(15));
-        MutableDateTime mutableDateTime = new MutableDateTime(end.minus(Duration.standardHours(24)));
+        MutableDateTime mutableStartTime = new MutableDateTime(end.minus(Duration.standardHours(24)));
         // Start request at top of hour requested. This makes some point archiving calculations easier
-        mutableDateTime.setMinuteOfHour(0);
-        Instant start = mutableDateTime.toInstant();
+        mutableStartTime.setMinuteOfHour(0);
+        Instant start = mutableStartTime.toInstant();
         Range<Instant> lastTwentyFourHours = Range.inclusive(start, end);
         try {
             for (List<String> serialNumbers : Iterables.partition(ecobeeDevices.keySet(), 25)) {

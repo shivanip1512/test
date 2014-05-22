@@ -1,5 +1,6 @@
 package com.cannontech.dr.ecobee.message;
 
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 
 import com.cannontech.common.util.JsonSerializers;
@@ -19,12 +20,12 @@ public class RuntimeReportRequest {
     private final int endInterval;
     private final Iterable<String> columns;
 
-    public RuntimeReportRequest(Instant startDate, int startInterval, Instant endDate, int endInterval,
-                                Iterable<String> serialNumbers, Iterable<String> columns) {
+    public RuntimeReportRequest(Instant startDate, Instant endDate, Iterable<String> serialNumbers,
+                                Iterable<String> columns) {
         this.startDate = startDate;
-        this.startInterval = startInterval;
+        this.startInterval = startDate.get(DateTimeFieldType.minuteOfDay()) / 5;
         this.endDate = endDate;
-        this.endInterval = endInterval;
+        this.endInterval = endDate.get(DateTimeFieldType.minuteOfDay()) / 5;;
         this.selection = new Selection(SelectionType.THERMOSTATS, serialNumbers);
         this.columns = columns;
     }

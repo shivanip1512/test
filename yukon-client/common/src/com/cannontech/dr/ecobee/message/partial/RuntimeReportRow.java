@@ -1,11 +1,15 @@
 package com.cannontech.dr.ecobee.message.partial;
 
+import java.util.Comparator;
+
+import org.joda.time.LocalDateTime;
+
 import com.cannontech.common.util.JsonSerializers;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(using=JsonSerializers.EcobeeRuntimeReportRow.class)
 public class RuntimeReportRow {
-    private final String dateStr;
+    private final LocalDateTime thermostatTime;
     private final String eventName;
     private final Float indoorTemp;
     private final Float outdoorTemp;
@@ -13,9 +17,9 @@ public class RuntimeReportRow {
     private final Float heatSetPoint;
     private final int runtime;
 
-    public RuntimeReportRow(String dateStr, String eventName, Float indoorTemp, Float outdoorTemp, Float coolSetPoint,
+    public RuntimeReportRow(LocalDateTime thermostatTime, String eventName, Float indoorTemp, Float outdoorTemp, Float coolSetPoint,
                             Float heatSetPoint, int runtime) {
-        this.dateStr = dateStr;
+        this.thermostatTime = thermostatTime;
         this.eventName = eventName;
         this.indoorTemp = indoorTemp;
         this.outdoorTemp = outdoorTemp;
@@ -48,7 +52,14 @@ public class RuntimeReportRow {
         return runtime;
     }
 
-    public String getDateStr() {
-        return dateStr;
+    public LocalDateTime getThermostatTime() {
+        return thermostatTime;
     }
+
+    public static Comparator<RuntimeReportRow> OnThermostatTime = new Comparator<RuntimeReportRow>() {
+        @Override
+        public int compare(RuntimeReportRow rowA, RuntimeReportRow rowB) {
+            return rowA.getThermostatTime().compareTo(rowB.getThermostatTime());
+        }
+    };
 }
