@@ -14,110 +14,183 @@ namespace Commands {
 
 namespace { // anonymous
 
-const std::map<unsigned, std::string> metricIdResolver = boost::assign::map_list_of
-        (   1, "Watt hour delivered"                   )
-        (   2, "Watt hour received"                    )
-        (   3, "Watt hour total/sum"                   )
-        (   4, "Watt hour net"                         )
-        (   5, "Watts delivered, current demand"       )
-        (   6, "Watts received, current demand"        )
-        (   7, "Watts delivered, peak demand"          )
-        (   8, "Watts received, peak demand"           )
-        (   9, "Watts delivered, peak demand (Frozen)" )
-        (  10, "Watts received, peak demand (Frozen)"  )
-        (  11, "Watt hour delivered (Frozen)"          )
-        (  12, "Watt hour received (Frozen)"           )
+template <typename T,unsigned Size>
+unsigned arraySize(const T (&arr)[Size]) { return Size; }
 
-        (  21, "Var hour delivered"                    )
-        (  22, "Var hour received"                     )
-        (  23, "Var hour total/sum"                    )
-        (  24, "Var hour net"                          )
-        (  25, "Var hour Q1"                           )
-        (  26, "Var hour Q2"                           )
-        (  27, "Var hour Q3"                           )
-        (  28, "Var hour Q4"                           )
-        (  29, "Var hour Q1 + Q4"                      )
-        (  30, "Var hour Q2 + Q3"                      )
-        (  31, "Var hour Q1 - Q4"                      )
-        (  32, "Var delivered, current demand"         )
-        (  33, "Var received, current demand"          )
-        (  34, "Var delivered, peak demand"            )
-        (  35, "Var received, peak demand"             )
-        (  36, "Var delivered, peak demand coincident" )
-        (  37, "Var received, peak demand coincident"  )
+enum TouRatesOptions
+{
+    None,
+    TouRates
+};
 
-        (  41, "VA hour delivered"                     )
-        (  42, "VA hour received"                      )
-        (  43, "VA hour total/sum"                     )
-        (  44, "VA hour net"                           )
-        (  45, "VA hour Q1"                            )
-        (  46, "VA hour Q2"                            )
-        (  47, "VA hour Q3"                            )
-        (  48, "VA hour Q4"                            )
-        (  49, "VA delivered, current demand"          )
-        (  50, "VA received, current demand"           )
-        (  51, "VA received, peak demand"              )
-        (  52, "VA delivered, peak demand"             )
+struct MetricInfo
+{
+    const unsigned        id;
+    const TouRatesOptions touRatesOption;
+    const std::string     description;
+};
 
-        (  61, "Q hour delivered"                      )
-        (  62, "Q hour received"                       )
-        (  63, "Q hour total/sum"                      )
-        (  64, "Q hour net"                            )
-        (  65, "Q delivered, current demand"           )
-        (  66, "Q received, current demand"            )
-        (  67, "Q delivered, peak demand"              )
-        (  68, "Q received, peak demand"               )
-        (  69, "Q delivered, peak demand coincident"   )
-        (  70, "Q received, peak demand coincident"    )
+const MetricInfo metricInfos[] = {
+        {   1,  TouRates,  "Watt hour delivered"                   },
+        {   2,  TouRates,  "Watt hour received"                    },
+        {   3,  TouRates,  "Watt hour total/sum"                   },
+        {   4,  TouRates,  "Watt hour net"                         },
+        {   5,  TouRates,  "Watts delivered, current demand"       },
+        {   6,  TouRates,  "Watts received, current demand"        },
+        {   7,  TouRates,  "Watts delivered, peak demand"          },
+        {   8,  TouRates,  "Watts received, peak demand"           },
+        {   9,  TouRates,  "Watts delivered, peak demand (Frozen)" },
+        {  10,  TouRates,  "Watts received, peak demand (Frozen)"  },
+        {  11,  TouRates,  "Watt hour delivered (Frozen)"          },
+        {  12,  TouRates,  "Watt hour received (Frozen)"           },
 
-        (  81, "Power Factor kWh(del)/kVar(del)"       )
-        (  82, "Power Factor kWh(rec)/kVar(rec)"       )
-        (  83, "Power Factor kWh(total)/kVar(total)"   )
+        {  21,  TouRates,  "Var hour delivered"                    },
+        {  22,  TouRates,  "Var hour received"                     },
+        {  23,  TouRates,  "Var hour total/sum"                    },
+        {  24,  TouRates,  "Var hour net"                          },
+        {  25,  TouRates,  "Var hour Q1"                           },
+        {  26,  TouRates,  "Var hour Q2"                           },
+        {  27,  TouRates,  "Var hour Q3"                           },
+        {  28,  TouRates,  "Var hour Q4"                           },
+        {  29,  TouRates,  "Var hour Q1 + Q4"                      },
+        {  30,  TouRates,  "Var hour Q2 + Q3"                      },
+        {  31,  TouRates,  "Var hour Q1 - Q4"                      },
+        {  32,  TouRates,  "Var delivered, current demand"         },
+        {  33,  TouRates,  "Var received, current demand"          },
+        {  34,  TouRates,  "Var delivered, peak demand"            },
+        {  35,  TouRates,  "Var received, peak demand"             },
+        {  36,  TouRates,  "Var delivered, peak demand coincident" },
+        {  37,  TouRates,  "Var received, peak demand coincident"  },
 
-        ( 100, "Voltage Phase A"                       )
-        ( 101, "Voltage Phase B"                       )
-        ( 102, "Voltage Phase C"                       )
-        ( 103, "Current Phase A"                       )
-        ( 104, "Current Phase B"                       )
-        ( 105, "Current Phase C"                       )
-        ( 106, "Voltage Angle Phase A"                 )
-        ( 107, "Voltage Angle Phase B"                 )
-        ( 108, "Voltage Angle Phase C"                 )
-        ( 109, "Current Angle Phase A"                 )
-        ( 110, "Current Angle Phase B"                 )
-        ( 111, "Current Angle Phase C"                 )
-        ( 112, "Voltage Min"                           )
-        ( 113, "Voltage Average"                       )
-        ( 114, "Voltage Max"                           )
-        ( 115, "Voltage"                               )
-        ( 116, "Voltage Min Phase A"                   )
-        ( 117, "Voltage Min Phase B"                   )
-        ( 118, "Voltage Min Phase C"                   )
-        ( 119, "Voltage Average Phase A"               )
-        ( 120, "Voltage Average Phase B"               )
-        ( 121, "Voltage Average Phase C"               )
-        ( 122, "Voltage Max Phase A"                   )
-        ( 123, "Voltage Max Phase B"                   )
-        ( 124, "Voltage Max Phase C"                   )
+        {  41,  TouRates,  "VA hour delivered"                     },
+        {  42,  TouRates,  "VA hour received"                      },
+        {  43,  TouRates,  "VA hour total/sum"                     },
+        {  44,  TouRates,  "VA hour net"                           },
+        {  45,  TouRates,  "VA hour Q1"                            },
+        {  46,  TouRates,  "VA hour Q2"                            },
+        {  47,  TouRates,  "VA hour Q3"                            },
+        {  48,  TouRates,  "VA hour Q4"                            },
+        {  49,  TouRates,  "VA delivered, current demand"          },
+        {  50,  TouRates,  "VA received, current demand"           },
+        {  51,  TouRates,  "VA received, peak demand"              },
+        {  52,  TouRates,  "VA delivered, peak demand"             },
 
-        ( 150, "Watts Phase A"                         )
-        ( 151, "Watts Phase B"                         )
-        ( 152, "Watts Phase C"                         )
-        ( 153, "Var Phase A"                           )
-        ( 154, "Var Phase B"                           )
-        ( 155, "Var Phase C"                           )
-        ( 156, "VA Phase A"                            )
-        ( 157, "VA Phase B"                            )
-        ( 158, "VA Phase C"                            )
-        ( 159, "PF degree Phase A"                     )
-        ( 160, "PF degree Phase A"                     )
-        ( 161, "PF degree Phase C"                     )
-        ( 162, "PF Phase A"                            )
-        ( 163, "PF Phase B"                            )
-        ( 164, "PF Phase C"                            )
+        {  61,  TouRates,  "Q hour delivered"                      },
+        {  62,  TouRates,  "Q hour received"                       },
+        {  63,  TouRates,  "Q hour total/sum"                      },
+        {  64,  TouRates,  "Q hour net"                            },
+        {  65,  TouRates,  "Q delivered, current demand"           },
+        {  66,  TouRates,  "Q received, current demand"            },
+        {  67,  TouRates,  "Q delivered, peak demand"              },
+        {  68,  TouRates,  "Q received, peak demand"               },
+        {  69,  TouRates,  "Q delivered, peak demand coincident"   },
+        {  70,  TouRates,  "Q received, peak demand coincident"    },
 
-        ( 256, "Time in Seconds"                       )
-        ( 257, "Temperature in Centigrade"             );
+        {  81,  TouRates,  "Power Factor kWh(del)/kVar(del)"       },
+        {  82,  TouRates,  "Power Factor kWh(rec)/kVar(rec)"       },
+        {  83,  TouRates,  "Power Factor kWh(total)/kVar(total)"   },
+
+        { 100,  TouRates,  "Voltage Phase A"                       },
+        { 101,  TouRates,  "Voltage Phase B"                       },
+        { 102,  TouRates,  "Voltage Phase C"                       },
+        { 103,  TouRates,  "Current Phase A"                       },
+        { 104,  TouRates,  "Current Phase B"                       },
+        { 105,  TouRates,  "Current Phase C"                       },
+        { 106,  TouRates,  "Voltage Angle Phase A"                 },
+        { 107,  TouRates,  "Voltage Angle Phase B"                 },
+        { 108,  TouRates,  "Voltage Angle Phase C"                 },
+        { 109,  TouRates,  "Current Angle Phase A"                 },
+        { 110,  TouRates,  "Current Angle Phase B"                 },
+        { 111,  TouRates,  "Current Angle Phase C"                 },
+        { 112,  TouRates,  "Voltage Min"                           },
+        { 113,  TouRates,  "Voltage Average"                       },
+        { 114,  TouRates,  "Voltage Max"                           },
+        { 115,  TouRates,  "Voltage"                               },
+        { 116,  TouRates,  "Voltage Min Phase A"                   },
+        { 117,  TouRates,  "Voltage Min Phase B"                   },
+        { 118,  TouRates,  "Voltage Min Phase C"                   },
+        { 119,  TouRates,  "Voltage Average Phase A"               },
+        { 120,  TouRates,  "Voltage Average Phase B"               },
+        { 121,  TouRates,  "Voltage Average Phase C"               },
+        { 122,  TouRates,  "Voltage Max Phase A"                   },
+        { 123,  TouRates,  "Voltage Max Phase B"                   },
+        { 124,  TouRates,  "Voltage Max Phase C"                   },
+
+        { 150,  TouRates,  "Watts Phase A"                         },
+        { 151,  TouRates,  "Watts Phase B"                         },
+        { 152,  TouRates,  "Watts Phase C"                         },
+        { 153,  TouRates,  "Var Phase A"                           },
+        { 154,  TouRates,  "Var Phase B"                           },
+        { 155,  TouRates,  "Var Phase C"                           },
+        { 156,  TouRates,  "VA Phase A"                            },
+        { 157,  TouRates,  "VA Phase B"                            },
+        { 158,  TouRates,  "VA Phase C"                            },
+        { 159,  TouRates,  "PF degree Phase A"                     },
+        { 160,  TouRates,  "PF degree Phase A"                     },
+        { 161,  TouRates,  "PF degree Phase C"                     },
+        { 162,  TouRates,  "PF Phase A"                            },
+        { 163,  TouRates,  "PF Phase B"                            },
+        { 164,  TouRates,  "PF Phase C"                            },
+
+        { 256,  None,      "Time in Seconds"                       },
+        { 257,  None,      "Temperature in Centigrade"             }};
+
+struct MetricItem
+{
+    const MetricInfo* info;
+    boost::optional<char> touRate;
+};
+
+std::map<unsigned, MetricItem> initializeMetricIdResolver()
+{
+    std::map<unsigned, MetricItem> m;
+
+    const unsigned totalMetricInfos  = arraySize(metricInfos);
+    const unsigned touRatesOffset    = 1000;
+    const std::vector<char> touRates = boost::assign::list_of('A')('B')('C')('D');
+
+    for(int nbr = 0; nbr < totalMetricInfos; nbr++)
+    {
+        const MetricInfo &info = metricInfos[nbr];
+
+        const MetricItem item = { &info, boost::none };
+        m[info.id] = item;
+
+        if( info.touRatesOption == TouRates )
+        {
+            unsigned id = info.id;
+            for each( char rate in touRates)
+            {
+                const MetricItem itemTou = { &info, rate };
+                id += touRatesOffset;
+                m[id] = itemTou;
+            }
+        }
+    }
+
+    return m;
+}
+
+const std::map<unsigned, MetricItem> metricIdResolver = initializeMetricIdResolver();
+
+/**
+ * find the metric description from the metric Id provided
+ * @param metricId
+ * @return the description of the metric if it exist, an empty string otherwise
+ */
+std::string getMetricDescription( unsigned metricId )
+{
+    const boost::optional<MetricItem> item = mapFind(metricIdResolver, metricId);
+
+    if( ! item )
+    {
+        return std::string();
+    }
+
+    return item->touRate
+            ? item->info->description + ", Rate " + *(item->touRate)
+            : item->info->description;
+}
 
 const std::map<unsigned, std::string> responseStatusResolver = boost::assign::map_list_of
         ( 0, "Success" )
@@ -363,16 +436,16 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
         const unsigned metricId = getValueFromBytes_bEndian( response, offset, 2 );
         offset += 2;
 
-        boost::optional<std::string> metricDescription = mapFind( metricIdResolver, metricId );
+        std::string metricDescription = getMetricDescription(metricId);
 
-        validate( Condition( metricDescription, ErrorInvalidData )
+        validate( Condition( ! metricDescription.empty(), ErrorInvalidData )
                 << "Received unknown metric id (" << metricId << ")" );
 
-        result.description += *metricDescription + " (" + CtiNumStr(metricId) + ")\n";
+        result.description += metricDescription + " (" + CtiNumStr(metricId) + ")\n";
 
         const bool isNewInsert = _metricsReceived.insert(metricId).second;
         validate( Condition( isNewInsert, ErrorInvalidData )
-                << "Received unexpected duplicated metric: " << *metricDescription << " (" << metricId << ")" );
+                << "Received unexpected duplicated metric: " << metricDescription << " (" << metricId << ")" );
     }
 }
 
@@ -398,23 +471,21 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
         return;
     }
 
-    std::set<unsigned> metricsIdsReceived;
+    std::set<unsigned> metricsIdsReceived, metricsIdsCoincidentReceived;
+
+    unsigned coincidentValue = -1; // start with -1 in case the first metric as a none-zero coincident value
 
     while( offset < expectedSize )
     {
         const unsigned metricId = getValueFromBytes_bEndian( response, offset, 2 );
         offset += 2;
 
-        boost::optional<std::string> metricDescription = mapFind( metricIdResolver, metricId );
+        std::string metricDescription = getMetricDescription(metricId);
 
-        validate( Condition( metricDescription, ErrorInvalidData )
+        validate( Condition( ! metricDescription.empty(), ErrorInvalidData )
                 << "Received unknown metric id (" << metricId << ")" );
 
-        const bool isNewInsert = metricsIdsReceived.insert(metricId).second;
-        validate( Condition( isNewInsert, ErrorInvalidData )
-                << "Received unexpected duplicated metric: " << *metricDescription << " (" << metricId << ")" );
-
-        result.description += *metricDescription + " (" + CtiNumStr(metricId) + "): ";
+        result.description += metricDescription + " (" + CtiNumStr(metricId) + "): ";
 
         const unsigned metricQualifier = getValueFromBytes_bEndian( response, offset, 2 );
         offset += 2;
@@ -423,6 +494,31 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
 
         validate( Condition( ! metricQFields.extensionBit, ErrorInvalidData )
                 << "Metric qualifier expected extension bit to be zero" );
+
+        if( metricQFields.coincidentValue == 0 )
+        {
+            // check for duplicated metricId
+            const bool isNewInsert = metricsIdsReceived.insert(metricId).second;
+            validate( Condition( isNewInsert, ErrorInvalidData )
+                    << "Received unexpected duplicated metric: " << metricDescription << " (" << metricId << ")" );
+
+            coincidentValue = 0;
+            metricsIdsCoincidentReceived.clear();
+        }
+        else
+        {
+            const unsigned coincidentValueExp = (coincidentValue < 7) ? ++coincidentValue : 0;
+
+            validate( Condition( metricQFields.coincidentValue == coincidentValueExp, ErrorInvalidData )
+                    << "Received unexpected coincident value: " << metricQFields.coincidentValue << " (expected: " << coincidentValueExp << "), "
+                    << metricDescription << " (" << metricId << ")" );
+
+            // check for duplicated coincident metricId
+            const bool isNewInsert = metricsIdsCoincidentReceived.insert(metricId).second;
+            validate( Condition( isNewInsert, ErrorInvalidData )
+                    << "Received unexpected duplicated coincident metric: " << metricDescription << " (" << metricId << ")"
+                    << ", coincident value: " << coincidentValue );
+        }
 
         result.description += metricQFields.resolve() + "\n";
     }
@@ -510,7 +606,7 @@ void RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResu
 
 RfnSetChannelSelectionCommand::RfnSetChannelSelectionCommand( const MetricIds& metrics )
 {
-    const unsigned maxMetrics = std::numeric_limits<unsigned char>::max();
+    const unsigned maxMetrics = 80;
 
     validate( Condition( metrics.size() <= maxMetrics, BADPARAM )
             << "Number of metrics " << metrics.size() << ", expected <= " << maxMetrics );
