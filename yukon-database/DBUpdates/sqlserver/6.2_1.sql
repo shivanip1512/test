@@ -127,6 +127,14 @@ ALTER COLUMN SerialNumber VARCHAR(30) NULL;
 INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Show ecobee','false','Allows ecobee-related actions and visibility of ecobee information on the DR pages.');
 /* End YUK-13377 */
 
+/* Start YUK-13359 */
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId = -20001;
+
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId = -20001;
+/* End YUK-13359 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

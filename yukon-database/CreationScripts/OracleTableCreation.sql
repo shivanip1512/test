@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/22/2014 4:08:51 PM                         */
+/* Created on:     5/22/2014 4:25:08 PM                         */
 /*==============================================================*/
 
 
@@ -9207,7 +9207,6 @@ INSERT INTO YukonRoleProperty VALUES(-20167,-201,'Opt Out Survey Edit','false','
 
 /* Operator Administrator Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20000,-200,'Edit Energy Company','false','Controls access to edit the user''s energy company settings.');
-INSERT INTO YukonRoleProperty VALUES(-20001,-200,'Create/Delete Energy Company','false','Controls access to create and delete an energy company');
 INSERT INTO YukonRoleProperty VALUES(-20003,-200,'Manage Members','false','Controls whether to allow managing the energy company''s members');
 INSERT INTO YukonRoleProperty VALUES(-20004,-200,'View Batch Commands','false','Controls whether to allow monitoring of all batched switch commands');
 INSERT INTO YukonRoleProperty VALUES(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring of all scheduled opt out events');
