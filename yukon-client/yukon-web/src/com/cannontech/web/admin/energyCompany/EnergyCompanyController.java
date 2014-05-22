@@ -102,16 +102,14 @@ public class EnergyCompanyController {
             }
         }
         else {
-            boolean isAdminEditECUser = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
             companies = Lists.newArrayList();
-            if(isAdminEditECUser) {
-                EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);                
-                if (ecDao.getOperatorUserIds(energyCompany).contains(user.getUserID())) {
+            EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);                
+            
+            if (ecDao.getOperatorUserIds(energyCompany).contains(user.getUserID())) {
                     /* If they belong to an energy company and are an operator, show energy company and all descendants. */
                     companies.addAll(energyCompany.getDescendants(true));
                 }            
-            }            
-        }        
+            }               
         setupHomeModelMap(modelMap, user, companies);
         return "energyCompany/home.jsp";
     }
