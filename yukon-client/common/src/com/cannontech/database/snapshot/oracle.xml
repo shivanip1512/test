@@ -22432,22 +22432,6 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>ENERGYCOMPANYID</i__columnName>
-            <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>NUMBER</i__typeName>
-            <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>22</i__columnSize>
-            <i__columnSizeDiffers>false</i__columnSizeDiffers>
-            <i__decimalDigits>0</i__decimalDigits>
-            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>0</i__nullable>
-            <i__nullableDiffers>false</i__nullableDiffers>
-            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>2</i__ordinalPosition>
-            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
-          </com.cariboulake.db.schemacompare.business.domain.db.Column>
-          <com.cariboulake.db.schemacompare.business.domain.db.Column>
-            <i__table reference="../../.."/>
             <i__columnName>REPORTDATE</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>DATE</i__typeName>
@@ -22459,7 +22443,7 @@
             <i__nullable>0</i__nullable>
             <i__nullableDiffers>false</i__nullableDiffers>
             <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>3</i__ordinalPosition>
+            <i__ordinalPosition>2</i__ordinalPosition>
             <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
         </columnList>
@@ -22488,20 +22472,6 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>PK_ECOBEERECONREPORT</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>INDX_ECOBEERECONREPORT_EC_UNQ</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>ECOBEERECONCILIATIONREPORT</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>ENERGYCOMPANYID</i__columnName>
-                  <i__nonNonUnique>true</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>INDX_ECOBEERECONREPORT_EC_UNQ</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -26961,15 +26931,6 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_ECOBEERECONREPORT_ENERGYCO</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>ENERGYCOMPANYID</i__columnName>
-            <i__foreignColumnName>ENERGYCOMPANYID</i__foreignColumnName>
-            <i__foreignTableName>ENERGYCOMPANY</i__foreignTableName>
-            <i__updateRule>0</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_ECTORESGROUPMAP_EC</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ENERGYCOMPANYID</i__columnName>
@@ -27016,15 +26977,6 @@
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_ECTOROUTEMAP_EC</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>ENERGYCOMPANYID</i__columnName>
-            <i__foreignColumnName>ENERGYCOMPANYID</i__foreignColumnName>
-            <i__foreignTableName>ENERGYCOMPANY</i__foreignTableName>
-            <i__updateRule>0</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_ECOBEEQUERYSTATS_ENERGYCO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ENERGYCOMPANYID</i__columnName>
             <i__foreignColumnName>ENERGYCOMPANYID</i__foreignColumnName>
@@ -33153,9 +33105,9 @@
             <i__table reference="../../.."/>
             <i__columnName>SERIALNUMBER</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>NUMBER</i__typeName>
+            <i__typeName>VARCHAR2</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>22</i__columnSize>
+            <i__columnSize>30</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
@@ -46564,7 +46516,7 @@
         <columnList>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>ENERGYCOMPANYID</i__columnName>
+            <i__columnName>MONTHINDEX</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -46580,7 +46532,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>MONTHINDEX</i__columnName>
+            <i__columnName>YEARINDEX</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -46596,22 +46548,6 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>YEARINDEX</i__columnName>
-            <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>NUMBER</i__typeName>
-            <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>22</i__columnSize>
-            <i__columnSizeDiffers>false</i__columnSizeDiffers>
-            <i__decimalDigits>0</i__decimalDigits>
-            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>0</i__nullable>
-            <i__nullableDiffers>false</i__nullableDiffers>
-            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>3</i__ordinalPosition>
-            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
-          </com.cariboulake.db.schemacompare.business.domain.db.Column>
-          <com.cariboulake.db.schemacompare.business.domain.db.Column>
-            <i__table reference="../../.."/>
             <i__columnName>QUERYTYPE</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>VARCHAR2</i__typeName>
@@ -46623,7 +46559,7 @@
             <i__nullable>0</i__nullable>
             <i__nullableDiffers>false</i__nullableDiffers>
             <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>4</i__ordinalPosition>
+            <i__ordinalPosition>3</i__ordinalPosition>
             <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
@@ -46639,7 +46575,7 @@
             <i__nullable>0</i__nullable>
             <i__nullableDiffers>false</i__nullableDiffers>
             <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>5</i__ordinalPosition>
+            <i__ordinalPosition>4</i__ordinalPosition>
             <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
         </columnList>
@@ -46653,24 +46589,18 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>ECOBEEQUERYSTATISTICS</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>ENERGYCOMPANYID</i__columnName>
-                  <i__nonNonUnique>false</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>ECOBEEQUERYSTATISTICS</i__tableName>
-                  <i__ordinalPosition>2</i__ordinalPosition>
                   <i__columnName>MONTHINDEX</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>ECOBEEQUERYSTATISTICS</i__tableName>
-                  <i__ordinalPosition>3</i__ordinalPosition>
+                  <i__ordinalPosition>2</i__ordinalPosition>
                   <i__columnName>YEARINDEX</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>ECOBEEQUERYSTATISTICS</i__tableName>
-                  <i__ordinalPosition>4</i__ordinalPosition>
+                  <i__ordinalPosition>3</i__ordinalPosition>
                   <i__columnName>QUERYTYPE</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
