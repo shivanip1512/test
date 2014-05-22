@@ -51,7 +51,7 @@ public interface JsonSerializers {
             // "2010-01-01,00:00:00,heatOff,70,92,..."
             String str = parser.getValueAsString();
             String[] split = str.split(",", -1);
-            // Arguments contain: [date, time, <deviceReadColumns>] 
+            // array contains: [date, time, <deviceReadColumns>] 
             // deviceReadColumns defined in EcobeeCommunicationServiceImpl, returned in the same order
             String dateStr = split[0] + " " + split[1];
             LocalDateTime thermostatTime = localDateFormatter.parseLocalDateTime(dateStr);
