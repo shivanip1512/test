@@ -135,6 +135,57 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -20001;
 /* End YUK-13359 */
 
+/* Start YUK-13354 */
+ALTER TABLE CommandRequestUnsupported
+ADD Type VARCHAR(50) NULL;
+
+UPDATE CommandRequestUnsupported
+SET Type = 'UNSUPPORTED';
+
+ALTER TABLE CommandRequestUnsupported
+ALTER COLUMN Type VARCHAR(50) NOT NULL;
+
+CREATE INDEX Indx_CommandReqUnsupport_Type ON CommandRequestUnsupported (
+    Type ASC
+);
+GO
+
+ALTER TABLE State
+ALTER COLUMN Text VARCHAR(50) NOT NULL;
+
+INSERT INTO State VALUES(-12, 4, 'Disconnected Demand Threshold Active', 1, 6, 0);
+INSERT INTO State VALUES(-12, 5, 'Connected Demand Threshold Active ', 7, 6, 0);
+INSERT INTO State VALUES(-12, 6, 'Disconnected Cycling Active', 1, 6, 0);
+INSERT INTO State VALUES(-12, 7, 'Connected Cycling Active ', 7, 6, 0);
+
+INSERT INTO YukonRoleProperty VALUES (-21314,-213,'Connect/Disconnect','true','Controls access to Connect/Disconnect collection action.');
+/* End YUK-13354 */
+
+/* Start YUK-13323 */
+INSERT INTO DeviceConfigCategoryItem
+SELECT 
+    ROW_NUMBER() OVER(ORDER BY C.DeviceConfigCategoryID) + (SELECT ISNULL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+    C.DeviceConfigCategoryId,
+    'disconnectMode',
+    (
+    CASE
+        WHEN (cast(DisconnectDemandThreshold.ItemValue AS float) <> 0) THEN 'DEMAND_THRESHOLD'
+        WHEN (ConnectMinutes.ItemValue <> '0') THEN 'CYCLING'
+        WHEN (DisconnectMinutes.ItemValue <> '0') THEN 'CYCLING'
+        ELSE 'ON_DEMAND'
+    END)
+FROM 
+    DeviceConfigCategory C 
+    JOIN DeviceConfigCategoryItem ConnectMinutes ON C.DeviceConfigCategoryId = ConnectMinutes.DeviceConfigCategoryId
+    JOIN DeviceConfigCategoryItem DisconnectMinutes ON C.DeviceConfigCategoryId = DisconnectMinutes.DeviceConfigCategoryId
+    JOIN DeviceConfigCategoryItem DisconnectDemandThreshold ON C.DeviceConfigCategoryId = DisconnectDemandThreshold.DeviceConfigCategoryId
+WHERE 
+    C.CategoryType = 'mctDisconnectConfiguration'
+    AND ConnectMinutes.ItemName = 'connectMinutes'
+    AND DisconnectMinutes.ItemName = 'disconnectMinutes'
+    AND DisconnectDemandThreshold.ItemName = 'disconnectDemandThreshold';
+/* End YUK-13323 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

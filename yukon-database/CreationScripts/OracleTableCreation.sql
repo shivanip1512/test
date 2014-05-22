@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/22/2014 4:25:08 PM                         */
+/* Created on:     5/22/2014 6:09:56 PM                         */
 /*==============================================================*/
 
 
@@ -1710,7 +1710,15 @@ create table CommandRequestUnsupported  (
    CommandRequestUnsupportedId NUMBER                          not null,
    CommandRequestExecId NUMBER                          not null,
    DeviceId             NUMBER                          not null,
+   Type                 VARCHAR2(50)                    not null,
    constraint PK_CommandRequestUnsupported primary key (CommandRequestUnsupportedId)
+);
+
+/*==============================================================*/
+/* Index: Indx_CommandReqUnsupport_Type                         */
+/*==============================================================*/
+create index Indx_CommandReqUnsupport_Type on CommandRequestUnsupported (
+   Type ASC
 );
 
 /*==============================================================*/
@@ -7570,7 +7578,7 @@ INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 create table State  (
    StateGroupId         NUMBER                          not null,
    RawState             NUMBER                          not null,
-   Text                 VARCHAR2(32)                    not null,
+   Text                 VARCHAR2(50)                    not null,
    ForegroundColor      NUMBER                          not null,
    BackgroundColor      NUMBER                          not null,
    ImageId              NUMBER                          not null,
@@ -7619,6 +7627,10 @@ INSERT INTO State VALUES(-12, 0, 'Unknown', 3, 6, 0);
 INSERT INTO State VALUES(-12, 1, 'Connected', 0, 6, 0);
 INSERT INTO State VALUES(-12, 2, 'Disconnected', 1, 6, 0);
 INSERT INTO State VALUES(-12, 3, 'Armed', 4, 6, 0);
+INSERT INTO State VALUES(-12, 4, 'Disconnected Demand Threshold Active', 1, 6, 0);
+INSERT INTO State VALUES(-12, 5, 'Connected Demand Threshold Active', 7, 6, 0);
+INSERT INTO State VALUES(-12, 6, 'Disconnected Cycling Active', 1, 6, 0);
+INSERT INTO State VALUES(-12, 7, 'Connected Cycling Active', 7, 6, 0);
 INSERT INTO State VALUES(-11,-1, 'Any', 2, 6, 0);
 INSERT INTO State VALUES(-11, 0, 'Connected', 0, 6, 0);
 INSERT INTO State VALUES(-11, 1, 'Disconnected', 1, 6, 0);
@@ -9303,6 +9315,7 @@ INSERT INTO YukonRoleProperty VALUES (-21310,-213,'Assign Configs','false','Cont
 INSERT INTO YukonRoleProperty VALUES (-21311,-213,'Archived Data Analysis','true','Controls access to Archived Data Analysis collection action.');
 INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','false','Controls access to FDR Translation Manager bulk operation.');
 INSERT INTO YukonRoleProperty VALUES (-21313,-213,'Archived Data Export','true','Controls access to Archived Data Export');
+INSERT INTO YukonRoleProperty VALUES (-21314,-213,'Connect/Disconnect','true','Controls access to Connect/Disconnect collection action.');
 
 /* Residential Customer Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-40001,-400,'Account General','true','Controls whether to show the general account information');

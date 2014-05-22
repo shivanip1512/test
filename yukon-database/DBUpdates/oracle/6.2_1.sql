@@ -150,6 +150,31 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -20001;
 /* End YUK-13359 */
 
+/* Start YUK-13354 */
+ALTER TABLE CommandRequestUnsupported
+ADD Type VARCHAR2(50) NULL;
+
+UPDATE CommandRequestUnsupported
+SET Type = 'UNSUPPORTED';
+
+ALTER TABLE CommandRequestUnsupported
+MODIFY Type VARCHAR2(50) NOT NULL;
+
+CREATE INDEX Indx_CommandReqUnsupport_Type ON CommandRequestUnsupported (
+    Type ASC
+);
+
+ALTER TABLE State
+MODIFY Text VARCHAR2(50);
+
+INSERT INTO State VALUES(-12, 4, 'Disconnected Demand Threshold Active', 1, 6, 0);
+INSERT INTO State VALUES(-12, 5, 'Connected Demand Threshold Active', 7, 6, 0);
+INSERT INTO State VALUES(-12, 6, 'Disconnected Cycling Active', 1, 6, 0);
+INSERT INTO State VALUES(-12, 7, 'Connected Cycling Active', 7, 6, 0);
+
+INSERT INTO YukonRoleProperty VALUES (-21314,-213,'Connect/Disconnect','true','Controls access to Connect/Disconnect collection action.');
+/* End YUK-13354 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
