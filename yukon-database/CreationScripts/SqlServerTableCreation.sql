@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/22/2014 1:32:18 PM                         */
+/* Created on:     5/22/2014 3:03:27 PM                         */
 /*==============================================================*/
 
 
@@ -4914,12 +4914,11 @@ go
 /* Table: EcobeeQueryStatistics                                 */
 /*==============================================================*/
 create table EcobeeQueryStatistics (
-   EnergyCompanyId      numeric              not null,
    MonthIndex           numeric              not null,
    YearIndex            numeric              not null,
    QueryType            varchar(40)          not null,
    QueryCount           numeric              not null,
-   constraint PK_EcobeeQueryStatistics primary key (EnergyCompanyId, MonthIndex, YearIndex, QueryType)
+   constraint PK_EcobeeQueryStatistics primary key (MonthIndex, YearIndex, QueryType)
 )
 go
 
@@ -4930,7 +4929,7 @@ create table EcobeeReconReportError (
    EcobeeReconReportErrorId numeric              not null,
    EcobeeReconReportId  numeric              not null,
    ErrorType            varchar(40)          not null,
-   SerialNumber         numeric              null,
+   SerialNumber         varchar(30)          null,
    CurrentLocation      varchar(100)         null,
    CorrectLocation      varchar(100)         null,
    constraint PK_EcobeeReconReportError primary key (EcobeeReconReportErrorId)
@@ -4942,17 +4941,8 @@ go
 /*==============================================================*/
 create table EcobeeReconciliationReport (
    EcobeeReconReportId  numeric              not null,
-   EnergyCompanyId      numeric              not null,
    ReportDate           datetime             not null,
    constraint PK_EcobeeReconReport primary key (EcobeeReconReportId)
-)
-go
-
-/*==============================================================*/
-/* Index: Indx_EcobeeReconReport_EC_UNQ                         */
-/*==============================================================*/
-create index Indx_EcobeeReconReport_EC_UNQ on EcobeeReconciliationReport (
-EnergyCompanyId ASC
 )
 go
 
@@ -12119,21 +12109,9 @@ alter table ECToWorkOrderMapping
       references WorkOrderBase (OrderID)
 go
 
-alter table EcobeeQueryStatistics
-   add constraint FK_EcobeeQueryStats_EnergyCo foreign key (EnergyCompanyId)
-      references EnergyCompany (EnergyCompanyID)
-         on delete cascade
-go
-
 alter table EcobeeReconReportError
    add constraint FK_EcobeeRecRepErr_EcobeeRecRp foreign key (EcobeeReconReportId)
       references EcobeeReconciliationReport (EcobeeReconReportId)
-         on delete cascade
-go
-
-alter table EcobeeReconciliationReport
-   add constraint FK_EcobeeReconReport_EnergyCo foreign key (EnergyCompanyId)
-      references EnergyCompany (EnergyCompanyID)
          on delete cascade
 go
 

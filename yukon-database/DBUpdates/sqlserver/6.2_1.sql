@@ -98,6 +98,31 @@ WHERE RoleId = -201
   AND RolePropertyId in (-20153, -20155, -20156, -20159, -20160, -20893);
 /* End YUK-13191 */
 
+/* Start YUK-13365 */
+ALTER TABLE EcobeeQueryStatistics
+DROP CONSTRAINT PK_EcobeeQueryStatistics;
+
+ALTER TABLE EcobeeQueryStatistics
+DROP CONSTRAINT FK_EcobeeQueryStats_EnergyCo;
+
+ALTER TABLE EcobeeQueryStatistics
+DROP COLUMN EnergyCompanyId;
+
+ALTER TABLE EcobeeQueryStatistics
+ADD CONSTRAINT PK_EcobeeQueryStatistics PRIMARY KEY (MonthIndex, YearIndex, QueryType);
+
+DROP INDEX EcobeeReconciliationReport.Indx_EcobeeReconReport_EC_UNQ;
+
+ALTER TABLE EcobeeReconciliationReport
+DROP CONSTRAINT FK_EcobeeReconReport_EnergyCo;
+
+ALTER TABLE EcobeeReconciliationReport
+DROP COLUMN EnergyCompanyId;
+
+ALTER TABLE EcobeeReconReportError
+ALTER COLUMN SerialNumber VARCHAR(30) NULL;
+/* End YUK-13365 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

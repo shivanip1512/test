@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/22/2014 1:13:18 PM                         */
+/* Created on:     5/22/2014 3:04:01 PM                         */
 /*==============================================================*/
 
 
@@ -4672,12 +4672,11 @@ create table ECToWorkOrderMapping  (
 /* Table: EcobeeQueryStatistics                                 */
 /*==============================================================*/
 create table EcobeeQueryStatistics  (
-   EnergyCompanyId      NUMBER                          not null,
    MonthIndex           NUMBER                          not null,
    YearIndex            NUMBER                          not null,
    QueryType            VARCHAR2(40)                    not null,
    QueryCount           NUMBER                          not null,
-   constraint PK_EcobeeQueryStatistics primary key (EnergyCompanyId, MonthIndex, YearIndex, QueryType)
+   constraint PK_EcobeeQueryStatistics primary key (MonthIndex, YearIndex, QueryType)
 );
 
 /*==============================================================*/
@@ -4687,7 +4686,7 @@ create table EcobeeReconReportError  (
    EcobeeReconReportErrorId NUMBER                          not null,
    EcobeeReconReportId  NUMBER                          not null,
    ErrorType            VARCHAR2(40)                    not null,
-   SerialNumber         NUMBER,
+   SerialNumber         VARCHAR2(30),
    CurrentLocation      VARCHAR2(100),
    CorrectLocation      VARCHAR2(100),
    constraint PK_EcobeeReconReportError primary key (EcobeeReconReportErrorId)
@@ -4698,16 +4697,8 @@ create table EcobeeReconReportError  (
 /*==============================================================*/
 create table EcobeeReconciliationReport  (
    EcobeeReconReportId  NUMBER                          not null,
-   EnergyCompanyId      NUMBER                          not null,
    ReportDate           DATE                            not null,
    constraint PK_EcobeeReconReport primary key (EcobeeReconReportId)
-);
-
-/*==============================================================*/
-/* Index: Indx_EcobeeReconReport_EC_UNQ                         */
-/*==============================================================*/
-create index Indx_EcobeeReconReport_EC_UNQ on EcobeeReconciliationReport (
-   EnergyCompanyId ASC
 );
 
 /*==============================================================*/
@@ -11258,19 +11249,9 @@ alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc foreign key (WorkOrderID)
       references WorkOrderBase (OrderID);
 
-alter table EcobeeQueryStatistics
-   add constraint FK_EcobeeQueryStats_EnergyCo foreign key (EnergyCompanyId)
-      references EnergyCompany (EnergyCompanyID)
-      on delete cascade;
-
 alter table EcobeeReconReportError
    add constraint FK_EcobeeRecRepErr_EcobeeRecRp foreign key (EcobeeReconReportId)
       references EcobeeReconciliationReport (EcobeeReconReportId)
-      on delete cascade;
-
-alter table EcobeeReconciliationReport
-   add constraint FK_EcobeeReconReport_EnergyCo foreign key (EnergyCompanyId)
-      references EnergyCompany (EnergyCompanyID)
       on delete cascade;
 
 alter table EnergyCompany
