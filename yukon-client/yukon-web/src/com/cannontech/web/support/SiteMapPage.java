@@ -195,9 +195,9 @@ public enum SiteMapPage implements DisplayableEnum {
     DATABASE_MIGRATION(SiteMapCategory.SUPPORT, "yukon.web.modules.support.databaseMigration.pageName", "/support/database/migration/home",
             MatchStyle.all, YukonRoleProperty.ADMIN_DATABASE_MIGRATION),
 
-    DEVELOPMENT(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.home.pageName", "/dev/main",
+    DEVELOPMENT(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.home.pageName", "/dev",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
-    UI_DEMO(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.styleguide.pageName", "/dev/styleguide/main",
+    UI_DEMO(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.styleguide.pageName", "/dev/styleguide",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
     UI_TOOLKIT(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.uiToolkitDemo.pageName", "/dev/uiToolkitDemo/main",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),

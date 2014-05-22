@@ -4,6 +4,9 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<cti:standardPage module="dev" page="datePickers">
+<tags:styleguide page="date-pickers">
+
 <style>
 .date-time-pickers label {
     width: 8em;
@@ -52,3 +55,6 @@
     <div class="date-container"><label>Limited Range<br><small>1 week ago -<br>1 week from now</small></label><dt:dateTime value="${now}" minDate="${start}" maxDate="${end}" /></div>
 
 </tags:sectionContainer>
+
+</tags:styleguide>
+</cti:standardPage>

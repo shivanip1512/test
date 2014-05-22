@@ -18,55 +18,50 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 
 @Controller
-@RequestMapping("/styleguide/*")
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class StyleGuideController {
     
-    @RequestMapping("main")
-    public void main(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    @RequestMapping({"/styleguide", "/styleguide/"})
+    public String root() {
+        return "redirect:styleguide/grid";
     }
     
-    @RequestMapping("grid")
+    @RequestMapping("/styleguide/grid")
     public String grid() {
         return "styleguide/grid.jsp";
     }
     
-    @RequestMapping("containers")
+    @RequestMapping("/styleguide/containers")
     public String containers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         return "styleguide/containers.jsp";
     }
     
-    @RequestMapping("buttons")
+    @RequestMapping("/styleguide/buttons")
     public String buttons(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         return "styleguide/buttons.jsp";
     }
     
-    @RequestMapping("pickers")
+    @RequestMapping("/styleguide/pickers")
     public String pickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         return "styleguide/pickers.jsp";
     }
     
-    @RequestMapping("dialogs")
+    @RequestMapping("/styleguide/dialogs")
     public String dialogs(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         return "styleguide/dialogs.jsp";
     }
     
-    @RequestMapping("jsTesting")
-    public String jsTesting(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
-        return "styleguide/jsTesting.jsp";
-    }
-    
-    @RequestMapping("sprites")
-    public String sprites(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    @RequestMapping("/styleguide/icons")
+    public String icons(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         try {
             setupSprites(model, request);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "styleguide/sprites.jsp";
+        return "styleguide/icons.jsp";
     }
     
-    @RequestMapping("more")
+    @RequestMapping("/styleguide/date-pickers")
     public String more(ModelMap model) {
         
         Instant now = Instant.now();
@@ -78,7 +73,7 @@ public class StyleGuideController {
         model.addAttribute("start", start);
         model.addAttribute("end", end);
         
-        return "styleguide/more.jsp";
+        return "styleguide/date.pickers.jsp";
     }
     
     private void setupSprites(ModelMap model, HttpServletRequest request) throws IOException {

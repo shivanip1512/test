@@ -10,7 +10,7 @@
         <div class="column one">
             <tags:sectionContainer title="User Interface Development">
                 <ul class="simple-list">
-                    <li><a href="<cti:url value="/dev/styleguide/main"/>">Style Guide</a></li>
+                    <li><a href="<cti:url value="/dev/styleguide"/>">Style Guide</a></li>
                     <li><a href="<cti:url value="/dev/uiToolkitDemo/main"/>">Advanced Components</a></li>
                     <li><a href="<cti:url value="/dev/i18n"/>">Localization</a></li>
                     <li><a href="<cti:url value="/dev/i18n/scopes"/>">Localization Scoping</a></li>
@@ -36,6 +36,7 @@
                     <li><a href="<cti:url value="/debug/loadControlService/inputs/home"/>">Load Control Services Test</a></li>
                     <li><a href="<cti:url value="/debug/accountService/inputs/home"/>">Account Service Test</a></li>
                     <li><a href="<cti:url value="/dev/rfn/viewBase"/>">RFN Test</a></li>
+                    <li><a href="<cti:url value="/dev/js-testing"/>">JS Testing</a></li>
                 </ul>
             </tags:sectionContainer>
         </div>

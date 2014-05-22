@@ -1,11 +1,11 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:standardPage module="dev" page="dialogs">
+<tags:styleguide page="dialogs">
 
 <cti:msgScope paths="modules.dev.styleguide">
 
@@ -98,3 +98,6 @@ $(document).ready(function() {
 </tags:sectionContainer>
 
 </cti:msgScope>
+
+</tags:styleguide>
+</cti:standardPage>

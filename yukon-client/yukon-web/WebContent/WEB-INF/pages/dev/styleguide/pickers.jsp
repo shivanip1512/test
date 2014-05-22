@@ -1,9 +1,13 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ page trimDirectiveWhitespaces="true" %>
 
-<cti:msgScope paths="modules.dev.pickerTest">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:standardPage module="dev" page="pickers">
+<tags:styleguide page="pickers">
+
+<cti:msgScope paths="modules.dev.pickers">
 
 <c:set var="pickerType" value="pointPicker"/>
 <c:if test="${!empty param.pickerType}">
@@ -82,8 +86,8 @@ This page should be tested at 1024x768.
 
 <br><br>
 
-<form id="pickerSelectForm" action="main">
-    <select name="pickerType" onchange="$('#pickerSelectForm').submit()">
+<form id="picker-select-form" action="<cti:url value="/dev/styleguide/pickers"/>">
+    <select name="pickerType" onchange="$('#picker-select-form').submit()">
         <option value="pointPicker"<c:if test="${pickerType == 'pointPicker'}"> selected</c:if>>Point Picker</option>
         <option value="paoPicker"<c:if test="${pickerType == 'paoPicker'}"> selected</c:if>>PAO Picker (Lucene)</option>
         <option value="assignedProgramPicker"<c:if test="${pickerType == 'assignedProgramPicker'}"> selected</c:if>>Assigned Program Picker (Database)</option>
@@ -494,7 +498,7 @@ This page should be tested at 1024x768.
   <br>
   <br>
 
-  <form id="pickerSelectForm" action="/dev/pickerTest/main">
+  <form action="<cti:url value="/dev/styleguide/pickers"/>">
     <c:if test="${!empty param.pickerType}">
       <input type="hidden" name="pickerType" value="${param.pickerType}"/>
     </c:if>
@@ -526,3 +530,6 @@ This page should be tested at 1024x768.
 <br>
 
 </cti:msgScope>
+
+</tags:styleguide>
+</cti:standardPage>

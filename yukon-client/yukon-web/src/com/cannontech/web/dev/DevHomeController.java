@@ -7,11 +7,12 @@ import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 
 @Controller
-@RequestMapping("/pickerTest/*")
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
-public class PickerTestController {
-    
-    @RequestMapping("main")
-    public void main() { }
+public class DevHomeController {
+
+    @RequestMapping("/*")
+    public String root() {
+        return "development.jsp";
+    }
     
 }

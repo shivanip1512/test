@@ -7,16 +7,11 @@ import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 
 @Controller
-@RequestMapping("/*")
+@RequestMapping("/uiToolkitDemo/*")
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class UIToolkitDemo {
     
-    @RequestMapping("uiToolkitDemo/main")
-    public void main() { }
-    
     @RequestMapping("main")
-    public String developmentPage(){
-        return "development.jsp";
-    }
+    public void main() { }
     
 }

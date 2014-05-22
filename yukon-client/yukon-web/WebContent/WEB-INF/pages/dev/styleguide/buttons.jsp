@@ -1,14 +1,17 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ page trimDirectiveWhitespaces="true" %>
 
-<cti:msgScope paths="modules.dev.styleguide">
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:standardPage module="dev" page="buttons">
+<tags:styleguide page="buttons">
 
 <style type="text/css">
-.description {line-height: 26px;margin-left:20px;}
+.description { 
+    line-height: 26px;
+    margin-left:20px; 
+}
 </style>
 
 <tags:sectionContainer title="normal buttons" styleClass="separated-sections">
@@ -153,4 +156,5 @@
     </div>
 </tags:sectionContainer>
 
-</cti:msgScope>
+</tags:styleguide>
+</cti:standardPage>

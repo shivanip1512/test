@@ -1,9 +1,11 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:standardPage module="dev" page="containers">
+<tags:styleguide page="containers">
 
 <style type="text/css">
 .description {line-height: 26px;margin-left:20px;}
@@ -69,3 +71,6 @@
         </div>
     </div>
 </tags:sectionContainer>
+
+</tags:styleguide>
+</cti:standardPage>

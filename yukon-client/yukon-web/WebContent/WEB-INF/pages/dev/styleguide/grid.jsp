@@ -1,9 +1,18 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:standardPage module="dev" page="grid">
+<tags:styleguide page="grid">
+
 <style type="text/css">
 .grid-example .column {padding: 10px;background-color: #efefef;min-height: 89px;}
 .grid-example .column .label {margin: 2px 0;display: inline-block;line-height: 14px;}
 </style>
 
-<h1>Grid System</h1>
 <p>
 The grid system in Yukon uses a 24 column grid. The column widths and gutters are percent based. That means grids can be nested.
 Grids are made with a container element and child elements.  The container element uses one of the column classes 
@@ -567,3 +576,5 @@ The last column must always specify the <span class="label label-default">.nogut
     </div>
     
 </div>
+</tags:styleguide>
+</cti:standardPage>

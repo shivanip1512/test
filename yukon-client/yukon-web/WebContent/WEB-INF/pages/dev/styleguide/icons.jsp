@@ -1,9 +1,12 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ page trimDirectiveWhitespaces="true" %>
 
-<cti:msgScope paths="modules.dev.styleguide">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:standardPage module="dev" page="icons">
+<tags:styleguide page="icons">
+
 <h1>Icons and their associated CSS classes</h1>
 <tags:sectionContainer title="16px icons">
     <c:forEach items="${sprites16Array}" var="spriteProperty" varStatus="status">
@@ -70,4 +73,6 @@
         <c:if test="${status.index % 4 == 3 or status.last}"></div></c:if>
     </c:forEach>
 </tags:sectionContainer>
-</cti:msgScope>
+
+</tags:styleguide>
+</cti:standardPage>

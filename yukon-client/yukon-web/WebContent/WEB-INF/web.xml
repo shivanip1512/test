@@ -676,7 +676,6 @@
     
     <servlet-mapping>
         <servlet-name>dev</servlet-name>
-        <url-pattern>/dev</url-pattern>
         <url-pattern>/dev/*</url-pattern>
     </servlet-mapping>
 

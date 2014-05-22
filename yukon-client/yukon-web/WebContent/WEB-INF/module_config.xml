@@ -1412,12 +1412,11 @@
     <pages>
       <page name="home" type="BASIC">
         <requireRoleProperty value="DEVELOPMENT_MODE"/>
-        <link>/dev/main</link>
+        <link>/dev</link>
         <pages>
           <page name="webServices.eimTest" type="BASIC"/>
           <page name="webServices.loadControl" type="BASIC"/>
           <page name="webServices.account" type="BASIC"/>
-          <page name="styleguide" type="BASIC"/>
           <page name="pointInjection" type="BASIC"/>
           <page name="bulkPointInjection" type="BASIC"/>
           <page name="uiToolkitDemo" type="BASIC"/>
@@ -1434,6 +1433,19 @@
           </page>
           <page name="i18nDemo" type="BASIC"/>
           <page name="i18nDemo.scopes" type="BASIC"/>
+          <page name="jsTesting" type="BASIC"/>
+          <page name="styleguide" type="BASIC">
+            <link>/dev/styleguide</link>
+            <pages>
+              <page name="grid" type="BASIC"/>
+              <page name="containers" type="BASIC"/>
+              <page name="buttons" type="BASIC"/>
+              <page name="pickers" type="BASIC"/>
+              <page name="dialogs" type="BASIC"/>
+              <page name="icons" type="BASIC"/>
+              <page name="datePickers" type="BASIC"/>
+            </pages>
+          </page>
         </pages>
       </page>
     </pages>
