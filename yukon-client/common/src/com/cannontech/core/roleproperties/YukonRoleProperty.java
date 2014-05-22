@@ -190,6 +190,7 @@ public enum YukonRoleProperty {
     START_TIME_DEFAULT(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 42, stringType()),
     ALLOW_DR_CONTROL(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 43, booleanType()),
     SHOW_ASSET_AVAILABILITY(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 44, booleanType()),
+    SHOW_ECOBEE(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 46, booleanType()),
     
     ALLOW_LOAD_GROUP_CONTROL(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 45, booleanType()),
     DR_VIEW_CONTROL_AREA_TRIGGER_INFO(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 21, booleanType()),

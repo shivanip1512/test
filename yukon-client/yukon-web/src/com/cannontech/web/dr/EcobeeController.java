@@ -28,7 +28,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.MonthYear;
 import com.cannontech.common.util.Range;
-import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
@@ -43,11 +43,11 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.model.EcobeeQueryStats;
 import com.cannontech.web.dr.model.EcobeeSettings;
-import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckRole(YukonRole.DEMAND_RESPONSE)
+@CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
 public class EcobeeController {
 
     private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
