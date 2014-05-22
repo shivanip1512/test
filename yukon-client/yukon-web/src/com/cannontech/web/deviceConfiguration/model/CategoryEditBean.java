@@ -91,20 +91,6 @@ public class CategoryEditBean {
         this.assignments = assignments;
     }
     
-    public boolean isFieldHidden(String fieldName) {
-        if (fieldName.contains("displayItem") && 
-            !fieldName.toLowerCase().equals("displayItem1".toLowerCase())) {
-            String val = categoryInputs.get(fieldName);
-        
-            if ("0".equals(val) || "SLOT_DISABLED".equals(val) ) {
-                // This is a display item whose value is "Slot Disabled." Hide it since it isn't the first display item.
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
     public boolean isScheduleRateHidden(String fieldName, String rateField) {
         RateBackingBean rate = scheduleInputs.get(fieldName);
         

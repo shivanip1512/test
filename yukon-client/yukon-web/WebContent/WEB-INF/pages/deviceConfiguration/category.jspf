@@ -16,12 +16,7 @@
     
     <c:forEach var="field" items="${categoryTemplate.fields}">
         <%-- The setting box needs to be hidden in certain cases --%>
-        <c:set var="classes" value=""/>
-        
-        <%-- Hide display item fields whose values are "Slot Disabled" --%>
-        <c:if test="${categoryEditBean.isFieldHidden(field.fieldName)}">
-            <c:set var="classes" value="dn"/>
-        </c:if>
+        <c:set var="classes" value=""/>        
         
         <div class="setting clearfix column-6-18 ${classes}" id="${field.fieldName}">
             <div class="column one">${field.displayName}</div>
@@ -124,7 +119,7 @@
     </c:forEach>
     <cti:displayForPageEditModes modes="CREATE,EDIT">
         <c:if test="${isDisplayItemsCategory}">
-            <div class="page-action-area stacked dn" id="showNextDiv">
+            <div class="page-action-area stacked" id="showNextDiv">
                 <cti:msg2 var="addTitle" key=".addDisplayItem"/>
                 <cti:button nameKey="addDisplayItem" icon="icon-add" id="showNextFieldBtn" title="${addTitle}" classes="fr"/>
             </div>

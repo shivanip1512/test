@@ -5,15 +5,25 @@ yukon.namespace('yukon.deviceConfig');
  * @module yukon.deviceConfig 
  */
 yukon.deviceConfig = (function () {
+
+    function visibleFilter(){
+        return $(this).css('display') !== 'none';
+    }
+    function hiddenFilter(){
+        return $(this).css('display') === 'none';
+    }
     
     var _determineDisplayItemAddButtonVisibility = function() {
-        var visibleElems = $("[id^='displayItem']").filter(":visible");
-        if (visibleElems.length < 26) {
+        var totalElems = $("[id^='displayItem']"),
+            visibleElems = totalElems.filter(visibleFilter);
+        
+        if (visibleElems.length < totalElems.length) {
             $('#showNextDiv').show();
         } else {
             $('#showNextDiv').hide();
         }
     },
+    
     
     _showSandwichedMidnightEntries = function(num) {
         var scheduleVisibles = $("td").filter(function() { 
@@ -23,13 +33,31 @@ yukon.deviceConfig = (function () {
     },
     
     _showSandwichedSlotDisabledEntries = function() {
-        var visibleElems = $("[id^='displayItem']").filter(":visible");
+        var visibleElems = $("[id^='displayItem']").filter(visibleFilter);
         visibleElems.last().closest('div').prevAll().show();
     },
     
+    _hideSlotDisabledEntries = function() {
+        var displayItems = $("[id^='displayItem']"),
+            filter = function() {
+                return $(this).find(':input').val() !== '0';
+            },
+            filteredItems = displayItems.filter(filter);
+            
+        if(filteredItems.length > 0) {
+            //edit
+            $(displayItems.splice(filteredItems.last().index()+1)).hide();
+        } else {
+            //create
+            $(displayItems.splice(1)).hide();
+        }
+    },
+    
     _handleVisibleElemsAndButtons = function() {
-        var hiddenElems = $("[id^='displayItem']").filter(":hidden");
-        if (hiddenElems.length < 26) {
+        var totalElems = $("[id^='displayItem']"),
+            hiddenElems = totalElems.filter(hiddenFilter);
+        
+        if (hiddenElems.length <= totalElems.length) {
             $('#showNextDiv').show();
         } else {
             $('#showNextDiv').hide();
@@ -55,22 +83,6 @@ yukon.deviceConfig = (function () {
         } else {
             $('#showNextDivSchedule' + num).hide();
         }
-    },
-    
-    _enableButton = function(button) {
-        button.removeAttr('disabled');
-        button.find('.busy').hide();
-        button.find('.icon').last().show();
-    },
-    
-    _makeAjaxCall = function(method, params, button) {
-        var url = yukon.url('/deviceConfiguration/category/' + method);
-        $('#' + button.attr('id')).mouseleave();
-        $('#category-popup').load(url, params, function() {
-            _handleVisibleElemsAndButtons();
-            _enableButton(button);
-            _registerScheduleButtons();
-        });
     },
     
     _registerScheduleButtons = function() {
@@ -176,6 +188,8 @@ yukon.deviceConfig = (function () {
                 
                 $('#category-popup').load(url, function() {
                     yukon.ui.unbusy(btn);
+                    _hideSlotDisabledEntries();
+                    _showSandwichedSlotDisabledEntries();
                     _handleVisibleElemsAndButtons();
                     _registerScheduleButtons();
                     _hideThingsInMap();
@@ -198,6 +212,8 @@ yukon.deviceConfig = (function () {
                     error: function(xhr, status, error, $form) {
                         $('#category-popup').html(xhr.responseText);
                         _hideThingsInMap();
+                        _hideSlotDisabledEntries();
+                        _showSandwichedSlotDisabledEntries();
                     }
                 });
             });
@@ -213,6 +229,7 @@ yukon.deviceConfig = (function () {
                 $('#category-popup').load(url, function() {
                     yukon.ui.unbusy(btn);
                     _handleVisibleElemsAndButtons();
+                    _hideSlotDisabledEntries();
                     _registerScheduleButtons();
                     _hideThingsInMap();
                     var title = $('#popup-title').val(),
@@ -222,6 +239,7 @@ yukon.deviceConfig = (function () {
             });
 
             _hideThingsInMap();
+            _hideSlotDisabledEntries();
             _determineDisplayItemAddButtonVisibility();
             _showSandwichedSlotDisabledEntries();
             
@@ -233,7 +251,7 @@ yukon.deviceConfig = (function () {
             $("#showNextFieldBtn").on("click", function() {
                 // Show the next hidden display item.
                 var hiddenElems = $("[id^='displayItem']").filter(":hidden");
-                $('#' + hiddenElems[0].id).removeClass('dn');
+                $('#' + hiddenElems[0].id).show();
                 _determineDisplayItemAddButtonVisibility();
             });
             
@@ -249,8 +267,10 @@ yukon.deviceConfig = (function () {
                     // Show the next hidden display item.
                     var hiddenElems = $("[id^='displayItem']").filter(":hidden"),
                         visibleElems = $("[id^='displayItem']").filter(":visible");
-                    $('#' + hiddenElems[0].id).removeClass('dn');
-                    if (visibleElems.length < 26) {
+                    if(hiddenElems.length < $("[id^='displayItem']").length) {
+                        $('#' + hiddenElems[0].id).show();
+                    }
+                    if (visibleElems.length + 1 < $("[id^='displayItem']").length) {
                         $('#showNextDiv').show();
                     } else {
                         $('#showNextDiv').hide();
