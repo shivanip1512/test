@@ -348,5 +348,11 @@
       <sequence name="RfnBroadcastEvent">
         <table name="RfnBroadcastEvent" identitycolumn="RfnBroadcastEventId" initsequence="true" />
       </sequence>
+      <sequence name="EcobeeReconciliationReport">
+        <table name="EcobeeReconciliationReport" identitycolumn="EcobeeReconReportId" initsequence="true"/>
+      </sequence>
+      <sequence name="EcobeeReconReportError">
+        <table name="EcobeeReconReportError" identitycolumn="EcobeeReconReportErrorId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
