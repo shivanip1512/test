@@ -156,13 +156,12 @@ public class OperatorHardwareController {
     public String list(YukonUserContext userContext, ModelMap model, AccountInfoFragment accountInfoFragment) {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         
-        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         model.addAttribute("serialNumberSwitch", new SerialNumber());
         model.addAttribute("serialNumberThermostat", new SerialNumber());
         model.addAttribute("serialNumberGateway", new SerialNumber());
         model.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         
-        setupListModel(accountInfoFragment, model, energyCompany, userContext);
+        setupListModel(accountInfoFragment, model, userContext);
         return "operator/hardware/hardwareList.jsp";
     }
 
@@ -214,8 +213,7 @@ public class OperatorHardwareController {
                 model.addAttribute("showGatewayCheckingPopup", true);
             }
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-            EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-            setupListModel(accountInfoFragment, model, energyCompany, userContext);
+            setupListModel(accountInfoFragment, model, userContext);
             return "operator/hardware/hardwareList.jsp"; 
         }
         
@@ -285,8 +283,7 @@ public class OperatorHardwareController {
             model.addAttribute("anotherEC", StringEscapeUtils.escapeHtml4(e.getYukonEnergyCompany().getName()));
         }
         
-        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-        setupListModel(accountInfoFragment, model, energyCompany, userContext);
+        setupListModel(accountInfoFragment, model, userContext);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         return "operator/hardware/hardwareList.jsp";
     }
@@ -872,11 +869,11 @@ public class OperatorHardwareController {
         
     }
 
-    private void setupListModel(AccountInfoFragment accountInfoFragment, ModelMap model, EnergyCompany ec,
-            YukonUserContext userContext) {
+    private void setupListModel(AccountInfoFragment accountInfoFragment, ModelMap model, YukonUserContext userContext) {
         // Add device types for dropdown menus
+        int energyCompanyId = accountInfoFragment.getEnergyCompanyId();
         ListMultimap<String, DeviceTypeOption> deviceTypeMap = ArrayListMultimap.create();
-        List<YukonListEntry> deviceTypeList = selectionListService.getSelectionList(ec,
+        List<YukonListEntry> deviceTypeList = selectionListService.getSelectionList(energyCompanyId,
                                     YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE).getYukonListEntries();
         
         for (YukonListEntry deviceTypeEntry : deviceTypeList) {
@@ -888,7 +885,7 @@ public class OperatorHardwareController {
         }
         model.addAttribute("deviceTypeMap", deviceTypeMap.asMap());
         
-        model.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
+        model.addAttribute("energyCompanyId", energyCompanyId);
         ListMultimap<HardwareClass, Hardware> hardwareMap = hardwareUiService.getHardwareMapForAccount(accountInfoFragment.getAccountId());
         
         model.addAttribute("switches", hardwareMap.get(HardwareClass.SWITCH));
@@ -911,12 +908,12 @@ public class OperatorHardwareController {
         model.addAttribute("gatewayClass", HardwareClass.GATEWAY);
         
         MeteringType meterDesignation = energyCompanySettingDao.getEnum(
-                EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getId());
+                EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, energyCompanyId);
         boolean starsMeters = meterDesignation == MeteringType.stars; 
         model.addAttribute("starsMeters", starsMeters);
         
         boolean inventoryChecking = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INVENTORY_CHECKING,
-                accountInfoFragment.getEnergyCompanyId());
+                energyCompanyId);
         model.addAttribute("inventoryChecking", inventoryChecking);
     }
     
