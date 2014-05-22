@@ -150,19 +150,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_delta, thermost
     BOOST_CHECK_EQUAL( gear->getSettings(),      "DCH-" );
 
     boost::scoped_ptr<CtiRequestMsg>
-        m( group->createSetPointRequestMsg( gear->getMode(),
-                                            gear->getMinValue(),
-                                            gear->getMaxValue(),
-                                            gear->getPrecoolTemp(),
-                                            gear->getControlTemp(),
-                                            gear->getRestoreTemp(),
-                                            gear->getRandom(),
-                                            gear->getDelayTime(),
-                                            gear->getPrecoolTime(),
-                                            gear->getPrecoolHoldTime(),
-                                            gear->getControlTime(),
-                                            gear->getControlHoldTime(),
-                                            gear->getRestoreTime(),
+        m( group->createSetPointRequestMsg( *gear,
                                             12 ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint delta celsius mode heat "
@@ -186,19 +174,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_delta, therm
     BOOST_CHECK_EQUAL( gear->getSettings(),      "ACH-" );
 
     boost::scoped_ptr<CtiRequestMsg>
-        m( group->createSetPointRequestMsg( gear->getMode(),
-                                            gear->getMinValue(),
-                                            gear->getMaxValue(),
-                                            gear->getPrecoolTemp(),
-                                            gear->getControlTemp(),
-                                            gear->getRestoreTemp(),
-                                            gear->getRandom(),
-                                            gear->getDelayTime(),
-                                            gear->getPrecoolTime(),
-                                            gear->getPrecoolHoldTime(),
-                                            gear->getControlTime(),
-                                            gear->getControlHoldTime(),
-                                            gear->getRestoreTime(),
+        m( group->createSetPointRequestMsg( *gear,
                                             12 ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint celsius mode heat "
@@ -222,19 +198,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_celsius, the
     BOOST_CHECK_EQUAL( gear->getSettings(),      "AFH-" );
 
     boost::scoped_ptr<CtiRequestMsg>
-        m( group->createSetPointRequestMsg( gear->getMode(),
-                                            gear->getMinValue(),
-                                            gear->getMaxValue(),
-                                            gear->getPrecoolTemp(),
-                                            gear->getControlTemp(),
-                                            gear->getRestoreTemp(),
-                                            gear->getRandom(),
-                                            gear->getDelayTime(),
-                                            gear->getPrecoolTime(),
-                                            gear->getPrecoolHoldTime(),
-                                            gear->getControlTime(),
-                                            gear->getControlHoldTime(),
-                                            gear->getRestoreTime(),
+        m( group->createSetPointRequestMsg( *gear,
                                             12 ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint mode heat "
@@ -258,19 +222,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_cool_mode, ther
     BOOST_CHECK_EQUAL( gear->getSettings(),      "AF-I" );
 
     boost::scoped_ptr<CtiRequestMsg>
-        m( group->createSetPointRequestMsg( gear->getMode(),
-                                            gear->getMinValue(),
-                                            gear->getMaxValue(),
-                                            gear->getPrecoolTemp(),
-                                            gear->getControlTemp(),
-                                            gear->getRestoreTemp(),
-                                            gear->getRandom(),
-                                            gear->getDelayTime(),
-                                            gear->getPrecoolTime(),
-                                            gear->getPrecoolHoldTime(),
-                                            gear->getControlTime(),
-                                            gear->getControlHoldTime(),
-                                            gear->getRestoreTime(),
+        m( group->createSetPointRequestMsg( *gear,
                                             12 ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint mode cool "
@@ -294,19 +246,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_both_modes, the
     BOOST_CHECK_EQUAL( gear->getSettings(),      "AFHI" );
 
     boost::scoped_ptr<CtiRequestMsg>
-        m( group->createSetPointRequestMsg( gear->getMode(),
-                                            gear->getMinValue(),
-                                            gear->getMaxValue(),
-                                            gear->getPrecoolTemp(),
-                                            gear->getControlTemp(),
-                                            gear->getRestoreTemp(),
-                                            gear->getRandom(),
-                                            gear->getDelayTime(),
-                                            gear->getPrecoolTime(),
-                                            gear->getPrecoolHoldTime(),
-                                            gear->getControlTime(),
-                                            gear->getControlHoldTime(),
-                                            gear->getRestoreTime(),
+        m( group->createSetPointRequestMsg( *gear,
                                             12 ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint mode both "
@@ -330,19 +270,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_mode, thermo
     BOOST_CHECK_EQUAL( gear->getSettings(),      "AF--" );
 
     boost::scoped_ptr<CtiRequestMsg>
-        m( group->createSetPointRequestMsg( gear->getMode(),
-                                            gear->getMinValue(),
-                                            gear->getMaxValue(),
-                                            gear->getPrecoolTemp(),
-                                            gear->getControlTemp(),
-                                            gear->getRestoreTemp(),
-                                            gear->getRandom(),
-                                            gear->getDelayTime(),
-                                            gear->getPrecoolTime(),
-                                            gear->getPrecoolHoldTime(),
-                                            gear->getControlTime(),
-                                            gear->getControlHoldTime(),
-                                            gear->getRestoreTime(),
+        m( group->createSetPointRequestMsg( *gear,
                                             12 ) );
 
     BOOST_CHECK( ! m );     // invalid mode string results in a null message
@@ -367,17 +295,8 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_heat, th
     BOOST_CHECK_EQUAL( gear->getSettings(),      "--H-" );
 
     boost::scoped_ptr<CtiRequestMsg>
-        m( group->createSetPointSimpleMsg( gear->getMode(),
-                                           gear->getMinValue(),
-                                           gear->getMaxValue(),
-                                           gear->getPrecoolTemp(),
-                                           gear->getRandom(),
-                                           gear->getRampRate(),
-                                           gear->getPrecoolTime(),
-                                           gear->getPrecoolHoldTime(),
-                                           gear->getControlTemp(),
+        m( group->createSetPointSimpleMsg( *gear,
                                            300,
-                                           gear->getRestoreTime(),
                                            30,
                                            12 ) );
 
@@ -402,17 +321,8 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_cool, th
     BOOST_CHECK_EQUAL( gear->getSettings(),      "---I" );
 
     boost::scoped_ptr<CtiRequestMsg>
-        m( group->createSetPointSimpleMsg( gear->getMode(),
-                                           gear->getMinValue(),
-                                           gear->getMaxValue(),
-                                           gear->getPrecoolTemp(),
-                                           gear->getRandom(),
-                                           gear->getRampRate(),
-                                           gear->getPrecoolTime(),
-                                           gear->getPrecoolHoldTime(),
-                                           gear->getControlTemp(),
+        m( group->createSetPointSimpleMsg( *gear,
                                            300,
-                                           gear->getRestoreTime(),
                                            30,
                                            12 ) );
 
@@ -437,17 +347,8 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_none_err
     BOOST_CHECK_EQUAL( gear->getSettings(),      "----" );
 
     boost::scoped_ptr<CtiRequestMsg>
-        m( group->createSetPointSimpleMsg( gear->getMode(),
-                                           gear->getMinValue(),
-                                           gear->getMaxValue(),
-                                           gear->getPrecoolTemp(),
-                                           gear->getRandom(),
-                                           gear->getRampRate(),
-                                           gear->getPrecoolTime(),
-                                           gear->getPrecoolHoldTime(),
-                                           gear->getControlTemp(),
+        m( group->createSetPointSimpleMsg( *gear,
                                            120,
-                                           gear->getRestoreTime(),
                                            30,
                                            12 ) );
 
@@ -470,17 +371,8 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_both_err
     BOOST_CHECK_EQUAL( gear->getSettings(),      "--HI" );
 
     boost::scoped_ptr<CtiRequestMsg>
-        m( group->createSetPointSimpleMsg( gear->getMode(),
-                                           gear->getMinValue(),
-                                           gear->getMaxValue(),
-                                           gear->getPrecoolTemp(),
-                                           gear->getRandom(),
-                                           gear->getRampRate(),
-                                           gear->getPrecoolTime(),
-                                           gear->getPrecoolHoldTime(),
-                                           gear->getControlTemp(),
+        m( group->createSetPointSimpleMsg( *gear,
                                            120,
-                                           gear->getRestoreTime(),
                                            30,
                                            12 ) );
 

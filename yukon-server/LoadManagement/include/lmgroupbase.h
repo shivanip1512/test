@@ -9,6 +9,8 @@
 #include "row_reader.h"
 #include "database_connection.h"
 
+class CtiLMProgramThermoStatGear;
+
 class CtiLMGroupBase : public CtiMemDBObject
 {
 
@@ -107,15 +109,8 @@ public:
     virtual CtiRequestMsg* createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const;// in CtiLMGroupExpresscom
     virtual CtiRequestMsg* createTargetCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority, DOUBLE kwh, CtiTime originalTime, const std::string& additionalInfo) const;// in CtiLMGroupExpresscom
 
-    virtual CtiRequestMsg* createSetPointRequestMsg(std::string mode, LONG minValue, LONG maxValue,
-                                                    LONG valueB, LONG valueD, LONG valueF, LONG random,
-                                                    LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
-                                                    LONG valueTE, LONG valueTF, int priority) const;// in CtiLMGroupExpresscom
-    virtual CtiRequestMsg* createSetPointSimpleMsg(std::string mode, LONG minValue, LONG maxValue,
-                                                    LONG precoolTemp, LONG random, float rampRate,
-                                                    LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
-                                                    LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
-                                                    int priority) const;// CtiLMGroupExpresscom
+    virtual CtiRequestMsg* createSetPointRequestMsg(const CtiLMProgramThermoStatGear & gear, int priority) const;// in CtiLMGroupExpresscom
+    virtual CtiRequestMsg* createSetPointSimpleMsg(const CtiLMProgramThermoStatGear & gear, LONG totalTime, LONG minutesFromBegin, int priority) const;// CtiLMGroupExpresscom
 
     virtual bool doesStopRequireCommandAt(const CtiTime &currentTime) const; //Currently only used by lmGroupDigiSep
     //pure virtuals

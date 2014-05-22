@@ -9,6 +9,7 @@
 #include "ctitokenizer.h"
 #include "numstr.h"
 #include "BeatThePeakControlInterface.h"
+#include "lmProgramThermostatGear.h"
 
 using namespace Cti::LoadManagement;
 using std::string;
@@ -317,11 +318,24 @@ CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, L
     Creates a new CtiRequestMsg pointer for a thermostat program gear with
     all the appropriate settings.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(string mode, LONG minValue, LONG maxValue,
-                                                              LONG valueB, LONG valueD, LONG valueF, LONG random,
-                                                              LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
-                                                              LONG valueTE, LONG valueTF, int priority) const
+CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(const CtiLMProgramThermoStatGear & gear,
+                                                              int priority) const
 {
+    string mode     = gear.getMode();
+    LONG minValue   = gear.getMinValue();
+    LONG maxValue   = gear.getMaxValue();
+    LONG valueB     = gear.getPrecoolTemp();
+    LONG valueD     = gear.getControlTemp();
+    LONG valueF     = gear.getRestoreTemp();
+    LONG random     = gear.getRandom();
+    LONG valueTA    = gear.getDelayTime();
+    LONG valueTB    = gear.getPrecoolTime();
+    LONG valueTC    = gear.getPrecoolHoldTime();
+    LONG valueTD    = gear.getControlTime();
+    LONG valueTE    = gear.getControlHoldTime();
+    LONG valueTF    = gear.getRestoreTime();
+
+
     if ( mode.empty() )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -451,12 +465,23 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(string mode, LONG 
 
 //Create a setpoint message using slopes instead of absolute values.
 //Sends a bump message only when minutesFromBegin is > 0.
-CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string mode, LONG minValue, LONG maxValue,
-                                                              LONG precoolTemp, LONG random, float rampRate,
-                                                              LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
-                                                              LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
-                                                              int priority) const
+CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(const CtiLMProgramThermoStatGear & gear,
+                                                             LONG totalTime,
+                                                             LONG minutesFromBegin,
+                                                             int priority) const
 {
+    string mode             = gear.getMode();
+    LONG minValue           = gear.getMinValue();
+    LONG maxValue           = gear.getMaxValue();
+    LONG precoolTemp        = gear.getPrecoolTemp();
+    LONG random             = gear.getRandom();
+    float rampRate          = gear.getRampRate();
+    LONG precoolTime        = gear.getPrecoolTime();
+    LONG precoolHoldTime    = gear.getPrecoolHoldTime();
+    LONG maxTempChange      = gear.getControlTemp();
+    LONG rampOutTime        = gear.getRestoreTime();
+
+
     LONG controlTime, controlHoldTime;
     bool retFlag = true;
     maxTempChange = abs(maxTempChange);
