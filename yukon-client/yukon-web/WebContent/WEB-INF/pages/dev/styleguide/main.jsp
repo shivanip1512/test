@@ -20,8 +20,6 @@
                 <li><a href="javascript:void(0);" data-url="<cti:url value="/dev/styleguide/containers"/>">Containers</a></li>
                 <li><a href="javascript:void(0);" data-url="<cti:url value="/dev/styleguide/buttons"/>">Buttons</a></li>
                 <li><a href="javascript:void(0);" data-url="<cti:url value="/dev/styleguide/pickers"/>">Pickers</a></li>
-                <li><a href="javascript:void(0);" data-url="<cti:url value="/dev/styleguide/i18n"/>">I18N</a></li>
-                <li><a href="javascript:void(0);" data-url="<cti:url value="/dev/styleguide/i18nScopes"/>">I18N Scopes</a></li>
                 <li><a href="javascript:void(0);" data-url="<cti:url value="/dev/styleguide/dialogs"/>">Dialogs</a></li>
                 <li><a href="javascript:void(0);" data-url="<cti:url value="/dev/styleguide/jsTesting"/>">JS Testing</a></li>
                 <li><a href="javascript:void(0);" data-url="<cti:url value="/dev/styleguide/sprites"/>">Icons</a></li>

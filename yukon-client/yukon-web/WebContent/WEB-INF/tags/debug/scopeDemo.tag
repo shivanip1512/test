@@ -17,6 +17,6 @@
         <pre class="code prettyprint">&lt;i:inline key=&quot;.testMessage&quot;/&gt;</pre>
         <div>resolves to <span class="green"><cti:msg2 key=".testMessage" debug="true" fallback="true"/></span></div>
         
-        <pre class="code"><strong>Keys Searched:</strong><br><c:forEach items="${msg2TagDebugMap}" var="entry">${entry.key}=${entry.value}<br></c:forEach></pre>
+        <pre class="code"><strong>Keys Searched:</strong><ul><c:forEach items="${msg2TagDebugMap}" var="entry"><li>${entry.key}=${entry.value}</li></c:forEach></ul></pre>
     </cti:msgScope>
 </tags:sectionContainer2>
