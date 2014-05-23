@@ -512,7 +512,8 @@ static const std::set<string> unsupported_devices = boost::assign::list_of
     ("rfw-meter")
     ("lcr-6200 rfn")
     ("lcr-6600 rfn")
-    ("weather location");
+    ("weather location")
+    ("ecobee smart si");
 
 /**
  * Check if the device is known and unsupported
