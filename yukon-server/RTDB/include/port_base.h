@@ -224,10 +224,8 @@ public:
     CtiPort& resetDevicePreload(LONG id);
     std::set<LONG> getPreloads(void);
 
-    INT incQueueSubmittal(int bumpcnt, CtiTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
-    INT incQueueProcessed(int bumpCnt, CtiTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
-    INT setQueueOrphans(int num, CtiTime &rwt);          // Number of queue entries remaining on device following this pass.
-    void getQueueMetrics(int index, int &submit, int &processed, int &orphan); // Return the metrics above.
+    virtual void incQueueSubmittal()  {}
+    virtual void incQueueProcessed()  {}
 
     bool getSharingStatus( ) const;
     void setSharingStatus( bool b );
@@ -237,9 +235,6 @@ public:
 protected:
 
     ULONG               _queueGripe;
-    CtiCounter          _submittal;
-    CtiCounter          _processed;
-    CtiCounter          _orphaned;
 
     CtiTblPAOLite       _tblPAO;
     CtiTablePortBase    _tblPortBase;

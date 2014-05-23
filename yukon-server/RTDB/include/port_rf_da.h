@@ -29,8 +29,6 @@ public:
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    virtual ULONG getDelay(int Offset) const;
-
     virtual INT inMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, std::list<CtiMessage *> &traceList)
     {
         return 0;
@@ -47,6 +45,10 @@ public:
     {
         return true;  //  connectionless, so always viable
     }
+
+    virtual void incQueueSubmittal();
+    virtual void incQueueProcessed();
+    unsigned concurrentRequests() const;
 };
 
 typedef boost::shared_ptr< RfDaPort > RfDaPortSPtr;

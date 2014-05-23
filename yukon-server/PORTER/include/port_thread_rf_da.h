@@ -31,17 +31,18 @@ class RfDaPortHandler : public UnsolicitedHandler
         }
     };
 
+    virtual bool isPortRateLimited() const;
+
 public:
 
     RfDaPortHandler( Ports::RfDaPortSPtr &port, CtiDeviceManager &deviceManager );
-    virtual ~RfDaPortHandler();
 
 protected:
 
-    virtual std::string describePort( void ) const;
+    virtual std::string describePort() const;
 
-    virtual bool setupPort( void ) { return true; }  //  nothing to do
-    virtual bool manageConnections( void ) { return false; }  //  nothing to do
+    virtual bool setupPort()         { return true; }  //  nothing to do
+    virtual bool manageConnections() { return false; }  //  nothing to do
 
     void receiveConfirm(Messaging::Rfn::E2eMessenger::Confirm msg);
 
@@ -55,7 +56,7 @@ protected:
     virtual void updateDeviceProperties(const CtiDeviceSingle &device) {}
     virtual void deleteDeviceProperties(const CtiDeviceSingle &device) {}
 
-    virtual void updatePortProperties( void ) {};  //  no properties
+    virtual void updatePortProperties() {}  //  no properties
 
     virtual bool isDeviceDisconnected( const long device_id ) const { return false; }
 

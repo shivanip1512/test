@@ -4327,7 +4327,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, boo
 
     if(OutMessage)
     {
-        Port->incQueueSubmittal(1, CtiTime());
+        Port->incQueueSubmittal();
     }
 
     return status;

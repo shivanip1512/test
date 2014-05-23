@@ -401,7 +401,10 @@ bool UnsolicitedHandler::distributeRequests(const MillisecondTimer &timer, const
 {
     generateKeepalives(_request_queue);
 
-    readPortQueue(_port, _request_queue);
+    if( ! isPortRateLimited() )
+    {
+        readPortQueue(_port, _request_queue);
+    }
 
     //  if we got work, attempt to distribute it to the device records
     return processQueue(_request_queue, &UnsolicitedHandler::handleDeviceRequest, timer, until);
@@ -448,6 +451,15 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
             INMESS im;
             OutEchoToIN(om, &im);
             ReturnResultMessage(DEVICEINHIBITED, &im, om);
+            return;
+        }
+
+        if( om->ExpirationTime && om->ExpirationTime < CtiTime::now() )
+        {
+            //  return an error - this deletes the OM
+            INMESS im;
+            OutEchoToIN(om, &im);
+            ReturnResultMessage(ErrRequestExpired, &im, om);
             return;
         }
 
@@ -858,6 +870,12 @@ void UnsolicitedHandler::traceInbound( string address, int status, const unsigne
 }
 
 
+bool UnsolicitedHandler::isPortRateLimited() const
+{
+    return false;
+}
+
+
 void UnsolicitedHandler::readPortQueue(CtiPortSPtr &port, om_list &local_queue)
 {
     unsigned long entries = 0;
@@ -870,7 +888,7 @@ void UnsolicitedHandler::readPortQueue(CtiPortSPtr &port, om_list &local_queue)
 
     while( max_entries-- && port->readQueue( &size, (PPVOID)&om, DCWW_NOWAIT, &priority, &entries) == NORMAL )
     {
-        port->incQueueSubmittal(1, CtiTime());
+        port->incQueueSubmittal();
 
         if( !printed && entries && gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
         {
@@ -1232,6 +1250,8 @@ void Cti::Porter::UnsolicitedHandler::sendResult(device_record *dr)
 
                 //  This method may delete the OM!
                 ReturnResultMessage(dr->device_status, &im, om);
+
+                _port->incQueueProcessed();
 
                 //  If ReturnResultMessage doesn't delete the OM (i.e. wasn't an error condition), then we'll delete it
                 delete om;

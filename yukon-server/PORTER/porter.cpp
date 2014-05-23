@@ -672,37 +672,6 @@ void applyPortWorkReport(const long unusedid, CtiPortSPtr ptPort, void *passedPt
 }
 
 
-void applyPortLoadReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
-{
-    bool yep = false;
-    string printStr;
-
-    /* Report on the state of the queues */
-
-    if(!ptPort->isInhibited())
-    {
-        int sub, proc, orph;
-
-        printStr = CtiTime().asString() + " Port: " + CtiNumStr(ptPort->getPortID()).spad(2) + " / " + ptPort->getName() + "\n";
-
-        for(int i = 0; i < 288; i++)
-        {
-            ptPort->getQueueMetrics(i, sub, proc, orph);
-            if(sub > 0)
-            {
-                yep = true;
-                printStr += CtiNumStr(i).spad(2) + string(", ") + CtiNumStr(sub).spad(5) + ", " + CtiNumStr(proc).spad(5) + ", " + CtiNumStr(orph).spad(5) + "\n";
-            }
-        }
-    }
-
-    if(yep)
-    {
-        CtiLockGuard<CtiLogger> bguard(blog);
-        blog << printStr << endl;
-    }
-}
-
 namespace {
 
 inline boost::posix_time::ptime getAbsTimeFromMillis( unsigned long millis )
@@ -2137,12 +2106,6 @@ bool processInputFunction(CHAR Char)
         {
             reportOnWorkObjects();
             // PortManager.apply( applyPortWorkReport, NULL );
-            break;
-        }
-    case 0x79:              // alt-y
-        {
-            PortManager.apply( applyPortLoadReport, (void*)1 );
-
             break;
         }
     default:

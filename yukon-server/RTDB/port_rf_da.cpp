@@ -54,11 +54,31 @@ void RfDaPort::DecodeDatabaseReader(Cti::RowReader &rdr)
     }
 }
 
-ULONG RfDaPort::getDelay(int Offset) const
+
+static long RfDaConcurrentRequests = 0;
+
+
+void RfDaPort::incQueueSubmittal()
 {
-    //if( Offset == EXTRA_DELAY )
-    return 30;  //  30 seconds for the data read timeout - but we will need to increment timeouts
+    InterlockedIncrement(&RfDaConcurrentRequests);
+
+    return CtiPort::incQueueSubmittal();
 }
+
+
+void RfDaPort::incQueueProcessed()
+{
+    InterlockedDecrement(&RfDaConcurrentRequests);
+
+    return CtiPort::incQueueProcessed();
+}
+
+
+unsigned RfDaPort::concurrentRequests() const
+{
+    return InterlockedCompareExchange(&RfDaConcurrentRequests, 0, 0);
+}
+
 
 }
 }

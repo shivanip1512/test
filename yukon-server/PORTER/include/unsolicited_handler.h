@@ -121,6 +121,7 @@ private:
     static bool isDnpKeepaliveNeeded( const device_record &dr, const CtiTime &TimeNow );
     static void generateDnpKeepalive( om_list &local_queue, const device_record &dr, const CtiTime &TimeNow );
     void readPortQueue( CtiPortSPtr &port, om_list &local_queue );
+    virtual bool isPortRateLimited() const;
     void tryGenerate(device_record *dr);
 
     bool expireTimeouts(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);

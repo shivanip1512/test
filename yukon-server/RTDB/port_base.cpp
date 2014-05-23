@@ -1673,31 +1673,6 @@ set<LONG> CtiPort::getPreloads(void)
 }
 
 
-INT CtiPort::incQueueSubmittal(int bumpCnt, CtiTime &rwt)    // Bumps the count of submitted deviceQ entries for this 5 minute window.
-{
-    int index = (rwt.hour()*60 + rwt.minute()) / 5;
-    _submittal.inc(index,bumpCnt);
-    return _submittal.get(index);
-}
-INT CtiPort::incQueueProcessed(int bumpCnt, CtiTime & rwt)   // Bumps the count of processed deviceQ entries for this 5 minute window.
-{
-    int index = (rwt.hour()*60 + rwt.minute()) / 5;
-    _processed.inc(index,bumpCnt);
-    return _processed.get(index);
-}
-INT CtiPort::setQueueOrphans(int num, CtiTime &rwt)          // Number of queue entries remaining on device following this pass.
-{
-    int index = (rwt.hour()*60 + rwt.minute()) / 5;
-    _orphaned.set(index,num);
-    return _orphaned.get(index);
-}
-void CtiPort::getQueueMetrics(int index, int &submit, int &processed, int &orphan) // Return the metrics above.
-{
-    submit = _submittal.get(index);
-    processed = _processed.get(index);
-    orphan = _orphaned.get(index);
-}
-
 INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, HANDLE hQuit)
 {
     INT status = !NORMAL;

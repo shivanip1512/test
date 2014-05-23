@@ -72,16 +72,20 @@ RfDaPortHandler::RfDaPortHandler( Ports::RfDaPortSPtr &rf_da_port, CtiDeviceMana
 }
 
 
+const DWORD RfDaConcurrentRequestsMax = gConfigParms.getValueAsULong("RF_DA_CONCURRENT_REQUESTS", 4);
+
+
+bool RfDaPortHandler::isPortRateLimited() const
+{
+    return _rf_da_port->concurrentRequests() >= RfDaConcurrentRequestsMax;
+}
+
+
 void RfDaPortHandler::receiveIndication(Messaging::Rfn::E2eMessenger::Indication msg)
 {
     CtiLockGuard<CtiCriticalSection> lock(_indicationMux);
 
     _indications.push_back(msg);
-}
-
-
-RfDaPortHandler::~RfDaPortHandler()
-{
 }
 
 
@@ -100,9 +104,9 @@ int RfDaPortHandler::sendOutbound( device_record &dr )
                           << describeDeviceAddress(dr.device->getID()) << " "
                           << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-        for( int xx = 0; xx < dr.xfer.getOutCount(); xx++ )
+        for( int offset = 0; offset < dr.xfer.getOutCount(); offset++ )
         {
-            dout << " " << CtiNumStr(dr.xfer.getOutBuffer()[xx]).hex().zpad(2).toString();
+            dout << " " << CtiNumStr(dr.xfer.getOutBuffer()[offset]).hex().zpad(2).toString();
         }
 
         dout << endl;
@@ -122,19 +126,17 @@ int RfDaPortHandler::sendOutbound( device_record &dr )
 }
 
 
+const unsigned RfDaDeviceTimeout = gConfigParms.getValueAsULong("RF_DA_DEVICE_TIMEOUT", 150);
+
 unsigned RfDaPortHandler::getDeviceTimeout( const device_record &dr ) const
 {
-    return 150;
+    return RfDaDeviceTimeout;
 }
 
 
 std::string RfDaPortHandler::describePort( void ) const
 {
-    ostringstream ostr;
-
-    ostr << "RF DA port " << _rf_da_port->getName();
-
-    return ostr.str();
+    return "RF DA port " + _rf_da_port->getName();
 }
 
 
@@ -157,6 +159,11 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
         recentIndications.swap(_indications);
     }
 
+    if( recentIndications.empty() )
+    {
+        return false;
+    }
+
     if( ! _device_id )
     {
         if( ! recentIndications.empty() && gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
@@ -165,7 +172,7 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
             dout << CtiTime() << " Cti::Porter::RfDaPortHandler::collectInbounds - _device_id not set, logging packets " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        for each( Messaging::Rfn::E2eMessenger::Indication ind in recentIndications )
+        for each( const Messaging::Rfn::E2eMessenger::Indication & ind in recentIndications )
         {
             //  this packet was unhandled, so we trace it
             traceInbound("(unhandled)", 0, &ind.payload.front(), ind.payload.size());
