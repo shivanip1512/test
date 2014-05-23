@@ -187,7 +187,7 @@ public abstract class DeleteForm extends DBEditorForm {
 			itemIDs[i] = Integer.parseInt(ids[i]);
 			CTILogger.debug("  DeleteFrom inited for item id = " + itemIDs[i]);
 		}
-
+		reset();
 	}
 
 	/**
