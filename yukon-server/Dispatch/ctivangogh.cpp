@@ -48,6 +48,7 @@
 #include "database_transaction.h"
 #include "database_writer.h"
 #include "database_util.h"
+#include "database_exceptions.h"
 
 #include "connection.h"
 #include "dbaccess.h"
@@ -61,10 +62,12 @@
 #include "debug_timer.h"
 #include "millisecond_timer.h"
 
+#include "std_helper.h"
+#include "amq_constants.h"
+
 #include <boost/tuple/tuple_comparison.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
-
-#include "amq_constants.h"
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
@@ -1520,7 +1523,11 @@ void CtiVanGogh::VGArchiverThread()
              *  Step 1. Write/mark any points which need archiving and update their nextArchive times.
              */
 
-            PointMgr.scanForArchival(TimeNow, _archiverQueue);
+            boost::ptr_vector<CtiTableRawPointHistory> rowsToArchive;
+
+            PointMgr.scanForArchival(TimeNow, rowsToArchive);
+
+            submitRowsToArchiver(rowsToArchive);
 
             /*
              *  Step 2. identify the next nearest time we need to do an archival write.
@@ -1798,7 +1805,9 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         // This is a forced reading, which must be written, it should not
                         // however cause any change in normal pending scanned readings
 
-                        _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
+                        submitRowToArchiver(
+                                std::auto_ptr<CtiTableRawPointHistory>(
+                                        new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis())));
 
                         pDyn->setWasArchived(true);
                     }
@@ -1808,7 +1817,9 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         (TempPoint->getArchiveType() == ArchiveTypeOnChange && isNew) ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnTimerOrUpdated))
                 {
-                    _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
+                    submitRowToArchiver(
+                            std::auto_ptr<CtiTableRawPointHistory>(
+                                    new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis())));
 
                     pDyn->setArchivePending(false);
 
@@ -2965,57 +2976,55 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
     }
 }
 
-void CtiVanGogh::writeArchiveDataToDB(bool justdoit)
+bool CtiVanGogh::writeArchiveDataToDB(const WriteMode wm)
 {
-#define PANIC_CONSTANT 1000
+    const unsigned MinRowsToWrite = 10;
+    const unsigned ChunkSize = 1000;
 
-    static int maxrowstowrite = PANIC_CONSTANT;
-    static UINT  dumpCounter = 0;
-    UINT panicCounter = 0;      // Make sure we don't write for too long...
+    const unsigned rowsWaiting = archiverQueueSize();
+
+    if( ! rowsWaiting )
+    {
+        return false;
+    }
+
+    if( wm == WriteMode_WriteChunkIfOverThreshold && rowsWaiting < MinRowsToWrite )
+    {
+        return false;
+    }
+
+    boost::ptr_deque<CtiTableRawPointHistory> rowsToWrite;
+
+    {
+        CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
+
+        if( wm != WriteMode_WriteAll && _archiverQueue.size() > ChunkSize )
+        {
+            rowsToWrite.transfer(
+                    rowsToWrite.begin(),
+                    _archiverQueue.begin(),
+                    _archiverQueue.begin() + ChunkSize,
+                    _archiverQueue);
+        }
+        else
+        {
+            rowsToWrite = _archiverQueue.release();
+        }
+    }
 
     try
     {
-        size_t archiveent = _archiverQueue.entries();
-
-        /*
-         *  Go look if we need to write out archive points.
-         *  We only do this once every 30 seconds or if there are >= 10 entries to do.
-         */
-        if(!(++dumpCounter % DUMP_RATE)
-           || archiveent > MAX_ARCHIVER_ENTRIES
-           || justdoit == true )                                 // Only chase the queue once per DUMP_RATE seconds.
+        if( unsigned rowsWritten = writeRawPointHistory(rowsToWrite) )
         {
-            if(archiveent > 0)
-            {
-                panicCounter = writeRawPointHistory(justdoit, maxrowstowrite);
-            }
+            const unsigned rowsRemaining = archiverQueueSize();
 
-            size_t rowsLeft = _archiverQueue.entries();
-            if( panicCounter > 0 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " RawPointHistory transaction complete. Inserted " << panicCounter
-                     << " rows" << endl;
-
-                if(rowsLeft > MAX_ARCHIVER_ENTRIES)
-                {
-                    dout << CtiTime() << " RawPointHistory rows remaining: " << rowsLeft << endl;
-                }
+                dout << CtiTime() << " RawPointHistory transaction complete. Inserted " << rowsWritten << " rows" << endl;
+                dout << CtiTime() << " RawPointHistory rows remaining: " << rowsRemaining << endl;
             }
 
-            if(panicCounter >= PANIC_CONSTANT)
-            {
-                /*
-                 *  double the queue's size if it is more than half full.
-                 */
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Archival queue has " << _archiverQueue.entries() << " entries" << endl;
-                    dout << " Queue is currently sized at " << _archiverQueue.size() << " entries" << endl;
-                }
-            }
+            return rowsRemaining > MinRowsToWrite;
         }
     }
     catch(const RWxmsg& x)
@@ -3028,6 +3037,8 @@ void CtiVanGogh::writeArchiveDataToDB(bool justdoit)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
+
+    return false;
 }
 
 
@@ -4414,7 +4425,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                         }
 
                         _deviceLiteSet.erase(pChg->getId());
-                        
+
                         // erase all associated points for the pao id
                         PointMgr.erasePao(pChg->getId());
                     }
@@ -5174,8 +5185,6 @@ void CtiVanGogh::shutdownAllClients()
 
 void CtiVanGogh::VGRPHWriterThread()
 {
-    UINT sanity = 0;
-
     ThreadStatusKeeper threadStatus("RawPointHistory Writer Thread");
 
     {
@@ -5187,24 +5196,48 @@ void CtiVanGogh::VGRPHWriterThread()
 
     try
     {
+        const unsigned ThirtySeconds = 30 * 1000;
+        unsigned cumulativeTime = 0;
+
         for(;!bGCtrlC;)
         {
-            if( ShutdownOnThreadTimeout )
+            Cti::Timing::MillisecondTimer timer;
+
+            WriteMode wm = WriteMode_WriteChunkIfOverThreshold;
+
+            if( cumulativeTime > ThirtySeconds )
             {
-                threadStatus.monitorCheck(&CtiVanGogh::sendbGCtrlC);
-            }
-            else
-            {
-                threadStatus.monitorCheck(CtiThreadRegData::None);
+                if( ShutdownOnThreadTimeout )
+                {
+                    threadStatus.monitorCheck(&CtiVanGogh::sendbGCtrlC);
+                }
+                else
+                {
+                    threadStatus.monitorCheck(CtiThreadRegData::None);
+                }
+
+                cumulativeTime %= ThirtySeconds;
+
+                //  guaranteed write once every 30 seconds
+                wm = WriteMode_WriteChunk;
             }
 
-            rwSleep(1000);
+            const bool MoreWaiting = writeArchiveDataToDB(wm);
 
-            writeArchiveDataToDB();
+            const unsigned SleepTime = MoreWaiting ? 50 : 1000;  //  wait 50 ms if more work waiting, 1 second otherwise
+
+            const unsigned elapsed = timer.elapsed();
+
+            if( elapsed < SleepTime )
+            {
+                rwSleep(SleepTime - elapsed);
+            }
+
+            cumulativeTime += timer.elapsed();
         }
 
-        // Make sure no one snuck in under the wire..
-        writeArchiveDataToDB(true);
+        //  Write anything remaining before we exit.
+        writeArchiveDataToDB(WriteMode_WriteAll);
     }
     catch(RWxmsg& msg )
     {
@@ -5217,13 +5250,10 @@ void CtiVanGogh::VGRPHWriterThread()
         dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    // And let'em know were A.D.
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Dispatch RawPointHistory Writer Thread shutting down" << endl;
     }
-
-    return;
 }
 
 
@@ -5821,50 +5851,117 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
     }
 }
 
-UINT CtiVanGogh::writeRawPointHistory(bool justdoit, int maxrowstowrite)
+void CtiVanGogh::submitRowToArchiver(std::auto_ptr<CtiTableRawPointHistory> row)
 {
-    UINT panicCounter = 0;      // Make sure we don't write for too long...
+    CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
 
-    try
+    _archiverQueue.push_back(row);
+}
+
+void CtiVanGogh::submitRowsToArchiver(boost::ptr_vector<CtiTableRawPointHistory> &rows)
+{
+    CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
+
+    _archiverQueue.transfer(_archiverQueue.end(), rows);
+}
+
+unsigned CtiVanGogh::archiverQueueSize()
+{
+    CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
+
+    return _archiverQueue.size();
+}
+
+
+unsigned CtiVanGogh::writeRawPointHistory(boost::ptr_deque<CtiTableRawPointHistory> &rowsToWrite)
+{
+    using namespace Cti::Database;
+
+    DatabaseConnection conn;
+
+    if( ! conn.isValid() )
     {
-        CtiTableRawPointHistory *pTblEntry;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-        Cti::Database::DatabaseConnection   conn;
+        return 0;
+    }
 
-        if ( ! conn.isValid() )
+    const unsigned ChunkSize = 10;
+
+    //  form up the SQL for both the single-row and multi-row cases
+    const std::string rowSql   = CtiTableRawPointHistory::getInsertSql();
+    const std::string chunkSql = boost::join(std::vector<std::string>(ChunkSize, rowSql), ";");
+
+    unsigned rowsWritten = 0;
+    bool multiRowInsert = true;
+    bool retryChangeId = false;
+
+    while( ! rowsToWrite.empty() )
+    {
+        multiRowInsert &= rowsToWrite.size() >= ChunkSize;
+
+        const unsigned rows = multiRowInsert ? ChunkSize : 1;
+
+        DatabaseWriter inserter(conn, multiRowInsert ? chunkSql : rowSql);
+
+        boost::scoped_ptr<DatabaseTransaction> transaction;
+
+        if( multiRowInsert || retryChangeId )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            transaction.reset(new DatabaseTransaction(conn));
+        }
 
-            return 0;
+        for( unsigned i = 0; i < rows; ++i )
+        {
+            rowsToWrite[i].fillInserter(inserter, ChangeIdGen(retryChangeId));
         }
 
         try
         {
-            while( ( justdoit || (panicCounter < maxrowstowrite) ) && (pTblEntry = _archiverQueue.getQueue(0)) != NULL)
-            {
-                panicCounter++;
-                pTblEntry->Insert(conn);
-                delete pTblEntry;
-            }
+            executeWriter(inserter, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
+
+            rowsWritten += rows;
+
+            retryChangeId = false;  //  we succeeded!
         }
-        catch(...)
+        catch( DatabaseException & ex )
         {
+            //  try to correct a PK error once, then let it fail
+            retryChangeId = ! retryChangeId && dynamic_cast<PrimaryKeyViolationException *>(&ex);
+
+            transaction && transaction->rollback();
+
+            if( multiRowInsert || retryChangeId )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                if( multiRowInsert )
+                {
+                    dout << CtiTime() << " Error \"" << ex.what() << "\", reverting to single-row inserts into RawPointHistory." << endl;
+                }
+                if( retryChangeId )
+                {
+                    dout << CtiTime() << " Insert collision occurred in RawPointHistory.  ChangeId will be re-initialized.  There may be two copies of dispatch inserting into this DB" << endl;
+                }
+
+                multiRowInsert = false;  //  any error means we fall back to single-row inserts for the entire block
+
+                continue;
+            }
+
+            //  If we reach this point, we are an unrecoverable single-row error.
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Error \"" << ex.what() << "\", unable to insert row into RawPointHistory." << endl;
             }
         }
-    }
-    catch(...)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+
+        rowsToWrite.erase(rowsToWrite.begin(), rowsToWrite.begin() + rows);
     }
 
-    return panicCounter;
+    return rowsWritten;
 }
 
 int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig )

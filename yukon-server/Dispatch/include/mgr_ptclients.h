@@ -69,8 +69,6 @@ private:
 
    void executeDynamicDataQueries(const std::vector<std::string> &queries);
 
-   std::vector<std::string> generateSqlStatements(const std::set<long> &pointIds);
-
    void getDirtyRecordList(std::list<CtiDynamicPointDispatchSPtr> &updateList);
    void writeRecordsToDB  (std::list<CtiDynamicPointDispatchSPtr> &updateList);
    void removeOldDynamicData();
@@ -79,10 +77,12 @@ private:
 
    void removePoint(long point, bool isExpiration = false);
 
+protected:  //  for unit test access
+
+   std::vector<std::string> generateSqlStatements(const std::set<long> &pointIds);
+
    void addAlarming(CtiTablePointAlarming &table);
    void removeAlarming(unsigned long pointID);
-
-   friend class Test_CtiPointClientManager;
 
 public:
 
@@ -109,7 +109,7 @@ public:
    bool pointHasConnection(LONG pointID, const CtiServer::ptr_type &Conn);
 
    CtiTime findNextNearestArchivalTime();
-   void scanForArchival(const CtiTime &Now, CtiFIFOQueue<CtiTableRawPointHistory> &Que);
+   void scanForArchival(const CtiTime &Now, boost::ptr_vector<CtiTableRawPointHistory> &Que);
 
    void validateConnections();
    void storeDirtyRecords();
@@ -129,13 +129,3 @@ public:
 
 };
 
-class Test_CtiPointClientManager : public CtiPointClientManager
-{
-private:
-    typedef CtiPointClientManager Inherited;
-public:
-    void addAlarming(CtiTablePointAlarming &table) { Inherited::addAlarming(table); }
-    void removeAlarming(unsigned long pointID)     { Inherited::removeAlarming(pointID); }
-
-    std::vector<std::string> generateSqlStatements(const std::set<long> &pointIds) { return Inherited::generateSqlStatements(pointIds); }
-};

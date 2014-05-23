@@ -630,7 +630,7 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
     return closeTime;
 }
 
-void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<CtiTableRawPointHistory> &Que)
+void CtiPointClientManager::scanForArchival(const CtiTime &Now, boost::ptr_vector<CtiTableRawPointHistory> &Que)
 {
     {
         Cti::Timing::DebugTimer debugTime("Scanning For Archival", false, 1);
@@ -658,7 +658,7 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
                                 case ArchiveTypeOnTimer:
                                 case ArchiveTypeOnTimerOrUpdated:
                                     {
-                                        Que.putQueue(CTIDBG_new CtiTableRawPointHistory(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now));
+                                        Que.push_back(new CtiTableRawPointHistory(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now, 0));
                                         break;
                                     }
                                 case ArchiveTypeOnTimerAndUpdated:

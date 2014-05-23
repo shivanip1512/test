@@ -6,6 +6,14 @@
 #include "pt_status.h"
 #include "pt_analog.h"
 
+struct Test_CtiPointClientManager : CtiPointClientManager
+{
+    using CtiPointClientManager::addAlarming;
+    using CtiPointClientManager::removeAlarming;
+    using CtiPointClientManager::generateSqlStatements;
+};
+
+
 using namespace std;
 
 BOOST_AUTO_TEST_SUITE( test_mgr_ptclients )

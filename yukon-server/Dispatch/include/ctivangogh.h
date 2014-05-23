@@ -36,6 +36,8 @@
 #include "rtdb.h"
 #include "connection_client.h"
 
+#include <boost/ptr_container/ptr_deque.hpp>
+
 class CtiPointRegistrationMsg;
 class CtiPointBase;
 class CtiPointStatus;
@@ -75,7 +77,13 @@ private:
     CtiFIFOQueue< CtiSignalMsg > _signalMsgPostQueue;   // Messages are processed out of this queue for emailing.
 
     CtiFIFOQueue< CtiSignalMsg > _signalMsgQueue;
-    CtiFIFOQueue< CtiTableRawPointHistory > _archiverQueue;
+
+    boost::ptr_deque< CtiTableRawPointHistory > _archiverQueue;
+    CtiCriticalSection _archiverLock;
+
+    void submitRowsToArchiver(boost::ptr_vector<CtiTableRawPointHistory> &rows);
+    void submitRowToArchiver(std::auto_ptr<CtiTableRawPointHistory> row);
+    unsigned archiverQueueSize();
 
     // These are the signals which have not been cleared by a client app
     CtiA2DTranslation_t        _alarmToDestInfo[256];  // This holds translations from alarm ID to DestinationID.
@@ -90,7 +98,7 @@ private:
     CtiClientConnection*       _notificationConnection;
     bool ShutdownOnThreadTimeout;
 
-    UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
+    unsigned writeRawPointHistory(boost::ptr_deque<CtiTableRawPointHistory> &rowsToWrite);
 
     int checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
     void checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
@@ -142,6 +150,17 @@ private:
 
     // handles dispatcher activemq static queue to receive client request to connect
     CtiListenerConnection _listenerConnection;
+
+protected:
+
+    enum WriteMode
+    {
+        WriteMode_WriteChunkIfOverThreshold,
+        WriteMode_WriteChunk,
+        WriteMode_WriteAll
+    };
+
+    bool writeArchiveDataToDB(const WriteMode wm);
 
 public:
 
@@ -210,7 +229,6 @@ public:
     void  loadPendingSignals();
     void  purifyClientConnectionList();
     void  updateRuntimeDispatchTable(bool force = false);
-    void  writeArchiveDataToDB(bool justdoit = false);
     void  writeSignalsToDB(bool justdoit = false);
     void  refreshCParmGlobals(bool force = false);
     INT   checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap);
