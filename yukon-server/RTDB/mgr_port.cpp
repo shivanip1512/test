@@ -659,16 +659,16 @@ typedef boost::function<CtiPort *()> MakePortFunc;
 typedef std::map<int, MakePortFunc> PortLookup;
 
 const PortLookup portFactory = boost::assign::map_list_of
-    (PortTypeLocalDirect,     makePort<CtiPortDirect>)
-    (PortTypeLocalDialup,     makeDialablePort<CtiPortDirect, CtiPortDialout>)
-    (PortTypeLocalDialBack,   makeDialablePort<CtiPortDirect, CtiPortDialin>)
-    (PortTypeTServerDirect,   makePort<CtiPortTCPIPDirect>)
-    (PortTypeTcp,             makePort<Cti::Ports::TcpPort>)
-    (PortTypeUdp,             makePort<Cti::Ports::UdpPort>)
-    (PortTypeRfDa,            makePort<Cti::Ports::RfDaPort>)
-    (PortTypeTServerDialup,   makeDialablePort<CtiPortTCPIPDirect, CtiPortDialout>)
-    (PortTypeTServerDialBack, makeDialablePort<CtiPortTCPIPDirect, CtiPortDialin>)
-    (PortTypePoolDialout,     makePort<CtiPortPoolDialout>);
+    (PortTypeLocalDirect,     MakePortFunc(makePort<CtiPortDirect>))
+    (PortTypeLocalDialup,     MakePortFunc(makeDialablePort<CtiPortDirect, CtiPortDialout>))
+    (PortTypeLocalDialBack,   MakePortFunc(makeDialablePort<CtiPortDirect, CtiPortDialin>))
+    (PortTypeTServerDirect,   MakePortFunc(makePort<CtiPortTCPIPDirect>))
+    (PortTypeTcp,             MakePortFunc(makePort<Cti::Ports::TcpPort>))
+    (PortTypeUdp,             MakePortFunc(makePort<Cti::Ports::UdpPort>))
+    (PortTypeRfDa,            MakePortFunc(makePort<Cti::Ports::RfDaPort>))
+    (PortTypeTServerDialup,   MakePortFunc(makeDialablePort<CtiPortTCPIPDirect, CtiPortDialout>))
+    (PortTypeTServerDialBack, MakePortFunc(makeDialablePort<CtiPortTCPIPDirect, CtiPortDialin>))
+    (PortTypePoolDialout,     MakePortFunc(makePort<CtiPortPoolDialout>));
 
 }
 
