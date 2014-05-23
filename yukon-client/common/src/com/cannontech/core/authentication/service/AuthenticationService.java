@@ -124,10 +124,10 @@ public interface AuthenticationService {
     boolean isPasswordBeingReused(LiteYukonUser yukonUser, String newPassword, int numberOfPasswordsToCheck);
 
     /**
-     * This method expires all the passwords for a given group. This will then force the users to
+     * This method expires all the passwords for a given role group. This will then force the users to
      * reset their password when they login.
      */
-    void expireAllPasswords(int groupId);
+    void expireAllPasswords(int roleGroupId);
 
     /**
      * Encrypt the password for the given user.  Returns an updated version of the authentication info.

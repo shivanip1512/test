@@ -44,9 +44,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired @Qualifier("static") private AuthenticationThrottleService staticAuthenticationThrottleService;
     @Autowired @Qualifier("increasing") private AuthenticationThrottleService increasingAuthenticationThrottleService;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PasswordHistoryDao passwordHistoryDao;
     @Autowired private PasswordPolicyService passwordPolicyService;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserPasswordDao yukonUserPasswordDao;
 
@@ -234,8 +234,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
     
     @Override
-    public void expireAllPasswords(int groupId) {
-        yukonUserDao.updateForceResetByGroupId(groupId, true);
+    public void expireAllPasswords(int roleGroupId) {
+        yukonUserDao.updateForceResetByRoleGroupId(roleGroupId, true);
     }
 
     @Override

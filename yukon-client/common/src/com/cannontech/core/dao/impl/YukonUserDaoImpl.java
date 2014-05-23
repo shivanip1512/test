@@ -20,7 +20,6 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.common.util.SqlStringStatementBuilder;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -50,13 +49,13 @@ import com.google.common.collect.Maps;
 
 public class YukonUserDaoImpl implements YukonUserDao {
 
-    @Autowired private DBPersistentDao dbPersistantDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private DBPersistentDao dbPersistantDao;
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
-    @Autowired private IDatabaseCache databaseCache;
 
     public static final int numberOfRandomChars = 5;
     
@@ -71,10 +70,8 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    
 	    final LiteYukonUser modifiedUser = getLiteYukonUser(modifiedUserId);
 	    modifiedUser.setUsername(newUsername);
+	    update(modifiedUser);
 	    
-	    final String sql = "UPDATE YukonUser SET UserName = ? WHERE UserID = ?";
-	    yukonJdbcTemplate.update(sql, newUsername, modifiedUserId);
-
 	    systemEventLogService.usernameChanged(changingUser, modifiedUser.getUsername(), newUsername);
 	    
 	    dbChangeManager.processDbChange(modifiedUserId,
@@ -287,14 +284,21 @@ public class YukonUserDaoImpl implements YukonUserDao {
         detachContactFromLogin.append("WHERE LoginId").eq(userId);
         yukonJdbcTemplate.update(detachContactFromLogin);
         
-        String deleteEnergyCompanyOperatorLoginList = "DELETE FROM EnergyCompanyOperatorLoginList WHERE OperatorLoginId = ?";
-        yukonJdbcTemplate.update(deleteEnergyCompanyOperatorLoginList, userId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM EnergyCompanyOperatorLoginList");
+        sql.append("WHERE OperatorLoginId").eq(userId);
+        
+        yukonJdbcTemplate.update(sql);
+
         userPaoPermissionDao.removeAllPermissions(userId);
         
         removeUserFromEventBase(userId);
         
-        String deleteYukonUser = "DELETE FROM YukonUser WHERE UserId = ?";
-        yukonJdbcTemplate.update(deleteYukonUser, userId);
+        sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM YukonUser");
+        sql.append("WHERE UserId").eq(userId);
+        
+        yukonJdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(userId,
                                         DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -305,8 +309,11 @@ public class YukonUserDaoImpl implements YukonUserDao {
 
 	@Override
 	public int getAllYukonUserCount() {
-	    String sql = "select count(*) from YukonUser";
-	    int count = yukonJdbcTemplate.queryForInt(sql);
+	    
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM YukonUser");
+
+        int count = yukonJdbcTemplate.queryForInt(sql);
 	    return count;
 	}
 	
@@ -365,11 +372,10 @@ public class YukonUserDaoImpl implements YukonUserDao {
         
         for (int groupId : groupIds) {
 
-            SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+            SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("INSERT INTO YukonUserGroup (UserId, GroupId)");
-            sql.append("VALUES (? , ?)");
-            
-            yukonJdbcTemplate.update(sql.toString(), userId, groupId);
+            sql.values(userId, groupId);
+            yukonJdbcTemplate.update(sql);
         }
 
         dbChangeManager.processDbChange(userId,
@@ -462,16 +468,16 @@ public class YukonUserDaoImpl implements YukonUserDao {
     }
 
     @Override
-    public void updateForceResetByGroupId(int groupId, boolean forceReset) {
-        SqlStatementBuilder userIdsByGroupIdSql = new SqlStatementBuilder();
-        userIdsByGroupIdSql.append("SELECT UserId") ;
-        userIdsByGroupIdSql.append("FROM UserGroupToYukonGroupMapping");
-        userIdsByGroupIdSql.append("WHERE GroupId").eq(groupId);
+    public void updateForceResetByRoleGroupId(int roleGroupId, boolean forceReset) {
+        SqlStatementBuilder userGroupsByRoleGroupIdSql = new SqlStatementBuilder();
+        userGroupsByRoleGroupIdSql.append("SELECT UserGroupId") ;
+        userGroupsByRoleGroupIdSql.append("FROM UserGroupToYukonGroupMapping");
+        userGroupsByRoleGroupIdSql.append("WHERE GroupId").eq(roleGroupId);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE YukonUser");
         sql.append("SET ForceReset").eq(YNBoolean.valueOf(forceReset));
-        sql.append("WHERE UserId").in(userIdsByGroupIdSql);
+        sql.append("WHERE UserGroupId").in(userGroupsByRoleGroupIdSql);
         
         yukonJdbcTemplate.update(sql);
     }

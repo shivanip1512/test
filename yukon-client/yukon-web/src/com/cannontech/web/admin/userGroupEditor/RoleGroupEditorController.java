@@ -93,10 +93,10 @@ public class RoleGroupEditorController {
     @RequestMapping(value="edit", method=RequestMethod.POST, params="expireAllPasswords")
     public String expireAllPasswords(HttpServletRequest request, ModelMap model, FlashScope flash, int roleGroupId) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(roleGroupId);
-        setupModelMap(model, group);
+        LiteYukonGroup roleGroup = yukonGroupDao.getLiteYukonGroup(roleGroupId);
+        setupModelMap(model, roleGroup);
         
-        authService.expireAllPasswords(group.getGroupID());
+        authService.expireAllPasswords(roleGroup.getGroupID());
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.expiredAllPasswords"));
         return "redirect:view";
     }

@@ -164,7 +164,7 @@ public interface YukonUserDao {
     public void updateUserGroupId(int userId, Integer userGroupId);
     
     /**
-     * Changes all the forceReset values for a given group.
+     * Changes all the forceReset values for a given role group (aka YukonGroup).
      */
-    public void updateForceResetByGroupId(int groupId, boolean forceReset);
+    public void updateForceResetByRoleGroupId(int roleGroupId, boolean forceReset);
 }
