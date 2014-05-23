@@ -701,9 +701,9 @@
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.RFN_MANUFACTURER"></entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.description.RFN_MODEL">Model of the RFN Meter.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.RFN_MODEL"></entry>
-    <entry key="yukon.common.device.bulk.columnHeader.update.description.LATITUDE">The device's latitude (WGS 84/EPSG:4326).</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.description.LATITUDE">The device's latitude based on coordinate reference system EPSG:4326 (WGS84).</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.LATITUDE"></entry>
-    <entry key="yukon.common.device.bulk.columnHeader.update.description.LONGITUDE">The device's longitude (WGS 84/EPSG:4326).</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.description.LONGITUDE">The device's longitude based on coordinate reference system EPSG:4326 (WGS84).</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.LONGITUDE"></entry>
     
     <!-- updateUpload.jsp: errors -->
@@ -821,9 +821,9 @@
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.RFN_MANUFACTURER"></entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.description.RFN_MODEL">Model of the RFN Meter.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.RFN_MODEL"></entry>
-    <entry key="yukon.common.device.bulk.columnHeader.import.description.LATITUDE">The device's latitude (WGS 84/EPSG:4326).</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.description.LATITUDE">The device's latitude based on coordinate reference system EPSG:4326 (WGS84).</entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.LATITUDE"></entry>
-    <entry key="yukon.common.device.bulk.columnHeader.import.description.LONGITUDE">The device's longitude (WGS 84/EPSG:4326).</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.description.LONGITUDE">The device's longitude based on coordinate reference system EPSG:4326 (WGS84).</entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.LONGITUDE"></entry>
     
     <!-- importUpload.jsp: errors -->
