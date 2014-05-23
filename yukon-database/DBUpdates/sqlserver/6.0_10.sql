@@ -24,7 +24,7 @@ SELECT
     C.DeviceConfigCategoryId,
     'disconnectMode',
     CASE
-        WHEN (cast(DisconnectDemandThreshold.ItemValue AS float) <> 0) THEN 'DEMAND_THRESHOLD'
+        WHEN (CAST(DisconnectDemandThreshold.ItemValue AS FLOAT) <> 0) THEN 'DEMAND_THRESHOLD'
         WHEN (ConnectMinutes.ItemValue <> '0') THEN 'CYCLING'
         WHEN (DisconnectMinutes.ItemValue <> '0') THEN 'CYCLING'
         ELSE 'ON_DEMAND'
