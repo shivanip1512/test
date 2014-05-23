@@ -1932,6 +1932,11 @@
             <parseSiPrefix/>
             <modifiers match="equal"/>
         </point>
+        <point name="Water Usage"> 
+        	<!-- uom intentially left out to support null -->
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
     </pointGroup>
     
     <!-- ITRON SENTINEL LEVEL 0 -->

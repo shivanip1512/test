@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -280,7 +281,7 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         for (PointMapper pointMapper : pointMappers) {
             String uom = pointMapper.getUom();
             String baseUom = pointMapper.getBaseUom();
-            if (!uom.equals(unitOfMeasure)) continue;
+            if (!StringUtils.equals(uom, unitOfMeasure)) continue;
             
             Set<String> modifiers = Sets.newHashSet(unitOfMeasureModifiers);
             
