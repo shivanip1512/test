@@ -221,8 +221,7 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
 
                 if (canAddRole(group, YukonRole.OPERATOR_ADMINISTRATOR)) {
                     setRoleProperty(group, YukonRoleProperty.ADMIN_SUPER_USER,true);
-                    setRoleProperty(group, YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY,true);
-                    setRoleProperty(group, YukonRoleProperty.ADMIN_CREATE_DELETE_ENERGY_COMPANY,true);
+                    setRoleProperty(group, YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY,true);                    
                     setRoleProperty(group, YukonRoleProperty.ADMIN_MANAGE_MEMBERS,true);
                     setRoleProperty(group, YukonRoleProperty.ADMIN_VIEW_BATCH_COMMANDS,true);
                     setRoleProperty(group, YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS,true);
