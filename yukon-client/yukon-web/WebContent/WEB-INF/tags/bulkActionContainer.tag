@@ -10,7 +10,7 @@
 
 <cti:msg2 var="headerTitle" key="${key}.header"/>
 <tags:sectionContainer title="${headerTitle}" id="collectionActionsContainer">
-    <div class="stacked note">
+    <div class="stacked notes">
         <%-- SELECTED DEVICES POPUP, NOTE TO USER --%>
         <c:if test="${not empty pageScope.deviceCollection}">
             <div class="vat">

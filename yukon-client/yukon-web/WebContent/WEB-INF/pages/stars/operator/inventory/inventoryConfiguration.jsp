@@ -6,7 +6,7 @@
 
 <cti:standardPage module="operator" page="inventoryConfiguration">
 
-    <div class="note stacked clearfix">
+    <div class="notes stacked clearfix">
         <div>
             <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection" />
         </div>

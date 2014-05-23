@@ -6,7 +6,7 @@
 
 <cti:standardPage module="operator" page="changeWarehouse">
     
-    <div class="note stacke">
+    <div class="notes stacked">
         <table>
             <tr>
                 <td valign="top" colspan="2">

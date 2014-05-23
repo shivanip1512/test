@@ -6,7 +6,7 @@
 
 <cti:standardPage module="operator" page="changeType">
     
-    <div class="note">
+    <div class="notes">
         <table>
             <tr>
                 <td valign="top" colspan="2">

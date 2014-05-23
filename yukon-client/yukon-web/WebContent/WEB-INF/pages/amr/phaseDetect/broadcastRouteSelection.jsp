@@ -34,7 +34,7 @@
             <table class="stacked">
                 <tr>
                     <td class="strong-label-small"><i:inline key=".noteLabel"/></td>
-                    <td><span class="note"><i:inline key=".noteText"/></span></td>
+                    <td><span class="notes"><i:inline key=".noteText"/></span></td>
                 </tr>
             </table>
             

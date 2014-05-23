@@ -33,7 +33,7 @@
     </script>
     
     <tags:boxContainer2 nameKey="title"> 
-        <div class="note">
+        <div class="notes">
             <table>
                 <tr>
                     <td valign="top" colspan="2">

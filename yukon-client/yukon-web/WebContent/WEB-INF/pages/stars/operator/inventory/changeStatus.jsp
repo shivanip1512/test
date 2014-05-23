@@ -6,7 +6,7 @@
 
 <cti:standardPage module="operator" page="changeStatus">
 
-    <div class="note stacked">
+    <div class="notes stacked">
         <table>
             <tr>
                 <td valign="top" colspan="2">

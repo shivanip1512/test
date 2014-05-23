@@ -108,7 +108,7 @@
         </tbody>
     </table>
 <pre class="code prettyprint">
-&lt;table class=&quot;results-table&quot;&gt;
+&lt;table class=&quot;compact-results-table&quot;&gt;
     &lt;thead&gt;
         &lt;tr&gt;
             &lt;th&gt;Header 1&lt;/th&gt;
@@ -134,6 +134,77 @@
             &lt;td&gt;Cell 3&lt;/td&gt;
         &lt;/tr&gt;
     &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+</div>
+<h3 class="subtle">Dashed Headers and Rows</h3>
+<div class="table-example clearfix stacked">
+    <p class="description">
+        Adding <span class="label label-default">.dashed</span> to a 
+        <span class="label label-default">.compact-results-table</span> change the header border to a dashed line.  Use this
+        when the table is inside a section container.
+    </p>
+    <tags:sectionContainer2 nameKey="areaFormulas">
+        <table class="compact-results-table dashed">
+            <thead><tr><th>Shape</th><th>Forumla</th></tr></thead>
+            <tfoot></tfoot>
+            <tbody>
+                <tr>
+                    <td>Circle</td>
+                    <td>A = &pi; r<sup>2</sup></td>
+                </tr>
+                <tr>
+                    <td>Square</td>
+                    <td>A = a<sup>2</sup></td>
+                </tr>
+                <tr>
+                    <td>Triangle</td>
+                    <td>A = (h<sub>b</sub>b) / 2</td>
+                </tr>
+            </tbody>
+        </table>
+    </tags:sectionContainer2>
+<pre class="code prettyprint">
+&lt;tags:sectionContainer2 nameKey=&quot;areaFormulas&quot;&gt;
+    &lt;table class=&quot;compact-results-table dashed&quot;&gt;
+        ...
+    &lt;/table&gt;
+&lt;/tags:sectionContainer2&gt;
+</pre>
+    <p class="description">
+        Adding <span class="label label-default">.separated</span> to a 
+        <span class="label label-default">.compact-results-table</span> will add dashed borders between rows.
+    </p>
+    <table class="compact-results-table separated">
+        <thead>
+            <tr>
+                <th>Header 1</th>
+                <th>Header 2</th>
+                <th>Header 3</th>
+            </tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr>
+                <td>Cell 1</td>
+                <td>Cell 2</td>
+                <td>Cell 3</td>
+            </tr>
+            <tr>
+                <td>Cell 1</td>
+                <td>Cell 2</td>
+                <td>Cell 3</td>
+            </tr>
+            <tr>
+                <td>Cell 1</td>
+                <td>Cell 2</td>
+                <td>Cell 3</td>
+            </tr>
+        </tbody>
+    </table>
+<pre class="code prettyprint">
+&lt;table class=&quot;compact-results-table separated&quot;&gt;
+...
 &lt;/table&gt;
 </pre>
 </div>
@@ -242,6 +313,52 @@
         &lt;td&gt;&lt;a href=&quot;icons&quot;&gt;Style Guide: Icons&lt;/a&gt;&lt;/td&gt;
         &lt;td&gt;A page listing all the icons and their class names.&lt;/td&gt;
     &lt;/tr&gt;
+&lt;/table&gt;
+</pre>
+</div>
+
+<h2>Table Helpers</h2>
+<h3 class="subtle">Striping</h3>
+<div class="table-example clearfix stacked">
+    <p class="description">
+        <span class="label label-default">.compact-results-table</span> and
+        <span class="label label-default">.results-table</span> are striped by default.  striping means every even row
+        has a slightly grey background.  You can add striping to other tables by adding the class 
+        <span class="label label-default">.striped</span>.
+    </p>
+    
+<pre class="code prettyprint">
+&lt;tags:nameValueContainer2 tableClass=&quot;striped&quot;&gt;
+    &lt;tags:nameValue2 nameKey=&quot;.circle&quot;&gt;A = &amp;pi; r&lt;sup&gt;2&lt;/sup&gt;&lt;/tags:nameValue2&gt;
+    &lt;tags:nameValue2 nameKey=&quot;.square&quot;&gt;A = a&lt;sup&gt;2&lt;/sup&gt;&lt;/tags:nameValue2&gt;
+    &lt;tags:nameValue2 nameKey=&quot;.triangle&quot;&gt;A = (h&lt;sub&gt;b&lt;/sub&gt;b) / 2&lt;/tags:nameValue2&gt;
+&lt;/tags:nameValueContainer2&gt;
+</pre>
+    <p class="description">
+        You can turn striping off for <span class="label label-default">.compact-results-table</span> and
+        <span class="label label-default">.results-table</span> tables by using 
+        <span class="label label-default">.manual-striping</span>.  You can then add the striping back by using
+         <span class="label label-default">.alt-row</span> on rows you want striped.  This is useful when there are hidden
+         rows that throw off the even/odd counting.
+    </p>
+    <table class="compact-results-table manual-striping">
+        <thead><tr><th>header 1</th><th>header 2</th></tr></thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr><td>visible</td><td>visible</td></tr>
+            <tr class="dn"><td>hidden</td><td>hidden</td></tr>
+            <tr class="alt-row"><td>visible</td><td>visible</td></tr>
+        </tbody>
+    </table>
+<pre class="code prettyprint">
+&lt;table class=&quot;compact-results-table manual-striping&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th&gt;header 1&lt;/th&gt;&lt;th&gt;header 2&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tfoot&gt;&lt;/tfoot&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;visible&lt;/td&gt;&lt;td&gt;visible&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr class=&quot;dn&quot;&gt;&lt;td&gt;hidden&lt;/td&gt;&lt;td&gt;hidden&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr class=&quot;alt-row&quot;&gt;&lt;td&gt;visible&lt;/td&gt;&lt;td&gt;visible&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
 &lt;/table&gt;
 </pre>
 </div>
