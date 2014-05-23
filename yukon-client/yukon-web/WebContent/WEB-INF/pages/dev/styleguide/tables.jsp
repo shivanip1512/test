@@ -188,11 +188,10 @@
         a form input.  They have support to handle <a href="http://docs.spring.io/spring/docs/3.0.x/spring-framework-reference/html/view.html">spring binding</a>.
     </p>
     <form:form commandName="signup">
-        <cti:csrfToken/>
         <tags:nameValueContainer2>
             <tags:inputNameValue nameKey=".name" path="name"/>
             <tags:selectNameValue nameKey=".type" items="${signupTypes}" path="type"/>
-            <tags:nameValueGap2 gapHeight="20"/>
+            <tags:nameValueGap2 gapHeight="20px"/>
             <tags:checkboxNameValue nameKey="yukon.web.defaults.blank" checkBoxDescriptionNameKey=".enabled" path="enabled" excludeColon="true"/>
             <tags:textareaNameValue nameKey=".notes" rows="3" cols="20" path="notes"/>
         </tags:nameValueContainer2>
@@ -202,7 +201,7 @@
     &lt;tags:nameValueContainer2&gt;
         &lt;tags:inputNameValue nameKey=&quot;.name&quot; path=&quot;name&quot;/&gt;
         &lt;tags:selectNameValue nameKey=&quot;.type&quot; items=&quot;&#36;{signupTypes}&quot; path=&quot;type&quot;/&gt;
-        &lt;tags:nameValueGap2 gapHeight=&quot;20&quot;/&gt;
+        &lt;tags:nameValueGap2 gapHeight=&quot;20px&quot;/&gt;
         &lt;tags:checkboxNameValue nameKey=&quot;yukon.web.defaults.blank&quot; checkBoxDescriptionNameKey=&quot;.enabled&quot; path=&quot;enabled&quot; excludeColon=&quot;true&quot;/&gt;
         &lt;tags:textareaNameValue nameKey=&quot;.notes&quot; rows=&quot;3&quot; cols=&quot;20&quot; path=&quot;notes&quot;/&gt;
     &lt;/tags:nameValueContainer2&gt;
