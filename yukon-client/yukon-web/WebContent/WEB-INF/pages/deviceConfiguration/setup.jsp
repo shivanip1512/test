@@ -9,6 +9,7 @@
     id="supportedTypePopup"
     options="{ 'width' : '988' }">
     <form:form commandName="configurationDeviceTypesBackingBean" action="addSupportedTypes">
+        <cti:csrfToken/>
         <form:hidden path="configId"/>
 
         <div class="stacked">

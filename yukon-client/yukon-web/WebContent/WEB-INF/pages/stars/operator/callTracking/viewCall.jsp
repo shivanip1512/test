@@ -18,7 +18,7 @@
 
     <cti:url var="submitUrl" value="/stars/operator/callTracking/updateCall"/>
     <form:form commandName="callReport" action="${submitUrl}">
-      
+        <cti:csrfToken/>
         <input type="hidden" name="accountId" value="${accountId}">
     
         <tags:sectionContainer2 nameKey="callContainer">

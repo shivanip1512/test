@@ -16,7 +16,7 @@
     </cti:url>
     
      <form:form commandName="warehouseDto" action="${action}" name="warehouseForm">
-        
+        <cti:csrfToken/>
         <tags:hidden path="warehouse.warehouseID"/>
         <tags:hidden path="warehouse.addressID"/>
         <tags:hidden path="warehouse.energyCompanyID"/>

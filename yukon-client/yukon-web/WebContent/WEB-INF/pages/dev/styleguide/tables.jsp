@@ -188,6 +188,7 @@
         a form input.  They have support to handle <a href="http://docs.spring.io/spring/docs/3.0.x/spring-framework-reference/html/view.html">spring binding</a>.
     </p>
     <form:form commandName="signup">
+        <cti:csrfToken/>
         <tags:nameValueContainer2>
             <tags:inputNameValue nameKey=".name" path="name"/>
             <tags:selectNameValue nameKey=".type" items="${signupTypes}" path="type"/>

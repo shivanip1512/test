@@ -103,6 +103,7 @@
                     </div>
                     <div dialog id="broadcast-config" data-form data-width="500" data-title="<cti:msg2 key=".rfPerformance.configure.title"/>" class="dn">
                         <form:form action="rf/performance" method="POST" commandName="settings">
+                            <cti:csrfToken/>
                             <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                                 <tags:nameValue2 nameKey=".rfPerformance.configure.dailyTestCommand" valueClass="full-width" nameClass="wsnw">
                                     <div class="column-6-18 clearfix stacked">
@@ -174,6 +175,7 @@
                         <cti:button nameKey="configure" popup="#ecobee-config" icon="icon-cog-edit"/>
                         <div dialog data-form id="ecobee-config" data-width="500" data-title="<cti:msg2 key=".ecobee.configure.title"/>" class="dn">
                             <form:form action="ecobee/settings" method="POST" commandName="ecobeeSettings">
+                                <cti:csrfToken/>
                                 <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                                     <tags:nameValue2 nameKey=".ecobee.configure.errorChecking" rowId="ecobee-error-checking-toggle" valueClass="full-width">
                                         <tags:hidden path="checkErrors" id="ecobee-check-errors"/>

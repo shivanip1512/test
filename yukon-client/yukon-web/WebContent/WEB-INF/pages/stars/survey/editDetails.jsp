@@ -12,6 +12,7 @@
 
 <cti:url var="submitUrl" value="saveDetails"/>
 <form:form id="inputForm" commandName="survey" action="${submitUrl}">
+    <cti:csrfToken/>
     <form:hidden path="surveyId"/>
     <form:hidden path="energyCompanyId"/>
     <tags:nameValueContainer>

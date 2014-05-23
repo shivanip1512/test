@@ -19,6 +19,7 @@ $(function() {
 <c:set var="legend"><cti:icon icon="icon-asterisk-orange"/>&nbsp;<i:inline key=".legend"/></c:set>
 
 <form:form commandName="settingsBean" action="save" id="settingsForm" method="post">
+    <cti:csrfToken/>
     <form:hidden path="ecId"/>
     
     <c:forEach items="${categories}" var="category">

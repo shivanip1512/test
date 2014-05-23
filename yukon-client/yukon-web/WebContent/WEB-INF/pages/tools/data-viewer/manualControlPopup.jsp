@@ -10,6 +10,7 @@
     <cti:flashScopeMessages/>
     <cti:url var="saveUrl" value="/tools/data-viewer/manualControlSend"/>
     <form:form id="manualControlForm" cssClass="f-preventSubmitViaEnterKey" commandName="backingBean" action="${saveUrl}">
+        <cti:csrfToken/>
         <form:hidden path="deviceId" />
         <form:hidden path="pointId" />
         <tags:nameValueContainer2>

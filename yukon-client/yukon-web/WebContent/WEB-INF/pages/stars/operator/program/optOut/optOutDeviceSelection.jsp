@@ -46,7 +46,7 @@ function createJSON () {
 <cti:url var="optOutUrl" value="/stars/operator/program/optOut/optOutQuestions"/>
 <form:form id="form" commandName="optOutBackingBean" action="${optOutUrl}" 
            method="POST" onsubmit="createJSON();">
-           
+    <cti:csrfToken/>       
     <input type="hidden" name="accountId" value="${accountId}" />
 
     <tags:sectionContainer2 nameKey="selectDevice">

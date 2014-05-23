@@ -14,6 +14,7 @@
     <tags:setFormEditMode mode="${mode}"/>
     
     <form:form commandName="deviceConfigurationBackingBean" action="save">
+        <cti:csrfToken/>
         <form:hidden path="configId"/>
         
         <c:if test="${configurationDeviceTypesBackingBean.supportedTypesEmpty}">
@@ -74,6 +75,7 @@
             <!-- CATEGORIES -->
             <div class="column one">
                 <form:form commandName="configurationDeviceTypesBackingBean" action="addSupportedType">
+                    <cti:csrfToken/>
                     <input type="hidden" name="configId" value="${deviceConfigurationBackingBean.configId}"/>
                     <c:forEach var="item" items="${configurationDeviceTypesBackingBean.supportedTypes}">
                         <form:hidden path="supportedTypes[${item.key}]"/>

@@ -28,6 +28,7 @@
                 </div>
             </noscript>
             <form:form action="forgottenPassword" commandName="forgottenPassword" method="POST">
+                <cti:csrfToken/>
                 <div class="stacked">
                     <i:inline key=".forgottenPasswordMessage"/>
                 </div>

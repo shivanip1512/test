@@ -51,6 +51,7 @@ $(function() {
 
 <cti:url var="submitUrl" value="/dr/program/changeMultipleGears"/>
 <form:form id="changeGearForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitForm();">
+    <cti:csrfToken/>
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
     <input type="hidden" value="true" name=fromBack"/>

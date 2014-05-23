@@ -60,6 +60,7 @@
 </cti:url>
 <form:form id="inputForm" commandName="programEnrollment" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('peDialog', 'inputForm')">
+    <cti:csrfToken/>
     <input type="hidden" name="accountId" value="${accountId}"/>
     <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
 

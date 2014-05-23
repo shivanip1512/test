@@ -17,7 +17,7 @@
 <div class="success dn f-success"></div>
 
 	<form:form id="scheduleForm" commandName="exportData" action="/scheduledBilling/scheduleExport" cssClass="stacked">
-        
+        <cti:csrfToken/>
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="billingParameters">

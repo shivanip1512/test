@@ -12,7 +12,7 @@
         <div class="column one">
             <tags:sectionContainer2 nameKey="setupContainer">
                 <form:form id="saveForm" commandName="deviceReconfigOptions" action="${deviceReconfigOptionsURl}" method="post">
-                    
+                    <cti:csrfToken/>
                     <div class="stacked">
                         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                         <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>

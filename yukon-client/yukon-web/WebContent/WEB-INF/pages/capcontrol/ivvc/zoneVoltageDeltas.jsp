@@ -108,6 +108,7 @@
 	</script>
 
 	<form:form id="deltaForm" action="/capcontrol/ivvc/zone/deltaUpdate" method="POST" commandName="zoneVoltageDeltas">
+        <cti:csrfToken/>
 		<input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
 
         <div class="f-ajax-page stacked" data-reloadable="disable-buttons">

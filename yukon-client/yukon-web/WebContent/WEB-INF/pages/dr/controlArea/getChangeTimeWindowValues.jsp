@@ -13,7 +13,7 @@
     <cti:url var="submitUrl" value="/dr/controlArea/sendChangeTimeWindowConfirm"/>
     
     <form:form id="getChangeTimeWindowValues" commandName="controlAreaTimeWindowDto" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'getChangeTimeWindowValues');">
-    
+        <cti:csrfToken/>
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
         <table class="stacked">
             <tr>

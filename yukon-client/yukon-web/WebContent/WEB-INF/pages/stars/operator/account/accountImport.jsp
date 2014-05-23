@@ -13,7 +13,7 @@
             <div class="column one">
                 <cti:url var="importUrl" value="/stars/operator/account/uploadImportFiles"/>
                 <form:form id="importForm" commandName="accountImportData" action="${importUrl}" enctype="multipart/form-data">
-                
+                    <cti:csrfToken/>
                     <%-- note --%>
                     <div class="stacked">
                         <h3><i:inline key=".noteLabel"/></h3>

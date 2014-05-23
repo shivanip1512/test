@@ -11,6 +11,7 @@
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.analysis.home" deviceCollection="${deviceCollection}">
         <cti:url var="analyzeUrl" value="/bulk/archiveDataAnalysis/home/analyze" />
         <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="${analyzeUrl}">
+            <cti:csrfToken/>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />            
             
             <div class="stacked">

@@ -39,6 +39,7 @@ $(function() {
             <cti:flashScopeMessages/>
         </c:if>
         <form:form commandName="password" action="changePassword" method="post">
+            <cti:csrfToken/>
             <input type="hidden" value="${userId}" name="userId">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".password">
@@ -63,6 +64,7 @@ $(function() {
         <div class="column one">
 
             <form:form commandName="user" action="edit" method="post">
+                <cti:csrfToken/>
                 <form:hidden path="userId"/>
 
                 <tags:nameValueContainer2>

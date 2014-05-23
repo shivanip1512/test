@@ -9,6 +9,7 @@
     <cti:flashScopeMessages />
     <div class="widgetMessage"></div>
     <form:form commandName="devEventLog" action="setupEventLog" method="post" id="setupEventLogForm">
+        <cti:csrfToken/>
         <div class="widgetContent">
             <h4>Select which Event Log Service(s) to use</h4>
             <ul>

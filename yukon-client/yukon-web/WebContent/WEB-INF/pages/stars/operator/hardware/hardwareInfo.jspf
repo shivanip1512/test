@@ -53,7 +53,7 @@ $(function() { updateServiceCompanyInfo();});
 </script>
         
 <form:form id="updateForm" commandName="hardware" action="${action}">
-
+    <cti:csrfToken/>
     <input type="hidden" name="inventoryId" value="${inventoryId}">
     <form:hidden path="accountId"/>
     <form:hidden path="energyCompanyId"/>

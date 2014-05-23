@@ -11,6 +11,7 @@
     <tags:setFormEditMode mode="${mode}"/>
     
     <form:form id="updateForm" commandName="schedule" action="${updateFormURL}">
+        <cti:csrfToken/>
         <form:hidden path="commandSchedule.commandScheduleId"/>
         <form:hidden path="commandSchedule.startTimeCronString"/>
         <cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_" />

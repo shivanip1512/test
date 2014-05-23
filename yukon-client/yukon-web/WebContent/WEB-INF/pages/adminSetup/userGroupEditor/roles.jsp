@@ -15,6 +15,7 @@
 
     <cti:url var="updateUrl" value="/adminSetup/roleEditor/update"/>
     <form:form action="${updateUrl}" id="loginGroupRoleForm" method="post">
+        <cti:csrfToken/>
         <input type="hidden" name="roleId" value="${roleId}">
         <input type="hidden" name="roleGroupId" value="${roleGroupId}">
         

@@ -65,6 +65,7 @@
 	
 	<div id="contactForm">
 		<form:form commandName="contact" action="${actionUrl}" >
+            <cti:csrfToken/>
 			<tags:sectionContainer2 nameKey="${mode}">
 				<form:hidden path="contactID"/>
 				<form:hidden path="loginID"/>

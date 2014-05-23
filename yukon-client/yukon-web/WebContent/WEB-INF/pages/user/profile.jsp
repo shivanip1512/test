@@ -17,7 +17,7 @@
     
         <%-- LEFT SIDE COLUMN --%>
         <form:form method="post" action="update" modelAttribute="userProfile">
-        
+            <cti:csrfToken/>
             <form:hidden path="userId"/>
             <tags:sectionContainer2 nameKey="userInfo">
                 <tags:nameValueContainer2>

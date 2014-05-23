@@ -124,6 +124,7 @@ $( function () {
 </h4>
 
 <form:form id="startMultipleProgramsForm" commandName="backingBean" onsubmit="return submitForm();">
+    <cti:csrfToken/>
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
     <input type="hidden" name="from" value="details"/>

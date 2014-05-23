@@ -19,6 +19,7 @@
             <i:inline key=".weatherStations.search"/>
         </div>
         <form:form id="findCloseStationsForm" commandName="weatherLocationBean" action="findCloseStations">
+            <cti:csrfToken/>
             <div class="column-12-12 clearfix">
                 <div class="column one">
                     <tags:nameValueStacked nameKey=".latitude">
@@ -43,6 +44,7 @@
 
     <div id="weatherLocationSearchResults" style="${dialogState eq 'saving' ? '' : 'display:none'}">
         <form:form id="saveWeatherLocationForm" commandName="weatherLocationBean" action="saveWeatherLocation">
+            <cti:csrfToken/>
             <tags:hidden path="latitude"/>
             <tags:hidden path="longitude"/>
             <h4><i:inline key=".name"/></h4>

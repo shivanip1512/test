@@ -86,6 +86,7 @@
 </cti:displayForPageEditModes>
 
 <form:form id="zoneDetailsForm" commandName="zoneDto" action="${action}" >
+    <cti:csrfToken/>
     <form:hidden path="zoneId"/>
     <form:hidden path="parentId"/>
     <form:hidden path="substationBusId" id="selectedBusId"/>

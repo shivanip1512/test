@@ -9,6 +9,7 @@
     <cti:flashScopeMessages />
     <div class="widgetMessage"></div>
     <form:form commandName="devCapControl" action="setupCapControl" method="post" id="setupCapControlForm">
+        <cti:csrfToken/>
         <div class="widgetContent">
             <tags:nameValueContainer2>
                 <tags:inputNameValue path="numAreas"

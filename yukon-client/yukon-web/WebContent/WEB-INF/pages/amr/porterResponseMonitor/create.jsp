@@ -6,7 +6,7 @@
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 <cti:url value="/amr/porterResponseMonitor/create" var="createPorterURL"/>
     <form:form commandName="monitor" id="basicInfoForm" action="${createPorterURL}" method="post">
-
+        <cti:csrfToken/>
         <input type="hidden" name="stateGroup" value="${monitor.stateGroup}">
 
         <tags:sectionContainer2 nameKey="setup">

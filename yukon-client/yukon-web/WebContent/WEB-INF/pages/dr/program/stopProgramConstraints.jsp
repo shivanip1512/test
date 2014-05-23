@@ -15,6 +15,7 @@ overrideConstraintsChecked = function() {
 
 <cti:url var="submitUrl" value="/dr/program/stop/stop"/>
 <form:form id="stopProgramForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'stopProgramForm');">
+    <cti:csrfToken/>
     <form:hidden path="programId"/>
     <form:hidden path="stopNow"/>
     <form:hidden path="stopDate"/>

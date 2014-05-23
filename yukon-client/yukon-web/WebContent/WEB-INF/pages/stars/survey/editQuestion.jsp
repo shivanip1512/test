@@ -18,6 +18,7 @@
 
 <cti:url var="submitUrl" value="saveQuestion"/>
 <form:form id="inputForm" commandName="question" action="${submitUrl}" data-answer-keys="${dataAnswerKeys}" htmlEscape="false">
+    <cti:csrfToken/>
     <form:hidden path="surveyId"/>
     <form:hidden path="surveyQuestionId"/>
     <form:hidden path="displayOrder"/>

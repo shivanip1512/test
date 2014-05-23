@@ -61,6 +61,7 @@
 
     <cti:url var="submitUrl" value="/stars/operator/workOrder/updateWorkOrder"/>
     <form:form commandName="workOrderDto" action="${submitUrl}" onsubmit="submitWorkOrder()">
+        <cti:csrfToken/>
         <input type="hidden" name="accountId" value="${accountId}">
         <form:hidden path="workOrderBase.accountId"/>
         <form:hidden path="workOrderBase.orderId"/>

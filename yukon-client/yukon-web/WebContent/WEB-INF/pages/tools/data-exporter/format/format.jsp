@@ -52,7 +52,7 @@
     
     <cti:url var="action" value="/tools/data-exporter/format"/>
     <form:form id="format-form" commandName="format" action="${action}">
-    
+        <cti:csrfToken/>
         <form:hidden id="format-id" path="formatId"/>
         <form:hidden id="format-type" path="formatType"/>
 

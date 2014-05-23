@@ -64,6 +64,7 @@
                     <cti:button nameKey="download" popup="#ecobee-download" icon="icon-page-white-excel"/>
                     <div dialog data-form id="ecobee-download" data-width="800" data-title=<cti:msg2 key=".dataDownloads.title"/> class="dn">
                         <form:form action="ecobee/download" method="POST" commandName="ecobeeDownload">
+                            <cti:csrfToken/>
                             <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                                 <tags:nameValue2 nameKey=".download.time" rowId="ecobee-download-schedule" valueClass="full-width">
                                     <div class="column-6-18 clearfix stacked">

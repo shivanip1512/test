@@ -22,6 +22,7 @@
             <c:choose>
                 <c:when test="${not multipleThermostatsSelected and canEditLabel}">
                     <form:form action="/stars/consumer/thermostat/saveLabel" commandName="thermostat" method="post">
+                        <cti:csrfToken/>
                         <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                         <form:hidden path="id"/>
     

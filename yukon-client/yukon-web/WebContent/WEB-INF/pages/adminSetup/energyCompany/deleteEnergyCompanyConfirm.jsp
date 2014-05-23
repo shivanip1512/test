@@ -16,6 +16,7 @@
         </div>
         <br>
         <form:form action="${deleteEnergyCompanyUrl}" id="deleteEnergyCompanyForm">
+            <cti:csrfToken/>
             <input type="hidden" name="ecId" value="${ecId}" />
             <cti:button nameKey="delete" name="delete" type="submit" classes="f-blocker"/>
             <cti:button nameKey="cancel" name="cancel" type="submit"/>

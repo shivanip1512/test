@@ -29,6 +29,7 @@ function taskFinished() {
 
     <tags:sectionContainer2 nameKey="settings">
         <form:form action="do" commandName="abr">
+            <cti:csrfToken/>
             <tags:hidden path="hardwareTypeId"/>
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".type"><spring:escapeBody htmlEscape="true">${type}</spring:escapeBody></tags:nameValue2>

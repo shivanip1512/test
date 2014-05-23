@@ -9,6 +9,7 @@
 <cti:flashScopeMessages />
 <div class="widgetMessage"></div>
     <form:form commandName="devStars" action="setupStars" method="post" id="setupStarsForm">
+        <cti:csrfToken/>
         <div class="widgetContent">
            <tags:nameValueContainer2>
                <tags:nameValue2 nameKey=".setupDevDatabase.option.stars.parentEnergyCompany">

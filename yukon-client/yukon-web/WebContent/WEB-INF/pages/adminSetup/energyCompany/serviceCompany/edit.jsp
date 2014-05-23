@@ -125,7 +125,7 @@
     </cti:url>
     
      <form:form id="serviceCompanyForm" commandName="serviceCompany" action="${action}" name="serviceCompanyForm">
-        
+        <cti:csrfToken/>
         <tags:hidden path="companyId"/>
             
         <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;">

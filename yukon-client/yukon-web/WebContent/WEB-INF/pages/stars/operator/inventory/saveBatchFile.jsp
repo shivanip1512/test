@@ -61,6 +61,7 @@
         
         <c:if test="${empty task}">
             <form:form action="do" commandName="saveToBatchInfo">
+                <cti:csrfToken/>
                 <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                 <form:hidden path="ecDefaultRoute"/>
                 <div class="clearfix">

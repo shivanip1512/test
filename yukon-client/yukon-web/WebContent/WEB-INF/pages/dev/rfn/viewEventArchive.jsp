@@ -17,6 +17,7 @@
 
     <tags:sectionContainer2 nameKey="sendEvent">
         <form:form action="sendEvent" method="post" commandName="event" id="eventForm">
+            <cti:csrfToken/>
             <tags:nameValueContainer>
                 <tags:nameValue name="Serial Number">
                     <form:input path="serialFrom" /> to <form:input path="serialTo"/>

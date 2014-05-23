@@ -25,7 +25,7 @@
 
 
 <form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
-
+    <cti:csrfToken/>
     <input type="hidden" name="from" value="gear_adjustments"/>
     <c:if test="${!empty program}">
         <form:hidden path="programId"/>

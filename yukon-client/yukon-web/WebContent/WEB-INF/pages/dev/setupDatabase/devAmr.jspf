@@ -9,6 +9,7 @@
     <cti:flashScopeMessages />
     <div class="widgetMessage"></div>
     <form:form commandName="devAMR" action="setupAMR" method="post" id="setupAMRForm">
+        <cti:csrfToken/>
         <div class="widgetContent">
             <tags:nameValueContainer2>
                 <label> 

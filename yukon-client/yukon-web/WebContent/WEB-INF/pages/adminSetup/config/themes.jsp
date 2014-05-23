@@ -117,6 +117,7 @@
                 </c:if>
                 
                 <form:form id="theme-form" action="${action}" method="${method}">
+                    <cti:csrfToken/>
                     <tags:hidden path="themeId"/>
                     <tags:hidden path="editable"/>
                     <tags:hidden path="currentTheme"/>

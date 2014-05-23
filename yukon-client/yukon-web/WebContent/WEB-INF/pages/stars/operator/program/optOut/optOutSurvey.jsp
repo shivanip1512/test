@@ -10,7 +10,7 @@
 
 <form:form id="form" commandName="optOutBackingBean" method="POST"
     action="/stars/operator/program/optOut/optOutQuestions">
-
+    <cti:csrfToken/>
     <tags:sectionContainer2 nameKey="optOuts">
         <input type="hidden" name="accountId" value="${accountId}"/>
 

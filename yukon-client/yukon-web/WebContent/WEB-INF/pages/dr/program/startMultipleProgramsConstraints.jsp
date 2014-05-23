@@ -41,6 +41,7 @@ singleOverrideChecked = function(boxChecked) {
 <cti:url var="submitUrl" value="/dr/program/start/multipleStart"/>
 <form:form id="startMultipleProgramsForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'startMultipleProgramsForm');">
+    <cti:csrfToken/>
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
     <input type="hidden" name="from" value="constraints"/>

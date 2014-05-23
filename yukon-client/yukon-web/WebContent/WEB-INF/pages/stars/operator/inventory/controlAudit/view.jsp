@@ -18,6 +18,7 @@
         <tags:sectionContainer2 nameKey="settings">
             <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
             <form:form commandName="settings" action="runAudit">
+                <cti:csrfToken/>
                 <cti:inventoryCollection inventoryCollection="${settings.collection}"/>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey="yukon.common.from">

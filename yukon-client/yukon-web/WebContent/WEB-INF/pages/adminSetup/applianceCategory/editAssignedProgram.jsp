@@ -89,6 +89,7 @@ function showProgramEditor() {
 </c:if>
 
 <form:form id="assignedProgramForm" commandName="backingBean" action="saveAssignedProgram" onsubmit="return submitForm()">
+    <cti:csrfToken/>
     <input type="hidden" name="ecId" value="${param.ecId}"/>
     <form:hidden path="virtual"/>
     <form:hidden path="multiple"/>

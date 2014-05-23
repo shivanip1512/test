@@ -33,6 +33,7 @@
                 <cti:button nameKey="create" icon="icon-plus-green" id="b-create"/>
             </c:if>
             <form:form id="exporterForm" commandName="archivedValuesExporter" action="${action}">
+                <cti:csrfToken/>
                 <form:hidden path="archivedValuesExportFormatType"/>
                 <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}" />
                 <tags:nameValueContainer2 id="formatContainer" >
@@ -103,6 +104,7 @@
     <div id="runDialog" class="dn">
          <cti:flashScopeMessages />
          <form:form id="runForm" commandName="archivedValuesExporter" >
+            <cti:csrfToken/>
              <div id="runInputsDiv">
                 <div id="endDateDiv" class="END_DATE">
                     <cti:msg2 key=".endDate" var="endDate" />
@@ -143,6 +145,7 @@
     <div id="scheduleDialog" class="dn">
          <cti:flashScopeMessages />
          <form:form id="scheduleForm" commandName="archivedValuesExporter" >
+            <cti:csrfToken/>
              <div id="scheduleInputsDiv">
                 <div id="endDateDiv" class="END_DATE">
                     <cti:msg2 key=".endDate" var="endDate" />

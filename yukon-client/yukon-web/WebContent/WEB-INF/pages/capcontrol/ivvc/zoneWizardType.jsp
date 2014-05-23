@@ -26,6 +26,7 @@
 
 <cti:url var="selectedTypeUrl" value="/capcontrol/ivvc/wizard/wizardTypeSelected"/>
 <form:form id="zoneTypeForm" commandName="zoneDto" action="${selectedTypeUrl}" >
+    <cti:csrfToken/>
     <form:hidden path="substationBusId"/>
     <form:hidden path="parentId"/>
 

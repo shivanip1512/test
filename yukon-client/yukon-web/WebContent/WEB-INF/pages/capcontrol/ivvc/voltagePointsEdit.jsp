@@ -32,6 +32,7 @@
 
     <tags:boxContainer2 nameKey=".title">
         <form:form id="voltagePointsForm" action="updateVoltagePoints" commandName="zoneVoltagePointsHolder">
+            <cti:csrfToken/>
             <input name="zoneId" value="${zoneId}" type="hidden"/>
             <table class="compact-results-table no-stripes">
                 <thead>

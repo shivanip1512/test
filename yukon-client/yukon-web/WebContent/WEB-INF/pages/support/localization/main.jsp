@@ -17,6 +17,7 @@
     </script>
 
     <form:form action="view" modelAttribute="localizationBackingBean">
+        <cti:csrfToken/>
         <cti:button type="submit" name="task" value="DUMP" nameKey="dumpKeys" />
     </form:form>
 

@@ -49,6 +49,7 @@ $(document).on('click', '#cancelDeleteBtn', function() {
     </cti:displayForPageEditModes>
     
     <form:form commandName="hardware" action="${action}" method="post">
+        <cti:csrfToken/>
         <input type="hidden" name="inventoryId" value="${hardware.inventoryId}">
         <form:hidden path="accountId"/>
         <form:hidden path="hardwareType"/>

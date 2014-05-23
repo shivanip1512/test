@@ -65,6 +65,7 @@ updateSub = function (data) {
     <div class="column one">
     
         <form:form id="editForm" name="editForm" action="${submitUrl}" commandName="configuration">
+            <cti:csrfToken/>
             <input id="actionInput" type="hidden" name="action" value=""/>
             <tags:hidden path="accountId"/>
             <tags:hidden path="inventoryId"/>

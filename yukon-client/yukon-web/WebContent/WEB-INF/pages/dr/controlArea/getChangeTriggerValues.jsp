@@ -16,7 +16,7 @@
     <cti:url var="submitUrl" value="/dr/controlArea/triggerChange"/>
         
     <form:form id="getChangeTimeWindowValues" commandName="triggersDto" action="${submitUrl}" onsubmit="submitFormViaAjax('drDialog', 'getChangeTimeWindowValues');return false;">
-        
+        <cti:csrfToken/>
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
         
         <cti:msg2 var="thresholdName" key=".threshold"/>

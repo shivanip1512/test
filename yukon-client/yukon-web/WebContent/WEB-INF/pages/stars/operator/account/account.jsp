@@ -193,7 +193,7 @@
         </cti:displayForPageEditModes>
         
         <form:form id="updateForm" commandName="accountGeneral" action="${action}">
-            
+            <cti:csrfToken/>
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="loginMode" value="${loginMode}">
             
@@ -422,6 +422,7 @@
                 <c:if test="${supportsPasswordSet and not empty passwordBean}">
                     <d:inline id="passwordDialog" okEvent="e_updatePassword" on="a.f-editPassword" nameKey="passwordDialog">
                         <form:form id="updatePasswordForm" commandName="passwordBean" action="/stars/operator/account/updatePassword">
+                            <cti:csrfToken/>
                             <input type="hidden" name="accountId" value="${accountId}">
                             <input type="hidden" name="loginMode" value="${loginMode}">
     

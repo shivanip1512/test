@@ -106,7 +106,7 @@ function assignPrograms(devices) {
 </cti:displayForPageEditModes>
 
 <form:form id="appCatForm" commandName="applianceCategory" action="save" onsubmit="return submitForm()">
-
+<cti:csrfToken/>
 <form:hidden path="energyCompanyId"/>
 <form:hidden path="applianceCategoryId"/>
 <form:hidden path="webConfiguration.configurationId"/>

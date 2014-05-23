@@ -59,7 +59,7 @@
     <%-- UPDATE FORM --%>
     <cti:url var="submitUrl" value="/amr/statusPointMonitoring/update"/>
     <form:form commandName="statusPointMonitor" action="${submitUrl}" method="post">
-    
+        <cti:csrfToken/>
         <form:hidden path="statusPointMonitorId"/>
         <form:hidden path="evaluatorStatus"/>
         <form:hidden path="stateGroup"/>

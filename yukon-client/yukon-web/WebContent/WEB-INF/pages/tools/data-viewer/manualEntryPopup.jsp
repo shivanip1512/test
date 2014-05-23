@@ -9,6 +9,7 @@
     <cti:flashScopeMessages/>
     <cti:url var="saveUrl" value="/tools/data-viewer/manualEntrySend"/>
     <form:form id="manualEntryForm" cssClass="f-preventSubmitViaEnterKey" commandName="backingBean" action="${saveUrl}">
+        <cti:csrfToken/>
         <form:hidden path="pointId" />
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey="yukon.common.device">${fn:escapeXml(deviceName)}</tags:nameValue2>

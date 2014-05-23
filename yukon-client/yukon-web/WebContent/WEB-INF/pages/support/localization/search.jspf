@@ -7,7 +7,7 @@
 
 <cti:msgScope paths="modules.support.localization">
     <form:form action="view" modelAttribute="localizationBackingBean" enctype="multipart/form-data">
-
+        <cti:csrfToken/>
         <div class="column-8-16">
                 <div class="column one">
                     <div>

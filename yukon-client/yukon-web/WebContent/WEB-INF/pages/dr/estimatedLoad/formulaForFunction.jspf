@@ -5,6 +5,7 @@
 
 <c:set var="formulaId" value="${formulaBean.formulaId}"/>
 <form:form id="formulaForm" commandName="formulaBean" action="edit?formulaId=${formulaBean.formulaId}">
+    <cti:csrfToken/>
     <div class="column-12-12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="formulaSettings">

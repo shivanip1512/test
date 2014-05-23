@@ -13,7 +13,8 @@
     <div class="column-12-12">
         <div class="column one">
             <form:form commandName="userGroup" action="edit" method="post">
-	                <form:hidden path="userGroupId"/>
+                <cti:csrfToken/>
+	            <form:hidden path="userGroupId"/>
 
                 <tags:nameValueContainer2>
                     <tags:inputNameValue nameKey=".userGroupName" path="userGroupName"/>

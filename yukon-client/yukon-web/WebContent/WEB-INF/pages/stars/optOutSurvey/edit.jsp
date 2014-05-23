@@ -30,6 +30,7 @@ $( function () {
 <cti:url var="submitUrl" value="/stars/optOutSurvey/save"/>
 <form:form id="optOutSurveyForm" commandName="optOutSurveyDto" action="${submitUrl}"
     onsubmit="return submitForm()">
+    <cti:csrfToken/>
     <form:hidden path="optOutSurveyId"/>
     <form:hidden path="energyCompanyId"/>
     <tags:nameValueContainer2>

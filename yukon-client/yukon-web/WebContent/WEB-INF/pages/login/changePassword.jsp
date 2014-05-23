@@ -14,6 +14,7 @@
                 <h1><i:inline key=".pageName"/></h1>
             </div>    
             <form:form commandName="loginBackingBean" action="changePassword">
+                <cti:csrfToken/>
                 <div class="column-12-12">
                     <div class="column one">
                         <input type="hidden" name="k" value="${k}" >

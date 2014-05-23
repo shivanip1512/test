@@ -49,6 +49,7 @@
     </cti:url>
     
      <form:form commandName="operatorLogin" action="${action}" name="operatorLoginForm">
+        <cti:csrfToken/>
         <tags:nameValueContainer2 tableClass="with-form-controls">
             <tags:hidden path="userId"/>
             <cti:displayForPageEditModes modes="EDIT,CREATE">

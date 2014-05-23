@@ -10,7 +10,7 @@
 
 <form:form commandName="optOutBackingBean" method="POST"
     action="/stars/operator/program/optOut/optOutQuestions">
-
+    <cti:csrfToken/>
     <form:hidden path="durationInDays" />
     <form:hidden path="startDate" />
 

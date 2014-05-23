@@ -73,6 +73,7 @@ $( function () {
 <h4 class="dialogQuestion stacked"><cti:msg2 key=".confirmQuestion" htmlEscape="true" argument="${program.name}"/></h4>
 
 <form:form id="startProgramForm" commandName="backingBean" onsubmit="return submitForm();">
+    <cti:csrfToken/>
     <form:hidden path="programId"/>
     <input type="hidden" name="from" value="details"/>
     <form:hidden path="now"/>

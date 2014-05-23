@@ -22,8 +22,6 @@
         </property>
     </bean>
 
-    <bean id="requestDataValueProcessor" class="com.cannontech.web.security.csrf.CsrfRequestDataValueProcessor"/>
-
     <bean id="webSecurityInterceptor" class="com.cannontech.web.security.WebSecurityInterceptor"/>
 
     <bean id="webSecurityAnnotationProcessor" class="com.cannontech.web.security.WebSecurityAnnotationProcessor"/>

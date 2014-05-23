@@ -10,7 +10,7 @@
 <cti:msgScope paths="modules.tools.bulk.archivedValueExporter">
 
     <form:form id="field-form" commandName="exportField">
-    
+        <cti:csrfToken/>
         <div class="notes stacked tac"><i:inline key=".note"/></div>
         
         <tags:sectionContainer2 nameKey="selectField">

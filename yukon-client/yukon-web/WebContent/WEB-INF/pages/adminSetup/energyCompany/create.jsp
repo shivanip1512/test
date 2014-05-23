@@ -10,6 +10,7 @@
 
     <cti:url var="createUrl" value="/adminSetup/energyCompany/create"/>
     <form:form commandName="energyCompanyDto" action="${createUrl}">
+        <cti:csrfToken/>
         <form:hidden path="operatorUserGroupIds" id="operatorUserGroupIds"/>
         <form:hidden path="residentialUserGroupIds" id="residentialUserGroupIds"/>
         <c:if test="${not empty parentId}">

@@ -8,6 +8,7 @@
 <cti:msgScope paths="modules.tools.tdc">
     <cti:url var="saveUrl" value="/tools/data-viewer/altScanRateSend"/>
     <form:form id="altScanRateForm" commandName="backingBean" action="${saveUrl}">
+        <cti:csrfToken/>
         <form:hidden path="deviceId" />
         <tags:nameValueContainer2>
         <tags:nameValue2 nameKey="yukon.common.device">${fn:escapeXml(deviceName)}</tags:nameValue2>

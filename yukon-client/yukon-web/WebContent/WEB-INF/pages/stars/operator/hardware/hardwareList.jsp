@@ -111,6 +111,7 @@
         <cti:flashScopeMessages/>
     </c:if>
     <form:form commandName="serialNumberSwitch" action="${checkSnUrl}Switch">
+        <cti:csrfToken/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".serialNumber">
                 <input type="hidden" name="accountId" value="${accountId}">
@@ -133,7 +134,7 @@
         <cti:flashScopeMessages/>
     </c:if>
     <form:form commandName="serialNumberThermostat" action="${checkSnUrl}Thermostat">
-
+        <cti:csrfToken/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".serialNumber">
                 <input type="hidden" name="accountId" value="${accountId}">
@@ -157,6 +158,7 @@
         <cti:flashScopeMessages/>
     </c:if>
     <form:form commandName="serialNumberGateway" action="${checkSnUrl}Gateway">
+        <cti:csrfToken/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".serialNumber">
                 <input type="hidden" name="accountId" value="${accountId}">

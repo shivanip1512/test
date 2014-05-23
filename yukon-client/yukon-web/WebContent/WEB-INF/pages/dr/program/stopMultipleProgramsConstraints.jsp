@@ -59,6 +59,7 @@ $(function () {
 <cti:url var="submitUrl" value="/dr/program/stop/stopMultiple"/>
 <form:form id="stopMultipleProgramsForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'stopMultipleProgramsForm')">
+    <cti:csrfToken/>
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
     <input type="hidden" name="from" value="constraints"/>

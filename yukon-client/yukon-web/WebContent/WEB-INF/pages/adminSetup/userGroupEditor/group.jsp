@@ -16,6 +16,7 @@
         <div class="column one">
             <cti:url var="groupUrl" value="/adminSetup/roleGroup/edit"/>
             <form:form commandName="group" action="${groupUrl}" method="post">
+                <cti:csrfToken/>
                 <form:hidden path="groupID"/>
                 <input type="hidden" value="${group.groupID}" name="roleGroupId">
                 

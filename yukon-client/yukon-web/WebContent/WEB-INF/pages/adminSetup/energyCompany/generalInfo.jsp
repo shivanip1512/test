@@ -32,6 +32,7 @@ $(function() {
             <%-- LEFT SIDE COLUMN --%>
             <div class="column one">
                 <form:form commandName="generalInfo" method="post" action="update">
+                    <cti:csrfToken/>
                     <form:hidden path="ecId"/>
                     
                     <tags:nameValueContainer2>

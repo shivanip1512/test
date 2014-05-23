@@ -40,7 +40,7 @@
     </cti:checkRolesAndProperties>
     <cti:url var="optOutUrl" value="/stars/operator/program/optOut/deviceSelection"/>
     <form:form id="optOutForm" action="${optOutUrl}" commandName="optOutBackingBean">
-
+         <cti:csrfToken/>   
          <input type="hidden" name="accountId" value="${accountId}" />
 
          <tags:nameValueContainer2>

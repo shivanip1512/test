@@ -21,7 +21,7 @@
 
         <form:form id="form" commandName="optOutBackingBean" method="POST"
              action="${actionUrl}">
-
+            <cti:csrfToken/>
             <form:hidden path="durationInDays" />
             <form:hidden path="startDate" />
 

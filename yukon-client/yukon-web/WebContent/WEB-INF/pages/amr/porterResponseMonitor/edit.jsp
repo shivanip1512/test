@@ -72,7 +72,7 @@
     </table>
 
     <form:form commandName="monitorDto" action="update" method="post">
-
+        <cti:csrfToken/>
         <form:hidden path="monitorId"/>
         <form:hidden path="stateGroup"/>
         <form:hidden path="evaluatorStatus"/>

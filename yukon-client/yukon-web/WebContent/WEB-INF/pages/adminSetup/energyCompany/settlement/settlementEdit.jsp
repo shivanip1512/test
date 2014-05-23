@@ -57,7 +57,7 @@ $(function() {
     </cti:url>
 
     <form:form commandName="settlementDto" method="post" action="${edit}">
-        
+        <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="configurations">
             <table class="name-value-table natural-width">
                 <c:forEach var="liteSettlementConfig" items="${settlementDto.editableLiteSettlementConfigs}" varStatus="status">

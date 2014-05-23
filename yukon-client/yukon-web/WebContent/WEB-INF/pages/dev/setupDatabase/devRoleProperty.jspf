@@ -22,6 +22,7 @@
     </c:if>
         
     <form:form commandName="devRoleProperties" action="setupRoleProperties" method="post" id="setupRolePropertiesForm">
+        <cti:csrfToken/>
         <cti:flashScopeMessages />
         <div class="widgetMessage"></div>
         <div class="widgetContent">
