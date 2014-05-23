@@ -8,7 +8,7 @@
 	<c:otherwise>
         <cti:msg2 key=".custInfo" var="custInfo"/>
         <tags:sectionContainer title="${custInfo}">
-    		<tags:nameValueContainer2 tableClass="row-highlighting striped two-column-split">
+    		<tags:nameValueContainer2 tableClass="row-highlighting striped two-column-table">
 		    	<tags:nameValue2 nameKey=".acctNumber">${fn:escapeXml(meterInfo.accountNumber)}</tags:nameValue2>
 		    	<tags:nameValue2 nameKey=".name">${fn:escapeXml(meterInfo.name)}</tags:nameValue2>
 			    <tags:nameValue2 nameKey=".locationNum">${fn:escapeXml(meterInfo.locationNumber)}</tags:nameValue2>

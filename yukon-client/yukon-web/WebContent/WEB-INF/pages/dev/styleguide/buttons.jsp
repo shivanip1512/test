@@ -14,7 +14,7 @@
 }
 </style>
 
-<tags:sectionContainer title="normal buttons" styleClass="separated-sections">
+<tags:sectionContainer title="Normal Buttons" styleClass="separated-sections">
     <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="edit"/>
@@ -43,28 +43,9 @@
         </div>
         <pre class="code prettyprint">&lt;cti:button nameKey=&quot;edit&quot; icon=&quot;icon-pencil&quot; disabled=&quot;true&quot;/&gt;</pre>
     </div>
-    <div class="button-example section">
-        <div class="clearfix">
-            <cm:dropdown type="button" key="yukon.web.defaults.actions" triggerClasses="fl">
-                <cm:dropdownOption icon="icon-pencil">Edit</cm:dropdownOption>
-                <cm:dropdownOption icon="icon-page-copy">Copy</cm:dropdownOption>
-                <cm:dropdownOption icon="icon-cross">Delete</cm:dropdownOption>
-                <li class="divider"></li>
-                <cm:dropdownOption icon="icon-plus-green">Create</cm:dropdownOption>
-            </cm:dropdown>
-            <span class="description">dropdown menu button</span>
-        </div>
-        <pre class="code prettyprint">&lt;cm:dropdown type=&quot;button&quot; key=&quot;yukon.web.defaults.actions&quot; triggerClasses=&quot;fl&quot;&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-pencil&quot;&gt;Edit&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-page-copy&quot;&gt;Copy&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-cross&quot;&gt;Delete&lt;/cm:dropdownOption&gt;
-    &lt;li class=&quot;divider&quot;&gt;&lt;/li&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-plus-green&quot;&gt;Create&lt;/cm:dropdownOption&gt;
-&lt;/cm:dropdown&gt;</pre>
-    </div>
 </tags:sectionContainer>
-
-<tags:sectionContainer title="primary buttons" styleClass="separated-sections">
+    
+<tags:sectionContainer title="Primary Buttons" styleClass="separated-sections">
     <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="save" classes="action primary"/>
@@ -81,8 +62,9 @@
     </div>
 </tags:sectionContainer>
 
-<tags:sectionContainer title="f-disable-after-click and busy buttons" styleClass="separated-sections">
-    <h4>All of these buttons can be submit buttons and whatever form them maybe inside of will still be submitted on button click</h4>
+<tags:sectionContainer title="f-disable-after-click and Busy Buttons" styleClass="separated-sections">
+    <h4>Note: All of these buttons can be <em>submit</em> buttons and whatever form they may be inside of will still be 
+        submitted on button click</h4>
     <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="save" classes="action primary f-disable-after-click"/>
@@ -121,6 +103,28 @@
         <div class="clearfix">
             <pre class="code prettyprint">&lt;cti:button nameKey=&quot;update&quot; classes=&quot;f-disable-after-click action primary&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disable-after-click delete&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;cancel&quot; classes=&quot;f-disable-after-click&quot; data-disable-group=&quot;them-buttons&quot;/&gt;</pre>
         </div>
+    </div>
+</tags:sectionContainer>
+
+<tags:sectionContainer title="Drop Downs" styleClass="separated-sections" id="drop-downs">
+    <div class="button-example section">
+        <div class="clearfix">
+            <cm:dropdown type="button" key="yukon.web.defaults.actions" triggerClasses="fl">
+                <cm:dropdownOption icon="icon-pencil">Edit</cm:dropdownOption>
+                <cm:dropdownOption icon="icon-page-copy">Copy</cm:dropdownOption>
+                <cm:dropdownOption icon="icon-cross">Delete</cm:dropdownOption>
+                <li class="divider"></li>
+                <cm:dropdownOption icon="icon-plus-green">Create</cm:dropdownOption>
+            </cm:dropdown>
+            <span class="description">dropdown menu button</span>
+        </div>
+        <pre class="code prettyprint">&lt;cm:dropdown type=&quot;button&quot; key=&quot;yukon.web.defaults.actions&quot; triggerClasses=&quot;fl&quot;&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-pencil&quot;&gt;Edit&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-page-copy&quot;&gt;Copy&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-cross&quot;&gt;Delete&lt;/cm:dropdownOption&gt;
+    &lt;li class=&quot;divider&quot;&gt;&lt;/li&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-plus-green&quot;&gt;Create&lt;/cm:dropdownOption&gt;
+&lt;/cm:dropdown&gt;</pre>
     </div>
 </tags:sectionContainer>
 

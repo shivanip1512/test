@@ -341,7 +341,7 @@
                 <span class="empty-list"><i:inline key=".switches.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="table-thirds compact-results-table dashed row-highlighting has-actions">
+                <table class="three-column-table compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
                             <th><i:inline key=".serialNumber"/></th>
@@ -425,7 +425,7 @@
                 <span class="empty-list"><i:inline key=".thermostats.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="table-thirds compact-results-table dashed row-highlighting has-actions">
+                <table class="three-column-table compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
                             <th><i:inline key=".serialNumber"/></th>
@@ -530,7 +530,7 @@
                 <span class="empty-list"><i:inline key=".meters.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="table-thirds compact-results-table dashed row-highlighting has-actions">
+                <table class="three-column-table compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
                             <th>
@@ -640,7 +640,7 @@
                 <span class="empty-list"><i:inline key=".gateways.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="table-thirds compact-results-table dashed row-highlighting has-actions">
+                <table class="three-column-table compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
                             <th><i:inline key=".displayName"/></th>

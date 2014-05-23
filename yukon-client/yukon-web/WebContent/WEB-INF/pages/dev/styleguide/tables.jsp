@@ -1,6 +1,7 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -78,7 +79,7 @@
 <h2>Compact Results Table</h2>
 <div class="table-example clearfix stacked">
     <p class="description"><span class="label label-default">.compact-results-table</span> is the preffered table to use when
-    tabling data.  It has a .9em font size meaning the font-size will be 90% of the parent's font size. Becareful not to 
+    tabling data.  It has a .9em font size meaning the font-size will be 90% of the parent's font size. Be careful not to 
     nest these tables since the inner table will be have the 90% applied once for every level of nesting.</p>
     <table class="compact-results-table">
         <thead>
@@ -171,6 +172,9 @@
     &lt;/table&gt;
 &lt;/tags:sectionContainer2&gt;
 </pre>
+    
+    <hr>
+    
     <p class="description">
         Adding <span class="label label-default">.separated</span> to a 
         <span class="label label-default">.compact-results-table</span> will add dashed borders between rows.
@@ -243,11 +247,19 @@
     &lt;/tr&gt;
 &lt;/table&gt;
 </pre>
+    
+    <hr>
+
     <p class="description">Instead of hardcoding this table there are tags that will build it for you. 
         <span class="label label-default">&lt;tags:nameValueContainer2/&gt;</span> will create the table element and 
         <span class="label label-default">&lt;tags:nameValue2&gt;</span> will create the tr and both td elements. These tags 
         provide the localizing of the name text. Use these tags instead of the raw html
     </p>
+    <tags:nameValueContainer2>
+        <tags:nameValue2 nameKey=".circle">A = &pi; r<sup>2</sup></tags:nameValue2>
+        <tags:nameValue2 nameKey=".square">A = a<sup>2</sup></tags:nameValue2>
+        <tags:nameValue2 nameKey=".triangle">A = (h<sub>b</sub>b) / 2</tags:nameValue2>
+    </tags:nameValueContainer2>
 <pre class="code prettyprint">
 &lt;tags:nameValueContainer2&gt;
     &lt;tags:nameValue2 nameKey=&quot;.circle&quot;&gt;A = &amp;pi; r&lt;sup&gt;2&lt;/sup&gt;&lt;/tags:nameValue2&gt;
@@ -255,6 +267,29 @@
     &lt;tags:nameValue2 nameKey=&quot;.triangle&quot;&gt;A = (h&lt;sub&gt;b&lt;/sub&gt;b) / 2&lt;/tags:nameValue2&gt;
 &lt;/tags:nameValueContainer2&gt;
 </pre>
+    
+    <hr>
+    
+    <p class="description">
+        <span class="label label-default">.name-value-table</span> tables have a min width for the name column
+        of 140px by default.  This can be overriden to allow the name column to shrink all the way by adding 
+        <span class="label label-default">.name-collapse</span>
+    </p>
+    <tags:nameValueContainer2 tableClass="name-collapse">
+        <tags:nameValue2 nameKey=".circle">A = &pi; r<sup>2</sup></tags:nameValue2>
+        <tags:nameValue2 nameKey=".square">A = a<sup>2</sup></tags:nameValue2>
+        <tags:nameValue2 nameKey=".triangle">A = (h<sub>b</sub>b) / 2</tags:nameValue2>
+    </tags:nameValueContainer2>
+<pre class="code prettyprint">
+&lt;tags:nameValueContainer2 tableClass=&quot;name-collapse&quot;&gt;
+    &lt;tags:nameValue2 nameKey=&quot;.circle&quot;&gt;A = &amp;pi; r&lt;sup&gt;2&lt;/sup&gt;&lt;/tags:nameValue2&gt;
+    &lt;tags:nameValue2 nameKey=&quot;.square&quot;&gt;A = a&lt;sup&gt;2&lt;/sup&gt;&lt;/tags:nameValue2&gt;
+    &lt;tags:nameValue2 nameKey=&quot;.triangle&quot;&gt;A = (h&lt;sub&gt;b&lt;/sub&gt;b) / 2&lt;/tags:nameValue2&gt;
+&lt;/tags:nameValueContainer2&gt;
+</pre>
+    
+    <hr>
+    
     <p class="description">There are additional tags that will handle the name and value td elements where the value will be
         a form input.  They have support to handle <a href="http://docs.spring.io/spring/docs/3.0.x/spring-framework-reference/html/view.html">spring binding</a>.
     </p>
@@ -334,12 +369,15 @@
     &lt;tags:nameValue2 nameKey=&quot;.triangle&quot;&gt;A = (h&lt;sub&gt;b&lt;/sub&gt;b) / 2&lt;/tags:nameValue2&gt;
 &lt;/tags:nameValueContainer2&gt;
 </pre>
+    
+    <hr>
+    
     <p class="description">
         You can turn striping off for <span class="label label-default">.compact-results-table</span> and
         <span class="label label-default">.results-table</span> tables by using 
-        <span class="label label-default">.manual-striping</span>.  You can then add the striping back by using
-         <span class="label label-default">.alt-row</span> on rows you want striped.  This is useful when there are hidden
-         rows that throw off the even/odd counting.
+        <span class="label label-default">.manual-striping</span> or <span class="label label-default">.no-stipes</span>.  
+        You can then add the striping back by using <span class="label label-default">.alt-row</span> on rows you want 
+        striped.  This is useful when there are hidden rows that throw off the even/odd counting.
     </p>
     <table class="compact-results-table manual-striping">
         <thead><tr><th>header 1</th><th>header 2</th></tr></thead>
@@ -358,6 +396,146 @@
         &lt;tr&gt;&lt;td&gt;visible&lt;/td&gt;&lt;td&gt;visible&lt;/td&gt;&lt;/tr&gt;
         &lt;tr class=&quot;dn&quot;&gt;&lt;td&gt;hidden&lt;/td&gt;&lt;td&gt;hidden&lt;/td&gt;&lt;/tr&gt;
         &lt;tr class=&quot;alt-row&quot;&gt;&lt;td&gt;visible&lt;/td&gt;&lt;td&gt;visible&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+</div>
+
+<h3 class="subtle">Sizing</h3>
+<div class="table-example clearfix stacked">
+    <p class="description">
+        <span class="label label-default">.natural-width</span> will change a table's width from the
+        default <em>100%</em> to <em>auto</em>.
+    </p>
+    <table class="compact-results-table natural-width">
+        <thead><tr><th>header</th><th>header</th></tr></thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr><td>cell</td><td>cell</td></tr>
+            <tr><td>cell</td><td>cell</td></tr>
+            <tr><td>cell</td><td>cell</td></tr>
+        </tbody>
+    </table>
+<pre class="code prettyprint">
+&lt;table class=&quot;compact-results-table natural-width&quot;&gt;
+    ...
+&lt;/table&gt;
+</pre>
+    
+    <hr>
+    
+    <p class="description">
+        <span class="label label-default">.two-column-table</span> will produce a table that has a width of 100% and 
+        td's are 50%.  Do <strong>NOT</strong> use this for page layout, only data. See <a href="grids">grids</a> for page layout.
+        <span class="label label-default">.three-column-table</span> is similar with three 33% columns.
+    </p>
+    <table class="compact-results-table two-column-table">
+        <thead><tr><th>header</th><th>header</th></tr></thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr><td>cell</td><td>cell</td></tr>
+            <tr><td>cell</td><td>cell</td></tr>
+            <tr><td>cell</td><td>cell</td></tr>
+        </tbody>
+    </table>
+    <table class="compact-results-table three-column-table">
+        <thead><tr><th>header</th><th>header</th><th>header</th></tr></thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr><td>cell</td><td>cell</td><td>cell</td></tr>
+            <tr><td>cell</td><td>cell</td><td>cell</td></tr>
+            <tr><td>cell</td><td>cell</td><td>cell</td></tr>
+        </tbody>
+    </table>
+<pre class="code prettyprint">
+&lt;table class=&quot;compact-results-table two-column-table&quot;&gt;
+    ...
+&lt;/table&gt;
+&lt;table class=&quot;compact-results-table three-column-table&quot;&gt;
+    ...
+&lt;/table&gt;
+</pre>
+</div>
+
+<h3 class="subtle">Misc</h3>
+<div class="table-example clearfix stacked">
+    <p class="description">
+        <span class="label label-default">.row-highlighting</span> will produce row highlighting when hovering. 
+        Do <strong>NOT</strong> use this unless instructed to.  The built in row striping is usually enough to help users
+        horizontally scan long rows.
+    </p>
+    <table class="compact-results-table row-highlighting">
+        <thead><tr><th>header</th><th>header</th><th>header</th></tr></thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr><td>cell</td><td>cell</td><td>cell</td></tr>
+            <tr><td>cell</td><td>cell</td><td>cell</td></tr>
+            <tr><td>cell</td><td>cell</td><td>cell</td></tr>
+        </tbody>
+    </table>
+<pre class="code prettyprint">
+&lt;table class=&quot;compact-results-table row-highlighting&quot;&gt;
+    ...
+&lt;/table&gt;
+</pre>
+    
+    <hr>
+    
+    <p class="description">
+        <span class="label label-default">.has-actions</span> is used in conjunction with 
+        <a href="buttons#drop-downs">drop downs</a>.  It will hide the drop down button until the row is hovered.  It is
+        also used to register right-click events on the row to display the drop down menu.  Do <strong>NOT</strong> use 
+        <span class="label label-default">.row-highlighting</span> with 
+        <span class="label label-default">.has-actions</span> because it makes it very hard to notice that a drop down
+        button appeared. 
+    </p>
+    <table class="compact-results-table has-actions">
+        <thead><tr><th>header</th><th>header</th></tr></thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr>
+                <td>cell</td>
+                <td>cell
+                    <cm:dropdown triggerClasses="fr">
+                        <cm:dropdownOption icon="icon-pencil">Edit</cm:dropdownOption>
+                        <cm:dropdownOption icon="icon-cross">Delete</cm:dropdownOption>
+                    </cm:dropdown>
+                </td>
+            </tr>
+            <tr>
+                <td>cell</td>
+                <td>cell
+                    <cm:dropdown triggerClasses="fr">
+                        <cm:dropdownOption icon="icon-pencil">Edit</cm:dropdownOption>
+                        <cm:dropdownOption icon="icon-cross">Delete</cm:dropdownOption>
+                    </cm:dropdown>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+<pre class="code prettyprint">
+&lt;table class=&quot;compact-results-table has-actions&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th&gt;header&lt;/th&gt;&lt;th&gt;header&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tfoot&gt;&lt;/tfoot&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;cell&lt;/td&gt;
+            &lt;td&gt;cell
+                &lt;cm:dropdown triggerClasses=&quot;fr&quot;&gt;
+                    &lt;cm:dropdownOption icon=&quot;icon-pencil&quot;&gt;Edit&lt;/cm:dropdownOption&gt;
+                    &lt;cm:dropdownOption icon=&quot;icon-cross&quot;&gt;Delete&lt;/cm:dropdownOption&gt;
+                &lt;/cm:dropdown&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;cell&lt;/td&gt;
+            &lt;td&gt;cell
+                &lt;cm:dropdown triggerClasses=&quot;fr&quot;&gt;
+                    &lt;cm:dropdownOption icon=&quot;icon-pencil&quot;&gt;Edit&lt;/cm:dropdownOption&gt;
+                    &lt;cm:dropdownOption icon=&quot;icon-cross&quot;&gt;Delete&lt;/cm:dropdownOption&gt;
+                &lt;/cm:dropdown&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
 </pre>
