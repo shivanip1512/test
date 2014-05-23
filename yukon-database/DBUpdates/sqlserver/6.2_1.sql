@@ -162,6 +162,32 @@ INSERT INTO State VALUES(-12, 7, 'Connected Cycling Active ', 7, 6, 0);
 INSERT INTO YukonRoleProperty VALUES (-21314,-213,'Connect/Disconnect','true','Controls access to Connect/Disconnect collection action.');
 /* End YUK-13354 */
 
+/* Start YUK-13323 */
+INSERT INTO DeviceConfigCategoryItem
+SELECT 
+    ROW_NUMBER() OVER(ORDER BY C.DeviceConfigCategoryID) + (SELECT ISNULL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+    C.DeviceConfigCategoryId,
+    'disconnectMode',
+    CASE
+        WHEN (cast(DisconnectDemandThreshold.ItemValue AS float) <> 0) THEN 'DEMAND_THRESHOLD'
+        WHEN (ConnectMinutes.ItemValue <> '0') THEN 'CYCLING'
+        WHEN (DisconnectMinutes.ItemValue <> '0') THEN 'CYCLING'
+        ELSE 'ON_DEMAND'
+    END
+FROM DeviceConfigCategory C 
+JOIN DeviceConfigCategoryItem ConnectMinutes ON C.DeviceConfigCategoryId = ConnectMinutes.DeviceConfigCategoryId
+JOIN DeviceConfigCategoryItem DisconnectMinutes ON C.DeviceConfigCategoryId = DisconnectMinutes.DeviceConfigCategoryId
+JOIN DeviceConfigCategoryItem DisconnectDemandThreshold ON C.DeviceConfigCategoryId = DisconnectDemandThreshold.DeviceConfigCategoryId
+WHERE 
+    C.CategoryType = 'mctDisconnectConfiguration'
+    AND ConnectMinutes.ItemName = 'connectMinutes'
+    AND DisconnectMinutes.ItemName = 'disconnectMinutes'
+    AND DisconnectDemandThreshold.ItemName = 'disconnectDemandThreshold'
+    AND NOT EXISTS (SELECT 1 FROM DeviceConfigCategoryItem DCCI 
+                    WHERE C.DeviceConfigCategoryId = DCCI.DeviceConfigCategoryId 
+                    AND DCCI.ItemName = 'disconnectMode');
+/* End YUK-13323 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
