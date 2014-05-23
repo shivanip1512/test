@@ -47,4 +47,4 @@ WHERE
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.0', '19-MAY-2014', 'Latest Update', 10, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('6.0', '28-MAY-2014', 'Latest Update', 10, GETDATE());
