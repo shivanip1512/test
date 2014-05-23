@@ -141,7 +141,7 @@
 <h2>Name Value Table</h2>
 <div class="table-example clearfix stacked">
     <p class="description"><span class="label label-default">.name-value-table</span> is a two column table used to display 
-    data that fits in pairs.  This table is often used in form to label form fields.</p>
+    data that fits in pairs.  This table is often used in a form to label form fields.</p>
     <table class="name-value-table natural-width">
         <tr>
             <td class="name">Circle</td>
