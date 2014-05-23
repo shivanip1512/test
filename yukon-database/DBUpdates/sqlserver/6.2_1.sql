@@ -138,6 +138,7 @@ WHERE RolePropertyId = -20001;
 /* Start YUK-13354 */
 ALTER TABLE CommandRequestUnsupported
 ADD Type VARCHAR(50) NULL;
+GO
 
 UPDATE CommandRequestUnsupported
 SET Type = 'UNSUPPORTED';
