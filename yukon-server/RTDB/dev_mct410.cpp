@@ -1679,7 +1679,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
                 }
             }
 
-            Mct410DisconnectConfigurationCommand::ReconnectButtonRequired buttonRequired =
+            Mct410DisconnectConfigurationCommand::ReconnectButtonOptions buttonRequired =
                     reconnectButtonRequired
                         ? Mct410DisconnectConfigurationCommand::ButtonRequired
                         : Mct410DisconnectConfigurationCommand::ButtonNotRequired;

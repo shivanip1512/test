@@ -19,7 +19,7 @@ public:
         Cycling
     };
 
-    enum ReconnectButtonRequired
+    enum ReconnectButtonOptions
     {
         ButtonRequired,
         ButtonNotRequired,
@@ -28,7 +28,7 @@ public:
     // Write constructor
     Mct410DisconnectConfigurationCommand(const DisconnectMode mode, const unsigned disconnectAddress, const float disconnectDemandThreshold,
                             const unsigned connectDelay, const unsigned disconnectMinutes, const unsigned connectMinutes,
-                            ReconnectButtonRequired reconnectButtonRequired, const long demandInterval);
+                            ReconnectButtonOptions reconnectButtonRequired, const long demandInterval);
 
     // Read constructor
     Mct410DisconnectConfigurationCommand();
@@ -53,7 +53,7 @@ private:
     unsigned _connectDelay;
     unsigned _disconnectMinutes;
     unsigned _connectMinutes;
-    ReconnectButtonRequired _reconnectButtonRequired;
+    ReconnectButtonOptions _reconnectButtonRequired;
     long _demandInterval;
 
     boost::optional<float> _returnedDisconnectDemandThreshold;

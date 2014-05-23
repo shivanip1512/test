@@ -12,7 +12,7 @@ namespace Commands {
 
 Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand(const DisconnectMode mode, const unsigned disconnectAddress,
                                                  const float disconnectDemandThreshold, const unsigned connectDelay,
-                                                 const unsigned disconnectMinutes, const unsigned connectMinutes, ReconnectButtonRequired reconnectButtonRequired,
+                                                 const unsigned disconnectMinutes, const unsigned connectMinutes, ReconnectButtonOptions reconnectButtonRequired,
                                                  const long demandInterval) :
     _disconnectMode(mode),
     _disconnectAddress(disconnectAddress),
