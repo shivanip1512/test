@@ -137,7 +137,7 @@ public interface AccountThermostatScheduleDao {
      * from an account to warehouse, since inventory in the warehouse (i.e. not assigned to an account) should not have 
      * ties to a specific account schedule.
      */
-    public void unmapThermostatsToSchedule(List<Integer> thermostatIds);
+    public void unmapThermostatsFromSchedules(List<Integer> thermostatIds);
 
 	/**
 	 * Retrieve list of all AccountThermostatSchedules for a given accountId and thermostat type excluding archived entries.

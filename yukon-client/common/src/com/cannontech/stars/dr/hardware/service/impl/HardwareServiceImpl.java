@@ -171,7 +171,7 @@ public class HardwareServiceImpl implements HardwareService {
             applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);
         }
         // Remove association between inventory and account thermostat schedules.
-        accountThermostatScheduleDao.unmapThermostatsToSchedule(Collections.singletonList(inventoryId));
+        accountThermostatScheduleDao.unmapThermostatsFromSchedules(Collections.singletonList(inventoryId));
         
         /* Removes any entries found in the InventoryBase */
         LiteInventoryBase inventoryBase = inventoryBaseDao.getByInventoryId(inventoryId);

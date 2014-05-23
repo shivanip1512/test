@@ -298,7 +298,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	@Override
     public void mapThermostatsToSchedule(List<Integer> thermostatIds, int atsId) {
 		// delete existing mappings
-		unmapThermostatsToSchedule(thermostatIds);
+		unmapThermostatsFromSchedules(thermostatIds);
 			
 		// insert new mappings
 		for (int thermostatId : thermostatIds) {
@@ -310,7 +310,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	}
 
 	@Override
-    public void unmapThermostatsToSchedule(List<Integer> thermostatIds) {
+    public void unmapThermostatsFromSchedules(List<Integer> thermostatIds) {
 		SqlStatementBuilder deleteSql = new SqlStatementBuilder();
 		deleteSql.append("DELETE FROM InventoryToAcctThermostatSch");
 		deleteSql.append("WHERE InventoryId").in(thermostatIds);

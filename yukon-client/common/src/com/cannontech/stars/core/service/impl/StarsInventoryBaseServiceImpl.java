@@ -356,7 +356,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         }
         
         // Remove inventory to account thermostat schedule mapping if it exists.
-        accountThermostatScheduleDao.unmapThermostatsToSchedule(Collections.singletonList(inventoryId));
+        accountThermostatScheduleDao.unmapThermostatsFromSchedules(Collections.singletonList(inventoryId));
 
         String removeLbl = lib.getManufacturerSerialNumber();
         // update the Inventory to remove it from the account
