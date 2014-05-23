@@ -180,9 +180,9 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             }
 
             sendAcknowledgement(archiveRequest);
-            if (log.isInfoEnabled()) {
+            if (log.isDebugEnabled()) {
                 Duration processingDuration = new Duration(startTime, new Instant());
-                log.info("It took " + processingDuration + " to process a request");
+                log.debug("It took " + processingDuration + " to process a request");
             }
         }
     }
