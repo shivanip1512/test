@@ -539,6 +539,128 @@
     &lt;/tbody&gt;
 &lt;/table&gt;
 </pre>
+
+    <hr>
+    
+    <p class="description">
+        <span class="label label-default">.has-alerts</span> is used when each row in a table is expected to have the first
+        column be icon describing the row.  It will ensure the first column only takes up enough space to show the icon. See
+        <a href="icons">icons</a> to learn more about using icons.
+    </p>
+    <table class="compact-results-table has-alerts">
+        <thead><tr><th colspan="2">Issues</th></tr></thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr>
+                <td><cti:icon icon="icon-error"/></td>
+                <td>High kVAr measured at substation Winthrop.</td>
+            </tr>
+            <tr>
+                <td><cti:icon icon="icon-exclamation"/></td>
+                <td>High Voltage measured at substation Alberta.</td>
+            </tr>
+        </tbody>
+    </table>
+<pre class="code prettyprint">
+&lt;table class=&quot;compact-results-table has-alerts&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th colspan=&quot;2&quot;&gt;Issues&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tfoot&gt;&lt;/tfoot&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;cti:icon icon=&quot;icon-error&quot;/&gt;&lt;/td&gt;
+            &lt;td&gt;High kVAr measured at substation Winthrop.&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;cti:icon icon=&quot;icon-exclamation&quot;/&gt;&lt;/td&gt;
+            &lt;td&gt;High Voltage measured at substation Alberta.&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+</div>
+
+<h3 class="subtle">Sorting</h3>
+<div class="table-example clearfix stacked">
+    <p class="description">
+        Sorting can be done using the <span class="label label-default">SortableData</span> and 
+        <span class="label label-default">SortableColumn</span> Java classes, the 
+        <span class="label label-default">tags:sort</span> tag and the 
+        <span class="label label-default">data-url</span> attribute. Click the headers in the table below.
+    </p>
+    <div data-url="tables/sort-example">
+        <table class="compact-results-table">
+            <thead>
+                <tr>
+                    <c:forEach var="column" items="${pops.columns}">
+                        <tags:sort column="${column}"/>
+                    </c:forEach>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="pop" items="${pops.data}">
+                    <tr>
+                        <td>${pop.city}</td>
+                        <td>${pop.population}</td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </div>
+    <h4>Java Code:</h4>
+<pre class="code prettyprint">
+@RequestMapping(&quot;/styleguide/tables/sort-example&quot;)
+public String tables(ModelMap model, int sort, Direction dir) {
+    
+    List&lt;Population&gt; data = new ArrayList&lt;&gt;();
+    data.add(new Population(&quot;Daluth&quot;, 86211));
+    data.add(new Population(&quot;Minneapolis&quot;, 392880));
+    data.add(new Population(&quot;St. Paul&quot;, 290770));
+    
+    Comparator&lt;Population&gt; comparator = compares.get(sort);
+    
+    if (dir == Direction.desc) {
+        comparator = Collections.reverseOrder(comparator);
+    }
+    
+    Collections.sort(data, comparator);
+    
+    SortableColumn h1 = new SortableColumn(dir, sort == 0 ? true : false, true, &quot;City&quot;);
+    SortableColumn h2 = new SortableColumn(dir, sort == 1 ? true : false, true, &quot;Population&quot;);
+    List&lt;SortableColumn&gt; headers = ImmutableList.of(h1, h2);
+    
+    SortableData pops = new SortableData(data, headers);
+    model.addAttribute(&quot;pops&quot;, pops);
+    
+    return &quot;styleguide/sort-example.jsp&quot;;
+}
+</pre>
+<h4>JSP Code:</h4>
+<pre class="code prettyprint">
+&lt;%@ page trimDirectiveWhitespaces=&quot;true&quot; %&gt;
+
+&lt;%@ taglib prefix=&quot;c&quot; uri=&quot;http://java.sun.com/jsp/jstl/core&quot; %&gt;
+&lt;%@ taglib prefix=&quot;tags&quot; tagdir=&quot;/WEB-INF/tags&quot; %&gt;
+
+&lt;table class=&quot;compact-results-table&quot;&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;c:forEach var=&quot;column&quot; items=&quot;&#36;{pops.columns}&quot;&gt;
+                &lt;tags:sort column=&quot;&#36;{column}&quot;/&gt;
+            &lt;/c:forEach&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tfoot&gt;&lt;/tfoot&gt;
+    &lt;tbody&gt;
+        &lt;c:forEach var=&quot;pop&quot; items=&quot;&#36;{pops.data}&quot;&gt;
+            &lt;tr&gt;
+                &lt;td&gt;&#36;{pop.city}&lt;/td&gt;
+                &lt;td&gt;&#36;{pop.population}&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/c:forEach&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
 </div>
 
 </tags:styleguide>

@@ -1,25 +1,22 @@
-<%@ tag body-content="empty" %>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <%@ attribute name="fieldName" required="true" %>
 <%@ attribute name="baseUrl" required="true" description="URL without context path." %>
 <%@ attribute name="nameKey" required="true" %>
-<%@ attribute name="styleClass"%>
-<%@ attribute name="moreAttributes"%>
+<%@ attribute name="styleClass" %>
+<%@ attribute name="moreAttributes" %>
 
-<%@ attribute name="sortParam" description="name of paramater for sort-by. Defaults to 'sort'"%>
-<%@ attribute name="descendingParam" description="name of parameter to hold descending boolean. Defaults to 'descending'."%>
+<%@ attribute name="sortParam" description="name of paramater for sort-by. Defaults to 'sort'" %>
+<%@ attribute name="descendingParam" description="name of parameter to hold descending boolean. Defaults to 'descending'." %>
 
-<%@ attribute name="isDefault" type="java.lang.Boolean" %>
+<%@ attribute name="isDefault" type="java.lang.Boolean" 
+    description="If the default sort field is anything other than 'NAME', set the isDefault attribute to true on the field which is the default sort field." %>
 <%@ attribute name="descendingByDefault" type="java.lang.Boolean" %>
-<%@ attribute name="overrideParams" type="java.lang.Boolean" description="Ignores params from the previous request. Set to true if they are specified in the baseUrl"%>
+<%@ attribute name="overrideParams" type="java.lang.Boolean" description="Ignores params from the previous request. Set to true if they are specified in the baseUrl" %>
 
-<%--
-If the default sort field is anything other than "NAME", set the isDefault
-attribute to true on the field which is the default sort field.
---%>
 
 <cti:msgScope paths=".${nameKey}">
     <cti:msg2 var="linkTextMsg" key=".linkText"/>
@@ -50,9 +47,9 @@ attribute to true on the field which is the default sort field.
         </c:forEach>
     </c:if>
     <cti:param name="${sortParam}" value="${fieldName}"/>
-    <c:set var="sortIcon" value="icon-bullet-arrow-up" />
+    <c:set var="sortIcon" value="icon-bullet-arrow-up"/>
     <c:if test="${isSorted && !currentDescending || !isSorted && descendingByDefault}">
-        <c:set var="sortIcon" value="icon-bullet-arrow-down" />
+        <c:set var="sortIcon" value="icon-bullet-arrow-down"/>
         <cti:param name="${descendingParam}" value="true"/>
     </c:if>
 </cti:url>
@@ -62,8 +59,7 @@ attribute to true on the field which is the default sort field.
     <c:set var="sortClass" value="sorted ${currentDescending ? 'desc' : 'asc'}"/>
     <a href="javascript:void(0)" data-reload="${sortUrl}" class="${sortClass} ${styleClass}" ${moreAttributes}>
         <span title="${sortMsg}" class="fl">${linkTextMsg}</span>
-
-        <i title="" class="icon ${sortIcon}"></i>
+        <cti:icon icon="${sortIcon}"/>
     </a>
 </c:if>
 

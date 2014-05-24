@@ -306,10 +306,10 @@ yukon.ui = (function () {
         
             /** Reload or page a container */
             $(document).on('click', '[data-reload]', function(event) {
-                var elem = $(event.currentTarget),
-                url = elem.data('reload'),
-                target = elem.closest('[data-reloadable]'),
-                completeEvent = target.data('loadable');
+                var elem = $(this),
+                    url = elem.data('reload'),
+                    target = elem.closest('[data-reloadable]'),
+                    completeEvent = target.data('reloadable');
                 
                 if (target.length > 0) {
                     target.load(url, function() {
@@ -323,9 +323,24 @@ yukon.ui = (function () {
                 
                 return false;
             });
+            
+            /** Sort a table */
+            $(document).on('click', '.sortable', function(ev) {
+                var anchor = $(this),
+                    sort = anchor.parent().index(),
+                    container = anchor.closest('[data-url]'),
+                    url = container.data('url'),
+                    dir = anchor.is('.desc') ? 'asc' : 'desc';
+                
+                $.get(url, {sort: sort, dir: dir}).done(function(data) {
+                    container.html(data);
+                });
+                
+                return false;
+            });
 
             /** Elements that navigate on click */
-            $(document).on('click', '[data-href]', function (event){window.location = $(this).attr('data-href');});
+            $(document).on('click', '[data-href]', function(ev) { window.location = $(this).attr('data-href'); });
         
             /** Page blockers */
             $(document).on('click', '.f-blocker', mod.block);

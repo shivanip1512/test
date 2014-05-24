@@ -21,7 +21,7 @@
 <cti:default var="showIcon" value="true"/>
 <cti:default var="type" value="icon"/>
 
-<div class="dropdown-trigger usn clearfix ${pageScope.triggerClasses}" <c:if test="${not empty id}">id="${id}"</c:if>>
+<div class="dropdown-trigger usn clearfix ${pageScope.triggerClasses}" <c:if test="${not empty id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
     <c:choose>
         <c:when test="${type == 'link' && not empty pageScope.key}">
             <a class="button naked">

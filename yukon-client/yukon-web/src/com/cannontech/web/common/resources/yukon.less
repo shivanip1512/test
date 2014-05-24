@@ -252,9 +252,6 @@ table.nowrap td {
         background-color: #dae2ff;
     }
     
-    &.with-footer {
-        border-bottom: 1px solid #ccc
-    }
     &.separated tr:not(:last-child) {
         border-bottom: 1px dashed #ccc;
     }
@@ -331,17 +328,37 @@ table.nowrap td {
         cursor: pointer;
     }
     
-    i {
+    .icon {
         margin: 0;
         visibility: hidden;
     }
     
-    &.sorted i,
-    &:hover i  {
+    &.sorted .icon,
+    &:hover .icon {
         visibility: visible;
     }
-    &.sorted.asc i { background-position: -208px -48px; }
-    &.sorted.desc i { background-position: -176px -48px; }
+    &.sorted.asc .icon { background-position: -208px -48px; }
+    &.sorted.desc .icon { background-position: -176px -48px; }
+}
+
+.sortable {
+    color: @font-color;
+    
+    &:hover {
+        color: @primary-color;
+        cursor: pointer;
+    }
+    
+    .icon {
+        margin: 0;
+        float: none;
+        background-position: 16px 16px;
+    }
+    
+    &.asc .icon { background-position: -208px -48px; }
+    
+    &.desc .icon,
+    &:hover:not(.asc) .icon { background-position: -176px -48px; }
 }
 
 /* PROGRESS BARS */
@@ -778,47 +795,138 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
 }
 
 /* DATE/TIME PICKER */
-.datetimeEntry_wrap {display: inline-block;overflow: hidden;background: #ccc;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;float: left;margin-right: 5px;border: 1px solid #aaa;height: 26px;}
-.datetimeEntry_wrap.date {width: 147px;}
-.datetimeEntry_wrap.dateTime {min-width: 182px;}
-.datetimeEntry_wrap.time {width: 107px;}
-.datetimeEntry_wrap input {padding: 2px;float: left;height: 24px;border: solid 1px white;font-size:14px !important;}/* jquery ui is messing up the font-size */
-.datetimeEntry_wrap img {margin: 5px;}
-.datetimeEntry_wrap .datetimeEntry_control {display: none !important;}
-.datetimeEntry_wrap input[disabled] {color: #999;}
-.datetimeEntry_wrap input[disabled] + .ui-datepicker-trigger {cursor: auto;}
-.ui-datepicker.hide_minutes .ui_tpicker_minute_label,.ui-datepicker.hide_minutes .ui_tpicker_minute{display: none;}
-.datetimeEntry_wrap .timezone_container {line-height: 24px;margin-left: -31px;float: left;color: #999;font-size: 13px;padding-right: 5px;}
-input.datePicker, input.timePicker, input.dateTimePicker {border-radius: 2px 0 0 2px;}
-input.datePicker {width: 114px;}
-input.timePicker {width: 74px;}
-input.dateTimePicker {width: 150px;}
-.ui-datepicker-trigger:hover {cursor: pointer;}
+.datetimeEntry_wrap {
+    display: inline-block;
+    overflow: hidden;
+    background: #ccc;
+    border-radius: 2px;
+    float: left;
+    margin-right: 5px;
+    border: 1px solid #aaa;
+    height: 26px;
+}
+.datetimeEntry_wrap.date { width: 147px; }
+.datetimeEntry_wrap.dateTime { min-width: 182px; }
+.datetimeEntry_wrap.time { width: 107px; }
+.datetimeEntry_wrap input {
+    padding: 2px;
+    float: left;
+    height: 24px;
+    border: solid 1px white;
+    font-size:14px !important; /* jquery ui is messing up the font-size */
+}
+.datetimeEntry_wrap img { margin: 5px; }
+.datetimeEntry_wrap .datetimeEntry_control { display: none !important; }
+
+.datetimeEntry_wrap input[disabled] { color: #999; }
+.datetimeEntry_wrap input[disabled] + .ui-datepicker-trigger { cursor: auto; }
+
+.ui-datepicker.hide_minutes .ui_tpicker_minute_label,
+.ui-datepicker.hide_minutes .ui_tpicker_minute{
+    display: none;
+}
+.datetimeEntry_wrap .timezone_container {
+    line-height: 24px;
+    margin-left: -31px;
+    float: left;
+    color: #999;
+    font-size: 13px;
+    padding-right: 5px;
+}
+input.datePicker, 
+input.timePicker, 
+input.dateTimePicker {
+    border-radius: 2px 0 0 2px;
+}
+input.datePicker { width: 114px ;}
+input.timePicker { width: 74px; }
+input.dateTimePicker { width: 150px; }
+
+.ui-datepicker-trigger:hover { cursor: pointer; }
 
 /* DROPDOWN MENUS */
-.dropdown-trigger {display: inline-block; position: relative;}
-.dropdown-trigger > a > .icon:first-child {margin-right: 0;}
-.dropdown-trigger > a > .icon:nth-child(2) {margin-left: 0;}
+.dropdown-trigger { 
+    display: inline-block;
+    position: relative;
+}
+.dropdown-trigger > a > .icon:first-child { margin-right: 0; }
+.dropdown-trigger > a > .icon:nth-child(2) { margin-left: 0; }
 
-.has-actions .dropdown-trigger, .show-on-hover {visibility: hidden;}
+.has-actions .dropdown-trigger, 
+.show-on-hover { visibility: hidden; }
+
 .has-actions tr:hover .dropdown-trigger, 
 .has-actions li:hover .dropdown-trigger, 
 .has-actions .dropdown-trigger.menu-open, 
 tr:hover .show-on-hover,
 .title-bar:hover .show-on-hover, 
 .has-show-on-hover:hover .show-on-hover,
-li:hover .show-on-hover {visibility: visible;}
-.has-actions .action-column {width:42px;} /* only use when you need the action icon to have it's own column, ie: you don't know which column would be the last column */
+li:hover .show-on-hover {
+    visibility: visible;
+}
 
-.dropdown-menu {display: none;position: absolute;left: auto;top: 100%;text-align: left;z-index: 1000;float: left;min-width: 130px;padding: 4px 0;margin: 1px 0 0;list-style: none;background-color: #fff;border: 1px solid #ccc;border-radius: 2px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);background-clip: padding-box;font-size: 13px;}
-.dropdown-menu.long-menu-list {font-size: 11px;}
-.dropdown-menu.no-icons .icon {display: none;}
-.dropdown-menu li {margin-top: 3px;}
-.dropdown-menu li .icon {float: none;vertical-align: text-top;margin-left: 0;}
-.dropdown-menu a, .dropdown-menu .button.naked {display: block; padding: 0 15px; clear: both; font-weight: normal; line-height: 18px; color: @font-color; white-space: nowrap; text-decoration: none; cursor: pointer;}
-.dropdown-menu li a:hover, .dropdown-menu li .button.naked:hover, .dropdown-menu .active a, .dropdown-menu .active .button.naked, .dropdown-menu .active a:hover, .dropdown-menu .active .button.naked:hover {color: @primary-color; text-decoration: none; background-color: whiteSmoke;}
-.dropdown-menu .divider {height: 1px; margin: 3px 1px; overflow: hidden; background-color: #E5E5E5; border-bottom: 1px solid white;}
-.dropdown-trigger a {cursor: pointer;}
+/* Only use when you need the action icon to have it's own column;
+ * ie: you don't know which column would be the last column.
+ */
+.has-actions .action-column { width:42px; } 
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    left: auto;
+    top: 100%;
+    text-align: left;
+    z-index: 1000;
+    float: left;
+    min-width: 130px;
+    padding: 4px 0;
+    margin: 1px 0 0;
+    list-style: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    background-clip: padding-box;
+    font-size: 13px;
+}
+.dropdown-menu.long-menu-list { font-size: 11px; }
+.dropdown-menu.no-icons .icon { display: none; }
+.dropdown-menu li { margin-top: 3px; }
+.dropdown-menu li .icon {
+    float: none;
+    vertical-align: text-top;
+    margin-left: 0;
+}
+.dropdown-menu a, 
+.dropdown-menu .button.naked {
+    display: block;
+    padding: 0 15px;
+    clear: both; 
+    font-weight: normal; 
+    line-height: 18px; 
+    color: @font-color; 
+    white-space: nowrap; 
+    text-decoration: none; 
+    cursor: pointer;
+}
+.dropdown-menu li a:hover, 
+.dropdown-menu li .button.naked:hover, 
+.dropdown-menu .active a, 
+.dropdown-menu .active .button.naked, 
+.dropdown-menu .active a:hover, 
+.dropdown-menu .active .button.naked:hover {
+    color: @primary-color; 
+    text-decoration: none; 
+    background-color: whiteSmoke;
+}
+.dropdown-menu .divider {
+    height: 1px; 
+    margin: 3px 1px; 
+    overflow: hidden; 
+    background-color: #E5E5E5; 
+    border-bottom: 1px solid white;
+}
+.dropdown-trigger a { cursor: pointer; }
 
 /* CRITERIA BUTTON */
 .criteria-button {text-align: left;position: relative;}
