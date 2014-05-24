@@ -8,7 +8,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ attribute name="classes" description="CSS class names applied to the anchor element." %>
-<%@ attribute name="column" required="true" type="com.cannontech.web.dev.StyleGuideController.SortableColumn" %>
+<%@ attribute name="column" required="true" type="com.cannontech.web.common.sort.SortableColumn" %>
 
 <c:if test="${column.sortable}">
     <c:set var="classes" value="${classes} sortable"/>
