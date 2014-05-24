@@ -588,26 +588,9 @@
         <span class="label label-default">data-url</span> attribute. Click the headers in the table below.
     </p>
     <div data-url="tables/sort-example">
-        <table class="compact-results-table">
-            <thead>
-                <tr>
-                    <c:forEach var="column" items="${pops.columns}">
-                        <tags:sort column="${column}"/>
-                    </c:forEach>
-                </tr>
-            </thead>
-            <tfoot></tfoot>
-            <tbody>
-                <c:forEach var="pop" items="${pops.data}">
-                    <tr>
-                        <td>${pop.city}</td>
-                        <td>${pop.population}</td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
+        <%@ include file="sort-example.jsp" %>
     </div>
-    <h4>Java Code:</h4>
+    <h4>Sort Request Mapping:</h4>
 <pre class="code prettyprint">
 @RequestMapping(&quot;/styleguide/tables/sort-example&quot;)
 public String tables(ModelMap model, int sort, Direction dir) {
@@ -625,17 +608,23 @@ public String tables(ModelMap model, int sort, Direction dir) {
     
     Collections.sort(data, comparator);
     
-    SortableColumn h1 = new SortableColumn(dir, sort == 0 ? true : false, true, &quot;City&quot;);
-    SortableColumn h2 = new SortableColumn(dir, sort == 1 ? true : false, true, &quot;Population&quot;);
-    List&lt;SortableColumn&gt; headers = ImmutableList.of(h1, h2);
+    SortableColumn c1 = new SortableColumn(dir, sort == 0 ? true : false, true, &quot;City&quot;);
+    SortableColumn c2 = new SortableColumn(dir, sort == 1 ? true : false, true, &quot;Population&quot;);
+    List&lt;SortableColumn&gt; columns = ImmutableList.of(c1, c2);
     
-    SortableData pops = new SortableData(data, headers);
+    SortableData pops = new SortableData(data, columns);
     model.addAttribute(&quot;pops&quot;, pops);
     
     return &quot;styleguide/sort-example.jsp&quot;;
 }
 </pre>
-<h4>JSP Code:</h4>
+<h4>Page:</h4>
+<pre class="code prettyprint">
+&lt;div data-url=&quot;tables/sort-example&quot;&gt;
+    &lt;%@ include file=&quot;sort-example.jsp&quot; %&gt;
+&lt;/div&gt;
+</pre>
+<h4>sort-example.jsp:</h4>
 <pre class="code prettyprint">
 &lt;%@ page trimDirectiveWhitespaces=&quot;true&quot; %&gt;
 
