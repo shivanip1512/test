@@ -1981,5 +1981,342 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
     }
 }
 
+struct test_DNPInterface : public Cti::Protocol::DNPInterface
+{
+    using Cti::Protocol::DNPInterface::getCommand;
+};
+
+BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
+{
+    using Cti::Protocol::DNPInterface;
+
+    test_DNPInterface dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(4, 3);
+    dnp.setName("Test DNP device");
+    dnp.setCommand(DNPInterface::Command_Loopback);
+
+    CtiXfer xfer;
+
+    // Enable DNP timesync
+    dnp.setConfigData( 1, false, true, false, false, false, false );
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        byte_buffer request;
+        request << 0x05, 0x64, 0x08, 0xC4, 0x04, 0x00, 0x03, 0x00, 0xB4, 0xB8,
+                   0xC0, 0xC1, 0x01, 0x23, 0x0B;
+
+        //  copy them into int vectors so they display nicely
+        std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+        std::vector<int> expected(request.begin(), request.end());
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            output.begin(),
+            output.end(),
+            expected.begin(),
+            expected.end());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+
+        {
+            byte_buffer response;
+            response << 0x05, 0x64, 0x0A, 0x44, 0x03, 0x00, 0x04, 0x00, 0x7C, 0xAE;
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
+
+        {
+            // NEEDTIME and RESTART are enable in this response,
+            // RESTART has priority however NEEDTIME is expected to be scheduled
+            byte_buffer response;
+            response << 0xC1, 0xC1, 0x81, 0x90, 0x04, 0x0D, 0x14;
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        byte_buffer request;
+        request << 0x05, 0x64, 0x0E, 0xC4, 0x04, 0x00, 0x03, 0x00, 0x6D, 0xD3,
+                   0xC0, 0xC2, 0x02, 0x50, 0x01, 0x00, 0x07, 0x07, 0x00, 0x08,
+                   0x65;
+
+        //  copy them into int vectors so they display nicely
+        std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+        std::vector<int> expected(request.begin(), request.end());
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            output.begin(),
+            output.end(),
+            expected.begin(),
+            expected.end());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+
+    {
+            byte_buffer response;
+            response << 0x05, 0x64, 0x0A, 0x44, 0x03, 0x00, 0x04, 0x00, 0x7C, 0xAE;
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
+
+        {
+            // NEEDTIME is set again in this response
+            byte_buffer response;
+            response << 0xC2, 0xC2, 0x81, 0x10, 0x00, 0x11, 0xb9;
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(DNPInterface::Command_WriteTime, dnp.getCommand());
+
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        BOOST_REQUIRE_EQUAL(25, xfer.getOutCount());
+
+        {
+            std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + 10);
+
+            byte_buffer requestHeader;
+            requestHeader << 0x05, 0x64, 0x12, 0xc4, 0x04, 0x00, 0x03, 0x00, 0x1e, 0x7c;
+
+            std::vector<int> expected(requestHeader.begin(), requestHeader.end());
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                output.begin(),
+                output.end(),
+                expected.begin(),
+                expected.end());
+        }
+
+        {
+            // TODO: Find a way to generate a predictable timestamp (bytes[17:23])
+            // the request may change since the timestamp is generated internally
+
+            std::vector<int> output(xfer.getOutBuffer() + 10, xfer.getOutBuffer() + 17);
+
+            byte_buffer userData;
+            userData << 0xC0, 0xC3, 0x02, 0x32, 0x01, 0x07, 0x01;
+            // Not checked:
+            // bytes [17:23] : timestamp
+            // bytes [24:25] : CRC
+
+            std::vector<int> expected(userData.begin(), userData.end());
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                output.begin(),
+                output.end(),
+                expected.begin(),
+                expected.end());
+        }
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+
+        {
+            byte_buffer response;
+
+            // Header block, expecting 10-bytes, (all user data without the CRC)
+            // src address 0x0003
+            // dst address 0x0004
+            response << 0x05, 0x64, 0x0A, 0x44, 0x03, 0x00, 0x04, 0x00, 0x7C, 0xAE;
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
+
+        {
+            // this time leave internal indication to zero
+            byte_buffer response;
+            response << 0xC0, 0xC3, 0x81, 0x00, 0x00, 0xDD, 0xE2;
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+    }
+
+    {
+        Cti::Protocol::Interface::pointlist_t point_list;
+
+        dnp.getInboundPoints(point_list);
+
+        BOOST_CHECK_EQUAL(3, point_list.size());
+
+        {
+            CtiPointDataMsg *pd = point_list[0];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 1);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[1];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[2];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+        }
+
+        Cti::Protocol::Interface::stringlist_t string_list;
+
+        dnp.getInboundStrings(string_list);
+
+        BOOST_CHECK_EQUAL(6, string_list.size());
+
+        BOOST_CHECK_EQUAL(*string_list[0],
+            "Loopback successful");
+        BOOST_CHECK_EQUAL(*string_list[1],
+            "Internal indications:\n"
+            "Time synchronization needed\n"
+            "Device restart\n"
+            "Request parameters out of range\n");
+        BOOST_CHECK_EQUAL(*string_list[2],
+            "Attempting to clear Device Restart bit");
+        BOOST_CHECK_EQUAL(*string_list[3],
+            "Internal indications:\n"
+            "Time synchronization needed\n");
+        BOOST_CHECK_EQUAL(*string_list[4],
+            "Time sync sent");
+        BOOST_CHECK_EQUAL(*string_list[5],
+            ""); // no internal indication
+
+        delete_container(point_list);
+        delete_container(string_list);
+    }
+}
 
 BOOST_AUTO_TEST_SUITE_END()

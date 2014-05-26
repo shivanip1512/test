@@ -176,6 +176,7 @@ public:
     void getObjects( object_block_queue &object_queue );
     std::string getInternalIndications( void ) const;
     bool hasDeviceRestarted() const;
+    bool needsTime() const;
 
     enum FunctionCode
     {

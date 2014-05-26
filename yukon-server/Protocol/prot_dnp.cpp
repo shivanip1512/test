@@ -683,6 +683,18 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 }
             }
 
+            if( _app_layer.needsTime() && _command != Command_WriteTime )
+            {
+                Command_deq_itr itr = std::find(_additional_commands.begin(),
+                                                _additional_commands.end(),
+                                                Command_WriteTime);
+
+                if( itr == _additional_commands.end() )
+                {
+                    _additional_commands.insert(_additional_commands.begin(), Command_WriteTime);
+                }
+            }
+
             // Point value for the message regarding device restart.
             bool deviceRestarted = false;
 

@@ -312,6 +312,10 @@ bool ApplicationLayer::hasDeviceRestarted() const
     return _iin.restart;
 }
 
+bool ApplicationLayer::needsTime() const
+{
+    return _config && _config->enableDnpTimesyncs && _iin.need_time;
+}
 
 void ApplicationLayer::resetLink( void )
 {
