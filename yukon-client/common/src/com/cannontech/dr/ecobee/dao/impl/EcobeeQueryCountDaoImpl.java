@@ -19,7 +19,7 @@ import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
 import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 
 public class EcobeeQueryCountDaoImpl implements EcobeeQueryCountDao {
-    @Autowired YukonJdbcTemplate jdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     @Override
     public void incrementQueryCount(EcobeeQueryType queryType) {
@@ -36,9 +36,8 @@ public class EcobeeQueryCountDaoImpl implements EcobeeQueryCountDao {
         if (rowsAffected == 0) {
             SqlStatementBuilder insertSql = new SqlStatementBuilder();
             insertSql.append("INSERT INTO EcobeeQueryStatistics");
-            // TODO remove energy company
-            insertSql.append("(EnergyCompanyId, MonthIndex, YearIndex, QueryType, QueryCount)");
-            insertSql.values(4, now.getMonthOfYear(), now.getYear(), queryType, 1);
+            insertSql.append("(MonthIndex, YearIndex, QueryType, QueryCount)");
+            insertSql.values(now.getMonthOfYear(), now.getYear(), queryType, 1);
             jdbcTemplate.update(insertSql);
         }
     }
