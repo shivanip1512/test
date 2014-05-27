@@ -3,7 +3,6 @@ package com.cannontech.dr.ecobee.message;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 
-import com.cannontech.common.util.JsonSerializers;
 import com.cannontech.dr.ecobee.message.partial.Selection;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -25,12 +24,12 @@ public class RuntimeReportRequest {
         this.startDate = startDate;
         this.startInterval = startDate.get(DateTimeFieldType.minuteOfDay()) / 5;
         this.endDate = endDate;
-        this.endInterval = endDate.get(DateTimeFieldType.minuteOfDay()) / 5;;
+        this.endInterval = endDate.get(DateTimeFieldType.minuteOfDay()) / 5;
         this.selection = new Selection(SelectionType.THERMOSTATS, serialNumbers);
         this.columns = columns;
     }
 
-    @JsonSerialize(using=JsonSerializers.EcobeeDate.class)
+    @JsonSerialize(using=EcobeeJsonSerializers.Date.class)
     public Instant getStartDate() {
         return startDate;
     }
@@ -40,7 +39,7 @@ public class RuntimeReportRequest {
         return startInterval;
     }
 
-    @JsonSerialize(using=JsonSerializers.EcobeeDate.class)
+    @JsonSerialize(using=EcobeeJsonSerializers.Date.class)
     public Instant getEndDate() {
         return endDate;
     }
@@ -54,7 +53,7 @@ public class RuntimeReportRequest {
         return selection;
     }
 
-    @JsonSerialize(using=JsonSerializers.Csv.class)
+    @JsonSerialize(using=EcobeeJsonSerializers.Csv.class)
     public Iterable<String> getColumns() {
         return columns;
     }

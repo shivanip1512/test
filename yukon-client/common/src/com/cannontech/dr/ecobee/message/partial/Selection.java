@@ -2,7 +2,7 @@ package com.cannontech.dr.ecobee.message.partial;
 
 import java.util.Collections;
 
-import com.cannontech.common.util.JsonSerializers;
+import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -49,7 +49,7 @@ public class Selection {
         return selectionType.getEcobeeString();
     }
 
-    @JsonSerialize(using=JsonSerializers.Csv.class)
+    @JsonSerialize(using=EcobeeJsonSerializers.Csv.class)
     @JsonGetter("selectionMatch")
     public Iterable<String> getSerialNumbers() {
         return serialNumbers;

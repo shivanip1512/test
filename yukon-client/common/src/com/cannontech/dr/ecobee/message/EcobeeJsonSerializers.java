@@ -1,4 +1,4 @@
-package com.cannontech.common.util;
+package com.cannontech.dr.ecobee.message;
 
 import java.io.IOException;
 
@@ -18,31 +18,31 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.google.common.base.Joiner;
 
-public interface JsonSerializers {
+public interface EcobeeJsonSerializers {
 
-    class EcobeeDate extends JsonSerializer<Instant> {
-        private static final DateTimeFormatter drDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
+    class Date extends JsonSerializer<Instant> {
+        private static final DateTimeFormatter ecobeeDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
         
         @Override
         public void serialize(Instant date, JsonGenerator jsonGenerator, SerializerProvider notUsed)
                 throws IOException, JsonProcessingException {
-            String dateString = drDateFormatter.print(date);
+            String dateString = ecobeeDateFormatter.print(date);
             jsonGenerator.writeString(dateString);
         }
     }
 
-    class EcobeeTime extends JsonSerializer<Instant> {
-        private static final DateTimeFormatter drDateFormatter = DateTimeFormat.forPattern("HH:mm:ss").withZoneUTC();
+    class Time extends JsonSerializer<Instant> {
+        private static final DateTimeFormatter ecobeeTimeFormatter = DateTimeFormat.forPattern("HH:mm:ss").withZoneUTC();
 
         @Override
         public void serialize(Instant date, JsonGenerator jsonGenerator, SerializerProvider notUsed)
                 throws IOException, JsonProcessingException {
-            String dateString = drDateFormatter.print(date);
+            String dateString = ecobeeTimeFormatter.print(date);
             jsonGenerator.writeString(dateString);
         }
     }
 
-    class EcobeeRuntimeReportRow extends JsonDeserializer<RuntimeReportRow> {
+    class RuntimeReportRowJson extends JsonDeserializer<RuntimeReportRow> {
         private static final DateTimeFormatter localDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         @Override
         public RuntimeReportRow deserialize(JsonParser parser, DeserializationContext context)

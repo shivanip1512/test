@@ -2,7 +2,7 @@ package com.cannontech.dr.ecobee.message.partial;
 
 import org.joda.time.Instant;
 
-import com.cannontech.common.util.JsonSerializers;
+import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -39,22 +39,22 @@ public class DutyCycleEvent {
         return type;
     }
 
-    @JsonSerialize(using=JsonSerializers.EcobeeDate.class)
+    @JsonSerialize(using=EcobeeJsonSerializers.Date.class)
     public Instant getStartDate() {
         return startDate;
     }
 
-    @JsonSerialize(using=JsonSerializers.EcobeeTime.class)
+    @JsonSerialize(using=EcobeeJsonSerializers.Time.class)
     public Instant getStartTime() {
         return startDate;
     }
 
-    @JsonSerialize(using=JsonSerializers.EcobeeDate.class)
+    @JsonSerialize(using=EcobeeJsonSerializers.Date.class)
     public Instant getEndDate() {
         return endDate;
     }
 
-    @JsonSerialize(using=JsonSerializers.EcobeeTime.class)
+    @JsonSerialize(using=EcobeeJsonSerializers.Time.class)
     public Instant getEndTime() {
         return endDate;
     }
