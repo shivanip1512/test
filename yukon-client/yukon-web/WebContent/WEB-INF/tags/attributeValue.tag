@@ -1,21 +1,19 @@
 <%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
 <%@ attribute name="device" required="true" type="com.cannontech.common.pao.YukonDevice" %>
 <%@ attribute name="attribute" required="true" type="com.cannontech.common.pao.attribute.model.Attribute" %>
 
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-
-<%@ attribute name="showHistoricalReadings" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="showHistoricalReadings" type="java.lang.Boolean" %>
 
 <cti:attributeResolver device="${device}" attribute="${attribute}" var="pointId"/>
 <c:choose>
     <c:when test="${pointId == 0}">
-        <span class="error">
-            <i:inline key="yukon.common.attributes.pointNotFound"/>
-        </span>
+        <span class="error"><i:inline key="yukon.common.attributes.pointNotFound"/></span>
     </c:when>
     <c:otherwise>
         <span class="wsnw">
