@@ -34,7 +34,7 @@ public class RuntimeReport {
         return runtimeReports;
     }
     
-    public static Function<RuntimeReport, String> ToSerialNumbers = new Function<RuntimeReport, String>() {
+    public static final Function<RuntimeReport, String> TO_SERIAL_NUMBER = new Function<RuntimeReport, String>() {
         @Override
         public String apply(RuntimeReport report) {
             return report.getThermostatIdentifier();

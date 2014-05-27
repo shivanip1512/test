@@ -56,7 +56,7 @@ public class RuntimeReportRow {
         return thermostatTime;
     }
 
-    public static Comparator<RuntimeReportRow> OnThermostatTime = new Comparator<RuntimeReportRow>() {
+    public static final Comparator<RuntimeReportRow> ON_THERMOSTAT_TIME = new Comparator<RuntimeReportRow>() {
         @Override
         public int compare(RuntimeReportRow rowA, RuntimeReportRow rowB) {
             return rowA.getThermostatTime().compareTo(rowB.getThermostatTime());

@@ -150,7 +150,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         Set<String> missingSerialNumbers = new HashSet<>(serialNumbers);
         if (response.getReportList() != null) {
             Iterables.removeAll(missingSerialNumbers, 
-                                Lists.transform(response.getReportList(), RuntimeReport.ToSerialNumbers));
+                                Lists.transform(response.getReportList(), RuntimeReport.TO_SERIAL_NUMBER));
         }
 
         for (String missingSerialNumber : missingSerialNumbers) {
@@ -162,7 +162,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         if (response.getReportList() != null) {
             for (RuntimeReport runtimeReport : response.getReportList()) {
                 List<RuntimeReportRow> sortedReports = new ArrayList<>(runtimeReport.getRuntimeReports());
-                Collections.sort(sortedReports, RuntimeReportRow.OnThermostatTime);
+                Collections.sort(sortedReports, RuntimeReportRow.ON_THERMOSTAT_TIME);
 
                 LocalDateTime reportStartDate = sortedReports.get(0).getThermostatTime();
                 Period offsetPeriod = new Period(requestStartDate, reportStartDate.toDateTime(DateTimeZone.UTC));
