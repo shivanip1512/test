@@ -18,7 +18,7 @@
         <%-- The setting box needs to be hidden in certain cases --%>
         <c:set var="classes" value=""/>        
         
-        <div class="setting clearfix column-6-18 ${classes}" id="${field.fieldName}">
+        <div class="setting clearfix column-6-18 ${classes}" data-display-item="${field.fieldName}">
             <div class="column one">${field.displayName}</div>
             <div class="column two detail nogutter">
                 <c:choose>

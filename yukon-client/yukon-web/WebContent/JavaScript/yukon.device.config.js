@@ -6,16 +6,9 @@ yukon.namespace('yukon.deviceConfig');
  */
 yukon.deviceConfig = (function () {
 
-    function visibleFilter(){
-        return $(this).css('display') !== 'none';
-    }
-    function hiddenFilter(){
-        return $(this).css('display') === 'none';
-    }
-    
     var _determineDisplayItemAddButtonVisibility = function() {
-        var totalElems = $("[id^='displayItem']"),
-            visibleElems = totalElems.filter(visibleFilter);
+        var totalElems = $('[data-display-item]'),
+            visibleElems = totalElems.filter(":visible");
         
         if (visibleElems.length < totalElems.length) {
             $('#showNextDiv').show();
@@ -33,12 +26,12 @@ yukon.deviceConfig = (function () {
     },
     
     _showSandwichedSlotDisabledEntries = function() {
-        var visibleElems = $("[id^='displayItem']").filter(visibleFilter);
+        var visibleElems = $('[data-display-item]').filter(":visible");
         visibleElems.last().closest('div').prevAll().show();
     },
     
     _hideSlotDisabledEntries = function() {
-        var displayItems = $("[id^='displayItem']"),
+        var displayItems = $('[data-display-item]'),
             filter = function() {
                 return $(this).find(':input').val() !== '0';
             },
@@ -54,8 +47,8 @@ yukon.deviceConfig = (function () {
     },
     
     _handleVisibleElemsAndButtons = function() {
-        var totalElems = $("[id^='displayItem']"),
-            hiddenElems = totalElems.filter(hiddenFilter);
+        var totalElems = $('[data-display-item]'),
+            hiddenElems = totalElems.filter(":hidden");
         
         if (hiddenElems.length <= totalElems.length) {
             $('#showNextDiv').show();
@@ -250,8 +243,8 @@ yukon.deviceConfig = (function () {
             
             $("#showNextFieldBtn").on("click", function() {
                 // Show the next hidden display item.
-                var hiddenElems = $("[id^='displayItem']").filter(":hidden");
-                $('#' + hiddenElems[0].id).show();
+                var hiddenElems = $('[data-display-item]').filter(":hidden");
+                $(hiddenElems[0]).show();
                 _determineDisplayItemAddButtonVisibility();
             });
             
@@ -265,12 +258,12 @@ yukon.deviceConfig = (function () {
             $("#category-popup").on("click", function(event) {
                 if ($(event.target).closest('#showNextFieldBtn').length > 0) {
                     // Show the next hidden display item.
-                    var hiddenElems = $("[id^='displayItem']").filter(":hidden"),
-                        visibleElems = $("[id^='displayItem']").filter(":visible");
-                    if(hiddenElems.length < $("[id^='displayItem']").length) {
-                        $('#' + hiddenElems[0].id).show();
+                    var hiddenElems = $('[data-display-item]').filter(":hidden"),
+                        visibleElems = $('[data-display-item]').filter(":visible");
+                    if(hiddenElems.length < $('[data-display-item]').length) {
+                        $(hiddenElems[0]).show();
                     }
-                    if (visibleElems.length + 1 < $("[id^='displayItem']").length) {
+                    if (visibleElems.length + 1 < $('[data-display-item]').length) {
                         $('#showNextDiv').show();
                     } else {
                         $('#showNextDiv').hide();
