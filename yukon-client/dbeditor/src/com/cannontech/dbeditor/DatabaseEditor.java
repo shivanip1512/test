@@ -2896,7 +2896,7 @@ private void updateConnectionStatus(IServerConnection conn) {
         }
 
         if (lastConnToVanGoghStatus != ConnectionStatus.CONNECTED) {
-            fireMessage( new MessageEvent( this, "Connection to Message Dispatcher Established. " + 
+            fireMessage( new MessageEvent( this, "Connection to Dispatch established. " + 
                     clientConn.getConnectionUri().getRawAuthority()) );
             
             lastConnToVanGoghStatus = ConnectionStatus.CONNECTED;
@@ -2911,7 +2911,7 @@ private void updateConnectionStatus(IServerConnection conn) {
         }
 
         if (lastConnToVanGoghStatus == ConnectionStatus.CONNECTED) {
-            fireMessage( new MessageEvent( this, "Lost Connection to Message Dispatcher. " + 
+            fireMessage( new MessageEvent( this, "Lost connection to Dispatch. " + 
                     clientConn.getConnectionUri().getRawAuthority() + ". Reconnecting.", MessageEvent.ERROR_MESSAGE) );
 
             lastConnToVanGoghStatus = ConnectionStatus.DISCONNECTED;
@@ -2920,7 +2920,7 @@ private void updateConnectionStatus(IServerConnection conn) {
             }
         }
         else if (lastConnToVanGoghStatus == ConnectionStatus.UNDEFINED && clientConn.isConnectionFailed()) {
-            fireMessage( new MessageEvent( this, "Unable to connect to Message Dispatcher. " + 
+            fireMessage( new MessageEvent( this, "Unable to connect to Dispatch. " + 
                     clientConn.getConnectionUri().getRawAuthority() + ". Reconnecting.", MessageEvent.ERROR_MESSAGE) );
 
             lastConnToVanGoghStatus = ConnectionStatus.DISCONNECTED;
