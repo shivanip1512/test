@@ -33,6 +33,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.SimpleMeterRowMapper;
 import com.cannontech.core.service.impl.PaoLoader;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -320,12 +321,7 @@ public class MeterDaoImpl implements MeterDao {
                 return sql;
             }
         };
-        List<Integer> deviceIds = template.query(sqlGenerator, ids, new ParameterizedRowMapper<Integer>() {
-            @Override
-            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getInt("DeviceID");
-            }
-        });
+        List<Integer> deviceIds = template.query(sqlGenerator, ids, RowMapper.INTEGER);
         return deviceIds;
     }
 

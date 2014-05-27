@@ -12,6 +12,10 @@ import com.cannontech.amr.disconnect.model.DisconnectResult;
 import com.cannontech.amr.disconnect.model.FilteredDevices;
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
 import com.cannontech.amr.disconnect.service.DisconnectRfnService;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.RfnMeterDisconnectArming;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
@@ -28,7 +32,14 @@ public class DisconnectRfnStrategy implements DisconnectStrategy {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DisconnectRfnService disconnectRfnService;
     
+    private final RfnMeterDisconnectArming mode;
     private Map<PaoType, PaoDefinition> disconnectTypes;
+   
+    @Autowired
+    public DisconnectRfnStrategy(ConfigurationSource configurationSource) {
+        String arm = configurationSource.getString(MasterConfigStringKeysEnum.RFN_METER_DISCONNECT_ARMING, "FALSE");
+        mode = RfnMeterDisconnectArming.getForCparm(arm);
+    }
 
     @Override
     public FilteredDevices filter(Iterable<SimpleDevice> meters) {
@@ -36,6 +47,7 @@ public class DisconnectRfnStrategy implements DisconnectStrategy {
 
         Iterable<SimpleDevice> metersWithIntegratedDisconnect =
             Iterables.filter(meters, new Predicate<SimpleDevice>() {
+                @Override
                 public boolean apply(SimpleDevice d) {
                     return disconnectTypes.get(d.getDeviceType()) != null;
 
@@ -46,16 +58,14 @@ public class DisconnectRfnStrategy implements DisconnectStrategy {
         return filteredDevices;
     }
 
-
     @Override
     public void cancel(DisconnectResult result, YukonUserContext userContext) {
         disconnectRfnService.cancel(result, userContext);
     }
 
-
     @Override
-    public void execute(DisconnectCommand command, Iterable<SimpleDevice> meters, DisconnectCallback callback,
-                        CommandRequestExecution execution, YukonUserContext userContext) {
+    public void execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
+                        CommandRequestExecution execution, DisconnectResult result, YukonUserContext userContext) {
         disconnectRfnService.execute(command, meters, callback, execution, userContext);
     }
     
@@ -65,9 +75,27 @@ public class DisconnectRfnStrategy implements DisconnectStrategy {
             paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_RFN);
         disconnectTypes =
             Maps.uniqueIndex(paoDefinitions, new Function<PaoDefinition, PaoType>() {
+                @Override
                 public PaoType apply(PaoDefinition daoDefinition) {
                     return daoDefinition.getType();
                 }
             });
+    }
+
+    @Override
+    public boolean supportsArm(DeviceCollection deviceCollection) {
+        if (mode == RfnMeterDisconnectArming.ARM || mode == RfnMeterDisconnectArming.BOTH) {
+            Iterable<SimpleDevice> rfnDevices =
+                Iterables.filter(deviceCollection.getDeviceList(), new Predicate<SimpleDevice>() {
+                    @Override
+                    public boolean apply(SimpleDevice d) {
+                        return d.getDeviceType().isRfn();
+                    }
+                });
+            if (rfnDevices.iterator().hasNext()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

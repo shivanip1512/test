@@ -156,11 +156,9 @@
 
                             <%-- DISCONNECT --%>
                             <cti:checkRolesAndProperties value="GROUP_DISCONNECT_CONTROL">
-                                <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
                                 <tags:collectionActionTr buttonValue="${disconnectLabel}"
                                     description="${disconnectDescription}" action="${disconnectUrl}"
                                     deviceCollection="${deviceCollection}" />
-                                </cti:checkRolesAndProperties>
                             </cti:checkRolesAndProperties>
                         </table>
                     </tags:sectionContainer>

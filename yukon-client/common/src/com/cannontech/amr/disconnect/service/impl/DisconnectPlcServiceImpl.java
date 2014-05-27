@@ -1,9 +1,7 @@
 package com.cannontech.amr.disconnect.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -32,15 +30,15 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     
-    private Logger log = YukonLogManager.getLogger(DisconnectPlcServiceImpl.class);
+    private final Logger log = YukonLogManager.getLogger(DisconnectPlcServiceImpl.class);
     private static final int MINUTES_TO_WAIT = 1;
     
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
@@ -55,10 +53,10 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
                                                          userContext.getYukonUser(), false);
         }
     }
-    
+            
     @Override
-    public void execute(final DisconnectCommand command, Iterable<SimpleDevice> meters, DisconnectCallback callback,
-                        CommandRequestExecution execution, YukonUserContext userContext) {
+    public void execute(final DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
+                        CommandRequestExecution execution, DisconnectResult result, LiteYukonUser user) {
 
         List<CommandRequestDevice> commands =
             Lists.transform(Lists.newArrayList(meters), new Function<SimpleDevice, CommandRequestDevice>() {
@@ -70,31 +68,28 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
                     return request;
                 }
             });
+        // Copy list so we don't create new requests every time the list is traversed.
+        commands = Lists.newArrayList(commands);
         if (log.isDebugEnabled()) {
             for (CommandRequestDevice c : commands) {
                 log.debug("PLC send" + c);
             }
         }
+        Callback commandCompletionCallback = new Callback(callback, meters);
+        result.setCommandCompletionCallback(commandCompletionCallback);
         CommandRequestExecutionTemplate<CommandRequestDevice> template =
-            commandRequestDeviceExecutor.getExecutionTemplate(DeviceRequestType.GROUP_CONNECT_DISCONNECT,
-                                                              userContext.getYukonUser());
-        template.execute(commands, new Callback(callback, meters), execution);
+            commandRequestDeviceExecutor.getExecutionTemplate(DeviceRequestType.GROUP_CONNECT_DISCONNECT, user);
+        template.execute(commands, commandCompletionCallback, execution);
     }
 
     private class Callback implements CommandCompletionCallback<CommandRequestDevice> {
 
-        private DisconnectCallback callback;
-        Map<SimpleDevice,SimpleDevice> meters;
+        private final DisconnectCallback callback;
+        Set<SimpleDevice> meters;
         
-        Callback(DisconnectCallback callback, Iterable<SimpleDevice> meters) {
+        Callback(DisconnectCallback callback, Set<SimpleDevice> meters) {
             this.callback = callback;
-            callback.setCommandCompletionCallback(this);
-            this.meters = new HashMap<SimpleDevice, SimpleDevice>(Maps.uniqueIndex(meters, new Function<SimpleDevice, SimpleDevice>() {
-                @Override
-                public SimpleDevice apply(SimpleDevice device) {
-                    return device;
-                }
-            }));
+            this.meters = meters;
         }
 
         @Override
@@ -117,15 +112,15 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
         public void cancel() {
             log.debug("PLC Cancel (CommandCompletionCallback)");
             if (log.isDebugEnabled()) {
-                log.debug(new Date() + " Wait " + MINUTES_TO_WAIT + " minutes before proccessing cancelations.");
+                log.debug("Wait " + MINUTES_TO_WAIT + " minutes before proccessing cancelations.");
             }
             Runnable cancelationRunner = new Runnable() {
                 @Override
                 public void run() {
                     if (log.isDebugEnabled()) {
-                        log.debug(new Date() + " Proccessing cancelations for meters:" + meters.keySet());
+                        log.debug("Proccessing cancelations for meters:" + meters);
                     }
-                    for (SimpleDevice meter : meters.keySet()) {
+                    for (SimpleDevice meter : meters) {
                         callback.canceled(meter);
                     }
                     log.debug("PLC Cancel Complete (CommandCompletionCallback)");
@@ -181,7 +176,6 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
 
         @Override
         public void receivedLastResultString(CommandRequestDevice command, String value) {}
-        
     }
     
 }

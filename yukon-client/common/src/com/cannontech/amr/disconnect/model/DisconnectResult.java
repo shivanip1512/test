@@ -3,7 +3,7 @@ package com.cannontech.amr.disconnect.model;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
@@ -38,11 +38,11 @@ public class DisconnectResult implements Completable, ExceptionStatus, CancelSta
     private CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback;
     
     //This map contains failed devices
-    private Map<SimpleDevice, SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<>(100, .75f, 1);
+    private final Map<SimpleDevice, SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<>(100, .75f, 1);
     
 
     //This map contains successful devices
-    private Map<SimpleDevice, Instant> timestamps = new ConcurrentHashMap<>(100, .75f, 1);
+    private final Map<SimpleDevice, Instant> timestamps = new ConcurrentHashMap<>(100, .75f, 1);
     
     @Override
     public boolean isComplete() {

@@ -1,6 +1,7 @@
 package com.cannontech.amr.disconnect.service.impl;
 
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,7 +21,6 @@ import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
@@ -35,7 +35,6 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.Lists;
 
 public class DisconnectRfnServiceImpl implements DisconnectRfnService {
 
@@ -44,16 +43,15 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     private Executor executor;
-
-    private Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
-
+    private final Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
+    
     @Override
     public void cancel(DisconnectResult result, YukonUserContext userContext) {
        //For RF devices, it is not possible to cancel for the devices that were already sent to NM
     }
     
     @Override
-    public void execute(final DisconnectCommand command, final Iterable<SimpleDevice> meters,
+    public void execute(final DisconnectCommand command, final Set<SimpleDevice> meters,
                         final DisconnectCallback disconnectCallback,
                         final CommandRequestExecution execution,
                         final YukonUserContext userContext) {
@@ -61,8 +59,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
             @Override
             public void run() {
                 Iterable<YukonMeter> yukonMeters = meterDao.getMetersForYukonPaos(meters);
-                int deviceCount = Lists.newArrayList(meters).size();
-                PendingRequests pendingRequests = new PendingRequests(deviceCount);
+                PendingRequests pendingRequests = new PendingRequests(meters.size());
                 for (YukonMeter meter : yukonMeters) {
                     Callback callback =
                         new Callback(meter, disconnectCallback, pendingRequests, execution, userContext);
@@ -81,7 +78,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     }
     
     private class PendingRequests {
-        private AtomicInteger pendingRequests;
+        private final AtomicInteger pendingRequests;
 
         PendingRequests(int deviceCount) {
             pendingRequests = new AtomicInteger(deviceCount);
@@ -98,10 +95,10 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
 
     private class Callback implements RfnMeterDisconnectCallback {
         MessageSourceAccessor messageSourceAccessor;
-        private DisconnectCallback callback;
-        private SimpleDevice meter;
-        private PendingRequests pendingRequests;
-        private CommandRequestExecution execution;
+        private final DisconnectCallback callback;
+        private final SimpleDevice meter;
+        private final PendingRequests pendingRequests;
+        private final CommandRequestExecution execution;
 
         Callback(YukonMeter meter, DisconnectCallback callback, PendingRequests pendingRequests,
                  CommandRequestExecution execution, YukonUserContext userContext) {

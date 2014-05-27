@@ -7,9 +7,7 @@
 <cti:standardPage module="tools" page="bulk.disconnect.results.recent">
 
     <c:if test="${empty results}">
-        <p>
-            <i:inline key="yukon.common.search.noResultsFound"/>
-        </p>
+        <p><i:inline key="yukon.common.search.noResultsFound"/></p>
     </c:if>
     <c:if test="${not empty results}">
         <table class="compact-results-table">

@@ -26,10 +26,6 @@ import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
-import com.cannontech.common.config.RfnMeterDisconnectArming;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
@@ -38,52 +34,38 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 
-@CheckRoleProperty({ YukonRoleProperty.GROUP_DISCONNECT_CONTROL, YukonRoleProperty.ALLOW_DISCONNECT_CONTROL })
+@CheckRoleProperty(YukonRoleProperty.GROUP_DISCONNECT_CONTROL)
 @Controller
 @RequestMapping("/disconnect/*")
 public class DisconnectController {
     
     private static final Logger log = YukonLogManager.getLogger(DisconnectController.class);
 
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired private DisconnectService disconnectService;
     @Autowired private MeterDao meterDao;
     @Autowired private AlertService alertService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-        
+
     @RequestMapping("home")
     public String home(ModelMap model, DeviceCollection deviceCollection) throws ServletException {
-        log.debug("home");
         model.addAttribute("deviceCollection", deviceCollection);
-        String arm = configurationSource.getString(MasterConfigStringKeysEnum.RFN_METER_DISCONNECT_ARMING, "FALSE");
-        RfnMeterDisconnectArming mode = RfnMeterDisconnectArming.getForCparm(arm);
-  
-        if (mode == RfnMeterDisconnectArming.ARM || mode == RfnMeterDisconnectArming.BOTH) {
-            Iterable<SimpleDevice> rfnDevices =
-                Iterables.filter(deviceCollection.getDeviceList(), new Predicate<SimpleDevice>() {
-                    public boolean apply(SimpleDevice d) {
-                        return d.getDeviceType().isRfn();
-                    }
-                });
-            if (rfnDevices.iterator().hasNext()) {
-                model.addAttribute("displayArmLink", "true");
-            }
+        if (disconnectService.supportsArm(deviceCollection)) {
+            model.addAttribute("displayArmLink", "true");
         }
+       
         return "disconnect/home.jsp";
     }
 
     @RequestMapping("action")
     public String action(ModelMap model, DeviceCollection deviceCollection, String key, DisconnectCommand command)
             throws ServletException {
-        log.debug("execute");
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("command", command);   
         if (StringUtils.isNotBlank(key)) {
             model.addAttribute("result", disconnectService.getResult(key));
         }
+        
         return "disconnect/resultDetail.jsp";
     }
 
@@ -101,30 +83,31 @@ public class DisconnectController {
         model.addAllAttributes(deviceCollection.getCollectionParameters());
         model.addAttribute("key", result.getKey());
         model.addAttribute("command", command);   
+        
         return "redirect:action";
     }
 
     @RequestMapping("recentResults")
     public String recentResults(ModelMap model) throws ServletException {
-        log.debug("recentResults");
-        model.addAttribute("results", disconnectService.getResults());  
+        model.addAttribute("results", disconnectService.getResults()); 
+        
         return "disconnect/results.jsp";
     }
 
     @RequestMapping("resultDetail")
     public String resultDetail(ModelMap model, String resultKey, DisconnectCommand command) throws ServletException {
-        log.debug("resultDetail");
         DisconnectResult result = disconnectService.getResult(resultKey);
         model.addAttribute("result", result);
         model.addAttribute("command", command);
+        
         return "disconnect/resultDetail.jsp";
     }
 
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     public @ResponseBody Map<String, String> cancel(String key, YukonUserContext userContext, DisconnectCommand command) {
-        log.debug("cancel");
         disconnectService.cancel(key, userContext, command);
-        return Collections.singletonMap("success", "success");
+        
+        return Collections.singletonMap("success", "true");
     }
 
     private class AlertCallback implements SimpleCallback<DisconnectResult> {
@@ -148,7 +131,7 @@ public class DisconnectController {
                 log.debug("completedCount=" + result.getCompletedCount());
             }
             int percentSuccess =
-                result.getCompletedCount() > 0 ? (int) successCount * 100 / result.getCompletedCount() : 0;
+                result.getCompletedCount() > 0 ? successCount * 100 / result.getCompletedCount() : 0;
             if (result.isExceptionOccured()) {
                 template = new ResolvableTemplate("yukon.common.alerts.disconnectCompletion.failed");
                 int shouldHaveCompleted = result.getTotalCount() - result.getNotAttemptedCount();  

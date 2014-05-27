@@ -500,8 +500,9 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         log.debug("Sending cancel request. groupMessageId = " + messageListener.getGroupMessageId());
         long commandsCanceled = porterRequestCancelService.cancelRequests(messageListener.getGroupMessageId(), CANCEL_PRIORITY);
         
-        if(updateExecutionStatus){
-            completeCommandRequestExecutionRecord(messageListener.getCommandRequestExecution(), CommandRequestExecutionStatus.CANCELLED);
+        if (updateExecutionStatus) {
+            completeCommandRequestExecutionRecord(messageListener.getCommandRequestExecution(),
+                                                  CommandRequestExecutionStatus.CANCELLED);
         }
         
         // cancel callback

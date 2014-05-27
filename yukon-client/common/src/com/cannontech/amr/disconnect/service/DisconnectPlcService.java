@@ -1,10 +1,12 @@
 package com.cannontech.amr.disconnect.service;
 
+import java.util.Set;
+
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectResult;
-import com.cannontech.amr.disconnect.service.DisconnectCallback;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 
 public interface DisconnectPlcService {
@@ -12,10 +14,8 @@ public interface DisconnectPlcService {
     /**
      * Send connect, disconnect or arm command to the given devices.
      */
-    void execute(DisconnectCommand command, Iterable<SimpleDevice> meters, DisconnectCallback callback,
-                 CommandRequestExecution execution,
-                 YukonUserContext userContext);
-
+    public void execute(final DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
+                        CommandRequestExecution execution, DisconnectResult result, LiteYukonUser user);
     /**
      * Send cancel command to the given devices.
      */

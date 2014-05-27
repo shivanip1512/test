@@ -42,7 +42,7 @@ public interface CommandRequestExecutor<T> {
      * {@link CommandCompletionCallback#complete()} methods are called in that order.
      * 
      * @param updateExecutionStatus - If set to "true" the execution status will be set to
-     *            CANCELLED. If set to "false" the execution status will not be unchanged.
+     *            CANCELLED. If set to "false" the execution status will not be changed.
      *            
      *            Example: Before calling this method execution status is set to CANCELLING. This
      *            method only works on PLC devices. If the attempt is made

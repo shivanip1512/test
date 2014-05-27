@@ -22,7 +22,7 @@ public interface DisconnectService {
     DisconnectResult getResult(String key);
     
     /**
-     * Attempts to cancel the command sent
+     * Attempts to cancel the command sent.
      */
     void cancel(String key, YukonUserContext userContext, DisconnectCommand command);
     
@@ -30,4 +30,9 @@ public interface DisconnectService {
      * Returns the list of completed and pending results
      */
     Iterable<DisconnectResult> getResults();
+    
+    /**
+     * Returns true if the devices can be armed.
+     */
+    boolean supportsArm(DeviceCollection deviceCollection);
 }

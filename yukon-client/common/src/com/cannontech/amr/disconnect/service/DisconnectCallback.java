@@ -54,8 +54,4 @@ public interface DisconnectCallback extends Completable, CancelStatus{
      */
     void processingExceptionOccured(String reason);
     
-    /**
-     * CommandCompletionCallback is needed to be able to cancel command sent to PLC meters
-     */
-    void setCommandCompletionCallback(CommandCompletionCallback<CommandRequestDevice> callback);
 }

@@ -13,6 +13,7 @@ import com.cannontech.amr.disconnect.model.FilteredDevices;
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
 import com.cannontech.amr.disconnect.service.DisconnectPlcService;
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
@@ -41,6 +42,7 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
 
         Iterable<SimpleDevice> metersWithIntegratedDisconnect =
             Iterables.filter(meters, new Predicate<SimpleDevice>() {
+                @Override
                 public boolean apply(SimpleDevice d) {
                     return integratedTypes.get(d.getDeviceType()) != null;
                 }
@@ -52,6 +54,7 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
 
         Iterable<SimpleDevice> metersWithDiconnectCollar =
             Iterables.filter(meters, new Predicate<SimpleDevice>() {
+                @Override
                 public boolean apply(SimpleDevice d) {
                     return collarTypes.get(d.getDeviceType()) != null;
                 }
@@ -67,13 +70,15 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
         final Map<Integer, Integer> metersIdWithValidAddress =
             Maps.uniqueIndex(meterDao.getMetersWithDisconnectCollarAddress(deviceIds),
                              new Function<Integer, Integer>() {
-                                 public Integer apply(Integer deviceId) {
+                                 @Override
+                                public Integer apply(Integer deviceId) {
                                      return deviceId;
                                  }
                              });
 
         Iterable<SimpleDevice> metersWithValidAddress =
             Iterables.filter(metersWithDiconnectCollar, new Predicate<SimpleDevice>() {
+                @Override
                 public boolean apply(SimpleDevice d) {
                     return metersIdWithValidAddress.get(d.getDeviceId()) != null;
                 }
@@ -84,6 +89,7 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
 
         Iterable<SimpleDevice> metersNotConfigured =
             Iterables.filter(metersWithDiconnectCollar, new Predicate<SimpleDevice>() {
+                @Override
                 public boolean apply(SimpleDevice d) {
                     return metersIdWithValidAddress.get(d.getDeviceId()) == null;
                 }
@@ -101,9 +107,9 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
     }
     
     @Override
-    public void execute(DisconnectCommand command, Iterable<SimpleDevice> meters, DisconnectCallback callback,
-                        CommandRequestExecution execution, YukonUserContext userContext) {
-        disconnectPlcService.execute(command, meters, callback, execution, userContext);
+    public void execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
+                        CommandRequestExecution execution, DisconnectResult result, YukonUserContext userContext) {
+        disconnectPlcService.execute(command, meters, callback, execution, result, userContext.getYukonUser());
     }
     
     @PostConstruct
@@ -121,6 +127,7 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
         // devices with integrated disconnect
         integratedTypes =
             Maps.uniqueIndex(integrated, new Function<PaoDefinition, PaoType>() {
+                @Override
                 public PaoType apply(PaoDefinition daoDefinition) {
                     return daoDefinition.getType();
                 }
@@ -129,9 +136,15 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
         // devices with collar
         collarTypes =
             Maps.uniqueIndex(collar, new Function<PaoDefinition, PaoType>() {
+                @Override
                 public PaoType apply(PaoDefinition daoDefinition) {
                     return daoDefinition.getType();
                 }
             });
+    }
+
+    @Override
+    public boolean supportsArm(DeviceCollection deviceCollection) {
+        return false;
     }
 }
