@@ -106,7 +106,7 @@ int DNPInterface::generate( CtiXfer &xfer )
             case Command_WriteTime:
             {
                 DNP::Time *time_now = CTIDBG_new DNP::Time(Time::T_TimeAndDate);
-                CtiTime now;
+                const CtiTime now = CtiTime::now();
 
                 if( _config->useLocalTime )
                 {

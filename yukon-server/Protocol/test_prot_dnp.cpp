@@ -2158,49 +2158,31 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
     {
         BOOST_CHECK_EQUAL(DNPInterface::Command_WriteTime, dnp.getCommand());
 
+        // Override the current time to Tue, 27 May 2014 16:22:59 GMT
+        Cti::Test::Override_CtiTime_Now override_ctiTime_now(1401207779);
+
         BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        BOOST_REQUIRE_EQUAL(25, xfer.getOutCount());
+        std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
 
-        {
-            std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + 10);
+        // Millis timestamp on 48-bits
+        // 1401207779 * 1000 = 1401207779000 => 0x01463E7DEEB8 => 0xB8, 0xEE, 0x7D, 0x3E, 0x46, 0x01
 
-            byte_buffer requestHeader;
-            requestHeader << 0x05, 0x64, 0x12, 0xc4, 0x04, 0x00, 0x03, 0x00, 0x1e, 0x7c;
+        byte_buffer request;
+        request << 0x05, 0x64, 0x12, 0xc4, 0x04, 0x00, 0x03, 0x00, 0x1E, 0x7C,
+                   0xC0, 0xC3, 0x02, 0x32, 0x01, 0x07, 0x01, 0xB8, 0xEE, 0x7D, 0x3E, 0x46, 0x01, 0x57, 0x3B;
 
-            std::vector<int> expected(requestHeader.begin(), requestHeader.end());
+        std::vector<int> expected(request.begin(), request.end());
 
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                output.begin(),
-                output.end(),
-                expected.begin(),
-                expected.end());
-        }
-
-        {
-            // TODO: Find a way to generate a predictable timestamp (bytes[17:23])
-            // the request may change since the timestamp is generated internally
-
-            std::vector<int> output(xfer.getOutBuffer() + 10, xfer.getOutBuffer() + 17);
-
-            byte_buffer userData;
-            userData << 0xC0, 0xC3, 0x02, 0x32, 0x01, 0x07, 0x01;
-            // Not checked:
-            // bytes [17:23] : timestamp
-            // bytes [24:25] : CRC
-
-            std::vector<int> expected(userData.begin(), userData.end());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                output.begin(),
-                output.end(),
-                expected.begin(),
-                expected.end());
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            output.begin(),
+            output.end(),
+            expected.begin(),
+            expected.end());
     }
 
     {
