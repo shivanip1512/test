@@ -77,8 +77,9 @@ public class HardwareController {
                 errors.add(accessor.getMessage(error.getSummary()));
             }
 
-            log.info("Read failed for " + device.getPaoIdentifier() + " with errors: " + Joiner.on(',').join(errors));
-            resultMap.put("message", Joiner.on(',').join(errors));
+            String errorsMsg = Joiner.on(',').join(errors);
+            log.info("Read failed for " + device.getPaoIdentifier() + " with errors: " + errorsMsg);
+            resultMap.put("message", errorsMsg);
         }
         return resultMap;
     }

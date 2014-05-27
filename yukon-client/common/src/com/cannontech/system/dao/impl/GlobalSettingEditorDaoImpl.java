@@ -56,7 +56,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
                         value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).decryptHexStr((String) value);
                     } catch (CryptoException | IOException | JDOMException |DecoderException e) {
                         value = type.getDefaultValue();
-                        log.error("Unable to decrypt value for setting " + type + ". Using the default value");
+                        log.error("Unable to decrypt value for setting " + type + ". Using the default value. ", e);
                     }
                 }
                 GlobalSetting setting = new GlobalSetting(type,value);
