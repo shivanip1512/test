@@ -9,11 +9,6 @@
 #include "logger.h"
 #include "loadmanager.h"
 
-#include <sstream>
-
-using std::string;
-
-extern ULONG _LM_DEBUG;
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -31,61 +26,66 @@ CtiLMProgramThermoStatGear::~CtiLMProgramThermoStatGear()
 {
 }
 
-const string& CtiLMProgramThermoStatGear::getSettings() const
+const std::string& CtiLMProgramThermoStatGear::getSettings() const
 {
     return _settings;
 }
 LONG CtiLMProgramThermoStatGear::getMinValue() const
 {
-    return _minvalue;
+    return _profile.minValue;
 }
 LONG CtiLMProgramThermoStatGear::getMaxValue() const
 {
-    return _maxvalue;
+    return _profile.maxValue;
 }
 LONG CtiLMProgramThermoStatGear::getPrecoolTemp() const
 {
-    return _valueb;
+    return _profile.valueB;
 }
 LONG CtiLMProgramThermoStatGear::getControlTemp() const
 {
-    return _valued;
+    return _profile.valueD;
 }
 LONG CtiLMProgramThermoStatGear::getRestoreTemp() const
 {
-    return _valuef;
+    return _profile.valueF;
 }
 LONG CtiLMProgramThermoStatGear::getRandom() const
 {
-    return _random;
+    return _profile.random;
 }
 LONG CtiLMProgramThermoStatGear::getDelayTime() const
 {
-    return _valueta;
+    return _profile.valueTA;
 }
 LONG CtiLMProgramThermoStatGear::getPrecoolTime() const
 {
-    return _valuetb;
+    return _profile.valueTB;
 }
 LONG CtiLMProgramThermoStatGear::getPrecoolHoldTime() const
 {
-    return _valuetc;
+    return _profile.valueTC;
 }
 LONG CtiLMProgramThermoStatGear::getControlTime() const
 {
-    return _valuetd;
+    return _profile.valueTD;
 }
 LONG CtiLMProgramThermoStatGear::getControlHoldTime() const
 {
-    return _valuete;
+    return _profile.valueTE;
 }
 LONG CtiLMProgramThermoStatGear::getRestoreTime() const
 {
-    return _valuetf;
+    return _profile.valueTF;
 }
 float CtiLMProgramThermoStatGear::getRampRate() const
 {
-    return _rampRate;
+    return _profile.rampRate;
+}
+
+CtiLMProgramThermoStatGear::ProfileSettings CtiLMProgramThermoStatGear::getProfileSettings() const
+{
+    return _profile;
 }
 
 /*---------------------------------------------------------------------------
@@ -106,98 +106,19 @@ CtiLMProgramDirectGear* CtiLMProgramThermoStatGear::replicate() const
 void CtiLMProgramThermoStatGear::restore(Cti::RowReader &rdr)
 {
     rdr["settings"] >> _settings;
-    rdr["minvalue"] >> _minvalue;
-    rdr["maxvalue"] >> _maxvalue;
-    rdr["valueb"] >> _valueb;
-    rdr["valued"] >> _valued;
-    rdr["valuef"] >> _valuef;
-    rdr["random"] >> _random;
-    rdr["valueta"] >> _valueta;
-    rdr["valuetb"] >> _valuetb;
-    rdr["valuetc"] >> _valuetc;
-    rdr["valuetd"] >> _valuetd;
-    rdr["valuete"] >> _valuete;
-    rdr["valuetf"] >> _valuetf;
-    rdr["ramprate"] >> _rampRate;
-}
 
-
-/*
-    Looks at the internal type of thermostat gear and builds the appropriate mode string
-        based on its internal settings.
-        Returns an empty string on error.
-*/
-std::string CtiLMProgramThermoStatGear::getMode() const
-{
-    // Validate
-
-    std::string settings( _settings );
-    CtiToUpper( settings );
-
-    if ( settings.length() != 4 )
-    {
-        return "";
-    }
-
-    if ( getControlMethod() == CtiLMProgramDirectGear::ThermostatRampingMethod )
-    {
-        //  settings is a string of the form '(A|D)(F|C)(H|-)(I|-)'
-        //      where either 'H' or 'I' or both are required.  It must not be '??--'
-
-        if ( settings[ 2 ] == '-' && settings[ 3 ] == '-' )
-        {
-            return "";
-        }
-    }
-    else if ( getControlMethod() == CtiLMProgramDirectGear::SimpleThermostatRampingMethod )
-    {
-        //  settings is a string of the form '--H-' or '---I'
-        //      '--H-' is 'delta mode heat'
-        //      '---I' is 'delta mode cool'
-
-        if ( ! ( settings[ 2 ] == '-' ^ settings[ 3 ] == '-' ) )    // either-or but not both or neither
-        {
-            return "";
-        }
-
-        // set our required fields
-        settings[ 0 ] = 'D';    // delta
-        settings[ 1 ] = 'F';    // fahrenheit
-    }
-    else
-    {
-        //  something is wrong here...
-
-        return "";
-    }
-
-    // Build mode string
-
-    std::ostringstream  mode;
-
-    if ( settings[ 0 ] == 'D' )
-    {
-        mode << " delta";
-    }
-
-    if ( settings[ 1 ] == 'C' )
-    {
-        mode << " celsius";
-    }
-
-    if ( settings[ 2 ] == 'H' && settings[ 3 ] == 'I' )
-    {
-        mode << " mode both";
-    }
-    else if ( settings[ 2 ] == 'H' )
-    {
-        mode << " mode heat";
-    }
-    else    // settings[ 3 ] == 'I'
-    {
-        mode << " mode cool";
-    }
-
-    return mode.str();
+    rdr["minvalue"] >> _profile.minValue;
+    rdr["maxvalue"] >> _profile.maxValue;
+    rdr["valueb"]   >> _profile.valueB;
+    rdr["valued"]   >> _profile.valueD;
+    rdr["valuef"]   >> _profile.valueF;
+    rdr["random"]   >> _profile.random;
+    rdr["valueta"]  >> _profile.valueTA;
+    rdr["valuetb"]  >> _profile.valueTB;
+    rdr["valuetc"]  >> _profile.valueTC;
+    rdr["valuetd"]  >> _profile.valueTD;
+    rdr["valuete"]  >> _profile.valueTE;
+    rdr["valuetf"]  >> _profile.valueTF;
+    rdr["ramprate"] >> _profile.rampRate;
 }
 

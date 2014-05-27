@@ -1135,11 +1135,21 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         {
                             if(isExpresscomGroup(currentLMGroup->getPAOType()))
                             {
+                                std::string logMessage;
                                 CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
 
                                 // XXX thermostat constraints??
 
-                                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(*thermostatGearObject, defaultLMStartPriority);
+                                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(*thermostatGearObject, defaultLMStartPriority, logMessage);
+                                if ( requestMsg )   // valid request - signal the log message
+                                {
+                                    multiDispatchMsg->insert( CTIDBG_new CtiSignalMsg( SYS_PID_LOADMANAGEMENT,
+                                                                                       0,
+                                                                                       "Thermostat Set Point, LM Program: " + getPAOName(),
+                                                                                       logMessage,
+                                                                                       GeneralLogType,
+                                                                                       SignalEvent) );
+                                }
                                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                                 if( currentGearObject->getPercentReduction() > 0.0 )
@@ -1165,7 +1175,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                 }
                 else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
                 {
-                    bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, currentTime, multiPilMsg, expectedLoadReduced, false);
+                    bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, currentTime, multiPilMsg, multiDispatchMsg, expectedLoadReduced, false);
                     if( didSendMessages && getProgramState() != CtiLMProgramBase::ManualActiveState )
                     {
                         setProgramState(CtiLMProgramBase::FullyActiveState);
@@ -1913,11 +1923,21 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
                     {
                         if( isExpresscomGroup(currentLMGroup->getPAOType()) )
                         {
+                            std::string logMessage;
                             CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
 
                             // thermo constraints?? XXX
 
-                            CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(*thermostatGearObject, defaultLMStartPriority);
+                            CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(*thermostatGearObject, defaultLMStartPriority, logMessage);
+                            if ( requestMsg )   // valid request - signal the log message
+                            {
+                                multiDispatchMsg->insert( CTIDBG_new CtiSignalMsg( SYS_PID_LOADMANAGEMENT,
+                                                                                   0,
+                                                                                   "Thermostat Set Point, LM Program: " + getPAOName(),
+                                                                                   logMessage,
+                                                                                   GeneralLogType,
+                                                                                   SignalEvent) );
+                            }
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             if( currentGearObject->getPercentReduction() > 0.0 )
@@ -1943,7 +1963,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
             }
             else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
             {
-                bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, currentTime, multiPilMsg, expectedLoadReduced, false);
+                bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, currentTime, multiPilMsg, multiDispatchMsg, expectedLoadReduced, false);
                 if( didSendMessages && getProgramState() != CtiLMProgramBase::ManualActiveState )
                 {
                     setProgramState(CtiLMProgramBase::FullyActiveState);
@@ -3300,9 +3320,19 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                 {
                     if( isExpresscomGroup(currentLMGroup->getPAOType()) )
                     {
+                        std::string logMessage;
                         CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
 
-                        CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(*thermostatGearObject, defaultLMStartPriority);
+                        CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(*thermostatGearObject, defaultLMStartPriority, logMessage);
+                        if ( requestMsg )   // valid request - signal the log message
+                        {
+                            multiDispatchMsg->insert( CTIDBG_new CtiSignalMsg( SYS_PID_LOADMANAGEMENT,
+                                                                               0,
+                                                                               "Thermostat Set Point, LM Program: " + getPAOName(),
+                                                                               logMessage,
+                                                                               GeneralLogType,
+                                                                               SignalEvent) );
+                        }
                         startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                         if( currentGearObject->getPercentReduction() > 0.0 )
@@ -6042,7 +6072,7 @@ void CtiLMProgramDirect::scheduleStopNotificationForTimedControl(const CtiTime& 
 }
 
 
-bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, CtiTime currentTime, CtiMultiMsg* multiPilMsg, double &expectedLoadReduced, bool isRefresh)
+bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, double &expectedLoadReduced, bool isRefresh)
 {
     bool retVal = false;
     CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
@@ -6084,9 +6114,20 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
             }
             if( isExpresscomGroup(currentLMGroup->getPAOType()) )
             {
+                std::string logMessage;
+
                 // XXX thermostat constraints??
 
-                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointSimpleMsg(*thermostatGearObject, totalControlMinutes, minutesFromBegin, defaultLMStartPriority);
+                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointSimpleMsg(*thermostatGearObject, totalControlMinutes, minutesFromBegin, defaultLMStartPriority, logMessage);
+                if ( requestMsg )   // valid request - signal the log message
+                {
+                    multiDispatchMsg->insert( CTIDBG_new CtiSignalMsg( SYS_PID_LOADMANAGEMENT,
+                                                                       0,
+                                                                       "Thermostat Simple Set Point, LM Program: " + getPAOName(),
+                                                                       logMessage,
+                                                                       GeneralLogType,
+                                                                       SignalEvent) );
+                }
                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
                 currentLMGroup->setNextControlTime(gInvalidCtiTime);
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )

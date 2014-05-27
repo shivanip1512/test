@@ -210,7 +210,7 @@ private:
     void RampInGroups(CtiTime currentTime, CtiLMProgramDirectGear* lm_gear = 0);
     void updateStandardControlActiveState(LONG numberOfActiveGroups);
     double StartMasterCycle(CtiTime currentTime, CtiLMProgramDirectGear* lm_gear);
-    bool sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, CtiTime currentTime, CtiMultiMsg* multiPilMsg, double &expectedLoadReduced, bool isRefresh);
+    bool sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, double &expectedLoadReduced, bool isRefresh);
     bool recordHistory(CtiTableLMProgramHistory::LMHistoryActions action, CtiTime &time);
     bool isAControlState(int state);
     bool isAStopState(int state);

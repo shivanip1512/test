@@ -24,6 +24,8 @@ struct thermostat_gear_settings_helper
 
     boost::scoped_ptr<CtiLMGroupExpresscom>     group;
 
+    std::string logMessage;
+
     thermostat_gear_settings_helper()
         :   settingsIndex( 28 ),
             controlMethodIndex( 3 ),
@@ -151,11 +153,15 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_delta, thermost
 
     boost::scoped_ptr<CtiRequestMsg>
         m( group->createSetPointRequestMsg( *gear,
-                                            12 ) );
+                                            12,
+                                            logMessage ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint delta celsius mode heat "
-                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2 ",
+                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2",
                        m->CommandString() );
+
+    BOOST_CHECK_EQUAL( "heat, 30m hold, -1 over 60m, 45m hold, +3 over 120m, 75m hold, -2 over 90m, 60m rand",
+                       logMessage );
 }
 
 
@@ -175,11 +181,15 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_delta, therm
 
     boost::scoped_ptr<CtiRequestMsg>
         m( group->createSetPointRequestMsg( *gear,
-                                            12 ) );
+                                            12,
+                                            logMessage ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint celsius mode heat "
-                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2 ",
+                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2",
                        m->CommandString() );
+
+    BOOST_CHECK_EQUAL( "heat, 30m hold, -1 over 60m, 45m hold, +3 over 120m, 75m hold, -2 over 90m, 60m rand",
+                       logMessage );
 }
 
 
@@ -199,11 +209,15 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_celsius, the
 
     boost::scoped_ptr<CtiRequestMsg>
         m( group->createSetPointRequestMsg( *gear,
-                                            12 ) );
+                                            12,
+                                            logMessage ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint mode heat "
-                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2 ",
+                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2",
                        m->CommandString() );
+
+    BOOST_CHECK_EQUAL( "heat, 30m hold, -1 over 60m, 45m hold, +3 over 120m, 75m hold, -2 over 90m, 60m rand",
+                       logMessage );
 }
 
 
@@ -223,11 +237,15 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_cool_mode, ther
 
     boost::scoped_ptr<CtiRequestMsg>
         m( group->createSetPointRequestMsg( *gear,
-                                            12 ) );
+                                            12,
+                                            logMessage ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint mode cool "
-                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2 ",
+                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2",
                        m->CommandString() );
+
+    BOOST_CHECK_EQUAL( "cool, 30m hold, -1 over 60m, 45m hold, +3 over 120m, 75m hold, -2 over 90m, 60m rand",
+                       logMessage );
 }
 
 
@@ -247,11 +265,15 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_both_modes, the
 
     boost::scoped_ptr<CtiRequestMsg>
         m( group->createSetPointRequestMsg( *gear,
-                                            12 ) );
+                                            12,
+                                            logMessage ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint mode both "
-                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2 ",
+                       "min 1 max 255 tr 60 ta 30 tb 60 dsb -1 tc 45 td 120 dsd 3 te 75 tf 90 dsf -2",
                        m->CommandString() );
+
+    BOOST_CHECK_EQUAL( "both, 30m hold, -1 over 60m, 45m hold, +3 over 120m, 75m hold, -2 over 90m, 60m rand",
+                       logMessage );
 }
 
 
@@ -271,9 +293,12 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_mode, thermo
 
     boost::scoped_ptr<CtiRequestMsg>
         m( group->createSetPointRequestMsg( *gear,
-                                            12 ) );
+                                            12,
+                                            logMessage ) );
 
     BOOST_CHECK( ! m );     // invalid mode string results in a null message
+
+    BOOST_CHECK( logMessage.empty() );
 }
 
 
@@ -298,11 +323,15 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_heat, th
         m( group->createSetPointSimpleMsg( *gear,
                                            300,
                                            30,
-                                           12 ) );
+                                           12,
+                                           logMessage ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint delta mode heat "
-                       "min 1 max 255 tr 60 tb 60 dsb -1 tc 45 td 0 dsd 1 te 105 tf 90 dsf 0 bump stage 30 ",
+                       "min 1 max 255 tr 60 tb 60 dsb -1 tc 45 td 0 dsd 1 te 105 tf 90 dsf 0 bump stage 30",
                        m->CommandString() );
+
+    BOOST_CHECK_EQUAL( "heat, -1 over 60m, 45m hold, +1 over 0m, 105m hold, +0 over 90m, 60m rand",
+                       logMessage );
 }
 
 
@@ -324,11 +353,15 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_cool, th
         m( group->createSetPointSimpleMsg( *gear,
                                            300,
                                            30,
-                                           12 ) );
+                                           12,
+                                           logMessage ) );
 
     BOOST_CHECK_EQUAL( "control xcom setpoint delta mode cool "
-                       "min 1 max 255 tr 60 tb 60 dsb -1 tc 45 td 0 dsd 1 te 105 tf 90 dsf 0 bump stage 30 ",
+                       "min 1 max 255 tr 60 tb 60 dsb -1 tc 45 td 0 dsd 1 te 105 tf 90 dsf 0 bump stage 30",
                        m->CommandString() );
+
+    BOOST_CHECK_EQUAL( "cool, -1 over 60m, 45m hold, +1 over 0m, 105m hold, +0 over 90m, 60m rand",
+                       logMessage );
 }
 
 
@@ -350,9 +383,12 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_none_err
         m( group->createSetPointSimpleMsg( *gear,
                                            120,
                                            30,
-                                           12 ) );
+                                           12,
+                                           logMessage ) );
 
     BOOST_CHECK( ! m );     // invalid mode string results in a null message
+
+    BOOST_CHECK( logMessage.empty() );
 }
 
 
@@ -374,9 +410,12 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_both_err
         m( group->createSetPointSimpleMsg( *gear,
                                            120,
                                            30,
-                                           12 ) );
+                                           12,
+                                           logMessage ) );
 
     BOOST_CHECK( ! m );     // invalid mode string results in a null message
+
+    BOOST_CHECK( logMessage.empty() );
 }
 
 

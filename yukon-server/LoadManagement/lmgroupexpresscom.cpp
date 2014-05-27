@@ -11,6 +11,8 @@
 #include "BeatThePeakControlInterface.h"
 #include "lmProgramThermostatGear.h"
 
+#include <boost/algorithm/string/case_conv.hpp>
+
 using namespace Cti::LoadManagement;
 using std::string;
 using std::endl;
@@ -19,6 +21,330 @@ using Cti::MacroOffset;
 
 extern ULONG _LM_DEBUG;
 #define ROUNDING_SECONDS (60*57) //Round up on minute 58 or greater
+
+
+namespace {
+
+/*
+    Looks at the internal type of thermostat gear and builds the appropriate mode string
+        based on its internal settings.
+        Returns an empty string on error.
+*/
+std::string getSetPointMode( const CtiLMProgramThermoStatGear & gear )
+{
+    // Validate
+
+    std::string settings( boost::algorithm::to_upper_copy( gear.getSettings() ) );
+
+    if ( settings.length() != 4 )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - corrupted settings (invalid length): "
+             << settings << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
+
+        return "";
+    }
+
+    const bool hasHeat = settings[ 2 ] == 'H';
+    const bool hasCool = settings[ 3 ] == 'I';
+
+    if ( gear.getControlMethod() == CtiLMProgramDirectGear::ThermostatRampingMethod )
+    {
+        //  settings is a string of the form '(A|D)(F|C)(H|-)(I|-)'
+        //      where either 'H' or 'I' or both are required.  It must not be '??--'
+
+        if ( ! ( hasHeat || hasCool ) )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - missing (heat|cool) mode setting: "
+                 << settings << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
+
+            return "";
+        }
+    }
+    else if ( gear.getControlMethod() == CtiLMProgramDirectGear::SimpleThermostatRampingMethod )
+    {
+        //  settings is a string of the form '--H-' or '---I'
+        //      '--H-' is 'delta mode heat'
+        //      '---I' is 'delta mode cool'
+
+        if ( ! ( hasHeat ^ hasCool ) )    // either-or but not both or neither
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - invalid (heat|cool) mode setting: "
+                 << settings << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
+
+            return "";
+        }
+
+        // set our required fields
+        settings[ 0 ] = 'D';    // delta
+        settings[ 1 ] = 'F';    // fahrenheit
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - unsupported control method: "
+             << gear.getControlMethod() << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
+
+        return "";
+    }
+
+    // Build mode string
+
+    std::string mode;
+
+    if ( settings[ 0 ] == 'D' )
+    {
+        mode += " delta";
+    }
+
+    if ( settings[ 1 ] == 'C' )
+    {
+        mode += " celsius";
+    }
+
+    if ( hasHeat && hasCool )
+    {
+        mode += " mode both";
+    }
+    else if ( hasHeat )
+    {
+        mode += " mode heat";
+    }
+    else    // hasCool
+    {
+        mode += " mode cool";
+    }
+
+    return mode;
+}
+
+std::string formatXcomSetPointProfile( const CtiLMProgramThermoStatGear::ProfileSettings & profile )
+{
+    std::ostringstream  profileFormatter;
+
+    if ( profile.minValue )
+    {
+        profileFormatter << " min " << profile.minValue;
+    }
+    if ( profile.maxValue )
+    {
+        profileFormatter << " max " << profile.maxValue;
+    }
+
+    if ( profile.random )
+    {
+        profileFormatter << " tr " << profile.random;
+    }
+
+    if ( profile.valueTA )
+    {
+        profileFormatter << " ta " << profile.valueTA;
+    }
+
+    if ( profile.valueTB )
+    {
+        profileFormatter << " tb " << profile.valueTB;
+    }
+    if ( profile.valueB )
+    {
+        profileFormatter << " dsb " << profile.valueB;
+    }
+
+    if ( profile.valueTC )
+    {
+        profileFormatter << " tc " << profile.valueTC;
+    }
+
+    if ( profile.valueTD )
+    {
+        profileFormatter << " td " << profile.valueTD;
+    }
+    if ( profile.valueD )
+    {
+        profileFormatter << " dsd " << profile.valueD;
+    }
+
+    if ( profile.valueTE )
+    {
+        profileFormatter << " te " << profile.valueTE;
+    }
+
+    if ( profile.valueTF )
+    {
+        profileFormatter << " tf " << profile.valueTF;
+    }
+    if ( profile.valueF )
+    {
+        profileFormatter << " dsf " << profile.valueF;
+    }
+
+    return profileFormatter.str();
+}
+
+std::string formatXcomSetPointLogMessage( const std::string & mode,
+                                          const CtiLMProgramThermoStatGear::ProfileSettings & profile )
+{
+    std::ostringstream  logFormatter;
+
+    logFormatter << mode;
+
+    if ( profile.valueTA )
+    {
+        logFormatter << ", " << profile.valueTA << "m hold";
+    }
+
+    if ( profile.valueB && profile.valueTB )
+    {
+        logFormatter << ", " << std::showpos << profile.valueB << std::noshowpos << " over " << profile.valueTB << "m";
+    }
+
+    if ( profile.valueTC )
+    {
+        logFormatter << ", " << profile.valueTC << "m hold";
+    }
+
+    if ( profile.valueD && profile.valueTD )
+    {
+        logFormatter << ", " << std::showpos << profile.valueD << std::noshowpos << " over " << profile.valueTD << "m";
+    }
+
+    if ( profile.valueTE )
+    {
+        logFormatter << ", " << profile.valueTE << "m hold";
+    }
+
+    if ( profile.valueF && profile.valueTF )
+    {
+        logFormatter << ", " << std::showpos << profile.valueF << std::noshowpos << " over " << profile.valueTF << "m";
+    }
+
+    if ( profile.random )
+    {
+        logFormatter << ", " << profile.random << "m rand";
+    }
+
+    return logFormatter.str();
+}
+
+int calculateSetPointSimpleProfileSettings( CtiLMProgramThermoStatGear::ProfileSettings & profile,
+                                            const long totalTime )
+{
+    LONG rampUpTime = totalTime - (profile.valueTB + profile.valueTF + profile.valueTC);
+
+    if( rampUpTime < 60 )
+    {
+        // Error - not enough ramp time
+        return -1;
+    }
+    if ( ! profile.rampRate )
+    {
+        // Error - improperly configured ramp rate
+        return -2;
+    }
+
+    // rampRate D is the degree/hour rate, degrees is a long because we can only send a whole number.
+    LONG degrees = ( rampUpTime / 60.0 ) * profile.rampRate;
+    if( std::abs( degrees ) > profile.valueD )
+    {
+        degrees = ( degrees < 0 ) ? -profile.valueD : profile.valueD;
+    }
+    profile.valueD = degrees;
+
+    // valueTD: Control time = (total time to do X degrees) - (hold time for the final degree)
+    // valueTE: Hold Time = (hold time for final degree) + any leftover time;
+    // This works because of the way degrees(valueD) is calculated before we get here.
+    profile.valueTD = abs( 60.0 * profile.valueD / profile.rampRate ) - abs( 60.0 / profile.rampRate );
+    profile.valueTE = rampUpTime - profile.valueTD;
+    profile.valueF  = -(profile.valueD + profile.valueB);
+
+    return 0;
+}
+
+std::string formatXcomSetPointSimpleProfile( const CtiLMProgramThermoStatGear::ProfileSettings & profile )
+{
+    std::ostringstream  simpleProfileFormatter;
+
+    if ( profile.minValue )
+    {
+        simpleProfileFormatter << " min " << profile.minValue;
+    }
+    if ( profile.maxValue )
+    {
+        simpleProfileFormatter << " max " << profile.maxValue;
+    }
+
+    if ( profile.random )
+    {
+        simpleProfileFormatter << " tr " << profile.random;
+    }
+
+    if ( profile.valueTB )
+    {
+        simpleProfileFormatter << " tb " << profile.valueTB;
+    }
+    if ( profile.valueB )
+    {
+        simpleProfileFormatter << " dsb " << profile.valueB;
+    }
+
+    if ( profile.valueTC )
+    {
+        simpleProfileFormatter << " tc " << profile.valueTC;
+    }
+
+    simpleProfileFormatter
+        << " td "  << profile.valueTD
+        << " dsd " << profile.valueD
+        << " te "  << profile.valueTE;
+
+    if ( profile.valueTF )
+    {
+        simpleProfileFormatter << " tf " << profile.valueTF;
+    }
+
+    simpleProfileFormatter << " dsf " << profile.valueF;
+
+    return simpleProfileFormatter.str();
+}
+
+std::string formatXcomSetPointSimpleLogMessage( const std::string & mode,
+                                                const CtiLMProgramThermoStatGear::ProfileSettings & profile )
+{
+    std::ostringstream  simpleLogFormatter;
+
+    simpleLogFormatter << mode;
+
+    if ( profile.valueB && profile.valueTB )
+    {
+        simpleLogFormatter << ", " << std::showpos << profile.valueB << std::noshowpos << " over " << profile.valueTB << "m";
+    }
+
+    if ( profile.valueTC )
+    {
+        simpleLogFormatter << ", " << profile.valueTC << "m hold";
+    }
+
+    simpleLogFormatter << ", " << std::showpos << profile.valueD << std::noshowpos << " over " << profile.valueTD << "m";
+
+    simpleLogFormatter << ", " << profile.valueTE << "m hold";
+
+    if ( profile.valueTF )
+    {
+        simpleLogFormatter << ", " << std::showpos << profile.valueF << std::noshowpos << " over " << profile.valueTF << "m";
+    }
+
+    if ( profile.random )
+    {
+        simpleLogFormatter << ", " << profile.random << "m rand";
+    }
+
+    return simpleLogFormatter.str();
+}
+
+}
+
 
 DEFINE_COLLECTABLE( CtiLMGroupExpresscom, CTILMGROUPEXPRESSCOM_ID )
 
@@ -319,22 +645,10 @@ CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, L
     all the appropriate settings.
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(const CtiLMProgramThermoStatGear & gear,
-                                                              int priority) const
+                                                              int priority,
+                                                              std::string & logMessage) const
 {
-    string mode     = gear.getMode();
-    LONG minValue   = gear.getMinValue();
-    LONG maxValue   = gear.getMaxValue();
-    LONG valueB     = gear.getPrecoolTemp();
-    LONG valueD     = gear.getControlTemp();
-    LONG valueF     = gear.getRestoreTemp();
-    LONG random     = gear.getRandom();
-    LONG valueTA    = gear.getDelayTime();
-    LONG valueTB    = gear.getPrecoolTime();
-    LONG valueTC    = gear.getPrecoolHoldTime();
-    LONG valueTD    = gear.getControlTime();
-    LONG valueTE    = gear.getControlHoldTime();
-    LONG valueTF    = gear.getRestoreTime();
-
+    std::string mode = getSetPointMode( gear );
 
     if ( mode.empty() )
     {
@@ -346,114 +660,25 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(const CtiLMProgram
         return 0;
     }
 
-    string controlString("control xcom setpoint");
+    CtiLMProgramThermoStatGear::ProfileSettings profile = gear.getProfileSettings();
 
-    controlString += mode + " ";
+    std::ostringstream  controlString;
 
-    if( minValue != 0 )
-    {
-        controlString += "min ";
-        char tempchar[64];
-        _ltoa(minValue,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( maxValue != 0 )
-    {
-        controlString += "max ";
-        char tempchar[64];
-        _ltoa(maxValue,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( random != 0 )
-    {
-        controlString += "tr ";
-        char tempchar[64];
-        _ltoa(random,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( valueTA != 0 )
-    {
-        controlString += "ta ";
-        char tempchar[64];
-        _ltoa(valueTA,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( valueTB != 0 )
-    {
-        controlString += "tb ";
-        char tempchar[64];
-        _ltoa(valueTB,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( valueB != 0 )
-    {
-        controlString += "dsb ";
-        char tempchar[64];
-        _ltoa(valueB,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( valueTC != 0 )
-    {
-        controlString += "tc ";
-        char tempchar[64];
-        _ltoa(valueTC,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( valueTD != 0 )
-    {
-        controlString += "td ";
-        char tempchar[64];
-        _ltoa(valueTD,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( valueD != 0 )
-    {
-        controlString += "dsd ";
-        char tempchar[64];
-        _ltoa(valueD,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( valueTE != 0 )
-    {
-        controlString += "te ";
-        char tempchar[64];
-        _ltoa(valueTE,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( valueTF != 0 )
-    {
-        controlString += "tf ";
-        char tempchar[64];
-        _ltoa(valueTF,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( valueF != 0 )
-    {
-        controlString += "dsf ";
-        char tempchar[64];
-        _ltoa(valueF,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
+    controlString
+        << "control xcom setpoint"
+        << mode
+        << formatXcomSetPointProfile( gear.getProfileSettings() );
+
+    logMessage = formatXcomSetPointLogMessage( mode.substr( mode.length() - 4, 4 ),
+                                               gear.getProfileSettings() );
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString.str() << ", priority: " << priority << endl;
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
-                                    controlString,
+                                    controlString.str(),
                                     0,
                                     0,
                                     0,
@@ -468,31 +693,10 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(const CtiLMProgram
 CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(const CtiLMProgramThermoStatGear & gear,
                                                              LONG totalTime,
                                                              LONG minutesFromBegin,
-                                                             int priority) const
+                                                             int priority,
+                                                             std::string & logMessage) const
 {
-    string mode             = gear.getMode();
-    LONG minValue           = gear.getMinValue();
-    LONG maxValue           = gear.getMaxValue();
-    LONG precoolTemp        = gear.getPrecoolTemp();
-    LONG random             = gear.getRandom();
-    float rampRate          = gear.getRampRate();
-    LONG precoolTime        = gear.getPrecoolTime();
-    LONG precoolHoldTime    = gear.getPrecoolHoldTime();
-    LONG maxTempChange      = gear.getControlTemp();
-    LONG rampOutTime        = gear.getRestoreTime();
-
-
-    LONG controlTime, controlHoldTime;
-    bool retFlag = true;
-    maxTempChange = abs(maxTempChange);
-
-    LONG rampUpTime = totalTime - (precoolTime + rampOutTime + precoolHoldTime);
-    if( rampUpTime < 60 )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " *** CHECKPOINT *** LM Group " << getPAOName() << " improperly configured time, not enough ramp time " << endl;
-        retFlag = false;
-    }
+    std::string mode = getSetPointMode( gear );
 
     if ( mode.empty() )
     {
@@ -504,153 +708,57 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(const CtiLMProgramT
         return 0;
     }
 
-    string controlString("control xcom setpoint");
+    CtiLMProgramThermoStatGear::ProfileSettings profile = gear.getProfileSettings();
 
-    controlString += mode + " ";
+    int errorCode;
 
-    if( minValue != 0 )
-    {
-        controlString += "min ";
-        char tempchar[64];
-        _ltoa(minValue,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( maxValue != 0 )
-    {
-        controlString += "max ";
-        char tempchar[64];
-        _ltoa(maxValue,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( random != 0 )
-    {
-        controlString += "tr ";
-        char tempchar[64];
-        _ltoa(random,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( precoolTime != 0 )
-    {
-        controlString += "tb ";
-        char tempchar[64];
-        _ltoa(precoolTime,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( precoolTemp != 0 )
-    {
-        controlString += "dsb ";
-        char tempchar[64];
-        _ltoa(precoolTemp,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( precoolHoldTime != 0 )
-    {
-        controlString += "tc ";
-        char tempchar[64];
-        _ltoa(precoolHoldTime,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-
-    int degrees = ((float)rampUpTime/60) * rampRate; //rampRate D is the degree/hour rate, degrees is an int because we can only send a whole number.
-
-    if( abs(degrees) > maxTempChange )
-    {
-        if( degrees < 0 )
-        {
-            degrees = -1*maxTempChange;
-        }
-        else
-        {
-            degrees = maxTempChange;
-        }
-    }
-    if( rampUpTime != 0 && degrees != 0 && rampRate != 0 )
-    {
-        // Control time = (total time to do X degrees) - (hold time for the final degree)
-        // Hold Time = (hold time for final degree) + any leftover time;
-        // This works because of the way degrees is calculated before we get here.
-        controlTime = abs((float)degrees / rampRate) * 60 - abs((float)1/rampRate * 60);
-        controlHoldTime = rampUpTime -controlTime;
-
-        controlString += "td ";
-        char tempchar[64];
-        _ltoa(controlTime,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-
-        controlString += "dsd ";
-        _ltoa(degrees,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-
-        controlString += "te ";
-        _ltoa(controlHoldTime,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-
-    }
-    else
+    if ( errorCode = calculateSetPointSimpleProfileSettings( profile, totalTime ) )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " *** CHECKPOINT *** LM Group " << getPAOName() << " improperly configured ramp time/rate. " << endl;
-        retFlag = false;
+
+        dout << CtiTime() << " *** CHECKPOINT *** LM Group: " << getPAOName();
+
+        if ( errorCode == -1 )
+        {
+            dout << " - improperly configured time, not enough ramp time " << std::endl;
+        }
+        else if ( errorCode == -2 )
+        {
+            dout << " - improperly configured ramp time/rate. " << std::endl;
+        }
+        return 0;
     }
 
-    if( rampOutTime != 0 )
+    std::ostringstream  controlString;
+
+    controlString
+        << "control xcom setpoint"
+        << mode
+        << formatXcomSetPointSimpleProfile( profile );
+
+    if ( minutesFromBegin > 0 )
     {
-        controlString += "tf ";
-        char tempchar[64];
-        _ltoa(rampOutTime,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
-    }
-    if( degrees != 0 )
-    {
-        //Set number of degrees to count down.
-        controlString += "dsf ";
-        char tempchar[64];
-        _ltoa((-1*degrees - precoolTemp),tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
+        controlString << " bump stage " << minutesFromBegin;
     }
 
-    if( minutesFromBegin > 0 )
-    {
-        controlString += "bump stage ";//these are seperate commands
-        char tempchar[64];
-        _ltoa(minutesFromBegin,tempchar,10);
-        controlString += tempchar;
-        controlString += " ";
+    logMessage = formatXcomSetPointSimpleLogMessage( mode.substr( mode.length() - 4, 4 ),
+                                                     profile );
 
-    }
-
-    if( retFlag && _LM_DEBUG & LM_DEBUG_STANDARD )
+    if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString.str() << ", priority: " << priority << endl;
     }
-    if( retFlag )
-    {
-        return CTIDBG_new CtiRequestMsg(getPAOId(),
-                                        controlString,
-                                        0,
-                                        0,
-                                        0,
-                                        MacroOffset::none,
-                                        0,
-                                        0,
-                                        priority);
-    }
-    else
-    {
-        return NULL;
-    }
+
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString.str(),
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*---------------------------------------------------------------------------

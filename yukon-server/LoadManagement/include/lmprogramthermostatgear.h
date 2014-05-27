@@ -7,6 +7,23 @@ class CtiLMProgramThermoStatGear : public CtiLMProgramDirectGear
 
 public:
 
+    struct ProfileSettings
+    {
+        LONG    minValue;
+        LONG    maxValue;        
+        LONG    valueB;     // precool temp
+        LONG    valueD;     // control temp
+        LONG    valueF;     // restore temp
+        LONG    random;
+        LONG    valueTA;    // delay time
+        LONG    valueTB;    // precool time
+        LONG    valueTC;    // precool hold time
+        LONG    valueTD;    // control time
+        LONG    valueTE;    // control hold time
+        LONG    valueTF;    // restore time
+        float   rampRate;
+    };
+
     CtiLMProgramThermoStatGear(Cti::RowReader &rdr);
 
     virtual ~CtiLMProgramThermoStatGear();
@@ -26,27 +43,15 @@ public:
     LONG getRestoreTime() const;
     float getRampRate() const;
 
-    virtual CtiLMProgramDirectGear* replicate() const;
+    ProfileSettings getProfileSettings() const;
 
-    std::string getMode() const;
+    virtual CtiLMProgramDirectGear* replicate() const;
 
 protected:
     void restore(Cti::RowReader &rdr);
 
 private:
 
-    std::string _settings;
-    LONG _minvalue;
-    LONG _maxvalue;
-    LONG _valueb;
-    LONG _valued;
-    LONG _valuef;
-    LONG _random;
-    LONG _valueta;
-    LONG _valuetb;
-    LONG _valuetc;
-    LONG _valuetd;
-    LONG _valuete;
-    LONG _valuetf;
-    float _rampRate;
+    std::string     _settings;
+    ProfileSettings _profile;
 };
