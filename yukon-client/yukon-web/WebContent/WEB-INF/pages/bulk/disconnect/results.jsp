@@ -31,8 +31,8 @@
                         <cti:param name="command" value="${result.command}"/>
                     </cti:url>
                     <tr>
-                        <td><a href="${detailUrl}"><cti:msg key="${result.command}"/></a></td>
-                        <td><cti:msg key="${result.allDevicesCollection.description}"/></td>
+                        <td><a href="${detailUrl}"><i:inline key="${result.command}"/></a></td>
+                        <td><i:inline key="${result.allDevicesCollection.description}"/></td>
                         <td class="tar"><cti:dataUpdaterValue type="DISCONNECT" identifier="${result.key}/SUCCESS_COUNT"/></td>
                         <td class="tar"><cti:dataUpdaterValue type="DISCONNECT" identifier="${result.key}/FAILED_COUNT"/></td>
                         <td>${startDate}</td>

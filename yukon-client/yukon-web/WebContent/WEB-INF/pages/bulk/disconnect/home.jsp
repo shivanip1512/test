@@ -21,17 +21,17 @@
     <tags:bulkActionContainer key="yukon.common.device.bulk.disconnect" deviceCollection="${deviceCollection}">
         <table>
             <tr>
-                <td><a href="${connectUrl}"><i:inline key="yukon.web.modules.tools.bulk.disconnect.command.CONNECT"/></a></td>
-                <td><i:inline key="yukon.web.modules.tools.bulk.disconnect.connect.description" /></td>
+                <td><a href="${connectUrl}"><i:inline key=".command.CONNECT"/></a></td>
+                <td><i:inline key=".connect.description" /></td>
             </tr>
             <tr>
-                <td><a href="${disconnectUrl}"><i:inline key="yukon.web.modules.tools.bulk.disconnect.command.DISCONNECT"/></a></td>
-                <td><i:inline key="yukon.web.modules.tools.bulk.disconnect.disconnect.description" /></td>
+                <td><a href="${disconnectUrl}"><i:inline key=".command.DISCONNECT"/></a></td>
+                <td><i:inline key=".disconnect.description" /></td>
             </tr>
             <c:if test="${displayArmLink}">
                 <tr>
-                    <td><a href="${armUrl}"><i:inline key="yukon.web.modules.tools.bulk.disconnect.command.ARM"/></a></td>
-                    <td><i:inline key="yukon.web.modules.tools.bulk.disconnect.arm.description" /></td>
+                    <td><a href="${armUrl}"><i:inline key=".command.ARM"/></a></td>
+                    <td><i:inline key=".arm.description" /></td>
                 </tr>
             </c:if>
         </table>
