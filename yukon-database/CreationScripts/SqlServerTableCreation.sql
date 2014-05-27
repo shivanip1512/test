@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/22/2014 6:07:28 PM                         */
+/* Created on:     5/27/2014 2:22:02 PM                         */
 /*==============================================================*/
 
 
@@ -9943,7 +9943,7 @@ INSERT INTO YukonRoleProperty VALUES (-90042,-900,'Start Time Default',' ', 'Spe
 INSERT INTO YukonRoleProperty VALUES (-90043,-900,'Allow DR Control','true','Allow control of demand response control areas, scenarios, programs and groups');
 INSERT INTO YukonRoleProperty VALUES (-90044,-900,'Asset Availability','false','Controls access to view Asset Availability for Scenarios, Control Areas, Programs, and Load Groups.');
 INSERT INTO YukonRoleProperty VALUES (-90045,-900,'Allow Load Group Control','true','In addition to Allow DR Control, controls access to shed and restore at group level.');
-INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Show ecobee','false','Allows ecobee-related actions and visibility of ecobee information on the DR pages.');
+INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Show ecobee','false','Controls access to actions and information related to ecobee devices.');
 
 /* Capacitor Control role properties cont...*/
 insert into YukonRoleProperty values(-100000, -1000, 'Target', 'true', 'display Target settings');
