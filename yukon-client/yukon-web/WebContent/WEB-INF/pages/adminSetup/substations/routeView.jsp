@@ -11,9 +11,9 @@
 <b>Assigned Routes</b>
 <form name="routeform" class="pr" action="${routeUrl}" method="post">
     <cti:csrfToken/>
-    <table>
-        <tr>
-            <td>
+    <div class="column-18-6 clearfix">
+        <div class="column one">
+            <div class="stacked-medium">
                 <select id="routeIdSelectList" name="routeid" size="10" style="width:200px">
                     <c:forEach var="route" items="${list}">
                         <option value="${route.id}">
@@ -21,44 +21,42 @@
                         </option>
                     </c:forEach>
                 </select>
-            </td>
-            <td class="vab">
-                <div class="pa T0">
-	                <div style="padding-bottom: 5px">
-                        <cti:button renderMode="buttonImage" icon="icon-bullet-go-up" onclick="yukon.ui.util.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1);"/>
-	                </div>
-	                <div>
-                        <cti:button renderMode="buttonImage" icon="icon-bullet-go-down" onclick="yukon.ui.util.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1);"/>
-	                </div>
-                </div>
-                <div style="padding-top: 55px">
-                    <cti:button nameKey="delete" onclick="SubstationToRouteMappings_removeRoute()"/>
-                </div>
-                <div style="padding-top: 15px">
-                    <cti:button label="Apply" onclick="SubstationToRouteMappings_updateRoutes('${updateUrl}')"/>
-                </div>
-            </td>
-        </tr>
-        
-        <tr><td><div style="height:20px;"></div></td></tr>
-        
-        <tr>
-            <td>
-                Available Routes<br>
-                <select id="avRoutesSelectList" name="avroutes"
-                    style="width:200px">
+            </div>
+            <div>
+                <span>Available Routes</span>
+                <select id="avRoutesSelectList" name="avroutes" style="width:160px">
                     <c:forEach var="avroute" items="${avlist}">
                         <option value="${avroute.id}">
                             ${fn:escapeXml(avroute.name)}
                         </option>
                     </c:forEach>
                 </select>
-            </td>
-            <td class="vab">
+            </div>
+        </div>
+        <div class="column two nogutter clearfix pr">
+            <div>
+                <div class="pa T0">
+                    <div class="clearfix">
+                        <cti:button renderMode="buttonImage" icon="icon-bullet-go-up" onclick="yukon.ui.util.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1);"/>
+                    </div>
+                    <div class="clearfix stacked" >
+                        <cti:button renderMode="buttonImage" icon="icon-bullet-go-down" onclick="yukon.ui.util.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1);"/>
+                    </div>
+                </div>
+                <div class="pa" style="top:112px;">
+                    <div class="clearfix stacked">
+                        <cti:button nameKey="delete" onclick="SubstationToRouteMappings_removeRoute()"/>
+                    </div>
+                    <div class="clearfix">
+                        <cti:button label="Apply" onclick="SubstationToRouteMappings_updateRoutes('${updateUrl}')"/>
+                    </div>
+                </div>
+            </div>
+            <div class="pa" style="top:212px;">
                 <cti:button nameKey="add" onclick="SubstationToRouteMappings_addRoute();"/>
-            </td>
-        </tr>
-    </table>
-
+            </div>
+        </div>
+       
+    </div>
 </form>
 </cti:msgScope>
