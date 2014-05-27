@@ -5197,7 +5197,7 @@ void CtiVanGogh::VGRPHWriterThread()
     try
     {
         const unsigned ThirtySeconds = 30 * 1000;
-        unsigned cumulativeTime = 0;
+        unsigned loopTimer = 0;
 
         for(;!bGCtrlC;)
         {
@@ -5205,8 +5205,13 @@ void CtiVanGogh::VGRPHWriterThread()
 
             WriteMode wm = WriteMode_WriteChunkIfOverThreshold;
 
-            if( cumulativeTime > ThirtySeconds )
+            if( loopTimer > ThirtySeconds )
             {
+                loopTimer %= ThirtySeconds;
+
+                //  guaranteed write once every 30 seconds
+                wm = WriteMode_WriteChunk;
+
                 if( ShutdownOnThreadTimeout )
                 {
                     threadStatus.monitorCheck(&CtiVanGogh::sendbGCtrlC);
@@ -5215,25 +5220,20 @@ void CtiVanGogh::VGRPHWriterThread()
                 {
                     threadStatus.monitorCheck(CtiThreadRegData::None);
                 }
-
-                cumulativeTime %= ThirtySeconds;
-
-                //  guaranteed write once every 30 seconds
-                wm = WriteMode_WriteChunk;
             }
 
             const bool MoreWaiting = writeArchiveDataToDB(wm);
 
-            const unsigned SleepTime = MoreWaiting ? 50 : 1000;  //  wait 50 ms if more work waiting, 1 second otherwise
+            const unsigned MinimumLoopTime = MoreWaiting ? 50 : 1000;  //  wait 50 ms if more work waiting, 1 second otherwise
 
             const unsigned elapsed = timer.elapsed();
 
-            if( elapsed < SleepTime )
+            if( elapsed < MinimumLoopTime )
             {
-                rwSleep(SleepTime - elapsed);
+                rwSleep(MinimumLoopTime - elapsed);
             }
 
-            cumulativeTime += timer.elapsed();
+            loopTimer += timer.elapsed();
         }
 
         //  Write anything remaining before we exit.
