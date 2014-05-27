@@ -29,7 +29,7 @@
         </div>
         <pre class="code prettyprint">&lt;cti:button nameKey=&quot;edit&quot; disabled=&quot;true&quot;/&gt;</pre>
     </div>
-    <div class="button-example section">
+    <div class="button-example section" id="icon-example">
         <div class="clearfix">
             <cti:button nameKey="edit" icon="icon-pencil"/>
             <span class="description">button with icon</span>
@@ -106,7 +106,7 @@
     </div>
 </tags:sectionContainer>
 
-<tags:sectionContainer title="Drop Downs" styleClass="separated-sections" id="drop-downs">
+<tags:sectionContainer title="Drop Downs" styleClass="separated-sections" id="drop-down-example">
     <div class="button-example section">
         <div class="clearfix">
             <cm:dropdown type="button" key="yukon.web.defaults.actions" triggerClasses="fl">

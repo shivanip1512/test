@@ -306,7 +306,17 @@ table.nowrap td {
 
 .has-alerts td:first-child { width: 24px; }
 
-.three-column-table th {width: 33%;}
+.with-form-controls tbody td, 
+.form-control {
+    line-height: @form-control-height;
+}
+.with-form-controls tbody td select { line-height: normal; }
+.with-form-controls td button.naked, 
+.with-form-controls td .button.naked {
+    margin-top: 5px;
+}
+
+.three-column-table th { width: 33%; }
 
 .two-column-table { width:100%; }
 .two-column-table th, 
@@ -632,8 +642,12 @@ input.error {
 .setting .value-description .default {font-weight: bold;}
 
 /* MISC */
-.clearfix:before, .clearfix:after {content: " ";display: table;}
-.clearfix:after {clear: both;}
+.clearfix:before, 
+.clearfix:after {
+    content: " ";
+    display: table;
+}
+.clearfix:after { clear: both; }
 
 .code {
     font-family: Consolas, "Liberation Mono", Courier, monospace;
@@ -652,18 +666,24 @@ input.error {
 .half-width { width: 50%; }
 .short-width { max-width: 200px; }
 
-.fade-half {opacity: 0.5;}
+.fade-half { opacity: 0.5; }
 
 /* Soley for spacing vertically stacked elements */
-.stacked {margin-bottom: 10px;}
-.stacked-medium {margin-bottom: 20px;}
-.buffered {margin-bottom: 10px;margin-top: 10px;}
+.stacked { margin-bottom: 10px; }
+.stacked-medium { margin-bottom: 20px; }
+.buffered { 
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
 
-.wall-of-text .value {max-width: 300px;}
-.title-bar-tool {float:right !important;margin-right: 10px;}
+.wall-of-text .value { max-width: 300px; }
+.title-bar-tool {
+    float:right !important;
+    margin-right: 10px;
+}
 
 /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
-.dialog-no-buttons {margin-bottom: 20px;}
+.dialog-no-buttons { margin-bottom: 20px; }
 
 .detail, 
 .subtle { 
@@ -688,65 +708,97 @@ strong,
     white-space: pre;
 }
 
-hr, .divider {height: 1px;border-top: 1px solid #ccc;border-style: solid none none none;clear: both;}
-hr.dashed, .divider.dashed {border-style: dashed none none none;}
+hr, 
+.divider {
+    clear: both;
+    height: 1px;
+    border-top: 1px solid #ccc;
+    border-style: solid none none none;
+}
+hr.dashed, 
+.divider.dashed { 
+    border-style: dashed none none none;
+}
 
-.empty-list {font-style: italic; color: #676767;}
-.editable:hover {background-color: LemonChiffon; cursor: text;}
-.front {z-index: 9999;}
-.with-form-controls tbody td, .form-control {line-height: @form-control-height;}
-.with-form-controls tbody td select {line-height: normal;}
-.with-form-controls td button.naked, .with-form-controls td .button.naked {margin-top: 5px;}
+.empty-list {
+    font-style: italic; 
+    color: #676767;
+}
+.editable:hover {
+    background-color: LemonChiffon; 
+    cursor: text;
+}
+
+.front { z-index: 9999; }
 
 @-webkit-keyframes pulse-opacity {
-    from {opacity: 0.3;} to {opacity: 1.0;}
+    from { opacity: 0.3; } to { opacity: 1.0; }
 }
 @keyframes pulse-opacity {
-    from {opacity: 0.3;} to {opacity: 1.0;}
+    from { opacity: 0.3; } to { opacity: 1.0; }
 }
 .pulse-opacity {
-    animation-name: pulse-opacity;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-    animation-direction: alternate;
     -webkit-animation-name: pulse-opacity;
+            animation-name: pulse-opacity;
+            
     -webkit-animation-duration: 1s;
-    -webkit-animation-iteration-count: infinite;
+            animation-duration: 1s;
+            
+   -webkit-animation-iteration-count: infinite;
+           animation-iteration-count: infinite;
+           
     -webkit-animation-timing-function: ease-in-out;
+            animation-timing-function: ease-in-out;
+            
     -webkit-animation-direction: alternate;
+            animation-direction: alternate;
 }
 @-webkit-keyframes blink-shadow {
-    0% {box-shadow: 0 0 15px @red;}
-    25% {box-shadow: 0 0 15px transparent;}
-    50% {box-shadow: 0 0 15px @red;}
-    75% {box-shadow: 0 0 15px transparent;}
-    100% {box-shadow: 0 0 15px @red;}
+    0% { box-shadow: 0 0 15px @red; }
+    25% { box-shadow: 0 0 15px transparent; }
+    50% { box-shadow: 0 0 15px @red; }
+    75% { box-shadow: 0 0 15px transparent; }
+    100% { box-shadow: 0 0 15px @red; }
 }
 @keyframes blink-shadow {
-    0% {box-shadow: 0 0 15px @red;}
-    25% {box-shadow: 0 0 15px transparent;}
-    50% {box-shadow: 0 0 15px @red;}
-    75% {box-shadow: 0 0 15px transparent;}
-    100% {box-shadow: 0 0 15px @red;}
+    0% { box-shadow: 0 0 15px @red; }
+    25% { box-shadow: 0 0 15px transparent; }
+    50% { box-shadow: 0 0 15px @red; }
+    75% { box-shadow: 0 0 15px transparent; }
+    100% { box-shadow: 0 0 15px @red; }
 }
 .blink-shadow {
     box-shadow: 0 0 15px @red;
-    animation-name: blink-shadow;
-    animation-duration: 1s;
-    animation-direction: alternate;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite; 
+    
     -webkit-animation-name: blink-shadow;
+            animation-name: blink-shadow;
+            
     -webkit-animation-duration: 1s;
+            animation-duration: 1s;
+    
     -webkit-animation-direction: alternate;
+            animation-direction: alternate;
+    
     -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+    
     -webkit-animation-iteration-count: infinite; 
+            animation-iteration-count: infinite; 
 }
-.md-no-cssanimations .pulse-opacity, .md-no-cssanimations .blink-shadow {border: 2px solid @red;}
-.toggle-on-off .button:focus {outline: none;}
-.toggle-on-off .yes.on .b-label, .toggle-on-off .yes.on:hover .b-label {color: @green;}
-.toggle-on-off .no.on .b-label, .toggle-on-off .no.on:hover .b-label {color: @red;}
+.md-no-cssanimations .pulse-opacity, 
+.md-no-cssanimations .blink-shadow {
+    border: 2px solid @red;
+}
+
+.toggle-on-off .button:focus { outline: none; }
+.toggle-on-off .yes.on .b-label, 
+.toggle-on-off .yes.on:hover .b-label { 
+    color: @green;
+}
+.toggle-on-off .no.on .b-label, 
+.toggle-on-off .no.on:hover .b-label {
+    color: @red;
+}
 
 /* COLOR PICKER */
 .color-picker {

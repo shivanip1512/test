@@ -19,12 +19,12 @@
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/containers"/>">Containers</a></li>
             <c:set var="clazz" value="${page == 'buttons' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/buttons"/>">Buttons</a></li>
+            <c:set var="clazz" value="${page == 'icons' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/icons"/>">Icons</a></li>
             <c:set var="clazz" value="${page == 'pickers' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/pickers"/>">Pickers</a></li>
             <c:set var="clazz" value="${page == 'dialogs' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/dialogs"/>">Dialogs</a></li>
-            <c:set var="clazz" value="${page == 'icons' ? 'selected' : ''}"/>
-            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/icons"/>">Icons</a></li>
             <c:set var="clazz" value="${page == 'date-pickers' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/date-pickers"/>">Date Pickers</a></li>
         </ul>
