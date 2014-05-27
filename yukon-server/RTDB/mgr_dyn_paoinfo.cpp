@@ -351,7 +351,7 @@ void DynamicPaoInfoManager::purgeInfo(long paoId, CtiTableDynamicPaoInfo::PaoInf
 
     deleter << paoId
             << keyString
-            << ownerString;
+            << *ownerString;
 
     Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
