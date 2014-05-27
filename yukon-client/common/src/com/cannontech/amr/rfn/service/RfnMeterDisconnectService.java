@@ -12,7 +12,6 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -81,7 +80,6 @@ public class RfnMeterDisconnectService {
 
             @Override
             public void handleException(Exception e) {
-                log.error(e);
                 MessageSourceResolvable message = 
                     YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error", e.toString());
                 callback.processingExceptionOccured(message);
