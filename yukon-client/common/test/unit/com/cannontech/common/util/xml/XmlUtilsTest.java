@@ -19,6 +19,6 @@ public class XmlUtilsTest {
     public void convertEnumToXmlRepresentionTest_NoneXMLRepresentationEnum() {
         String xmlRepresention = XmlUtils.toXmlRepresentation(PasswordPolicyError.INVALID_PASSWORD_LENGTH);
         
-        Assert.assertEquals("Max Password Length Exceeded", xmlRepresention);
+        Assert.assertEquals("Invalid Password Length", xmlRepresention);
     }
 }
