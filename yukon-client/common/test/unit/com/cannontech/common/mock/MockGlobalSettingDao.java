@@ -19,7 +19,12 @@ public class MockGlobalSettingDao extends GlobalSettingDaoAdapter {
     
     @Override
     public String getString(GlobalSettingType setting) {
-        String value = values.get(setting).toString();
+        Object object = values.get(setting);
+        if (object == null) {
+            throw new IllegalStateException("Mock doesn't support setting '" + setting + "'. Need to add this setting" +
+                " using mock.addValue() before running test.");
+        }
+        String value = object.toString();
         if(value == null) {
             value = (String) setting.getDefaultValue();
         }
