@@ -6,8 +6,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
  * These values should match up with the ChangeLoginMessage enum until we can redo that page.
  */
 public enum PasswordPolicyError implements DisplayableEnum {
-    MIN_PASSWORD_LENGTH_NOT_MET, 
-    MAX_PASSWORD_LENGTH_EXCEEDED, 
+    INVALID_PASSWORD_LENGTH, 
     MIN_PASSWORD_AGE_NOT_MET, 
     PASSWORD_USED_TOO_RECENTLY, 
     PASSWORD_DOES_NOT_MEET_POLICY_QUALITY;

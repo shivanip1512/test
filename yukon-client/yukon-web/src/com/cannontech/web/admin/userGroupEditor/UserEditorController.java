@@ -204,6 +204,8 @@ public class UserEditorController {
     }
     
     private void setupModelMap(ModelMap model, User user, PageEditMode mode, YukonUserContext userContext) {
+        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(userContext.getYukonUser());
+        model.addAttribute("passwordPolicy", passwordPolicy);
         model.addAttribute("user", user);
         model.addAttribute("password", new Password());
         model.addAttribute("mode", mode);
@@ -286,6 +288,14 @@ public class UserEditorController {
                 PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
                 errorArgs = new Object[] { passwordPolicy.numberOfRulesMet(password),
                         passwordPolicy.getPasswordQualityCheck() };
+            }
+            else if(passwordPolicyError == PasswordPolicyError.INVALID_PASSWORD_LENGTH) {
+                PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
+                errorArgs = new Object[] { passwordPolicy.getMinPasswordLength() };
+            }
+            else if(passwordPolicyError == PasswordPolicyError.PASSWORD_USED_TOO_RECENTLY) {
+                PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
+                errorArgs = new Object[] { passwordPolicy.getPasswordHistory() };
             }
 
             if (passwordPolicyError != null) {

@@ -117,15 +117,10 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
     public PasswordPolicyError checkPasswordPolicy(String password, LiteYukonUser user, LiteUserGroup liteUserGroup) {
         
         PasswordPolicy passwordPolicy = getPasswordPolicy(user, liteUserGroup);
-        if (password.length() < passwordPolicy.getMinPasswordLength()) {
-            return PasswordPolicyError.MIN_PASSWORD_LENGTH_NOT_MET;
+        if ((password.length() < passwordPolicy.getMinPasswordLength()) || (password.length() > 64)) {
+            return PasswordPolicyError.INVALID_PASSWORD_LENGTH;
         }
-
-        // DB Column limit
-        if (password.length() > 64) {
-        	return PasswordPolicyError.MAX_PASSWORD_LENGTH_EXCEEDED;
-        }
-
+        
         // if existing user, check password age and recently used list
         if (user != null) {
     		UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
@@ -154,12 +149,12 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
     	
     	PasswordPolicy passwordPolicy = getPasswordPolicy(user, liteUserGroup);
         if (password.length() < passwordPolicy.getMinPasswordLength()) {
-            errors.add(PasswordPolicyError.MIN_PASSWORD_LENGTH_NOT_MET);
+            errors.add(PasswordPolicyError.INVALID_PASSWORD_LENGTH);
         }
 
         //DB Column limit
         if (password.length() > 64) {
-        	errors.add(PasswordPolicyError.MAX_PASSWORD_LENGTH_EXCEEDED);
+        	errors.add(PasswordPolicyError.INVALID_PASSWORD_LENGTH);
         }
 
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());

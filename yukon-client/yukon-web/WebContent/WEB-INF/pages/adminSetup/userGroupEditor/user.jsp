@@ -38,22 +38,29 @@ $(function() {
         <c:if test="${showChangePasswordErrors}">
             <cti:flashScopeMessages/>
         </c:if>
-        <form:form commandName="password" action="changePassword" method="post">
-            <cti:csrfToken/>
-            <input type="hidden" value="${userId}" name="userId">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".password">
-                    <tags:password path="password"/>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".confirmPassword">
-                    <tags:password path="confirmPassword"/>
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
-            <div class="action-area">
-                <cti:button nameKey="save" type="submit" classes="primary action"/>
-                <cti:button nameKey="cancel" id="cancelChangePassword"/>
+        <div class="column-12-12">
+            <div class="column one">
+                <form:form commandName="password" action="changePassword" method="post">
+                    <cti:csrfToken/>
+                    <input type="hidden" value="${userId}" name="userId">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".password">
+                            <tags:password path="password"/>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".confirmPassword">
+                            <tags:password path="confirmPassword"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                    <div class="action-area">
+                        <cti:button nameKey="save" type="submit" classes="primary action"/>
+                        <cti:button nameKey="cancel" id="cancelChangePassword"/>
+                    </div>
+                </form:form>
             </div>
-        </form:form>
+            <div class="column two nogutter">
+                <tags:passwordHelper passwordPolicy="${passwordPolicy}"/>
+            </div>
+        </div>                     
     </i:simplePopup>
     
     <tags:setFormEditMode mode="${mode}"/>

@@ -20,7 +20,7 @@ $(function(){
 <div class="description">
     <h4><i:inline key="yukon.web.modules.passwordPolicy.requirements"/></h4>
     <ul class="list clearfix">
-        <li class="MIN_PASSWORD_LENGTH_NOT_MET MAX_PASSWORD_LENGTH_EXCEEDED clearfix">
+        <li class="INVALID_PASSWORD_LENGTH clearfix">
             <i class="icon icon-blank"></i>
             <span class="b-label"><i:inline key="yukon.web.modules.passwordPolicy.length.description" 
                 arguments="${passwordPolicy.minPasswordLength}" /></span>
