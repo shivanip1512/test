@@ -77,7 +77,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                 try {
                     T request = inQueue.take();
                     processRequest(request);
-                    log.debug("Proccessed Archive Request for " + request.getRfnIdentifier() + " on " + this.getName()
+                    log.debug("Proccessed Archive Request for " + request.getRfnIdentifier() + " on " + getName()
                               + ", queue size is: " + inQueue.size());
                 } catch (InterruptedException e) {
                     log.warn("received shutdown signal, queue size: " + inQueue.size());
@@ -142,7 +142,12 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                     + "manufacturer as the new device.", e);
                 throw new RuntimeException("Creation failed for " + identifier, e);
             } catch (Exception e) {
-                log.warn("Creation failed for " + identifier, e);
+                if (log.isTraceEnabled()) {
+                    // Only log full exception when trace is on so lots of failed creations don't kill performance.
+                    log.warn("Creation failed for " + identifier, e);
+                } else {
+                    log.warn("Creation failed for " + identifier +":" + e);
+                }
                 throw new RuntimeException("Creation failed for " + identifier, e);
             }
         }
@@ -152,7 +157,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         public void shutdown() {
             // shutdown mechanism assumes that
             shutdown = true;
-            this.interrupt();
+            interrupt();
             drainQueue();
         }
     }
@@ -209,7 +214,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
         public void shutdown() {
             shutdown = true;
-            this.interrupt();
+            interrupt();
             drainQueue();
         }
     }
