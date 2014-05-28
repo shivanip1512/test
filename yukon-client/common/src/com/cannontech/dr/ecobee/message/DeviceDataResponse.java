@@ -7,51 +7,17 @@ import com.cannontech.dr.ecobee.message.partial.Status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class DeviceDataResponse extends BaseResponse {
-    private final String startDate;
-    private final int startInterval;
-    private final String endDate;
-    private final int endInterval;
-    private final String columns;
+public final class DeviceDataResponse extends BaseResponse {
     private final List<RuntimeReport> reportList;
     
     @JsonCreator
     public DeviceDataResponse(@JsonProperty("status") Status status,
-                              @JsonProperty("startDate") String startDate,
-                              @JsonProperty("startInterval") int startInterval,
-                              @JsonProperty("endDate") String endDate,
-                              @JsonProperty("endInterval") int endInterval,
-                              @JsonProperty("columns") String columns,
                               @JsonProperty("reportList") List<RuntimeReport> reportList) {
         super(status);
-        this.startDate = startDate;
-        this.startInterval = startInterval;
-        this.endDate = endDate;
-        this.endInterval = endInterval;
-        this.columns = columns;
-        this.reportList = reportList;
-    }
-
-    public String getStartDate() {
-        return startDate;
-    }
-
-    public int getStartInterval() {
-        return startInterval;
-    }
-
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public int getEndInterval() {
-        return endInterval;
-    }
-
-    public String getColumns() {
-        return columns;
+        this.reportList = ImmutableList.copyOf(reportList);
     }
 
     public List<RuntimeReport> getReportList() {

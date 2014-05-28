@@ -59,7 +59,7 @@ public class RuntimeReportRow {
     public static final Comparator<RuntimeReportRow> ON_THERMOSTAT_TIME = new Comparator<RuntimeReportRow>() {
         @Override
         public int compare(RuntimeReportRow rowA, RuntimeReportRow rowB) {
-            return rowA.getThermostatTime().compareTo(rowB.getThermostatTime());
+            return rowA.thermostatTime.compareTo(rowB.thermostatTime);
         }
     };
 }

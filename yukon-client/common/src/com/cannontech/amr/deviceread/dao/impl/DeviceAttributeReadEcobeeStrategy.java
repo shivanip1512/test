@@ -172,6 +172,6 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     public void initiateRead(Iterable<PaoMultiPointIdentifier> points,
                              final GroupCommandCompletionCallback groupCallback, DeviceRequestType type,
                              final YukonUserContext userContext) {
-        initiateRead(points, groupCallback, type, userContext);
+        // TODO:  support group reads
     }
 }

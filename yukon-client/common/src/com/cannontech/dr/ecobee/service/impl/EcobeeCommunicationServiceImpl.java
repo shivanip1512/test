@@ -72,7 +72,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     private static final String runtimeReportUrlPart = "runtimeReport?format=json";
     private static final List<String> deviceReadColumns = ImmutableList.of(
         // If the order is changed here or something is added or removed we need to update
-        // JsonSerializers.EcobeeRuntimeReportRow and RuntimeReport
+        // EcobeeJsonSerializers.RuntimeReportRow and RuntimeReport
         "zoneCalendarEvent", //currently running event
         "zoneAveTemp", // indoor temp
         "outdoorTemp", // outdoor temp
@@ -136,7 +136,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         MutableDateTime mutableStartDate = new MutableDateTime(dateRange.getMin());
         mutableStartDate.setMillisOfSecond(0);
         mutableStartDate.setSecondOfMinute(0);
-        mutableStartDate.setMinuteOfHour(mutableStartDate.getMinuteOfHour() % 5);
+        int minuteOfHour = mutableStartDate.getMinuteOfHour();
+        mutableStartDate.setMinuteOfHour(minuteOfHour / 5 * 5);
         Instant requestStartDate = mutableStartDate.toInstant();
         Instant requestStopDate = dateRange.getMax();
 
