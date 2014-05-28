@@ -12,12 +12,12 @@ import com.google.common.collect.ImmutableList;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public final class DeviceDataResponse extends BaseResponse {
     private final List<RuntimeReport> reportList;
-    
+
     @JsonCreator
     public DeviceDataResponse(@JsonProperty("status") Status status,
                               @JsonProperty("reportList") List<RuntimeReport> reportList) {
         super(status);
-        this.reportList = ImmutableList.copyOf(reportList);
+        this.reportList = reportList != null ? ImmutableList.copyOf(reportList) : ImmutableList.<RuntimeReport>of();
     }
 
     public List<RuntimeReport> getReportList() {
