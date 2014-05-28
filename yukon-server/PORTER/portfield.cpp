@@ -1308,7 +1308,15 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
                                 if( om && im )
                                 {
-                                    if( !status )
+                                    if( (status == EWORDRCV || im->EventCode == EWORDRCV) && im->Buffer.RepeaterError.ESt )
+                                    {
+                                        im->Buffer.RepeaterError.Details =
+                                            findRepeaterInRouteByAddress(
+                                                om->Request.RouteID,
+                                                om->Request.RetryMacroOffset,
+                                                im->Buffer.RepeaterError.ESt->echo_address);
+                                    }
+                                    else if( ! status )
                                     {
                                         if( const CtiDeviceSPtr temDevice = DeviceManager.getDeviceByID(im ->TargetID) )
                                         {
@@ -1318,15 +1326,6 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                                 im->EventCode = WRONGADDRESS;
                                             }
                                         }
-                                    }
-
-                                    if( im->EventCode == EWORDRCV && im->Buffer.RepeaterError.ESt )
-                                    {
-                                        im->Buffer.RepeaterError.Details =
-                                            findRepeaterInRouteByAddress(
-                                                om->Request.RouteID,
-                                                om->Request.RetryMacroOffset,
-                                                im->Buffer.RepeaterError.ESt->echo_address);
                                     }
 
                                     addCommResult(im->TargetID, im->EventCode & 0x3fff, false);
