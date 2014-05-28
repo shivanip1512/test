@@ -62,7 +62,7 @@ void RfDaPort::incQueueSubmittal()
 {
     InterlockedIncrement(&RfDaConcurrentRequests);
 
-    return CtiPort::incQueueSubmittal();
+    CtiPort::incQueueSubmittal();
 }
 
 
@@ -70,7 +70,7 @@ void RfDaPort::incQueueProcessed()
 {
     InterlockedDecrement(&RfDaConcurrentRequests);
 
-    return CtiPort::incQueueProcessed();
+    CtiPort::incQueueProcessed();
 }
 
 
