@@ -22,6 +22,7 @@ import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
@@ -59,22 +60,11 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
                     return collarTypes.get(d.getDeviceType()) != null;
                 }
             });
-        Iterable<Integer> deviceIds =
-            Iterables.transform(metersWithDiconnectCollar, new Function<SimpleDevice, Integer>() {
-                @Override
-                public Integer apply(SimpleDevice d) {
-                    return d.getDeviceId();
-                }
-            });
+        Iterable<Integer> deviceIds = Iterables.transform(metersWithDiconnectCollar, SimpleDevice.TO_PAO_ID);
 
+        Function<Integer, Integer> toSelf = Functions.identity();
         final Map<Integer, Integer> metersIdWithValidAddress =
-            Maps.uniqueIndex(meterDao.getMetersWithDisconnectCollarAddress(deviceIds),
-                             new Function<Integer, Integer>() {
-                                 @Override
-                                public Integer apply(Integer deviceId) {
-                                     return deviceId;
-                                 }
-                             });
+            Maps.uniqueIndex(meterDao.getMetersWithDisconnectCollarAddress(deviceIds), toSelf);
 
         Iterable<SimpleDevice> metersWithValidAddress =
             Iterables.filter(metersWithDiconnectCollar, new Predicate<SimpleDevice>() {

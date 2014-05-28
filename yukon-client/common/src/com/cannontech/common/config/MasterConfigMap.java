@@ -265,4 +265,13 @@ public class MasterConfigMap implements ConfigurationSource {
             throw new IllegalArgumentException("Master config setting: " + key + " is deprecated can cannot be used.");
         }
     }
+
+    @Override
+    public int getInteger(MasterConfigIntegerKeysEnum key, int defaultValue) {
+        String string = getString(key.name());
+        if (string == null) {
+            return defaultValue;
+        }
+        return Integer.parseInt(string);
+    }
 }

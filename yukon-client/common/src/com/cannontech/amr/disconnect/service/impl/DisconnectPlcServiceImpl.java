@@ -15,6 +15,8 @@ import com.cannontech.amr.disconnect.service.DisconnectCallback;
 import com.cannontech.amr.disconnect.service.DisconnectPlcService;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigIntegerKeysEnum;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
@@ -34,17 +36,23 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     
     private final Logger log = YukonLogManager.getLogger(DisconnectPlcServiceImpl.class);
-    private static final int MINUTES_TO_WAIT = 1;
+    private final int minutesToWait;
     
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     @Autowired private AttributeService attributeService;
     @Autowired private StateDao stateDao;
     @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
+    
+    @Autowired
+    public DisconnectPlcServiceImpl(ConfigurationSource configurationSource) {
+        minutesToWait = configurationSource.getInteger(MasterConfigIntegerKeysEnum.PLC_ACTIONS_CANCEL_TIMEOUT, 10);
+    }
     
     @Override
     public void cancel(DisconnectResult result, YukonUserContext userContext) {
@@ -58,18 +66,17 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     public void execute(final DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
                         CommandRequestExecution execution, DisconnectResult result, LiteYukonUser user) {
 
-        List<CommandRequestDevice> commands =
-            Lists.transform(Lists.newArrayList(meters), new Function<SimpleDevice, CommandRequestDevice>() {
-                @Override
-                public CommandRequestDevice apply(SimpleDevice meter) {
-                    CommandRequestDevice request = new CommandRequestDevice();
-                    request.setDevice(new SimpleDevice(meter));
-                    request.setCommandCallback(new CommandCallbackBase(command.getPlcCommand()));
-                    return request;
-                }
-            });
-        // Copy list so we don't create new requests every time the list is traversed.
-        commands = Lists.newArrayList(commands);
+        Function<SimpleDevice, CommandRequestDevice> toCommandRequestDevice =
+                new Function<SimpleDevice, CommandRequestDevice>() {
+                    @Override
+                    public CommandRequestDevice apply(SimpleDevice meter) {
+                        CommandRequestDevice request = new CommandRequestDevice();
+                        request.setDevice(meter);
+                        request.setCommandCallback(new CommandCallbackBase(command.getPlcCommand()));
+                        return request;
+                    }
+                };
+        List<CommandRequestDevice> commands = Lists.newArrayList(Iterables.transform(meters, toCommandRequestDevice));
         if (log.isDebugEnabled()) {
             for (CommandRequestDevice c : commands) {
                 log.debug("PLC send" + c);
@@ -103,7 +110,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
                 callback.complete();
             }else{
                 if(log.isDebugEnabled()){
-                    log.debug("PLC Waiting for "+ MINUTES_TO_WAIT + " minutes before completing");
+                    log.debug("PLC Waiting for "+ minutesToWait + " minutes before completing");
                 }
             }
         }
@@ -112,7 +119,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
         public void cancel() {
             log.debug("PLC Cancel (CommandCompletionCallback)");
             if (log.isDebugEnabled()) {
-                log.debug("Wait " + MINUTES_TO_WAIT + " minutes before proccessing cancelations.");
+                log.debug("Wait " + minutesToWait + " minutes before proccessing cancelations.");
             }
             Runnable cancelationRunner = new Runnable() {
                 @Override
@@ -127,7 +134,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
                     callback.complete();
                 }
             };
-            refreshTimer.schedule(cancelationRunner, MINUTES_TO_WAIT, TimeUnit.MINUTES);
+            refreshTimer.schedule(cancelationRunner, minutesToWait, TimeUnit.MINUTES);
         }
 
         @Override

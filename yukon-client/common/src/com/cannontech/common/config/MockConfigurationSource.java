@@ -88,4 +88,9 @@ public class MockConfigurationSource implements ConfigurationSource {
     public String getString(MasterConfigStringKeysEnum key) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public int getInteger(MasterConfigIntegerKeysEnum key, int defaultValue) {
+        throw new UnsupportedOperationException();
+    }
 }

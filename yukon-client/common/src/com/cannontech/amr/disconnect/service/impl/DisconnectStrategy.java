@@ -21,16 +21,16 @@ public interface DisconnectStrategy {
     /**
      * Send connect, disconnect or arm command to the given devices.
      */
-    public void execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
+    void execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
                         CommandRequestExecution execution, DisconnectResult result, YukonUserContext userContext);
 
     /**
      * Attempt to cancel the command
      */
-    public void cancel(DisconnectResult result, YukonUserContext userContext);
+    void cancel(DisconnectResult result, YukonUserContext userContext);
     
     /**
      * Returns true if the devices can be armed.
      */
-    public boolean supportsArm(DeviceCollection deviceCollection);
+    boolean supportsArm(DeviceCollection deviceCollection);
 }

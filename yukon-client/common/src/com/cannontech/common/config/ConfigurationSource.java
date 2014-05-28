@@ -187,5 +187,10 @@ public interface ConfigurationSource {
      * @param defaultValue Duration value to return if the key does not exist
      */
     public Duration getDuration(String key, ReadableDuration defaultValue);
-
+    
+    /**
+     * Returns value of key from the configuration file. Returns defaultVlaue if
+     * the key did not exist in the file.
+     */
+    public int getInteger(MasterConfigIntegerKeysEnum key, int defaultValue);
 }
