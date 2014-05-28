@@ -66,8 +66,7 @@ public class DisconnectSuccessResultsModel extends BareReportModelBase<Disconnec
         }
         String state = states.get(currentState);
         Map<PaoIdentifier, LiteYukonPAObject> paoIdentifiers =
-                paoDao.getLiteYukonPaosById(Lists.transform(devices,
-                                                            SimpleDevice.PAO_IDENTIFIER_FUNCTION));
+                paoDao.getLiteYukonPaosById(Lists.transform(devices, SimpleDevice.TO_PAO_IDENTIFIER));
         
         for (LiteYukonPAObject device : paoIdentifiers.values()) {
             ModelRow row = new ModelRow();

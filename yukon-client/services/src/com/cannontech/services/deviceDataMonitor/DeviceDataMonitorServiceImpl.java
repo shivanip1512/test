@@ -136,7 +136,9 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
                 // this service because he needs to access it MUCH more frequently then this listener will
                 // and it is an expensive operation to send this serialized list "over the wire"
                 for (DeviceDataMonitor monitor: deviceDataMonitorCacheService.getAllEnabledMonitors()) {
-                    if (!monitor.isEnabled()) continue;
+                    if (!monitor.isEnabled()) {
+                        continue;
+                    }
                     try {
                         // this resolveGroupName uses the cache - so we're good
                         DeviceGroup monitoringGroup = deviceGroupService.resolveGroupName(monitor.getGroupName());
@@ -194,7 +196,9 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
 
     @Override
     public boolean shouldFindViolatingPaosBeforeSave(DeviceDataMonitor updatedMonitor, DeviceDataMonitor existingMonitor) {
-        if (CollectionUtils.isEmpty(updatedMonitor.getProcessors()) || !updatedMonitor.isEnabled()) return false;
+        if (CollectionUtils.isEmpty(updatedMonitor.getProcessors()) || !updatedMonitor.isEnabled()) {
+            return false;
+        }
 
         boolean monitorExists = existingMonitor != null;
         boolean monitoringGroupChanged = false;
@@ -376,7 +380,9 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
                 checkWorkerInterrupted();
                 
                 // check state group
-                if (!(litePoint.getStateGroupID() == processor.getStateGroup().getStateGroupID())) continue;
+                if (!(litePoint.getStateGroupID() == processor.getStateGroup().getStateGroupID())) {
+                    continue;
+                }
 
                 // check if our processor matches the point's value
                 if (isPointValueMatch(processor, pvqh)) {
@@ -414,10 +420,14 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
                     checkWorkerInterrupted();
 
                     // this monitor currently only works on status points
-                    if (paoPointIdentifier.getPointIdentifier().getPointType() != PointType.Status) continue;
+                    if (paoPointIdentifier.getPointIdentifier().getPointType() != PointType.Status) {
+                        continue;
+                    }
 
                     // this monitor only works on devices
-                    if (paoPointIdentifier.getPaoTypePointIdentifier().getPaoType().getPaoCategory() != PaoCategory.DEVICE) continue;
+                    if (paoPointIdentifier.getPaoTypePointIdentifier().getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
+                        continue;
+                    }
 
                     // add it to our list to get later
                     paoPointIdentToGetAsLitePoints.add(paoPointIdentifier);
@@ -461,7 +471,8 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
                 return;
             }
             // check if our violating devices are the same as the ones in our group
-            List<PaoIdentifier> currentViolationPaos = Lists.newArrayList(Lists.transform(currentViolationDevices, SimpleDevice.PAO_IDENTIFIER_FUNCTION));
+            List<PaoIdentifier> currentViolationPaos = Lists.newArrayList(Lists.transform(currentViolationDevices,
+                SimpleDevice.TO_PAO_IDENTIFIER));
             List<PaoIdentifier> paosInViolationList = Lists.newArrayList();
             Collections.sort(currentViolationPaos, PaoIdentifier.COMPARATOR);
             Collections.sort(paosInViolationList, PaoIdentifier.COMPARATOR);
@@ -495,7 +506,7 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
     
     private void waitForDispatch() throws InterruptedException {
         if (dispatchConnection == null) {
-            dispatchConnection = (com.cannontech.message.dispatch.DispatchClientConnection)connPool.getDefDispatchConn();
+            dispatchConnection = connPool.getDefDispatchConn();
         }
         dispatchConnection.waitForValidConnection();
     }

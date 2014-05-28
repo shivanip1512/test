@@ -63,7 +63,7 @@ public class DisconnectAllResultsModel extends BareReportModelBase<DisconnectAll
     private void addRows(List<SimpleDevice> devices, DisconnectDeviceState currentState,  DisconnectResult result){
         if (!devices.isEmpty()) {
             Map<PaoIdentifier, LiteYukonPAObject> paoIdentifiers =
-                paoDao.getLiteYukonPaosById(Lists.transform(devices,SimpleDevice.PAO_IDENTIFIER_FUNCTION));
+                paoDao.getLiteYukonPaosById(Lists.transform(devices,SimpleDevice.TO_PAO_IDENTIFIER));
             
             for (LiteYukonPAObject device : paoIdentifiers.values()) {
                 ModelRow row = new ModelRow();

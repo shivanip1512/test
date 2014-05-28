@@ -388,8 +388,7 @@ public class TdcServiceImpl implements TdcService{
             });
 
         Map<PaoIdentifier, LiteYukonPAObject> paoIdentifiers =
-            paoDao.getLiteYukonPaosById(Lists.transform(devices,
-                                                        SimpleDevice.PAO_IDENTIFIER_FUNCTION));
+            paoDao.getLiteYukonPaosById(Lists.transform(devices, SimpleDevice.TO_PAO_IDENTIFIER));
 
         List<DisplayData> data = new ArrayList<>();
         for (Signal signal : signals) {
