@@ -5971,8 +5971,8 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
     CtiPointClientManager::ReasonabilityLimitStruct limits = PointMgr.getReasonabilityLimits(pointNumeric);
 
     // Relatively arbitrary, but should be ok.
-    #define MAX_HIGH_REASONABILITY          (1e30)
-    #define MIN_LOW_REASONABILITY           (-1e30)
+    const double MaxHighReasonability =  1e30;
+    const double MinLowReasonability  = -1e30;
 
     try
     {
@@ -5981,7 +5981,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
            limits.highLimit >  limits.lowLimit )
         {
             // Evaluate High Limit
-            if(limits.highLimit < MAX_HIGH_REASONABILITY)  // Is the reasonability reasonable?
+            if(limits.highLimit < MaxHighReasonability)  // Is the reasonability reasonable?
             {
                 alarm = CtiTablePointAlarming::highReasonability;
                 double val = pData->getValue();
@@ -6029,7 +6029,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                 }
             }
 
-            if(limits.lowLimit > MIN_LOW_REASONABILITY)  // Is the reasonability reasonable?
+            if(limits.lowLimit > MinLowReasonability)  // Is the reasonability reasonable?
             {
                 alarm = CtiTablePointAlarming::lowReasonability;
                 double val = pData->getValue();
