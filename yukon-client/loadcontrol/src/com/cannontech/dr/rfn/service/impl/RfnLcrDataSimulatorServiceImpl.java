@@ -25,7 +25,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
-import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
@@ -55,7 +54,6 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ExiParsingService exiParsingService;
-    @Autowired private RfnEventTestingService rfnEventTestingService;
     @Autowired private ConnectionFactory connectionFactory;
 
     private Simulator simulator = new Simulator();
