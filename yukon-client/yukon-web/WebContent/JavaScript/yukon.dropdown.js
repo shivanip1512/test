@@ -12,24 +12,25 @@ $(function() {
         
         $('.dropdown-trigger').removeClass('menu-open');
         
-        var target = $(this),
-            menu = target.find('.dropdown-menu');
+        var trigger = $(this),
+            menu = trigger.find('.dropdown-menu');
         
         /** Get menu, do the body prepending at this point since the menu may
          * have been ajaxed in. */
         if (menu[0]) { // The menu hasn't been moved to the body yet
-            target.data({'menu': menu});
+            trigger.data({'menu': menu});
             $('body').prepend(menu); // prepend will move, not clone
+            menu.data('trigger', trigger);
         } else { // The menu has been opened once already
-            menu = target.data('menu');
+            menu = trigger.data('menu');
         }
 
         if (menu.is(':visible')) {
             $('ul.dropdown-menu').hide();
             /*
              * We want to propagate the click event if it was on a link.
-             * The target may have been an icon inside that link, 
-             * so  we can't just check if the target has an href.
+             * The trigger may have been an icon inside that link, 
+             * so  we can't just check if the trigger has an href.
              */
             if ( $(e.target).closest('[href]').length !== 0 ) {
                 return true;
@@ -38,11 +39,11 @@ $(function() {
         }
 
         $('ul.dropdown-menu').hide();
-        if (target.closest('.dropdown-trigger').hasClass('ajax-menu')) {
-            ajaxMenuOpen(target, e);
+        if (trigger.closest('.dropdown-trigger').hasClass('ajax-menu')) {
+            ajaxMenuOpen(trigger, e);
             return false;
         }
-        positionDropdownMenu(menu, target);
+        positionDropdownMenu(menu, trigger);
         return false;
     });
 
@@ -134,21 +135,33 @@ $(function() {
     /** Handle option selections for criteria buttons */
     $(document).on('click', '.criteria-menu .criteria-option', function(e) {
         
-        var option = $(e.target),
-            menu = option.closest('.criteria-menu');
+        var menu = $(this).closest('.criteria-menu'),
+            checkbox = $(this).find(':checkbox');
         
+        checkbox.prop('checked', !checkbox.prop('checked'));
         updateCriteriaButton(menu);
+        positionDropdownMenu(menu, menu.data('trigger'));
         
-        positionDropdownMenu(menu, menu.data('button').closest('.dropdown-trigger'));
-        return false;
+        // propagate click event.
+        return true;
     });
     
     /** Update a criteria button's text */
     function updateCriteriaButton(menu) {
-        var button = menu.prev(),
+        
+        var trigger = $(menu.data('trigger')),
             allOptions = menu.find('.criteria-option input'),
             checkedOptions = allOptions.filter(':checked'),
-            buttonText = ''; 
+            buttonText = '',
+            button;
+        
+        if (!trigger.length) {
+            // The menu hasn't been opened yet
+            button =  menu.closest('.dropdown-trigger').find('.criteria-button');
+        } else {
+            // The menu has already been opened once
+            button = trigger.find('.criteria-button');
+        }
         
         if (allOptions.length === checkedOptions.length) {
             button.find('.criteria-value').text(button.data('allText'));

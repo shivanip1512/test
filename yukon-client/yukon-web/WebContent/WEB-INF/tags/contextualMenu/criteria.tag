@@ -17,12 +17,12 @@
 <div class="dropdown-trigger usn ${pageScope.triggerClasses}" <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
     <button type="button" class="criteria-button" data-all-text="${allText}" data-none-text="${noneText}">
         <div class="criteria-wrap">
-            <c:choose>
-                <c:when test="${not empty pageScope.label}">
-                    <span class="criteria-label">${fn:escapeXml(pageScope.label)}</span>
-                </c:when>
-                <c:otherwise><span class="criteria-label"><cti:msg2 key="${pageScope.key}"/>:&nbsp;</span></c:otherwise>
-            </c:choose>
+            <span class="criteria-label">
+                <c:choose>
+                    <c:when test="${not empty pageScope.label}">${fn:escapeXml(pageScope.label)}:&nbsp;</c:when>
+                    <c:otherwise><cti:msg2 key="${pageScope.key}"/>:&nbsp;</c:otherwise>
+                </c:choose>
+            </span>
             <span class="criteria-value">${fn:escapeXml(pageScope.value)}</span>
         </div>
         <i class="icon icon-bullet-arrow-down">&nbsp;</i>
