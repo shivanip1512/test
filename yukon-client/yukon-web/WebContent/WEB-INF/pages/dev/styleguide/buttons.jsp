@@ -103,7 +103,7 @@
 &lt;/form&gt;
 </pre>
     
-<h2>Using Icons with Buttons</h2>
+<h2 id="icon-example">Using Icons with Buttons</h2>
 
 <p class="description">
     The <span class="label label-info">&lt;cti:button&gt;</span> tag has built in support for icons. Simply set the 
@@ -373,7 +373,8 @@ yukon.ui.unbusy('#busy-test-3');
 
 <p class="description">
     You can create drop down menu buttons using two tags: <span class="label label-info">&lt;tags:dropdown&gt;</span> and
-    <span class="label label-info">&lt;tags:dropdownOption&gt;</span>.  
+    <span class="label label-info">&lt;tags:dropdownOption&gt;</span>.  See <a href="tables#has-actions-example">tables</a>
+    to learn about using drop down menus in tables.
 </p>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>

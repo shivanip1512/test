@@ -13,6 +13,83 @@
 .description { line-height: 20px; }
 </style>
 
+<p>
+    Tables are meant for organizing data, <strong>NOT</strong> for page or component layout.  Yukon has 4 css classes to
+    define the type of tables we use: <span class="label label-info">.results-table</span>
+    <span class="label label-info">.compact-results-table</span> <span class="label label-info">.name-value-table</span>
+    <span class="label label-info">.links-table</span>
+</p>
+
+<h2>Table Data</h2>
+<p>
+    Follow standard practices when organizing data in tables:
+    <a target="_blank" href="http://i.imgur.com/Jg6rgsr.gif">nifty example gif!</a>
+</p>
+<ul>
+    <li>Left align text.</li>
+    <li>Right align dates and numbers.</li>
+    <li>Align headers with data.</li>
+    <li>Use consistent rounding.</li>
+</ul>
+<h4 class="subtle">Example:</h4>
+<table class="half-width">
+    <thead>
+        <tr>
+            <th>State</th>
+            <th class="tar">Population</th>
+            <th class="tar">Established</th>
+        </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+        <tr>
+            <td>Minnesota</td>
+            <td class="tar">5.379M</td>
+            <td class="tar">May 11, 1858</td>
+        </tr>
+        <tr>
+            <td>Wisconsin</td>
+            <td class="tar">5.726M</td>
+            <td class="tar">May 29, 1848</td>
+        </tr>
+        <tr>
+            <td>Iowa</td>
+            <td class="tar">3.074M</td>
+            <td class="tar">December 28, 1846</td>
+        </tr>
+    </tbody>
+</table>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;table&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;State&lt;/th&gt;
+            &lt;th class=&quot;tar&quot;&gt;Population&lt;/th&gt;
+            &lt;th class=&quot;tar&quot;&gt;Established&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tfoot&gt;&lt;/tfoot&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Minnesota&lt;/td&gt;
+            &lt;td class=&quot;tar&quot;&gt;5.379M&lt;/td&gt;
+            &lt;td class=&quot;tar&quot;&gt;May 11, 1858&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Wisconsin&lt;/td&gt;
+            &lt;td class=&quot;tar&quot;&gt;5.726M&lt;/td&gt;
+            &lt;td class=&quot;tar&quot;&gt;May 29, 1848&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Iowa&lt;/td&gt;
+            &lt;td class=&quot;tar&quot;&gt;3.074M&lt;/td&gt;
+            &lt;td class=&quot;tar&quot;&gt;December 28, 1846&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+
 <h2>Results Table</h2>
 <div class="table-example clearfix stacked">
     <p class="description"><span class="label label-info">.results-table</span> is used to display data when a bordered around the table is desired.
@@ -146,8 +223,8 @@
 <div class="table-example clearfix stacked">
     <p class="description">
         Adding <span class="label label-info">.dashed</span> to a 
-        <span class="label label-info">.compact-results-table</span> change the header border to a dashed line.  Use this
-        when the table is inside a section container.
+        <span class="label label-info">.compact-results-table</span> will change the header border to a dashed line.  Use 
+        this when the table is inside a section container.
     </p>
     <h4 class="subtle">Example:</h4>
     <tags:sectionContainer2 nameKey="areaFormulas">
@@ -375,7 +452,7 @@
 <div class="table-example clearfix stacked">
     <p class="description">
         <span class="label label-info">.compact-results-table</span> and
-        <span class="label label-info">.results-table</span> are striped by default.  striping means every even row
+        <span class="label label-info">.results-table</span> are striped by default.  Striping means every even row
         has a slightly grey background.  You can add striping to other tables by adding the class 
         <span class="label label-info">.striped</span>.
     </p>
@@ -605,7 +682,7 @@ public String tables(ModelMap model, int sort, Direction dir) {
 &lt;/table&gt;
 </pre>
     
-    <hr>
+    <hr id="has-actions-example">
     
     <p class="description">
         <span class="label label-info">.has-actions</span> is used in conjunction with 
@@ -672,7 +749,7 @@ public String tables(ModelMap model, int sort, Direction dir) {
     
     <p class="description">
         <span class="label label-info">.has-alerts</span> is used when each row in a table is expected to have the first
-        column be icon describing the row.  It will ensure the first column only takes up enough space to show the icon. See
+        column be an icon describing the row.  It will ensure the first column only takes up enough space to show the icon. See
         <a href="icons">icons</a> to learn more about using icons.
     </p>
     <h4 class="subtle">Example:</h4>

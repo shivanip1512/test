@@ -29,6 +29,8 @@ The last column must always specify the <span class="label label-info">.nogutter
     &lt;div class=&quot;column two nogutter&quot;&gt;&lt;/div&gt;
 &lt;/div&gt;
 </pre>
+
+<h2 id="icon-example">Current Grid Definitions</h2>
 <div class="separated-sections">
 
     <div class="section">
