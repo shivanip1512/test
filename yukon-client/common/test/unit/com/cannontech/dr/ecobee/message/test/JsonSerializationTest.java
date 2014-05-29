@@ -35,7 +35,6 @@ import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
 
-@SuppressWarnings(value={"unchecked", "rawtypes"})
 public class JsonSerializationTest {
 
     @Test
@@ -60,8 +59,8 @@ public class JsonSerializationTest {
         String json = JsonUtils.toJson(jsonSource);
         StandardResponse response = JsonUtils.fromJson(json, StandardResponse.class);
 
-        Assert.assertEquals(response.getStatus().getMessage(), ((Map)jsonSource.get("status")).get("message"));
-        Assert.assertEquals(response.getStatus().getCode(), ((Map)jsonSource.get("status")).get("code"));
+        Assert.assertEquals(response.getStatus().getMessage(), ((Map<?,?>)jsonSource.get("status")).get("message"));
+        Assert.assertEquals(response.getStatus().getCode(), ((Map<?,?>)jsonSource.get("status")).get("code"));
         Assert.assertEquals(response.getSuccess(), jsonSource.get("success"));
     }
     
@@ -92,8 +91,8 @@ public class JsonSerializationTest {
 
         RuntimeReportRequest request = new RuntimeReportRequest(startDate, endDate, serialNumbers, columns);
         String json = JsonUtils.toJson(request);
-        Map<String, Object> jsonResult = JsonUtils.fromJson(json, Map.class);
-        Map selectionJsonResult = (Map) jsonResult.get("selection");
+        Map<?, ?> jsonResult = JsonUtils.fromJson(json, Map.class);
+        Map<?, ?> selectionJsonResult = (Map<?,?>) jsonResult.get("selection");
 
         Assert.assertEquals(jsonResult.get("startDate"), startDateStr);
         Assert.assertEquals(jsonResult.get("startInterval"), "122"); // 10:10 is 122*5 minutes into the day
@@ -114,7 +113,7 @@ public class JsonSerializationTest {
         Map<String, Object> statusJsonSource = new HashMap<>();
         statusJsonSource.put("code", 3);
         statusJsonSource.put("message", "hello world");
-        List<Map> reportListJsonSource = new ArrayList<>();
+        List<Map<String, Object>> reportListJsonSource = new ArrayList<>();
         for (int i=0; i<numThermostats; i++) {
             List<String> rowListJsonSource = new ArrayList<>();
             for (int j=0; j<numRows; j++) {
@@ -137,8 +136,8 @@ public class JsonSerializationTest {
         String json = JsonUtils.toJson(jsonSource);
         DeviceDataResponse response = JsonUtils.fromJson(json, DeviceDataResponse.class);
 
-        Assert.assertEquals(response.getStatus().getMessage(), ((Map)jsonSource.get("status")).get("message"));
-        Assert.assertEquals(response.getStatus().getCode(), ((Map)jsonSource.get("status")).get("code"));
+        Assert.assertEquals(response.getStatus().getMessage(), ((Map<?, ?>)jsonSource.get("status")).get("message"));
+        Assert.assertEquals(response.getStatus().getCode(), ((Map<?, ?>)jsonSource.get("status")).get("code"));
         Assert.assertEquals(response.getReportList().size(), numThermostats);
 
         List<RuntimeReport> reportList = response.getReportList();
@@ -212,10 +211,10 @@ public class JsonSerializationTest {
 
         DutyCycleDrRequest request = new DutyCycleDrRequest(setName, drName, 99, startDate, false, endDate, false);
         String json = JsonUtils.toJson(request);
-        Map<String, Object> jsonResult = JsonUtils.fromJson(json, Map.class);
-        Map selectionJsonResult = (Map) jsonResult.get("selection");
-        Map demandResponseResult = (Map) jsonResult.get("demandResponse");
-        Map demandEventResult = (Map) demandResponseResult.get("event");
+        Map<?, ?> jsonResult = JsonUtils.fromJson(json, Map.class);
+        Map<?, ?> selectionJsonResult = (Map<?, ?>) jsonResult.get("selection");
+        Map<?, ?> demandResponseResult = (Map<?, ?>) jsonResult.get("demandResponse");
+        Map<?, ?> demandEventResult = (Map<?, ?>) demandResponseResult.get("event");
 
         Assert.assertEquals(jsonResult.get("operation"), "create");
         Assert.assertEquals(selectionJsonResult.get("selectionType"), SelectionType.MANAGEMENT_SET.getEcobeeString());
@@ -242,8 +241,8 @@ public class JsonSerializationTest {
         String demandResponseRef = "demandResponseRef";
         DrRestoreRequest request = new DrRestoreRequest(demandResponseRef);
         String json = JsonUtils.toJson(request);
-        Map<String, Object> jsonResult = JsonUtils.fromJson(json, Map.class);
-        Map demandResponseRefResult = (Map) jsonResult.get("demandResponse");
+        Map<?, ?> jsonResult = JsonUtils.fromJson(json, Map.class);
+        Map<?, ?> demandResponseRefResult = (Map<?, ?>) jsonResult.get("demandResponse");
         
         Assert.assertEquals(jsonResult.get("operation"), "cancel");
         Assert.assertEquals(demandResponseRefResult.get("demandResponseRef"), demandResponseRef);
@@ -253,7 +252,7 @@ public class JsonSerializationTest {
     public void test_ListHierarchyRequest() throws IOException {
         ListHierarchyRequest request = new ListHierarchyRequest();
         String json = JsonUtils.toJson(request);
-        Map<String, Object> jsonResult = JsonUtils.fromJson(json, Map.class);
+        Map<?, ?> jsonResult = JsonUtils.fromJson(json, Map.class);
         
         Assert.assertEquals(jsonResult.get("operation"), "list");
         Assert.assertEquals(jsonResult.get("setPath"), "/");
@@ -295,8 +294,8 @@ public class JsonSerializationTest {
         String json = JsonUtils.toJson(jsonSource);
         HierarchyResponse response = JsonUtils.fromJson(json, HierarchyResponse.class);
 
-        Assert.assertEquals(response.getStatus().getMessage(), ((Map)jsonSource.get("status")).get("message"));
-        Assert.assertEquals(response.getStatus().getCode(), ((Map)jsonSource.get("status")).get("code"));
+        Assert.assertEquals(response.getStatus().getMessage(), ((Map<?, ?>)jsonSource.get("status")).get("message"));
+        Assert.assertEquals(response.getStatus().getCode(), ((Map<?, ?>)jsonSource.get("status")).get("code"));
         Assert.assertEquals(response.getSets().size(), numSets);
         for (int i=0; i<numSets; i++) {
             SetNode set = response.getSets().get(i);
