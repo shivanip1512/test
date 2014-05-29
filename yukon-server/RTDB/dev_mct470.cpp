@@ -451,11 +451,12 @@ bool Mct470Device::isLPDynamicInfoCurrent( void )
 
     retval &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
 
-    //  This compares against either the device config, if available, or the database table
-    retval &= ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) * 60) == getLoadProfile()->getLoadProfileDemandRate());
-
-    //  we don't use the second load profile rate yet
-    //retval |= ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) * 60) == getLoadProfile().getVoltageProfileDemandRate());
+    //  only MCT-470s have a load profile interval in their device config
+    if( retval && isMct470(getType()) )
+    {
+        //  This compares against either the device config, if available, or the database table
+        retval &= ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) * 60) == getLoadProfile()->getLoadProfileDemandRate());
+    }
 
     if( retval && ((sspec == Sspec_MCT470_128k && sspec_rev >= SspecRev_Min && sspec_rev <= SspecRev_Max)
                    || sspec == Sspec_MCT430A
@@ -582,7 +583,21 @@ ULONG Mct470Device::calcNextLPScanTime( void )
         //  i'm purposely using the DB rate instead of the fancy getLoadProfileInterval() call here, so it can be ignorant
         //    of the dynamic LP config info - this could probably be improved to look at the minimum of the available
         //    LP intervals (interval 1, interval 2, electronic)
-        unsigned int overdue_rate = getLPRetryRate(getLoadProfile()->getLoadProfileDemandRate());
+        unsigned int overdue_rate;
+
+        if( isMct430(getType()) )
+        {
+            int lp_rate = Default_IedLoadProfileRate;  //  default to 15 minutes
+
+            //  try to get the device's value if we have it
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, lp_rate);
+
+            overdue_rate = getLPRetryRate(lp_rate);
+        }
+        else
+        {
+            overdue_rate = getLPRetryRate(getLoadProfile()->getLoadProfileDemandRate());
+        }
 
         //  only try for the dynamic info at the retry rate, no faster
         next_time  = (Now.seconds() - LPBlockEvacuationTime) + overdue_rate;
@@ -758,7 +773,14 @@ long Mct470Device::getLoadProfileInterval( unsigned channel )
             dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - load profile interval requested, but value not retrieved...  sending DB value **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retval = getLoadProfile()->getLoadProfileDemandRate();
+        if( isMct470(getType()) )
+        {
+            retval = getLoadProfile()->getLoadProfileDemandRate();
+        }
+        else
+        {
+            retval = Default_IedLoadProfileRate;  //  default to 15 minutes
+        }
     }
     else if( retval == 0 )
     {
@@ -1310,53 +1332,47 @@ INT Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
             {
                 requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, OutMessage, outList);
             }
-            //  check if we're the IED sspec
-            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)   == Sspec_MCT470_128k
-                        && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Min
-                        && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= SspecRev_Max)
-                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT430A
-                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT430S
-                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT470_256k )
-            {
-                if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) * 60) != getLoadProfile()->getLoadProfileDemandRate() )
-                {
-                    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) )
-                    {
-                        OUTMESS *om = CTIDBG_new CtiOutMessage(*OutMessage);
-
-                        //  send the intervals....
-                        sendIntervals(om, outList);
-                    }
-                    //  then verify them - the ordering here does matter
-                    requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, OutMessage, outList);
-                }
-
-                if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval) )
-                {
-                    //  as i understand it, we can only read this, not write it, so we'll never do a write-then-read confirmation
-                    requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, OutMessage, outList);
-                }
-
-                if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig) )
-                {
-                    //  this will need to be changed to check for a match like LoadProfileInterval above -
-                    //    if it doesn't match, then re-send and re-read
-                    //    (which will happen when the 470 config is added)
-                    requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, OutMessage, outList);
-                }
-            }
             else
             {
-                if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) * 60) != getLoadProfile()->getLoadProfileDemandRate() )
+                if( isMct470(getType()) )
                 {
-                    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) )
+                    if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) * 60) != getLoadProfile()->getLoadProfileDemandRate() )
                     {
-                        OUTMESS *om = CTIDBG_new CtiOutMessage(*OutMessage);
+                        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) )
+                        {
+                            OUTMESS *om = CTIDBG_new CtiOutMessage(*OutMessage);
 
-                        sendIntervals(om, outList);
+                            //  send the intervals....
+                            sendIntervals(om, outList);
+                        }
+                        //  then verify them - the ordering here does matter
+                        requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, OutMessage, outList);
+                    }
+                }
+
+                const long sspec    = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec);
+                const long sspecRev = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision);
+
+                //  check if we're the IED sspec
+                if( isMct430(getType())
+                    || (sspec == Sspec_MCT470_256k)
+                    || (sspec == Sspec_MCT470_128k
+                        && sspecRev >= SspecRev_Min
+                        && sspecRev <= SspecRev_Max) )
+                {
+                    if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval) )
+                    {
+                        //  as i understand it, we can only read this, not write it, so we'll never do a write-then-read confirmation
+                        requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, OutMessage, outList);
                     }
 
-                    requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, OutMessage, outList);
+                    if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig) )
+                    {
+                        //  this will need to be changed to check for a match like LoadProfileInterval above -
+                        //    if it doesn't match, then re-send and re-read
+                        //    (which will happen when the 470 config is added)
+                        requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, OutMessage, outList);
+                    }
                 }
             }
 

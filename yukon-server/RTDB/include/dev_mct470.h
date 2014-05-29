@@ -150,6 +150,8 @@ private:
         SspecRev_IED_ErrorPadding    = 14,  //  rev 1.4
         SspecRev_IED_LPExtendedRange = 26,  //  rev 2.6
         SspecRev_IED_Precanned11     = 42,  //  rev 4.2
+
+        Default_IedLoadProfileRate = 900,
     };
 
     bool hasIedInputs()   const;
