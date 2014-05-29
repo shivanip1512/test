@@ -20,7 +20,7 @@ var indexManager_getProgress = function (indexName) {
         url: yukon.url('/index/percentDone?index=' + indexName),
         type: 'get'
     }).done(function (data, textStatus, jqXHR) {
-        var json = yukon.ui.util.getHeaderJSON(jqXHR);
+        var json = JSON.parse(data);
         indexManager_updateProgressWrapper(jqXHR, json);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         indexManager_ajaxError(jqXHR);
@@ -56,11 +56,6 @@ var indexManager_ajaxError = function (transport, json) {
 };
 
 function indexManager_updateIndexProgressBar (indexName, percent) {
-    progressText = document.getElementById(indexName + 'progressText');
-    progressInner = document.getElementById(indexName + 'progressInner');
-    if (percent > 20) {
-        $(progressText).html(parseInt(percent, 10) + '%');
-    }
-    progressInner.style.width = percent + '%';
+    $('#' + indexName + 'percentComplete').find('.progress-bar').width(percent + '%');
 }
 
