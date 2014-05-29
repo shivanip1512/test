@@ -13,6 +13,7 @@ import com.cannontech.database.data.device.MCTIEDBase;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.db.device.DeviceGroupMember;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
@@ -1255,7 +1256,7 @@ public boolean processPortFile()
 		
 		//this createPort() call actually queries the database for a new unique portID!!
 		// let this happen for now, but, a performance issue may occur
-		port = com.cannontech.database.data.port.PortFactory.createPort( PaoType.getPaoTypeId(tokenizer.nextElement().toString()) );
+		port = PortFactory.createPort(PaoType.getForDbString(tokenizer.nextElement().toString()));
 
 		//set our unique own portID
 		port.setPortID(portID);

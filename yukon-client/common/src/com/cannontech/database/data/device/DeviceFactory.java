@@ -32,7 +32,6 @@ import com.cannontech.database.data.device.lm.LMGroupSA305;
 import com.cannontech.database.data.device.lm.LMGroupSADigital;
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
 import com.cannontech.database.data.device.lm.MacroGroup;
-import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.port.TerminalServerSharedPortBase;
 
@@ -489,7 +488,7 @@ public final class DeviceFactory {
 
         //set up comm channel for IPCMeter types.
         if (returnDevice instanceof IPCMeter) {
-            TerminalServerSharedPortBase comms = (TerminalServerSharedPortBase) PortFactory.createPort(PortTypes.TSERVER_SHARED);
+            TerminalServerSharedPortBase comms = (TerminalServerSharedPortBase) PortFactory.createPort(PaoType.TSERVER_SHARED);
             ((IPCMeter)returnDevice).setCommChannel(comms);
         }
         

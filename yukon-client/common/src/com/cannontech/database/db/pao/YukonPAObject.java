@@ -1,5 +1,7 @@
 package com.cannontech.database.db.pao;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -33,19 +35,22 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
     @Override
     public void add() throws java.sql.SQLException {
         Object addValues[] = {
-                getPaObjectID(),
-                getPaoType().getPaoCategory().getDbString(),
-                getPaoType().getPaoClass().getDbString(),
-                (getPaoName().length() <= 60 ? getPaoName() : getPaoName().substring(0, 60)), 
-                getPaoType().getDbString(),
-                getDescription(), getDisableFlag(), getPaoStatistics() };
+                paObjectID,
+                paoType.getPaoCategory().getDbString(),
+                paoType.getPaoClass().getDbString(),
+                StringUtils.left(paoName, 60),
+                paoType.getDbString(),
+                description,
+                disableFlag,
+                paoStatistics
+                };
 
         add(TABLE_NAME, addValues);
     }
 
     @Override
     public void delete() throws java.sql.SQLException {
-        Object values[] = { getPaObjectID() };
+        Object values[] = { paObjectID };
 
         delete(TABLE_NAME, CONSTRAINT_COLUMNS, values);
 
@@ -83,7 +88,7 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
     
     @Override
     public void retrieve() throws java.sql.SQLException {
-        Object constraintValues[] = { getPaObjectID() };
+        Object constraintValues[] = { paObjectID };
         Object results[] = retrieve(SETTER_COLUMNS,
                                     TABLE_NAME,
                                     CONSTRAINT_COLUMNS,
@@ -128,13 +133,18 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
     
     @Override
     public void update() throws java.sql.SQLException {
-        String paoName = getPaoName().length() <= 60 ? getPaoName()
-                : getPaoName().substring(0, 60);
-        Object setValues[] = { getPaoType().getPaoCategory().getDbString(), getPaoType().getPaoClass().getDbString(), paoName,
-                getPaoType().getDbString(), getDescription(), getDisableFlag(),
-                getPaoStatistics() };
 
-        Object constraintValues[] = { getPaObjectID() };
+        Object setValues[] = { 
+                paoType.getPaoCategory().getDbString(), 
+                paoType.getPaoClass().getDbString(), 
+                StringUtils.left(paoName, 60),
+                paoType.getDbString(),
+                description,
+                disableFlag,
+                paoStatistics
+                };
+
+        Object constraintValues[] = { paObjectID };
 
         update(TABLE_NAME,
                SETTER_COLUMNS,

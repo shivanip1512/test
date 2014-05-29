@@ -41,9 +41,9 @@ public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel 
 		},
 		//Until the background functionality is there, hide this panel.
 		/*{		//3 - PortAlarmEditorPanel
-			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
-			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
-			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
+			PaoType.LOCAL_DIRECT, PaoType.LOCAL_SHARED, PaoType.LOCAL_RADIO,
+			PaoType.LOCAL_DIALUP, PaoType.TSERVER_DIRECT, PaoType.TSERVER_SHARED,
+			PaoType.TSERVER_RADIO, PaoType.TSERVER_DIALUP, PaoType.LOCAL_DIALBACK
 		},*/
 		{		//3 - PortSharingEditorPanel
 		    PaoType.LOCAL_DIRECT, PaoType.LOCAL_SHARED, PaoType.LOCAL_RADIO,

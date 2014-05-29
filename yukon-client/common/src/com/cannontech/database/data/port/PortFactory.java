@@ -1,22 +1,22 @@
 package com.cannontech.database.data.port;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.spring.YukonSpringHook;
 
 public final class PortFactory {
 
-    public static DirectPort createPort(int typeOfPort) {
+    public static DirectPort createPort(PaoType portType) {
         DirectPort port;
 
-        switch (typeOfPort) {
-        case PortTypes.LOCAL_DIRECT:
+        switch (portType) {
+        case LOCAL_DIRECT:
             LocalDirectPort p = new LocalDirectPort();
             port = p;
             break;
 
-        case PortTypes.LOCAL_SHARED:
+        case LOCAL_SHARED:
             LocalSharedPort lsp = new LocalSharedPort();
             lsp.getCommPort().setCommonProtocol("IDLC");
             lsp.getPortTiming().setPreTxWait(new Integer(25));
@@ -28,12 +28,12 @@ public final class PortFactory {
             port = lsp;
             break;
 
-        case PortTypes.DIALOUT_POOL:
+        case DIALOUT_POOL:
             PooledPort pp = new PooledPort();
             port = pp;
             break;
 
-        case PortTypes.LOCAL_RADIO:
+        case LOCAL_RADIO:
             LocalRadioPort lrp = new LocalRadioPort();
 
             lrp.getPortTiming().setPreTxWait(new Integer(25));
@@ -50,7 +50,7 @@ public final class PortFactory {
             port = lrp;
             break;
 
-        case PortTypes.LOCAL_DIALUP:
+        case LOCAL_DIALUP:
             LocalDialupPort dialupPort = new LocalDialupPort();
 
             dialupPort.getPortTiming().setPreTxWait(new Integer(25));
@@ -61,7 +61,7 @@ public final class PortFactory {
 
             port = dialupPort;
             break;
-        case PortTypes.LOCAL_DIALBACK:
+        case LOCAL_DIALBACK:
             LocalDialbackPort dialbackPort = new LocalDialbackPort();
 
             dialbackPort.getPortTiming().setPreTxWait(new Integer(25));
@@ -72,12 +72,12 @@ public final class PortFactory {
 
             port = dialbackPort;
             break;
-        case PortTypes.TSERVER_DIRECT:
+        case TSERVER_DIRECT:
             TerminalServerDirectPort tdp = new TerminalServerDirectPort();
             port = tdp;
             break;
 
-        case PortTypes.TSERVER_SHARED:
+        case TSERVER_SHARED:
             TerminalServerSharedPort tsp = new TerminalServerSharedPort();
             tsp.getCommPort().setCommonProtocol("IDLC");
             tsp.getPortTiming().setPreTxWait(new Integer(25));
@@ -87,7 +87,7 @@ public final class PortFactory {
             tsp.getPortTiming().setExtraTimeOut(new Integer(0));
             port = tsp;
             break;
-        case PortTypes.UDPPORT:
+        case UDPPORT:
             UdpPort udpPort = new UdpPort();
             udpPort.getCommPort().setCommonProtocol("IDLC");
             udpPort.getPortTiming().setPreTxWait(new Integer(25));
@@ -98,7 +98,7 @@ public final class PortFactory {
             port = udpPort;
             break;
 
-        case PortTypes.TSERVER_RADIO:
+        case TSERVER_RADIO:
             TerminalServerRadioPort trp = new TerminalServerRadioPort();
 
             trp.getPortTiming().setPreTxWait(new Integer(25));
@@ -115,7 +115,7 @@ public final class PortFactory {
             port = trp;
             break;
 
-        case PortTypes.TSERVER_DIALUP:
+        case TSERVER_DIALUP:
             TerminalServerDialupPort tp = new TerminalServerDialupPort();
 
             tp.getPortTiming().setPreTxWait(new Integer(25));
@@ -125,7 +125,7 @@ public final class PortFactory {
             tp.getPortTiming().setExtraTimeOut(new Integer(0));
             port = tp;
             break;
-        case PortTypes.TCPPORT:
+        case TCPPORT:
             TcpPort tcp = new TcpPort();
 
             tcp.getPortTiming().setPreTxWait(new Integer(25));
@@ -146,15 +146,14 @@ public final class PortFactory {
         port.setDisableFlag(new Character('N'));
         port.getCommPort().setAlarmInhibit(new Character('N'));
 
-        if (port.getCommPort().getCommonProtocol() == null)
+        if (port.getCommPort().getCommonProtocol() == null) {
             port.getCommPort().setCommonProtocol("None");
+        }
 
         port.getCommPort().setPerformThreshold(new Integer(90));
         port.getCommPort().setPerformanceAlarm(new Character('Y'));
-        port.getCommPort()
-            .setSharedPortType(com.cannontech.common.util.CtiUtilities.STRING_NONE);
-        port.getCommPort()
-            .setSharedSocketNumber(new Integer(CommPort.DEFAULT_SHARED_SOCKET_NUMBER));
+        port.getCommPort().setSharedPortType(com.cannontech.common.util.CtiUtilities.STRING_NONE);
+        port.getCommPort().setSharedSocketNumber(new Integer(CommPort.DEFAULT_SHARED_SOCKET_NUMBER));
 
         return port;
     }

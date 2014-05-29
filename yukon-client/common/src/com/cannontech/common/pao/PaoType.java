@@ -14,7 +14,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -217,18 +216,18 @@ public enum PaoType implements DatabaseRepresentationSource {
     ROUTE_TNPP_TERMINAL(RouteTypes.ROUTE_TNPP_TERMINAL, "TNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_RDS_TERMINAL(RouteTypes.ROUTE_RDS_TERMINAL, "RDS Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
 
-    LOCAL_DIRECT(PortTypes.LOCAL_DIRECT, "Local Direct", PaoCategory.PORT, PaoClass.PORT),
-    LOCAL_SHARED(PortTypes.LOCAL_SHARED, "Local Serial Port", PaoCategory.PORT, PaoClass.PORT),
-    LOCAL_RADIO(PortTypes.LOCAL_RADIO, "Local Radio", PaoCategory.PORT, PaoClass.PORT),
-    LOCAL_DIALUP(PortTypes.LOCAL_DIALUP, "Local Dialup", PaoCategory.PORT, PaoClass.PORT),
-    TSERVER_DIRECT(PortTypes.TSERVER_DIRECT, "Terminal Server Direct", PaoCategory.PORT, PaoClass.PORT),
-    TCPPORT(PortTypes.TCPPORT, "TCP", PaoCategory.PORT, PaoClass.PORT),
-    UDPPORT(PortTypes.UDPPORT, "UDP", PaoCategory.PORT, PaoClass.PORT),
-    TSERVER_SHARED(PortTypes.TSERVER_SHARED, "Terminal Server", PaoCategory.PORT, PaoClass.PORT),
-    TSERVER_RADIO(PortTypes.TSERVER_RADIO, "Terminal Server Radio", PaoCategory.PORT, PaoClass.PORT),
-    TSERVER_DIALUP(PortTypes.TSERVER_DIALUP, "Terminal Server Dialup", PaoCategory.PORT, PaoClass.PORT),
-    LOCAL_DIALBACK(PortTypes.LOCAL_DIALBACK, "Local Dialback", PaoCategory.PORT, PaoClass.PORT),
-    DIALOUT_POOL(PortTypes.DIALOUT_POOL, "Dialout Pool", PaoCategory.PORT, PaoClass.PORT),
+    LOCAL_DIRECT(3000, "Local Direct", PaoCategory.PORT, PaoClass.PORT),
+    LOCAL_SHARED(3001, "Local Serial Port", PaoCategory.PORT, PaoClass.PORT),
+    LOCAL_RADIO(3002, "Local Radio", PaoCategory.PORT, PaoClass.PORT),
+    LOCAL_DIALUP(3003, "Local Dialup", PaoCategory.PORT, PaoClass.PORT),
+    TSERVER_DIRECT(3004, "Terminal Server Direct", PaoCategory.PORT, PaoClass.PORT),
+    TCPPORT(3010, "TCP", PaoCategory.PORT, PaoClass.PORT),
+    UDPPORT(3011, "UDP", PaoCategory.PORT, PaoClass.PORT),
+    TSERVER_SHARED(3005, "Terminal Server", PaoCategory.PORT, PaoClass.PORT),
+    TSERVER_RADIO(3006, "Terminal Server Radio", PaoCategory.PORT, PaoClass.PORT),
+    TSERVER_DIALUP(3007, "Terminal Server Dialup", PaoCategory.PORT, PaoClass.PORT),
+    LOCAL_DIALBACK(3008, "Local Dialback", PaoCategory.PORT, PaoClass.PORT),
+    DIALOUT_POOL(3009, "Dialout Pool", PaoCategory.PORT, PaoClass.PORT),
 
     SCRIPT(DeviceTypes.SCRIPT, "Script", PaoCategory.SCHEDULE, PaoClass.SCHEDULE),
     SIMPLE_SCHEDULE(DeviceTypes.SIMPLE_SCHEDULE, "Simple", PaoCategory.SCHEDULE, PaoClass.SCHEDULE),

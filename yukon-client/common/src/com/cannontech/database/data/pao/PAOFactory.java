@@ -55,7 +55,7 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
 	}
 	else if (paoCategory == PaoCategory.PORT)
 	{
-		returnObject = PortFactory.createPort(litePAObject.getPaoType().getDeviceTypeId());
+		returnObject = PortFactory.createPort(litePAObject.getPaoType());
 		((com.cannontech.database.data.port.DirectPort)returnObject).setPortID( new Integer( litePAObject.getYukonID() ) );
 		((com.cannontech.database.data.port.DirectPort)returnObject).setPortName( litePAObject.getPaoName() );
 	}

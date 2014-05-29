@@ -96,7 +96,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
             return;
         }
 
-        DirectPort directPort = PortFactory.createPort(commChannel.getPaoType().getDeviceTypeId());
+        DirectPort directPort = PortFactory.createPort(commChannel.getPaoType());
         directPort.getCommPort().setCommonProtocol("IDLC");
 
         PortSettings portSettings = new PortSettings();

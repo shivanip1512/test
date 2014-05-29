@@ -11,14 +11,15 @@ import javax.swing.event.CaretListener;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.database.data.pao.PortTypes;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.version.DBEditorDefines;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.port.TcpPort;
 
-public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListener, CaretListener{
-    private JComboBox baudRateCombo = null;
+public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListener, CaretListener {
+    private JComboBox<String> baudRateCombo = null;
     private JLabel baudRateLabel = null;
-        
+
     private JLabel descriptionLabel = null;
     private JTextField descriptionTextField = null;
 
@@ -27,39 +28,32 @@ public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListen
         initialize();
     }
 
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
-        if (e.getSource() == getBaudRateComboBox()) { 
-            baudRateSelected(e);
+        if (e.getSource() == getBaudRateComboBox()) {
+            try {
+                fireInputUpdate();
+            } catch (Throwable t) {
+                handleException(t);
+            }
         }
     }
 
+    @Override
     public void caretUpdate(javax.swing.event.CaretEvent e) {
-        if (e.getSource() == getDescriptionTextField()) { 
-            descriptionEntered(e);
-        }
-
-    }
-
-    private void baudRateSelected(java.awt.event.ActionEvent arg1) {
-        try {
-            fireInputUpdate();
-        } catch (Throwable e) {
-            handleException(e);
+        if (e.getSource() == getDescriptionTextField()) {
+            try {
+                fireInputUpdate();
+            } catch (Throwable t) {
+                handleException(t);
+            }
         }
     }
 
-    private void descriptionEntered(javax.swing.event.CaretEvent arg1) {
-        try {
-            fireInputUpdate();
-        } catch (Throwable e) {
-            handleException(e);
-        }
-    }
-
-    private JComboBox getBaudRateComboBox() {
+    private JComboBox<String> getBaudRateComboBox() {
         if (baudRateCombo == null) {
             try {
-                baudRateCombo = new javax.swing.JComboBox();
+                baudRateCombo = new JComboBox<String>();
                 baudRateCombo.setName("BaudRateComboBox");
                 baudRateCombo.setFont(new java.awt.Font("dialog", 0, 14));
                 baudRateCombo.setMaximumRowCount(5);
@@ -113,29 +107,31 @@ public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListen
         return descriptionTextField;
     }
 
+    @Override
     public Dimension getMinimumSize() {
         return getPreferredSize();
     }
 
+    @Override
     public Dimension getPreferredSize() {
-        return new Dimension( 350, 200 );
+        return new Dimension(350, 200);
     }
 
-    public Object getValue(Object val) 
-    {
-        val = PortFactory.createPort( PortTypes.TCPPORT );
+    @Override
+    public Object getValue(Object val) {
+        val = PortFactory.createPort(PaoType.TCPPORT);
         String name = getDescriptionTextField().getText().trim();
-    
+
         Integer baudRate = new Integer((String) getBaudRateComboBox().getSelectedItem());
-    
-        ((TcpPort) val).setPortName( name );
-        ((TcpPort) val).getPortSettings().setBaudRate( baudRate );
-    
+
+        ((TcpPort) val).setPortName(name);
+        ((TcpPort) val).getPortSettings().setBaudRate(baudRate);
+
         return val;
     }
 
     private void handleException(Throwable exception) {
-    
+
     }
 
     private void initConnections() throws Exception {
@@ -149,27 +145,31 @@ public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListen
             setFont(new java.awt.Font("dialog", 0, 14));
             setLayout(new java.awt.GridBagLayout());
             setSize(350, 300);
-    
+
             java.awt.GridBagConstraints constraintsDescriptionLabel = new java.awt.GridBagConstraints();
-            constraintsDescriptionLabel.gridx = 0; constraintsDescriptionLabel.gridy = 0;
+            constraintsDescriptionLabel.gridx = 0;
+            constraintsDescriptionLabel.gridy = 0;
             constraintsDescriptionLabel.fill = java.awt.GridBagConstraints.HORIZONTAL;
             constraintsDescriptionLabel.anchor = java.awt.GridBagConstraints.WEST;
             add(getDescriptionLabel(), constraintsDescriptionLabel);
-    
+
             java.awt.GridBagConstraints constraintsBaudRateLabel = new java.awt.GridBagConstraints();
-            constraintsBaudRateLabel.gridx = 0; constraintsBaudRateLabel.gridy = 1;
+            constraintsBaudRateLabel.gridx = 0;
+            constraintsBaudRateLabel.gridy = 1;
             constraintsBaudRateLabel.fill = java.awt.GridBagConstraints.HORIZONTAL;
             constraintsBaudRateLabel.anchor = java.awt.GridBagConstraints.WEST;
             add(getBaudRateLabel(), constraintsBaudRateLabel);
-    
+
             java.awt.GridBagConstraints constraintsDescriptionTextField = new java.awt.GridBagConstraints();
-            constraintsDescriptionTextField.gridx = 1; constraintsDescriptionTextField.gridy = 0;
+            constraintsDescriptionTextField.gridx = 1;
+            constraintsDescriptionTextField.gridy = 0;
             constraintsDescriptionTextField.anchor = java.awt.GridBagConstraints.WEST;
             constraintsDescriptionTextField.insets = new java.awt.Insets(5, 10, 5, 0);
             add(getDescriptionTextField(), constraintsDescriptionTextField);
-    
+
             java.awt.GridBagConstraints constraintsBaudRateComboBox = new java.awt.GridBagConstraints();
-            constraintsBaudRateComboBox.gridx = 1; constraintsBaudRateComboBox.gridy = 1;
+            constraintsBaudRateComboBox.gridx = 1;
+            constraintsBaudRateComboBox.gridy = 1;
             constraintsBaudRateComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
             constraintsBaudRateComboBox.anchor = java.awt.GridBagConstraints.WEST;
             constraintsBaudRateComboBox.insets = new java.awt.Insets(5, 10, 5, 0);
@@ -179,46 +179,43 @@ public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListen
             handleException(ivjExc);
         }
 
-        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_300 );
-        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_1200 );
-        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_2400 );
-        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_4800 );
-        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_9600 );
-        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_14400 );
-        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_28800 );
-        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_38400 );
-        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_57600 );
-        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_115200 );
-        getBaudRateComboBox().setSelectedItem(com.cannontech.common.version.DBEditorDefines.BAUD_1200);
+        baudRateCombo.addItem(DBEditorDefines.BAUD_300);
+        baudRateCombo.addItem(DBEditorDefines.BAUD_1200);
+        baudRateCombo.addItem(DBEditorDefines.BAUD_2400);
+        baudRateCombo.addItem(DBEditorDefines.BAUD_4800);
+        baudRateCombo.addItem(DBEditorDefines.BAUD_9600);
+        baudRateCombo.addItem(DBEditorDefines.BAUD_14400);
+        baudRateCombo.addItem(DBEditorDefines.BAUD_28800);
+        baudRateCombo.addItem(DBEditorDefines.BAUD_38400);
+        baudRateCombo.addItem(DBEditorDefines.BAUD_57600);
+        baudRateCombo.addItem(DBEditorDefines.BAUD_115200);
+        getBaudRateComboBox().setSelectedItem(DBEditorDefines.BAUD_1200);
 
     }
 
+    @Override
     public boolean isInputValid() {
-        
-        if( getDescriptionTextField().getText().length() < 1 )
-        {
+
+        if (getDescriptionTextField().getText().length() < 1) {
             setErrorString("The Description text field must be filled in");
             return false;
         }
-        
+
         return true;
     }
 
+    @Override
     public void setValue(Object val) {
-        
     }
-    
-    public void setFirstFocus() 
-    {
+
+    @Override
+    public void setFirstFocus() {
         // Make sure that when its time to display this panel, the focus starts in the top component
-        SwingUtilities.invokeLater( 
-            new Runnable() 
-            { 
-                public void run() 
-                { 
-                    getDescriptionTextField().requestFocus(); 
-                } 
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                getDescriptionTextField().requestFocus();
             }
-        );    
+        });
     }
 }
