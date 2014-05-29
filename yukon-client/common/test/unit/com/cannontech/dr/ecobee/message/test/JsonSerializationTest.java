@@ -37,12 +37,17 @@ import com.google.common.collect.ImmutableList;
 
 public class JsonSerializationTest {
 
+    private static final TypeReference<Map<String, Object>> mapStringObjectType = 
+            new TypeReference<Map<String, Object>>(){/* required */};
+    private static final TypeReference<Map<String, String>> mapStringStringType = 
+            new TypeReference<Map<String, String>>(){/* required */};
+
     @Test
     public void test_RegisterDeviceRequest() throws IOException {
         String serialNumber = "123abc321";
         RegisterDeviceRequest request = new RegisterDeviceRequest(serialNumber);
         String json = JsonUtils.toJson(request);
-        Map<String, String> jsonResult = JsonUtils.fromJson(json, new TypeReference<Map<String, String>>(){/* required */});
+        Map<String, String> jsonResult = JsonUtils.fromJson(json, mapStringStringType);
 
         Assert.assertEquals(jsonResult.get("operation"), "register");
         Assert.assertEquals(jsonResult.get("thermostats"), serialNumber);
@@ -71,7 +76,7 @@ public class JsonSerializationTest {
 
         MoveDeviceRequest request = new MoveDeviceRequest(serialNumber, setPath);
         String json = JsonUtils.toJson(request);
-        Map<String, String> jsonResult = JsonUtils.fromJson(json, new TypeReference<Map<String, String>>(){/* required */});
+        Map<String, String> jsonResult = JsonUtils.fromJson(json, mapStringStringType);
 
         Assert.assertEquals(jsonResult.get("operation"), "assign");
         Assert.assertEquals(jsonResult.get("setPath"), setPath);
@@ -91,7 +96,7 @@ public class JsonSerializationTest {
 
         RuntimeReportRequest request = new RuntimeReportRequest(startDate, endDate, serialNumbers, columns);
         String json = JsonUtils.toJson(request);
-        Map<?, ?> jsonResult = JsonUtils.fromJson(json, Map.class);
+        Map<String, Object> jsonResult = JsonUtils.fromJson(json, mapStringObjectType);
         Map<?, ?> selectionJsonResult = (Map<?,?>) jsonResult.get("selection");
 
         Assert.assertEquals(jsonResult.get("startDate"), startDateStr);
@@ -165,7 +170,7 @@ public class JsonSerializationTest {
         String setName = "bogusSet";
         CreateSetRequest request = new CreateSetRequest(setName);
         String json = JsonUtils.toJson(request);
-        Map<String, String> jsonResult = JsonUtils.fromJson(json, new TypeReference<Map<String, String>>(){/* required */});
+        Map<String, String> jsonResult = JsonUtils.fromJson(json, mapStringStringType);
 
         Assert.assertEquals(jsonResult.get("operation"), "add");
         Assert.assertEquals(jsonResult.get("setName"), setName);
@@ -177,7 +182,7 @@ public class JsonSerializationTest {
         String setName = "bogusSet";
         DeleteSetRequest request = new DeleteSetRequest(setName);
         String json = JsonUtils.toJson(request);
-        Map<String, String> jsonResult = JsonUtils.fromJson(json, new TypeReference<Map<String, String>>(){/* required */});
+        Map<String, String> jsonResult = JsonUtils.fromJson(json, mapStringStringType);
 
         Assert.assertEquals(jsonResult.get("operation"), "remove");
         Assert.assertEquals(jsonResult.get("setPath"), "/" + setName);
@@ -189,7 +194,7 @@ public class JsonSerializationTest {
         String newPath = "bogusToPath";
         MoveSetRequest request = new MoveSetRequest(currentPath, newPath);
         String json = JsonUtils.toJson(request);
-        Map<String, String> jsonResult = JsonUtils.fromJson(json, new TypeReference<Map<String, String>>(){/* required */});
+        Map<String, String> jsonResult = JsonUtils.fromJson(json, mapStringStringType);
 
         Assert.assertEquals(jsonResult.get("operation"), "move");
         Assert.assertEquals(jsonResult.get("setPath"), currentPath);
@@ -211,7 +216,7 @@ public class JsonSerializationTest {
 
         DutyCycleDrRequest request = new DutyCycleDrRequest(setName, drName, 99, startDate, false, endDate, false);
         String json = JsonUtils.toJson(request);
-        Map<?, ?> jsonResult = JsonUtils.fromJson(json, Map.class);
+        Map<String, Object> jsonResult = JsonUtils.fromJson(json, mapStringObjectType);
         Map<?, ?> selectionJsonResult = (Map<?, ?>) jsonResult.get("selection");
         Map<?, ?> demandResponseResult = (Map<?, ?>) jsonResult.get("demandResponse");
         Map<?, ?> demandEventResult = (Map<?, ?>) demandResponseResult.get("event");
@@ -241,7 +246,7 @@ public class JsonSerializationTest {
         String demandResponseRef = "demandResponseRef";
         DrRestoreRequest request = new DrRestoreRequest(demandResponseRef);
         String json = JsonUtils.toJson(request);
-        Map<?, ?> jsonResult = JsonUtils.fromJson(json, Map.class);
+        Map<String, Object> jsonResult = JsonUtils.fromJson(json, mapStringObjectType);
         Map<?, ?> demandResponseRefResult = (Map<?, ?>) jsonResult.get("demandResponse");
         
         Assert.assertEquals(jsonResult.get("operation"), "cancel");
@@ -252,8 +257,8 @@ public class JsonSerializationTest {
     public void test_ListHierarchyRequest() throws IOException {
         ListHierarchyRequest request = new ListHierarchyRequest();
         String json = JsonUtils.toJson(request);
-        Map<?, ?> jsonResult = JsonUtils.fromJson(json, Map.class);
-        
+        Map<String, Object> jsonResult = JsonUtils.fromJson(json, mapStringObjectType);
+
         Assert.assertEquals(jsonResult.get("operation"), "list");
         Assert.assertEquals(jsonResult.get("setPath"), "/");
         Assert.assertEquals(jsonResult.get("recursive"), true);
