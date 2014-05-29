@@ -61,13 +61,6 @@ public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInput
 		};
 	};
 
-@Deprecated /* use LMProgramBasePanel(PaoType) */
-public LMProgramBasePanel() {
-	super();
-	initialize();
-	programType = PaoType.LM_DIRECT_PROGRAM;
-}
-
 public LMProgramBasePanel(PaoType programType) {
 	super();
 	this.programType = programType;
@@ -639,32 +632,7 @@ public boolean isTimedOperationalState()
 {
 	return getJComboBoxOperationalState().getSelectedItem().toString().compareTo("Timed") == 0;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		LMProgramBasePanel aLMProgramBasePanel;
-		aLMProgramBasePanel = new LMProgramBasePanel();
-		frame.setContentPane(aLMProgramBasePanel);
-		frame.setSize(aLMProgramBasePanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			@Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.setVisible(true);
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 public void setIsAWizardOp(boolean wizard)
 {
 	isAWizardOp = wizard;

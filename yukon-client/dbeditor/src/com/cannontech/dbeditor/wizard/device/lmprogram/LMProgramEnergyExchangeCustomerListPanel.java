@@ -22,6 +22,7 @@ public LMProgramEnergyExchangeCustomerListPanel() {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void addButtonAction_actionPerformed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -93,6 +94,7 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanel() {
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	com.cannontech.database.data.device.lm.LMProgramBase program = (com.cannontech.database.data.device.lm.LMProgramBase)o;
@@ -188,42 +190,20 @@ private void initializeAddPanel()
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void leftListListSelection_valueChanged(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
 	// user code begin {2}
 	// user code end
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		LMProgramBasePanel aLMProgramBasePanel;
-		aLMProgramBasePanel = new LMProgramBasePanel();
-		frame.setContentPane(aLMProgramBasePanel);
-		frame.setSize(aLMProgramBasePanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * Method to handle events for the AddRemovePanelListener interface.
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void removeButtonAction_actionPerformed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -237,6 +217,7 @@ public void removeButtonAction_actionPerformed(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListListSelection_valueChanged(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -248,6 +229,7 @@ public void rightListListSelection_valueChanged(java.util.EventObject newEvent) 
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouse_mouseClicked(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -259,6 +241,7 @@ public void rightListMouse_mouseClicked(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouse_mouseEntered(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -270,6 +253,7 @@ public void rightListMouse_mouseEntered(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouse_mouseExited(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -281,6 +265,7 @@ public void rightListMouse_mouseExited(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouse_mousePressed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -292,6 +277,7 @@ public void rightListMouse_mousePressed(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouse_mouseReleased(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -303,6 +289,7 @@ public void rightListMouse_mouseReleased(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -312,6 +299,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	com.cannontech.database.data.device.lm.LMProgramBase program = (com.cannontech.database.data.device.lm.LMProgramBase)o;
@@ -344,11 +332,13 @@ public void setValue(Object o)
 	getAddRemovePanel().rightListSetListData( usedItems )	;
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getAddRemovePanel().requestFocus(); 

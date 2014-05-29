@@ -40,6 +40,7 @@ public LMProgramEnergyExchangePanel() {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -656,6 +657,7 @@ private javax.swing.JTextPane getJTextPaneMsgStoppedEarly() {
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	LMProgramEnergyExchange program = (LMProgramEnergyExchange)o;
@@ -774,6 +776,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	if( getJTextFieldHeading().getText() == null || getJTextFieldHeading().getText().length() <= 0 )
@@ -785,34 +788,11 @@ public boolean isInputValid()
 
 	return true;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		LMProgramBasePanel aLMProgramBasePanel;
-		aLMProgramBasePanel = new LMProgramBasePanel();
-		frame.setContentPane(aLMProgramBasePanel);
-		frame.setSize(aLMProgramBasePanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	LMProgramEnergyExchange program = (LMProgramEnergyExchange)o;
@@ -828,11 +808,13 @@ public void setValue(Object o)
 	getJCSpinFieldMinNotifyTime().setValue( new Integer(program.getEnergyExchangeProgram().getMinNotifyTime().intValue() / 60) );
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getJTextFieldHeading().requestFocus(); 
@@ -844,6 +826,7 @@ public void setFirstFocus()
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 	//fire this event for all JCSpinFields!!
@@ -853,6 +836,7 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 }

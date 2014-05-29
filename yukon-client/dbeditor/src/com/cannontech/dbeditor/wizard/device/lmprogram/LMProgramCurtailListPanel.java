@@ -128,6 +128,7 @@ private AddremoveTableModel getTableModel()
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	LMProgramCurtailment program = (LMProgramCurtailment)o;
@@ -232,6 +233,7 @@ private void initJTableCellComponents()
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void JButtonAddAction_actionPerformed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -245,6 +247,7 @@ public void JButtonAddAction_actionPerformed(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void JButtonRemoveAction_actionPerformed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -254,38 +257,16 @@ public void JButtonRemoveAction_actionPerformed(java.util.EventObject newEvent) 
 	// user code end
 }
 
+@Override
 public void MouseTableAction_actionPerformed(java.util.EventObject newEvent) {
 	if (newEvent.getSource() == getAddRemoveJTablePanel()) 
 			connEtoC3(newEvent);
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		LMProgramBasePanel aLMProgramBasePanel;
-		aLMProgramBasePanel = new LMProgramBasePanel();
-		frame.setContentPane(aLMProgramBasePanel);
-		frame.setSize(aLMProgramBasePanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	LMProgramCurtailment program = (LMProgramCurtailment)o;
@@ -297,17 +278,19 @@ public void setValue(Object o)
 		((LMProgramCurtailCustomerList)program.getLmProgramStorageVector().get(i)).setDeviceID( program.getPAObjectID() );
 		
 		getTableModel().addRow( 
-			(LMProgramCurtailCustomerList)program.getLmProgramStorageVector().get(i),
+			program.getLmProgramStorageVector().get(i),
 			((LMProgramCurtailCustomerList)program.getLmProgramStorageVector().get(i)).getLmProgramCurtailCustomerList().getRequireAck() );
 	}
 
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getAddRemoveJTablePanel().requestFocus(); 

@@ -3,11 +3,8 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JFrame;
 import javax.swing.JRadioButton;
 
 import com.cannontech.common.pao.PaoType;
@@ -153,32 +150,7 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
         getJRadioButtonDirectControl().setSelected(true);
         
     }
-    /**
-     * main entrypoint - starts the part when it is run as an application
-     * @param args java.lang.String[]
-     */
-    public static void main(String[] args) {
-        try {
-            JFrame frame = new JFrame();
-            LMProgramBasePanel aLMProgramBasePanel;
-            aLMProgramBasePanel = new LMProgramBasePanel();
-            frame.setContentPane(aLMProgramBasePanel);
-            frame.setSize(aLMProgramBasePanel.getSize());
-            frame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    System.exit(0);
-                };
-            });
-            frame.show();
-            java.awt.Insets insets = frame.getInsets();
-            frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-            frame.setVisible(true);
-        } catch (Throwable exception) {
-            System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-            com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-        }
-    }
+
     /**
      * setValue method comment.
      */

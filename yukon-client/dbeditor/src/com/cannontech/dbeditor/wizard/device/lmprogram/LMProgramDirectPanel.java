@@ -25,13 +25,15 @@ public class LMProgramDirectPanel extends com.cannontech.common.gui.util.DataInp
     private PaoType programType;
 
 class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.ItemListener {
-		public void actionPerformed(java.awt.event.ActionEvent e) {
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == LMProgramDirectPanel.this.getJButtonDelete()) 
 				connEtoC4(e);
 			if (e.getSource() == LMProgramDirectPanel.this.getJButtonCreate()) 
 				connEtoC5(e);
 		};
-		public void itemStateChanged(java.awt.event.ItemEvent e) {
+		@Override
+        public void itemStateChanged(java.awt.event.ItemEvent e) {
 			if (e.getSource() == LMProgramDirectPanel.this.getJComboBoxGear()) 
 				connEtoC1(e);
 		};
@@ -48,6 +50,7 @@ public LMProgramDirectPanel(PaoType programType) {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -275,6 +278,7 @@ private java.awt.FlowLayout getJPanelButtonsFlowLayout() {
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	//this stores any changes that are made to the current Gear
@@ -404,6 +408,7 @@ private void initialize() {
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void inputUpdate(PropertyPanelEvent event)
 {
 	
@@ -422,6 +427,7 @@ public void inputUpdate(PropertyPanelEvent event)
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	if( getJComboBoxGear().getSelectedItem() != null
@@ -451,6 +457,7 @@ public boolean isInputValid()
  * @param e java.awt.event.ItemEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
 	// user code begin {1}
 	// user code end
@@ -575,34 +582,11 @@ public void jComboBoxGear_ItemStateChanged(java.awt.event.ItemEvent itemEvent)
 
 	return;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		LMProgramBasePanel aLMProgramBasePanel;
-		aLMProgramBasePanel = new LMProgramBasePanel();
-		frame.setContentPane(aLMProgramBasePanel);
-		frame.setSize(aLMProgramBasePanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	LMProgramDirectBase program = (LMProgramDirectBase)o;
@@ -610,7 +594,7 @@ public void setValue(Object o)
 	for( int i = 0; i < program.getLmProgramDirectGearVector().size(); i++ )
 	{
 		getJComboBoxGear().addItem(
-				(com.cannontech.database.db.device.lm.LMProgramDirectGear)program.getLmProgramDirectGearVector().get(i) );
+				program.getLmProgramDirectGearVector().get(i) );
 	}
 
 
@@ -621,11 +605,13 @@ public void setValue(Object o)
 	getDirectModifyGearPanel().setVisible( getJComboBoxGear().getItemCount() > 0 );
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getJComboBoxGear().requestFocus(); 

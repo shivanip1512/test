@@ -29,6 +29,7 @@ public LMProgramControlWindowPanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -414,6 +415,7 @@ private com.cannontech.common.gui.util.TimeComboJPanel getTimeComboStop2() {
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	com.cannontech.database.data.device.lm.LMProgramBase program = (com.cannontech.database.data.device.lm.LMProgramBase)o;
@@ -564,6 +566,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	if(getWindowChangePasser().isSelected())
@@ -630,34 +633,11 @@ public void jCheckBoxUse2_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	fireInputUpdate();
 	return;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		LMProgramBasePanel aLMProgramBasePanel;
-		aLMProgramBasePanel = new LMProgramBasePanel();
-		frame.setContentPane(aLMProgramBasePanel);
-		frame.setSize(aLMProgramBasePanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	if( o != null )
@@ -667,7 +647,7 @@ public void setValue(Object o)
 		for( int i = 0; i < program.getLmProgramControlWindowVector().size(); i++ )
 		{
 			com.cannontech.database.db.device.lm.LMProgramControlWindow window =
-				(com.cannontech.database.db.device.lm.LMProgramControlWindow)program.getLmProgramControlWindowVector().get(i);
+				program.getLmProgramControlWindowVector().get(i);
 				
 			if( window.getWindowNumber().intValue() == 1 )
 			{
@@ -698,11 +678,13 @@ public void setValue(Object o)
 	}
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getJCheckBoxUse1().requestFocus(); 
