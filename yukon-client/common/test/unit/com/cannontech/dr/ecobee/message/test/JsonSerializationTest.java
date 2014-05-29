@@ -2,6 +2,7 @@ package com.cannontech.dr.ecobee.message.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import com.cannontech.dr.ecobee.message.DeleteSetRequest;
 import com.cannontech.dr.ecobee.message.DeviceDataResponse;
 import com.cannontech.dr.ecobee.message.DrRestoreRequest;
 import com.cannontech.dr.ecobee.message.DutyCycleDrRequest;
+import com.cannontech.dr.ecobee.message.HierarchyResponse;
 import com.cannontech.dr.ecobee.message.ListHierarchyRequest;
 import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
 import com.cannontech.dr.ecobee.message.MoveSetRequest;
@@ -29,6 +31,7 @@ import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReport;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
+import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
 
@@ -258,21 +261,59 @@ public class JsonSerializationTest {
         Assert.assertEquals(jsonResult.get("includeThermostats"), true);
     }
 
-    //TODO finish this test
-//    @Test
-//    public void test_HierarchyResponse() throws IOException {
-//        Map<String, Object> statusJsonSource = new HashMap<>();
-//        statusJsonSource.put("code", 3);
-//        statusJsonSource.put("message", "hello world");
-//        Map<String, Object> jsonSource = new HashMap<>();
-//        jsonSource.put("success", true);
-//        jsonSource.put("status", statusJsonSource);
-//        String json = JsonUtils.toJson(jsonSource);
-//        HierarchyResponse response = JsonUtils.fromJson(json, HierarchyResponse.class);
-//
-//        Assert.assertEquals(response.getStatus().getMessage(), ((Map)jsonSource.get("status")).get("message"));
-//        Assert.assertEquals(response.getStatus().getCode(), ((Map)jsonSource.get("status")).get("code"));
-//        Assert.assertEquals(response.getSuccess(), jsonSource.get("success"));
-//    }
-    
+    @Test
+    public void test_HierarchyResponse() throws IOException {
+        int numSets = 10;
+        int numChildren = 10;
+        ImmutableList<String> thermostatList = ImmutableList.of("abcd","1234","efgh");
+        ImmutableList<String> childThermostatList = ImmutableList.of("abc","123","def");
+        
+        Map<String, Object> statusJsonSource = new HashMap<>();
+        statusJsonSource.put("code", 3);
+        statusJsonSource.put("message", "hello world");
+        List<Map<String, Object>> setsJsonSource = new ArrayList<>();
+        for (int i=0; i<numSets; i++) {
+            List<Map<String, Object>> childSetsJsonSource = new ArrayList<>();
+            for (int j=0; j<numChildren; j++) {
+                Map<String, Object> childSetNodeJsonSource = new HashMap<>();
+                childSetNodeJsonSource.put("setName", "setName_" + i + "_" + j);
+                childSetNodeJsonSource.put("setPath", "setPath_" + i + "_" + j);
+                childSetNodeJsonSource.put("children", Collections.EMPTY_LIST);
+                childSetNodeJsonSource.put("thermostats", childThermostatList);
+                childSetsJsonSource.add(childSetNodeJsonSource);
+            }
+            Map<String, Object> setNodeJsonSource = new HashMap<>();
+            setNodeJsonSource.put("setName", "setName_" + i);
+            setNodeJsonSource.put("setPath", "setPath_" + i);
+            setNodeJsonSource.put("children", childSetsJsonSource);
+            setNodeJsonSource.put("thermostats", thermostatList);
+            setsJsonSource.add(setNodeJsonSource);
+        }
+        Map<String, Object> jsonSource = new HashMap<>();
+        jsonSource.put("status", statusJsonSource);
+        jsonSource.put("sets", setsJsonSource);
+        String json = JsonUtils.toJson(jsonSource);
+        HierarchyResponse response = JsonUtils.fromJson(json, HierarchyResponse.class);
+
+        Assert.assertEquals(response.getStatus().getMessage(), ((Map)jsonSource.get("status")).get("message"));
+        Assert.assertEquals(response.getStatus().getCode(), ((Map)jsonSource.get("status")).get("code"));
+        Assert.assertEquals(response.getSets().size(), numSets);
+        for (int i=0; i<numSets; i++) {
+            SetNode set = response.getSets().get(i);
+            Assert.assertEquals(set.getChildren().size(), numChildren);
+            Assert.assertEquals(set.getSetName(), "setName_" + i);
+            Assert.assertEquals(set.getSetPath(), "setPath_" + i);
+            Assert.assertEquals(set.getThermostats().size(), thermostatList.size());
+            Assert.assertTrue(set.getThermostats().containsAll(thermostatList));
+            for (int j=0; j<numChildren; j++) {
+                SetNode childSet = set.getChildren().get(j);
+                Assert.assertEquals(childSet.getChildren().size(), 0);
+                Assert.assertEquals(childSet.getSetName(), "setName_" + i + "_" + j);
+                Assert.assertEquals(childSet.getSetPath(), "setPath_" + i + "_" + j);
+                Assert.assertTrue(childSet.getChildren().isEmpty());
+                Assert.assertEquals(childSet.getThermostats().size(), childThermostatList.size());
+                Assert.assertTrue(childSet.getThermostats().containsAll(childThermostatList));
+            }
+        }
+    }
 }
