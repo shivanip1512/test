@@ -164,32 +164,50 @@
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
         <div class="clearfix stacked button-group">
-            <cti:button renderMode="buttonImage" icon="icon-text-align-left"/>
-            <cti:button renderMode="buttonImage" icon="icon-text-align-center"/>
-            <cti:button renderMode="buttonImage" icon="icon-text-align-justify"/>
-            <cti:button renderMode="buttonImage" icon="icon-text-align-right"/>
+            <cti:button renderMode="buttonImage" icon="icon-box"/>
+            <cti:button renderMode="buttonImage" icon="icon-flag-red"/>
+            <cti:button renderMode="buttonImage" icon="icon-bin"/>
+        </div>
+        <div class="clearfix stacked button-group">
+            <cti:button renderMode="buttonImage" icon="icon-resultset-first-grey"/>
+            <cti:button renderMode="buttonImage" icon="icon-resultset-previous-grey"/>
+            <cti:button label="1"/>
+            <cti:button label="2"/>
+            <cti:button label="3"/>
+            <cti:button label="4"/>
+            <cti:button label="5"/>
+            <cti:button renderMode="buttonImage" icon="icon-resultset-next-grey"/>
+            <cti:button renderMode="buttonImage" icon="icon-resultset-last-grey"/>
         </div>
         <div class="clearfix">
-            <cti:button icon="icon-transmit-blue" label="Active" classes="left"/>
-            <cti:button icon="icon-transmit" label="Inactive" classes="middle"/>
-            <cti:button icon="icon-transmit-delete" label="Disabled" classes="middle"/>
-            <cti:button label="All" classes="right"/>
+            <cti:button icon="icon-transmit-blue" label="Activate" classes="left"/>
+            <cti:button icon="icon-transmit" label="Deactivate" classes="middle"/>
+            <cti:button icon="icon-transmit-delete" label="Disabled" classes="right"/>
         </div>
     </div>
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
 &lt;div class=&quot;clearfix stacked button-group&quot;&gt;
-    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-left&quot;/&gt;
-    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-center&quot;/&gt;
-    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-justify&quot;/&gt;
-    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-right&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-box&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-flag-red&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-bin&quot;/&gt;
+&lt;/div&gt;
+&lt;div class=&quot;clearfix stacked button-group&quot;&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-first-grey&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-previous-grey&quot;/&gt;
+    &lt;cti:button label=&quot;1&quot;/&gt;
+    &lt;cti:button label=&quot;2&quot;/&gt;
+    &lt;cti:button label=&quot;3&quot;/&gt;
+    &lt;cti:button label=&quot;4&quot;/&gt;
+    &lt;cti:button label=&quot;5&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-next-grey&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-last-grey&quot;/&gt;
 &lt;/div&gt;
 &lt;div class=&quot;clearfix&quot;&gt;
-    &lt;cti:button icon=&quot;icon-transmit-blue&quot; label=&quot;Active&quot; classes=&quot;left&quot;/&gt;
-    &lt;cti:button icon=&quot;icon-transmit&quot; label=&quot;Inactive&quot; classes=&quot;middle&quot;/&gt;
-    &lt;cti:button icon=&quot;icon-transmit-delete&quot; label=&quot;Disabled&quot; classes=&quot;middle&quot;/&gt;
-    &lt;cti:button label=&quot;All&quot; classes=&quot;right&quot;/&gt;
+    &lt;cti:button icon=&quot;icon-transmit-blue&quot; label=&quot;Activate&quot; classes=&quot;left&quot;/&gt;
+    &lt;cti:button icon=&quot;icon-transmit&quot; label=&quot;Deactivate&quot; classes=&quot;middle&quot;/&gt;
+    &lt;cti:button icon=&quot;icon-transmit-delete&quot; label=&quot;Disabled&quot; classes=&quot;right&quot;/&gt;
 &lt;/div&gt;
 </pre>
 
@@ -218,6 +236,36 @@
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-center&quot; classes=&quot;on&quot;/&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-justify&quot;/&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-right&quot;/&gt;
+&lt;/div&gt;
+</pre>
+<p class="description">
+    Toggle buttons can show a little more visual state using the <span class="label label-info">.toggle-on-off</span> class
+    on the container element and adding the <span class="label label-info">.yes</span> or 
+    <span class="label label-info">.no</span> classes to the buttons.  Yukon's js library handles this automatically as well.
+</p>
+<div class="column-4-20 clearfix button-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="clearfix stacked button-group js-toggle toggle-on-off">
+            <cti:button nameKey="on" classes="yes on"/>
+            <cti:button nameKey="off" classes="no"/>
+        </div>
+        <div class="clearfix stacked button-group js-toggle toggle-on-off">
+            <cti:button label="Activated" classes="yes on"/>
+            <cti:button label="Deactivated"/>
+            <cti:button label="Disabled" classes="no"/>
+        </div>
+    </div>
+</div>
+<pre class="code prettyprint">
+&lt;div class=&quot;clearfix stacked button-group js-toggle toggle-on-off&quot;&gt;
+    &lt;cti:button nameKey=&quot;on&quot; classes=&quot;yes on&quot;/&gt;
+    &lt;cti:button nameKey=&quot;off&quot; classes=&quot;no&quot;/&gt;
+&lt;/div&gt;
+&lt;div class=&quot;clearfix stacked button-group js-toggle toggle-on-off&quot;&gt;
+    &lt;cti:button label=&quot;Activate&quot; classes=&quot;yes on&quot;/&gt;
+    &lt;cti:button label=&quot;Deactivate&quot;/&gt;
+    &lt;cti:button label=&quot;Disabled&quot; classes=&quot;no&quot;/&gt;
 &lt;/div&gt;
 </pre>
     
