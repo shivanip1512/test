@@ -28,7 +28,7 @@ namespace {
 /*
     Looks at the internal type of thermostat gear and builds the appropriate mode string
         based on its internal settings.
-        Returns an empty string on error.
+        On error - returns an uninitialized optional string.  (boost::none)
 */
 boost::optional<std::string> getSetPointMode( const CtiLMProgramThermostatGear & gear )
 {
