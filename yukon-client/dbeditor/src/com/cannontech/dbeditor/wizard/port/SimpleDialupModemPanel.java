@@ -6,7 +6,7 @@ package com.cannontech.dbeditor.wizard.port;
  
 import java.awt.Dimension;
 
-import com.cannontech.database.data.port.LocalDialupPort;
+import com.cannontech.database.data.port.LocalDialupPortBase;
 import com.cannontech.database.data.port.TerminalServerDialupPort;
   
 public class SimpleDialupModemPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
@@ -125,9 +125,9 @@ public Object getValue(Object val) {
 
 	String modemType = (String) getModemTypeComboBox().getSelectedItem();
 	
-	if( val instanceof com.cannontech.database.data.port.LocalDialupPort )
+	if( val instanceof com.cannontech.database.data.port.LocalDialupPortBase )
 	{
-		((LocalDialupPort) val).getPortDialupModem().setModemType( modemType );
+		((LocalDialupPortBase) val).getPortDialupModem().setModemType( modemType );
 	}
 	else if( val instanceof com.cannontech.database.data.port.TerminalServerDialupPort )
 	{

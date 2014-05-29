@@ -37,11 +37,6 @@ public class LMGroupEmetcon extends LMGroup implements IGroupRoute {
         super.delete();
     }
 
-    @Override
-    public void deletePartial() throws java.sql.SQLException {
-        super.deletePartial();
-    }
-
     public com.cannontech.database.db.device.lm.LMGroupEmetcon getLmGroupEmetcon() {
         if (lmGroupEmetcon == null) {
             lmGroupEmetcon = new com.cannontech.database.db.device.lm.LMGroupEmetcon();
@@ -69,7 +64,6 @@ public class LMGroupEmetcon extends LMGroup implements IGroupRoute {
     @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
-
         getLmGroupEmetcon().setDbConnection(conn);
     }
 

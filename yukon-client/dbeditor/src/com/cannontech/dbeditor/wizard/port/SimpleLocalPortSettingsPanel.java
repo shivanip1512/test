@@ -8,7 +8,7 @@ import java.awt.Dimension;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.port.DirectPort;
-import com.cannontech.database.data.port.LocalDirectPort;
+import com.cannontech.database.data.port.LocalDirectPortBase;
  
 public class SimpleLocalPortSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjBaudRateLabel = null;
@@ -285,9 +285,9 @@ public Object getValue(Object val)
 	((DirectPort) val).getPortSettings().setLineSettings( "8N1" );
 
 	//be sure this is a local direct port
-	if( val instanceof LocalDirectPort )
+	if( val instanceof LocalDirectPortBase )
 	{
-		((LocalDirectPort) val).getPortLocalSerial().setPhysicalPort( physicalPort );
+		((LocalDirectPortBase) val).getPortLocalSerial().setPhysicalPort( physicalPort );
 	}
 
 	return val;

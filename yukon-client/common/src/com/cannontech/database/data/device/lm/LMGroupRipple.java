@@ -37,12 +37,6 @@ public class LMGroupRipple extends LMGroup implements IGroupRoute {
         super.delete();
     }
 
-    @Override
-    public void deletePartial() throws java.sql.SQLException {
-
-        super.deletePartial();
-    }
-
     public com.cannontech.database.db.device.lm.LMGroupRipple getLmGroupRipple() {
         if (lmGroupRipple == null) {
             lmGroupRipple = new com.cannontech.database.db.device.lm.LMGroupRipple();
@@ -68,7 +62,6 @@ public class LMGroupRipple extends LMGroup implements IGroupRoute {
     @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
-
         getLmGroupRipple().setDbConnection(conn);
     }
 

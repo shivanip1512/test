@@ -210,7 +210,7 @@ private javax.swing.JCheckBox getJCheckBoxActivateMaster() {
  */
 public Object getValue(Object o) 
 {
-	com.cannontech.database.data.device.lm.LMProgramDirect program = (com.cannontech.database.data.device.lm.LMProgramDirect)o;
+	com.cannontech.database.data.device.lm.LMProgramDirectBase program = (com.cannontech.database.data.device.lm.LMProgramDirectBase)o;
 	
 	program.getPAOExclusionVector().removeAllElements();
 	if(getJCheckBoxActivateMaster().isSelected())
@@ -457,7 +457,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
  */
 public void setValue(Object o) 
 {
-	com.cannontech.database.data.device.lm.LMProgramDirect program = (com.cannontech.database.data.device.lm.LMProgramDirect)o;
+	com.cannontech.database.data.device.lm.LMProgramDirectBase program = (com.cannontech.database.data.device.lm.LMProgramDirectBase)o;
 	
 	if(program.getPAOExclusionVector().size() > 0)
 	{

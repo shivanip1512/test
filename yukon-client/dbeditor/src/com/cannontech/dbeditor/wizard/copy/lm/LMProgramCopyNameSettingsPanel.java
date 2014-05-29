@@ -13,7 +13,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.lm.LMProgramBase;
-import com.cannontech.database.data.device.lm.LMProgramDirect;
+import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -441,7 +441,7 @@ private javax.swing.JTextField getJTextFieldName() {
  */
 public Object getValue(Object o) 
 {
-	LMProgramDirect program = (LMProgramDirect)o;
+	LMProgramDirectBase program = (LMProgramDirectBase)o;
 	SmartMultiDBPersistent smartMulti = new SmartMultiDBPersistent();
 	smartMulti.addOwnerDBPersistent(program);
 	

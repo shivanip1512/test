@@ -26,7 +26,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
-import com.cannontech.database.data.device.Ion7700;
+import com.cannontech.database.data.device.IonBase;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.Repeater900;
@@ -435,8 +435,8 @@ public Object getValue(Object val)
 		((IDLCBase)deviceBase).getDeviceIDLCRemote().setAddress( address );	
 	} else if( val instanceof CCU721 ) {
 		((CCU721)deviceBase).getDeviceAddress().setSlaveAddress( address );
-	} else if( val instanceof Ion7700 ) {
-		((Ion7700)val).getDeviceAddress().setSlaveAddress( address );
+	} else if( val instanceof IonBase ) {
+		((IonBase)val).getDeviceAddress().setSlaveAddress( address );
 	} else if( val instanceof DNPBase ) {
 		((DNPBase)val).getDeviceAddress().setSlaveAddress( address );
 	} else if( val instanceof RTCBase ) {

@@ -23,7 +23,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IEDMeter;
 import com.cannontech.database.data.device.LCUBase;
 import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.TapTerminalBase;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.RTUBase;
@@ -1555,7 +1555,7 @@ public Object getValue(Object device)
 	if (val instanceof CCUBase ||
 			val instanceof TCUBase ||
 			val instanceof RepeaterBase ||
-			val instanceof PagingTapTerminal ||
+			val instanceof TapTerminalBase ||
 			val instanceof RTCBase ||
 			val instanceof CCU721) 
 	{
@@ -2112,7 +2112,7 @@ public void setValue(Object val)
 	if (val instanceof CCUBase ||
 			val instanceof TCUBase ||
 			val instanceof RepeaterBase ||
-			val instanceof PagingTapTerminal ||
+			val instanceof TapTerminalBase ||
 			val instanceof IEDMeter	||
 			val instanceof RTCBase ||
 			val instanceof RTM ||

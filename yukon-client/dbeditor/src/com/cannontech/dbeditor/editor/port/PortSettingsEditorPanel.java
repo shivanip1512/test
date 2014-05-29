@@ -6,10 +6,10 @@ package com.cannontech.dbeditor.editor.port;
 
  import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.port.DirectPort;
-import com.cannontech.database.data.port.LocalDirectPort;
+import com.cannontech.database.data.port.LocalDirectPortBase;
 import com.cannontech.database.data.port.PooledPort;
 import com.cannontech.database.data.port.TcpPort;
-import com.cannontech.database.data.port.TerminalServerDirectPort;
+import com.cannontech.database.data.port.TerminalServerPortBase;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
@@ -958,19 +958,19 @@ public Object getValue(Object val)
 	String commonProtocol = ((String) getCommonProtocolComboBox().getSelectedItem()).trim();
 	cp.setCommonProtocol( commonProtocol );
 
-	if( val instanceof LocalDirectPort )
+	if( val instanceof LocalDirectPortBase )
 	{
 		String physicalPort = ((String) getPhysicalPortComboBox().getSelectedItem()).trim();
-		((LocalDirectPort)dp).getPortLocalSerial().setPhysicalPort( physicalPort );
+		((LocalDirectPortBase)dp).getPortLocalSerial().setPhysicalPort( physicalPort );
 	}
-	else if( val instanceof TerminalServerDirectPort )
+	else if( val instanceof TerminalServerPortBase )
 	{
 		String ipAddress = getIPAddressTextField().getText();
 		Integer portNumber = new Integer(getPortNumberTextField().getText());
 		String encryptionKey = getEncodingTextField().getText();
 		boolean encryptionEnabled = getEncodingCheckBox().isSelected();
 		
-		PortTerminalServer pts = ((TerminalServerDirectPort)dp).getPortTerminalServer();
+		PortTerminalServer pts = ((TerminalServerPortBase)dp).getPortTerminalServer();
 		pts.setIpAddress(ipAddress);
 		pts.setSocketPortNumber(portNumber);
 		if(encryptionEnabled) {
@@ -1113,7 +1113,7 @@ public void setValue(Object val)
 	Integer baudRate = ps.getBaudRate();
 	Integer cdWait = ps.getCdWait();
 
-	if( val instanceof LocalDirectPort )
+	if( val instanceof LocalDirectPortBase )
 	{
 		
 		getIPAddressLabel().setVisible(false);
@@ -1125,12 +1125,12 @@ public void setValue(Object val)
 		getCommonProtocolLabel().setVisible(true);
 		getCommonProtocolComboBox().setVisible(true);
 		SwingUtil.setSelectedInComboBox(getPhysicalPortComboBox(),
-			((LocalDirectPort) dp).getPortLocalSerial().getPhysicalPort());
+			((LocalDirectPortBase) dp).getPortLocalSerial().getPhysicalPort());
 		SwingUtil.setSelectedInComboBox(getCommonProtocolComboBox(), cp.getCommonProtocol());
 	}
-	else if (val instanceof TerminalServerDirectPort)
+	else if (val instanceof TerminalServerPortBase)
 	{
-        PortTerminalServer pts = ((TerminalServerDirectPort) dp).getPortTerminalServer();
+        PortTerminalServer pts = ((TerminalServerPortBase) dp).getPortTerminalServer();
 	    
         boolean udpPort = pts.getIpAddress().equalsIgnoreCase("UDP");
 		

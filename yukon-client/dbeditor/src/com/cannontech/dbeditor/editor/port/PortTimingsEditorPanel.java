@@ -4,9 +4,9 @@ package com.cannontech.dbeditor.editor.port;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.database.data.port.LocalSharedPort;
+import com.cannontech.database.data.port.LocalSharedPortBase;
 import com.cannontech.database.data.port.TcpPort;
-import com.cannontech.database.data.port.TerminalServerSharedPort;
+import com.cannontech.database.data.port.TerminalServerSharedPortBase;
 import com.cannontech.database.db.port.PortTiming;
  
 public class PortTimingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener
@@ -400,10 +400,10 @@ public Object getValue(Object val) {
         pt = ((TcpPort) val).getPortTiming();
     } else {
         try {
-            pt = ((LocalSharedPort) val).getPortTiming();
+            pt = ((LocalSharedPortBase) val).getPortTiming();
         } catch (ClassCastException cce) {
             // don't try/catch this one
-            pt = ((TerminalServerSharedPort) val).getPortTiming();
+            pt = ((TerminalServerSharedPortBase) val).getPortTiming();
         }
     }
 
@@ -616,13 +616,13 @@ public void setValue(Object val) {
 
 	PortTiming pt = null;
 
-	if( val instanceof LocalSharedPort )
+	if( val instanceof LocalSharedPortBase )
 	{
-		pt = ((LocalSharedPort) val).getPortTiming();
+		pt = ((LocalSharedPortBase) val).getPortTiming();
 	}
-	else if( val instanceof TerminalServerSharedPort )
+	else if( val instanceof TerminalServerSharedPortBase )
 	{
-		pt = ((TerminalServerSharedPort) val).getPortTiming();
+		pt = ((TerminalServerSharedPortBase) val).getPortTiming();
 	}else if ( val instanceof TcpPort ) {
 	    pt = ((TcpPort) val).getPortTiming();
 	}

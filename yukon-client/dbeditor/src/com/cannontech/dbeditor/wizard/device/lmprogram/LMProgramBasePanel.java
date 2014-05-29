@@ -12,7 +12,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMProgramBase;
-import com.cannontech.database.data.device.lm.LMProgramDirect;
+import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteLMConstraint;
 import com.cannontech.yukon.IDatabaseCache;
@@ -557,8 +557,8 @@ public Object getValue(Object o)
 	if( getJComboBoxConstraint().getSelectedItem() != null )
 		program.getProgram().setConstraintID( new Integer(((com.cannontech.database.data.lite.LiteLMConstraint)getJComboBoxConstraint().getSelectedItem()).getConstraintID() ));
 
-	if (program instanceof LMProgramDirect)	{
-		LMProgramDirect prog = (LMProgramDirect)program;
+	if (program instanceof LMProgramDirectBase)	{
+		LMProgramDirectBase prog = (LMProgramDirectBase)program;
 		if(getJTextFieldTriggerOffset().getText().length() > 0)
 			prog.getDirectProgram().setTriggerOffset(new Double(getJTextFieldTriggerOffset().getText()));
 
@@ -692,10 +692,10 @@ public void setValue(Object o)
     				break;
     			}
 
-        if (program instanceof LMProgramDirect) {
+        if (program instanceof LMProgramDirectBase) {
     		getJPanelTriggerThreshold().setVisible(true);
-    		getJTextFieldTriggerOffset().setText(((LMProgramDirect)program).getDirectProgram().getTriggerOffset().toString());
-    		getJTextFieldOffset().setText(((LMProgramDirect)program).getDirectProgram().getRestoreOffset().toString());
+    		getJTextFieldTriggerOffset().setText(((LMProgramDirectBase)program).getDirectProgram().getTriggerOffset().toString());
+    		getJTextFieldOffset().setText(((LMProgramDirectBase)program).getDirectProgram().getRestoreOffset().toString());
     	}
     }
 }

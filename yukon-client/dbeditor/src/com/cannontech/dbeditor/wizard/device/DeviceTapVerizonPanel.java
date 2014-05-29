@@ -4,7 +4,7 @@ import java.awt.Dimension;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.TapTerminalBase;
 
 /**
  * This type was created in VisualAge.
@@ -556,7 +556,7 @@ private javax.swing.JTextField getSenderTextField() {
  */
 public Object getValue(Object val) 
 {
-	PagingTapTerminal tapTerm = (PagingTapTerminal)val;
+	TapTerminalBase tapTerm = (TapTerminalBase)val;
 
 	String nameString = getNameTextField().getText();
 	tapTerm.setPAOName( nameString );

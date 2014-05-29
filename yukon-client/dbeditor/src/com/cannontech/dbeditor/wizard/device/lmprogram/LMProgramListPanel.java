@@ -11,7 +11,7 @@ import javax.swing.ListModel;
 import com.cannontech.common.gui.util.AddRemovePanel;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.lm.LMProgramDirect;
+import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
@@ -477,7 +477,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
 @Override
 public void setValue(Object o) 
 {
-	LMProgramDirect dirProg= (LMProgramDirect)o;
+	LMProgramDirectBase dirProg= (LMProgramDirectBase)o;
 	PaoType paoType = dirProg.getPaoType(); 
 
 	/**** special case for the LM_GROUP_POINT group type ****/

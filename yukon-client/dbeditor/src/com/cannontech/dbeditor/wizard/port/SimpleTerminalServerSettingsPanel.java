@@ -8,7 +8,7 @@ import java.awt.Dimension;
 
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.database.data.port.TerminalServerDirectPort;
+import com.cannontech.database.data.port.TerminalServerPortBase;
 
 public class SimpleTerminalServerSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JComboBox ivjBaudRateComboBox = null;
@@ -345,13 +345,13 @@ public Object getValue(Object val)
 
 	Integer baudRate = new Integer((String) getBaudRateComboBox().getSelectedItem());
 
-	((TerminalServerDirectPort) val).setPortName( name );
+	((TerminalServerPortBase) val).setPortName( name );
 	
-	((TerminalServerDirectPort) val).getPortTerminalServer().setIpAddress( ipAddress );
-	((TerminalServerDirectPort) val).getPortTerminalServer().setSocketPortNumber( portNumber );
+	((TerminalServerPortBase) val).getPortTerminalServer().setIpAddress( ipAddress );
+	((TerminalServerPortBase) val).getPortTerminalServer().setSocketPortNumber( portNumber );
 	
-	((TerminalServerDirectPort) val).getPortSettings().setBaudRate( baudRate );
-	((TerminalServerDirectPort) val).getPortSettings().setLineSettings( "8N1" );
+	((TerminalServerPortBase) val).getPortSettings().setBaudRate( baudRate );
+	((TerminalServerPortBase) val).getPortSettings().setLineSettings( "8N1" );
 
 	return val;
 }

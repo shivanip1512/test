@@ -8,7 +8,7 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.database.data.device.lm.LMProgramDirect;
+import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
@@ -286,7 +286,7 @@ public Object getValue(Object o)
 	}
 		 
 		
-	LMProgramDirect program = (LMProgramDirect)o;
+	LMProgramDirectBase program = (LMProgramDirectBase)o;
 
 	program.getLmProgramDirectGearVector().removeAllElements();
 	for( int i = 0; i < getJComboBoxGear().getItemCount(); i++ )
@@ -605,7 +605,7 @@ public static void main(java.lang.String[] args) {
  */
 public void setValue(Object o) 
 {
-	LMProgramDirect program = (LMProgramDirect)o;
+	LMProgramDirectBase program = (LMProgramDirectBase)o;
 
 	for( int i = 0; i < program.getLmProgramDirectGearVector().size(); i++ )
 	{

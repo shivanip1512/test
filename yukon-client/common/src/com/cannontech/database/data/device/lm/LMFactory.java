@@ -54,7 +54,7 @@ public final class LMFactory {
             retLm = new MacroGroup();
             break;
         case LM_DIRECT_PROGRAM:
-            retLm = new LMProgramDirect(PaoType.LM_DIRECT_PROGRAM);
+            retLm = new LMProgramDirect();
             break;
         case LM_SEP_PROGRAM:
             retLm = new LmProgramSep();

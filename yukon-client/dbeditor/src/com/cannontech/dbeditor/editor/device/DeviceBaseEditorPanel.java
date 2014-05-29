@@ -63,7 +63,7 @@ import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.KV;
 import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.TapTerminalBase;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.RemoteBase;
@@ -1955,7 +1955,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
                 dDialup.setPhoneNumber(getPhoneNumberTextField().getText()
                     .trim());
-                if (val instanceof PagingTapTerminal) {
+                if (val instanceof TapTerminalBase) {
                     dDialup.setLineSettings("7E1");
                 } else {
                     dDialup.setLineSettings("8N1");
@@ -2062,8 +2062,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                         iedBase.getDeviceIED().setPassword(password);
                     }
                 } else {
-                    if (val instanceof PagingTapTerminal) {
-                        ((PagingTapTerminal) val).getDeviceTapPagingSettings()
+                    if (val instanceof TapTerminalBase) {
+                        ((TapTerminalBase) val).getDeviceTapPagingSettings()
                             .setPOSTPath(
                                          com.cannontech.common.util.CtiUtilities.STRING_NONE);
                     } else {
@@ -2073,16 +2073,16 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                     }
                 }
 
-                if (val instanceof PagingTapTerminal) {
-                    PagingTapTerminal pagingTapTerminal = (PagingTapTerminal) val;
+                if (val instanceof TapTerminalBase) {
+                    TapTerminalBase tapTerminalBase = (TapTerminalBase) val;
                     if (getSenderTextField().isVisible()
                         && getSenderTextField().getText().length() > 0) {
-                        pagingTapTerminal.getDeviceTapPagingSettings()
+                        tapTerminalBase.getDeviceTapPagingSettings()
                             .setSender(getSenderTextField().getText());
                     }
                     if (getSecurityCodeTextField().isVisible()
                         && getSecurityCodeTextField().getText().length() > 0) {
-                        pagingTapTerminal.getDeviceTapPagingSettings()
+                        tapTerminalBase.getDeviceTapPagingSettings()
                             .setSecurityCode(
                                              getSecurityCodeTextField().getText());
                     }
@@ -2647,9 +2647,9 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 getSecurityCodeLabel().setVisible(true);
                 getSecurityCodeTextField().setVisible(true);
 
-                getSenderTextField().setText(((PagingTapTerminal) rBase)
+                getSenderTextField().setText(((TapTerminalBase) rBase)
                     .getDeviceTapPagingSettings().getSender());
-                getSecurityCodeTextField().setText(((PagingTapTerminal) rBase)
+                getSecurityCodeTextField().setText(((TapTerminalBase) rBase)
                     .getDeviceTapPagingSettings().getSecurityCode());
             } else if (rBase instanceof SNPPTerminal) {
                 getSenderLabel().setText("Login: ");
@@ -2661,15 +2661,15 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 getPasswordLabel().setVisible(false);
                 getPasswordTextField().setVisible(false);
 
-                getSenderTextField().setText(((PagingTapTerminal) rBase)
+                getSenderTextField().setText(((TapTerminalBase) rBase)
                     .getDeviceTapPagingSettings().getSender());
-                getSecurityCodeTextField().setText(((PagingTapTerminal) rBase)
+                getSecurityCodeTextField().setText(((TapTerminalBase) rBase)
                     .getDeviceTapPagingSettings().getSecurityCode());
             }
 
             String password;
             if (rBase instanceof WCTPTerminal) {
-                password = ((PagingTapTerminal) rBase).getDeviceTapPagingSettings().getPOSTPath();
+                password = ((TapTerminalBase) rBase).getDeviceTapPagingSettings().getPOSTPath();
             } else {
                 password = ((IEDBase) rBase).getDeviceIED().getPassword();
             }

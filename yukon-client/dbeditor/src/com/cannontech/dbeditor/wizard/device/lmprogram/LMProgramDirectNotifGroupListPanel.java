@@ -149,7 +149,7 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanel() {
 @SuppressWarnings("unchecked")
 public Object getValue(Object o) 
 {
-	com.cannontech.database.data.device.lm.LMProgramDirect program = (com.cannontech.database.data.device.lm.LMProgramDirect)o;
+	com.cannontech.database.data.device.lm.LMProgramDirectBase program = (com.cannontech.database.data.device.lm.LMProgramDirectBase)o;
 	program.getLmProgramDirectNotifyGroupVector().removeAllElements();
 	
 	for( int i = 0; i < getAddRemovePanel().rightListGetModel().getSize(); i++ )
@@ -515,7 +515,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
 @SuppressWarnings("unchecked")
 public void setValue(Object o) 
 {
-	com.cannontech.database.data.device.lm.LMProgramDirect program = (com.cannontech.database.data.device.lm.LMProgramDirect)o;
+	com.cannontech.database.data.device.lm.LMProgramDirectBase program = (com.cannontech.database.data.device.lm.LMProgramDirectBase)o;
 	
 	//init storage that will contain all possible items
 	java.util.Vector allItems = new java.util.Vector( getAddRemovePanel().leftListGetModel().getSize() );

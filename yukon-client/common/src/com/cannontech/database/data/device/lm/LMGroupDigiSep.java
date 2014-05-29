@@ -32,12 +32,6 @@ public class LMGroupDigiSep extends LMGroup {
         super.delete();
     }
 
-    @Override
-    public void deletePartial() throws SQLException {
-
-        super.deletePartial();
-    }
-
     public LMGroupSep getLmGroupSep() {
         if (lmGroupSep == null) {
             lmGroupSep = new LMGroupSep();

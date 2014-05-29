@@ -1,6 +1,6 @@
 package com.cannontech.dbeditor.editor.device;
 
-import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.TapTerminalBase;
 
 /**
  * This type was created in VisualAge.
@@ -101,7 +101,7 @@ private javax.swing.JTextField getPagerNumberTextField() {
  * @param val java.lang.Object
  */
 public Object getValue(Object val) {
-	PagingTapTerminal tapPagingTerminal = (PagingTapTerminal)val;
+	TapTerminalBase tapPagingTerminal = (TapTerminalBase)val;
 
 	String pagerNumber = new String(getPagerNumberTextField().getText());
 
@@ -191,7 +191,7 @@ public static void main(java.lang.String[] args) {
  * @param val java.lang.Object
  */
 public void setValue(Object val) {
-	PagingTapTerminal tapTerminal = (PagingTapTerminal)val;
+	TapTerminalBase tapTerminal = (TapTerminalBase)val;
 
 	String pagerNumber = tapTerminal.getDeviceTapPagingSettings().getPagerNumber();
 	String password = tapTerminal.getDeviceIED().getPassword();

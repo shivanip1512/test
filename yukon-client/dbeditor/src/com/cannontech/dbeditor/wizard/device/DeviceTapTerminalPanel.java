@@ -7,7 +7,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.IEDBase;
-import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.TapTerminalBase;
 import com.cannontech.database.data.device.RDSTerminal;
 import com.cannontech.database.data.device.TNPPTerminal;
 
@@ -385,8 +385,8 @@ public Object getValue(Object val)
     iedBase.getDeviceIED().setSlaveAddress("Master");
 
     
-    if (iedBase instanceof PagingTapTerminal) {
-        PagingTapTerminal tapTerm = (PagingTapTerminal)val;
+    if (iedBase instanceof TapTerminalBase) {
+        TapTerminalBase tapTerm = (TapTerminalBase)val;
     	String pagerNumber = getPagerNumberTextField().getText();
     	tapTerm.getDeviceTapPagingSettings().setPagerNumber(pagerNumber);
     }
@@ -525,7 +525,7 @@ public void passwordCheckBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent
 public void setValue(Object val ) {
     IEDBase iedBase = (IEDBase)val;
 
-    if (iedBase instanceof PagingTapTerminal) {
+    if (iedBase instanceof TapTerminalBase) {
         deviceType = PaoType.TAPTERMINAL;
     }
     if (iedBase instanceof TNPPTerminal){

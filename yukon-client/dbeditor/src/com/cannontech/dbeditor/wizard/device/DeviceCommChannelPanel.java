@@ -26,7 +26,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
-import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.TapTerminalBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.TNPPTerminal;
@@ -237,8 +237,8 @@ private void checkAddress()
         PaoType paoType = ((DeviceBase) val).getPaoType();
         int devType = paoType.getDeviceTypeId();
 
-        if (val instanceof PagingTapTerminal) {
-            ((PagingTapTerminal) val).getDeviceDirectCommSettings().setPortID(portID);
+        if (val instanceof TapTerminalBase) {
+            ((TapTerminalBase) val).getDeviceDirectCommSettings().setPortID(portID);
         } else if (val instanceof TNPPTerminal) {
             ((TNPPTerminal) val).getDeviceDirectCommSettings().setPortID(portID);
         } else if (val instanceof RemoteBase) {

@@ -5,7 +5,7 @@ import javax.swing.JComboBox;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.port.DirectPort;
-import com.cannontech.database.data.port.LocalDialupPort;
+import com.cannontech.database.data.port.LocalDialupPortBase;
 import com.cannontech.database.data.port.TerminalServerDialupPort;
 import com.cannontech.database.db.port.PortDialupModem;
  
@@ -397,14 +397,14 @@ public Object getValue(Object val)
 	String prefixString = getPrefixNumberTextField().getText();
 	String suffixString = getSuffixNumberTextField().getText();
 	
-	if( val instanceof LocalDialupPort
+	if( val instanceof LocalDialupPortBase
 		 || val instanceof TerminalServerDialupPort )
 	{
 		PortDialupModem pdm;
 	
 		try
 		{
-			pdm = ((LocalDialupPort) val).getPortDialupModem();
+			pdm = ((LocalDialupPortBase) val).getPortDialupModem();
 		}
 		catch( ClassCastException cce )
 		{
@@ -527,9 +527,9 @@ public void setValue(Object val)
 	String modemType = null, initString = null;
 	PortDialupModem pdm = null;
 	
-	if( val instanceof LocalDialupPort )
+	if( val instanceof LocalDialupPortBase )
 	{
-		pdm = ((LocalDialupPort) val).getPortDialupModem();
+		pdm = ((LocalDialupPortBase) val).getPortDialupModem();
 		getPrefixNumberTextField().setText( pdm.getPrefixNumber() );
 
 		getSuffixNumberTextField().setText( pdm.getSuffixNumber() );

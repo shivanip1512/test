@@ -38,13 +38,6 @@ public abstract class LMGroup extends DeviceBase {
         super.delete();
     }
 
-    @Override
-    public void deletePartial() throws java.sql.SQLException {
-
-        super.deletePartial();
-
-    }
-
     public com.cannontech.database.db.device.lm.LMGroup getLmGroup() {
         if (lmGroup == null) {
             lmGroup = new com.cannontech.database.db.device.lm.LMGroup();
@@ -62,7 +55,6 @@ public abstract class LMGroup extends DeviceBase {
     @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
-
         getLmGroup().setDbConnection(conn);
     }
 

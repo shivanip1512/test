@@ -32,7 +32,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.IEDMeter;
-import com.cannontech.database.data.device.Ion7700;
+import com.cannontech.database.data.device.IonBase;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RemoteBase;
@@ -770,12 +770,12 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
       if( val instanceof IEDMeter )
          getJTextFieldMeterNumber().setText( ((IEDMeter)val).getDeviceMeterGroup().getMeterNumber().toString() );
 
-      if( val instanceof Ion7700 )
+      if( val instanceof IonBase )
       {
          getPhysicalAddressLabel().setText("Slave Address:");
          
          getAddressTextField().setText( 
-            ((Ion7700)val).getDeviceAddress().getSlaveAddress().toString() );            
+            ((IonBase)val).getDeviceAddress().getSlaveAddress().toString() );            
       }
       
       if( val instanceof Series5Base )
