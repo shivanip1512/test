@@ -42,7 +42,7 @@
                                             <c:if test="${config.numDevices > 0}">
                                                 <c:url var="deviceGroupPopupUrl" value="/bulk/selectedDevicesTableForGroupName">
                                                     <c:set var="fullName" value="/System/Device Configs/${config.name}"/>
-                                                    <c:param name="groupName" value="${fn:escapeXml(fullName)}"/>
+                                                    <c:param name="groupName" value="${fullName}"/>
                                                 </c:url>
                                                 <cti:uniqueIdentifier var="deviceGroupPopupId" prefix="device-group-popup-"/>
                                                 <cti:icon icon="icon-magnifier" classes="cp show-on-hover" popup="#${deviceGroupPopupId}"/>
