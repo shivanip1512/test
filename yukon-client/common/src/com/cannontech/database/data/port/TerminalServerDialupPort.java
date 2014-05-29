@@ -3,7 +3,7 @@ package com.cannontech.database.data.port;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.port.PortDialupModem;
 
-public class TerminalServerDialupPort extends TerminalServerSharedPort {
+public class TerminalServerDialupPort extends TerminalServerSharedPortBase {
 
     private PortDialupModem portDialupModem = null;
 
@@ -24,8 +24,9 @@ public class TerminalServerDialupPort extends TerminalServerSharedPort {
     }
 
     public PortDialupModem getPortDialupModem() {
-        if (portDialupModem == null)
+        if (portDialupModem == null) {
             portDialupModem = new PortDialupModem();
+        }
 
         return portDialupModem;
     }

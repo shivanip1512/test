@@ -7,14 +7,4 @@ public class Sentinel extends IEDMeter {
     public Sentinel() {
         super(PaoType.SENTINEL);
     }
-
-    @Override
-    public void setDbConnection(java.sql.Connection conn) {
-        super.setDbConnection(conn);
-    }
-
-    @Override
-    public void setDeviceID(Integer deviceID) {
-        super.setDeviceID(deviceID);
-    }
 }

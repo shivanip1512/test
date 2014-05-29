@@ -5,7 +5,7 @@ import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 
 
-public class IEDMeter extends IEDBase implements IDeviceMeterGroup {
+public abstract class IEDMeter extends IEDBase implements IDeviceMeterGroup {
     private DeviceMeterGroup deviceMeterGroup = null;
     private DeviceLoadProfile deviceLoadProfile = null;
 
@@ -35,22 +35,19 @@ public class IEDMeter extends IEDBase implements IDeviceMeterGroup {
         super.delete();
     }
 
-    @Override
-    public void deletePartial() throws java.sql.SQLException {
-        super.deletePartial();
-    }
-
     public DeviceLoadProfile getDeviceLoadProfile() {
-        if (deviceLoadProfile == null)
+        if (deviceLoadProfile == null) {
             deviceLoadProfile = new DeviceLoadProfile();
+        }
 
         return deviceLoadProfile;
     }
 
     @Override
     public DeviceMeterGroup getDeviceMeterGroup() {
-        if (deviceMeterGroup == null)
+        if (deviceMeterGroup == null) {
             deviceMeterGroup = new DeviceMeterGroup();
+        }
 
         return deviceMeterGroup;
     }
@@ -79,7 +76,6 @@ public class IEDMeter extends IEDBase implements IDeviceMeterGroup {
 
     public void setDeviceLoadProfile(DeviceLoadProfile newValue) {
         deviceLoadProfile = newValue;
-
     }
 
     @Override

@@ -15,13 +15,9 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
-public class DNPBase extends AddressBase implements DBCopiable {
+public abstract class DNPBase extends AddressBase implements DBCopiable {
     private DNPConfiguration dnpConfiguration = null;
 
-    /**
-     * Valid paoTypes are RTU-DNP, RTU ModBus, RTU Dart 
-     * @param paoType
-     */
     public DNPBase(PaoType paoType) {
         super(paoType);
     }

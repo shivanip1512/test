@@ -40,10 +40,11 @@ public class RouteBase extends com.cannontech.database.data.pao.YukonPAObject im
     @Override
     public boolean equals(Object obj) {
 
-        if (obj instanceof RouteBase)
+        if (obj instanceof RouteBase) {
             return getRoute().getRouteID().equals(((RouteBase) obj).getRoute().getRouteID());
-        else
+        } else {
             return super.equals(obj);
+        }
     }
 
     public String getDefaultRoute() {
@@ -76,10 +77,11 @@ public class RouteBase extends com.cannontech.database.data.pao.YukonPAObject im
 
         try {
             stmt.execute();
-            if (stmt.getRowCount() > 0)
+            if (stmt.getRowCount() > 0) {
                 return stmt.getRow(0)[0].toString();
-            else
+            } else {
                 return null;
+            }
         } catch (Exception e) {
             return null;
         }
@@ -148,14 +150,14 @@ public class RouteBase extends com.cannontech.database.data.pao.YukonPAObject im
 
         try {
             stmt.execute();
-            if (stmt.getRowCount() > 0)
+            if (stmt.getRowCount() > 0) {
                 return stmt.getRow(0)[0].toString();
-            else
+            } else {
                 return null;
+            }
         } catch (Exception e) {
             return null;
         }
-
     }
 
     @Override

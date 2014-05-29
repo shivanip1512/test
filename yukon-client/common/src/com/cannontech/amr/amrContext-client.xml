@@ -45,10 +45,7 @@
 
     <bean id="groupMetersDao" class="com.cannontech.amr.meter.dao.impl.GroupMetersDaoImpl"/>
 
-    <bean id="meterService" class="com.cannontech.amr.meter.service.impl.MeterServiceImpl">
-        <property name="dbPersistentDao" ref="dbPersistentDao" />
-        <property name="attributeService" ref="attributeService" />
-    </bean>
+    <bean id="meterService" class="com.cannontech.amr.meter.service.impl.MeterServiceImpl"/>
 
     <bean id="meterRowMapper" class="com.cannontech.amr.meter.dao.impl.MeterRowMapper"/>
 

@@ -60,11 +60,6 @@ public class RDSTerminal extends IEDBase {
     }
     
     @Override
-    public void deletePartial() throws SQLException {
-        super.deletePartial();
-    }
-    
-    @Override
     public void retrieve() throws SQLException {
         super.retrieve();
         getRdsIpAddress().retrieve();

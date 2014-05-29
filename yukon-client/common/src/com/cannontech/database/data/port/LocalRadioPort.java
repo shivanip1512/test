@@ -3,7 +3,7 @@ package com.cannontech.database.data.port;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.port.PortRadioSettings;
 
-public class LocalRadioPort extends LocalSharedPort {
+public class LocalRadioPort extends LocalSharedPortBase {
     private PortRadioSettings portRadioSettings = null;
 
     public LocalRadioPort() {

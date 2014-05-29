@@ -26,7 +26,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.capcontrol.CapBankController701x;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
@@ -324,8 +323,11 @@ public final class CapControlUtils {
     }
 
     public static boolean is701xDevice(LiteYukonPAObject obj) {
-        DBPersistent dbPers = LiteFactory.convertLiteToDBPersAndRetrieve(obj);
-        if (dbPers instanceof CapBankController701x) return true;
+        if (obj.getPaoType() == PaoType.CBC_7010 ||
+                obj.getPaoType() == PaoType.CBC_7011 ||
+                obj.getPaoType() == PaoType.CBC_7012) {
+            return true;
+        }
         
         return false;
     }

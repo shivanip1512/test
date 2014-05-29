@@ -5,8 +5,15 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
-import com.cannontech.database.data.capcontrol.CapBankController701x;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.CapBankController7010;
+import com.cannontech.database.data.capcontrol.CapBankController7011;
+import com.cannontech.database.data.capcontrol.CapBankController7012;
+import com.cannontech.database.data.capcontrol.CapBankController7020;
+import com.cannontech.database.data.capcontrol.CapBankController7022;
+import com.cannontech.database.data.capcontrol.CapBankController7023;
+import com.cannontech.database.data.capcontrol.CapBankController7024;
+import com.cannontech.database.data.capcontrol.CapBankController8020;
+import com.cannontech.database.data.capcontrol.CapBankController8024;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
 import com.cannontech.database.data.capcontrol.CapBankControllerExpresscom;
 import com.cannontech.database.data.capcontrol.CapBankControllerVersacom;
@@ -27,7 +34,7 @@ import com.cannontech.database.data.device.lm.LMGroupVersacom;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.port.PortFactory;
-import com.cannontech.database.data.port.TerminalServerSharedPort;
+import com.cannontech.database.data.port.TerminalServerSharedPortBase;
 
 
 public final class DeviceFactory {
@@ -78,15 +85,22 @@ public final class DeviceFactory {
             returnDevice = new LCUER();
             break;
         case RTU_DNP:
-        case RTU_MODBUS:
-        case RTU_DART:
-            returnDevice = new DNPBase(paoType);
+            returnDevice = new RTUDnp();
             break;
-            //use only 1 ION class for now!! 1-7-2003
+        case RTU_MODBUS:
+            returnDevice = new RTUModbus();
+            break;
+        case RTU_DART:
+            returnDevice = new RTUDart();
+            break;
         case ION_7700:
+            returnDevice = new Ion7700();
+            break;
         case ION_7330:
+            returnDevice = new Ion7330();
+            break;
         case ION_8300:
-            returnDevice = new Ion7700(paoType);
+            returnDevice = new Ion8300();
             break;
         case RTUILEX:
             returnDevice = new RTUILEX();
@@ -96,18 +110,28 @@ public final class DeviceFactory {
             break;
         //IEDMeter type devices
         case ALPHA_A1:
-        case ALPHA_PPLUS:
-        case ALPHA_A3:
-            returnDevice = new Alpha(paoType);
+            returnDevice = new AlphaA1();
             break;
-        case FULCRUM: //replaced Schlumberger
-        case VECTRON: //replaced Schlumberger
+        case ALPHA_PPLUS:
+            returnDevice = new AlphaPowerPlus();
+            break;
+        case ALPHA_A3:
+            returnDevice = new AlphaA3();
+            break;
+        case FULCRUM:
+            returnDevice = new Fulcrum();
+            break;
+        case VECTRON:
+            returnDevice = new Vectron();
+            break;
         case QUANTUM:
-            returnDevice = new Schlumberger(paoType);
+            returnDevice = new Quantum();
             break;
         case KV:
+            returnDevice = new KV();
+            break;
         case KVII:
-            returnDevice = new KV(paoType);
+            returnDevice = new KVII();
             break;
         case SENTINEL:
             returnDevice = new Sentinel();
@@ -131,14 +155,16 @@ public final class DeviceFactory {
             returnDevice = new TransdataMarkV();
             break;
         case IPC430SL:
+            returnDevice = new IPC430SL();
+            break;
         case IPC430S4E:
+            returnDevice = new IPC430S4E();
+            break;
         case IPC420FD:
+            returnDevice = new IPC420FD();
+            break;
         case IPC410FL:
-            IPCMeter meter = new IPCMeter(paoType);
-            //set up comm channel
-            TerminalServerSharedPort comms = (TerminalServerSharedPort) PortFactory.createPort(PortTypes.TSERVER_SHARED);
-            meter.setCommChannel(comms);
-            returnDevice = meter;
+            returnDevice = new IPC410FL();
             break;
         case RFN410FL:
         case RFN410FX:
@@ -172,8 +198,10 @@ public final class DeviceFactory {
             break;
             
         case LCR6200_RFN:
+            returnDevice = new RfnLcr6200();
+            break;
         case LCR6600_RFN:
-            returnDevice = new RfnBase(paoType);
+            returnDevice = new RfnLcr6600();
             break;
 
         //Carrier type devices
@@ -296,7 +324,7 @@ public final class DeviceFactory {
             returnDevice = new Repeater921();
             break;
         case TAPTERMINAL:
-            returnDevice = new PagingTapTerminal(paoType);
+            returnDevice = new PagingTapTerminal();
             break;
         case TNPP_TERMINAL:
             returnDevice = new TNPPTerminal();
@@ -364,20 +392,32 @@ public final class DeviceFactory {
             returnDevice = new CapBankControllerExpresscom();
             break;
         case CBC_7010:
+            returnDevice = new CapBankController7010();
+            break;
         case CBC_7011:
+            returnDevice = new CapBankController7011();
+            break;
         case CBC_7012:
-            returnDevice = new CapBankController701x(paoType);
+            returnDevice = new CapBankController7012();
             break;    
         case CBC_7020:
+            returnDevice = new CapBankController7020();
+            break;    
         case CBC_7022:
+            returnDevice = new CapBankController7022();
+            break;    
         case CBC_7023:
+            returnDevice = new CapBankController7023();
+            break;    
         case CBC_7024:
-            returnDevice = new CapBankController702x(paoType);
-            break;
+            returnDevice = new CapBankController7024();
+            break;    
         case CBC_8020:
+            returnDevice = new CapBankController8020();
+            break;    
         case CBC_8024:
-            returnDevice = new CapBankController702x(paoType);
-            break;
+            returnDevice = new CapBankController8024();
+            break;    
         case CBC_FP_2800:
             returnDevice = new CapBankController_FP_2800();
             break;
@@ -447,6 +487,12 @@ public final class DeviceFactory {
             ((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setRealTimeScan(new Character('N'));
         }
 
+        //set up comm channel for IPCMeter types.
+        if (returnDevice instanceof IPCMeter) {
+            TerminalServerSharedPortBase comms = (TerminalServerSharedPortBase) PortFactory.createPort(PortTypes.TSERVER_SHARED);
+            ((IPCMeter)returnDevice).setCommChannel(comms);
+        }
+        
         return returnDevice;
     }
 }

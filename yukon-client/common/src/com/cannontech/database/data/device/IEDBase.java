@@ -3,8 +3,7 @@ package com.cannontech.database.data.device;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.device.DeviceIED;
 
-
-public class IEDBase extends RemoteBase {
+public abstract class IEDBase extends RemoteBase {
     private DeviceIED deviceIED = null;
 
     // static strings for the SLAVE ADDRESS field
@@ -29,7 +28,6 @@ public class IEDBase extends RemoteBase {
     public void addPartial() throws java.sql.SQLException {
         super.addPartial();
         getDeviceIEDDefaults().add();
-
     }
 
     @Override
@@ -38,22 +36,15 @@ public class IEDBase extends RemoteBase {
         super.delete();
     }
 
-    @Override
-    public void deletePartial() throws java.sql.SQLException {
-
-        super.deletePartial();
-
-    }
-
     public DeviceIED getDeviceIED() {
-        if (deviceIED == null)
+        if (deviceIED == null) {
             deviceIED = new DeviceIED();
+        }
 
         return deviceIED;
     }
 
     public DeviceIED getDeviceIEDDefaults() {
-
         getDeviceIED().setPassword("0");
         getDeviceIED().setSlaveAddress(IEDBase.SLAVE_STAND_ALONE);
 
@@ -69,7 +60,6 @@ public class IEDBase extends RemoteBase {
     @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
-
         getDeviceIED().setDbConnection(conn);
     }
 

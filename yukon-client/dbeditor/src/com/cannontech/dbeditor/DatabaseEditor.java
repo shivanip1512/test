@@ -95,7 +95,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IPCMeter;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
 import com.cannontech.database.data.device.lm.LMGroup;
-import com.cannontech.database.data.device.lm.LMProgramDirect;
+import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
@@ -1008,7 +1008,7 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
             YukonPAObject yukonPAObject = PAOFactory.createPAObject(deviceId);
             showCopyWizardPanel (yukonPAObject);
 		}
-        else if(toCopy instanceof LMProgramDirect) {
+        else if(toCopy instanceof LMProgramDirectBase) {
             showCopyWizardPanel( new LMProgramCopyWizardPanel(toCopy), toCopy );
         } else if(toCopy instanceof LMGroup) {
             showCopyWizardPanel( new LMGroupCopyWizardPanel(toCopy), toCopy );

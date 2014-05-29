@@ -19,7 +19,7 @@ import com.cannontech.database.data.device.lm.LMGroupGolay;
 import com.cannontech.database.data.device.lm.LMGroupSA205;
 import com.cannontech.database.data.device.lm.LMGroupSADigital;
 import com.cannontech.database.data.device.lm.LMProgramBase;
-import com.cannontech.database.data.device.lm.LMProgramDirect;
+import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.data.device.lm.TimeRefreshGear;
@@ -31,7 +31,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.port.DirectPort;
-import com.cannontech.database.data.port.LocalDirectPort;
+import com.cannontech.database.data.port.LocalDirectPortBase;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
@@ -309,21 +309,21 @@ public String getFullFileName(String aFileName)
  * Insert the method's description here.
  * Creation date: (3/31/2001 12:57:46 PM)
  */
-private void handleLocalDirectPort( com.cannontech.database.data.port.LocalDirectPort port )
+private void handleLocalDirectPort( com.cannontech.database.data.port.LocalDirectPortBase port )
 {
 	port.getPortLocalSerial().setPhysicalPort( "Com1" );
 	port.getPortSettings().setLineSettings( "8N1" );
 
 	//----- Start of defaults settings for the different instances of ports
-	if( port instanceof com.cannontech.database.data.port.LocalDialupPort )
+	if( port instanceof com.cannontech.database.data.port.LocalDialupPortBase )
 	{
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setModemType("U.S. Robotics");
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setInitializationString(
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setModemType("U.S. Robotics");
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setInitializationString(
 			com.cannontech.common.util.CtiUtilities.STRING_NONE);
 		
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setPrefixNumber("9");
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setSuffixNumber("9");
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setPortID( port.getCommPort().getPortID() );
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setPrefixNumber("9");
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setSuffixNumber("9");
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setPortID( port.getCommPort().getPortID() );
 	}
 	//----- End of defaults settings for the different instances of ports
 	// last item to set for a port
@@ -521,8 +521,8 @@ public boolean processLoadPrograms()
 		CTILogger.info("LOAD_PROGRAM line: " + lines.get(i).toString());
 
 
-		LMProgramDirect lmProgram =
-			(LMProgramDirect)LMFactory.createLoadManagement(PaoType.LM_DIRECT_PROGRAM);
+		LMProgramDirectBase lmProgram =
+			(LMProgramDirectBase)LMFactory.createLoadManagement(PaoType.LM_DIRECT_PROGRAM);
 
 		lmProgram.setName( line[4].trim() + " " + line[0].trim() );
 		lmProgram.getProgram().setControlType( LMProgramBase.OPSTATE_MANUALONLY );
@@ -982,7 +982,7 @@ private DirectPort createDirectPort( Integer portID )
 	port.setPortName( "Port #" + (portID.intValue() - PORTID_OFFSET) );
 	port.setPortID(portID);
 
-	handleLocalDirectPort( (LocalDirectPort)port );
+	handleLocalDirectPort( (LocalDirectPortBase)port );
 
 	
 	return port;
@@ -1910,8 +1910,8 @@ public boolean processUnxPrograms()
 		if( i <= 1 || line.length <= 6 )
 			continue;
 
-		LMProgramDirect lmProgram =
-			(LMProgramDirect)LMFactory.createLoadManagement(PaoType.LM_DIRECT_PROGRAM);
+		LMProgramDirectBase lmProgram =
+			(LMProgramDirectBase)LMFactory.createLoadManagement(PaoType.LM_DIRECT_PROGRAM);
 
 		String progName = line[0].trim();
 		String gearName = line[1].trim();
@@ -2038,7 +2038,7 @@ public boolean processUnxLoadScenarios()
 		
 
 		
-		LMProgramDirect prog = (LMProgramDirect)unxPrgNameMap.get( line[1].trim() );
+		LMProgramDirectBase prog = (LMProgramDirectBase)unxPrgNameMap.get( line[1].trim() );
 		if( prog == null )
 			continue;
 		

@@ -15,16 +15,6 @@ public class RfDa extends RfnBase {
     public RfDa() {
         super(PaoType.RF_DA);
     }
-
-    @Override
-    public void setDbConnection(java.sql.Connection conn) {
-        super.setDbConnection(conn);
-    }
-
-    @Override
-    public void setDeviceID(Integer deviceID) {
-        super.setDeviceID(deviceID);
-    }
     
     @Override
     public void add() throws SQLException {

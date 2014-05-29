@@ -20,8 +20,8 @@ import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusPoint;
-import com.cannontech.database.data.port.LocalDialupPort;
-import com.cannontech.database.data.port.LocalSharedPort;
+import com.cannontech.database.data.port.LocalDialupPortBase;
+import com.cannontech.database.data.port.LocalSharedPortBase;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.device.DeviceGroupMember;
@@ -164,22 +164,22 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 	 * Creation date: (3/31/2001 12:57:46 PM)
 	 */
 	private void handleLocalDialupPort(
-		com.cannontech.database.data.port.LocalDirectPort port) {
+		com.cannontech.database.data.port.LocalDirectPortBase port) {
 		port.getPortLocalSerial().setPhysicalPort("Com1");
 		port.getPortSettings().setLineSettings("8N1");
 
 		//----- Start of defaults settings for the different instances of ports
-		if (port instanceof LocalDialupPort) {
-			((LocalDialupPort) port).getPortDialupModem().setModemType(
+		if (port instanceof LocalDialupPortBase) {
+			((LocalDialupPortBase) port).getPortDialupModem().setModemType(
 				"U.S. Robotics");
-			((LocalDialupPort) port)
+			((LocalDialupPortBase) port)
 				.getPortDialupModem()
 				.setInitializationString(
 				com.cannontech.common.util.CtiUtilities.STRING_NONE);
 
-			((LocalDialupPort) port).getPortDialupModem().setPrefixNumber("9");
-			((LocalDialupPort) port).getPortDialupModem().setSuffixNumber("9");
-			((LocalDialupPort) port).getPortDialupModem().setPortID(
+			((LocalDialupPortBase) port).getPortDialupModem().setPrefixNumber("9");
+			((LocalDialupPortBase) port).getPortDialupModem().setSuffixNumber("9");
+			((LocalDialupPortBase) port).getPortDialupModem().setPortID(
 				port.getCommPort().getPortID());
 		}
 		//----- End of defaults settings for the different instances of ports
@@ -271,13 +271,13 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 			hour + minute + (string.toUpperCase().endsWith("PM") ? 43200 : 0));
 	}
 
-	private LocalSharedPort createDirectPort(Integer portID) {
-		LocalSharedPort port = null;
+	private LocalSharedPortBase createDirectPort(Integer portID) {
+		LocalSharedPortBase port = null;
 
 		//this createPort() call actually queries the database for a new unique portID!!
 		// let this happen for now, but, a performance issue may occur
 		port =
-			(LocalSharedPort) PortFactory.createPort(
+			(LocalSharedPortBase) PortFactory.createPort(
 				PortTypes.LOCAL_SHARED);
 
 		//set our own unique portID
@@ -334,7 +334,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 			ts.nextToken();
 			ts.nextToken();
 
-			LocalSharedPort port = createDirectPort(portID);
+			LocalSharedPortBase port = createDirectPort(portID);
 			port.getPortLocalSerial().setPhysicalPort(
 				"Com" + ts.nextToken().trim().toString());
 

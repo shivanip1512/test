@@ -5,7 +5,7 @@ import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceSeries5RTU;
 import com.cannontech.database.db.device.DeviceVerification;
 
-public class Series5Base extends RemoteBase {
+public abstract class Series5Base extends RemoteBase {
 
     // we use the DeviceAddress table to store the address
     private DeviceAddress deviceAddress = null;
@@ -80,8 +80,9 @@ public class Series5Base extends RemoteBase {
     }
 
     public DeviceSeries5RTU getSeries5RTU() {
-        if (series5RTU == null)
+        if (series5RTU == null) {
             series5RTU = new DeviceSeries5RTU();
+        }
 
         return series5RTU;
     }
@@ -91,8 +92,9 @@ public class Series5Base extends RemoteBase {
     }
 
     public DeviceVerification getVerification() {
-        if (lmiVerification == null)
+        if (lmiVerification == null) {
             lmiVerification = new DeviceVerification();
+        }
 
         return lmiVerification;
     }
@@ -100,5 +102,4 @@ public class Series5Base extends RemoteBase {
     public void setVerification(DeviceVerification verify) {
         this.lmiVerification = verify;
     }
-
 }

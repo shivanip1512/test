@@ -19,7 +19,6 @@ public class CCU721 extends RemoteBase {
     @Override
     public void addPartial() throws java.sql.SQLException {
         super.addPartial();
-
         getDeviceAddress().add();
     }
 
@@ -29,24 +28,15 @@ public class CCU721 extends RemoteBase {
         super.delete();
     }
 
-    @Override
-    public void deletePartial() throws java.sql.SQLException {
-
-        super.deletePartial();
-
-    }
-
     public DeviceAddress getDeviceAddress() {
         if (deviceAddress == null) {
             deviceAddress = new DeviceAddress();
         }
-
         return deviceAddress;
     }
 
     @Override
     public void retrieve() throws java.sql.SQLException {
-
         super.retrieve();
         getDeviceAddress().retrieve();
     }
@@ -54,7 +44,6 @@ public class CCU721 extends RemoteBase {
     @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
-
         getDeviceAddress().setDbConnection(conn);
     }
 
@@ -65,7 +54,6 @@ public class CCU721 extends RemoteBase {
     @Override
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
-
         getDeviceAddress().setDeviceID(deviceID);
     }
 

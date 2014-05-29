@@ -7,9 +7,4 @@ public class TapPagingRoute extends RouteBase {
     public TapPagingRoute() {
         super(PaoType.ROUTE_TAP_PAGING);
     }
-
-    @Override
-    public void setDbConnection(java.sql.Connection conn) {
-        super.setDbConnection(conn);
-    }
 }

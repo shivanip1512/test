@@ -27,22 +27,6 @@ public class SystemDevice extends DeviceBase {
     public void deletePartial() {
         throw new IllegalArgumentException("Instances of " + this.getClass().getName() + " can not be PARTIALLY_DELETED from the database");
     }
-
-    @Override
-    public void retrieve() throws java.sql.SQLException {
-        super.retrieve();
-    }
-
-    @Override
-    public void setDbConnection(java.sql.Connection conn) {
-        super.setDbConnection(conn);
-    }
-
-    @Override
-    public void setDeviceID(Integer deviceID) {
-        super.setDeviceID(deviceID);
-    }
-
     @Override
     public void update() {
         throw new IllegalArgumentException("Instances of " + this.getClass().getName() + " can not be UPDATED in the database");

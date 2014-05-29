@@ -3,7 +3,7 @@ package com.cannontech.database.data.device;
 import java.sql.SQLException;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.port.TerminalServerSharedPort;
+import com.cannontech.database.data.port.TerminalServerSharedPortBase;
 import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
 
@@ -13,8 +13,8 @@ import com.cannontech.database.db.port.PortTerminalServer;
  * a TCP Terminal Server comm channel when they are created. This is set as the IPC Meter's comm 
  * channel.
  */
-public class IPCMeter extends IEDMeter {
-    private TerminalServerSharedPort comms;
+public abstract class IPCMeter extends IEDMeter {
+    private TerminalServerSharedPortBase comms;
     
     public IPCMeter(PaoType paoType) {
         super(paoType);
@@ -42,7 +42,7 @@ public class IPCMeter extends IEDMeter {
         return comms.getPortSettings();
     }
     
-    public void setCommChannel(TerminalServerSharedPort comms) {
+    public void setCommChannel(TerminalServerSharedPortBase comms) {
         this.comms = comms;
     }
 }

@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.device.DeviceAddress;
 
-public class AddressBase extends RemoteBase {
+public abstract class AddressBase extends RemoteBase {
     private DeviceAddress deviceAddress = null;
 
     public AddressBase(PaoType paoType) {
@@ -60,8 +60,9 @@ public class AddressBase extends RemoteBase {
     }
 
     public DeviceAddress getDeviceAddress() {
-        if (deviceAddress == null)
+        if (deviceAddress == null) {
             deviceAddress = new DeviceAddress();
+        }
 
         return deviceAddress;
     }

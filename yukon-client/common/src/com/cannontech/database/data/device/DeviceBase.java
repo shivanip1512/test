@@ -41,7 +41,6 @@ public abstract class DeviceBase extends YukonPAObject implements EditorPanel {
     }
 
     public boolean allowRebroadcast() {
-
         return false;
     }
 
@@ -72,10 +71,12 @@ public abstract class DeviceBase extends YukonPAObject implements EditorPanel {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DeviceBase)
+        if (obj instanceof DeviceBase) {
             return getDevice().getDeviceID().equals(((DeviceBase) obj).getDevice().getDeviceID());
-        else
+        }
+        else {
             return super.equals(obj);
+        }
     }
 
     @Override
@@ -84,8 +85,9 @@ public abstract class DeviceBase extends YukonPAObject implements EditorPanel {
     }
 
     public Device getDevice() {
-        if (device == null)
+        if (device == null) {
             device = new Device();
+        }
 
         return device;
     }
@@ -126,10 +128,6 @@ public abstract class DeviceBase extends YukonPAObject implements EditorPanel {
         super.setPAObjectID(deviceID);
         getDevice().setDeviceID(deviceID);
     }
-
-//    public void setDeviceType(String devType) {
-//        getYukonPAObject().setType(devType);
-//    }
 
     public void setDisableFlag(Character ch) {
         getYukonPAObject().setDisableFlag(ch);

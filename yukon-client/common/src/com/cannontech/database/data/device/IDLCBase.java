@@ -4,7 +4,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.DBCopiable;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 
-public class IDLCBase extends RemoteBase implements DBCopiable {
+public abstract class IDLCBase extends RemoteBase implements DBCopiable {
     private DeviceIDLCRemote deviceIDLCRemote = null;
 
     public IDLCBase(PaoType paoType) {
@@ -39,16 +39,10 @@ public class IDLCBase extends RemoteBase implements DBCopiable {
         super.delete();
     }
 
-    @Override
-    public void deletePartial() throws java.sql.SQLException {
-
-        super.deletePartial();
-
-    }
-
     public DeviceIDLCRemote getDeviceIDLCRemote() {
-        if (deviceIDLCRemote == null)
+        if (deviceIDLCRemote == null) {
             deviceIDLCRemote = new DeviceIDLCRemote();
+        }
 
         return deviceIDLCRemote;
     }

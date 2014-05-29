@@ -1,10 +1,11 @@
 package com.cannontech.database.data.device;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.db.device.DeviceRTC;
 
-public class RTCBase extends RemoteBase {
+public abstract class RTCBase extends RemoteBase {
 
-    com.cannontech.database.db.device.DeviceRTC deviceRTC = null;
+    DeviceRTC deviceRTC = null;
 
     // strings for the Listen Before Talk column
     public static final String LBT0 = "No LBT";
@@ -57,15 +58,15 @@ public class RTCBase extends RemoteBase {
         getDeviceRTC().update();
     }
 
-    public com.cannontech.database.db.device.DeviceRTC getDeviceRTC() {
-        if (deviceRTC == null)
-            deviceRTC = new com.cannontech.database.db.device.DeviceRTC();
+    public DeviceRTC getDeviceRTC() {
+        if (deviceRTC == null) {
+            deviceRTC = new DeviceRTC();
+        }
 
         return deviceRTC;
     }
 
-    public void setDeviceRTC(
-            com.cannontech.database.db.device.DeviceRTC deviceRTC) {
+    public void setDeviceRTC(DeviceRTC deviceRTC) {
         this.deviceRTC = deviceRTC;
     }
 
@@ -92,5 +93,4 @@ public class RTCBase extends RemoteBase {
 
         return lbtFun;
     }
-
 }

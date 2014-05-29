@@ -18,7 +18,7 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
-public class RfnBase extends DeviceBase {
+public abstract class RfnBase extends DeviceBase {
     
     private RfnAddress rfnAddress = null;
     
@@ -81,12 +81,7 @@ public class RfnBase extends DeviceBase {
         }
         super.delete();
     }
-    
-    @Override
-    public void deletePartial() throws SQLException {
-        super.deletePartial();
-    }
-    
+
     @Override
     public void retrieve() throws SQLException {
         super.retrieve();
@@ -121,5 +116,4 @@ public class RfnBase extends DeviceBase {
     public void setRfnAddress(RfnAddress rfmAddress) {
         this.rfnAddress = rfmAddress;
     }
-    
 }

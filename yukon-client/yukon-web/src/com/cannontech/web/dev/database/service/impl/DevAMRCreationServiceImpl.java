@@ -112,7 +112,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         PortTerminalServer portTerminalServer =
             new PortTerminalServer(directPort.getCommPort().getPortID(), ipAddress, commChannel.getPort());
 
-        TerminalServerSharedPort terminalServerSharedPort = new TerminalServerSharedPort(PaoType.TSERVER_SHARED);
+        TerminalServerSharedPort terminalServerSharedPort = new TerminalServerSharedPort();
         terminalServerSharedPort.setCommPort(directPort.getCommPort());
         terminalServerSharedPort.setPortSettings(portSettings);
         terminalServerSharedPort.setPortTerminalServer(portTerminalServer);

@@ -16,8 +16,9 @@ public class MacroRoute extends RouteBase {
     public void add() throws java.sql.SQLException {
         super.add();
 
-        for (int i = 0; i < getMacroRouteVector().size(); i++)
+        for (int i = 0; i < getMacroRouteVector().size(); i++) {
             getMacroRouteVector().elementAt(i).add();
+        }
     }
 
     @Override
@@ -27,8 +28,9 @@ public class MacroRoute extends RouteBase {
     }
 
     public Vector<com.cannontech.database.db.route.MacroRoute> getMacroRouteVector() {
-        if (macroRouteVector == null)
+        if (macroRouteVector == null) {
             macroRouteVector = new Vector<com.cannontech.database.db.route.MacroRoute>();
+        }
 
         return macroRouteVector;
     }
@@ -57,8 +59,9 @@ public class MacroRoute extends RouteBase {
         }
 
         // This necessary??
-        for (int i = 0; i < getMacroRouteVector().size(); i++)
+        for (int i = 0; i < getMacroRouteVector().size(); i++) {
             getMacroRouteVector().elementAt(i).retrieve();
+        }
     }
 
     @Override
@@ -68,8 +71,9 @@ public class MacroRoute extends RouteBase {
         Vector<com.cannontech.database.db.route.MacroRoute> v = getMacroRouteVector();
 
         if (v != null) {
-            for (int i = 0; i < v.size(); i++)
+            for (int i = 0; i < v.size(); i++) {
                 v.elementAt(i).setDbConnection(conn);
+            }
         }
     }
 
@@ -82,8 +86,9 @@ public class MacroRoute extends RouteBase {
 
         super.setRouteID(routeID);
 
-        for (int i = 0; i < getMacroRouteVector().size(); i++)
+        for (int i = 0; i < getMacroRouteVector().size(); i++) {
             getMacroRouteVector().elementAt(i).setRouteID(routeID);
+        }
     }
 
     @Override
@@ -92,7 +97,8 @@ public class MacroRoute extends RouteBase {
 
         com.cannontech.database.db.route.MacroRoute.deleteAllMacroRoutes(getRouteID(), getDbConnection());
 
-        for (int i = 0; i < getMacroRouteVector().size(); i++)
+        for (int i = 0; i < getMacroRouteVector().size(); i++) {
             getMacroRouteVector().elementAt(i).add();
+        }
     }
 }

@@ -9,7 +9,7 @@ import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.database.db.port.PortSettings;
 
-public class DirectPort extends YukonPAObject implements EditorPanel {
+public abstract class DirectPort extends YukonPAObject implements EditorPanel {
     private CommPort commPort = null;
     private PortSettings portSettings = null;
 
@@ -38,16 +38,18 @@ public class DirectPort extends YukonPAObject implements EditorPanel {
     @Override
     public boolean equals(Object obj) {
 
-        if (obj instanceof DirectPort)
+        if (obj instanceof DirectPort) {
             return getCommPort().getPortID().equals(((DirectPort) obj).getCommPort().getPortID());
-        else
+        } else {
             return super.equals(obj);
+        }
     }
 
     public CommPort getCommPort() {
 
-        if (commPort == null)
+        if (commPort == null) {
             commPort = new CommPort();
+        }
 
         return commPort;
     }
@@ -57,8 +59,9 @@ public class DirectPort extends YukonPAObject implements EditorPanel {
     }
 
     public PortSettings getPortSettings() {
-        if (portSettings == null)
+        if (portSettings == null) {
             portSettings = new PortSettings();
+        }
 
         return portSettings;
     }

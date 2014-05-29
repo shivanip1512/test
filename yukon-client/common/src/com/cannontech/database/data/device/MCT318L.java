@@ -7,14 +7,4 @@ public class MCT318L extends MCTBase {
     public MCT318L() {
         super(PaoType.MCT318L);
     }
-
-    @Override
-    public void setDbConnection(java.sql.Connection conn) {
-        super.setDbConnection(conn);
-    }
-
-    @Override
-    public void setDeviceID(Integer deviceID) {
-        super.setDeviceID(deviceID);
-    }
 }

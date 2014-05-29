@@ -11,15 +11,15 @@ import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 
-public class GridAdvisorBase extends TwoWayDevice {
+public abstract class GridAdvisorBase extends TwoWayDevice {
     private static final Logger log = YukonLogManager.getLogger(GridAdvisorBase.class);
     private DeviceDirectCommSettings deviceDirectCommSettings = null;
     private DeviceAddress deviceAddress = null;
-    
+
     public GridAdvisorBase(PaoType paoType) {
         super(paoType);
     }
-    
+
     @Override
     public void add() throws SQLException {
         super.add();
@@ -90,24 +90,19 @@ public class GridAdvisorBase extends TwoWayDevice {
     @Override
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
-        getDeviceDirectCommSettings().setDeviceID( deviceID);
+        getDeviceDirectCommSettings().setDeviceID(deviceID);
         getDeviceAddress().setDeviceID(deviceID);
     }
-    
-    public void setDefaultPort()
-    {
-        try{
+
+    public void setDefaultPort() {
+        try {
             getDeviceDirectCommSettings().setDefaultPortID();
-        }
-        catch( java.sql.SQLException j )
-        {            
+        } catch (java.sql.SQLException j) {
             log.info("SQL Exception in setting default port: " + j);
-            
-        }
-        catch( Exception e )
-        {
+
+        } catch (Exception e) {
             log.debug("Exception in Setting Default port:" + e);
-        }        
+        }
     }
 
     @Override
@@ -128,40 +123,33 @@ public class GridAdvisorBase extends TwoWayDevice {
     }
 
     public DeviceDirectCommSettings getDeviceDirectCommSettings() {
-        if ( deviceDirectCommSettings == null )
-        {
+        if (deviceDirectCommSettings == null) {
             deviceDirectCommSettings = new DeviceDirectCommSettings();
         }
         return deviceDirectCommSettings;
     }
 
-    public void setDeviceDirectCommSettings(
-            DeviceDirectCommSettings deviceDirectCommSettings) {
+    public void setDeviceDirectCommSettings(DeviceDirectCommSettings deviceDirectCommSettings) {
         this.deviceDirectCommSettings = deviceDirectCommSettings;
     }
-    
-    public Integer getAddress() 
-    {
-       return getDeviceAddress().getMasterAddress();
+
+    public Integer getAddress() {
+        return getDeviceAddress().getMasterAddress();
     }
 
-    public void setAddress( Integer newAddress )
-    {
-       getDeviceAddress().setMasterAddress( newAddress );
-    }    
+    public void setAddress(Integer newAddress) {
+        getDeviceAddress().setMasterAddress(newAddress);
+    }
 
-    public DeviceAddress getDeviceAddress()
-    {
-       if( deviceAddress == null )
+    public DeviceAddress getDeviceAddress() {
+        if (deviceAddress == null) {
             deviceAddress = new DeviceAddress();
+        }
 
-       return deviceAddress;
+        return deviceAddress;
     }
 
-    public void setDeviceAddress(DeviceAddress deviceAddr)
-    {
-       this.deviceAddress = deviceAddr;
+    public void setDeviceAddress(DeviceAddress deviceAddr) {
+        this.deviceAddress = deviceAddr;
     }
-
-
 }

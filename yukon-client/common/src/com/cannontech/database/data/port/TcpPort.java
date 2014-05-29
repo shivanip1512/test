@@ -62,8 +62,9 @@ public class TcpPort extends DirectPort implements EditorPanel {
     }
     
     public PortTiming getPortTiming() {
-        if( portTiming == null )
+        if( portTiming == null ) {
             portTiming = new PortTiming();
+        }
         return portTiming;
     }
     

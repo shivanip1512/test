@@ -27,7 +27,7 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
 
     @Override
     public PaoIdentifier getPaoIdentifier() {
-        return new PaoIdentifier(getPaObjectID(), getPaoType());
+        return new PaoIdentifier(paObjectID, paoType);
     }
     
     @Override

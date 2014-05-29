@@ -18,8 +18,9 @@ public class CCURoute extends RouteBase {
         super.add();
         getCarrierRoute().add();
 
-        for (int i = 0; i < getRepeaterVector().size(); i++)
+        for (int i = 0; i < getRepeaterVector().size(); i++) {
             ((DBPersistent) getRepeaterVector().elementAt(i)).add();
+        }
     }
 
     @Override
@@ -37,8 +38,9 @@ public class CCURoute extends RouteBase {
     }
 
     public CarrierRoute getCarrierRoute() {
-        if (carrierRoute == null)
+        if (carrierRoute == null) {
             carrierRoute = new CarrierRoute();
+        }
         return carrierRoute;
     }
 
@@ -48,11 +50,11 @@ public class CCURoute extends RouteBase {
         // otherwise on a delete they will be skipped
         // and probably cause constraint violations
 
-        if (repeaterVector == null)
+        if (repeaterVector == null) {
             repeaterVector = new java.util.Vector<RepeaterRoute>();
+        }
 
         return repeaterVector;
-
     }
 
     @Override
@@ -65,8 +67,9 @@ public class CCURoute extends RouteBase {
 
         try {
             RepeaterRoute rArray[] = RepeaterRoute.getRepeaterRoutes(getRouteID(), getDbConnection());
-            for (int i = 0; i < rArray.length; i++)
+            for (int i = 0; i < rArray.length; i++) {
                 repeaterVector.addElement(rArray[i]);
+            }
 
         } catch (java.sql.SQLException e) {
             // not necessarily an error
@@ -93,8 +96,9 @@ public class CCURoute extends RouteBase {
         java.util.Vector<RepeaterRoute> v = getRepeaterVector();
 
         if (v != null) {
-            for (int i = 0; i < v.size(); i++)
+            for (int i = 0; i < v.size(); i++) {
                 ((DBPersistent) v.elementAt(i)).setDbConnection(conn);
+            }
         }
     }
 
@@ -107,8 +111,9 @@ public class CCURoute extends RouteBase {
         super.setRouteID(routeID);
         getCarrierRoute().setRouteID(routeID);
 
-        for (int i = 0; i < getRepeaterVector().size(); i++)
+        for (int i = 0; i < getRepeaterVector().size(); i++) {
             getRepeaterVector().elementAt(i).setRouteID(routeID);
+        }
     }
 
     @Override
@@ -118,7 +123,8 @@ public class CCURoute extends RouteBase {
 
         RepeaterRoute.deleteRepeaterRoutes(getRouteID(), getDbConnection());
 
-        for (int i = 0; i < getRepeaterVector().size(); i++)
+        for (int i = 0; i < getRepeaterVector().size(); i++) {
             ((DBPersistent) getRepeaterVector().elementAt(i)).add();
+        }
     }
 }

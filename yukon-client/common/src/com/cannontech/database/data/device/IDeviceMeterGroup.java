@@ -2,15 +2,8 @@ package com.cannontech.database.data.device;
 
 import com.cannontech.database.db.device.DeviceMeterGroup;
 
-/**
- * @author rneuharth
- *
- * This interface if for DBPersistant objects that have a
- * DeviceMeterGroup instance.
- */
-public interface IDeviceMeterGroup 
-{
+public interface IDeviceMeterGroup {
 
-	DeviceMeterGroup getDeviceMeterGroup();
-	void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ );	
+    DeviceMeterGroup getDeviceMeterGroup();
+    void setDeviceMeterGroup(DeviceMeterGroup dvMtrGrp_);
 }

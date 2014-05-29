@@ -5,7 +5,7 @@ import com.cannontech.database.db.DBCopiable;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceRoutes;
 
-public class CarrierBase extends TwoWayDevice implements DBCopiable {
+public abstract class CarrierBase extends TwoWayDevice implements DBCopiable {
 
     private DeviceRoutes deviceRoutes = null;
 
@@ -39,7 +39,6 @@ public class CarrierBase extends TwoWayDevice implements DBCopiable {
 
         getDeviceCarrierSettings().add();
         getDeviceRoutes().add();
-
     }
 
     @Override
@@ -50,24 +49,18 @@ public class CarrierBase extends TwoWayDevice implements DBCopiable {
         super.delete();
     }
 
-    @Override
-    public void deletePartial() throws java.sql.SQLException {
-
-        super.deletePartial();
-
-    }
-
     public DeviceCarrierSettings getDeviceCarrierSettings() {
-        if (deviceCarrierSettings == null)
+        if (deviceCarrierSettings == null) {
             deviceCarrierSettings = new DeviceCarrierSettings();
+        }
 
         return deviceCarrierSettings;
     }
 
     public DeviceRoutes getDeviceRoutes() {
-
-        if (deviceRoutes == null)
+        if (deviceRoutes == null) {
             deviceRoutes = new DeviceRoutes();
+        }
 
         return deviceRoutes;
     }

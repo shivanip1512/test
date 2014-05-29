@@ -7,5 +7,4 @@ public class MCT420CD extends MCT400SeriesBase {
     public MCT420CD() {
         super(PaoType.MCT420CD);
     }
-
 }

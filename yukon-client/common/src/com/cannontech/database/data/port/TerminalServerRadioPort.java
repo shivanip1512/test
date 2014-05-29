@@ -3,7 +3,7 @@ package com.cannontech.database.data.port;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.port.PortRadioSettings;
 
-public class TerminalServerRadioPort extends TerminalServerSharedPort {
+public class TerminalServerRadioPort extends TerminalServerSharedPortBase {
     private PortRadioSettings portRadioSettings = null;
 
     public TerminalServerRadioPort() {
@@ -23,8 +23,9 @@ public class TerminalServerRadioPort extends TerminalServerSharedPort {
     }
 
     public PortRadioSettings getPortRadioSettings() {
-        if (portRadioSettings == null)
+        if (portRadioSettings == null) {
             portRadioSettings = new PortRadioSettings();
+        }
 
         return portRadioSettings;
     }
@@ -38,7 +39,6 @@ public class TerminalServerRadioPort extends TerminalServerSharedPort {
     @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
-
         getPortRadioSettings().setDbConnection(conn);
     }
 

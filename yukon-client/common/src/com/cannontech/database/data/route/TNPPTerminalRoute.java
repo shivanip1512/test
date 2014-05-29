@@ -7,9 +7,4 @@ public class TNPPTerminalRoute extends RouteBase {
     public TNPPTerminalRoute() {
         super(PaoType.TNPP_TERMINAL);
     }
-
-    @Override
-    public void setDbConnection(java.sql.Connection conn) {
-        super.setDbConnection(conn);
-    }
 }

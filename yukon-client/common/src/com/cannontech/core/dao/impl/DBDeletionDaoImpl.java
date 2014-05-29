@@ -11,7 +11,7 @@ import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.MACScheduleDao;
 import com.cannontech.database.data.capcontrol.VoltageRegulator;
 import com.cannontech.database.data.config.ConfigTwoWay;
-import com.cannontech.database.data.device.lm.LMProgramDirect;
+import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.season.SeasonSchedule;
@@ -517,7 +517,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			delRes.setItemID( ((com.cannontech.database.db.tags.Tag) toDelete).getTagID().intValue() );
 			delRes.setDelType( DBDeletionDaoImpl.TAG_TYPE );
 		}
-		else if (toDelete instanceof LMProgramDirect) {
+		else if (toDelete instanceof LMProgramDirectBase) {
 		    delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + 
 		            "' and all of its points?" + CR_LF + CR_LF +
 		            "*The delete process will take extra time if several points are present." + CR_LF +

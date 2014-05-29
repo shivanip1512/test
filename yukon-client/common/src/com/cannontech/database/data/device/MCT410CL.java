@@ -7,5 +7,4 @@ public class MCT410CL extends MCT400SeriesBase {
     public MCT410CL() {
         super(PaoType.MCT410CL);
     }
-
 }

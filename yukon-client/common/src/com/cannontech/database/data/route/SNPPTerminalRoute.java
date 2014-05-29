@@ -7,9 +7,4 @@ public class SNPPTerminalRoute extends RouteBase {
     public SNPPTerminalRoute() {
         super(PaoType.ROUTE_SNPP_TERMINAL);
     }
-
-    @Override
-    public void setDbConnection(java.sql.Connection conn) {
-        super.setDbConnection(conn);
-    }
 }

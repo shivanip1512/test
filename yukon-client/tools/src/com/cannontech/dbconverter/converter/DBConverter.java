@@ -207,7 +207,7 @@ public String getFullFileName(String aFileName)
  * Insert the method's description here.
  * Creation date: (3/31/2001 12:57:46 PM)
  */
-private void handleLocalDirectPort( com.cannontech.database.data.port.LocalDirectPort port, java.util.StringTokenizer tokenizer)
+private void handleLocalDirectPort( com.cannontech.database.data.port.LocalDirectPortBase port, java.util.StringTokenizer tokenizer)
 {
 	//not sure if this will work every	time???
 	port.getPortLocalSerial().setPhysicalPort( tokenizer.nextElement().toString() );
@@ -229,20 +229,20 @@ private void handleLocalDirectPort( com.cannontech.database.data.port.LocalDirec
 	timing.setPortID( port.getCommPort().getPortID() );
 
 	//----- Start of defaults settings for the different instances of ports
-	if( port instanceof com.cannontech.database.data.port.LocalSharedPort )
+	if( port instanceof com.cannontech.database.data.port.LocalSharedPortBase )
 	{
-		((com.cannontech.database.data.port.LocalSharedPort)port).setPortTiming(timing);
+		((com.cannontech.database.data.port.LocalSharedPortBase)port).setPortTiming(timing);
 	}
 
-	if( port instanceof com.cannontech.database.data.port.LocalDialupPort )
+	if( port instanceof com.cannontech.database.data.port.LocalDialupPortBase )
 	{
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setModemType("U.S. Robotics");
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setInitializationString(
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setModemType("U.S. Robotics");
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setInitializationString(
 			CtiUtilities.STRING_NONE);
 		
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setPrefixNumber("9");
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setSuffixNumber("9");
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setPortID( port.getCommPort().getPortID() );
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setPrefixNumber("9");
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setSuffixNumber("9");
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setPortID( port.getCommPort().getPortID() );
 	}
 
 	if( port instanceof com.cannontech.database.data.port.LocalRadioPort )
@@ -301,7 +301,7 @@ private void handleRptRouteType(com.cannontech.database.data.route.CCURoute aRou
  * Insert the method's description here.
  * Creation date: (3/31/2001 12:57:46 PM)
  */
-private void handleTerminalPort( com.cannontech.database.data.port.LocalDirectPort port, java.util.StringTokenizer tokenizer)
+private void handleTerminalPort( com.cannontech.database.data.port.LocalDirectPortBase port, java.util.StringTokenizer tokenizer)
 {
 	//not sure if this will work every	time???
 	port.getPortLocalSerial().setPhysicalPort( tokenizer.nextElement().toString() );
@@ -323,20 +323,20 @@ private void handleTerminalPort( com.cannontech.database.data.port.LocalDirectPo
 	timing.setPortID( port.getCommPort().getPortID() );
 
 	//----- Start of defaults settings for the different instances of ports
-	if( port instanceof com.cannontech.database.data.port.LocalSharedPort )
+	if( port instanceof com.cannontech.database.data.port.LocalSharedPortBase )
 	{
-		((com.cannontech.database.data.port.LocalSharedPort)port).setPortTiming(timing);
+		((com.cannontech.database.data.port.LocalSharedPortBase)port).setPortTiming(timing);
 	}
 
-	if( port instanceof com.cannontech.database.data.port.LocalDialupPort )
+	if( port instanceof com.cannontech.database.data.port.LocalDialupPortBase )
 	{
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setModemType("U.S. Robotics");
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setInitializationString(
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setModemType("U.S. Robotics");
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setInitializationString(
 					CtiUtilities.STRING_NONE );
 		
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setPrefixNumber("9");
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setSuffixNumber("9");
-		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setPortID( port.getCommPort().getPortID() );
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setPrefixNumber("9");
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setSuffixNumber("9");
+		((com.cannontech.database.data.port.LocalDialupPortBase)port).getPortDialupModem().setPortID( port.getCommPort().getPortID() );
 	}
 
 	if( port instanceof com.cannontech.database.data.port.LocalRadioPort )
@@ -358,7 +358,7 @@ private void handleTerminalPort( com.cannontech.database.data.port.LocalDirectPo
  * Insert the method's description here.
  * Creation date: (3/31/2001 12:57:46 PM)
  */
-private void handleTerminalPort( com.cannontech.database.data.port.TerminalServerDirectPort port, java.util.StringTokenizer tokenizer)
+private void handleTerminalPort( com.cannontech.database.data.port.TerminalServerPortBase port, java.util.StringTokenizer tokenizer)
 {
 	String myTempIpPort = new String(tokenizer.nextElement().toString());
 	
@@ -376,7 +376,7 @@ private void handleTerminalPort( com.cannontech.database.data.port.TerminalServe
 	port.getCommPort().setCommonProtocol( tokenizer.nextElement().toString() );
 
 	// create a new PortTimeing object so we use the next tokens and possibly set
-	//  the TerminalServerSharedPort values correctly
+	//  the TerminalServerSharedPortBase values correctly
 	com.cannontech.database.db.port.PortTiming timing = new com.cannontech.database.db.port.PortTiming();
 	timing.setPreTxWait( new Integer(Integer.parseInt(tokenizer.nextElement().toString()) ) );
 	timing.setRtsToTxWait( new Integer(Integer.parseInt(tokenizer.nextElement().toString()) ) );
@@ -386,9 +386,9 @@ private void handleTerminalPort( com.cannontech.database.data.port.TerminalServe
 	timing.setPortID( port.getCommPort().getPortID() );
 
 	//----- Start of defaults settings for the different instances of ports
-	if( port instanceof com.cannontech.database.data.port.TerminalServerSharedPort )
+	if( port instanceof com.cannontech.database.data.port.TerminalServerSharedPortBase )
 	{
-		((com.cannontech.database.data.port.TerminalServerSharedPort)port).setPortTiming(timing);
+		((com.cannontech.database.data.port.TerminalServerSharedPortBase)port).setPortTiming(timing);
 	}
 
 	if( port instanceof com.cannontech.database.data.port.TerminalServerDialupPort )
@@ -452,13 +452,13 @@ private void handleTransmitter(com.cannontech.database.data.device.TwoWayDevice 
 			((com.cannontech.database.data.device.IDLCBase)device).getDeviceDialupSettings().setLineSettings( "8N1" );		
 		}
 	}
-	else if( device instanceof com.cannontech.database.data.device.PagingTapTerminal )
+	else if( device instanceof com.cannontech.database.data.device.TapTerminalBase )
 	{
 		/* For TAPTERMINAL */
-		((com.cannontech.database.data.device.PagingTapTerminal)device).getDeviceDirectCommSettings().setPortID( new Integer(Integer.parseInt(tokenizer.nextElement().toString()) ) );
+		((com.cannontech.database.data.device.TapTerminalBase)device).getDeviceDirectCommSettings().setPortID( new Integer(Integer.parseInt(tokenizer.nextElement().toString()) ) );
 
 		// Actually the Address for tap terms are the Pager Phone Numbers
-		((com.cannontech.database.data.device.PagingTapTerminal)device).getDeviceTapPagingSettings().setPagerNumber( tokenizer.nextElement().toString() );
+		((com.cannontech.database.data.device.TapTerminalBase)device).getDeviceTapPagingSettings().setPagerNumber( tokenizer.nextElement().toString() );
 
 		
 		//just remove the transmitter PostCommWait token and do nothing with it
@@ -469,9 +469,9 @@ private void handleTransmitter(com.cannontech.database.data.device.TwoWayDevice 
 			((com.cannontech.database.data.device.IEDBase)device).getDeviceDialupSettings().setPhoneNumber( tokenizer.nextElement().toString() );
 			
 			// Default values that do NOT get set by default??
-			((com.cannontech.database.data.device.PagingTapTerminal)device).getDeviceDialupSettings().setMaxConnectTime( new Integer(30) );
-			((com.cannontech.database.data.device.PagingTapTerminal)device).getDeviceDialupSettings().setMinConnectTime( new Integer(0) );
-			((com.cannontech.database.data.device.PagingTapTerminal)device).getDeviceDialupSettings().setLineSettings( "8N1" );		
+			((com.cannontech.database.data.device.TapTerminalBase)device).getDeviceDialupSettings().setMaxConnectTime( new Integer(30) );
+			((com.cannontech.database.data.device.TapTerminalBase)device).getDeviceDialupSettings().setMinConnectTime( new Integer(0) );
+			((com.cannontech.database.data.device.TapTerminalBase)device).getDeviceDialupSettings().setLineSettings( "8N1" );		
 		}
 		
 		// set some Tap term defaults  --> getDeviceIED()
@@ -1267,14 +1267,14 @@ public boolean processPortFile()
 			 || portType == PaoType.LOCAL_SHARED
 			 || portType == PaoType.LOCAL_RADIO )
 		{
-			handleLocalDirectPort( (com.cannontech.database.data.port.LocalDirectPort)port, tokenizer);
+			handleLocalDirectPort( (com.cannontech.database.data.port.LocalDirectPortBase)port, tokenizer);
 		}
 		else if( portType == PaoType.TSERVER_DIALUP
 			 		|| portType == PaoType.TSERVER_DIRECT
 			 		|| portType == PaoType.TSERVER_RADIO
 					|| portType == PaoType.TSERVER_SHARED )
 		{
-			handleTerminalPort( (com.cannontech.database.data.port.TerminalServerDirectPort)port, tokenizer);
+			handleTerminalPort( (com.cannontech.database.data.port.TerminalServerPortBase)port, tokenizer);
 		}
 		else
 		{

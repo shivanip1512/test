@@ -23,8 +23,9 @@ public class VersacomRoute extends RouteBase {
     }
 
     public com.cannontech.database.db.route.VersacomRoute getVersacomRoute() {
-        if (versacomRoute == null)
+        if (versacomRoute == null) {
             versacomRoute = new com.cannontech.database.db.route.VersacomRoute();
+        }
 
         return versacomRoute;
     }

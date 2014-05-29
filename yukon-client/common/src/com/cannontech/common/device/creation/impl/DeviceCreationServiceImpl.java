@@ -83,7 +83,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, paoType);
         
         if (templateDevice.getPaoType().getPaoClass() != PaoClass.RFMESH) {
-            throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'. Template '%s' must be an RFN Device",
+            throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'. Template must be an RFN Device",
                                                             newDeviceName,
                                                             templateName));
         }

@@ -39,11 +39,6 @@ public class RfnMeterBase extends RfnBase implements IDeviceMeterGroup {
     }
     
     @Override
-    public void deletePartial() throws SQLException {
-        super.deletePartial();
-    }
-    
-    @Override
     public void retrieve() throws SQLException {
         super.retrieve();
         getDeviceMeterGroup().retrieve();
@@ -73,5 +68,4 @@ public class RfnMeterBase extends RfnBase implements IDeviceMeterGroup {
     public void setDeviceMeterGroup(DeviceMeterGroup deviceMeterGroup) {
         this.deviceMeterGroup = deviceMeterGroup;
     }
-    
 }

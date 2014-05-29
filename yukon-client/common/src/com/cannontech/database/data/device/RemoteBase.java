@@ -14,7 +14,7 @@ import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.spring.YukonSpringHook;
 
-public class RemoteBase extends TwoWayDevice {
+public abstract class RemoteBase extends TwoWayDevice {
     private DeviceDirectCommSettings deviceDirectCommSettings = null;
     private DeviceDialupSettings deviceDialupSettings = null;
 
@@ -54,30 +54,28 @@ public class RemoteBase extends TwoWayDevice {
         super.delete();
     }
 
-    @Override
-    public void deletePartial() throws java.sql.SQLException {
-        super.deletePartial();
-    }
-
     public DeviceDialupSettings getDeviceDialupSettings() {
-        if (deviceDialupSettings == null)
+        if (deviceDialupSettings == null) {
             deviceDialupSettings = new DeviceDialupSettings();
+        }
 
         return deviceDialupSettings;
     }
 
     public DeviceDialupSettings getDeviceDialupSettingsDefaults() {
-        if (this instanceof PagingTapTerminal)
+        if (this instanceof TapTerminalBase) {
             getDeviceDialupSettings().setLineSettings("7E2");
-        else
+        } else {
             getDeviceDialupSettings().setLineSettings("8N1");
+        }
 
         return getDeviceDialupSettings();
     }
 
     public DeviceDirectCommSettings getDeviceDirectCommSettings() {
-        if (deviceDirectCommSettings == null)
+        if (deviceDirectCommSettings == null) {
             deviceDirectCommSettings = new DeviceDirectCommSettings();
+        }
 
         return deviceDirectCommSettings;
     }
@@ -114,8 +112,9 @@ public class RemoteBase extends TwoWayDevice {
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
 
-        if (getDeviceDialupSettings() != null)
+        if (getDeviceDialupSettings() != null) {
             getDeviceDialupSettings().setDbConnection(conn);
+        }
 
         getDeviceDirectCommSettings().setDbConnection(conn);
     }
@@ -132,8 +131,9 @@ public class RemoteBase extends TwoWayDevice {
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
 
-        if (getDeviceDialupSettings() != null)
+        if (getDeviceDialupSettings() != null) {
             getDeviceDialupSettings().setDeviceID(deviceID);
+        }
 
         getDeviceDirectCommSettings().setDeviceID(deviceID);
     }
@@ -147,8 +147,9 @@ public class RemoteBase extends TwoWayDevice {
     }
 
     public boolean hasPhoneNumber() {
-        if (getDeviceDialupSettings().getPhoneNumber() == null)
+        if (getDeviceDialupSettings().getPhoneNumber() == null) {
             return false;
+        }
         return (!(getDeviceDialupSettings().getPhoneNumber().compareTo("0") == 0 || getDeviceDialupSettings().getPhoneNumber() == null));
 
     }

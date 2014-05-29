@@ -46,19 +46,14 @@ public class MCT_Broadcast extends CarrierBase {
         setDbConnection(null);
     }
 
-    @Override
-    public void deletePartial() throws java.sql.SQLException {
-        super.deletePartial();
-    }
-
     public int getMctOrderNum() {
         return mctOrderNum;
     }
 
     public Vector<MCTBroadcastMapping> getMCTVector() {
-        if (MCTVector == null)
+        if (MCTVector == null) {
             MCTVector = new Vector<MCTBroadcastMapping>();
-
+        }
         return MCTVector;
     }
 

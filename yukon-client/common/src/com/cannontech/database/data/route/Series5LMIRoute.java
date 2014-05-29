@@ -7,9 +7,4 @@ public class Series5LMIRoute extends RouteBase {
     public Series5LMIRoute() {
         super(PaoType.ROUTE_SERIES_5_LMI);
     }
-
-    @Override
-    public void setDbConnection(java.sql.Connection conn) {
-        super.setDbConnection(conn);
-    }
 }

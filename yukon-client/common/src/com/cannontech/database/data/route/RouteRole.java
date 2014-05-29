@@ -2,29 +2,31 @@ package com.cannontech.database.data.route;
 
 import java.util.Vector;
 
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+
 public class RouteRole {
     
     private int fixedBit = -1;
     private int varBit = -1;
-    private Vector duplicates;
+    private Vector<LiteYukonPAObject> duplicates;
     
     public RouteRole() {
         setFixedBit(-1);
         setVarbit(-1);
-        setDuplicates(new Vector());
+        setDuplicates(new Vector<LiteYukonPAObject>());
     }
     
-    public RouteRole(int fixedBit, int varBit, Vector dups) {
+    public RouteRole(int fixedBit, int varBit, Vector<LiteYukonPAObject> dups) {
         setFixedBit(fixedBit);
         setVarbit(varBit);
         setDuplicates(dups);
     }
 
-    public Vector getDuplicates() {
+    public Vector<LiteYukonPAObject> getDuplicates() {
         return duplicates;
     }
 
-    public void setDuplicates(Vector duplicates) {
+    public void setDuplicates(Vector<LiteYukonPAObject> duplicates) {
         this.duplicates = duplicates;
     }
 
@@ -43,5 +45,4 @@ public class RouteRole {
     public void setVarbit(int varbit) {
         this.varBit = varbit;
     }
-
 }
