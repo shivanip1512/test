@@ -79,11 +79,11 @@
             });
         }
     
-    $(function() {
+    $(function () {
         var thermos = $('input[id*="THERMOSTATCHECKBOX"]');
         // if we check a box, press schedule, then return to this page, clear all checkboxes
         // Chrome "remembers" previous selections, IE and Firefox do not
-        $.each(thermos, function(index, cb) {
+        $.each(thermos, function (index, cb) {
             cb.checked = false;
             cb.disabled = false;
         });
