@@ -13,7 +13,7 @@
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMProgramThermoStatGear::CtiLMProgramThermoStatGear(Cti::RowReader &rdr)
+CtiLMProgramThermostatGear::CtiLMProgramThermostatGear(Cti::RowReader &rdr)
     : CtiLMProgramDirectGear(rdr)
 {
     restore(rdr);
@@ -22,68 +22,48 @@ CtiLMProgramThermoStatGear::CtiLMProgramThermoStatGear(Cti::RowReader &rdr)
 /*---------------------------------------------------------------------------
     Destructor
 ---------------------------------------------------------------------------*/
-CtiLMProgramThermoStatGear::~CtiLMProgramThermoStatGear()
+CtiLMProgramThermostatGear::~CtiLMProgramThermostatGear()
 {
 }
 
-const std::string& CtiLMProgramThermoStatGear::getSettings() const
+const std::string& CtiLMProgramThermostatGear::getSettings() const
 {
     return _settings;
 }
-LONG CtiLMProgramThermoStatGear::getMinValue() const
-{
-    return _profile.minValue;
-}
-LONG CtiLMProgramThermoStatGear::getMaxValue() const
-{
-    return _profile.maxValue;
-}
-LONG CtiLMProgramThermoStatGear::getPrecoolTemp() const
-{
-    return _profile.valueB;
-}
-LONG CtiLMProgramThermoStatGear::getControlTemp() const
-{
-    return _profile.valueD;
-}
-LONG CtiLMProgramThermoStatGear::getRestoreTemp() const
-{
-    return _profile.valueF;
-}
-LONG CtiLMProgramThermoStatGear::getRandom() const
+LONG CtiLMProgramThermostatGear::getRandom() const
 {
     return _profile.random;
 }
-LONG CtiLMProgramThermoStatGear::getDelayTime() const
+LONG CtiLMProgramThermostatGear::getDelayTime() const
 {
     return _profile.valueTA;
 }
-LONG CtiLMProgramThermoStatGear::getPrecoolTime() const
+LONG CtiLMProgramThermostatGear::getPrecoolTime() const
 {
     return _profile.valueTB;
 }
-LONG CtiLMProgramThermoStatGear::getPrecoolHoldTime() const
+LONG CtiLMProgramThermostatGear::getPrecoolHoldTime() const
 {
     return _profile.valueTC;
 }
-LONG CtiLMProgramThermoStatGear::getControlTime() const
+LONG CtiLMProgramThermostatGear::getControlTime() const
 {
     return _profile.valueTD;
 }
-LONG CtiLMProgramThermoStatGear::getControlHoldTime() const
+LONG CtiLMProgramThermostatGear::getControlHoldTime() const
 {
     return _profile.valueTE;
 }
-LONG CtiLMProgramThermoStatGear::getRestoreTime() const
+LONG CtiLMProgramThermostatGear::getRestoreTime() const
 {
     return _profile.valueTF;
 }
-float CtiLMProgramThermoStatGear::getRampRate() const
+float CtiLMProgramThermostatGear::getRampRate() const
 {
     return _profile.rampRate;
 }
 
-CtiLMProgramThermoStatGear::ProfileSettings CtiLMProgramThermoStatGear::getProfileSettings() const
+CtiLMProgramThermostatGear::ProfileSettings CtiLMProgramThermostatGear::getProfileSettings() const
 {
     return _profile;
 }
@@ -93,9 +73,9 @@ CtiLMProgramThermoStatGear::ProfileSettings CtiLMProgramThermoStatGear::getProfi
 
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
-CtiLMProgramDirectGear* CtiLMProgramThermoStatGear::replicate() const
+CtiLMProgramDirectGear* CtiLMProgramThermostatGear::replicate() const
 {
-    return(CTIDBG_new CtiLMProgramThermoStatGear(*this));
+    return(CTIDBG_new CtiLMProgramThermostatGear(*this));
 }
 
 /*---------------------------------------------------------------------------
@@ -103,7 +83,7 @@ CtiLMProgramDirectGear* CtiLMProgramThermoStatGear::replicate() const
 
     Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMProgramThermoStatGear::restore(Cti::RowReader &rdr)
+void CtiLMProgramThermostatGear::restore(Cti::RowReader &rdr)
 {
     rdr["settings"] >> _settings;
 

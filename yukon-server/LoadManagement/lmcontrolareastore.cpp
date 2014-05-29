@@ -1024,7 +1024,7 @@ void CtiLMControlAreaStore::reset()
                     }
                     else
                     {
-                        newDirectGear = CTIDBG_new CtiLMProgramThermoStatGear(rdr);
+                        newDirectGear = CTIDBG_new CtiLMProgramThermostatGear(rdr);
                     }
 
                     if( newDirectGear != NULL )

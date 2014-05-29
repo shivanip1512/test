@@ -1136,7 +1136,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             if(isExpresscomGroup(currentLMGroup->getPAOType()))
                             {
                                 std::string logMessage;
-                                CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
+                                const CtiLMProgramThermostatGear * thermostatGearObject = static_cast<const CtiLMProgramThermostatGear*>( currentGearObject );
 
                                 // XXX thermostat constraints??
 
@@ -1924,7 +1924,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
                         if( isExpresscomGroup(currentLMGroup->getPAOType()) )
                         {
                             std::string logMessage;
-                            CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
+                            const CtiLMProgramThermostatGear * thermostatGearObject = static_cast<const CtiLMProgramThermostatGear*>( currentGearObject );
 
                             // thermo constraints?? XXX
 
@@ -1963,8 +1963,8 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
             }
             else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
             {
-                bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, currentTime, multiPilMsg, multiDispatchMsg, expectedLoadReduced, false);
-                if( didSendMessages && getProgramState() != CtiLMProgramBase::ManualActiveState )
+                const bool sentMessage = sendSimpleThermostatMessage(currentGearObject, currentTime, multiPilMsg, multiDispatchMsg, expectedLoadReduced, false);
+                if( sentMessage && getProgramState() != CtiLMProgramBase::ManualActiveState )
                 {
                     setProgramState(CtiLMProgramBase::FullyActiveState);
                 }
@@ -3321,7 +3321,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                     if( isExpresscomGroup(currentLMGroup->getPAOType()) )
                     {
                         std::string logMessage;
-                        CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
+                        const CtiLMProgramThermostatGear * thermostatGearObject = static_cast<const CtiLMProgramThermostatGear*>( currentGearObject );
 
                         CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(*thermostatGearObject, defaultLMStartPriority, logMessage);
                         if ( requestMsg )   // valid request - signal the log message
@@ -3423,7 +3423,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                             else if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) )
                             {
                                 timeToTimeIn = currentLMGroup->getLastControlSent();
-                                CtiLMProgramThermoStatGear* thermostatGear = (CtiLMProgramThermoStatGear*)previousGearObject;
+                                const CtiLMProgramThermostatGear * thermostatGear = static_cast<const CtiLMProgramThermostatGear*>( previousGearObject );
+
                                 int minutesToAdd = 0;
                                 minutesToAdd += (thermostatGear->getRandom()/2+thermostatGear->getRandom()%2);
                                 minutesToAdd += thermostatGear->getDelayTime();
@@ -4553,7 +4554,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                                  ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
                         {
                             timeToTimeIn = currentLMGroup->getLastControlSent();
-                            CtiLMProgramThermoStatGear* thermostatGear = (CtiLMProgramThermoStatGear*)currentGearObject;
+                            const CtiLMProgramThermostatGear * thermostatGear = static_cast<const CtiLMProgramThermostatGear*>( currentGearObject );
                             int minutesToAdd = 0;
                             minutesToAdd += (thermostatGear->getRandom()/2+thermostatGear->getRandom()%2);
                             minutesToAdd += thermostatGear->getDelayTime();
@@ -5576,7 +5577,7 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, CtiTime start_tim
     }
     else if( method == CtiLMProgramDirectGear::ThermostatRampingMethod.c_str() )
     {
-        CtiLMProgramThermoStatGear *thermoGear = (CtiLMProgramThermoStatGear *)cur_gear;
+        const CtiLMProgramThermostatGear * thermoGear = static_cast<const CtiLMProgramThermostatGear*>( cur_gear );
         return ( thermoGear->getPrecoolTime() + thermoGear->getPrecoolHoldTime() +
                  thermoGear->getControlTime() + thermoGear->getControlHoldTime() +
                  thermoGear->getRestoreTime() ) * 60;
@@ -6075,7 +6076,7 @@ void CtiLMProgramDirect::scheduleStopNotificationForTimedControl(const CtiTime& 
 bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, double &expectedLoadReduced, bool isRefresh)
 {
     bool retVal = false;
-    CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
+    const CtiLMProgramThermostatGear * thermostatGearObject = static_cast<const CtiLMProgramThermostatGear*>( currentGearObject );
 
     LONG maxTotalMinutes = thermostatGearObject->getDelayTime();
 

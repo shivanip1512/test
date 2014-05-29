@@ -24,8 +24,8 @@ DECLARE_COLLECTABLE( CtiLMGroupExpresscom );
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
 
-    virtual CtiRequestMsg* createSetPointRequestMsg(const CtiLMProgramThermoStatGear & gear, int priority, std::string & logMessage) const;
-    virtual CtiRequestMsg* createSetPointSimpleMsg(const CtiLMProgramThermoStatGear & gear, LONG totalTime, LONG minutesFromBegin, int priority, std::string & logMessage) const;
+    virtual CtiRequestMsg* createSetPointRequestMsg(const CtiLMProgramThermostatGear & gear, int priority, std::string & logMessage) const;
+    virtual CtiRequestMsg* createSetPointSimpleMsg(const CtiLMProgramThermostatGear & gear, LONG totalTime, LONG minutesFromBegin, int priority, std::string & logMessage) const;
 
     virtual bool sendBeatThePeakControl(Cti::BeatThePeak::AlertLevel level, int timeout);
     virtual bool sendBeatThePeakRestore();

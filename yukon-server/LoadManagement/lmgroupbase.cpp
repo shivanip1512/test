@@ -956,7 +956,7 @@ CtiRequestMsg* CtiLMGroupBase::createTargetCycleRequestMsg(LONG percent, LONG pe
 
     .
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(const CtiLMProgramThermoStatGear & gear, int priority, std::string & logMessage) const
+CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(const CtiLMProgramThermostatGear & gear, int priority, std::string & logMessage) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -967,7 +967,7 @@ CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(const CtiLMProgramThermo
 
 // CreateSetPointSimpleMessage
 // Only in expresscom.
-CtiRequestMsg* CtiLMGroupBase::createSetPointSimpleMsg(const CtiLMProgramThermoStatGear & gear, LONG totalTime, LONG minutesFromBegin, int priority, std::string & logMessage) const
+CtiRequestMsg* CtiLMGroupBase::createSetPointSimpleMsg(const CtiLMProgramThermostatGear & gear, LONG totalTime, LONG minutesFromBegin, int priority, std::string & logMessage) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);

@@ -10,7 +10,7 @@ using std::endl;
 using namespace Cti::LoadManagement;
 
 SEPTemperatureOffsetGear::SEPTemperatureOffsetGear(Cti::RowReader &rdr)
-    : CtiLMProgramThermoStatGear(rdr)
+    : CtiLMProgramThermostatGear(rdr)
 {
 }
 

@@ -9,7 +9,7 @@
 #include "lmprogramthermostatgear.h"
 #include "smartgearbase.h"
 
-class SEPTemperatureOffsetGear : public SmartGearBase, public CtiLMProgramThermoStatGear
+class SEPTemperatureOffsetGear : public SmartGearBase, public CtiLMProgramThermostatGear
 {
 public:
 

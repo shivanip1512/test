@@ -12,6 +12,7 @@
 #include "lmProgramThermostatGear.h"
 
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/optional.hpp>
 
 using namespace Cti::LoadManagement;
 using std::string;
@@ -20,7 +21,6 @@ using std::endl;
 using Cti::MacroOffset;
 
 extern ULONG _LM_DEBUG;
-#define ROUNDING_SECONDS (60*57) //Round up on minute 58 or greater
 
 
 namespace {
@@ -30,7 +30,7 @@ namespace {
         based on its internal settings.
         Returns an empty string on error.
 */
-std::string getSetPointMode( const CtiLMProgramThermoStatGear & gear )
+boost::optional<std::string> getSetPointMode( const CtiLMProgramThermostatGear & gear )
 {
     // Validate
 
@@ -42,7 +42,7 @@ std::string getSetPointMode( const CtiLMProgramThermoStatGear & gear )
         dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - corrupted settings (invalid length): "
              << settings << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
 
-        return "";
+        return boost::none;
     }
 
     const bool hasHeat = settings[ 2 ] == 'H';
@@ -59,7 +59,7 @@ std::string getSetPointMode( const CtiLMProgramThermoStatGear & gear )
             dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - missing (heat|cool) mode setting: "
                  << settings << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
 
-            return "";
+            return boost::none;
         }
     }
     else if ( gear.getControlMethod() == CtiLMProgramDirectGear::SimpleThermostatRampingMethod )
@@ -74,7 +74,7 @@ std::string getSetPointMode( const CtiLMProgramThermoStatGear & gear )
             dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - invalid (heat|cool) mode setting: "
                  << settings << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
 
-            return "";
+            return boost::none;
         }
 
         // set our required fields
@@ -87,7 +87,7 @@ std::string getSetPointMode( const CtiLMProgramThermoStatGear & gear )
         dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - unsupported control method: "
              << gear.getControlMethod() << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
 
-        return "";
+        return boost::none;
     }
 
     // Build mode string
@@ -120,7 +120,7 @@ std::string getSetPointMode( const CtiLMProgramThermoStatGear & gear )
     return mode;
 }
 
-std::string formatXcomSetPointProfile( const CtiLMProgramThermoStatGear::ProfileSettings & profile )
+std::string formatXcomSetPointProfile( const CtiLMProgramThermostatGear::ProfileSettings & profile )
 {
     std::ostringstream  profileFormatter;
 
@@ -184,7 +184,7 @@ std::string formatXcomSetPointProfile( const CtiLMProgramThermoStatGear::Profile
 }
 
 std::string formatXcomSetPointLogMessage( const std::string & mode,
-                                          const CtiLMProgramThermoStatGear::ProfileSettings & profile )
+                                          const CtiLMProgramThermostatGear::ProfileSettings & profile )
 {
     std::ostringstream  logFormatter;
 
@@ -228,20 +228,18 @@ std::string formatXcomSetPointLogMessage( const std::string & mode,
     return logFormatter.str();
 }
 
-int calculateSetPointSimpleProfileSettings( CtiLMProgramThermoStatGear::ProfileSettings & profile,
-                                            const long totalTime )
+boost::optional<std::string> calculateSetPointSimpleProfileSettings( CtiLMProgramThermostatGear::ProfileSettings & profile,
+                                                                     const long totalTime )
 {
     LONG rampUpTime = totalTime - (profile.valueTB + profile.valueTF + profile.valueTC);
 
     if( rampUpTime < 60 )
     {
-        // Error - not enough ramp time
-        return -1;
+        return "improperly configured time, not enough ramp time.";
     }
     if ( ! profile.rampRate )
     {
-        // Error - improperly configured ramp rate
-        return -2;
+        return "improperly configured ramp time/rate.";
     }
 
     // rampRate D is the degree/hour rate, degrees is a long because we can only send a whole number.
@@ -259,10 +257,10 @@ int calculateSetPointSimpleProfileSettings( CtiLMProgramThermoStatGear::ProfileS
     profile.valueTE = rampUpTime - profile.valueTD;
     profile.valueF  = -(profile.valueD + profile.valueB);
 
-    return 0;
+    return boost::none;
 }
 
-std::string formatXcomSetPointSimpleProfile( const CtiLMProgramThermoStatGear::ProfileSettings & profile )
+std::string formatXcomSetPointSimpleProfile( const CtiLMProgramThermostatGear::ProfileSettings & profile )
 {
     std::ostringstream  simpleProfileFormatter;
 
@@ -310,7 +308,7 @@ std::string formatXcomSetPointSimpleProfile( const CtiLMProgramThermoStatGear::P
 }
 
 std::string formatXcomSetPointSimpleLogMessage( const std::string & mode,
-                                                const CtiLMProgramThermoStatGear::ProfileSettings & profile )
+                                                const CtiLMProgramThermostatGear::ProfileSettings & profile )
 {
     std::ostringstream  simpleLogFormatter;
 
@@ -515,8 +513,6 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
     if( additionalInfo.size() > 12 )// Magic number = length of "adjustments "
     {
         int iValue[8];
-        int incHours = 0;
-        long timeChange;
         int count = 0;
 
         CtiString token;
@@ -547,11 +543,16 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
             }
         }
 
+        const long RoundingSeconds = 60 * 57;   // Round up on minute 58 or greater
+        const long SecondsPerHour  = 60 * 60;
+        int incHours = 0;
+        long timeChange;
+
         //Are we at least 59 minutes past the start time? If not we send all of the adjustment flags
-        if( (timeChange = CtiTime::now().seconds() - ctrlStartTime.seconds()) > (ROUNDING_SECONDS) )
+        if( (timeChange = CtiTime::now().seconds() - ctrlStartTime.seconds()) > RoundingSeconds )
         {
-            incHours = timeChange / (60*60);
-            if( timeChange - incHours*60*60 >= ROUNDING_SECONDS ) //Account for ROUNDING_SECONDS rounding errors
+            incHours = timeChange / SecondsPerHour;
+            if( timeChange - incHours * SecondsPerHour >= RoundingSeconds ) //Account for RoundingSeconds rounding errors
             {
                 incHours ++;
             }
@@ -644,32 +645,32 @@ CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, L
     Creates a new CtiRequestMsg pointer for a thermostat program gear with
     all the appropriate settings.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(const CtiLMProgramThermoStatGear & gear,
+CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(const CtiLMProgramThermostatGear & gear,
                                                               int priority,
                                                               std::string & logMessage) const
 {
-    std::string mode = getSetPointMode( gear );
+    boost::optional<std::string> mode = getSetPointMode( gear );
 
-    if ( mode.empty() )
+    if ( ! mode )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
 
-        dout << CtiTime() << " *** CHECKPOINT *** LM Group " << getPAOName()
+        dout << CtiTime() << " *** ERROR *** LM Group " << getPAOName()
              << " has improperly configured thermostat gear mode." << std::endl;
 
         return 0;
     }
 
-    CtiLMProgramThermoStatGear::ProfileSettings profile = gear.getProfileSettings();
+    CtiLMProgramThermostatGear::ProfileSettings profile = gear.getProfileSettings();
 
     std::ostringstream  controlString;
 
     controlString
         << "control xcom setpoint"
-        << mode
+        << *mode
         << formatXcomSetPointProfile( gear.getProfileSettings() );
 
-    logMessage = formatXcomSetPointLogMessage( mode.substr( mode.length() - 4, 4 ),
+    logMessage = formatXcomSetPointLogMessage( mode->substr( mode->length() - 4, 4 ),
                                                gear.getProfileSettings() );
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -690,42 +691,35 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(const CtiLMProgram
 
 //Create a setpoint message using slopes instead of absolute values.
 //Sends a bump message only when minutesFromBegin is > 0.
-CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(const CtiLMProgramThermoStatGear & gear,
+CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(const CtiLMProgramThermostatGear & gear,
                                                              LONG totalTime,
                                                              LONG minutesFromBegin,
                                                              int priority,
                                                              std::string & logMessage) const
 {
-    std::string mode = getSetPointMode( gear );
+    boost::optional<std::string> mode = getSetPointMode( gear );
 
-    if ( mode.empty() )
+    if ( ! mode )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
 
-        dout << CtiTime() << " *** CHECKPOINT *** LM Group " << getPAOName()
+        dout << CtiTime() << " *** ERROR *** LM Group " << getPAOName()
              << " has improperly configured thermostat gear mode." << std::endl;
 
         return 0;
     }
 
-    CtiLMProgramThermoStatGear::ProfileSettings profile = gear.getProfileSettings();
+    CtiLMProgramThermostatGear::ProfileSettings profile = gear.getProfileSettings();
 
     int errorCode;
 
-    if ( errorCode = calculateSetPointSimpleProfileSettings( profile, totalTime ) )
+    if ( const boost::optional<std::string> errorMessage = calculateSetPointSimpleProfileSettings( profile, totalTime ) )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
 
-        dout << CtiTime() << " *** CHECKPOINT *** LM Group: " << getPAOName();
+        dout << CtiTime() << " *** ERROR *** LM Group: " << getPAOName()
+             << " - " << *errorMessage << std::endl;
 
-        if ( errorCode == -1 )
-        {
-            dout << " - improperly configured time, not enough ramp time " << std::endl;
-        }
-        else if ( errorCode == -2 )
-        {
-            dout << " - improperly configured ramp time/rate. " << std::endl;
-        }
         return 0;
     }
 
@@ -733,7 +727,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(const CtiLMProgramT
 
     controlString
         << "control xcom setpoint"
-        << mode
+        << *mode
         << formatXcomSetPointSimpleProfile( profile );
 
     if ( minutesFromBegin > 0 )
@@ -741,7 +735,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(const CtiLMProgramT
         controlString << " bump stage " << minutesFromBegin;
     }
 
-    logMessage = formatXcomSetPointSimpleLogMessage( mode.substr( mode.length() - 4, 4 ),
+    logMessage = formatXcomSetPointSimpleLogMessage( mode->substr( mode->length() - 4, 4 ),
                                                      profile );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )

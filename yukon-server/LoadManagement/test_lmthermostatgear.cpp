@@ -146,7 +146,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_delta, thermost
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
     reader();
 
-    boost::scoped_ptr<CtiLMProgramThermoStatGear>   gear( new CtiLMProgramThermoStatGear( reader ) );
+    boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
 
     BOOST_CHECK_EQUAL( gear->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod );
     BOOST_CHECK_EQUAL( gear->getSettings(),      "DCH-" );
@@ -174,7 +174,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_delta, therm
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
     reader();
 
-    boost::scoped_ptr<CtiLMProgramThermoStatGear>   gear( new CtiLMProgramThermoStatGear( reader ) );
+    boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
 
     BOOST_CHECK_EQUAL( gear->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod );
     BOOST_CHECK_EQUAL( gear->getSettings(),      "ACH-" );
@@ -202,7 +202,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_celsius, the
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
     reader();
 
-    boost::scoped_ptr<CtiLMProgramThermoStatGear>   gear( new CtiLMProgramThermoStatGear( reader ) );
+    boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
 
     BOOST_CHECK_EQUAL( gear->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod );
     BOOST_CHECK_EQUAL( gear->getSettings(),      "AFH-" );
@@ -230,7 +230,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_cool_mode, ther
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
     reader();
 
-    boost::scoped_ptr<CtiLMProgramThermoStatGear>   gear( new CtiLMProgramThermoStatGear( reader ) );
+    boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
 
     BOOST_CHECK_EQUAL( gear->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod );
     BOOST_CHECK_EQUAL( gear->getSettings(),      "AF-I" );
@@ -258,7 +258,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_both_modes, the
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
     reader();
 
-    boost::scoped_ptr<CtiLMProgramThermoStatGear>   gear( new CtiLMProgramThermoStatGear( reader ) );
+    boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
 
     BOOST_CHECK_EQUAL( gear->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod );
     BOOST_CHECK_EQUAL( gear->getSettings(),      "AFHI" );
@@ -286,7 +286,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_mode, thermo
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
     reader();
 
-    boost::scoped_ptr<CtiLMProgramThermoStatGear>   gear( new CtiLMProgramThermoStatGear( reader ) );
+    boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
 
     BOOST_CHECK_EQUAL( gear->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod );
     BOOST_CHECK_EQUAL( gear->getSettings(),      "AF--" );
@@ -314,7 +314,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_heat, th
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
     reader();
 
-    boost::scoped_ptr<CtiLMProgramThermoStatGear>   gear( new CtiLMProgramThermoStatGear( reader ) );
+    boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
 
     BOOST_CHECK_EQUAL( gear->getControlMethod(), CtiLMProgramDirectGear::SimpleThermostatRampingMethod );
     BOOST_CHECK_EQUAL( gear->getSettings(),      "--H-" );
@@ -344,7 +344,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_cool, th
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
     reader();
 
-    boost::scoped_ptr<CtiLMProgramThermoStatGear>   gear( new CtiLMProgramThermoStatGear( reader ) );
+    boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
 
     BOOST_CHECK_EQUAL( gear->getControlMethod(), CtiLMProgramDirectGear::SimpleThermostatRampingMethod );
     BOOST_CHECK_EQUAL( gear->getSettings(),      "---I" );
@@ -374,7 +374,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_none_err
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
     reader();
 
-    boost::scoped_ptr<CtiLMProgramThermoStatGear>   gear( new CtiLMProgramThermoStatGear( reader ) );
+    boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
 
     BOOST_CHECK_EQUAL( gear->getControlMethod(), CtiLMProgramDirectGear::SimpleThermostatRampingMethod );
     BOOST_CHECK_EQUAL( gear->getSettings(),      "----" );
@@ -401,7 +401,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_both_err
                          std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
     reader();
 
-    boost::scoped_ptr<CtiLMProgramThermoStatGear>   gear( new CtiLMProgramThermoStatGear( reader ) );
+    boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
 
     BOOST_CHECK_EQUAL( gear->getControlMethod(), CtiLMProgramDirectGear::SimpleThermostatRampingMethod );
     BOOST_CHECK_EQUAL( gear->getSettings(),      "--HI" );

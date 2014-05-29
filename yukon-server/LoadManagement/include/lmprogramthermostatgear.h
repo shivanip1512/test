@@ -2,7 +2,7 @@
 
 #include "lmprogramdirectgear.h"
 
-class CtiLMProgramThermoStatGear : public CtiLMProgramDirectGear
+class CtiLMProgramThermostatGear : public CtiLMProgramDirectGear
 {
 
 public:
@@ -24,16 +24,11 @@ public:
         float   rampRate;
     };
 
-    CtiLMProgramThermoStatGear(Cti::RowReader &rdr);
+    CtiLMProgramThermostatGear(Cti::RowReader &rdr);
 
-    virtual ~CtiLMProgramThermoStatGear();
+    virtual ~CtiLMProgramThermostatGear();
 
     const std::string& getSettings() const;
-    LONG getMinValue() const;
-    LONG getMaxValue() const;
-    LONG getPrecoolTemp() const;
-    LONG getControlTemp() const;
-    LONG getRestoreTemp() const;
     LONG getRandom() const;
     LONG getDelayTime() const;
     LONG getPrecoolTime() const;
