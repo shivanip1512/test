@@ -338,7 +338,12 @@ yukon.ui = (function () {
                 
                 return false;
             });
-
+            
+            /** Toggle buttons in a button group */
+            $(document).on('click', '.js-toggle .button', function(ev) { 
+                $(this).addClass('on').siblings('.button').removeClass('on');
+            });
+            
             /** Elements that navigate on click */
             $(document).on('click', '[data-href]', function(ev) { window.location = $(this).attr('data-href'); });
         

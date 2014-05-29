@@ -123,13 +123,113 @@
 &lt;cti:button nameKey=&quot;edit&quot; icon=&quot;icon-pencil&quot;/&gt;
 &lt;cti:button nameKey=&quot;delete&quot; icon=&quot;icon-cross&quot; disabled=&quot;true&quot;/&gt;
 </pre>
+
+<h2>Render Mode</h2>
+
+<p class="description">
+    The <span class="label label-info">&lt;cti:button&gt;</span> tag has a <span class="label label-attr">renderMode</span>
+    that will change the way the button looks.  Values are:
+</p>
+<ul>
+    <li><em>button</em> - (the default when not specified) Just a normal looking button.</li>
+    <li><em>image</em> - Looks just like an icon but functions as a button.</li>
+    <li><em>buttonImage</em> - A button with an icon and no text.</li>
+    <li><em>labeledImage</em> - A button that looks like a link and an icon.</li>
+</ul>
+<div class="column-4-20 clearfix button-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <cti:button nameKey="add"/>
+        <cti:button renderMode="image" icon="icon-add"/>
+        <cti:button renderMode="buttonImage" icon="icon-add"/>
+        <cti:button renderMode="labeledImage" icon="icon-add" nameKey="add"/>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;cti:button nameKey=&quot;add&quot;/&gt;
+&lt;cti:button renderMode=&quot;image&quot; icon=&quot;icon-add&quot;/&gt;
+&lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-add&quot;/&gt;
+&lt;cti:button renderMode=&quot;labeledImage&quot; icon=&quot;icon-add&quot; nameKey=&quot;add&quot;/&gt;
+</pre>
+
+<h2>Button Groups</h2>
+
+<p class="description">
+    Buttons can be grouped together by using a container class <span class="label label-info">.button-group</span> or 
+    individual classes <span class="label label-info">.left</span>, <span class="label label-info">.middle</span> and
+    <span class="label label-info">.right</span>.
+</p>
+<div class="column-4-20 clearfix button-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="clearfix stacked button-group">
+            <cti:button renderMode="buttonImage" icon="icon-text-align-left"/>
+            <cti:button renderMode="buttonImage" icon="icon-text-align-center"/>
+            <cti:button renderMode="buttonImage" icon="icon-text-align-justify"/>
+            <cti:button renderMode="buttonImage" icon="icon-text-align-right"/>
+        </div>
+        <div class="clearfix">
+            <cti:button icon="icon-transmit-blue" label="Active" classes="left"/>
+            <cti:button icon="icon-transmit" label="Inactive" classes="middle"/>
+            <cti:button icon="icon-transmit-delete" label="Disabled" classes="middle"/>
+            <cti:button label="All" classes="right"/>
+        </div>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;clearfix stacked button-group&quot;&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-left&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-center&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-justify&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-right&quot;/&gt;
+&lt;/div&gt;
+&lt;div class=&quot;clearfix&quot;&gt;
+    &lt;cti:button icon=&quot;icon-transmit-blue&quot; label=&quot;Active&quot; classes=&quot;left&quot;/&gt;
+    &lt;cti:button icon=&quot;icon-transmit&quot; label=&quot;Inactive&quot; classes=&quot;middle&quot;/&gt;
+    &lt;cti:button icon=&quot;icon-transmit-delete&quot; label=&quot;Disabled&quot; classes=&quot;middle&quot;/&gt;
+    &lt;cti:button label=&quot;All&quot; classes=&quot;right&quot;/&gt;
+&lt;/div&gt;
+</pre>
+
+<h3 class="subtle">Toggle Buttons</h3>
+
+<p class="description">
+    Button groups can be made to act like toggle or radio buttons by add the <span class="label label-info">.js-toggle</span>
+    class the container element.  Yukon's js library will automatically make one of the buttons look punched in when clicked
+    by simply added the <span class="label label-info">.on</span> class to the right button.
+</p>
+<div class="column-4-20 clearfix button-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="clearfix stacked button-group js-toggle">
+            <cti:button renderMode="buttonImage" icon="icon-text-align-left"/>
+            <cti:button renderMode="buttonImage" icon="icon-text-align-center" classes="on"/>
+            <cti:button renderMode="buttonImage" icon="icon-text-align-justify"/>
+            <cti:button renderMode="buttonImage" icon="icon-text-align-right"/>
+        </div>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;clearfix stacked button-group js-toggle&quot;&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-left&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-center&quot; classes=&quot;on&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-justify&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-right&quot;/&gt;
+&lt;/div&gt;
+</pre>
     
 <h2>Primary Buttons</h2>
 
 <p class="description">
-    Primary buttons are buttons that usually are part of a group and they represent the primary action a user is probably
-    looking for.  To make a primary button simply add two classes <span class="label label-info">.action</span> and 
-    <span class="label label-info">.primary</span> to it.  Dialogs should always have a primary button.  Traditional forms
+    Primary buttons are buttons that usually are part of a group.  They represent the primary action a user is probably
+    looking for.  To make one add two classes <span class="label label-info">.action</span> and 
+    <span class="label label-info">.primary</span> to it your button.  
+</p>
+<p class="description">
+    Dialogs should always have a primary button.  Traditional forms
     or pages that are in edit mode should have a primary button.  Delete buttons on these type of pages are also special,
     they should have the <span class="label label-info">.delete</span> class.  
 </p>
