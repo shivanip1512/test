@@ -43,43 +43,99 @@
 @form-control-height: 26px;
 
 /* HEADINGS */
-.page-heading {display: inline-block; float:left; margin: 0;}
-h1{font-size: 1.3em;}
-h2{font-size: 1.17em;}
-h3{font-size: 1.0em;}
-h4{font-size: .95em;}
-h5{font-size: .9em;}
-h6{font-size: .8em;}
-h1, h2, h3, h4, h5, h6 {margin: .3em 0;}
+.page-heading {
+    display: inline-block;
+    float: left; 
+    margin: 0;
+}
+
+h1 { font-size: 1.3em; }
+h2 { font-size: 1.17em; }
+h3 { font-size: 1.0em; }
+h4 { font-size: .95em; }
+h5 { font-size: .9em; }
+h6 { font-size: .8em; }
+h1, h2, h3, h4, h5, h6 { margin: .3em 0; }
 
 /* LINKS */
 a {
     text-decoration: none;
     outline: none;
-    &:link, &:visited {color: @primary-color;}
-    &:hover, &:focus {text-decoration:underline;outline: none;}
-    &:link.subtle-link, &:visited.subtle-link {color: @font-color;}
-    &:link.subtle-link:hover, &:visited.subtle-link:hover {color: @primary-color; cursor: pointer;}
+    
+    &:link, 
+    &:visited {
+        color: @primary-color;
+    }
+    &:hover, 
+    &:focus {
+        text-decoration: underline;
+        outline: none;
+    }
+    &:link.subtle-link, 
+    &:visited.subtle-link {
+        color: @font-color;
+    }
+    &:link.subtle-link:hover, 
+    &:visited.subtle-link:hover {
+        color: @primary-color; 
+        cursor: pointer;
+    }
 }
-.show-visited, .compact-results-table, .results-table, .name-value-table {
-    a:visited {color: @visited-color;}
+.show-visited, 
+.compact-results-table, 
+.results-table, 
+.name-value-table {
+    a:visited { color: @visited-color; }
 }
-a.show-visited:visited {color: @visited-color;}
-.vertical-menu a:hover {text-decoration:none;}
+a.show-visited:visited { color: @visited-color; }
+.vertical-menu a:hover { text-decoration: none; }
 
 /* COLORS */
-a, .primary-color, .vertical-menu li.selected a, .vertical-menu a:hover, .ui-widget-content a, #subMenu a:visited, .perPageArea a:visited {color:@primary-color;}
-.primary-background {background-color:@primary-color; color:white;}
-::-moz-selection, ::selection {background-color:@primary-color; color:white;} /* IE 9 does not support pseudo element selector '::selection' and will ignore the entire rule, therefore it must be in it's own rule */
-.primary-background a, .primary-background a:visited {color:white}
-.highlight, .primary-background .highlight {color: @orange;}
-.alert {background-color: #ffcccc !important;}
+a, 
+.primary-color, 
+.vertical-menu li.selected a, 
+.vertical-menu a:hover, 
+.ui-widget-content a, 
+#subMenu a:visited, 
+.perPageArea a:visited {
+    color: @primary-color;
+}
+.primary-background {
+    background-color: @primary-color; 
+    color: white;
+}
+
+/** 
+ * IE 9 does not support pseudo element selector '::selection' 
+ * and will ignore the entire rule, therefore it must be in it's own rule.
+ */
+::-moz-selection, 
+     ::selection {
+    background-color: @primary-color; 
+    color: white;
+}
+.primary-background a, 
+.primary-background a:visited {
+    color: white;
+}
+.highlight, 
+.primary-background .highlight {
+    color: @orange;
+}
+.alert { background-color: #ffcccc !important; }
 
 /* FORM FIELDS */
-input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url], select {
-    appearance: none;
+input[type=email], 
+input[type=number], 
+input[type=password], 
+input[type=tel], 
+input[type=text], 
+input[type=url], 
+select, 
+textarea {
     -webkit-appearance: none;
-    -moz-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
     background: #fff;
     border: 1px solid #d9d9d9;
     border-top: 1px solid #c0c0c0;
@@ -87,42 +143,64 @@ input[type=email], input[type=number], input[type=password], input[type=tel], in
     margin: 0;
     padding: 2px 5px;
     transition: border .1s ease-in-out,background-color .1s ease-in-out;
+    
+    &:hover {
+        border: 1px solid #b9b9b9;
+        border-top: 1px solid #a0a0a0;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    &:focus {
+        border: 1px solid @primary-color;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+        outline: none;
+    }
+    
+    &.left, &.middle {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+    }
+    
+    &.right, &.middle {
+        border-left: 0;
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+    }
 }
-input[disabled], select[disabled] {
+
+input[disabled], 
+select[disabled], 
+textarea[disabled] {
     background: #f1f1f1 !important;
-    border: 1px solid #e5e5e5;}
-
-input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url], select:not([multiple]):not([size]) {height: @form-control-height;}
-input[type=email]:hover, input[type=number]:hover, input[type=password]:hover, input[type=tel]:hover, input[type=text]:hover, input[type=url]:hover, select:not([multiple]):hover {
-    border: 1px solid #b9b9b9;
-    border-top: 1px solid #a0a0a0;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-}
-input[type=email]:focus, input[type=number]:focus, input[type=password]:focus, input[type=tel]:focus, input[type=text]:focus, input[type=url]:focus, select:not([multiple]):focus {
-    border: 1px solid @primary-color;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
-    outline: none;
-}
-input[type=email].left, input[type=number].left, input[type=password].left, input[type=tel].left, input[type=text].left, input[type=url].left, select.left,
-input[type=email].middle, input[type=number].middle, input[type=password].middle, input[type=tel].middle, input[type=text].middle, input[type=url].middle, select.middle {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-}
-input[type=email].right, input[type=number].right, input[type=password].right, input[type=tel].right, input[type=text].right, input[type=url].right, select.right,
-input[type=email].middle, input[type=number].middle, input[type=password].middle, input[type=tel].middle, input[type=text].middle, input[type=url].middle, select.middle {
-    border-left: 0;
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
+    border: 1px solid #e5e5e5;
 }
 
-input[type=checkbox], input[type=radio] {margin: 3px;}
-input[type=radio]:focus {outline:none;}
+input[type=email], 
+input[type=number], 
+input[type=password], 
+input[type=tel], 
+input[type=text], 
+input[type=url], 
+select:not([multiple]):not([size]) {
+    height: @form-control-height;
+}
+
+input[type=checkbox], 
+input[type=radio] {
+    margin: 3px;
+}
+input[type=radio]:focus { outline:none; }
 
 /* hack to achieve webkit only css */
 @media screen and (-webkit-min-device-pixel-ratio:0) {
-    select:not([multiple]):not([size]), select[size="1"] {background: white url('../Icons/bullet_arrow_down.png') right no-repeat;padding-right: 16px;}
+    select:not([multiple]):not([size]), 
+    select[size="1"] {
+        background: white url('../Icons/bullet_arrow_down.png') right no-repeat;
+        padding-right: 16px;
+    }
 }
-.placeholder {color: #aaa;}
+
+.placeholder { color: #aaa; }
 
 /* VERTICAL MENUS */
 #LeftColumn .info-fragment, #LeftColumn .bumper {border-right: 1px solid #ccc;}
@@ -636,7 +714,6 @@ input.error {
 .setting {border-top: dashed 1px #ccc; margin-top: -1px; padding: 10px 0;}
 .setting:first-child {border-top: none;}
 .setting .comments textArea {resize:none;width: 100%;}
-.setting .comments .button, .setting .updated {float:right;margin-bottom: 5px;}
 .setting .default-indicator {display: inline-block;float:left;min-height:1px;min-width:30px;width: 8%;}
 .setting .value-description {display: inline-block;float:left;width: 92%;}
 .setting .value-description .default {font-weight: bold;}

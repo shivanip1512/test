@@ -8,14 +8,6 @@
 
 <cti:standardPage module="adminSetup" page="energyCompanySettings">
 
-<script>
-$(function() {
-    $(".f-addCommentBtn").click(function() {
-        $(this).hide().siblings(".f-commentsShowHide").show(200).focus();
-    });
-});
-</script>
-
 <c:set var="legend"><cti:icon icon="icon-asterisk-orange"/>&nbsp;<i:inline key=".legend"/></c:set>
 
 <form:form commandName="settingsBean" action="save" id="settingsForm" method="post">
@@ -34,7 +26,13 @@ $(function() {
                         
                         <div class="column-6-12-6 clearfix">
                             <div class="column one">
-                                <i:inline key="${setting.extra}"/>
+                                <div class="stacked"><i:inline key="${setting.extra}"/></div>
+                                <div><span class="detail hint">
+                                    <c:if test="${not empty settingsBean.settings[setting.extra].lastChanged}">
+                                        <i:inline key=".updated"/>:&nbsp;<cti:formatDate type="DATEHM" value="${settingsBean.settings[setting.extra].lastChanged}"/>
+                                    </c:if>
+                                </span>
+                                </div>
                             </div>
                             <div class="column two">
                                 <div class="default-indicator">
@@ -68,22 +66,11 @@ $(function() {
                                 </div>
                             </div>
                             <div class="column three nogutter comments">
-                                <span class="detail updated">
-                                    <c:if test="${not empty settingsBean.settings[setting.extra].lastChanged}">
-                                        <i:inline key=".updated"/>:&nbsp;<cti:formatDate type="DATEHM" value="${settingsBean.settings[setting.extra].lastChanged}"/>
-                                    </c:if>
-                                </span>
-                                <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
-                                <c:set var="style" value="${empty settingsBean.settings[setting.extra].comments ? 'display:none' : ''}"/>
-                                <c:if test="${empty settingsBean.settings[setting.extra].comments}">
-                                    <cti:button classes="f-addCommentBtn" nameKey="energyCompanySettings.addComment" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
-                                </c:if>
                                 <form:textarea rows="3" cols="27" 
                                     placeholder="comments" 
                                     id="${setting.extra}_comments" 
                                     path="settings[${setting.extra}].comments"
-                                    style="${style};"
-                                    class="f-commentsShowHide ${inputClass}"/> 
+                                    class="${status.error ? 'error' : ''}"/> 
                                 <form:errors path="settings[${setting.extra}].comments" cssClass="error" element="div"/>
                             </div>
                         </div>

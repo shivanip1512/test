@@ -44,7 +44,6 @@
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.navigationTitle">Settings</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.contextualPageName">Settings</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.pageName">Energy Company Settings</entry>
-    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.addComment.label">Add Comment</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.default">Default</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.updated">Updated</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.pageTitle">Energy Company Settings</entry>
