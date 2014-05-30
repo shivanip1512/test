@@ -448,6 +448,36 @@
         </property>
     </bean>
     
+    <bean id="ecobeeReconciliationReportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="ecobeeReconciliationReport"/>
+        <property name="taskName">
+            <idref local="ecobeeReconciliationReportTask"/>
+        </property>
+        <property name="title" value="Scheduled Weather Data Update Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="ecobeePointUpdateJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="ecobeePointUpdate"/>
+        <property name="taskName">
+            <idref local="ecobeePointUpdateTask"/>
+        </property>
+        <property name="title" value="Scheduled Weather Data Update Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
     <!-- Scheduled Export History Cleanup Task -->
     <bean id="repeatingExportHistoryDeletionTask" class="com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask" 
         scope="prototype">
@@ -505,5 +535,10 @@
     <bean id="rfnPerformanceVerificationEmailTask" 
         class="com.cannontech.web.dr.RfnPerformanceVerificationEmailTask" 
         scope="prototype"/>
+        
+    <bean id="ecobeeReconciliationReportTask" class="com.cannontech.web.dr.ecobee.EcobeeReconciliationReportTask" 
+        scope="prototype"/>
+        
+    <bean id="ecobeePointUpdateTask" class="com.cannontech.web.dr.ecobee.EcobeePointUpdateTask" scope="prototype"/>
 </beans>
 

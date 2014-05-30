@@ -1,4 +1,4 @@
-package com.cannontech.web.dr;
+package com.cannontech.web.dr.ecobee;
 
 import java.beans.PropertyEditorSupport;
 import java.io.BufferedWriter;
@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -21,6 +23,7 @@ import org.joda.time.YearMonth;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -42,12 +45,17 @@ import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
+import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.service.JobManager;
+import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.model.EcobeeQueryStats;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.loadcontrol.tasks.RepeatingWeatherDataTask;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
@@ -63,6 +71,47 @@ public class EcobeeController {
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+    @Autowired private JobManager jobManager;
+    @Autowired @Qualifier("ecobeeReconciliationReport")
+        private YukonJobDefinition<RepeatingWeatherDataTask> ecobeeReconciliationReportJobDef;
+    @Autowired @Qualifier("ecobeePointUpdate")
+        private YukonJobDefinition<RepeatingWeatherDataTask> ecobeePointUpdateJobDef;
+
+    @PostConstruct
+    public void init() {
+        String defaultCron = "0 0 0 * * ?";// every day at 12am
+
+        List<ScheduledRepeatingJob> reconciliationReportJobs = 
+                jobManager.getNotDeletedRepeatingJobsByDefinition(ecobeeReconciliationReportJobDef);
+        if (reconciliationReportJobs == null || reconciliationReportJobs.isEmpty()) {
+            log.info("ecobeeReconciliationReport job doesn't exist. Creating job with default values.");
+            ScheduledRepeatingJob job = new ScheduledRepeatingJob();
+            job.setBeanName(ecobeeReconciliationReportJobDef.getName());
+            job.setCronString(defaultCron);
+            job.setDisabled(true);
+            job.setUserContext(null);
+            job.setJobDefinition(ecobeeReconciliationReportJobDef);
+            job.setJobProperties(new HashMap<String,String>());
+            scheduledRepeatingJobDao.save(job);
+            jobManager.instantiateTask(job);
+        }
+
+        List<ScheduledRepeatingJob> ecobeePointUpdateJobs  = 
+                jobManager.getNotDeletedRepeatingJobsByDefinition(ecobeePointUpdateJobDef);
+        if (ecobeePointUpdateJobs == null || ecobeePointUpdateJobs.isEmpty()) {
+            log.info("ecobeePointUpdate job doesn't exist. Creating job with default values.");
+            ScheduledRepeatingJob job = new ScheduledRepeatingJob();
+            job.setBeanName(ecobeePointUpdateJobDef.getName());
+            job.setCronString(defaultCron);
+            job.setDisabled(true);
+            job.setUserContext(null);
+            job.setJobDefinition(ecobeePointUpdateJobDef);
+            job.setJobProperties(new HashMap<String,String>());
+            scheduledRepeatingJobDao.save(job);
+            jobManager.instantiateTask(job);
+        }
+    }
 
     @RequestMapping(value="/ecobee/settings", method=RequestMethod.POST)
     public String saveSettings(EcobeeSettings ecobeeSettings, BindingResult bindingResult, FlashScope flashScope) {
