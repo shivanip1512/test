@@ -10,10 +10,10 @@ $(function() {
     /** Handle clicks on menu triggers */
     $(document).on('click', '.dropdown-trigger', function(e) {
         
-        $('.dropdown-trigger').removeClass('menu-open');
-        
         var trigger = $(this),
-            menu = trigger.find('.dropdown-menu');
+        menu = trigger.find('.dropdown-menu');
+        
+        $('.dropdown-trigger').removeClass('menu-open');
         
         /** Get menu, do the body prepending at this point since the menu may
          * have been ajaxed in. */

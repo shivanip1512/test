@@ -26,7 +26,7 @@
                     <td>
                         <span id="<c:out value="${index.indexName}" />percentComplete" style="display:none">
                             <div class="progress progress-striped active">
-                              <div class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+                              <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
                             </div>
                         </span> 
                             
