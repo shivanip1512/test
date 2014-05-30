@@ -185,7 +185,7 @@ public class OperatorCallTrackingController {
 
     @RequestMapping("deleteCall")
     @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
-    public String deleteCall(Integer deleteCallId, ModelMap modelMap, FlashScope flashScope, 
+    public String deleteCall(int deleteCallId, ModelMap modelMap, FlashScope flashScope, 
             AccountInfoFragment accountInfoFragment) {
         callReportDao.delete(deleteCallId);
 
@@ -202,11 +202,7 @@ public class OperatorCallTrackingController {
     private boolean shouldAutoGenerateCallNumber(int energyCompanyId) {
         String value = energyCompanySettingDao.getString(EnergyCompanySettingType.CALL_TRACKING_NUMBER_AUTO_GEN, energyCompanyId);
         
-        if (NumberUtils.isDigits(value)) {
-            return true;
-        } else {    //returns true for true, on, yes
-            return BooleanUtils.toBoolean(value);
-        }
+        return NumberUtils.isDigits(value) || BooleanUtils.toBoolean(value);
     }
     
     private void setupCallReportModel(AccountInfoFragment accountInfoFragment, ModelMap modelMap, YukonUserContext userContext, Integer callId) {
