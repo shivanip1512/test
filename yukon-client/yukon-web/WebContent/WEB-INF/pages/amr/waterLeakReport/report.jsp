@@ -1,14 +1,16 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage page="waterLeakReport.report" module="amr">
 
@@ -67,7 +69,7 @@
             <div class="tac hint"><cti:msg2 key=".filterShortcutOpen"/></div>
         </form:form>
     </d:inline>
-    <%@ include file="leakAlgorithmDialog.jspf"%>
+    <%@ include file="leakAlgorithmDialog.jspf" %>
     
     <c:set var="popupTitleArgs" value=""/>
     <c:if test="${not empty exportData.scheduleName}">
@@ -102,8 +104,6 @@
     <form:form id="resetForm" action="report" method="get">
         <input type="hidden" name="resetReport" value="true"/>
     </form:form>
-
-    <div id="accountInfoAjaxDialog" class="dn"></div>
 
     <!-- Help messages at the top of the page -->
     <c:choose>
@@ -205,7 +205,7 @@
         
         <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
             <form:form id="intervalDataForm" action="intervalData" method="get" commandName="backingBean" cssClass="dib">
-                <%@ include file="reportFilterFormValues.jspf"%>
+                <%@ include file="reportFilterFormValues.jspf" %>
                 <cti:msg2 key=".viewIntervalDataTitle" var="title"/>
                 <cti:msg2 key=".viewIntervalData" var="label"/>
                 <cti:button type="submit" title="${title}" label="${label}"/>
@@ -257,7 +257,7 @@
                     <thead>
                         <tr>
                             <c:if test="${filterResult.hitCount > 0}">
-                                <th class="small_width"><input id="f-check_all" type="checkbox"></th>
+                                <th><input id="f-check_all" type="checkbox"></th>
                             </c:if>
                             <th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="DEVICE_NAME" isDefault="false"/></th>
                             <th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="report" fieldName="METER_NUMBER"/></th>
@@ -270,30 +270,31 @@
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach var="row" items="${filterResult.resultList}">
+                            <c:set var="paoId" value="${row.meter.paoIdentifier.paoId}"/>
                             <tr>
-                                <cti:url var="accountInfoUrl" value="cisDetails">
-                                    <cti:param name="paoId" value="${row.meter.paoIdentifier.paoId}"/>
-                                </cti:url>
-                                <input type="hidden" value="${accountInfoUrl}" class="account_info_url"/>
-                                <input type="hidden" value="${row.meter.paoIdentifier.paoId}" class="the_pao_id"/>
-                                <td class="small_width"><input type="checkbox" class="f-check_single"></td>
+                                
                                 <td>
-                                    <cti:paoDetailUrl yukonPao="${row.meter}">
-                                        ${fn:escapeXml(row.meter.name)}
-                                    </cti:paoDetailUrl>
+                                    <input type="checkbox" class="f-check_single">
+                                    <input type="hidden" value="${paoId}" class="the_pao_id"/>
+                                </td>
+                                <td>
+                                    <cti:paoDetailUrl yukonPao="${row.meter}">${fn:escapeXml(row.meter.name)}</cti:paoDetailUrl>
                                 </td>
                                 <td>${fn:escapeXml(row.meter.meterNumber)}</td>
                                 <td><tags:paoType yukonPao="${row.meter}"/></td>
                                 <td><i:inline key=".leakRateLabel" arguments="${row.leakRate}"/></td>
                                 <c:if test="${hasVendorId}">
                                     <td>
-                                        <a href="javascript:void(0);" class="f-cis_details">
-                                            <i:inline key=".viewCISDetails"/>
-                                        </a>
+                                        <cti:url var="accountUrl" value="cisDetails">
+                                            <cti:param name="paoId" value="${paoId}"/>
+                                        </cti:url>
+                                        <cti:msg2 var="accountTitle" key=".accountInfo.title"/> 
+                                        <a href="javascript:void(0);" popup="#account-${paoId}"><i:inline key=".viewCISDetails"/></a>
+                                        <div class="dn" id="account-${paoId}" data-url="${accountUrl}" data-title="${accountTitle}"></div>
                                     </td>
                                 </c:if>
-                                <td class="contextual-menu">
-                                    <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}" triggerClasses="fr"/>
+                                <td>
+                                    <cm:singleDeviceMenu deviceId="${paoId}" triggerClasses="fr"/>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -301,9 +302,7 @@
                 </c:when>
                 <c:otherwise>
                     <tr>
-                        <td class="empty-list" colspan="6">
-                            <i:inline key=".noLeaks"/>
-                        </td>
+                        <td class="empty-list" colspan="6"><i:inline key=".noLeaks"/></td>
                     </tr>
                 </c:otherwise>
             </c:choose>
@@ -313,6 +312,6 @@
         commandName="backingBean" cssClass="dib" title="${exportTitle}">
         <cti:deviceCollection deviceCollection="${backingBean.deviceCollection}"/>
         <tags:sortFields backingBean="${backingBean}"/>
-        <%@ include file="reportFilterFormValues.jspf"%>
+        <%@ include file="reportFilterFormValues.jspf" %>
     </form:form>
 </cti:standardPage>

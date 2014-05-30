@@ -37,7 +37,7 @@
                                             </cti:url>
                                             <a href="${viewUrl}">${fn:escapeXml(config.name)}</a>
                                         </td>
-                                        <td class="contextual-menu">
+                                        <td>
                                             <span class="fl">${fn:escapeXml(config.numDevices)}</span>
                                             <c:if test="${config.numDevices > 0}">
                                                 <c:url var="deviceGroupPopupUrl" value="/bulk/selectedDevicesTableForGroupName">

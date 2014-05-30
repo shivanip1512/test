@@ -10,92 +10,92 @@
 
 <cti:standardPage page="waterLeakReport.report.intervalData" module="amr">
 
-	<cti:includeScript link="/JavaScript/yukon.ami.water.leak.report.js" />
+    <cti:includeScript link="/JavaScript/yukon.ami.water.leak.report.js" />
 
-	<form:form id="csvIntervalForm" action="csvWaterLeakIntervalData" method="get" commandName="backingBean">
-		<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
-		<tags:sortFields backingBean="${backingBean}" />
-		<%@ include file="reportFilterFormValues.jspf"%>
-	</form:form>
+    <form:form id="csvIntervalForm" action="csvWaterLeakIntervalData" method="get" commandName="backingBean">
+        <cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
+        <tags:sortFields backingBean="${backingBean}" />
+        <%@ include file="reportFilterFormValues.jspf"%>
+    </form:form>
 
     <%@ include file="leakAlgorithmDialog.jspf"%>
 
-	<c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
-		<c:set var="actionsMenu">
-			<cm:dropdown triggerClasses="fr">
-				<li>
+    <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
+        <c:set var="actionsMenu">
+            <cm:dropdown triggerClasses="fr">
+                <li>
                     <cti:link href="/bulk/collectionActions"
                         key="yukon.web.modules.amr.waterLeakReport.report.performCollectionAction">
-						<cti:mapParam value="${collectionFromReportResults.collectionParameters}" />
-					</cti:link>
+                        <cti:mapParam value="${collectionFromReportResults.collectionParameters}" />
+                    </cti:link>
                 </li>
-				<li>
+                <li>
                     <a id="exportIntervalCsv" href="javascript:void(0);">
                         <i:inline key=".exportCSV" />
                     </a>
                 </li>
-			</cm:dropdown>
-		</c:set>
-	</c:if>
+            </cm:dropdown>
+        </c:set>
+    </c:if>
 
     <c:set var="detection_algorithm">
         <a href="javascript:void(0);" class="f-open_detection_algorithm"><i:inline key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm"/></a>
     </c:set>
-	<div class="page-help">
-		<cti:msg2 key=".leakIndicationDescription" arguments="${detection_algorithm}" htmlEscapeArguments="false"/>
-	</div>
+    <div class="page-help">
+        <cti:msg2 key=".leakIndicationDescription" arguments="${detection_algorithm}" htmlEscapeArguments="false"/>
+    </div>
 
-	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}"
-		baseUrl="intervalData" titleLinkHtml="${actionsMenu}">
-		<table class="compact-results-table f-traversable has-actions">
-			<tr>
-				<th>
+    <tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}"
+        baseUrl="intervalData" titleLinkHtml="${actionsMenu}">
+        <table class="compact-results-table f-traversable has-actions">
+            <tr>
+                <th>
                     <tags:sortLink nameKey="tableHeader.deviceName" baseUrl="intervalData" fieldName="DEVICE_NAME" isDefault="false" />
                 </th>
-				<th>
+                <th>
                     <tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="intervalData" fieldName="METER_NUMBER" />
                 </th>
-				<th>
+                <th>
                     <tags:sortLink nameKey="tableHeader.deviceType" baseUrl="intervalData" fieldName="PAO_TYPE" />
                 </th>
-				<th>
+                <th>
                     <tags:sortLink nameKey="tableHeader.usage" baseUrl="intervalData" fieldName="USAGE" />
                 </th>
-				<th>
+                <th>
                     <tags:sortLink nameKey="tableHeader.date" baseUrl="intervalData" fieldName="DATE" isDefault="true" />
                 </th>
                 <th></th>
-			</tr>
-			<c:forEach var="row" items="${filterResult.resultList}">
-				<c:set var="disabledClass" value="" />
-				<c:if test="${row.meter.disabled}">
-					<c:set var="disabledClass" value="subtle" />
-				</c:if>
-				<c:set var="leakRowClass" value="" />
-				<c:if test="${row.pointValueHolder.value == row.leakRate}">
-					<c:set var="leakRowClass" value="alert" />
-				</c:if>
-				<tr class="${leakRowClass} ${disabledClass}">
-					<td>
+            </tr>
+            <c:forEach var="row" items="${filterResult.resultList}">
+                <c:set var="disabledClass" value="" />
+                <c:if test="${row.meter.disabled}">
+                    <c:set var="disabledClass" value="subtle" />
+                </c:if>
+                <c:set var="leakRowClass" value="" />
+                <c:if test="${row.pointValueHolder.value == row.leakRate}">
+                    <c:set var="leakRowClass" value="alert" />
+                </c:if>
+                <tr class="${leakRowClass} ${disabledClass}">
+                    <td>
                         <cti:paoDetailUrl yukonPao="${row.meter}">
                             ${fn:escapeXml(row.meter.name)}
-						</cti:paoDetailUrl>
+                        </cti:paoDetailUrl>
                     </td>
-					<td>${fn:escapeXml(row.meter.meterNumber)}</td>
-					<td><tags:paoType yukonPao="${row.meter}" /></td>
-					<td><cti:pointValueFormatter value="${row.pointValueHolder}" format="VALUE" /></td>
-					<td><cti:formatDate type="BOTH" value="${row.pointValueHolder.pointDataTimeStamp}" /></td>
-					<td class="contextual-menu">
+                    <td>${fn:escapeXml(row.meter.meterNumber)}</td>
+                    <td><tags:paoType yukonPao="${row.meter}" /></td>
+                    <td><cti:pointValueFormatter value="${row.pointValueHolder}" format="VALUE" /></td>
+                    <td><cti:formatDate type="BOTH" value="${row.pointValueHolder.pointDataTimeStamp}" /></td>
+                    <td>
                         <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}" triggerClasses="fr"/>
-					</td>
-				</tr>
-			</c:forEach>
+                    </td>
+                </tr>
+            </c:forEach>
 
-			<c:if test="${fn:length(filterResult.resultList) == 0}">
-				<tr>
-					<td class="empty-list" colspan="6"><i:inline key=".noUsage" /></td>
-				</tr>
-			</c:if>
-		</table>
-	</tags:pagedBox2>
+            <c:if test="${fn:length(filterResult.resultList) == 0}">
+                <tr>
+                    <td class="empty-list" colspan="6"><i:inline key=".noUsage" /></td>
+                </tr>
+            </c:if>
+        </table>
+    </tags:pagedBox2>
 </cti:standardPage>

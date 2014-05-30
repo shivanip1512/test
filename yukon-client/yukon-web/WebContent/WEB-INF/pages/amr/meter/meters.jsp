@@ -107,7 +107,7 @@
                     <td><tags:paoType yukonPao="${searchResultRow}"/></td>
                     <td><c:if test="${!empty searchResultRow.serialOrAddress}">${fn:escapeXml(searchResultRow.serialOrAddress)}</c:if></td>
                     <td><c:if test="${!empty searchResultRow.route}">${fn:escapeXml(searchResultRow.route)}</c:if></td>
-                    <td class="contextual-menu">
+                    <td>
                         <cm:singleDeviceMenu deviceId="${searchResultRow.paoIdentifier.paoId}" triggerClasses="fr"/>
                     </td>
                 </tr>

@@ -21,7 +21,6 @@ yukon.ami.waterLeakReport = (function () {
         _all_selector = '#f-check_all:checkbox',
         _single_selector = 'tbody tr input.f-check_single:checkbox',
         _initialized = false,
-        _f_cis_details_store = [],
         _f_filter_values = [],
         /* --------------- */
         /* private methods */
@@ -177,30 +176,12 @@ yukon.ami.waterLeakReport = (function () {
             $(_csv_interval_form_selector).submit();
         },
 
-        _view_cis_details = function () {
-            var paoId = _get_row_pao_id(this);
-            var in_array = $.inArray(paoId, _f_cis_details_store);
-            if (in_array === -1) {
-                _f_cis_details_store.push(paoId);
-                // only block the page if we haven't requested this before (will take longer)
-                yukon.ui.blockPage();
-            }
-            
-            var url = _get_row_account_info_url(this);
-            $('#accountInfoAjaxDialog').show();
-            $('#accountInfoAjaxDialog').load(url);
-        },
-
         _disable_filter_buttons = function () {
             $('.ui-button', '.ui-dialog-buttonset').prop('disabled', true);
         },
 
         _get_row_pao_id = function (elem) {
             return $(elem).closest('tr').find('input.the_pao_id').val();
-        },
-
-        _get_row_account_info_url = function (elem) {
-            return $(elem).closest('tr').find('input.account_info_url').val();
         },
 
         _add_to_interval_data_form = function (paoId) {
@@ -227,7 +208,6 @@ yukon.ami.waterLeakReport = (function () {
                 $(_leak_filter_dialog).on('keyup', _init_filter_key_bindings);
                 $(document).on('dialogopen', _leak_filter_dialog, _filter_dialog_open);
                 $(document).on('keyup', _init_open_filter_key_binding);
-                $('a.f-cis_details').on('click', _view_cis_details);
                 $('.f-open_filter_dialog').on('click', function () {yukon.ui._autofocus();});
                 $('#exportLeakCsv').on('click', _export_leak_csv);
                 _init_filter();

@@ -77,7 +77,7 @@
                             <td class="${color}">
                                 <cti:pointValueFormatter format="VALUE" value="${event.pointValueHolder}" />
                             </td>
-                            <td class="contextual-menu">
+                            <td>
                                 <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}" triggerClasses="fr"/>
                             </td>
                         </tr>

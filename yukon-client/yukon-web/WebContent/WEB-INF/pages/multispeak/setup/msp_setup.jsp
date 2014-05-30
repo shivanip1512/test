@@ -57,7 +57,7 @@
         function serviceSubmit(service, value)
         {
           document.mspForm.actionService.value=service;
-          document.mspForm.action = "/multispeak/setup/" + value;
+          document.mspForm.action = yukon.url("/multispeak/setup/" + value);
           document.mspForm.submit();
         }
         
@@ -68,7 +68,7 @@
         
         function vendorChanged()
         {
-            document.mspForm.action = "/multispeak/setup/home";
+            document.mspForm.action = yukon.url("/multispeak/setup/home");
             document.mspForm.submit();
         }
 

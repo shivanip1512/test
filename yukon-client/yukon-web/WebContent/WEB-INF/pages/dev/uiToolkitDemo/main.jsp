@@ -83,10 +83,10 @@ $(function() {
     });
     
     $("button.blockElement").click(function(e){
-		var elem = $(e.target).closest(".f-block-this");
-		if(elem) {
-		    yukon.ui.elementGlass.show(elem);
-		}
+        var elem = $(e.target).closest(".f-block-this");
+        if(elem) {
+            yukon.ui.elementGlass.show(elem);
+        }
     });
 });
 </script>
@@ -202,13 +202,13 @@ button
                 </tr>
                 <tr>
                     <td>
-				        <cm:dropdown>
-				            <li><a>Some Item 1</a></li>
-				            <li><a>Some Item 2</a></li>
-				            <li><a>Some Item 3</a></li>
-			                <li class="divider"></li>
-				            <li><a>Last Item</a></li>
-				        </cm:dropdown>
+                        <cm:dropdown>
+                            <li><a>Some Item 1</a></li>
+                            <li><a>Some Item 2</a></li>
+                            <li><a>Some Item 3</a></li>
+                            <li class="divider"></li>
+                            <li><a>Last Item</a></li>
+                        </cm:dropdown>
                     </td>
                     <td>
                     The default behavior of the menu is to first try to display to the left, but will switch to displaying to the right if the initial positioning places it off the left of the screen. 
@@ -221,7 +221,7 @@ button
     &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
 &lt;/cm:dropdown&gt;
 </pre>
-					</td>
+                    </td>
                 </tr>
                 <tr>
                     <th>Text Menu</th>
@@ -229,13 +229,13 @@ button
                 </tr>
                 <tr>
                     <td>
-				        <cm:dropdown type="link" key="yukon.web.defaults.actions">
-				            <li><a>Some Item 1</a></li>
-				            <li><a>Some Item 2</a></li>
-				            <li><a>Some Item 3</a></li>
-			                <li class="divider"></li>
-				            <li><a>Last Item</a></li>
-				        </cm:dropdown>
+                        <cm:dropdown type="link" key="yukon.web.defaults.actions">
+                            <li><a>Some Item 1</a></li>
+                            <li><a>Some Item 2</a></li>
+                            <li><a>Some Item 3</a></li>
+                            <li class="divider"></li>
+                            <li><a>Last Item</a></li>
+                        </cm:dropdown>
                     </td>
                     <td>
                     Again, this one first tries opening to the left, but switches to the right so it doesn't go off the screen. 
@@ -248,7 +248,7 @@ button
     &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
 &lt;/cm:dropdown&gt;
 </pre>
-					</td>
+                    </td>
                 </tr>
                 <tr>
                     <th>Button Menu</th>
@@ -256,13 +256,13 @@ button
                 </tr>
                 <tr>
                     <td style="width: 175px;">
-				        <cm:dropdown type="button" key="yukon.web.defaults.actions" triggerClasses="fr">
-				            <li><a>Some Item 1</a></li>
-				            <li><a>Some Item 2</a></li>
-				            <li><a>Some Item 3</a></li>
-			                <li class="divider"></li>
-				            <li><a>Last Item</a></li>
-				        </cm:dropdown>
+                        <cm:dropdown type="button" key="yukon.web.defaults.actions" triggerClasses="fr">
+                            <li><a>Some Item 1</a></li>
+                            <li><a>Some Item 2</a></li>
+                            <li><a>Some Item 3</a></li>
+                            <li class="divider"></li>
+                            <li><a>Last Item</a></li>
+                        </cm:dropdown>
                     </td>
                     <td>
                     Floating this one right so it can open in the "default" manner, which is to the left.
@@ -275,11 +275,11 @@ button
     &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
 &lt;/cm:dropdown&gt;
 </pre>
-					</td>
+                    </td>
                 </tr>
             </table>
-		    <div class="column-12-12 clearfix">
-		            <div class="column one">
+            <div class="column-12-12 clearfix">
+                    <div class="column one">
                         <div class="column-header"><h2>Inside A Table</h2></div><br/>
                         <table class="compact-results-table row-highlighting has-actions">
                             <thead>
@@ -291,30 +291,28 @@ button
                             </thead>
                             <tbody>
                                    <c:forEach begin="0" end="10" varStatus="status">
-	                                <tr>
-	                                    <td>Some Data ${status.index+1}</td>
-	                                    <td>Some Data ${status.index+2}</td>
-	                                    <td class="contextual-menu">
-	                                        <cm:dropdown triggerClasses="fr">
-	                                            <li><a>Some Item 1</a></li>
-	                                            <li><a>Some Item 2</a></li>
-	                                            <li><a>Some Item 3</a></li>
-	                                            <li class="divider"></li>
-	                                            <li><a>Last Item</a></li>
-	                                        </cm:dropdown>
-	                                    </td>
-	                                </tr>
+                                    <tr>
+                                        <td>Some Data ${status.index+1}</td>
+                                        <td>Some Data ${status.index+2}</td>
+                                        <td>
+                                            <cm:dropdown triggerClasses="fr">
+                                                <li><a>Some Item 1</a></li>
+                                                <li><a>Some Item 2</a></li>
+                                                <li><a>Some Item 3</a></li>
+                                                <li class="divider"></li>
+                                                <li><a>Last Item</a></li>
+                                            </cm:dropdown>
+                                        </td>
+                                    </tr>
                                    </c:forEach>
                             </tbody>
                         </table>
                        </div>
                        <div class="column two nogutter">
                            <div class="column-header"><h2>Relavent Markup</h2></div><br/>
-							The only real "required" markup for this to work correctly is to
-							have a class of <strong>has-actions</strong> on the table, a class of
-							<strong>contextual-menu</strong> on the td that will contain the menu, and the
-							<strong>&lt;cm:dropdown</strong> tag within that td
-							<pre class="code">
+                            The only real "required" markup for this to work correctly is to
+                            have a class of <strong>has-actions</strong> on the table.
+<pre class="code">
 &lt;table class="compact-results-table row-highlighting has-actions"&gt;
     &lt;thead&gt;
         &lt;tr&gt;
@@ -327,7 +325,7 @@ button
         &lt;tr&gt;
             &lt;td&gt;Some Data ${status.index+1}&lt;/td&gt;
             &lt;td&gt;Some Data ${status.index+2}&lt;/td&gt;
-            &lt;td class="contextual-menu"&gt;
+            &lt;td&gt;
                 &lt;cm:dropdown triggerClasses="fr"&gt;
                     &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
                     &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;

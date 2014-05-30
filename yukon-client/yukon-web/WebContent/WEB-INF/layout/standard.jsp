@@ -151,7 +151,7 @@
                     <c:if test="${showContextualNavigation}">
                         <div id="LeftColumn" class="column one">
                             <jsp:include page="${pageDetail.detailInfoIncludePath}"/>
-                            <div class="contextual-menu vertical-menu">
+                            <div class="vertical-menu">
                                 <cti:outputContent writable="${contextualNavigationMenu}"/>
                             </div>
                             <div class="bumper"></div>
