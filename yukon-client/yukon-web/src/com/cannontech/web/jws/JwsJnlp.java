@@ -95,7 +95,7 @@ public enum JwsJnlp {
                 "jdom-2.0.2.jar",
                 "jfreechart.jar",
                 "jloox30.jar",
-                "joda-time-2.1.jar",
+                "joda-time-2.3.jar",
                 "jradius-client.jar",
                 "jta.jar",
                 "jtds-1.3.0.jar",
