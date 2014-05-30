@@ -13,10 +13,11 @@ yukon.dr.ecobee = (function () {
          * @param {String} inputSelector. - the actual hidden input that holds the current value of this slider
          */
         _setupSlider = function (containingDivSelector, inputSelector) {
+            var value = $(inputSelector).val();
             $(containingDivSelector +' .f-time-slider').slider({
                 max: 24 * 60 - 15,
                 min: 0,
-                value: 120,
+                value: value,
                 step: 15,
                 slide: function (event, ui) {
                     $(containingDivSelector + ' .f-time-label').text(_timeFormatter.formatTime(ui.value, 0));
@@ -27,6 +28,7 @@ yukon.dr.ecobee = (function () {
                     $(inputSelector).val(ui.value);
                 }
             });
+            $(containingDivSelector + ' .f-time-label').text(_timeFormatter.formatTime(value, 0));
         },
         mod;
 
@@ -38,10 +40,6 @@ yukon.dr.ecobee = (function () {
             _setupSlider('#ecobee-download-schedule', '#ecobee-download-time');
             _setupSlider('#ecobee-data-collection-schedule', '#ecobee-data-collection-time');
             _setupSlider('#ecobee-error-check-schedule', '#ecobee-error-check-time');
-
-            $('#ecobee-download-schedule .f-time-label').text(_timeFormatter.formatTime($('#ecobee-download-time').val(), 0));
-            $('#ecobee-error-check-schedule .f-time-label').text(timeFormatter.formatTime($('#ecobee-error-check-time').val(), 0));
-            $('#ecobee-data-collection-schedule .f-time-label').text(timeFormatter.formatTime($('#ecobee-data-collection-time').val(), 0));
 
             try {
                 if ('undefined' !== typeof loadGroupPicker) {
