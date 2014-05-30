@@ -48,12 +48,11 @@ yukon.dr.dashboard = (function() {
                     });
                 },
                 sliderInitOptions = [
+                    // max, min, value, step, htmlSelector, timeSelector
                     /** Setup the command time slider */
                     ['#broadcast-config .f-time-slider', 24 * 60 - 15, 0, $('#rf-performance-command-time').val(), 15, '#broadcast-config .f-time-label', '#rf-performance-command-time'],
                     /** Setup the email time slider */
-                    ['#broadcast-config .f-email-time-slider', 24 * 60 - 15, 0, $('#rf-performance-email-time').val(), 15, '#broadcast-config .f-email-time-label', '#rf-performance-email-time'],
-                    /** Setup the error check time slider */
-                    ['#ecobee-config .f-time-slider', 24 * 60 - 15, 0, $('#ecobee-error-check-time').val(), 15, '#ecobee-config .f-time-label', '#ecobee-error-check-time']
+                    ['#broadcast-config .f-email-time-slider', 24 * 60 - 15, 0, $('#rf-performance-email-time').val(), 15, '#broadcast-config .f-email-time-label', '#rf-performance-email-time']
                 ],
                 _io,
                 _initOpt;
@@ -73,8 +72,7 @@ yukon.dr.dashboard = (function() {
             /** Setup the time label */
             $('#broadcast-config .f-time-label').html(timeFormatter.formatTime($('#rf-performance-command-time').val(), 0));
             $('#broadcast-config .f-email-time-label').html(timeFormatter.formatTime($('#rf-performance-email-time').val(), 0));
-            $('#ecobee-config .f-time-label').html(timeFormatter.formatTime($('#ecobee-error-check-time').val(), 0));
-            
+
             /** Handle email on/off toggle button.  TODO make on-off toggle button resuable */
             $(document).on('click', '#broadcast-config .toggle-on-off .button', function() {
                 $('#broadcast-config .toggle-on-off .button').toggleClass('on');
@@ -86,27 +84,6 @@ yukon.dr.dashboard = (function() {
                     $('#rf-performance-email').val('false');
                 }
                 
-            });
-            
-            $(document).on('click', '#ecobee-error-checking-toggle .toggle-on-off .button', function () {
-                $('#ecobee-error-checking-toggle .toggle-on-off .button').toggleClass('on');
-                if ($('#ecobee-error-checking-toggle .toggle-on-off .button.yes').hasClass('on')) {
-                    $('#ecobee-check-errors').val('true');
-                    $('#ecobee-error-check-schedule').toggle('fade');
-                } else {
-                    $('#ecobee-check-errors').val('false');
-                    // hide daily error check row
-                    $('#ecobee-error-check-schedule').toggle('fade');
-                }
-            });
-            
-            $(document).on('click', '#ecobee-data-collection-toggle .toggle-on-off .button', function() {
-                $('#ecobee-data-collection-toggle .toggle-on-off .button').toggleClass('on');
-                if ($('#ecobee-data-collection-toggle .toggle-on-off .button.yes').hasClass('on')) {
-                    $('#ecobee-data-collection').val('true');
-                } else {
-                    $('#ecobee-data-collection').val('false');
-                }
             });
 
             if ($('#rf-performance-email').val() === 'true') {
@@ -120,22 +97,7 @@ yukon.dr.dashboard = (function() {
                 $('.f-notif-group').hide();
                 $('.f-email-schedule').hide();
             }
-            
-            if ('true' === $('#ecobee-check-errors').val()) {
-                $('#ecobee-config #ecobee-check-errors .toggle-on-off .yes').addClass('on');
-                $('#ecobee-config #ecobee-check-errors .toggle-on-off .no').removeClass('on');
-            } else {
-                $('#ecobee-config #ecobee-check-errors .toggle-on-off .no').addClass('on');
-                $('#ecobee-config #ecobee-check-errors .toggle-on-off .yes').removeClass('on');
-            }
-            
-            if ('true' === $('#ecobee-data-collection').val()) {
-                $('#ecobee-config #ecobee-data-collection .toggle-on-off .yes').addClass('on');
-                $('#ecobee-config #ecobee-data-collection .toggle-on-off .no').removeClass('on');
-            } else {
-                $('#ecobee-config #ecobee-data-collection .toggle-on-off .no').addClass('on');
-                $('#ecobee-config #ecobee-data-collection .toggle-on-off .yes').removeClass('on');
-            }
+
         }
     };
     

@@ -47,18 +47,30 @@
                         <div class="column-6-18 clearfix stacked">
                             <div class="column one">
                                 <span class="f-time-label fwb">&nbsp;</span>
-                                <tags:hidden path="errorCheckTime" id="ecobee-error-check-time"/>
+                                <tags:hidden path="checkErrorsTime" id="ecobee-error-check-time"/>
                             </div>
                             <div class="column two nogutter">
                                 <div class="f-time-slider" style="margin-top: 7px;"></div>
                             </div>
                         </div>
                     </tags:nameValue2>
+
                     <tags:nameValue2 nameKey=".ecobee.configure.dataCollection" rowId="ecobee-data-collection-toggle" valueClass="full-width">
                         <tags:hidden path="dataCollection" id="ecobee-data-collection"/>
                         <div class="button-group toggle-on-off">
                             <cti:button nameKey="on" classes="on yes M0"/>
                             <cti:button nameKey="off" classes="no M0"/>
+                        </div>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".ecobee.configure.dailyDataCollection" rowId="ecobee-data-collection-schedule" valueClass="full-width">
+                        <div class="column-6-18 clearfix stacked">
+                            <div class="column one">
+                                <span class="f-time-label fwb">&nbsp;</span>
+                                <tags:hidden path="dataCollectionTime" id="ecobee-data-collection-time"/>
+                            </div>
+                            <div class="column two nogutter">
+                                <div class="f-time-slider" style="margin-top: 7px;"></div>
+                            </div>
                         </div>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>

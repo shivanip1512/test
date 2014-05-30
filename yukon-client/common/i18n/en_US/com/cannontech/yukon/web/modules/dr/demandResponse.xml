@@ -440,7 +440,7 @@
 <entry key="yukon.web.modules.dr.home.ecobee.configure.errorChecking">Error Checking</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dataCollection">Data Collection</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dailyErrorCheck">Daily Error Check</entry>
-<entry key="yukon.web.modules.dr.home.ecobee.configure.dailyErrorCheck">Daily Error Check</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.dailyDataCollection">Daily Collection</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.successful">Successful</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.failed">Failed</entry>
 

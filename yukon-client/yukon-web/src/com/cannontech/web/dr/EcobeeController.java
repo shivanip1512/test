@@ -1,5 +1,6 @@
 package com.cannontech.web.dr;
 
+import java.beans.PropertyEditorSupport;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -12,15 +13,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.LocalTime;
 import org.joda.time.YearMonth;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -37,12 +42,12 @@ import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.model.EcobeeQueryStats;
 import com.cannontech.web.dr.model.EcobeeSettings;
+import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
@@ -51,18 +56,25 @@ import com.google.common.collect.Lists;
 public class EcobeeController {
 
     private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
-    private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
+    private static final String baseKey = "yukon.web.modules.dr.home.ecobee.configure.";
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 
     @RequestMapping(value="/ecobee/settings", method=RequestMethod.POST)
-    public String saveSettings(@ModelAttribute("ecobeeSettings") EcobeeSettings settings, FlashScope flash) {
-        log.info(settings);
-        //flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "successful"));
-        flash.setError(new YukonMessageSourceResolvable(homeKey + "failed"));
+    public String saveSettings(EcobeeSettings ecobeeSettings, BindingResult bindingResult, FlashScope flashScope) {
+        log.info(ecobeeSettings);
+        
+        
+//        if (bindingResult.hasErrors()) {
+//            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+//            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+//        } else {
+//            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "successful"));
+//        }
         return "redirect:/dr/home";
     }
 
@@ -118,7 +130,8 @@ public class EcobeeController {
         EcobeeSettings ecobeeSettings = new EcobeeSettings();
         ecobeeSettings.setCheckErrors(true);
         ecobeeSettings.setDataCollection(true);
-        ecobeeSettings.setErrorCheckTime(42);
+        ecobeeSettings.setCheckErrorsTime(LocalTime.MIDNIGHT);
+        ecobeeSettings.setDataCollectionTime(LocalTime.MIDNIGHT);
         model.addAttribute("ecobeeSettings", ecobeeSettings);
 
         EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now());
@@ -247,6 +260,31 @@ public class EcobeeController {
         model.addAttribute("startDownLoad", startDownLoad);
 
         return "dr/ecobee/details.jsp";
+    }
+
+    @InitBinder
+    public void initialize(WebDataBinder dataBinder) {
+        PropertyEditorSupport localDateEditor = new PropertyEditorSupport() {
+            @Override
+            public String getAsText() {
+                LocalTime value = (LocalTime) getValue();
+                if (value == null) {
+                    value = LocalTime.MIDNIGHT;
+                }
+                int minutesOfDay = value.get(DateTimeFieldType.minuteOfDay());
+                return Integer.toString(minutesOfDay);
+            }
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                try {
+                    int minutesSinceMidnight = Integer.parseInt(text);
+                    setValue(LocalTime.MIDNIGHT.plusMinutes(minutesSinceMidnight));
+                } catch (NumberFormatException e) {
+                    setValue(null);
+                }
+            }
+        };
+        dataBinder.registerCustomEditor(LocalTime.class, localDateEditor);
     }
 
     public class EcobeeSyncIssue {
