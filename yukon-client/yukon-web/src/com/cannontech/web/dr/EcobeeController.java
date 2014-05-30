@@ -113,6 +113,47 @@ public class EcobeeController {
         return num == null ? "" : new DecimalFormat("#.#").format(num);
     }
 
+    @RequestMapping(value="/ecobee/statistics", method=RequestMethod.GET)
+    public String statistics(ModelMap model, LiteYukonUser user) {
+        EcobeeSettings ecobeeSettings = new EcobeeSettings();
+        ecobeeSettings.setCheckErrors(true);
+        ecobeeSettings.setDataCollection(true);
+        ecobeeSettings.setErrorCheckTime(42);
+        model.addAttribute("ecobeeSettings", ecobeeSettings);
+
+        EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now());
+        int statsMonth = currentMonthStats.getMonth();
+        int statsYear = currentMonthStats.getYear();
+        int currentMonthDataCollectionQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
+        int currentMonthDemandResponseQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
+        int currentMonthSystemQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
+        EcobeeQueryStats queryStats;
+        // begin test
+        if(0 == currentMonthDataCollectionQueryCount && 0 == currentMonthDemandResponseQueryCount &&
+            0 == currentMonthSystemQueryCount) {
+            // generate fake data
+            Random rand = new Random();
+            int maxTestVal = 10000;
+            currentMonthDemandResponseQueryCount = rand.nextInt(maxTestVal);
+            currentMonthDataCollectionQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount);
+            currentMonthSystemQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount -
+                currentMonthDataCollectionQueryCount);
+            YearMonth month = new YearMonth().withYear(statsYear).withMonthOfYear(statsMonth);
+            queryStats =
+                new EcobeeQueryStats(month, currentMonthDemandResponseQueryCount, currentMonthDataCollectionQueryCount,
+                    currentMonthSystemQueryCount);
+        } else {
+            queryStats = new EcobeeQueryStats(currentMonthStats);
+        }
+        // end test
+        model.addAttribute("ecobeeStats", queryStats);
+        model.addAttribute("deviceIssues", 3);
+        model.addAttribute("groupIssues", 6);
+
+        log.debug(queryStats);
+        return "dr/ecobee/statistics.jsp";
+    }
+
     @RequestMapping(value="/ecobee", method=RequestMethod.GET)
     public String details(ModelMap model, YukonUserContext userContext) {
 

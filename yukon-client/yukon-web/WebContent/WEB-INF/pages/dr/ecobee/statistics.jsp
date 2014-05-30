@@ -1,0 +1,68 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<cti:includeScript link="YUKON_TIME_FORMATTER"/>
+<cti:includeScript link="/JavaScript/yukon.dr.ecobee.js"/>
+
+<tags:sectionContainer2 nameKey="ecobee">
+    <div class="stacked">
+        <tags:nameValueContainer2 naturalWidth="false">
+            <cti:formatDate type="SHORT_MONTH_YEAR" value="${ecobeeStats.month}" var="currentMonth"/>
+            <tags:nameValue2 nameKey=".ecobee.queries" argument="${currentMonth}" valueClass="full-width">
+                <dr:ecobeeStats value="${ecobeeStats}"/>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".ecobee.issues">
+                <c:set var="deviceClass" value="${deviceIssues > 0 ? 'label-danger' : ''}"/>
+                <c:set var="groupClass" value="${groupIssues > 0 ? 'label-danger' : ''}"/>
+                <span class="label ${deviceClass}">${deviceIssues}</span>&nbsp;
+                <i:inline key=".ecobee.devices"/>&nbsp;
+                <span class="label ${groupClass}">${groupIssues}</span>&nbsp;
+                <i:inline key=".ecobee.groups"/>&nbsp;
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+    </div>
+    <div class="action-area">
+        <a href="<cti:url value="/dr/ecobee"/>"><i:inline key=".details"/></a>
+        <cti:button nameKey="configure" popup="#ecobee-config" icon="icon-cog-edit"/>
+        <div dialog data-form id="ecobee-config" data-width="500" data-title="<cti:msg2 key=".ecobee.configure.title"/>" class="dn">
+            <form:form action="ecobee/settings" method="POST" commandName="ecobeeSettings">
+                <cti:csrfToken/>
+                <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
+                    <tags:nameValue2 nameKey=".ecobee.configure.errorChecking" rowId="ecobee-error-checking-toggle" valueClass="full-width">
+                        <tags:hidden path="checkErrors" id="ecobee-check-errors"/>
+                        <div class="button-group toggle-on-off">
+                            <cti:button nameKey="on" classes="on yes M0"/>
+                            <cti:button nameKey="off" classes="no M0"/>
+                        </div>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".ecobee.configure.dailyErrorCheck" rowId="ecobee-error-check-schedule" valueClass="full-width">
+                        <div class="column-6-18 clearfix stacked">
+                            <div class="column one">
+                                <span class="f-time-label fwb">&nbsp;</span>
+                                <tags:hidden path="errorCheckTime" id="ecobee-error-check-time"/>
+                            </div>
+                            <div class="column two nogutter">
+                                <div class="f-time-slider" style="margin-top: 7px;"></div>
+                            </div>
+                        </div>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".ecobee.configure.dataCollection" rowId="ecobee-data-collection-toggle" valueClass="full-width">
+                        <tags:hidden path="dataCollection" id="ecobee-data-collection"/>
+                        <div class="button-group toggle-on-off">
+                            <cti:button nameKey="on" classes="on yes M0"/>
+                            <cti:button nameKey="off" classes="no M0"/>
+                        </div>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </form:form>
+        </div>
+    </div>
+</tags:sectionContainer2>

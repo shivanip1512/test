@@ -4,31 +4,23 @@ import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.joda.time.YearMonth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.userpage.dao.UserPageDao;
-import com.cannontech.common.util.MonthYear;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
-import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
-import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 import com.cannontech.dr.model.PerformanceVerificationAverageReports;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
@@ -43,8 +35,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.OnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.dr.model.EcobeeQueryStats;
-import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.dr.model.RfPerformanceSettings;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
@@ -56,7 +46,6 @@ import com.google.common.collect.Ordering;
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public class HomeController {
 
-    private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
@@ -70,7 +59,6 @@ public class HomeController {
         private YukonJobDefinition<RfnPerformanceVerificationTask> rfnVerificationJobDef;
     @Autowired @Qualifier("rfnPerformanceVerificationEmail")
         private YukonJobDefinition<RfnPerformanceVerificationEmailTask> rfnEmailJobDef;
-    @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
     @Autowired private EnergyCompanyDao ecDao;
 
     @RequestMapping("/home")
@@ -155,56 +143,12 @@ public class HomeController {
             model.addAttribute("settings", settings);
         }
 
-        /** ECOBEE */
-        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ECOBEE, user)) {
-//            OnOff ecobee = globalSettingDao.getEnum(GlobalSettingType.ECOBEE, OnOff.class);
-//            boolean showEcobeeStats = (ecobee == OnOff.ON);
-            boolean showEcobeeStats = true;
-            model.addAttribute("showEcobeeStats", showEcobeeStats);
-    
-            EcobeeSettings ecobeeSettings = new EcobeeSettings();
-            ecobeeSettings.setCheckErrors(true);
-            ecobeeSettings.setDataCollection(true);
-            ecobeeSettings.setErrorCheckTime(42);
-            model.addAttribute("ecobeeSettings", ecobeeSettings);
-    
-            EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now());
-            int statsMonth = currentMonthStats.getMonth();
-            int statsYear = currentMonthStats.getYear();
-            int currentMonthDataCollectionQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
-            int currentMonthDemandResponseQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
-            int currentMonthSystemQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
-            EcobeeQueryStats queryStats;
-            // begin test
-            if(0 == currentMonthDataCollectionQueryCount && 0 == currentMonthDemandResponseQueryCount &&
-                0 == currentMonthSystemQueryCount) {
-                // generate fake data
-                Random rand = new Random();
-                int maxTestVal = 10000;
-                currentMonthDemandResponseQueryCount = rand.nextInt(maxTestVal);
-                currentMonthDataCollectionQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount);
-                currentMonthSystemQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount -
-                    currentMonthDataCollectionQueryCount);
-                YearMonth month = new YearMonth().withYear(statsYear).withMonthOfYear(statsMonth);
-                queryStats =
-                    new EcobeeQueryStats(month, currentMonthDemandResponseQueryCount, currentMonthDataCollectionQueryCount, currentMonthSystemQueryCount);
-            } else {
-                queryStats = new EcobeeQueryStats(currentMonthStats);
-            }
-            // end test
-            model.addAttribute("ecobeeStats", queryStats);
-            model.addAttribute("deviceIssues", 3);
-            model.addAttribute("groupIssues", 6);
-            
-            log.debug(queryStats);
-        }
-        
         return "dr/home.jsp";
     }
 
     @RequestMapping("/details")
     public String details(LiteYukonUser user) {
-        
+
         boolean showControlAreas =
                 rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CONTROL_AREAS, user);
         boolean showScenarios =
