@@ -124,7 +124,7 @@ ALTER COLUMN SerialNumber VARCHAR(30) NULL;
 /* End YUK-13365 */
 
 /* Start YUK-13377 */
-INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Show ecobee','false','Controls access to actions and information related to ecobee devices.');
+INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Enable ecobee','false','Controls access to actions and information related to ecobee devices.');
 /* End YUK-13377 */
 
 /* Start YUK-13359 */
