@@ -5,7 +5,7 @@ package com.cannontech.database.data.pao;
  * @deprecated Use PaoCategory, PaoClass, PaoType enums
  */
 @Deprecated
-public final class PAOGroups implements RouteTypes, DeviceTypes, CapControlTypes
+public final class PAOGroups implements DeviceTypes, CapControlTypes
 {
 	public final static int INVALID = -1;
    	public final static int CAT_DEVICE = 0;

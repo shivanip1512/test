@@ -1675,17 +1675,16 @@ public boolean processSingleRouteFile()
 		String routeType = tokenizer.nextElement().toString();
 		com.cannontech.database.data.route.RouteBase route = null;
 
-		int routeInt = PaoType.getPaoTypeId(routeType);
-			
-		route = com.cannontech.database.data.route.RouteFactory.createRoute(PaoType.getForDbString(routeType));
+		PaoType routePaoType = PaoType.getForDbString(routeType);
+		route = com.cannontech.database.data.route.RouteFactory.createRoute(routePaoType);
 
 		//set our unique own routeID
 		route.setRouteID(routeID);
 		route.setRouteName(tokenizer.nextElement().toString());
 			
-		switch(routeInt)
+		switch(routePaoType)
 		{
-			case com.cannontech.database.data.pao.PAOGroups.ROUTE_CCU:
+			case ROUTE_CCU:
 			// handle CCU
 				handleRouteType( ((com.cannontech.database.data.route.CCURoute)route), tokenizer);
 				break;

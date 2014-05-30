@@ -2,7 +2,7 @@
 package com.cannontech.common.pao;
 
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Set;
 
@@ -14,7 +14,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -203,18 +202,18 @@ public enum PaoType implements DatabaseRepresentationSource {
     FAULT_CI(DeviceTypes.FAULT_CI, "Faulted Circuit Indicator", PaoCategory.DEVICE, PaoClass.GRID),
     NEUTRAL_MONITOR(DeviceTypes.NEUTRAL_MONITOR, "Capacitor Bank Neutral Monitor", PaoCategory.DEVICE, PaoClass.GRID),
 
-    ROUTE_CCU(RouteTypes.ROUTE_CCU, "CCU", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_TCU(RouteTypes.ROUTE_TCU, "TCU", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_LCU(RouteTypes.ROUTE_LCU, "LCU", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_MACRO(RouteTypes.ROUTE_MACRO, "Macro", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_VERSACOM(RouteTypes.ROUTE_VERSACOM, "Versacom", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_TAP_PAGING(RouteTypes.ROUTE_TAP_PAGING, "Tap Paging", PaoCategory.ROUTE, PaoClass.ROUTE),
-	ROUTE_WCTP_TERMINAL(RouteTypes.ROUTE_WCTP_TERMINAL, "WCTP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_SERIES_5_LMI(RouteTypes.ROUTE_SERIES_5_LMI, "Series 5 LMI", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_RTC(RouteTypes.ROUTE_RTC, "RTC Route", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_SNPP_TERMINAL(RouteTypes.ROUTE_SNPP_TERMINAL, "SNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_TNPP_TERMINAL(RouteTypes.ROUTE_TNPP_TERMINAL, "TNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_RDS_TERMINAL(RouteTypes.ROUTE_RDS_TERMINAL, "RDS Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_CCU(2000, "CCU", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_TCU(2001, "TCU", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_LCU(2002, "LCU", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_MACRO(2003, "Macro", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_VERSACOM(2004, "Versacom", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_TAP_PAGING(2005, "Tap Paging", PaoCategory.ROUTE, PaoClass.ROUTE),
+	ROUTE_WCTP_TERMINAL(2006, "WCTP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_SERIES_5_LMI(2007, "Series 5 LMI", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_RTC(2008, "RTC Route", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_SNPP_TERMINAL(2009, "SNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_TNPP_TERMINAL(2011, "TNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_RDS_TERMINAL(2012, "RDS Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
 
     LOCAL_DIRECT(3000, "Local Direct", PaoCategory.PORT, PaoClass.PORT),
     LOCAL_SHARED(3001, "Local Serial Port", PaoCategory.PORT, PaoClass.PORT),
