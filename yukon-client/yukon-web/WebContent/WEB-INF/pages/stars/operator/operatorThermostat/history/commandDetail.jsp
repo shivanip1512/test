@@ -6,8 +6,6 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<d:ajaxPage nameKey="details" module="operator" page="thermostatHistory" okEvent="none">
-
 <script>
 var TIME_SLIDER = null;
 $(function() {
@@ -42,5 +40,3 @@ $(function() {
                                         omitEditor="true"
                                         customActions="true"
                                         thermostatType="${thermostatType}"/>
-
-</d:ajaxPage>

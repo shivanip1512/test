@@ -7,10 +7,9 @@
 
 <cti:standardPage module="adminSetup" page="survey.edit">
 
-<cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
 <cti:includeScript link="/JavaScript/yukon.surveys.edit.js"/>
 
-<div id="ajaxDialog"></div>
+<div id="question-popup" title="<cti:msg2 key=".surveyQuestion"/>"></div>
 
 <span id="templateIcons" style="display: none">
 <cti:button nameKey="up" classes="moveAnswerUp" renderMode="image" icon="icon-bullet-go-up"/>
@@ -22,12 +21,6 @@
 
 <c:set var="surveyId" value="${survey.surveyId}"/>
 <c:set var="baseUrl" value="edit"/>
-
-<script type="text/javascript">
-    $(function () {
-        yukon.surveys.edit.init({hasBeenTaken : '${hasBeenTaken}'});
-    });
-</script>
 
 <div class="column-12-12">
     <div class="column one">
@@ -53,15 +46,16 @@
                         <cti:url var="detailUrl" value="editDetails">
                             <cti:param name="surveyId" value="${surveyId}"/>
                         </cti:url>
-                        <cti:button id="editDetailsBtn" data-detail-url="${detailUrl}" nameKey="edit" icon="icon-pencil"
-                            renderMode="labeledImage" classes="f-blocker"/>
+                        <cti:msg2 var="detailsTitle" key="modules.adminSetup.survey.list.details.title"/>
+                        <cti:button nameKey="edit" icon="icon-pencil" renderMode="labeledImage" popup="#details-popup"/>
+                        <div id="details-popup" dialog data-event="yukon.survey.details.edit" data-url="${detailUrl}" data-title="${detailsTitle}"></div>
                     </li>
                     <li>
                         <cti:url var="addQuestionUrl" value="addQuestion">
                             <cti:param name="surveyId" value="${surveyId}"/>
                         </cti:url>
                         <cti:button id="addQuestionBtn" data-add-question-url="${addQuestionUrl}" nameKey="addQuestion"
-                            renderMode="labeledImage" classes="f-blocker" icon="icon-add"/>
+                            renderMode="labeledImage" icon="icon-add"/>
                     </li>
                 </c:if>
                 <li>
@@ -93,84 +87,88 @@
 </div>
 <div class="column-24">
     <div class="column one nogutter">
-		<c:if test="${empty questions}">
-		    <span class="empty-list"><i:inline key=".noQuestions"/></span>
-		</c:if>
-		<c:if test="${!empty questions}">
-		    <table class="compact-results-table row-highlighting">
+        <c:if test="${empty questions}">
+            <span class="empty-list"><i:inline key=".noQuestions"/></span>
+        </c:if>
+        <c:if test="${!empty questions}">
+            <table class="compact-results-table">
                 <thead>
-		        <tr>
-		            <th><i:inline key=".questionKey"/></th>
-		            <th><i:inline key=".answerRequired"/></th>
-		            <th><i:inline key=".questionType"/></th>
-		            <th><i:inline key=".actions"/></th>
-		        </tr>
+                <tr>
+                    <th><i:inline key=".questionKey"/></th>
+                    <th><i:inline key=".answerRequired"/></th>
+                    <th><i:inline key=".questionType"/></th>
+                    <th><i:inline key=".actions"/></th>
+                </tr>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-		        <c:forEach var="question" varStatus="status" items="${questions}">
-		            <tr questionId="${question.surveyQuestionId}">
-		                <td>
-	                        ${fn:escapeXml(question.questionKey)}
-		                </td>
-		                <td>
-		                    <c:if test="${question.answerRequired}">
-		                        <i:inline key=".answerIsRequired"/>
-		                    </c:if>
-		                    <c:if test="${!question.answerRequired}">
-		                        <i:inline key=".answerNotRequired"/>
-		                    </c:if>
-		                </td>
-		                <td>
-		                    <i:inline key="${question.questionType}"/>
-		                </td>
-		                <td>
+                <c:forEach var="question" varStatus="status" items="${questions}">
+                    <tr questionId="${question.surveyQuestionId}">
+                        <td>
+                            ${fn:escapeXml(question.questionKey)}
+                        </td>
+                        <td>
+                            <c:if test="${question.answerRequired}">
+                                <i:inline key=".answerIsRequired"/>
+                            </c:if>
+                            <c:if test="${!question.answerRequired}">
+                                <i:inline key=".answerNotRequired"/>
+                            </c:if>
+                        </td>
+                        <td>
+                            <i:inline key="${question.questionType}"/>
+                        </td>
+                        <td>
                             <cti:url var="editQuestionUrl" value="editQuestion">
                                 <cti:param name="surveyQuestionId" value="${question.surveyQuestionId}" />
                             </cti:url>
                             <cti:button nameKey="editQuestion" data-edit-question-url="${editQuestionUrl}" renderMode="image"
-                                classes="editQuestionBtn f-blocker" icon="icon-pencil"/>
+                                classes="editQuestionBtn" icon="icon-pencil"/>
                             <c:if test="${!hasBeenTaken}">
-			                    <c:if test="${status.first}">
-			                        <cti:button renderMode="image"
+                                <c:if test="${status.first}">
+                                    <cti:button renderMode="image"
                                         nameKey="up.disabled" disabled="true" icon="icon-bullet-go-up"/>
-			                    </c:if>
-			                    <c:if test="${!status.first}">
+                                </c:if>
+                                <c:if test="${!status.first}">
                                     <cti:url var="moveUpUrl" value="moveQuestion">
                                         <cti:param name="direction" value="up" />
                                         <cti:param name="surveyQuestionId" value="${question.surveyQuestionId}" />
                                     </cti:url>
-			                        <cti:button renderMode="image" nameKey="up" icon="icon-bullet-go-up"
+                                    <cti:button renderMode="image" nameKey="up" icon="icon-bullet-go-up"
                                         href="${moveUpUrl}"/>
-			                    </c:if>
-			                    <c:if test="${status.last}">
-			                        <cti:button renderMode="image" icon="icon-bullet-go-down"
+                                </c:if>
+                                <c:if test="${status.last}">
+                                    <cti:button renderMode="image" icon="icon-bullet-go-down"
                                         nameKey="down.disabled" disabled="true"/>
-			                    </c:if>
-			                    <c:if test="${!status.last}">
+                                </c:if>
+                                <c:if test="${!status.last}">
                                     <cti:url var="moveDownUrl" value="moveQuestion">
                                         <cti:param name="direction" value="down" />
                                         <cti:param name="surveyQuestionId" value="${question.surveyQuestionId}" />
                                     </cti:url>
-			                        <cti:button renderMode="image" nameKey="down" icon="icon-bullet-go-down"
+                                    <cti:button renderMode="image" nameKey="down" icon="icon-bullet-go-down"
                                         href="${moveDownUrl}"/>
-			                    </c:if>
-			                    <cti:url var="deleteUrl" value="deleteQuestion">
-			                        <cti:param name="surveyQuestionId"
-			                            value="${question.surveyQuestionId}"/>
-			                    </cti:url>
+                                </c:if>
+                                <cti:url var="deleteUrl" value="deleteQuestion">
+                                    <cti:param name="surveyQuestionId"
+                                        value="${question.surveyQuestionId}"/>
+                                </cti:url>
                                 <d:confirm on="#deleteBtn${question.surveyQuestionId}"
                                     nameKey="confirmDelete"
                                     argument="${question.questionKey}"/>
                                 <cti:button id="deleteBtn${question.surveyQuestionId}" icon="icon-cross"
                                     nameKey="deleteQuestion" renderMode="image" href="${deleteUrl}"/>
-		                    </c:if>
-		                </td>
-		            </tr>
-		        </c:forEach>
+                            </c:if>
+                        </td>
+                    </tr>
+                </c:forEach>
                 </tbody>
-		    </table>
-		</c:if>
+            </table>
+        </c:if>
     </div>
 </div>
+
+<script type="text/javascript">
+$(function () { yukon.surveys.edit.init({hasBeenTaken : '${hasBeenTaken}'}); });
+</script>
 </cti:standardPage>

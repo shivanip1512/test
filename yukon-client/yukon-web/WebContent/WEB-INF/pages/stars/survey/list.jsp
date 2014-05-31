@@ -1,3 +1,5 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -6,10 +8,8 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="adminSetup" page="survey.list">
-    <cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
-    <cti:includeScript link="/JavaScript/yukon.surveys.list.js"/>
 
-    <div id="ajaxDialog"></div>
+    <cti:includeScript link="/JavaScript/yukon.surveys.edit.js"/>
 
     <div class="stacked" data-reloadable>
         <%@ include file="listTable.jsp" %>
@@ -18,6 +18,13 @@
     <div class="action-area">
         <cti:url var="sampleXmlUrl" value="sampleXml"/>
         <cti:button nameKey="sampleXml" href="${sampleXmlUrl}" icon="icon-page-white-code"/>
-        <cti:button id="addSurveyBtn" nameKey="add" classes="f-blocker" icon="icon-add"/>
+        <cti:button nameKey="add" icon="icon-add" popup="#add-survey-popup"/>
+        <div dialog id="add-survey-popup" data-url="editDetails" data-title="<cti:msg2 key=".addTitle"/>" data-event="yukon.survey.details.edit"></div>
     </div>
+    
+<script type="text/javascript">
+$(function () {
+    yukon.surveys.edit.init({hasBeenTaken : '${hasBeenTaken}'});
+});
+</script>
 </cti:standardPage>

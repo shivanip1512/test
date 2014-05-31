@@ -24,8 +24,6 @@ $(function() {
 });
 </script>
 
-<div id="ajaxDialog"></div>
-
 <h3>
     <cti:msg key="yukon.web.modules.consumer.history.pageTitle" /><br>
     <c:forEach var="stat" items="${thermostats}">
@@ -54,7 +52,7 @@ $(function() {
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach var="historyItem" items="${eventHistoryList}">
+                        <c:forEach var="historyItem" items="${eventHistoryList}" varStatus="status">
                             <tr>
                                 <!-- Thermostat -->
                                 <c:if test="${multipleThermostatsSelected}">
@@ -108,7 +106,9 @@ $(function() {
                                                     <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                                     <cti:param name="scheduleId" value="${historyItem.scheduleId}"/>
                                                 </cti:url>
-                                                <a href="${viewArchivedScheduleUrl}" class="f-ajaxPage" data-selector="#ajaxDialog"> ${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
+                                                <a href="javascript:void(0);" popup="#command-details-${status.index}">${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
+                                                <cti:msg2 var="title" key="modules.operator.thermostatHistory.details.title"/>
+                                                <div id="command-details-${status.index}" data-url="${viewArchivedScheduleUrl}" data-title="${title}"></div>
                                             </c:otherwise>
                                         </c:choose> 
                                     </c:if>

@@ -31,18 +31,16 @@ $(function(){
 });
 </script>
 
-    <div id="ajaxDialog"></div>
-    
     <c:set var="multipleThermostatsSelected" value="${fn:length(thermostatNames) > 1}"></c:set>
     <div class="stacked">
         <%-- THERMOSTAT NAMES --%>
-        <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
+        <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp"/>
     </div>
     <cti:msg2 var="historyTableTitle" key="yukon.web.modules.operator.thermostatHistory.historyTableTitle"/>
     <tags:pagedBox title="${historyTableTitle}" searchResult="${searchResult}"
         filterDialog="" baseUrl="view"
         isFiltered="false" showAllUrl="/stars/operator/thermostat/history/view">
-        <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/history/commandHistory.jsp" />
+        <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/history/commandHistory.jsp"/>
     </tags:pagedBox>
 
 </cti:standardPage>

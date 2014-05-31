@@ -33,10 +33,6 @@ yukon.surveys.edit = (function () {
             _questionTypeChanged();
             
             $(document).on('change', '#questionType', _questionTypeChanged)
-            $(document).on('submit', '#inputForm', function(e) {
-                e.preventDefault();
-                $(this).ajaxSubmit({'target' : '#ajaxDialog'});
-            });
 
             if (answerKeys instanceof Array) {
                 for (ii = 0; ii < answerKeys.length; ii += 1) {
@@ -45,6 +41,8 @@ yukon.surveys.edit = (function () {
                 $('#questionKey').focus();
                 $('#questionKey').select();
             }
+            
+            $('#question-popup').dialog({width: 600, buttons: yukon.ui.buttons({ event: 'yukon.survey.question.save' }) });
         },
 
         _disableMoveUp = function (rowIdNum) {
@@ -72,7 +70,9 @@ yukon.surveys.edit = (function () {
             var oldMoveIcon = $('#moveDownIcon' + rowIdNum)[0],
                 enabledIcon = _moveDownIcon.cloneNode(true);
             enabledIcon.id = 'moveDownIcon' + rowIdNum;
-            oldMoveIcon.parentNode.replaceChild(enabledIcon, oldMoveIcon);
+            if (typeof oldMoveIcon !== 'undefined') {
+                oldMoveIcon.parentNode.replaceChild(enabledIcon, oldMoveIcon);
+            }
         },
 
         _deleteAnswer = function (event) {
@@ -151,39 +151,52 @@ yukon.surveys.edit = (function () {
 
         mod = {
             init: function (params) {
-                var editDetailsBtn = $('#editDetailsBtn'),
-                    addQuestionBtn = $('#addQuestionBtn'),
-                    icons;
 
                 if (params.hasBeenTaken === 'false') {
-                    icons = $('#templateIcons > button');
+                    var icons = $('#templateIcons > button');
                     _moveUpIcon = icons[0];
                     _moveDownIcon = icons[1];
                     _deleteAnswerIcon = icons[2];
                     _moveUpDisabledIcon = icons[3];
                     _moveDownDisabledIcon = icons[4];
                 }
-                editDetailsBtn.click(function () {
-                    var editDetailsUrl = editDetailsBtn.data('detailUrl');
-                    $('#ajaxDialog').load(editDetailsUrl);
+                
+                $(document).on('yukon.survey.details.edit' , function (ev) {
+                    $('#survey-details-form').ajaxSubmit({
+                        success: function(data, status, xhr, $form) {
+                            window.location.href = data.url;
+                        }, 
+                        error: function(xhr, status, error, $form) {
+                            $('#details-popup').html(xhr.responseText);
+                        }
+                    });
+                });
+                
+                $(document).on('yukon.survey.question.save' , function (ev) {
+                    $('#question-form').ajaxSubmit({
+                        success: function(data, status, xhr, $form) {
+                            window.location.href = window.location.href;
+                        }, 
+                        error: function(xhr, status, error, $form) {
+                            $('#question-popup').html(xhr.responseText);
+                        }
+                    });
                 });
 
-                addQuestionBtn.click(function () {
-                    var addQuestionUrl = addQuestionBtn.data('addQuestionUrl');
-                    $('#ajaxDialog').load(addQuestionUrl, _initQuestionDialog);
+                $('#addQuestionBtn').click(function (ev) {
+                    var addQuestionUrl = $(this).data('addQuestionUrl');
+                    $('#question-popup').load(addQuestionUrl, _initQuestionDialog);
                 });
 
                 $('.editQuestionBtn').click(function (event) {
                     var editQuestionUrl = $(event.target).closest('[data-edit-question-url]').data('editQuestionUrl');
-                    $('#ajaxDialog').load(editQuestionUrl, _initQuestionDialog);
+                    $('#question-popup').load(editQuestionUrl, _initQuestionDialog);
                 });
 
                 $(document).on('click', '.moveAnswerUp', _moveAnswerUp);
                 $(document).on('click', '.moveAnswerDown', _moveAnswerDown);
                 $(document).on('click', '.deleteAnswer', _deleteAnswer);
 
-                $(document).on('yukonDetailsUpdated', closeAjaxDialogAndRefresh);
-                $(document).on('yukonQuestionSaved', closeAjaxDialogAndRefresh);
             },
 
             addAnswer : function (answerKey) {

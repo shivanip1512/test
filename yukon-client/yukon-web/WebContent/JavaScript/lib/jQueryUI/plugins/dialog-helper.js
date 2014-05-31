@@ -3,7 +3,7 @@
       //maintain the chain!
       return this.each(function() {
           var messages = [];
-          var create = !$(this).children('[data-ui-add-message=]').length;
+          var create = !$(this).children('[data-ui-add-message]').length;
           
           switch(typeof(args.message)){
           case 'string':
@@ -37,7 +37,7 @@
               if(create){
                   $(this).prepend('<div class="user-message '+ args.messageClass +' box" data-ui-add-message=""><ul class="simple-list">'+ messages.join('') +'</ul></div>');
               }else{
-                  $(this).children('[data-ui-add-message=]').addClass(args.messageClass).find('ul').html(messages.join(''));
+                  $(this).children('[data-ui-add-message]').addClass(args.messageClass).find('ul').html(messages.join(''));
               }
           }
       });
@@ -45,7 +45,7 @@
   
   $.fn.removeMessage = function() {
       return this.each(function() {
-          $(this).children('[data-ui-add-message=]').remove();
+          $(this).children('[data-ui-add-message]').remove();
       });
   }
 })( jQuery );

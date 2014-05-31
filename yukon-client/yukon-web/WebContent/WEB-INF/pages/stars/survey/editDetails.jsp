@@ -1,17 +1,14 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ page trimDirectiveWhitespaces="true" %>
 
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
-<d:ajaxPage nameKey="details" module="adminSetup" page="survey.list" okEvent="yukonDialogSubmit">
+<cti:msgScope paths="modules.adminSetup.survey.list">
 
 <cti:url var="submitUrl" value="saveDetails"/>
-<form:form id="inputForm" commandName="survey" action="${submitUrl}">
+<form:form id="survey-details-form" commandName="survey" action="${submitUrl}">
     <cti:csrfToken/>
     <form:hidden path="surveyId"/>
     <form:hidden path="energyCompanyId"/>
@@ -28,4 +25,4 @@
     </tags:nameValueContainer>
 </form:form>
 
-</d:ajaxPage>
+</cti:msgScope>

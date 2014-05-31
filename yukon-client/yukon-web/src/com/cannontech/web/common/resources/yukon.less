@@ -309,8 +309,8 @@ table.nowrap td {
     
     td { border: none; }
 }
-.compact-results-table:not(.manual-striping) tr:nth-child(even), 
-.results-table:not(.manual-striping) tr:nth-child(even), 
+.compact-results-table:not(.manual-striping):not(.no-stripes) tr:nth-child(even), 
+.results-table:not(.manual-striping):not(.no-stripes) tr:nth-child(even), 
 .striped-list > div:nth-child(even), 
 .striped-list > li:nth-child(even), 
 .striped tr:nth-child(even), 
@@ -332,9 +332,6 @@ table.nowrap td {
     
     &.separated tr:not(:last-child) {
         border-bottom: 1px dashed #ccc;
-    }
-    &.no-stripes tr {
-        background-color: white;
     }
 }
 
