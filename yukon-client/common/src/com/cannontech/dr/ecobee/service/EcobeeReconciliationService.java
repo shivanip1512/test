@@ -3,7 +3,6 @@ package com.cannontech.dr.ecobee.service;
 import java.util.List;
 
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
-import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
 
 /**
@@ -30,12 +29,6 @@ public interface EcobeeReconciliationService {
      * @throws EcobeeCommunicationException if the specified reportId is outdated.
      */
     public List<String> fixDiscrepancy(int reportId, int errorId) throws EcobeeCommunicationException;
-    
-    /**
-     * Fixes the all discrepancies of the specified type by making changes to the ecobee portal's hierarchy.
-     * @throws EcobeeCommunicationException if the specified reportId is outdated.
-     */
-    public List<String> fixDiscrepancies(int reportId, EcobeeDiscrepancyType type) throws EcobeeCommunicationException;
     
     /**
      * Fixes the all discrepancies in the specified report by making changes to the ecobee portal's hierarchy.

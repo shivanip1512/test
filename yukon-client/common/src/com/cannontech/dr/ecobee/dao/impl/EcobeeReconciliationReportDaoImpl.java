@@ -18,11 +18,13 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.ecobee.dao.EcobeeReconciliationReportDao;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
-import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDeviceDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
+import com.cannontech.dr.ecobee.model.discrepancy.EcobeeExtraneousDeviceDiscrepancy;
+import com.cannontech.dr.ecobee.model.discrepancy.EcobeeExtraneousSetDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeMislocatedDeviceDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeMislocatedSetDiscrepancy;
-import com.cannontech.dr.ecobee.model.discrepancy.EcobeeSetDiscrepancy;
+import com.cannontech.dr.ecobee.model.discrepancy.EcobeeMissingDeviceDiscrepancy;
+import com.cannontech.dr.ecobee.model.discrepancy.EcobeeMissingSetDiscrepancy;
 
 public class EcobeeReconciliationReportDaoImpl implements EcobeeReconciliationReportDao {
     @Autowired private NextValueHelper nextValueHelper;
@@ -39,13 +41,15 @@ public class EcobeeReconciliationReportDaoImpl implements EcobeeReconciliationRe
             
             switch(errorType) {
                 case MISSING_MANAGEMENT_SET:
+                    return new EcobeeMissingSetDiscrepancy(errorId, correctLocation);
                 case EXTRANEOUS_MANAGEMENT_SET:
-                    return new EcobeeSetDiscrepancy(errorId, errorType, currentLocation);
+                    return new EcobeeExtraneousSetDiscrepancy(errorId, currentLocation);
                 case MISLOCATED_MANAGEMENT_SET:
                     return new EcobeeMislocatedSetDiscrepancy(errorId, currentLocation, correctLocation);
                 case MISSING_DEVICE:
+                    return new EcobeeMissingDeviceDiscrepancy(errorId, serialNumber, correctLocation);
                 case EXTRANEOUS_DEVICE:
-                    return new EcobeeDeviceDiscrepancy(errorId, errorType, serialNumber, currentLocation);
+                    return new EcobeeExtraneousDeviceDiscrepancy(errorId, serialNumber, currentLocation);
                 case MISLOCATED_DEVICE:
                     return new EcobeeMislocatedDeviceDiscrepancy(errorId, serialNumber, currentLocation, correctLocation);
                 default:
@@ -65,7 +69,7 @@ public class EcobeeReconciliationReportDaoImpl implements EcobeeReconciliationRe
         //insert the new report
         insertReportRow(reportId);
         
-        for (EcobeeDiscrepancy error : report.getErrors().values()) {
+        for (EcobeeDiscrepancy error : report.getErrors()) {
             int errorId = nextValueHelper.getNextValue("EcobeeReconReportError");
             
             SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -103,8 +107,7 @@ public class EcobeeReconciliationReportDaoImpl implements EcobeeReconciliationRe
         return new EcobeeReconciliationReport(reportId, reportDate, errorList);
     }
     
-    @Override
-    public Integer findCurrentReportId() {
+    private Integer findCurrentReportId() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select EcobeeReconReportId");
         sql.append("from EcobeeReconciliationReport");

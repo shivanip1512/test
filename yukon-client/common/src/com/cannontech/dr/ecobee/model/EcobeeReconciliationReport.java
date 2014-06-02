@@ -1,10 +1,12 @@
 package com.cannontech.dr.ecobee.model;
 
+import java.util.Collection;
+
 import org.joda.time.Instant;
 
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * This report describes any discrepancies between Yukon's structure of ecobee groups and thermostats, and the ecobee
@@ -14,17 +16,15 @@ import com.google.common.collect.ImmutableMap.Builder;
 public class EcobeeReconciliationReport {
     private final Integer reportId;
     private final Instant reportDate;
-    private final ImmutableMap<EcobeeDiscrepancyType, EcobeeDiscrepancy> errors;
+    private final Multimap<EcobeeDiscrepancyCategory, EcobeeDiscrepancy> errors = ArrayListMultimap.create();
 
     public EcobeeReconciliationReport(Integer reportId, Instant reportDate, Iterable<EcobeeDiscrepancy> errors) {
         this.reportId = reportId;
         this.reportDate = reportDate;
         
-        Builder<EcobeeDiscrepancyType, EcobeeDiscrepancy> builder = ImmutableMap.builder();
         for (EcobeeDiscrepancy error : errors) {
-            builder.put(error.getErrorType(), error);
+            this.errors.put(error.getErrorType().getCategory(), error);
         }
-        this.errors = builder.build();
     }
     
     public EcobeeReconciliationReport(Iterable<EcobeeDiscrepancy> errors) {
@@ -35,8 +35,12 @@ public class EcobeeReconciliationReport {
         return reportId;
     }
 
-    public ImmutableMap<EcobeeDiscrepancyType, EcobeeDiscrepancy> getErrors() {
-        return errors;
+    public Collection<EcobeeDiscrepancy> getErrors() {
+        return errors.values();
+    }
+    
+    public int getErrorNumberByCategory(EcobeeDiscrepancyCategory category) {
+        return errors.get(category).size();
     }
 
     public Instant getReportDate() {

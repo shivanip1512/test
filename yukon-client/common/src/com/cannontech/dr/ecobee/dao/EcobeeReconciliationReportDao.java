@@ -17,9 +17,4 @@ public interface EcobeeReconciliationReportDao {
      * Deletes the previous report and adds a new report to the database.
      */
     public int insertReport(EcobeeReconciliationReport report);
-    
-    /**
-     * Gets the ID of the most recent reconciliation report. Returns null if no report has been run.
-     */
-    public Integer findCurrentReportId();
 }

@@ -3,20 +3,20 @@ package com.cannontech.dr.ecobee.model.discrepancy;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 
 /**
- * A discrepancy that indicates an ecobee device is missing or extraneous.
+ * A discrepancy that indicates an ecobee device is extraneous.
  */
-public class EcobeeDeviceDiscrepancy extends EcobeeDiscrepancy {
+public class EcobeeExtraneousDeviceDiscrepancy extends EcobeeDiscrepancy {
     private final String serialNumber;
     private final String currentLocation;
     
-    public EcobeeDeviceDiscrepancy(EcobeeDiscrepancyType errorType, String serialNumber, String currentLocation) {
-        super(errorType);
+    public EcobeeExtraneousDeviceDiscrepancy(String serialNumber, String currentLocation) {
+        super(EcobeeDiscrepancyType.EXTRANEOUS_DEVICE);
         this.serialNumber = serialNumber;
         this.currentLocation = currentLocation;
     }
     
-    public EcobeeDeviceDiscrepancy(int errorId, EcobeeDiscrepancyType errorType, String serialNumber, String currentLocation) {
-        super(errorId, errorType);
+    public EcobeeExtraneousDeviceDiscrepancy(int errorId, String serialNumber, String currentLocation) {
+        super(errorId, EcobeeDiscrepancyType.EXTRANEOUS_DEVICE);
         this.serialNumber = serialNumber;
         this.currentLocation = currentLocation;
     }
