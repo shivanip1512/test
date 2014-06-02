@@ -242,15 +242,18 @@
     Toggle buttons can show a little more visual state using the <span class="label label-info">.toggle-on-off</span> class
     on the container element and adding the <span class="label label-info">.yes</span> or 
     <span class="label label-info">.no</span> classes to the buttons.  Yukon's js library handles this automatically as well.
+    The <span class="label label-info">.toggle-on-off</span> also handles the button toggling so 
+    <span class="label label-info">.js-toggle</span> is not needed when using 
+    <span class="label label-info">.toggle-on-off</span>.
 </p>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <div class="clearfix stacked button-group js-toggle toggle-on-off">
+        <div class="clearfix stacked button-group toggle-on-off">
             <cti:button nameKey="on" classes="yes on"/>
             <cti:button nameKey="off" classes="no"/>
         </div>
-        <div class="clearfix stacked button-group js-toggle toggle-on-off">
+        <div class="clearfix stacked button-group toggle-on-off">
             <cti:button label="Activated" classes="yes on"/>
             <cti:button label="Deactivated"/>
             <cti:button label="Disabled" classes="no"/>
@@ -258,11 +261,11 @@
     </div>
 </div>
 <pre class="code prettyprint">
-&lt;div class=&quot;clearfix stacked button-group js-toggle toggle-on-off&quot;&gt;
+&lt;div class=&quot;clearfix stacked button-group toggle-on-off&quot;&gt;
     &lt;cti:button nameKey=&quot;on&quot; classes=&quot;yes on&quot;/&gt;
     &lt;cti:button nameKey=&quot;off&quot; classes=&quot;no&quot;/&gt;
 &lt;/div&gt;
-&lt;div class=&quot;clearfix stacked button-group js-toggle toggle-on-off&quot;&gt;
+&lt;div class=&quot;clearfix stacked button-group toggle-on-off&quot;&gt;
     &lt;cti:button label=&quot;Activate&quot; classes=&quot;yes on&quot;/&gt;
     &lt;cti:button label=&quot;Deactivate&quot;/&gt;
     &lt;cti:button label=&quot;Disabled&quot; classes=&quot;no&quot;/&gt;

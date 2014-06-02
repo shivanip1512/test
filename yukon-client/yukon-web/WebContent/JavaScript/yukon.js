@@ -298,12 +298,6 @@ yukon.ui = (function () {
                 table_row_helper: true
             });
         
-            /** ajaxPage TODO Convert these to the use the one below and delete it */
-            $(document).on('click', '.f-ajaxPage', function(e) {
-                $(this.getAttribute('data-selector')).load(this.getAttribute('href'));
-                return false;
-            });
-        
             /** Reload or page a container */
             $(document).on('click', '[data-reload]', function(event) {
                 var elem = $(this),
@@ -340,7 +334,7 @@ yukon.ui = (function () {
             });
             
             /** Toggle buttons in a button group */
-            $(document).on('click', '.js-toggle .button', function(ev) { 
+            $(document).on('click', '.js-toggle .button, .toggle-on-off .button', function(ev) { 
                 $(this).addClass('on').siblings('.button').removeClass('on');
             });
             
