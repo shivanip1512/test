@@ -41,6 +41,7 @@ yukon.dr.ecobee = (function () {
             _setupSlider('#ecobee-data-collection-schedule', '#ecobee-data-collection-time');
             _setupSlider('#ecobee-error-check-schedule', '#ecobee-error-check-time');
 
+            $('#ecobee-download-schedule .f-time-label').html(_timeFormatter.formatTime($('#ecobee-download-time').val(), 0));
             try {
                 if ('undefined' !== typeof loadGroupPicker) {
                     loadGroupPicker.show.call(loadGroupPicker, true);
@@ -48,6 +49,12 @@ yukon.dr.ecobee = (function () {
             } catch (pickerException) {
                 debug.log('pickerException: ' + pickerException);
             };
+            $(document).on('ecobeeDownload', function(event) {
+                var form = $('#ecobee-download').find("form");
+                loadGroupPicker.endAction.call(loadGroupPicker, loadGroupPicker.selectedItems);
+                form.submit();
+                $('#ecobee-download').dialog('close');
+            });
 
             $(document).on('click', '#ecobee-error-checking-toggle .toggle-on-off .button', function () {
                 var checkErrorsOn = $('#ecobee-error-checking-toggle .toggle-on-off .button.yes').hasClass('on');
@@ -79,6 +86,33 @@ yukon.dr.ecobee = (function () {
                 $('#ecobee-data-collection-toggle .toggle-on-off .no').addClass('on');
                 $('#ecobee-data-collection-toggle .toggle-on-off .yes').removeClass('on');
                 $('#ecobee-data-collection-schedule').hide();
+            }
+        },
+        assignInputs : function (devices) {
+            var pickerThis = loadGroupPicker,
+                loadGroupDiv = document.getElementById('loadGroup'),
+                ssInputId = 'picker_' + pickerThis.pickerId + '_ss',
+                ssInputElem = document.getElementById(ssInputId);
+            console.log('devices=%O',devices);
+            $.each(devices, function (key, selectedItem) {
+                var inputElement = document.createElement('input');
+                inputElement.type = 'hidden';
+                inputElement.value = selectedItem[pickerThis.idFieldName];
+                inputElement.name = pickerThis.destinationFieldName;
+                loadGroupDiv.appendChild(inputElement);
+            });
+            // Inline pickers create a hidden input named 'ss'.
+            // We don't want to send that up to the server here.
+            if ('undefined' !== typeof ssInputElem && ssInputElem) {
+                ssInputElem.parentNode.removeChild(ssInputElem);
+            }
+            console.log("awesome! populated " + pickerThis.destinationFieldName + " with " + devices.length + " values");
+            return true;
+        },
+        updater : function (stuff) {
+            var i;
+            for (i = 0; i < stuff.length; i += 1) {
+                console.log('arg[' + i + ']=' + arguments[i]);
             }
         }
     };

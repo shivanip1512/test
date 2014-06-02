@@ -10,6 +10,7 @@ import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
  * Object containing query statistics for a single month of Ecobee communications.
  */
 public final class EcobeeQueryStatistics implements Comparable<EcobeeQueryStatistics> {
+    
     private final int month;
     private final int year;
     private final Map<EcobeeQueryType, EcobeeQueryCount> queryCounts = new HashMap<>();

@@ -385,7 +385,10 @@ table.nowrap td {
 .form-control {
     line-height: @form-control-height;
 }
-.with-form-controls tbody td select { line-height: normal; }
+.with-form-controls tbody td select,
+.with-form-controls tbody td .datetimeEntry_wrap {
+    line-height: normal; 
+}
 .with-form-controls td button.naked, 
 .with-form-controls td .button.naked {
     margin-top: 5px;
