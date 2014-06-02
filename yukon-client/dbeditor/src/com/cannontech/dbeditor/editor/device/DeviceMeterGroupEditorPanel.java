@@ -1140,28 +1140,26 @@ public void setValue(Object val)
           SwingUtil.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
           SwingUtil.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
 		
-          if (deviceType == PaoType.MCT470) {
-              try {
-                  LightDeviceConfiguration config = deviceConfigDao.findConfigurationForDevice(device);
-                  if (config != null) {
-                      int configId = config.getConfigurationId();
-                      CategoryType catType = CategoryType.DEMAND_PROFILE;
-                      
-                      String intervalVal = deviceConfigDao.getValueForItemName(configId, catType, "demandInterval");
-                      String lpVal = deviceConfigDao.getValueForItemName(configId, catType, "loadProfileInterval1");
-                      String demandString = intervalVal.equalsIgnoreCase("60") ? "1 hour" : intervalVal + " minute";
-                      String loadProfileString = lpVal.equalsIgnoreCase("60") ? "1 hour" : lpVal + " minute";
-                      getLastIntervalDemandRateComboBox().setSelectedItem(demandString);
-                      getLoadProfileDemandRateComboBox().setSelectedItem(loadProfileString);
-                      getLastIntervalDemandRateComboBox().setEnabled(false);
-                      getLoadProfileDemandRateComboBox().setEnabled(false);
-                  }
-              } catch (NotFoundException nfe) {
-                  getLastIntervalDemandRateComboBox().setSelectedItem("No Config Data");
-                  getLoadProfileDemandRateComboBox().setSelectedItem("No Config Data");
+          try {
+              LightDeviceConfiguration config = deviceConfigDao.findConfigurationForDevice(device);
+              if (config != null) {
+                  int configId = config.getConfigurationId();
+                  CategoryType catType = CategoryType.DEMAND_PROFILE;
+                  
+                  String intervalVal = deviceConfigDao.getValueForItemName(configId, catType, "demandInterval");
+                  String lpVal = deviceConfigDao.getValueForItemName(configId, catType, "loadProfileInterval1");
+                  String demandString = intervalVal.equalsIgnoreCase("60") ? "1 hour" : intervalVal + " minute";
+                  String loadProfileString = lpVal.equalsIgnoreCase("60") ? "1 hour" : lpVal + " minute";
+                  getLastIntervalDemandRateComboBox().setSelectedItem(demandString);
+                  getLoadProfileDemandRateComboBox().setSelectedItem(loadProfileString);
                   getLastIntervalDemandRateComboBox().setEnabled(false);
                   getLoadProfileDemandRateComboBox().setEnabled(false);
               }
+          } catch (NotFoundException nfe) {
+              getLastIntervalDemandRateComboBox().setSelectedItem("No Config Data");
+              getLoadProfileDemandRateComboBox().setSelectedItem("No Config Data");
+              getLastIntervalDemandRateComboBox().setEnabled(false);
+              getLoadProfileDemandRateComboBox().setEnabled(false);
           }
 	  } else if( DeviceTypesFuncs.isLoadProfile4Channel(deviceType.getDeviceTypeId())) {
 			SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
