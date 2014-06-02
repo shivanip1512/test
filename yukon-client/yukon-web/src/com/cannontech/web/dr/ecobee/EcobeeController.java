@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -26,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,15 +48,17 @@ import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
+import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.model.EcobeeQueryStats;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.loadcontrol.tasks.RepeatingWeatherDataTask;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -64,7 +66,7 @@ import com.google.common.collect.Lists;
 public class EcobeeController {
 
     private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
-    private static final String baseKey = "yukon.web.modules.dr.home.ecobee.configure.";
+//    private static final String baseKey = "yukon.web.modules.dr.home.ecobee.configure.";
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EnergyCompanyDao ecDao;
@@ -114,16 +116,43 @@ public class EcobeeController {
     }
 
     @RequestMapping(value="/ecobee/settings", method=RequestMethod.POST)
-    public String saveSettings(EcobeeSettings ecobeeSettings, BindingResult bindingResult, FlashScope flashScope) {
-        log.info(ecobeeSettings);
-        
-        
-//        if (bindingResult.hasErrors()) {
-//            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-//            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-//        } else {
-//            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "successful"));
-//        }
+    public String saveSettings(EcobeeSettings ecobeeSettings) {
+        ScheduledRepeatingJob ecobeePointUpdateJob = getJob(ecobeePointUpdateJobDef);
+        ScheduledRepeatingJob reconciliationReportJob = getJob(ecobeeReconciliationReportJobDef);
+
+        LocalTime pointUpdateTime = ecobeeSettings.getDataCollectionTime();
+        String pointUpdateCron = "0 " + pointUpdateTime.getMinuteOfHour() + " " 
+                + pointUpdateTime.getHourOfDay() + " * * ?";
+
+        if (!ecobeePointUpdateJob.getCronString().equals(pointUpdateCron)) {
+            jobManager.replaceScheduledJob(ecobeePointUpdateJob.getId(), ecobeePointUpdateJobDef, 
+                    ecobeePointUpdateJob.getJobDefinition().createBean(), pointUpdateCron, null, 
+                    ecobeePointUpdateJob.getJobProperties());
+            ecobeePointUpdateJob = getJob(ecobeePointUpdateJobDef);
+        }
+
+        LocalTime errorCheckTime = ecobeeSettings.getCheckErrorsTime();
+        String errorsCron = "0 " + errorCheckTime.getMinuteOfHour() + " " + errorCheckTime.getHourOfDay() + " * * ?";
+
+        if (!reconciliationReportJob.getCronString().equals(errorsCron)) {
+            jobManager.replaceScheduledJob(reconciliationReportJob.getId(), ecobeeReconciliationReportJobDef, 
+                    reconciliationReportJob.getJobDefinition().createBean(), errorsCron, null, 
+                    reconciliationReportJob.getJobProperties());
+            reconciliationReportJob = getJob(ecobeeReconciliationReportJobDef);
+        }
+
+        if (ecobeeSettings.isDataCollection() && ecobeePointUpdateJob.isDisabled()) {
+            jobManager.enableJob(ecobeePointUpdateJob);
+        } else if (!ecobeeSettings.isDataCollection() && !ecobeePointUpdateJob.isDisabled()) {
+            jobManager.disableJob(ecobeePointUpdateJob);
+        }
+
+        if (ecobeeSettings.isCheckErrors() && reconciliationReportJob.isDisabled()) {
+            jobManager.enableJob(reconciliationReportJob);
+        } else if (!ecobeeSettings.isCheckErrors() && !reconciliationReportJob.isDisabled()) {
+            jobManager.disableJob(reconciliationReportJob);
+        }
+
         return "redirect:/dr/home";
     }
 
@@ -176,43 +205,34 @@ public class EcobeeController {
 
     @RequestMapping(value="/ecobee/statistics", method=RequestMethod.GET)
     public String statistics(ModelMap model, LiteYukonUser user) {
+        ScheduledRepeatingJob reconciliationReportJob = getJob(ecobeeReconciliationReportJobDef);
+        ScheduledRepeatingJob ecobeePointUpdateJob = getJob(ecobeePointUpdateJobDef);
+
         EcobeeSettings ecobeeSettings = new EcobeeSettings();
-        ecobeeSettings.setCheckErrors(true);
-        ecobeeSettings.setDataCollection(true);
-        ecobeeSettings.setCheckErrorsTime(LocalTime.MIDNIGHT);
-        ecobeeSettings.setDataCollectionTime(LocalTime.MIDNIGHT);
+        ecobeeSettings.setCheckErrors(!reconciliationReportJob.isDisabled());
+        ecobeeSettings.setDataCollection(!ecobeePointUpdateJob.isDisabled());
+        try {
+            Date now = new Date();
+            Date nextErrorCheck = jobManager.getNextRuntime(reconciliationReportJob, now);
+            ecobeeSettings.setCheckErrorsTime(LocalTime.fromDateFields(nextErrorCheck));
+            Date nextPointUpdate = jobManager.getNextRuntime(ecobeePointUpdateJob, now);
+            ecobeeSettings.setDataCollectionTime(LocalTime.fromDateFields(nextPointUpdate));
+        } catch (ScheduleException e) {
+            ecobeeSettings.setCheckErrorsTime(LocalTime.MIDNIGHT);
+            ecobeeSettings.setDataCollectionTime(LocalTime.MIDNIGHT);
+            log.error("Unable to retrieve ecobee job schedules. ", e);
+        }
         model.addAttribute("ecobeeSettings", ecobeeSettings);
 
         EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now());
-        int statsMonth = currentMonthStats.getMonth();
-        int statsYear = currentMonthStats.getYear();
-        int currentMonthDataCollectionQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
-        int currentMonthDemandResponseQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
-        int currentMonthSystemQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
-        EcobeeQueryStats queryStats;
-        // begin test
-        if(0 == currentMonthDataCollectionQueryCount && 0 == currentMonthDemandResponseQueryCount &&
-            0 == currentMonthSystemQueryCount) {
-            // generate fake data
-            Random rand = new Random();
-            int maxTestVal = 10000;
-            currentMonthDemandResponseQueryCount = rand.nextInt(maxTestVal);
-            currentMonthDataCollectionQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount);
-            currentMonthSystemQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount -
-                currentMonthDataCollectionQueryCount);
-            YearMonth month = new YearMonth().withYear(statsYear).withMonthOfYear(statsMonth);
-            queryStats =
-                new EcobeeQueryStats(month, currentMonthDemandResponseQueryCount, currentMonthDataCollectionQueryCount,
-                    currentMonthSystemQueryCount);
-        } else {
-            queryStats = new EcobeeQueryStats(currentMonthStats);
-        }
-        // end test
+        EcobeeQueryStats queryStats = new EcobeeQueryStats(currentMonthStats);
+
         model.addAttribute("ecobeeStats", queryStats);
+
+        // TODO deviceIssues and groupIssues need real data
         model.addAttribute("deviceIssues", 3);
         model.addAttribute("groupIssues", 6);
 
-        log.debug(queryStats);
         return "dr/ecobee/statistics.jsp";
     }
 
@@ -395,5 +415,10 @@ public class EcobeeController {
         public String getFormatKey() {
             return "yukon.web.modules.dr.ecobee.details." + name();
         }
+    }
+    
+    private ScheduledRepeatingJob getJob(YukonJobDefinition<? extends YukonTask> jobDefinition) {
+        List<ScheduledRepeatingJob> activeJobs = jobManager.getNotDeletedRepeatingJobsByDefinition(jobDefinition);
+        return Iterables.getOnlyElement(activeJobs);
     }
 }

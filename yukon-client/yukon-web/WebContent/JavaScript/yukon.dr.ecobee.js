@@ -64,19 +64,23 @@ yukon.dr.ecobee = (function () {
             });
 
             if ('true' === $('#ecobee-check-errors').val()) {
-                $('#ecobee-config #ecobee-check-errors .toggle-on-off .yes').addClass('on');
-                $('#ecobee-config #ecobee-check-errors .toggle-on-off .no').removeClass('on');
+                $('#ecobee-error-checking-toggle .toggle-on-off .yes').addClass('on');
+                $('#ecobee-error-checking-toggle .toggle-on-off .no').removeClass('on');
+                $('#ecobee-error-check-schedule').show();
             } else {
-                $('#ecobee-config #ecobee-check-errors .toggle-on-off .no').addClass('on');
-                $('#ecobee-config #ecobee-check-errors .toggle-on-off .yes').removeClass('on');
+                $('#ecobee-error-checking-toggle .toggle-on-off .no').addClass('on');
+                $('#ecobee-error-checking-toggle .toggle-on-off .yes').removeClass('on');
+                $('#ecobee-error-check-schedule').hide();
             }
 
             if ('true' === $('#ecobee-data-collection').val()) {
-                $('#ecobee-config #ecobee-data-collection .toggle-on-off .yes').addClass('on');
-                $('#ecobee-config #ecobee-data-collection .toggle-on-off .no').removeClass('on');
+                $('#ecobee-data-collection-toggle .toggle-on-off .yes').addClass('on');
+                $('#ecobee-data-collection-toggle .toggle-on-off .no').removeClass('on');
+                $('#ecobee-data-collection-schedule').show();
             } else {
-                $('#ecobee-config #ecobee-data-collection .toggle-on-off .no').addClass('on');
-                $('#ecobee-config #ecobee-data-collection .toggle-on-off .yes').removeClass('on');
+                $('#ecobee-data-collection-toggle .toggle-on-off .no').addClass('on');
+                $('#ecobee-data-collection-toggle .toggle-on-off .yes').removeClass('on');
+                $('#ecobee-data-collection-schedule').hide();
             }
         }
     };
