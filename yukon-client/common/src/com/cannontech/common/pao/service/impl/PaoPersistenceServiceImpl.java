@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoPersistenceDao;
 import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
@@ -24,8 +24,8 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     @Autowired private PaoPersistenceDao paoPersistenceDao;
 
     @Override
-    public <T extends CompleteYukonPao> T retreivePao(PaoIdentifier paoIdentifier, Class<T> klass) {
-        return paoPersistenceDao.retreivePao(paoIdentifier, klass);
+    public <T extends CompleteYukonPao> T retreivePao(YukonPao pao, Class<T> klass) {
+        return paoPersistenceDao.retreivePao(pao, klass);
     }
 
     @Override
@@ -58,15 +58,15 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     }
 
     @Override
-    public void deletePao(PaoIdentifier paoIdentifier) {
+    public void deletePao(YukonPao pao) {
         try {
-            paoCreationHelper.deletePointsForPao(paoIdentifier.getPaoId());
+            paoCreationHelper.deletePointsForPao(pao.getPaoIdentifier().getPaoId());
         } catch (SQLException e) {
             log.error(e.getMessage());
         }
 
-        paoPersistenceDao.deletePao(paoIdentifier);
+        paoPersistenceDao.deletePao(pao);
 
-        dbChangeManager.processPaoDbChange(paoIdentifier, DbChangeType.DELETE);
+        dbChangeManager.processPaoDbChange(pao, DbChangeType.DELETE);
     }
 }

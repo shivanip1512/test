@@ -3,7 +3,7 @@ package com.cannontech.common.userpage.dao;
 import java.util.List;
 
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.common.userpage.model.UserPage.Key;
@@ -38,13 +38,13 @@ public interface UserPageDao {
     /**
      * Delete all references to pao in page history/favorites for all users. To be called after a Pao is deleted.
      */
-    void deletePagesForPao(PaoIdentifier paoIdentifier);
+    void deletePagesForPao(YukonPao pao);
 
     /**
      * Update all references to pao in page history/favorites for all users to use the new PAO name. To be
      * called after a Pao is updated.
      */
-    void updatePagesForPao(PaoIdentifier paoIdentifier, String paoName);
+    void updatePagesForPao(YukonPao pao, String paoName);
 
     /**
      * @return List of all favorite DR items (Areas, Programs, Groups, Scenarios) for use on the DR dashboard 

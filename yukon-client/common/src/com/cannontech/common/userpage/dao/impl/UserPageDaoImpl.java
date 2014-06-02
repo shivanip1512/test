@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
@@ -331,24 +332,24 @@ public class UserPageDaoImpl implements UserPageDao {
     }
 
     @Override
-    public void deletePagesForPao(PaoIdentifier paoIdentifier) {
+    public void deletePagesForPao(YukonPao pao) {
         List<UserPage> pages = getPages(null, null);
 
         for (UserPage page : pages) {
             Integer pagePaoId = paoIdInPath(page.getPath(), paoUrls);
-            if ( pagePaoId != null && pagePaoId == paoIdentifier.getPaoId() ) {
+            if (pagePaoId != null && pagePaoId == pao.getPaoIdentifier().getPaoId()) {
                 delete(page.getKey());
             }
         }
     }
     
     @Override
-    public void updatePagesForPao(PaoIdentifier paoIdentifier, String paoName) {
+    public void updatePagesForPao(YukonPao pao, String paoName) {
         List<UserPage> pages = getPages(null, null);
 
         for (UserPage page : pages) {
             Integer pagePaoId = paoIdInPath(page.getPath(), paoUrls);
-            if ( pagePaoId != null && pagePaoId == paoIdentifier.getPaoId() ) {
+            if (pagePaoId != null && pagePaoId == pao.getPaoIdentifier().getPaoId()) {
                 List<String> args = Arrays.asList(paoName);
                 page = new UserPage(page.getId(), page.getKey(), page.getModule(), page.getName(), args,
                     page.isFavorite(), page.getLastAccess());

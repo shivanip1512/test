@@ -331,11 +331,11 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
     }
 
     @Override
-    public <T extends CompleteYukonPao> T retreivePao(PaoIdentifier paoIdentifier, final Class<T> klass) {
+    public <T extends CompleteYukonPao> T retreivePao(com.cannontech.common.pao.YukonPao pao, final Class<T> klass) {
         try {
             final T newInstance = klass.newInstance();
 
-            newInstance.setPaoIdentifier(paoIdentifier);
+            newInstance.setPaoIdentifier(pao.getPaoIdentifier());
 
             Set<PaoType> supportedTypes = paoTypeByClass.get(klass);
             if (!supportedTypes.contains(newInstance.getPaoType())) {
@@ -452,24 +452,24 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
 
     @Override
     @Transactional
-    public void deletePao(PaoIdentifier paoIdentifier) {
+    public void deletePao(com.cannontech.common.pao.YukonPao pao) {
         if (log.isDebugEnabled()) {
-            log.debug("Deleting " + paoIdentifier);
+            log.debug("Deleting " + pao);
         }
 
-        List<CompletePaoMetaData> mappings = paoTypeToTableMapping.get(paoIdentifier.getPaoType());
+        List<CompletePaoMetaData> mappings = paoTypeToTableMapping.get(pao.getPaoIdentifier().getPaoType());
         // The list we get from the map is in insertion order, we need to reverse it for deletion.
         List<CompletePaoMetaData> dbTableMappings = Lists.reverse(mappings);
 
         for (CompletePaoMetaData dbTableMapping : dbTableMappings) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("delete from").append(dbTableMapping.getDbTableName());
-            sql.append("where").append(dbTableMapping.getDbIdColumnName()).eq(paoIdentifier.getPaoId());
+            sql.append("where").append(dbTableMapping.getDbIdColumnName()).eq(pao.getPaoIdentifier().getPaoId());
 
             jdbcTemplate.update(sql);
         }
 
-        userPageDao.deletePagesForPao(paoIdentifier);
+        userPageDao.deletePagesForPao(pao);
     }
 
     /**

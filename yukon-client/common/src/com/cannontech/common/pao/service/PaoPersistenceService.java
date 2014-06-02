@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.database.data.point.PointBase;
 
@@ -15,7 +16,7 @@ public interface PaoPersistenceService {
      * @param klass The class of the object expected as a return value.
      * @return a PAO of type T completely populated with data.
      */
-    <T extends CompleteYukonPao> T retreivePao(PaoIdentifier paoIdentifier, Class<T> klass);
+    <T extends CompleteYukonPao> T retreivePao(YukonPao pao, Class<T> klass);
 
     /**
      * Create a PAO of a specific type with default set of points.
@@ -47,5 +48,5 @@ public interface PaoPersistenceService {
      * 
      * @param paoIdentifier the {@link PaoIdentifier} containing the paoId of the PAO to be deleted.
      */
-    void deletePao(PaoIdentifier paoIdentifier);
+    void deletePao(YukonPao pao);
 }
