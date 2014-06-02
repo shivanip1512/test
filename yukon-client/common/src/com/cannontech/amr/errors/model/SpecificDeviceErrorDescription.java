@@ -2,15 +2,13 @@ package com.cannontech.amr.errors.model;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 
-public class SpecificDeviceErrorDescription {
-
+public final class SpecificDeviceErrorDescription {
     private final DeviceErrorDescription errorDescription;
     private final String resultString;
 
-    public SpecificDeviceErrorDescription(DeviceErrorDescription errorDescription,
-                                          String resultString) {
-                                            this.errorDescription = errorDescription;
-                                            this.resultString = resultString;
+    public SpecificDeviceErrorDescription(DeviceErrorDescription errorDescription, String resultString) {
+        this.errorDescription = errorDescription;
+        this.resultString = resultString;
     }
 
     public Integer getErrorCode() {
@@ -35,9 +33,9 @@ public class SpecificDeviceErrorDescription {
 
     @Override
     public String toString() {
-        return errorDescription.toString() + "(" + resultString + ")";
+        return errorDescription + "(" + resultString + ")";
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -49,24 +47,30 @@ public class SpecificDeviceErrorDescription {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         SpecificDeviceErrorDescription other = (SpecificDeviceErrorDescription) obj;
         if (errorDescription == null) {
-            if (other.errorDescription != null)
+            if (other.errorDescription != null) {
                 return false;
-        } else if (!errorDescription.equals(other.errorDescription))
+            }
+        } else if (!errorDescription.equals(other.errorDescription)) {
             return false;
+        }
         if (resultString == null) {
-            if (other.resultString != null)
+            if (other.resultString != null) {
                 return false;
-        } else if (!resultString.equals(other.resultString))
+            }
+        } else if (!resultString.equals(other.resultString)) {
             return false;
+        }
         return true;
     }
-
 }

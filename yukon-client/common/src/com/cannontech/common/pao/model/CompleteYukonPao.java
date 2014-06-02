@@ -9,7 +9,7 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.util.CtiUtilities;
 import com.google.common.base.Objects;
 
-@YukonPao(tableName="YukonPaObject", idColumnName="PaObjectId", paoTypes=PaoType.WEATHER_LOCATION)
+@YukonPao(tableName = "YukonPaObject", idColumnName = "PaObjectId", paoTypes = PaoType.WEATHER_LOCATION)
 public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
     private PaoIdentifier paoIdentifier;
 
@@ -31,17 +31,17 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
         return paoIdentifier.getPaoId();
     }
 
-    @YukonPaoField(columnName="Category")
+    @YukonPaoField(columnName = "Category")
     public PaoCategory getPaoCategory() {
         return paoIdentifier.getPaoType().getPaoCategory();
     }
 
-    @YukonPaoField(columnName="PaoClass")
+    @YukonPaoField(columnName = "PaoClass")
     public PaoClass getPaoClass() {
         return paoIdentifier.getPaoType().getPaoClass();
     }
 
-    @YukonPaoField(columnName="Type")
+    @YukonPaoField(columnName = "Type")
     public PaoType getPaoType() {
         return paoIdentifier.getPaoType();
     }
@@ -64,7 +64,7 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
         this.description = description;
     }
 
-    @YukonPaoField(columnName="DisableFlag")
+    @YukonPaoField(columnName = "DisableFlag")
     public boolean isDisabled() {
         return disabled;
     }
@@ -73,7 +73,7 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
         this.disabled = disabled;
     }
 
-    @YukonPaoField(columnName="PaoStatistics")
+    @YukonPaoField(columnName = "PaoStatistics")
     public String getStatistics() {
         return statistics;
     }
@@ -84,9 +84,8 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + " [ CompleteYukonPao [paoIdentifier="
-                + paoIdentifier + ", paoName=" + paoName + ", description=" + description
-                + ", statistics=" + statistics + ", disabled=" + disabled + "]";
+        return this.getClass().getSimpleName() + " [ CompleteYukonPao [paoIdentifier=" + paoIdentifier + ", paoName="
+            + paoName + ", description=" + description + ", statistics=" + statistics + ", disabled=" + disabled + "]";
     }
 
     @Override
@@ -101,11 +100,9 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
                 return false;
             }
             CompleteYukonPao that = (CompleteYukonPao) object;
-            return Objects.equal(this.paoIdentifier, that.paoIdentifier)
-                    && Objects.equal(this.paoName, that.paoName)
-                    && Objects.equal(this.description, that.description)
-                    && Objects.equal(this.statistics, that.statistics)
-                    && Objects.equal(this.disabled, that.disabled);
+            return Objects.equal(paoIdentifier, that.paoIdentifier) && Objects.equal(paoName, that.paoName)
+                && Objects.equal(description, that.description) && Objects.equal(statistics, that.statistics)
+                && Objects.equal(disabled, that.disabled);
         }
         return false;
     }

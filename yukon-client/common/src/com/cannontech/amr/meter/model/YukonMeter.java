@@ -6,11 +6,10 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 
-public abstract class YukonMeter extends SimpleMeter implements DisplayablePao{
-    
+public abstract class YukonMeter extends SimpleMeter implements DisplayablePao {
     private String name;
     private boolean disabled;
-    
+
     protected YukonMeter(PaoIdentifier paoIdentifier, String meterNumber, String name, boolean disabled) {
         super(paoIdentifier, meterNumber);
         this.name = name;
@@ -41,17 +40,17 @@ public abstract class YukonMeter extends SimpleMeter implements DisplayablePao{
     public PaoType getPaoType() {
         return getPaoIdentifier().getPaoType();
     }
-    
+
     /**
-     * Returns the field representing the communcation address or sensor serial number.
+     * Return the field representing the communication address or sensor serial number.
      */
     public abstract String getSerialOrAddress();
 
     /**
-     * Returns the communication routeName for Meter objects. If no route, overwrite and return empty string.
+     * Return the communication routeName for Meter objects. If no route, overwrite and return empty string.
      */
     public abstract String getRoute();
-    
+
     @Override
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);

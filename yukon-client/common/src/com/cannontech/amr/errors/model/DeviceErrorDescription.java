@@ -1,62 +1,56 @@
 package com.cannontech.amr.errors.model;
 
-
-
 public class DeviceErrorDescription {
-
     private Integer errorCode;
     private String category;
     private String porter;
     private String description;
     private String troubleshooting;
-    
-    public DeviceErrorDescription(Integer errorCode, String category, String porter,
-                                  String description, String troubleshooting) {
-        super();
+
+    public DeviceErrorDescription(Integer errorCode, String category, String porter, String description,
+            String troubleshooting) {
         this.errorCode = errorCode;
         this.category = category;
         this.porter = porter;
         this.description = description;
         this.troubleshooting = troubleshooting;
     }
+
     /**
-     * Returns the error code or null if this is the default.
-     * @return
+     * Get error code or null if this is the default.
      */
     public Integer getErrorCode() {
         return errorCode;
     }
 
     /**
-     * Returns a short description of the error.
-     * @return
+     * Get a short description of the error.
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * Returns an HTML fragment with the troubleshooting steps.
-     * @return
+     * Get an HTML fragment with the troubleshooting steps.
      */
     public String getTroubleshooting() {
         return troubleshooting;
     }
 
     public String getCategory() {
-		return category;
-	}
+        return category;
+    }
 
-	public String getPorter() {
-		return porter;
-	}
+    public String getPorter() {
+        return porter;
+    }
 
     @Override
     public String toString() {
         return description + "(" + porter + " -- " + errorCode + ")";
     }
 
-	@Override
+    @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;

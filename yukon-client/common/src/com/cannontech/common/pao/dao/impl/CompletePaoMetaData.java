@@ -27,26 +27,24 @@ import com.google.common.collect.Lists;
  *      This method is invoked to retrieve the {@link YukonPaoPart} object in order to set
  *      or get its data.
  */
-/*package*/ class CompletePaoMetaData {
-    
+/*package*/ final class CompletePaoMetaData {
     /**
-     * Stores the class of the annotated object. 
+     * The class of the annotated object. 
      */
     private Class<?> klass;
     
     /**
-     * Specifies the name of the table backing the class (if any.) 
+     * The name of the table backing the class (if any.) 
      */
     private String dbTableName;
     
     /**
-     * Specifies the name of the key column which maps back to YukonPaObject's paobjectId column. 
+     * The name of the key column which maps back to YukonPaObject's paobjectId column.
      */
     private String dbIdColumnName;
     
     /**
-     * Contains a {@link PaoFieldMetaData} for each of the {@link YukonPaoField} annotated 
-     * members of the class.
+     * A {@link PaoFieldMetaData} for each of the {@link YukonPaoField} annotated members of the class.
      */
     private Iterable<PaoFieldMetaData> fields = Lists.newArrayList();
     
@@ -59,10 +57,10 @@ import com.google.common.collect.Lists;
     }
 
     public CompletePaoMetaData(CompletePaoMetaData toCopy, PropertyDescriptor propertyDescriptor) {
-        this.klass = toCopy.klass;
-        this.dbTableName = toCopy.dbTableName;
-        this.dbIdColumnName = toCopy.dbIdColumnName;
-        this.fields = toCopy.fields;
+        klass = toCopy.klass;
+        dbTableName = toCopy.dbTableName;
+        dbIdColumnName = toCopy.dbIdColumnName;
+        fields = toCopy.fields;
         this.propertyDescriptor = propertyDescriptor;
     }
 
@@ -108,8 +106,7 @@ import com.google.common.collect.Lists;
 
     @Override
     public String toString() {
-        return "CompletePaoMetaData [klass=" + klass + ", dbTableName=" + dbTableName
-               + ", dbIdColumnName=" + dbIdColumnName + ", fields=" + fields
-               + ", propertyDescriptor=" + propertyDescriptor + "]";
+        return "CompletePaoMetaData [klass=" + klass + ", dbTableName=" + dbTableName + ", dbIdColumnName="
+            + dbIdColumnName + ", fields=" + fields + ", propertyDescriptor=" + propertyDescriptor + "]";
     }
 }
