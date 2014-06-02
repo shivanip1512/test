@@ -47,6 +47,11 @@
     <entry key="yukon.common.events.commandScheduleId">Command Schedule Id</entry>
     <entry key="yukon.common.events.globalSettingType">Global Setting</entry>
     <entry key="yukon.common.events.globalSettingValue">Global Setting Value</entry>
+    <entry key="yukon.common.events.commandRequestString">Command</entry>
+    <entry key="yukon.common.events.totalRequests">Total Requests</entry>
+    <entry key="yukon.common.events.successRequests">Success Requests</entry>
+    <entry key="yukon.common.events.failureRequests">Failure Requests</entry>
+    <entry key="yukon.common.events.notAttemptedRequests">Not Attempted Requests</entry>
 
 <!-- Event log message text and column names -->
 <!-- Account -->
