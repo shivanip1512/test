@@ -222,8 +222,8 @@
         <pages>
           <page name="configs.config.CREATE" type="BASIC"/>
           <page name="configs.config.VIEW" type="DETAIL_CHILD">
-            <link>/deviceConfiguration/viewConfiguration?configId=${deviceConfigurationBackingBean.configId}</link>
-            <labelArgument>${deviceConfigurationBackingBean.configName}</labelArgument>
+            <link>/deviceConfiguration/viewConfiguration?configId=${deviceConfig.configId}</link>
+            <labelArgument>${deviceConfig.configName}</labelArgument>
             <pages>
               <page name="configs.config.EDIT" type="BASIC" hideFavorite="true"/>
             </pages>

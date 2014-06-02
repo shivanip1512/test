@@ -1,6 +1,6 @@
 package com.cannontech.web.deviceConfiguration.model;
 
-public class DeviceConfigurationBackingBean {
+public class DeviceConfig {
     private Integer configId;
     private String configName;
     private String description;

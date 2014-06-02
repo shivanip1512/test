@@ -9,7 +9,7 @@ import com.google.common.base.Objects;
 /**
  * This backing bean stores the categories that have been chosen by the user.
  */
-public class ConfigurationCategoriesBackingBean {
+public class ConfigCategories {
     private Integer configId; 
     private List<CategorySelection> categorySelections = LazyList.ofInstance(CategorySelection.class);
     

@@ -6,13 +6,13 @@
 <cti:msgScope paths=",yukon.web.modules.tools.configs.category">
     <div class="clearfix">
         <c:set var="catType" value="${category.categoryDisplay.categoryType}"/>
-        <c:set var="selection" value="${configurationCategoriesBackingBean.categorySelections[(loopStatus.index)]}"/>
+        <c:set var="selection" value="${configCategories.categorySelections[(loopStatus.index)]}"/>
     
         <input type="hidden" id="categoryId_${catType}" value="${selection.categoryId}"/>
     
         <div class="pr clearfix">
             <c:set var="attrs" value=""/>
-            <c:forEach var="deviceType" items="${configurationDeviceTypesBackingBean.typesByCategory[catType]}">
+            <c:forEach var="deviceType" items="${deviceConfigTypes.typesByCategory[catType]}">
                 <c:set var="attrs" value="${attrs} data-device-type-${deviceType}"/>
             </c:forEach>
             <span ${attrs} class="pipe" style="margin-bottom: 20px;">&nbsp;</span>
@@ -33,7 +33,7 @@
                        class="f-category-type-info dib" 
                        title="click for more details" 
                        data-category-type="${catType}" 
-                       data-config-id="${configurationCategoriesBackingBean.configId}"
+                       data-config-id="${configCategories.configId}"
                        data-popup-title="${catPopupTitle}">
                         <cti:icon icon="icon-help" popup="#section-container-info-popup-${catType}"/>
                     </a>
@@ -64,7 +64,7 @@
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
                     <cti:url var="swapCategoryUrl" value="/deviceConfiguration/config/swapCategory"/>
                     <form id="categoryChange_${catType}" action="${swapCategoryUrl}">
-                        <input type="hidden" name="configId" value="${configurationCategoriesBackingBean.configId}">
+                        <input type="hidden" name="configId" value="${configCategories.configId}">
                         <input type="hidden" name="newCategoryId" id="newCategoryId_${catType}">
                         <input type="hidden" name="categoryType" value="${catType}">
                        
@@ -95,7 +95,7 @@
                                 <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
                                 <cti:msg2 var="createBtnTitle" key=".createCategory" argument="${i18nCatType}"/>
                                 <cti:button nameKey="create" 
-                                    data-config-id="${configurationCategoriesBackingBean.configId}" 
+                                    data-config-id="${configCategories.configId}" 
                                     data-category-type="${catType}" 
                                     classes="f-create-category" 
                                     busy="true" 
@@ -104,7 +104,7 @@
                                 <c:if test="${not empty selection.categoryId}">
                                     <cti:msg2 var="editBtnTitle" key=".editAssignedCategory" argument="${selection.categoryName}"/>
                                     <cti:button nameKey="edit" 
-                                        data-config-id="${configurationCategoriesBackingBean.configId}" 
+                                        data-config-id="${configCategories.configId}" 
                                         data-category-type="${catType}" 
                                         classes="f-edit-category" 
                                         busy="true" 

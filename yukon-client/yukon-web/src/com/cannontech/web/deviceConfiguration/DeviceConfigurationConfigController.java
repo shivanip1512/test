@@ -43,10 +43,10 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.deviceConfiguration.model.CategoryDisplay;
-import com.cannontech.web.deviceConfiguration.model.ConfigurationCategoriesBackingBean;
-import com.cannontech.web.deviceConfiguration.model.ConfigurationCategoriesBackingBean.CategorySelection;
-import com.cannontech.web.deviceConfiguration.model.ConfigurationDeviceTypesBackingBean;
-import com.cannontech.web.deviceConfiguration.model.DeviceConfigurationBackingBean;
+import com.cannontech.web.deviceConfiguration.model.ConfigCategories;
+import com.cannontech.web.deviceConfiguration.model.ConfigCategories.CategorySelection;
+import com.cannontech.web.deviceConfiguration.model.DeviceConfigTypes;
+import com.cannontech.web.deviceConfiguration.model.DeviceConfig;
 import com.cannontech.web.deviceConfiguration.validation.DeviceConfigurationValidator;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -95,7 +95,7 @@ public class DeviceConfigurationConfigController {
         setupModelMap(model, 
                       PageEditMode.CREATE, 
                       null,  // no config id
-                      new DeviceConfigurationBackingBean(), 
+                      new DeviceConfig(), 
                       null,  // no device types backing bean
                       null); // no categories backing bean.
         
@@ -105,29 +105,29 @@ public class DeviceConfigurationConfigController {
     @RequestMapping("save") 
     public String save(ModelMap model,
                        FlashScope flashScope,
-                       @ModelAttribute DeviceConfigurationBackingBean deviceConfigurationBackingBean,
+                       @ModelAttribute DeviceConfig deviceConfig,
                        BindingResult bindingResult,
                        YukonUserContext context) {
         DeviceConfigurationValidator validator = new DeviceConfigurationValidator();
-        validator.validate(deviceConfigurationBackingBean, bindingResult);
+        validator.validate(deviceConfig, bindingResult);
         
         if (bindingResult.hasErrors()) {
             flashScope.setMessage(new YukonMessageSourceResolvable(baseKey + ".errorsExist"), FlashScopeMessageType.ERROR);
-            return showConfigurationPageForErrorMessage(model, deviceConfigurationBackingBean);
+            return showConfigurationPageForErrorMessage(model, deviceConfig);
             // We need to return to the edit view if this config has an Id, create otherwise.
         }
 
-        String configName = deviceConfigurationBackingBean.getConfigName();
+        String configName = deviceConfig.getConfigName();
         if (!(DeviceGroupUtil.isValidName(configName))) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.containsIllegalChars"));
-            return showConfigurationPageForErrorMessage(model, deviceConfigurationBackingBean);
+            return showConfigurationPageForErrorMessage(model, deviceConfig);
         }
 
         try {
             int configId = 
-                deviceConfigurationService.saveConfigurationBase(deviceConfigurationBackingBean.getConfigId(), 
-                                                                 deviceConfigurationBackingBean.getConfigName(), 
-                                                                 deviceConfigurationBackingBean.getDescription());
+                deviceConfigurationService.saveConfigurationBase(deviceConfig.getConfigId(), 
+                                                                 deviceConfig.getConfigName(), 
+                                                                 deviceConfig.getDescription());
             
             flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".config.saveSuccess"));
 
@@ -138,20 +138,20 @@ public class DeviceConfigurationConfigController {
             log.debug("Creation of a device configuration with an already existing name was attempted.");
             
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".config.nameExists"));
-            if (deviceConfigurationBackingBean.getConfigId() == null) {
+            if (deviceConfig.getConfigId() == null) {
                 return "redirect:create";
             } else {
-                return "redirect:edit?configId=" + deviceConfigurationBackingBean.getConfigId();
+                return "redirect:edit?configId=" + deviceConfig.getConfigId();
             }
         } catch (DataIntegrityViolationException e) {
             // Some other error occurred.
             log.debug("Exception caught during the configuration save process.", e);
             
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".config.errorOccurred"));
-            if (deviceConfigurationBackingBean.getConfigId() == null) {
+            if (deviceConfig.getConfigId() == null) {
                 return "redirect:create";
             } else {
-                return "redirect:edit?configId=" + deviceConfigurationBackingBean.getConfigId();
+                return "redirect:edit?configId=" + deviceConfig.getConfigId();
             }
         }
     }
@@ -159,19 +159,19 @@ public class DeviceConfigurationConfigController {
     /**
      * Sets up the model map for rendering a configuration view.
      * @param model the model map
-     * @param deviceConfigurationBackingBean the backing bean containing the configuration data.
+     * @param deviceConfig the backing bean containing the configuration data.
      */
     
     private String showConfigurationPageForErrorMessage(ModelMap model,
-                                                        DeviceConfigurationBackingBean deviceConfigurationBackingBean) {
+                                                        DeviceConfig deviceConfig) {
         PageEditMode mode =
-            deviceConfigurationBackingBean.getConfigId() != null ? PageEditMode.EDIT
+            deviceConfig.getConfigId() != null ? PageEditMode.EDIT
                     : PageEditMode.CREATE;
 
         setupModelMap(model,
                       mode,
-                      deviceConfigurationBackingBean.getConfigId(),
-                      deviceConfigurationBackingBean,
+                      deviceConfig.getConfigId(),
+                      deviceConfig,
                       null,
                       null);
 
@@ -206,8 +206,8 @@ public class DeviceConfigurationConfigController {
     public String addSupportedTypes(ModelMap model, 
                                     FlashScope flashScope, 
                                     YukonUserContext context, 
-                                    @ModelAttribute ConfigurationDeviceTypesBackingBean configurationDeviceTypesBackingBean) {
-        Map<PaoType, Boolean> supportedTypes = configurationDeviceTypesBackingBean.getSupportedTypes();
+                                    @ModelAttribute DeviceConfigTypes deviceConfigTypes) {
+        Map<PaoType, Boolean> supportedTypes = deviceConfigTypes.getSupportedTypes();
         
         Set<PaoType> trueTypes = new HashSet<>();
         for (Entry<PaoType, Boolean> entry : supportedTypes.entrySet()) {
@@ -216,7 +216,7 @@ public class DeviceConfigurationConfigController {
             }
         }
         
-        int configId = configurationDeviceTypesBackingBean.getConfigId();
+        int configId = deviceConfigTypes.getConfigId();
         
         SetView<PaoType> addTypes = 
             Sets.difference(trueTypes, deviceConfigurationDao.getSupportedTypesForConfiguration(configId));
@@ -281,35 +281,35 @@ public class DeviceConfigurationConfigController {
                               PageEditMode mode) {
         DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
 
-        // Setup the DeviceConfigurationBackingBean
-        DeviceConfigurationBackingBean deviceConfigurationBackingBean = setupConfigBackingBean(configId, config);
+        // Setup the DeviceConfig
+        DeviceConfig deviceConfig = setupConfigBackingBean(configId, config);
 
-        // Setup the ConfigurationDeviceTypesBackingBean
-        ConfigurationDeviceTypesBackingBean configurationDeviceTypesBackingBean = setupTypesBackingBean(config);
+        // Setup the DeviceConfigTypes
+        DeviceConfigTypes deviceConfigTypes = setupTypesBackingBean(config);
         
-        // Setup the ConfigurationCategoriesBackingBean
-        ConfigurationCategoriesBackingBean configurationCategoriesBackingBean = 
+        // Setup the ConfigCategories
+        ConfigCategories configCategories = 
             setupCategoriesBackingBean(flashScope, context, config);
         
         setupModelMap(model, 
                       mode,
                       configId,
-                      deviceConfigurationBackingBean, 
-                      configurationDeviceTypesBackingBean, 
-                      configurationCategoriesBackingBean);
+                      deviceConfig, 
+                      deviceConfigTypes, 
+                      configCategories);
         
         return "configuration.jsp";
     }
     
-    private ConfigurationCategoriesBackingBean setupCategoriesBackingBean(FlashScope flashScope, 
+    private ConfigCategories setupCategoriesBackingBean(FlashScope flashScope, 
                                                                           YukonUserContext context,
                                                                           DeviceConfiguration config) {
-        ConfigurationCategoriesBackingBean configurationCategoriesBackingBean = 
-            new ConfigurationCategoriesBackingBean();
+        ConfigCategories configCategories = 
+            new ConfigCategories();
         
-        handleMissingCategories(flashScope, context, config, configurationCategoriesBackingBean);
+        handleMissingCategories(flashScope, context, config, configCategories);
 
-        List<CategorySelection> selections = configurationCategoriesBackingBean.getCategorySelections();
+        List<CategorySelection> selections = configCategories.getCategorySelections();
         for (DeviceConfigCategory category : config.getCategories()) {
             CategoryDisplay categoryDisplay = 
                 new CategoryDisplay(
@@ -331,22 +331,22 @@ public class DeviceConfigurationConfigController {
         List<CategorySelection> orderedSelections = 
             formattingService.sortDisplayableValues(selections, null, null, context);
         
-        configurationCategoriesBackingBean.setCategorySelections(orderedSelections);
+        configCategories.setCategorySelections(orderedSelections);
         
-        configurationCategoriesBackingBean.setConfigId(config.getConfigurationId());
+        configCategories.setConfigId(config.getConfigurationId());
 
-        return configurationCategoriesBackingBean;
+        return configCategories;
     }
 
-    private ConfigurationDeviceTypesBackingBean setupTypesBackingBean(DeviceConfiguration config) {
-        ConfigurationDeviceTypesBackingBean configurationDeviceTypesBackingBean = 
-            new ConfigurationDeviceTypesBackingBean();
+    private DeviceConfigTypes setupTypesBackingBean(DeviceConfiguration config) {
+        DeviceConfigTypes deviceConfigTypes = 
+            new DeviceConfigTypes();
         
         Set<PaoType> supportedTypes = config.getSupportedDeviceTypes();
         List<PaoType> sortedTypes = Lists.newArrayList(supportedTypes);
         Collections.sort(sortedTypes, paoTypeAlphaComparator);
         for (PaoType deviceType : sortedTypes) {
-            configurationDeviceTypesBackingBean.getSupportedTypes().put(deviceType, true);
+            deviceConfigTypes.getSupportedTypes().put(deviceType, true);
         }
         
         Multimap<String, PaoType> categoryToPaoTypeMap = ArrayListMultimap.create();
@@ -357,16 +357,16 @@ public class DeviceConfigurationConfigController {
             }
         }
         
-        configurationDeviceTypesBackingBean.setTypesByCategory(categoryToPaoTypeMap.asMap());
+        deviceConfigTypes.setTypesByCategory(categoryToPaoTypeMap.asMap());
         
         Set<PaoType> allTypes = getAllConfigurationPaoTypes();
         
         List<PaoType> availableTypes = new ArrayList<>(Sets.difference(allTypes, supportedTypes));
         Collections.sort(availableTypes, paoTypeAlphaComparator);
         
-        configurationDeviceTypesBackingBean.setAvailableTypes(availableTypes);
+        deviceConfigTypes.setAvailableTypes(availableTypes);
         
-        return configurationDeviceTypesBackingBean;
+        return deviceConfigTypes;
     }
 
     private Set<PaoType> getAllConfigurationPaoTypes() {
@@ -380,14 +380,14 @@ public class DeviceConfigurationConfigController {
         return allTypes;
     }
     
-    private DeviceConfigurationBackingBean setupConfigBackingBean(int configId, 
+    private DeviceConfig setupConfigBackingBean(int configId, 
                                                                   DeviceConfiguration deviceConfiguration) {
-        DeviceConfigurationBackingBean deviceConfigurationBackingBean = new DeviceConfigurationBackingBean();
-        deviceConfigurationBackingBean.setConfigId(configId);
-        deviceConfigurationBackingBean.setConfigName(deviceConfiguration.getName());
-        deviceConfigurationBackingBean.setDescription(deviceConfiguration.getDescription());
+        DeviceConfig deviceConfig = new DeviceConfig();
+        deviceConfig.setConfigId(configId);
+        deviceConfig.setConfigName(deviceConfiguration.getName());
+        deviceConfig.setDescription(deviceConfiguration.getDescription());
         
-        return deviceConfigurationBackingBean;
+        return deviceConfig;
     }
     
     private Set<CategoryType> validateCategories(DeviceConfiguration deviceConfiguration) {
@@ -431,7 +431,7 @@ public class DeviceConfigurationConfigController {
     private void handleMissingCategories(FlashScope flashScope, 
             YukonUserContext context,
             DeviceConfiguration deviceConfiguration,
-            ConfigurationCategoriesBackingBean configurationCategoriesBackingBean) {
+            ConfigCategories configCategories) {
         Set<CategoryType> missingCategories = validateCategories(deviceConfiguration);
 
         if (!missingCategories.isEmpty()) {
@@ -458,7 +458,7 @@ public class DeviceConfigurationConfigController {
                         categoryType.value(),
                         deviceConfigurationDao.categoriesExistForType(categoryType.value()));
 
-                configurationCategoriesBackingBean.getCategorySelections().add(
+                configCategories.getCategorySelections().add(
                     new CategorySelection(categoryDisplay, noneSelected));
             }
         }
@@ -468,15 +468,15 @@ public class DeviceConfigurationConfigController {
         Set<PaoDefinition> configDefinitions = 
             paoDefinitionDao.getCreatablePaosThatSupportTag(PaoTag.DEVICE_CONFIGURATION);
         
-        ConfigurationDeviceTypesBackingBean backingBean;
+        DeviceConfigTypes backingBean;
         if (configId != null) {
             // Populate the current types.
             DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
             Set<PaoType> supportedDeviceTypes = configuration.getSupportedDeviceTypes();
             
-            backingBean = ConfigurationDeviceTypesBackingBean.fromPaoTypes(configDefinitions, supportedDeviceTypes);
+            backingBean = DeviceConfigTypes.fromPaoTypes(configDefinitions, supportedDeviceTypes);
         } else {
-            backingBean = ConfigurationDeviceTypesBackingBean.fromPaoDefinitions(configDefinitions);
+            backingBean = DeviceConfigTypes.fromPaoDefinitions(configDefinitions);
         }
         
         backingBean.setConfigId(configId);
@@ -490,7 +490,7 @@ public class DeviceConfigurationConfigController {
      */
     private void setupModelMapForSetup(ModelMap model, 
                                        Integer configId, 
-                                       ConfigurationDeviceTypesBackingBean backingBean) {
+                                       DeviceConfigTypes backingBean) {
         if (configId != null) {
             model.addAttribute("configId", configId);
         }
@@ -503,7 +503,7 @@ public class DeviceConfigurationConfigController {
         }
         
         // Add the bean to the model.
-        model.addAttribute("configurationDeviceTypesBackingBean", backingBean);
+        model.addAttribute("deviceConfigTypes", backingBean);
         
         // Add the possible types for the checkboxes.
         List<PaoType> rtus = new ArrayList<>();
@@ -534,26 +534,26 @@ public class DeviceConfigurationConfigController {
      * Sets up the model map for rendering a configuration view.
      * @param model the model map
      * @param mode the mode the view will be rendered in
-     * @param deviceConfigurationBackingBean the backing bean containing the configuration data.
+     * @param deviceConfig the backing bean containing the configuration data.
      */
     private void setupModelMap(ModelMap model, 
                                PageEditMode mode,
                                Integer configId,
-                               DeviceConfigurationBackingBean deviceConfigurationBackingBean, 
-                               ConfigurationDeviceTypesBackingBean configurationDeviceTypesBackingBean,
-                               ConfigurationCategoriesBackingBean configurationCategoriesBackingBean) {
+                               DeviceConfig deviceConfig, 
+                               DeviceConfigTypes deviceConfigTypes,
+                               ConfigCategories configCategories) {
         boolean isDeletable = configId == null ? false : deviceConfigurationDao.isConfigurationDeletable(configId);
         model.addAttribute("isDeletable", isDeletable);
 
-        model.addAttribute("deviceConfigurationBackingBean", deviceConfigurationBackingBean);
-        model.addAttribute("configurationDeviceTypesBackingBean", configurationDeviceTypesBackingBean);
-        model.addAttribute("configurationCategoriesBackingBean", configurationCategoriesBackingBean);
+        model.addAttribute("deviceConfig", deviceConfig);
+        model.addAttribute("deviceConfigTypes", deviceConfigTypes);
+        model.addAttribute("configCategories", configCategories);
 
         model.addAttribute("mode", mode);
         
         boolean showTypesPopupOnLoad = 
             mode == PageEditMode.VIEW && 
-            configurationDeviceTypesBackingBean.isSupportedTypesEmpty();
+            deviceConfigTypes.isSupportedTypesEmpty();
         
         model.addAttribute("showTypesPopupOnLoad", showTypesPopupOnLoad);
         

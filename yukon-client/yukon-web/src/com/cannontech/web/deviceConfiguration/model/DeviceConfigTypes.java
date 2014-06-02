@@ -12,13 +12,13 @@ import java.util.Set;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 
-public class ConfigurationDeviceTypesBackingBean {
+public class DeviceConfigTypes {
     private int configId;
     private Map<PaoType, Boolean> supportedTypes = new LinkedHashMap<>();
     private Map<String, Collection<PaoType>> typesByCategory = new HashMap<>();
     private List<PaoType> availableTypes = new ArrayList<>();
     
-    public ConfigurationDeviceTypesBackingBean() {
+    public DeviceConfigTypes() {
     }
     
     /**
@@ -34,9 +34,9 @@ public class ConfigurationDeviceTypesBackingBean {
      * @return a backing bean whose supported types contains all pao types present in the provided definitions with 
      *      supported values of true for all of the provided pao types.
      */
-    public static ConfigurationDeviceTypesBackingBean fromPaoTypes(Set<PaoDefinition> definitions, 
+    public static DeviceConfigTypes fromPaoTypes(Set<PaoDefinition> definitions, 
                                                                    Set<PaoType> paoTypes) {
-        ConfigurationDeviceTypesBackingBean backingBean = new ConfigurationDeviceTypesBackingBean();
+        DeviceConfigTypes backingBean = new DeviceConfigTypes();
 
         for (PaoDefinition definition : definitions) {
             backingBean.supportedTypes.put(definition.getType(), false);
@@ -59,7 +59,7 @@ public class ConfigurationDeviceTypesBackingBean {
      * @return a backing bean whose supported types contains entries for all of the pao types in the provided
      *      pao definitions and whose supported values are all false;
      */
-    public static ConfigurationDeviceTypesBackingBean fromPaoDefinitions(Set<PaoDefinition> definitions) {
+    public static DeviceConfigTypes fromPaoDefinitions(Set<PaoDefinition> definitions) {
         return fromPaoTypes(definitions, null);
     }
     

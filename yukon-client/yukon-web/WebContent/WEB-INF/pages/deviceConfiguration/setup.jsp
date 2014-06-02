@@ -6,10 +6,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<d:ajaxPage okEvent="yukonDialogSubmit" module="tools" nameKey="addSupportedTypes" page="configs.config" 
-    id="supportedTypePopup"
-    options="{ 'width' : '988' }">
-    <form:form commandName="configurationDeviceTypesBackingBean" action="addSupportedTypes">
+
+<cti:msgScope paths="modules.tools.configs.config">
+<div id="supportedTypePopup">
+    <form:form id="supported-types-form" commandName="deviceConfigTypes" action="addSupportedTypes">
         <cti:csrfToken/>
         <form:hidden path="configId"/>
 
@@ -25,10 +25,10 @@
                     <div class="column-12-12">
                         <div class="column one">
                             <%-- FOR EVENS --%>
-                            <c:forEach items="${meters}" begin="0" step="2" end="${fn:length(meters)}" var="meter" varStatus="status">
+                            <c:forEach items="${meters}" begin="0" step="2" var="meter" varStatus="status">
                                 <div class="category">
                                     <label>
-                                        <c:set var="disabled" value="${configurationDeviceTypesBackingBean.supportedTypes[meter]}"/>
+                                        <c:set var="disabled" value="${deviceConfigTypes.supportedTypes[meter]}"/>
                                         <tags:checkbox path="supportedTypes[${meter}]" disabled="${disabled}"/>
                                         <span class="checkBoxLabel">${fn:escapeXml(meter.dbString)}</span>
                                     </label>
@@ -37,10 +37,10 @@
                         </div>
                         <div class="column two nogutter">
                             <%-- FOR ODDS --%>
-                            <c:forEach items="${meters}" begin="1" step="2" end="${fn:length(meters)}" var="meter" varStatus="status">
+                            <c:forEach items="${meters}" begin="1" step="2" var="meter" varStatus="status">
                                 <div class="category">
                                     <label>
-                                        <c:set var="disabled" value="${configurationDeviceTypesBackingBean.supportedTypes[meter]}"/>
+                                        <c:set var="disabled" value="${deviceConfigTypes.supportedTypes[meter]}"/>
                                         <tags:checkbox path="supportedTypes[${meter}]" disabled="${disabled}"/>
                                         <span class="checkBoxLabel">${fn:escapeXml(meter.dbString)}</span>
                                     </label>
@@ -55,10 +55,10 @@
                     <div class="column-12-12">
                         <div class="column one">
                             <%-- FOR EVENS --%>
-                            <c:forEach items="${rtus}" begin="0" step="2" end="${fn:length(rtus)}" var="rtu" varStatus="status">
+                            <c:forEach items="${rtus}" begin="0" step="2" var="rtu" varStatus="status">
                                 <div class="category">
                                     <label>
-                                        <c:set var="disabled" value="${configurationDeviceTypesBackingBean.supportedTypes[rtu]}"/>
+                                        <c:set var="disabled" value="${deviceConfigTypes.supportedTypes[rtu]}"/>
                                         <tags:checkbox path="supportedTypes[${rtu}]" disabled="${disabled}"/>
                                         <span class="checkBoxLabel">${fn:escapeXml(rtu.dbString)}</span>
                                     </label>
@@ -67,10 +67,10 @@
                         </div>
                         <div class="column two nogutter">
                             <%-- FOR ODDS --%>
-                            <c:forEach items="${rtus}" begin="1" step="2" end="${fn:length(rtus)}" var="rtu" varStatus="status">
+                            <c:forEach items="${rtus}" begin="1" step="2" var="rtu" varStatus="status">
                                 <div class="category">
                                     <label>
-                                        <c:set var="disabled" value="${configurationDeviceTypesBackingBean.supportedTypes[rtu]}"/>
+                                        <c:set var="disabled" value="${deviceConfigTypes.supportedTypes[rtu]}"/>
                                         <tags:checkbox path="supportedTypes[${rtu}]" disabled="${disabled}"/>
                                         <span class="checkBoxLabel">${fn:escapeXml(rtu.dbString)}</span>
                                     </label>
@@ -85,10 +85,10 @@
                     <div class="column-12-12">
                         <div class="column one">
                             <%-- FOR EVENS --%>
-                            <c:forEach items="${cbcs}" begin="0" step="2" end="${fn:length(cbcs)}" var="cbc" varStatus="status">
+                            <c:forEach items="${cbcs}" begin="0" step="2" var="cbc" varStatus="status">
                                 <div class="category">
                                     <label>
-                                        <c:set var="disabled" value="${configurationDeviceTypesBackingBean.supportedTypes[cbc]}"/>
+                                        <c:set var="disabled" value="${deviceConfigTypes.supportedTypes[cbc]}"/>
                                         <tags:checkbox path="supportedTypes[${cbc}]" disabled="${disabled}"/>
                                         <span class="checkBoxLabel">${fn:escapeXml(cbc.dbString)}</span>
                                     </label>
@@ -97,10 +97,10 @@
                         </div>
                         <div class="column two nogutter">
                             <%-- FOR ODDS --%>
-                            <c:forEach items="${cbcs}" begin="1" step="2" end="${fn:length(cbcs)}" var="cbc" varStatus="status">
+                            <c:forEach items="${cbcs}" begin="1" step="2" var="cbc" varStatus="status">
                                 <div class="category">
                                     <label>
-                                        <c:set var="disabled" value="${configurationDeviceTypesBackingBean.supportedTypes[cbc]}"/>
+                                        <c:set var="disabled" value="${deviceConfigTypes.supportedTypes[cbc]}"/>
                                         <tags:checkbox path="supportedTypes[${cbc}]" disabled="${disabled}"/>
                                         <span class="checkBoxLabel">${fn:escapeXml(cbc.dbString)}</span>
                                     </label>
@@ -112,4 +112,5 @@
             </div>
         </div>
     </form:form>
-</d:ajaxPage>
+</div>
+</cti:msgScope>

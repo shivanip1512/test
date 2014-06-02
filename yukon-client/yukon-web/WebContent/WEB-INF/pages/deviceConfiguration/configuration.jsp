@@ -13,11 +13,11 @@
 
     <tags:setFormEditMode mode="${mode}"/>
     
-    <form:form commandName="deviceConfigurationBackingBean" action="save">
+    <form:form commandName="deviceConfig" action="save">
         <cti:csrfToken/>
         <form:hidden path="configId"/>
         
-        <c:if test="${configurationDeviceTypesBackingBean.supportedTypesEmpty}">
+        <c:if test="${deviceConfigTypes.supportedTypesEmpty}">
             <tags:alertBox nameKey=".noSupportedTypesPage"/>
         </c:if>
 
@@ -32,7 +32,7 @@
             <cti:displayForPageEditModes modes="VIEW">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
                     <cti:url value="edit" var="editUrl">
-                        <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
+                        <cti:param name="configId" value="${deviceConfig.configId}"/>
                     </cti:url>
                     <cti:button nameKey="edit" href="${editUrl}" icon="icon-pencil"/>
                 </cti:checkRolesAndProperties>
@@ -45,12 +45,12 @@
                     <c:if test="${isDeletable}">
                         <d:confirm on="#remove" nameKey="confirmRemove"/>
                         <cti:url var="deleteUrl" value="delete">
-                            <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
+                            <cti:param name="configId" value="${deviceConfig.configId}"/>
                         </cti:url>
                         <cti:button nameKey="remove" id="remove" href="${deleteUrl}" disabled="${disabled}"/>
                     </c:if>
                     <cti:url var="viewUrl" value="view">
-                        <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
+                        <cti:param name="configId" value="${deviceConfig.configId}"/>
                     </cti:url>
                     <cti:button nameKey="cancel" href="${viewUrl}"/>
                 </cti:checkRolesAndProperties>
@@ -74,30 +74,33 @@
         <div class="column-6-18">
             <!-- CATEGORIES -->
             <div class="column one">
-                <form:form commandName="configurationDeviceTypesBackingBean" action="addSupportedType">
+                <form:form commandName="deviceConfigTypes" action="addSupportedType">
                     <cti:csrfToken/>
-                    <input type="hidden" name="configId" value="${deviceConfigurationBackingBean.configId}"/>
-                    <c:forEach var="item" items="${configurationDeviceTypesBackingBean.supportedTypes}">
+                    <input type="hidden" name="configId" value="${deviceConfig.configId}"/>
+                    <c:forEach var="item" items="${deviceConfigTypes.supportedTypes}">
                         <form:hidden path="supportedTypes[${item.key}]"/>
                     </c:forEach>
-                    
                     <tags:sectionContainer title="Device Types">
                         <ul class="editable-list">
-                            <c:forEach var="type" items="${configurationDeviceTypesBackingBean.supportedTypes}">
+                            <c:forEach var="type" items="${deviceConfigTypes.supportedTypes}">
                                 <c:if test="${not empty type.value}">
                                     <li class="f-categories" data-device-type="${type.key}">
                                         <a href="javascript:void(0);" class="pipe-selector ">
-                                            <span data-device-type="${type.key}" class="pipe f-categories">&nbsp;</span><span>${type.key.dbString}</span>
+                                            <span data-device-type="${type.key}" class="pipe f-categories">&nbsp;</span>
+                                            <span>${type.key.dbString}</span>
                                         </a>
                                         <cti:checkRolesAndProperties value="${editingRoleProperty}">
                                             <cti:displayForPageEditModes modes="VIEW">
-                                                <c:if test="${fn:length(configurationDeviceTypesBackingBean.supportedTypes) > 1}">
-                                                    <d:confirm on="#remove-${type.key}" nameKey="confirmSupportedTypeRemove" argument="${type.key.dbString}"/>
+                                                <c:if test="${fn:length(deviceConfigTypes.supportedTypes) > 1}">
+                                                    <d:confirm on="#remove-${type.key}" nameKey="confirmSupportedTypeRemove"
+                                                        argument="${type.key.dbString}"/>
                                                     <cti:url var="removeUrl" value="removeSupportedType">
-                                                        <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
+                                                        <cti:param name="configId" value="${deviceConfig.configId}"/>
                                                         <cti:param name="paoType" value="${type.key}"/>
                                                     </cti:url>
-                                                    <cti:button nameKey="remove" icon="icon-cross" renderMode="image" id="remove-${type.key}" classes="remove-item fr vh" href="${removeUrl}"/>
+                                                    <cti:button nameKey="remove" icon="icon-cross" renderMode="image" 
+                                                        id="remove-${type.key}" classes="remove-item fr vh" 
+                                                        href="${removeUrl}"/>
                                                 </c:if>
                                             </cti:displayForPageEditModes>
                                         </cti:checkRolesAndProperties>
@@ -108,9 +111,11 @@
                     </tags:sectionContainer>
                     <cti:displayForPageEditModes modes="VIEW">
                         <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                            <c:if test="${! empty configurationDeviceTypesBackingBean.availableTypes}">
+                            <c:if test="${! empty deviceConfigTypes.availableTypes}">
                                 <div class="action-area">
-                                    <cti:button nameKey="addTypes" data-config-id="${deviceConfigurationBackingBean.configId}" id="addTypeBtn" icon="icon-add" renderMode="button"/>
+                                    <cti:button nameKey="addTypes" icon="icon-add" renderMode="button"
+                                    data-config-id="${deviceConfig.configId}" popup="#supportedTypePopup"
+                                    data-show-device-types="${showTypesPopupOnLoad}" />
                                 </div>
                             </c:if>
                         </cti:checkRolesAndProperties>
@@ -121,7 +126,7 @@
                 <tags:sectionContainer title="Categories">
                     <div class="separated-sections">
                         <cti:displayForPageEditModes modes="VIEW,EDIT,CREATE">
-                            <c:forEach var="category" items="${configurationCategoriesBackingBean.categorySelections}" end="${fn:length(configurationCategoriesBackingBean.categorySelections)}" varStatus="loopStatus">
+                            <c:forEach var="category" items="${configCategories.categorySelections}" varStatus="loopStatus">
                                 <div class="pipe-selector section <c:if test="${!loopStatus.last}">stacked</c:if>">
                                     <%@ include file="categories.jspf" %>
                                 </div>
@@ -132,8 +137,12 @@
             </div>
         </div>
     </cti:displayForPageEditModes>
-    
-    <div id="supportedTypePopup" data-show-on-load="${showTypesPopupOnLoad}" data-config-id="${deviceConfigurationBackingBean.configId}"></div>
-    <div id="category-popup" class="dn"></div>
+    <cti:url var="processAddTypes" value="processAddTypes">
+        <cti:param name="configId" value="${deviceConfig.configId}" />
+    </cti:url>
+    <cti:msg2 var="popupTitle" key="yukon.web.modules.tools.configs.config.addSupportedTypes.title"/>
+    <div id="supportedTypePopup" dialog data-config-id="${deviceConfig.configId}"
+        data-url="${processAddTypes}" data-width="988" data-title="${popupTitle}" data-form="#supported-types-form" />
+    <div id="category-popup" class="dn" />
     
 </cti:standardPage>

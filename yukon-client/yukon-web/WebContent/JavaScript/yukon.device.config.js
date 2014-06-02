@@ -161,14 +161,10 @@ yukon.deviceConfig = (function () {
         /** Initialize the module. Depends on DOM elements so call after page load. */
         init : function() {
             
-            var typesPopup = $('#supportedTypePopup');
-            if (typesPopup.attr('data-show-on-load') === 'true') {
-                typesPopup.load('processAddTypes', { configId : typesPopup.attr('data-config-id') });
+            var typesLink = $('[data-show-device-types]');
+            if (typesLink.data('showDeviceTypes') === true) {
+                typesLink.trigger('click');
             }
-        
-            $("#addTypeBtn").click(function() {
-                $('#supportedTypePopup').load('processAddTypes', { configId : $(this).attr('data-config-id') });
-            });
             
             /** Edit button clicked for category, show category edit popup. */
             $('.f-edit-category').click(function(ev) {
