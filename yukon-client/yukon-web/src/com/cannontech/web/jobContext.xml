@@ -453,7 +453,7 @@
         <property name="taskName">
             <idref local="ecobeeReconciliationReportTask"/>
         </property>
-        <property name="title" value="Scheduled Weather Data Update Execution Job"/>
+        <property name="title" value="Ecobee Reconciliation Report Execution Job"/>
         <property name="inputs">
             <bean class="com.cannontech.web.input.InputRoot">
                 <property name="inputList">
@@ -468,7 +468,7 @@
         <property name="taskName">
             <idref local="ecobeePointUpdateTask"/>
         </property>
-        <property name="title" value="Scheduled Weather Data Update Execution Job"/>
+        <property name="title" value="Ecobee Point Update Execution Job"/>
         <property name="inputs">
             <bean class="com.cannontech.web.input.InputRoot">
                 <property name="inputList">
