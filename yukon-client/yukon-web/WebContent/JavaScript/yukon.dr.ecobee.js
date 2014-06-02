@@ -50,14 +50,12 @@ yukon.dr.ecobee = (function () {
             };
 
             $(document).on('click', '#ecobee-error-checking-toggle .toggle-on-off .button', function () {
-                $('#ecobee-error-checking-toggle .toggle-on-off .button').toggleClass('on');
                 var checkErrorsOn = $('#ecobee-error-checking-toggle .toggle-on-off .button.yes').hasClass('on');
                 $('#ecobee-check-errors').val(checkErrorsOn ? 'true' : 'false');
                 $('#ecobee-error-check-schedule').toggle('fade');
             });
 
             $(document).on('click', '#ecobee-data-collection-toggle .toggle-on-off .button', function() {
-                $('#ecobee-data-collection-toggle .toggle-on-off .button').toggleClass('on');
                 var dataCollectionOn = $('#ecobee-data-collection-toggle .toggle-on-off .button.yes').hasClass('on');
                 $('#ecobee-data-collection').val(dataCollectionOn ? 'true' : 'false');
                 $('#ecobee-data-collection-schedule').toggle('fade');
