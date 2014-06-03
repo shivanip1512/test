@@ -5594,7 +5594,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
         {
             subBusToUpdate = findSubBusByPAObjectID(subBusId);
 
-            if ( reEnableDualBusForThisBus )
+            if ( subBusToUpdate && reEnableDualBusForThisBus )
             {
                 const long altSubID          = subBusToUpdate->getAltDualSubId();
                 const long switchOverPointID = subBusToUpdate->getSwitchOverPointId();
