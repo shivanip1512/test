@@ -1,5 +1,6 @@
 package com.cannontech.dr.ecobee.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -14,6 +15,9 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
+import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
+import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
+import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.service.EcobeePointUpdateService;
@@ -24,6 +28,7 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
 
     @Autowired private AttributeService attributeService;
     @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
 
     @Override
     public void updatePointData(PaoIdentifier paoIdentifier, EcobeeDeviceReadings deviceReadings) {
@@ -32,6 +37,8 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
         // runtime store all values added up set to on hour BEFORE hour (archives on update)
 
         // device readings are 5 minutes apart. partition these into hourly buckets to work with
+        Instant lastReading = null;
+        Instant lastRuntime = null;
         for (List<EcobeeDeviceReading> readings : Iterables.partition(deviceReadings.getReadings(), 12)) {
             // only update runtime if we have the full hours data
             boolean shouldUpdateRuntime = readings.size() == 12;
@@ -41,6 +48,9 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
             Float outdoorTempToUpdate = null;
             Integer runtime = 0;
             for (EcobeeDeviceReading reading : readings) {
+                if (lastReading == null || reading.getDate().isAfter(lastReading)) {
+                    lastReading = reading.getDate();
+                }
                 if (startDate == null) {
                     startDate = reading.getDate();
                 }
@@ -58,6 +68,9 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
                     setPointValue(paoIdentifier, BuiltInAttribute.COOL_SET_TEMPERATURE, 
                                   startDate, reading.getSetCoolTempInF());
                 }
+                if (reading.getRuntimeSeconds() != 0 && lastRuntime == null || reading.getDate().isAfter(lastRuntime)) {
+                    lastRuntime = reading.getDate();
+                }
                 runtime += reading.getRuntimeSeconds();
                 TrueFalse controlStatus = 
                         StringUtils.isBlank(reading.getEventActivity()) ? TrueFalse.FALSE : TrueFalse.TRUE;
@@ -73,6 +86,32 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
             if (shouldUpdateRuntime) {
                 setPointValue(paoIdentifier, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG,
                               startDate, TimeUnit.SECONDS.toMinutes(runtime));
+            }
+        }
+        updateAssetAvailability(paoIdentifier, lastReading, lastRuntime);
+    }
+
+    private void updateAssetAvailability(PaoIdentifier paoIdentifier, Instant lastCommTime, Instant lastRuntime) {
+        if (lastCommTime != null || lastRuntime != null) {
+            AllRelayCommunicationTimes commTimes = 
+                    dynamicLcrCommunicationsDao.findAllRelayCommunicationTimes(Collections.singleton(paoIdentifier.getPaoId())).get(paoIdentifier.getPaoId());
+            Instant currentLastCommTime = commTimes == null ? null : commTimes.getLastCommunicationTime();
+            Instant currentLastRuntime = commTimes == null ? null : commTimes.getLastNonZeroRuntime();
+
+            boolean shouldUpdate = false;
+            AssetAvailabilityPointDataTimes times = new AssetAvailabilityPointDataTimes(paoIdentifier.getPaoId());
+            if (currentLastCommTime == null || (lastCommTime != null && lastCommTime.isAfter(currentLastCommTime))) {
+                times.setLastCommunicationTime(lastCommTime);
+                shouldUpdate = true;
+            }
+
+            if (currentLastRuntime == null || (lastRuntime != null && lastRuntime.isAfter(currentLastRuntime))) {
+                times.setRelayRuntime(1, lastCommTime);
+                shouldUpdate = true;
+            }
+
+            if (shouldUpdate) {
+                dynamicLcrCommunicationsDao.insertData(times);
             }
         }
     }

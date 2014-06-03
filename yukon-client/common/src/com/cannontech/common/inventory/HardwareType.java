@@ -323,7 +323,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     public int getNumRelays() {
-        return isEcobee() ? 0 :
+        return isEcobee() ? 1 :
                isExpressCom() ? 8 : 4;
     }
 
