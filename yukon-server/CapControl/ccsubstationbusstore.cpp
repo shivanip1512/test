@@ -4899,6 +4899,31 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
         subBusToUpdate = findSubBusByPAObjectID(subBusId);
     }
 
+    bool reEnableDualBusForThisBus = false;
+
+    if ( subBusToUpdate )
+    {
+        const long altSubID = subBusToUpdate->getAltDualSubId();
+
+        if ( altSubID > 0 )
+        {
+            CtiCCSubstationBusPtr altSub = findSubBusByPAObjectID( altSubID );
+
+            reEnableDualBusForThisBus = ( altSub && altSub->getPrimaryBusFlag() );
+
+            // disable dual bus until we finish reloading the bus
+
+            if ( reEnableDualBusForThisBus )
+            {
+                CtiCapController::getInstance()->handleAlternateBusModeValues( subBusToUpdate->getSwitchOverPointId(),
+                                                                               0.0,
+                                                                               subBusToUpdate );
+            }
+
+            dumpAllDynamicData();
+        }
+    }
+
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     try
     {
@@ -5561,6 +5586,24 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - Undefined Substation Bus point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
+                }
+            }
+        }
+
+        if ( subBusId > 0 )     //  restore dual bus if necessary
+        {
+            subBusToUpdate = findSubBusByPAObjectID(subBusId);
+
+            if ( reEnableDualBusForThisBus )
+            {
+                const long altSubID          = subBusToUpdate->getAltDualSubId();
+                const long switchOverPointID = subBusToUpdate->getSwitchOverPointId();
+
+                if ( altSubID > 0 && switchOverPointID > 0 )    // we still have a dual bus assignment and switchover point - enable it if it was enabled at the start of the reload
+                {
+                    CtiCapController::getInstance()->handleAlternateBusModeValues( switchOverPointID,
+                                                                                   1.0,
+                                                                                   subBusToUpdate );
                 }
             }
         }
