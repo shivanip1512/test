@@ -29,7 +29,10 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
+import static com.cannontech.dr.ecobee.model.EcobeeDiscrepancyCategory.*;
 import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
+import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
+import com.cannontech.dr.ecobee.service.EcobeeReconciliationService;
 import com.cannontech.dr.model.PerformanceVerificationAverageReports;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
@@ -66,6 +69,7 @@ public class HomeController {
     @Autowired private PerformanceVerificationDao performanceVerificationDao;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
     @Autowired private JobManager jobManager;
+    @Autowired private EcobeeReconciliationService reconciliationService;
 
     @Autowired @Qualifier("rfnPerformanceVerification")
         private YukonJobDefinition<RfnPerformanceVerificationTask> rfnVerificationJobDef;
@@ -197,8 +201,15 @@ public class HomeController {
         // TODO: leverage EcobeeSyncIssue after moving it from EcobeeController.java
         // to dr/model. Find backend API that gets this data and bolt it on.
         model.addAttribute("ecobeeStats", queryStats);
-        model.addAttribute("deviceIssues", 3);
-        model.addAttribute("groupIssues", 6);
+        EcobeeReconciliationReport report = reconciliationService.findReconciliationReport();
+        int deviceErrorCount = 0;
+        int groupErrorCount = 0;
+        if (report != null) {
+            deviceErrorCount = report.getErrorNumberByCategory(DEVICE);
+            groupErrorCount = report.getErrorNumberByCategory(GROUP);
+        }
+        model.addAttribute("deviceIssues", deviceErrorCount);
+        model.addAttribute("groupIssues", groupErrorCount);
         
         log.debug(queryStats);
         }

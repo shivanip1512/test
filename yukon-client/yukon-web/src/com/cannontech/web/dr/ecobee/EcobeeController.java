@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -240,51 +241,8 @@ public class EcobeeController {
                 result.addCompleted(serialNumbers.size());
             }
         }
-        readResultsCache.addResult(result);
+        String resultId = readResultsCache.addResult(result);
         log.info("errorCount=" + errorCount);
-        output.flush();
-    }
-
-    // TODO: Mark: set requestMapping values
-    //@RequestMapping(value="/ecobeeCsv", method=RequestMethod.GET)
-    public void ecobeeDataReportCsv(HttpServletResponse response, LiteYukonUser user) throws IOException {
-        response.setContentType("text/csv");
-        // TODO: Mark: figure out good name for file
-        response.setHeader("Content-Disposition","filename=\"ecobee_data_report.csv\"");
-
-        // TODO: get date range from request
-        Range<Instant> dateRange = Range.inclusive(Instant.now().minus(Duration.standardDays(7)), Instant.now());
-        // TODO: Mark: get loadGroupIds from request
-        List<Integer> loadGroupIds = new ArrayList<>();
-        List<String> allSerialNumbers = drGroupDeviceMappingDao.getInventorySerialNumbersForLoadGroups(loadGroupIds);
-
-        String headerFormat = "%s,%s,%s,%s,%s,%s,%s,%s\n";
-        String dataFormat = "%s,%s,%s,%s,%s,%s,%d,%s\n";
-
-        BufferedWriter output = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
-        output.write(String.format(headerFormat, "Serial Number", "Date", "Outdoor Temp",
-                         "Indoor Temp", "Set Cool Temp", "Set Heat Temp", "Runtime Seconds", "Event Activity"));
-        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
-
-        // readDeviceData should only be sent 25 serial numbers at a time
-        for (List<String> serialNumbers : Lists.partition(allSerialNumbers, 25)) {
-            List<EcobeeDeviceReadings> allDeviceReadings =
-                    ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange);
-            for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
-                String serialNumber = deviceReadings.getSerialNumber();
-                for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
-                    String dateStr = timeFormatter.print(deviceReading.getDate());
-                    String line = String.format(dataFormat, serialNumber, dateStr,
-                            formatNullable(deviceReading.getOutdoorTempInF()),
-                            formatNullable(deviceReading.getIndoorTempInF()),
-                            formatNullable(deviceReading.getSetCoolTempInF()),
-                            formatNullable(deviceReading.getSetHeatTempInF()),
-                            deviceReading.getRuntimeSeconds(), deviceReading.getEventActivity());
-                    output.write(line);
-                }
-            }
-        }
-
         output.flush();
     }
 
@@ -321,8 +279,8 @@ public class EcobeeController {
         int currentMonthSystemQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
         EcobeeQueryStats queryStats;
         // begin test
-        if(0 == currentMonthDataCollectionQueryCount && 0 == currentMonthDemandResponseQueryCount &&
-            0 == currentMonthSystemQueryCount) {
+        if (currentMonthDataCollectionQueryCount == 0 && currentMonthDemandResponseQueryCount == 0 &&
+            currentMonthSystemQueryCount == 0) {
             // generate fake data
             Random rand = new Random();
             int maxTestVal = 10000;
@@ -354,6 +312,8 @@ public class EcobeeController {
         EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
         if (report != null) {
             // TODO: add report parsing here
+            Collection<EcobeeDiscrepancy> errors = report.getErrors();
+            model.addAttribute(errors);
         }
         // dummy data for issues until job created to generate issues
         List<EcobeeSyncIssue> issues = new ArrayList<>();
@@ -539,6 +499,7 @@ public class EcobeeController {
         dataBinder.registerCustomEditor(LocalTime.class, localDateEditor);
     }
 
+    // TODO: replace with EcobeeDiscrepancy
     public class EcobeeSyncIssue {
 
         private EcobeeSyncIssueType type;
@@ -572,6 +533,7 @@ public class EcobeeController {
         }
     }
 
+    // TODO: replace with EcobeeDiscrepancyType
     public enum EcobeeSyncIssueType implements DisplayableEnum {
 
         DEVICE_NOT_IN_ECOBEE(false),
@@ -600,6 +562,7 @@ public class EcobeeController {
         }
     }
 
+    // TODO: remove, now using real data
     public class EcobeeDataDownload {
         private DateTime startDate;
         private DateTime endDate;
@@ -636,31 +599,6 @@ public class EcobeeController {
         public void setDownloadFinished(boolean downloadFinished) {
             this.downloadFinished = downloadFinished;
         }
-    }
-    
-    public class EcobeeDownload {
-        private DateTime startReportDate;
-        private DateTime endReportDate;
-        private List<Integer> paoIds;
-        public DateTime getStartReportDate() {
-            return startReportDate;
-        }
-        public void setStartReportDate(DateTime startReportDate) {
-            this.startReportDate = startReportDate;
-        }
-        public DateTime getEndReportDate() {
-            return endReportDate;
-        }
-        public void setEndReportDate(DateTime endReportDate) {
-            this.endReportDate = endReportDate;
-        }
-        public List<Integer> getPaoIds() {
-            return paoIds;
-        }
-        public void setPaoIds(List<Integer> paoIds) {
-            this.paoIds = paoIds;
-        }
-        
     }
     
     private ScheduledRepeatingJob getJob(YukonJobDefinition<? extends YukonTask> jobDefinition) {
