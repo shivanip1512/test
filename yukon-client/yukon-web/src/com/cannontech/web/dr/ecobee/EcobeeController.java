@@ -1,15 +1,13 @@
 package com.cannontech.web.dr.ecobee;
 
 import java.beans.PropertyEditorSupport;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -19,21 +17,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
 import org.joda.time.YearMonth;
-import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -45,12 +42,8 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
-import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
-import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
-import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
-import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
@@ -65,15 +58,16 @@ import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.dr.ecobee.service.DataDownloadService;
 import com.cannontech.web.dr.model.EcobeeQueryStats;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.loadcontrol.tasks.RepeatingWeatherDataTask;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.WebFileUtils;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
@@ -81,13 +75,13 @@ public class EcobeeController {
 
     private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
 //    private static final String baseKey = "yukon.web.modules.dr.home.ecobee.configure.";
-    private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
-    private static final String detailsKey = "yukon.web.modules.dr.home.ecobee.details.";
+//    private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
+//    private static final String detailsKey = "yukon.web.modules.dr.home.ecobee.details.";
     private static DateTimeFormatter dateTimeFormatter;
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
+    
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
@@ -99,6 +93,8 @@ public class EcobeeController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired @Qualifier("ecobeeReads") RecentResultsCache<EcobeeReadResult> readResultsCache;
     @Autowired EcobeeReconciliationService ecobeeReconciliation;
+    @Autowired DataDownloadService dataDownloadService;
+    @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
 
     @PostConstruct
     public void init() {
@@ -183,75 +179,43 @@ public class EcobeeController {
         return "redirect:/dr/home";
     }
     
-    @RequestMapping(value="/ecobee/download", method=RequestMethod.POST)
-    public void ecobeeDataReport(HttpServletRequest request, HttpServletResponse response, Integer[] loadGroupIds,
-            String ecobeeStartReportDate, String ecobeeEndReportDate) throws IOException {
+    @RequestMapping(value="/ecobee/download/start", method=RequestMethod.POST)
+    public @ResponseBody Map<String, String> ecobeeDataReport(HttpServletRequest request, 
+                                 HttpServletResponse response, 
+                                 Integer[] loadGroupIds,
+                                 String ecobeeStartReportDate, 
+                                 String ecobeeEndReportDate) throws IOException {
 
         Instant startDate = new Instant(dateTimeFormatter.parseMillis(ecobeeStartReportDate));
         Instant endDate = new Instant(dateTimeFormatter.parseMillis(ecobeeEndReportDate));
-        log.info("ecobeeStartReportDate: " + ecobeeStartReportDate + " ecobeeEndReportDate: " + ecobeeEndReportDate +
-            " loadGroupIds: " + loadGroupIds);
-        Range<Instant> dateRange = Range.inclusive(startDate, endDate);
+        
         if (loadGroupIds == null) {
-            response.setStatus(200);
-            log.info("no loadGroupIds specified");
-            return;
+            // Load groups are required.
+            response.setStatus(400);
+            return null;
         }
-        List<Integer> idsList = Lists.newArrayList(loadGroupIds);
-        List<String> allSerialNumbers = drGroupDeviceMappingDao.getInventorySerialNumbersForLoadGroups(idsList);
-
-        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
-        response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename=\"ecobee_data_report.csv\"");
-        BufferedWriter output = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
-        String headerFormat = "%s,%s,%s,%s,%s,%s,%s,%s\n";
-        String dataFormat = "%s,%s,%s,%s,%s,%s,%d,%s\n";
-        output.write(String.format(headerFormat, "Serial Number", "Date", "Outdoor Temp",
-                "Indoor Temp", "Set Cool Temp", "Set Heat Temp", "Runtime Seconds", "Event Activity"));
-        // readDeviceData should only be sent 25 serial numbers at a time
-        int errorCount = 0;
-        EcobeeReadResult result = new EcobeeReadResult(allSerialNumbers.size());
-        for (List<String> serialNumbers : Lists.partition(allSerialNumbers, 25)) {
-            List<EcobeeDeviceReadings> allDeviceReadings = new ArrayList<>();
-            try {
-                allDeviceReadings = ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange);
-            } catch (EcobeeCommunicationException e) {
-                errorCount += 1;
-            }
-            for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
-                String serialNumber = deviceReadings.getSerialNumber();
-                for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
-                    String dateStr = timeFormatter.print(deviceReading.getDate());
-                    int runtimeSeconds = deviceReading.getRuntimeSeconds();
-                    if (0 > runtimeSeconds) {
-                        log.info("runtimeSeconds=" + runtimeSeconds + ", converting to absolute value");
-                        runtimeSeconds = Math.abs(runtimeSeconds);
-                    }
-                    String dataRow = String.format(dataFormat,
-                        serialNumber,
-                        dateStr,
-                        formatNullable(deviceReading.getOutdoorTempInF()),
-                        formatNullable(deviceReading.getIndoorTempInF()),
-                        formatNullable(deviceReading.getSetCoolTempInF()),
-                        formatNullable(deviceReading.getSetHeatTempInF()),
-                        runtimeSeconds,
-                        deviceReading.getEventActivity());
-                    output.write(dataRow);
-                }
-                result.addCompleted(serialNumbers.size());
-            }
+        List<String> serialNumbers = drGroupDeviceMappingDao.getSerialNumbersForLoadGroups(Lists.newArrayList(loadGroupIds));
+        
+        String resultKey = dataDownloadService.start(serialNumbers, Range.inclusive(startDate, endDate));
+        
+        return ImmutableMap.of("resultKey", resultKey);
+    }
+    
+    @RequestMapping("/ecobee/download")
+    public void download(HttpServletResponse response, String key) throws IOException {
+        
+        EcobeeReadResult result = readResultsCache.getResult(key);
+        
+        if (!result.isComplete()) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+        } else {
+            WebFileUtils.writeToCSV(response, result.getFile(), "ecobee_data_" + Instant.now().getMillis());
         }
-        String resultId = readResultsCache.addResult(result);
-        log.info("errorCount=" + errorCount);
-        output.flush();
     }
-
-    private static String formatNullable(Float num) {
-        return num == null ? "" : new DecimalFormat("#.#").format(num);
-    }
-
+    
     @RequestMapping(value="/ecobee/statistics", method=RequestMethod.GET)
     public String statistics(ModelMap model, LiteYukonUser user) {
+        
         ScheduledRepeatingJob reconciliationReportJob = getJob(ecobeeReconciliationReportJobDef);
         ScheduledRepeatingJob ecobeePointUpdateJob = getJob(ecobeePointUpdateJobDef);
 

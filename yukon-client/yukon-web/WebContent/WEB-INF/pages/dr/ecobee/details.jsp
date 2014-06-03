@@ -62,31 +62,20 @@
                 <div class="action-area">
                     <cti:button nameKey="download" popup="#ecobee-download" icon="icon-page-white-excel"/>
                     <div dialog data-event="ecobeeDownload" id="ecobee-download" data-width="800" data-title="<cti:msg2 key=".dataDownloads.title"/>" class="dn">
-                        <form action="ecobee/download" method="POST">
+                        <form>
                             <cti:csrfToken/>
                             <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                                 <tags:nameValue2 nameKey=".download.startDate" valueClass="full-width">
-                                    <div class="column-6-18 clearfix stacked">
-                                        <div class="column one">
-                                            <input type="hidden" id="ecobee-start-report-date">
-                                            <dt:dateTime name="ecobeeStartReportDate" value="${oneDayAgo}" minDate="${sevenDaysAgo}" maxDate="${now}"></dt:dateTime>
-                                        </div>
-                                        <div class="column two">
-                                        </div>
-                                    </div>
-                                </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".download.endDate" valueClass="full-width">
-                                    <div class="column-6-18 clearfix stacked">
-                                        <div class="column one">
-                                            <input type="hidden" id="ecobee-end-report-date">
-                                            <dt:dateTime name="ecobeeEndReportDate" value="${now}" minDate="${sevenDaysAgo}" maxDate="${now}"></dt:dateTime>
-                                        </div>
-                                        <div class="column two nogutter">
-                                        </div>
-                                    </div>
+                                    <input type="hidden" id="ecobee-start-report-date">
+                                    <input type="hidden" id="ecobee-end-report-date">
+                                    <dt:dateTime name="ecobeeStartReportDate" value="${oneDayAgo}" minDate="${sevenDaysAgo}" 
+                                        maxDate="${now}"/>
+                                    <span class="fl" style="margin-right: 5px;"><i:inline key="yukon.common.to"/></span>
+                                    <dt:dateTime name="ecobeeEndReportDate" value="${now}" minDate="${sevenDaysAgo}" 
+                                        maxDate="${now}"/>
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
-                            <h3>Notification Group(s)</h3>
+                            <h3><i:inline key=".loadGroups"/></h3>
                             <div id="loadGroup">
                                 <input type="hidden" id="loadGroupId" name="loadGroup">
                                 <tags:pickerDialog

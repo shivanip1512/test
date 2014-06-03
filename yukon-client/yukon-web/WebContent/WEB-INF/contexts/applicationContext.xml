@@ -671,8 +671,14 @@
     </bean>
 
     <bean id="tdcBackingService" class="com.cannontech.web.updater.tdc.TdcBackingService"/>
+    
     <bean id="disconnectBackingService" class="com.cannontech.web.updater.disconnect.DisconnectBackingService"/>
+    
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>
+    <bean class="com.cannontech.web.dr.ecobee.service.impl.DataDownloadServiceImpl"/>
+    <bean class="com.cannontech.common.util.RecentResultsCache">
+        <qualifier value="ecobeeReads"/>
+    </bean>
     
     <!-- Update Service -->
     <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService">
@@ -1635,10 +1641,6 @@
         <qualifier value="assetAvailabilityReads"/>
     </bean>
     <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityPingServiceImpl"/>
-    
-    <bean class="com.cannontech.common.util.RecentResultsCache">
-        <qualifier value="ecobeeReads"/>
-    </bean>
     
     <!-- Contextual Menu Beans (start) -->
     <bean id="meterMenuDecider" class="com.cannontech.web.contextualMenu.MeterMenuDecider"/>

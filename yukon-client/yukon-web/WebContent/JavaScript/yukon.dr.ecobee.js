@@ -50,10 +50,20 @@ yukon.dr.ecobee = (function () {
                 debug.log('pickerException: ' + pickerException);
             };
             $(document).on('ecobeeDownload', function(event) {
-                var form = $('#ecobee-download').find("form");
+                
                 loadGroupPicker.endAction.call(loadGroupPicker, loadGroupPicker.selectedItems);
-                form.submit();
-                $('#ecobee-download').dialog('close');
+                
+                $('#ecobee-download form').ajaxSubmit({
+                    url: 'ecobee/download/start', 
+                    type: 'post',
+                    success: function(data, status, xhr, $form) {
+                        debug.log('it worked. resultKey: ' + data.resultKey);
+                        $('#ecobee-download').dialog('close');
+                    },
+                    error: function(xhr, status, error, $form) {
+                        debug.log('oh gawd!');
+                    }
+                });
             });
 
             $(document).on('click', '#ecobee-error-checking-toggle .toggle-on-off .button', function () {

@@ -104,12 +104,8 @@ public class WebFileUtils {
     
     public static void writeToCSV(HttpServletResponse response, String[] headerRow, String fileName, CSVDataWriter dataWriter)
         throws IOException {
-        // set up output for CSV
-        response.setContentType("text/csv");
-        response.setHeader("Content-Type", "application/force-download");
-        fileName = ServletUtil.makeWindowsSafeFileName(fileName);
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName +"\"");
-        OutputStream outputStream = response.getOutputStream();
+        
+        OutputStream outputStream = setupResponse(response, fileName);
         
         // write out the file
         Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
@@ -122,6 +118,33 @@ public class WebFileUtils {
         dataWriter.writeData(csvWriter);
         
         csvWriter.close();
+    }
+    
+    /**
+     * Writes and existing csv file to the reponse.
+     */
+    public static void writeToCSV(HttpServletResponse response, File file, String fileName) throws IOException {
+        
+        OutputStream outputStream = setupResponse(response, fileName);
+        
+        // write out the file
+        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        CSVWriter csvWriter = new CSVWriter(writer);
+        CSVReader reader = new CSVReader(new FileReader(file));
+        
+        csvWriter.writeAll(reader.readAll());
+        
+        csvWriter.close();
+    }
+    
+    private static OutputStream setupResponse(HttpServletResponse response, String fileName) throws IOException {
+        
+        response.setContentType("text/csv");
+        response.setHeader("Content-Type", "application/force-download");
+        fileName = ServletUtil.makeWindowsSafeFileName(fileName);
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName +"\"");
+        
+        return response.getOutputStream();
     }
     
     public interface CSVDataWriter {
@@ -141,4 +164,5 @@ public class WebFileUtils {
         Matcher matcher = PATTERN_WINDOWS_FILENAME.matcher(StringUtils.trim(filename));
         return matcher.matches();
     }
+    
 }

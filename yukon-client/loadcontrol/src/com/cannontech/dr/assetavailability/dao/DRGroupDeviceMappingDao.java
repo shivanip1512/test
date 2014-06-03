@@ -22,7 +22,7 @@ public interface DRGroupDeviceMappingDao {
     /**
      * Returns the manufacturers serial number for all inventory associated with the load groups
      */
-    List<String> getInventorySerialNumbersForLoadGroups(Iterable<Integer> loadGroupIds);
+    List<String> getSerialNumbersForLoadGroups(Iterable<Integer> loadGroupIds);
     
     /**
      * Returns The set of device ids associated with the specified load group, program, scenario or

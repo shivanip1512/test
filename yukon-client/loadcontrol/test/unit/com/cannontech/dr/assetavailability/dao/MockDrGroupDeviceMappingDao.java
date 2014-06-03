@@ -63,7 +63,7 @@ public class MockDrGroupDeviceMappingDao implements DRGroupDeviceMappingDao {
     }
 
     @Override
-    public List<String> getInventorySerialNumbersForLoadGroups(Iterable<Integer> loadGroupIds) {
+    public List<String> getSerialNumbersForLoadGroups(Iterable<Integer> loadGroupIds) {
         throw new MethodNotImplementedException();
     }
 }

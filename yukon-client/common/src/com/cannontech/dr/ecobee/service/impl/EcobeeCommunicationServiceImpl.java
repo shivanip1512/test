@@ -1,6 +1,9 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.NOT_AUTHORIZED;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.PROCESSING_ERROR;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.SUCCESS;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.VALIDATION_ERROR;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,6 +63,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationService {
+    
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommunicationServiceImpl.class);
 
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
@@ -110,7 +114,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         }
         return success;
     }
-
+    
     private boolean attemptMoveDeviceToSet(String serialNumber, String setPath) 
             throws EcobeeSetDoesNotExistException, EcobeeDeviceDoesNotExistException {
 

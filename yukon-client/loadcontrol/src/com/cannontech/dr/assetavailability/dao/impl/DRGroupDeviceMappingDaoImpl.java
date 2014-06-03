@@ -135,7 +135,7 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
     }
     
     @Override
-    public List<String> getInventorySerialNumbersForLoadGroups(Iterable<Integer> loadGroupIds) {
+    public List<String> getSerialNumbersForLoadGroups(Iterable<Integer> loadGroupIds) {
         SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
