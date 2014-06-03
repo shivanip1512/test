@@ -75,13 +75,15 @@ yukon.dr.dashboard = (function() {
 
             /** Handle email on/off toggle button.  TODO make on-off toggle button resuable */
             $(document).on('click', '#broadcast-config .toggle-on-off .button', function() {
-                $('#broadcast-config .toggle-on-off .button').toggleClass('on');
-                $('.f-notif-group').toggle('fade');
-                $('.f-email-schedule').toggle('fade');
+                
                 if ($('#broadcast-config .toggle-on-off .yes').hasClass('on')) {
                     $('#rf-performance-email').val('true');
+                    $('.f-notif-group').show('fade');
+                    $('.f-email-schedule').show('fade');
                 } else {
                     $('#rf-performance-email').val('false');
+                    $('.f-notif-group').hide('fade');
+                    $('.f-email-schedule').hide('fade');
                 }
                 
             });

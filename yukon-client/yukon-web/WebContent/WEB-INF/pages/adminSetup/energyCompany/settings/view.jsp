@@ -27,11 +27,10 @@
                         <div class="column-6-12-6 clearfix">
                             <div class="column one">
                                 <div class="stacked"><i:inline key="${setting.extra}"/></div>
-                                <div><span class="detail hint">
+                                <div class="detail hint">
                                     <c:if test="${not empty settingsBean.settings[setting.extra].lastChanged}">
                                         <i:inline key=".updated"/>:&nbsp;<cti:formatDate type="DATEHM" value="${settingsBean.settings[setting.extra].lastChanged}"/>
                                     </c:if>
-                                </span>
                                 </div>
                             </div>
                             <div class="column two">

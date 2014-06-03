@@ -35,7 +35,12 @@
                 <div class="setting">
                     <div class="column-6-12-6 clearfix">
                         <div class="column one">
-                            <i:inline key="${setting.extra.type}"/>
+                            <div class="stacked"><i:inline key="${setting.extra.type}"/></div>
+                            <div class="detail hint">
+                                <c:if test="${not empty setting.extra.lastChanged}">
+                                    <i:inline key=".updated"/>&nbsp;<cti:formatDate type="DATEHM" value="${setting.extra.lastChanged}"/>
+                                </c:if>
+                            </div>
                         </div>
                         <div class="column two">
                             <div class="default-indicator">
@@ -48,11 +53,6 @@
                             <div class="value-description">
                                 <div class="value">
                                     <tags:simpleInputType id="${setting.extra.type}" input="${setting.valueType}" path="${setting.path}"/>
-                                    <span class="detail updated">
-                                        <c:if test="${not empty setting.extra.lastChanged}">
-                                            <i:inline key=".updated"/>&nbsp;<cti:formatDate type="DATEHM" value="${setting.extra.lastChanged}"/>
-                                        </c:if>
-                                    </span>
                                 </div>
                                 <div class="description detail">
                                     <p>
