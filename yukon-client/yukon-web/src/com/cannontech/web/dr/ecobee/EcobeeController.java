@@ -236,11 +236,6 @@ public class EcobeeController {
         model.addAttribute("ecobeeSettings", ecobeeSettings);
 
         EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now());
-        int statsMonth = currentMonthStats.getMonth();
-        int statsYear = currentMonthStats.getYear();
-        int currentMonthDataCollectionQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
-        int currentMonthDemandResponseQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
-        int currentMonthSystemQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
         EcobeeQueryStats queryStats = new EcobeeQueryStats(currentMonthStats);
         model.addAttribute("ecobeeStats", queryStats);
 
