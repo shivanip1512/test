@@ -4,8 +4,8 @@ import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -110,7 +110,7 @@ public class EcobeeController {
             job.setDisabled(true);
             job.setUserContext(null);
             job.setJobDefinition(ecobeeReconciliationReportJobDef);
-            job.setJobProperties(new HashMap<String,String>());
+            job.setJobProperties(Collections.<String, String>emptyMap());
             scheduledRepeatingJobDao.save(job);
             jobManager.instantiateTask(job);
         }
@@ -125,7 +125,7 @@ public class EcobeeController {
             job.setDisabled(true);
             job.setUserContext(null);
             job.setJobDefinition(ecobeePointUpdateJobDef);
-            job.setJobProperties(new HashMap<String,String>());
+            job.setJobProperties(Collections.<String, String>emptyMap());
             scheduledRepeatingJobDao.save(job);
             jobManager.instantiateTask(job);
         }
