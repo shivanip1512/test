@@ -107,6 +107,17 @@ public class EcobeeReconciliationReportDaoImpl implements EcobeeReconciliationRe
         return new EcobeeReconciliationReport(reportId, reportDate, errorList);
     }
     
+    @Override
+    public boolean removeError(int reportId, int errorId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("delete from EcobeeReconReportError");
+        sql.append("where EcobeeReconReportErrorId").eq(errorId);
+        sql.append("and EcobeeReconReportId").eq(reportId);
+        
+        int rowsAffected = jdbcTemplate.update(sql);
+        return rowsAffected == 1;
+    }
+    
     private Integer findCurrentReportId() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select EcobeeReconReportId");

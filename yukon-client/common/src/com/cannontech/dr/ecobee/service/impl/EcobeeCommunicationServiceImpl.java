@@ -217,6 +217,19 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
         return response.getSuccess();
     }
+    
+    @Override
+    public boolean deleteManagementSetByPath(String managementSetPath) {
+        String url = getUrlBase() + modifySetUrlPart;
+
+        DeleteSetRequest request = new DeleteSetRequest(managementSetPath, true);
+        HttpEntity<DeleteSetRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
+
+        log.info("Deleting set " + managementSetPath + " URL: " + url);
+        StandardResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.SYSTEM, StandardResponse.class);
+
+        return response.getSuccess();
+    }
 
     @Override
     public boolean moveManagementSet(String currentPath, String newPath) {

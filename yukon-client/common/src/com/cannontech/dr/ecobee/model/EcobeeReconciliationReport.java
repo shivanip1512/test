@@ -6,6 +6,8 @@ import org.joda.time.Instant;
 
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Multimap;
 
 /**
@@ -16,15 +18,25 @@ import com.google.common.collect.Multimap;
 public class EcobeeReconciliationReport {
     private final Integer reportId;
     private final Instant reportDate;
-    private final Multimap<EcobeeDiscrepancyCategory, EcobeeDiscrepancy> errors = ArrayListMultimap.create();
-
+    private final Multimap<EcobeeDiscrepancyCategory, EcobeeDiscrepancy> errorsByCategory = ArrayListMultimap.create();
+    private final Multimap<EcobeeDiscrepancyType, EcobeeDiscrepancy> errorsByType = ArrayListMultimap.create();
+    private final ImmutableMap<Integer, EcobeeDiscrepancy> errorsById;
+    
+    
     public EcobeeReconciliationReport(Integer reportId, Instant reportDate, Iterable<EcobeeDiscrepancy> errors) {
         this.reportId = reportId;
         this.reportDate = reportDate;
         
+        Builder<Integer, EcobeeDiscrepancy> byIdBuilder = ImmutableMap.builder();
         for (EcobeeDiscrepancy error : errors) {
-            this.errors.put(error.getErrorType().getCategory(), error);
+            errorsByCategory.put(error.getErrorType().getCategory(), error);
+            errorsByType.put(error.getErrorType(), error);
+            //only populate this map if the error has an id
+            if (error.getErrorId() != null) {
+                byIdBuilder.put(error.getErrorId(), error);
+            }
         }
+        errorsById = byIdBuilder.build();
     }
     
     public EcobeeReconciliationReport(Iterable<EcobeeDiscrepancy> errors) {
@@ -34,13 +46,25 @@ public class EcobeeReconciliationReport {
     public int getReportId() {
         return reportId;
     }
-
+    
+    public EcobeeDiscrepancy getError(int errorId) {
+        return errorsById.get(errorId);
+    }
+    
     public Collection<EcobeeDiscrepancy> getErrors() {
-        return errors.values();
+        return errorsByCategory.values();
+    }
+    
+    public Collection<EcobeeDiscrepancy> getErrors(EcobeeDiscrepancyCategory category) {
+        return errorsByCategory.get(category);
+    }
+    
+    public Collection<EcobeeDiscrepancy> getErrors(EcobeeDiscrepancyType type) {
+        return errorsByType.get(type);
     }
     
     public int getErrorNumberByCategory(EcobeeDiscrepancyCategory category) {
-        return errors.get(category).size();
+        return errorsByCategory.get(category).size();
     }
 
     public Instant getReportDate() {

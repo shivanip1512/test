@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
+import com.cannontech.dr.ecobee.model.EcobeeReconciliationResult;
 
 /**
  * Creates and retrieves ecobee reconciliation reports, which describe discrepancies between Yukon's ecobee groups and 
@@ -26,13 +27,13 @@ public interface EcobeeReconciliationService {
     
     /**
      * Fixes the specified discrepancy by making changes to the ecobee portal's hierarchy.
-     * @throws EcobeeCommunicationException if the specified reportId is outdated.
+     * @throws IllegalArgumentException if the specified reportId is outdated, or errorId is invalid.
      */
-    public List<String> fixDiscrepancy(int reportId, int errorId) throws EcobeeCommunicationException;
+    public EcobeeReconciliationResult fixDiscrepancy(int reportId, int errorId) throws IllegalArgumentException;
     
     /**
      * Fixes the all discrepancies in the specified report by making changes to the ecobee portal's hierarchy.
-     * @throws EcobeeCommunicationException if the specified reportId is outdated.
+     * @throws IllegalArgumentException if the specified reportId is outdated.
      */
-    public List<String> fixAllDiscrepancies(int reportId) throws EcobeeCommunicationException;
+    public List<EcobeeReconciliationResult> fixAllDiscrepancies(int reportId) throws IllegalArgumentException;
 }

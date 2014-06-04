@@ -1,5 +1,7 @@
 package com.cannontech.dr.ecobee.service.impl;
 
+import static com.cannontech.dr.ecobee.model.EcobeeReconciliationResult.ErrorType.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,14 +10,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
+import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
+import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.dao.EcobeeGroupDeviceMappingDao;
 import com.cannontech.dr.ecobee.dao.EcobeeReconciliationReportDao;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
+import com.cannontech.dr.ecobee.model.EcobeeReconciliationResult;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeExtraneousDeviceDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeExtraneousSetDiscrepancy;
@@ -26,6 +30,7 @@ import com.cannontech.dr.ecobee.model.discrepancy.EcobeeMissingSetDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeReconciliationService;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
@@ -34,6 +39,17 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     @Autowired private EcobeeReconciliationReportDao reconciliationReportDao;
     @Autowired private EcobeeCommunicationService communicationService;
     @Autowired private EcobeeGroupDeviceMappingDao ecobeeGroupDeviceMappingDao;
+    
+    //Fix issues in this order to avoid e.g. deleting an extraneous set containing a mislocated set.
+    //(This should not be rearranged without some thought)
+    private static final ImmutableList<EcobeeDiscrepancyType> errorTypes = ImmutableList.of(
+        EcobeeDiscrepancyType.MISSING_MANAGEMENT_SET,
+        EcobeeDiscrepancyType.MISLOCATED_MANAGEMENT_SET,
+        EcobeeDiscrepancyType.EXTRANEOUS_MANAGEMENT_SET,
+        EcobeeDiscrepancyType.MISSING_DEVICE,
+        EcobeeDiscrepancyType.MISLOCATED_DEVICE
+        //EcobeeDiscrepancyType.EXTRANEOUS_DEVICE //No good way to fix this
+    );
     
     @Override
     public int runReconciliationReport() throws EcobeeCommunicationException {
@@ -58,23 +74,98 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     }
     
     @Override
-    @Transactional
-    public List<String> fixDiscrepancy(int reportId, int errorId) throws EcobeeCommunicationException {
-        //TODO
+    public EcobeeReconciliationResult fixDiscrepancy(int reportId, int errorId) throws IllegalArgumentException {
         //get discrepancy
-        //fix with ecobeecommunicationservice
+        EcobeeReconciliationReport report = reconciliationReportDao.findReport();
+        if (report.getReportId() != reportId) {
+            throw new IllegalArgumentException("Report id is outdated.");
+        }
+        
+        EcobeeDiscrepancy error = report.getError(errorId);
+        if(error == null) {
+            throw new IllegalArgumentException("Invalid error id.");
+        }
+        
+        //fix discrepancy
+        EcobeeReconciliationResult result = fixDiscrepancy(error);
+        
         //remove discrepancy from report
-        return null;
+        if (result.isSuccess()) {
+            reconciliationReportDao.removeError(reportId, errorId);
+        }
+        
+        return result;
     }
     
     @Override
-    @Transactional
-    public List<String> fixAllDiscrepancies(int reportId) throws EcobeeCommunicationException {
-        //TODO
+    public List<EcobeeReconciliationResult> fixAllDiscrepancies(int reportId) throws IllegalArgumentException {
         //get discrepancies
-        //fix all with ecobeecommunicationservice
-        //remove discrepancies from report
-        return null;
+        EcobeeReconciliationReport report = reconciliationReportDao.findReport();
+        if (report.getReportId() != reportId) {
+            throw new IllegalArgumentException("Report id is outdated.");
+        }
+        
+        List<EcobeeReconciliationResult> results = new ArrayList<>();
+        
+        for (EcobeeDiscrepancyType errorType : errorTypes) {
+            Collection<EcobeeDiscrepancy> errors = report.getErrors(errorType);
+            for (EcobeeDiscrepancy error : errors) {
+                //Attempt to fix
+                EcobeeReconciliationResult result = fixDiscrepancy(error);
+                //Save the result
+                results.add(result);
+                //Remove discrepancy from report
+                if (result.isSuccess()) {
+                    reconciliationReportDao.removeError(reportId, error.getErrorId());
+                }
+            }
+        }
+        
+        return results;
+    }
+    
+    private EcobeeReconciliationResult fixDiscrepancy(EcobeeDiscrepancy error) {
+        try {
+            switch (error.getErrorType()) {
+                //Set is in ecobee, doesn't correspond to a Yukon group
+                case EXTRANEOUS_MANAGEMENT_SET:
+                    communicationService.deleteManagementSetByPath(error.getCurrentLocation());
+                    return EcobeeReconciliationResult.newSuccessfulResult(error.getErrorId());
+                    
+                //ecobee device corresponds to a Yukon device, but is in the wrong management set
+                case MISLOCATED_DEVICE:
+                    communicationService.moveDeviceToSet(error.getSerialNumber(), error.getCorrectLocation());
+                    return EcobeeReconciliationResult.newSuccessfulResult(error.getErrorId());
+                
+                //ecobee set corresponds to Yukon group, but is in the wrong location in the hierarchy
+                case MISLOCATED_MANAGEMENT_SET:
+                    communicationService.moveManagementSet(error.getCurrentLocation(), error.getCorrectLocation());
+                    return EcobeeReconciliationResult.newSuccessfulResult(error.getErrorId());
+                
+                //Device in Yukon, not in ecobee
+                case MISSING_DEVICE:
+                    communicationService.registerDevice(error.getSerialNumber());
+                    communicationService.moveDeviceToSet(error.getSerialNumber(), error.getCorrectLocation());
+                    return EcobeeReconciliationResult.newSuccessfulResult(error.getErrorId());
+                
+                //Yukon group has no corresponding ecobee set
+                case MISSING_MANAGEMENT_SET:
+                    communicationService.createManagementSet(error.getCorrectLocation());
+                    return EcobeeReconciliationResult.newSuccessfulResult(error.getErrorId());
+                
+                //Device in ecobee, not in Yukon
+                case EXTRANEOUS_DEVICE:
+                //Unknown discrepancy type, shouldn't happen
+                default:
+                    return EcobeeReconciliationResult.newFailureResult(error.getErrorId(), NOT_FIXABLE);
+            }
+        } catch (EcobeeSetDoesNotExistException e) {
+            return EcobeeReconciliationResult.newFailureResult(error.getErrorId(), NO_SET);
+        } catch (EcobeeDeviceDoesNotExistException e) {
+            return EcobeeReconciliationResult.newFailureResult(error.getErrorId(), NO_DEVICE);
+        } catch (EcobeeCommunicationException e) {
+            return EcobeeReconciliationResult.newFailureResult(error.getErrorId(), COMMUNICATION);
+        }
     }
     
     /**
@@ -117,19 +208,22 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             if (setPath == null) {
                 //Set doesn't exist in ecobee
                 errorsList.add(new EcobeeMissingSetDiscrepancy(correctPath));
-            } else if (setPath != correctPath) {
+            } else if (!setPath.equals(correctPath)) {
                 //Set exists, but not under the root where it's supposed to be
                 errorsList.add(new EcobeeMislocatedSetDiscrepancy(setPath, correctPath));
             } else {
                 //Set exists, in the correct location
                 Collection<String> yukonSerialNumbersForGroup = groupToDevicesMap.get(groupId);
                 Collection<String> ecobeeSerialNumbersForGroup = hierarchyInfo.getSetsAndSerialNumbers().get(groupId);
+                Collection<String> optedOutSerialNumbers = 
+                        hierarchyInfo.getSetsAndSerialNumbers().get(EcobeeCommunicationService.OPT_OUT_SET);
                 
                 for (String yukonSerialNumber : yukonSerialNumbersForGroup) {
                     if (!allEcobeeSerialNumbers.contains(yukonSerialNumber)) {
                         //Device doesn't exist in ecobee
                         errorsList.add(new EcobeeMissingDeviceDiscrepancy(yukonSerialNumber, setPath)); 
-                    } else if (!ecobeeSerialNumbersForGroup.contains(yukonSerialNumber)) {
+                    } else if (!ecobeeSerialNumbersForGroup.contains(yukonSerialNumber) 
+                            && !optedOutSerialNumbers.contains(yukonSerialNumber)) {
                         //Device exists, but not in the correct set
                         String currentPath = hierarchyInfo.getSetPathForSerialNumber(yukonSerialNumber);
                         errorsList.add(new EcobeeMislocatedDeviceDiscrepancy(yukonSerialNumber, currentPath, setPath));
@@ -184,7 +278,8 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
         private final Multimap<String, String> serialNumbersAndSets = ArrayListMultimap.create();
         
         public EcobeeHierarchyInfo(List<SetNode> ecobeeHierarchy) {
-            SetNode root = Iterables.getOnlyElement(ecobeeHierarchy); //only top-level element should be the root, "/"
+            //the root, "/", should be the only top-level element 
+            SetNode root = Iterables.getOnlyElement(ecobeeHierarchy); 
             for (SetNode childNode : root.getChildren()) {
                 initialize(childNode);
             }

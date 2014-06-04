@@ -17,4 +17,9 @@ public interface EcobeeReconciliationReportDao {
      * Deletes the previous report and adds a new report to the database.
      */
     public int insertReport(EcobeeReconciliationReport report);
+    
+    /**
+     * Delete the specified error from the report.
+     */
+    public boolean removeError(int reportId, int errorId);
 }
