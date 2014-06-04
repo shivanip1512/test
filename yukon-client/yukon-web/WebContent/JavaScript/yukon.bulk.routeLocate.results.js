@@ -14,7 +14,7 @@ yukon.bulk.routeLocate.results = (function () {
             }
 
             if (isCanceled === 'true') {
-                routesButton.prop('disabled', false);;
+                routesButton.prop('disabled', false);
                 cancelDiv.hide();
                 $('#commandsCanceledDiv').show();
             }
