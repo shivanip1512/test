@@ -114,7 +114,6 @@ yukon.dr.ecobee = (function () {
                 loadGroupDiv = document.getElementById('loadGroup'),
                 ssInputId = 'picker_' + pickerThis.pickerId + '_ss',
                 ssInputElem = document.getElementById(ssInputId);
-            console.log('devices=%O',devices);
             $.each(devices, function (key, selectedItem) {
                 var inputElement = document.createElement('input');
                 inputElement.type = 'hidden';
@@ -127,7 +126,6 @@ yukon.dr.ecobee = (function () {
             if ('undefined' !== typeof ssInputElem && ssInputElem) {
                 ssInputElem.parentNode.removeChild(ssInputElem);
             }
-            console.log("awesome! populated " + pickerThis.destinationFieldName + " with " + devices.length + " values");
             return true;
         },
         updater : function (stuff) {

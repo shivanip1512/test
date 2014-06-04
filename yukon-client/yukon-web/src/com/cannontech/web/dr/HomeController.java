@@ -160,60 +160,6 @@ public class HomeController {
             model.addAttribute("settings", settings);
         }
 
-        /** ECOBEE */
-        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ECOBEE, user)) {
-//        OnOff ecobee = globalSettingDao.getEnum(GlobalSettingType.ECOBEE, OnOff.class);
-//        boolean showEcobeeStats = (ecobee == OnOff.ON);
-        boolean showEcobeeStats = true;
-        model.addAttribute("showEcobeeStats", showEcobeeStats);
-
-        EcobeeSettings ecobeeSettings = new EcobeeSettings();
-        ecobeeSettings.setCheckErrors(true);
-        ecobeeSettings.setDataCollection(true);
-        LocalTime timeNow = new LocalTime();
-        ecobeeSettings.setCheckErrorsTime(timeNow);
-        model.addAttribute("ecobeeSettings", ecobeeSettings);
-
-        EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now());
-        int statsMonth = currentMonthStats.getMonth();
-        int statsYear = currentMonthStats.getYear();
-        int currentMonthDataCollectionQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
-        int currentMonthDemandResponseQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
-        int currentMonthSystemQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
-        EcobeeQueryStats queryStats;
-        // begin test
-        if (currentMonthDataCollectionQueryCount == 0 && currentMonthDemandResponseQueryCount == 0 &&
-            currentMonthSystemQueryCount == 0) {
-            // generate fake data
-            Random rand = new Random();
-            int maxTestVal = 10000;
-            currentMonthDemandResponseQueryCount = rand.nextInt(maxTestVal);
-            currentMonthDataCollectionQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount);
-            currentMonthSystemQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount -
-                currentMonthDataCollectionQueryCount);
-            YearMonth month = new YearMonth().withYear(statsYear).withMonthOfYear(statsMonth);
-            queryStats =
-                new EcobeeQueryStats(month, currentMonthDemandResponseQueryCount, currentMonthDataCollectionQueryCount, currentMonthSystemQueryCount);
-        } else {
-            queryStats = new EcobeeQueryStats(currentMonthStats);
-        }
-        // end test
-        // TODO: leverage EcobeeSyncIssue after moving it from EcobeeController.java
-        // to dr/model. Find backend API that gets this data and bolt it on.
-        model.addAttribute("ecobeeStats", queryStats);
-        EcobeeReconciliationReport report = reconciliationService.findReconciliationReport();
-        int deviceErrorCount = 0;
-        int groupErrorCount = 0;
-        if (report != null) {
-            deviceErrorCount = report.getErrorNumberByCategory(DEVICE);
-            groupErrorCount = report.getErrorNumberByCategory(GROUP);
-        }
-        model.addAttribute("deviceIssues", deviceErrorCount);
-        model.addAttribute("groupIssues", groupErrorCount);
-        
-        log.debug(queryStats);
-        }
-        
         return "dr/home.jsp";
     }
 

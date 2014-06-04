@@ -68,11 +68,9 @@
                                 <tags:nameValue2 nameKey=".download.startDate" valueClass="full-width">
                                     <input type="hidden" id="ecobee-start-report-date">
                                     <input type="hidden" id="ecobee-end-report-date">
-                                    <dt:dateTime name="ecobeeStartReportDate" value="${oneDayAgo}" minDate="${sevenDaysAgo}" 
-                                        maxDate="${now}"/>
+                                    <dt:dateTime name="ecobeeStartReportDate" value="${oneDayAgo}" maxDate="${now}"/>
                                     <span class="fl" style="margin-right: 5px;"><i:inline key="yukon.common.to"/></span>
-                                    <dt:dateTime name="ecobeeEndReportDate" value="${now}" minDate="${sevenDaysAgo}" 
-                                        maxDate="${now}"/>
+                                    <dt:dateTime name="ecobeeEndReportDate" value="${now}" maxDate="${now}"/>
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
                             <h3><i:inline key=".loadGroups"/></h3>

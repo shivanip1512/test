@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
 import org.joda.time.YearMonth;
@@ -74,9 +75,6 @@ import com.google.common.collect.Lists;
 public class EcobeeController {
 
     private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
-//    private static final String baseKey = "yukon.web.modules.dr.home.ecobee.configure.";
-//    private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
-//    private static final String detailsKey = "yukon.web.modules.dr.home.ecobee.details.";
     private static DateTimeFormatter dateTimeFormatter;
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
@@ -170,12 +168,6 @@ public class EcobeeController {
             jobManager.disableJob(reconciliationReportJob);
         }
         
-//        if (bindingResult.hasErrors()) {
-//            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-//            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-//        } else {
-//            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "successful"));
-//        }
         return "redirect:/dr/home";
     }
     
@@ -188,6 +180,14 @@ public class EcobeeController {
 
         Instant startDate = new Instant(dateTimeFormatter.parseMillis(ecobeeStartReportDate));
         Instant endDate = new Instant(dateTimeFormatter.parseMillis(ecobeeEndReportDate));
+        
+        Duration specifiedDuration = new Duration(startDate, endDate);
+        
+        if (specifiedDuration.isLongerThan(Duration.standardDays(7))) {
+            log.debug("bogus date range: " + specifiedDuration);
+            response.setStatus(400);
+            return null;
+        }
         
         if (loadGroupIds == null) {
             // Load groups are required.
@@ -241,28 +241,10 @@ public class EcobeeController {
         int currentMonthDataCollectionQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
         int currentMonthDemandResponseQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
         int currentMonthSystemQueryCount = currentMonthStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
-        EcobeeQueryStats queryStats;
-        // begin test
-        if (currentMonthDataCollectionQueryCount == 0 && currentMonthDemandResponseQueryCount == 0 &&
-            currentMonthSystemQueryCount == 0) {
-            // generate fake data
-            Random rand = new Random();
-            int maxTestVal = 10000;
-            currentMonthDemandResponseQueryCount = rand.nextInt(maxTestVal);
-            currentMonthDataCollectionQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount);
-            currentMonthSystemQueryCount = rand.nextInt(maxTestVal - currentMonthDemandResponseQueryCount -
-                currentMonthDataCollectionQueryCount);
-            YearMonth month = new YearMonth().withYear(statsYear).withMonthOfYear(statsMonth);
-            queryStats =
-                new EcobeeQueryStats(month, currentMonthDemandResponseQueryCount, currentMonthDataCollectionQueryCount,
-                    currentMonthSystemQueryCount);
-        } else {
-            queryStats = new EcobeeQueryStats(currentMonthStats);
-        }
-        // end test
+        EcobeeQueryStats queryStats = new EcobeeQueryStats(currentMonthStats);
         model.addAttribute("ecobeeStats", queryStats);
 
-        // TODO deviceIssues and groupIssues need real data
+        // TODO deviceIssues and groupIssues need real counts
         model.addAttribute("deviceIssues", 3);
         model.addAttribute("groupIssues", 6);
 
@@ -279,75 +261,9 @@ public class EcobeeController {
             Collection<EcobeeDiscrepancy> errors = report.getErrors();
             model.addAttribute(errors);
         }
-        // dummy data for issues until job created to generate issues
-        List<EcobeeSyncIssue> issues = new ArrayList<>();
 
-        EcobeeSyncIssue deviceNotInEcobee = new EcobeeSyncIssue();
-        deviceNotInEcobee.setType(EcobeeSyncIssueType.DEVICE_NOT_IN_ECOBEE);
-        deviceNotInEcobee.setSerialNumber("123456789");
-        issues.add(deviceNotInEcobee);
-
-        EcobeeSyncIssue deviceNotInYukon = new EcobeeSyncIssue();
-        deviceNotInYukon.setType(EcobeeSyncIssueType.DEVICE_NOT_IN_YUKON);
-        deviceNotInYukon.setSerialNumber("987654321");
-        issues.add(deviceNotInYukon);
-
-        EcobeeSyncIssue loadGroupNotInEcobee = new EcobeeSyncIssue();
-        loadGroupNotInEcobee.setType(EcobeeSyncIssueType.LOAD_GROUP_NOT_IN_ECOBEE);
-        loadGroupNotInEcobee.setLoadGroupName("AC Super Saver 9000");;
-        issues.add(loadGroupNotInEcobee);
-
-        EcobeeSyncIssue ecobeeEnrollmentIncorrect = new EcobeeSyncIssue();
-        ecobeeEnrollmentIncorrect.setType(EcobeeSyncIssueType.LOAD_GROUP_NOT_IN_ECOBEE);
-        ecobeeEnrollmentIncorrect.setLoadGroupName("WH Lite 50%");
-        issues.add(ecobeeEnrollmentIncorrect);
-
-        EcobeeSyncIssue ecobeeSetDoesNotMatch = new EcobeeSyncIssue();
-        ecobeeSetDoesNotMatch.setType(EcobeeSyncIssueType.ECOBEE_SET_DOES_NOT_MATCH);
-        ecobeeSetDoesNotMatch.setLoadGroupName("Com 5M Control");
-        issues.add(ecobeeSetDoesNotMatch);
-
-        EcobeeSyncIssue ecobeeIncorrectLocation = new EcobeeSyncIssue();
-        ecobeeIncorrectLocation.setType(EcobeeSyncIssueType.ECOBEE_SET_IN_INCORRECT_LOCATION);
-        ecobeeIncorrectLocation.setLoadGroupName("RF WH EMERGENCY PROGRAM");
-        issues.add(ecobeeIncorrectLocation);
-
-        EcobeeSyncIssue ecobeeBadLoadGroup = new EcobeeSyncIssue();
-        ecobeeBadLoadGroup.setType(EcobeeSyncIssueType.LOAD_GROUP_NOT_IN_ECOBEE);
-        ecobeeBadLoadGroup.setLoadGroupName("COM_LITE-8");
-        issues.add(ecobeeBadLoadGroup);
-
-        EcobeeSyncIssue anotherDeviceNotInYukon = new EcobeeSyncIssue();
-        anotherDeviceNotInYukon.setType(EcobeeSyncIssueType.DEVICE_NOT_IN_YUKON);
-        anotherDeviceNotInYukon.setSerialNumber("42");
-        issues.add(anotherDeviceNotInYukon);
-
-        EcobeeSyncIssue anotherDeviceNotInEcobee = new EcobeeSyncIssue();
-        anotherDeviceNotInEcobee.setType(EcobeeSyncIssueType.DEVICE_NOT_IN_ECOBEE);
-        anotherDeviceNotInEcobee.setSerialNumber("42");
-        issues.add(anotherDeviceNotInEcobee);
-
-        EcobeeSyncIssue anotherSetDoesNotMatch = new EcobeeSyncIssue();
-        anotherSetDoesNotMatch.setType(EcobeeSyncIssueType.ECOBEE_SET_DOES_NOT_MATCH);
-        anotherSetDoesNotMatch.setLoadGroupName("Serial RFN Group");
-        issues.add(anotherSetDoesNotMatch);
-
-        EcobeeSyncIssue anotherIncorrectLocation = new EcobeeSyncIssue();
-        anotherIncorrectLocation.setType(EcobeeSyncIssueType.ECOBEE_SET_IN_INCORRECT_LOCATION);
-        anotherIncorrectLocation.setLoadGroupName("RF WH EMERGENCY GRP");
-        issues.add(anotherIncorrectLocation);
-
-        EcobeeSyncIssue yetAnotherSetDoesNotMatch = new EcobeeSyncIssue();
-        yetAnotherSetDoesNotMatch.setType(EcobeeSyncIssueType.ECOBEE_SET_DOES_NOT_MATCH);
-        yetAnotherSetDoesNotMatch.setLoadGroupName("SEP Group");
-        issues.add(yetAnotherSetDoesNotMatch);
-
-        EcobeeSyncIssue notAnotherIncorrectLocation = new EcobeeSyncIssue();
-        notAnotherIncorrectLocation.setType(EcobeeSyncIssueType.ECOBEE_SET_IN_INCORRECT_LOCATION);
-        notAnotherIncorrectLocation.setLoadGroupName("SIGNAL TEST");
-        issues.add(notAnotherIncorrectLocation);
-
-        model.addAttribute("issues", issues);
+        // TODO: fetch issues via new API
+        //model.addAttribute("issues", issues);
 
         //get stats across a range of months
         MonthYear currentMonth = MonthYear.now();
@@ -385,11 +301,6 @@ public class EcobeeController {
                 queryStatsList.add(queryStats);
             }
         }
-        log.debug("queryStatsList.size(): " + queryStatsList.size());
-        for (EcobeeQueryStats stats : queryStatsList) {
-            log.debug(stats);
-        }
-        // end unit test, debug logging
         model.addAttribute("statsList", queryStatsList);
         // TODO: fetch data download info
         List<String> pendingKeys = readResultsCache.getPendingKeys();
@@ -406,34 +317,12 @@ public class EcobeeController {
             EcobeeReadResult result = readResultsCache.getResult(completedKeys.get(completedIndex));
             downloadsList.add(result);
         }
-        // begin unit test for data downloads history and in-progress
-        // TODO: this should return a list of historical entries
-        DateTime startDate = new DateTime(2014, 5, 2, 21, 45, 00);
-        DateTime endDate = new DateTime(2014, 5, 2, 22, 00, 00);
-        Boolean downLoadFinished = true;
-        DateTime startDownLoad = new DateTime(2014, 5, 16, 22, 00, 00);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("downLoadFinished", downLoadFinished);
-        model.addAttribute("startDownLoad", startDownLoad);
-//      List<EcobeeDataDownload> downloadsList = new ArrayList<EcobeeController.EcobeeDataDownload>();
-//      downloadsList.add(new EcobeeDataDownload(new DateTime(2014, 5, 16, 22, 00, 00), null, false));
-//      downloadsList.add(new EcobeeDataDownload(new DateTime(2014, 5, 20, 12, 30, 00),
-//              new DateTime(2014, 5, 21, 12, 30, 00), true));
-//      downloadsList.add(new EcobeeDataDownload(new DateTime(2014, 5, 2, 21, 45, 00),
-//          new DateTime(2014, 5, 3, 21, 45, 00), true));
-//      downloadsList.add(new EcobeeDataDownload(new DateTime(2014, 5, 19, 12, 30, 00),
-//              new DateTime(2014, 5, 20, 12, 30, 00), true));
-//      for (EcobeeDataDownload download: downloadsList) {
-//          log.info("startDate: " + download.startDate + " endDate: " + download.endDate + " downloadFinished: " + download.downloadFinished);
-//      }
-      model.addAttribute("downloadsList", downloadsList);
-      DateTime now = new DateTime();
-      DateTime sevenDaysAgo = new DateTime(now.minusDays(7));
-      DateTime oneDayAgo = new DateTime(now.minusDays(1));
-      model.addAttribute("now", now);
-      model.addAttribute("sevenDaysAgo", sevenDaysAgo);
-      model.addAttribute("oneDayAgo", oneDayAgo);
+        model.addAttribute("downloadsList", downloadsList);
+        DateTime now = new DateTime();
+        DateTime sevenDaysAgo = new DateTime(now.minusDays(7));
+        DateTime oneDayAgo = new DateTime(now.minusDays(1));
+        model.addAttribute("now", now);
+        model.addAttribute("oneDayAgo", oneDayAgo);
 
         return "dr/ecobee/details.jsp";
     }
