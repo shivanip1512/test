@@ -149,7 +149,7 @@ public class SubstationController {
 
         String name = ServletRequestUtils.getStringParameter(request, "name");
         if (!(DeviceGroupUtil.isValidName(name))) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.containsIllegalChars"));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.deviceGroupName.containsIllegalChars"));
             return mav;
         }
         Substation substation = new Substation();

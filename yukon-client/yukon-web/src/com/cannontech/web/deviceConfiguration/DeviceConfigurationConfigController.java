@@ -119,7 +119,7 @@ public class DeviceConfigurationConfigController {
 
         String configName = deviceConfig.getConfigName();
         if (!(DeviceGroupUtil.isValidName(configName))) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.containsIllegalChars"));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.deviceGroupName.containsIllegalChars"));
             return showConfigurationPageForErrorMessage(model, deviceConfig);
         }
 
