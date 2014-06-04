@@ -42,6 +42,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
@@ -214,8 +215,12 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                     new DeviceVerificationInfo(callback, now, new SimpleDevice(device));
                 // Should be a loop of one since we requested only one attribute.
                 for (PaoPointIdentifier paoPointIdentifier : paoMultiPointId.getPaoPointIdentifiers()) {
-                    devicesAwaitingVerification.put(pointDao.getPointId(paoPointIdentifier), dvi);
-                    devicesWithoutPoint.remove(device.getPaoIdentifier());
+                    try {
+                        devicesAwaitingVerification.put(pointDao.getPointId(paoPointIdentifier), dvi);
+                        devicesWithoutPoint.remove(device.getPaoIdentifier());
+                    } catch (NotFoundException e) {
+                       //devices without a point can't be verified
+                    }
                 }
             }
             asyncDynamicDataSource.registerForPointData(this, devicesAwaitingVerification.keySet());
