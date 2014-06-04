@@ -124,14 +124,6 @@ yukon.namespace = function(ns) {
     return object;
 };
 
-// NaN is the one value in JavaScript that is not treated as being equal to itself.
-// This was cribbed from David Herman's Effective JavaScript, p. 12
-// Also see the following for why you don't want to use the native isNaN API:
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/isNaN
-yukon.isReallyNaN = function(val) {
-    return val !== val;
-};
-
 /** 
  * UI module - General purpose ui functionality for yukon.
  * 
