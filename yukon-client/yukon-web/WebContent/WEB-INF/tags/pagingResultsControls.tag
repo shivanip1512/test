@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" %>
 
+<%@ attribute name="classes" description="CSS class names applied to the container element." %>
 <%@ attribute name="result" required="true" type="com.cannontech.common.search.result.SearchResults" %>
 <%@ attribute name="baseUrl" required="true" description="URL without context path." %>
 <%@ attribute name="adjustPageCount" description="When 'true', the items per page options appear. Default: false." %>
@@ -13,7 +14,7 @@
 <cti:default var="adjustPageCount" value="false"/>
 
 <c:if test="${result.numberOfPages >= 1}">
-<div class="compact-results-paging clearfix">
+<div class="compact-results-paging clearfix ${classes}">
     <div class="paging-area" data-current-page="${result.currentPage}">
         <c:if test="${adjustPageCount == 'true'}">
             <span class="fl perPageArea">
