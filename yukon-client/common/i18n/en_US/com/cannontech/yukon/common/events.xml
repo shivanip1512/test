@@ -390,6 +390,7 @@
     <entry key="yukon.common.events.system.maintenance.rphDeleteDuplicates">Deleted {7} duplicate RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
     <entry key="yukon.common.events.system.maintenance.systemLogDeleteDanglingEntries">Deleted {7} dangling SystemLog rows from database. Start time: {11}. Finish time: {12}.</entry>
     <entry key="yukon.common.events.system.maintenance.rphDeleteDanglingEntries">Deleted {7} dangling RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
+    <entry key="yukon.common.events.system.maintenance.systemLogWeatherDataUpdate">Updated {7} weather stations. Start time: {11}. Finish time: {12}.</entry>
     
     <!--  System Administration -->
     <!-- Configuration -->

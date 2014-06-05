@@ -59,7 +59,7 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
     public void systemLogDeleteDanglingEntries(int rowsDeleted, Instant start, Instant finish);
     
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.mantenance")
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
     public void systemLogWeatherDataUpdate(int weatherLocationsUpdated, Instant start, Instant finish);
     
     /* System Admin */
