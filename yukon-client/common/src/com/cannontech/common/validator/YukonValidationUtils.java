@@ -108,6 +108,29 @@ public class YukonValidationUtils extends ValidationUtils {
                 + " and " + max + ".");
         }
     }
+    
+    /**
+     * check to ensure that the given double value is between the given min and max value 
+     * @param errors
+     * @param field
+     * @param value
+     * @param min
+     * @param max
+     * @param required
+     */
+    public static <T extends Comparable<T>> void checkDoubleRange(Errors errors, String field, Double value, T min,
+                                        Double max, boolean required) {
+        if (value == null) {
+            if (required) {
+                errors.rejectValue(field, "yukon.web.error.required", "Field is required");
+            }
+            return;
+        }
+
+        if (value.compareTo(Double.valueOf(min.toString())) < 0 || value.compareTo(Double.valueOf(max.toString())) > 0) {
+            errors.rejectValue(field, "yukon.web.error.notValidNumber");
+        }
+    }
 
     public static void regexCheck(Errors errors, String field, String fieldValue, Pattern pattern, String errorCode) {
         Matcher matcher = pattern.matcher(fieldValue);
@@ -192,4 +215,5 @@ public class YukonValidationUtils extends ValidationUtils {
         }
         errors.rejectValue(fields[fields.length - 1], errorMessageKey, errorArgs, "yukon.web.defaults.blank");
     }
+
 }

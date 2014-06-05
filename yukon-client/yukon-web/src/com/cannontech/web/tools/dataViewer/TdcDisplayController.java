@@ -101,6 +101,7 @@ public class TdcDisplayController {
         @Override
         protected void doValidation(DisplayBackingBean bean, Errors errors) {
             YukonValidationUtils.checkIsPositiveDouble(errors, "value", bean.getValue());
+            YukonValidationUtils.checkDoubleRange(errors, "value", bean.getValue(), 0, Double.MAX_VALUE, true);
         }
     };
 
@@ -341,7 +342,7 @@ public class TdcDisplayController {
                 List<MessageSourceResolvable> messages =
                     YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setError(messages);
-                return "manualEntryPopup.jsp";
+                return "data-viewer/manualEntryPopup.jsp";
             }
 
             newPointValue = backingBean.getValue();

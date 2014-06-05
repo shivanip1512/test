@@ -11,8 +11,8 @@ import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
 public class AnalogManualEntryPanel extends ManualEntryJPanel implements RowEditorDialogListener {
-    public static final double MIN_INPUT_VALUE = -99999.99999;
-    public static final double MAX_INPUT_VALUE = 99999.99999;
+    public static final double MIN_INPUT_VALUE = 0;
+    public static final double MAX_INPUT_VALUE = Double.MAX_VALUE;
     private javax.swing.JLabel ivjJLabelPtName = null;
     private javax.swing.JLabel ivjJLabelValue = null;
     private javax.swing.JTextField ivjJTextFieldValue = null;
