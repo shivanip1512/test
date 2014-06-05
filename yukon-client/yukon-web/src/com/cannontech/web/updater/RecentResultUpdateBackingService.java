@@ -2,7 +2,6 @@ package com.cannontech.web.updater;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.user.YukonUserContext;

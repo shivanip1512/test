@@ -73,7 +73,6 @@ yukon.dr.dashboard = (function() {
             $('#broadcast-config .f-time-label').html(timeFormatter.formatTime($('#rf-performance-command-time').val(), 0));
             $('#broadcast-config .f-email-time-label').html(timeFormatter.formatTime($('#rf-performance-email-time').val(), 0));
 
-            /** Handle email on/off toggle button.  TODO make on-off toggle button resuable */
             $(document).on('click', '#broadcast-config .toggle-on-off .button', function() {
                 
                 if ($('#broadcast-config .toggle-on-off .yes').hasClass('on')) {

@@ -454,17 +454,19 @@ yukon.ui = (function () {
              * The value of the [popup] attribute should be a css selector of the popup element.
              * The popup element's attributes are as follows:
              * 
-             * dialog -      If present the popup will have 'ok', 'cancel' buttons. See yukon.ui.buttons
-             *               function for button behaviors.
-             * data-width  - Width of the popup. Default is 'auto'.
-             * data-height - Height of the popup. Default is 'auto'.
-             * data-title  - The title of the popup.
-             * data-event  - If present and [dialog] is present, the value of [data-event] will be the name
-             *               of the event to fire when clicking the 'ok' button.
-             * data-target - If present and [dialog] is present' the value of [data-target] will be the 
-             *               target of the event fired when clicking the ok button.
-             * data-url      If present, the contents of the popup element will be replaced with the 
-             *               response of an ajax request to the url before the popup is shown.
+             * dialog -          If present the popup will have 'ok', 'cancel' buttons. See yukon.ui.buttons
+             *                   function for button behaviors.
+             * data-width  -     Width of the popup. Default is 'auto'.
+             * data-height -     Height of the popup. Default is 'auto'.
+             * data-title  -     The title of the popup.
+             * data-event  -     If present and [dialog] is present, the value of [data-event] will be the name
+             *                   of the event to fire when clicking the 'ok' button.
+             * data-target -     If present and [dialog] is present' the value of [data-target] will be the 
+             *                   target of the event fired when clicking the ok button.
+             * data-url          If present, the contents of the popup element will be replaced with the 
+             *                   response of an ajax request to the url before the popup is shown.
+             * data-load-event - If present and data-url is present, this event will be fired after the popup 
+             *                   has been loaded from the data-url.
              */
             $(document).on('click', '[popup]', function(ev) {
                 var trigger = $(this),
@@ -492,6 +494,9 @@ yukon.ui = (function () {
                         if (!options.title) {
                             var title = popup.find('.f-popup-title');
                             if (title[0]) options.title = title[0].value;
+                        }
+                        if (popup.is('[data-load-event]')) {
+                            popup.trigger(popup.data('loadEvent'));
                         }
                         popup.dialog(options);
                     });

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
@@ -38,10 +37,12 @@ public class DataDownloadServiceImpl implements DataDownloadService {
     @Override
     public String start(final List<String> serialNumbers, final Range<Instant> dateRange) throws IOException {
         
-        final File file = File.createTempFile("ecobee_data_" + Instant.now().getMillis(), "csv");
+        final File file = File.createTempFile("ecobee_data_" + Instant.now().getMillis(), ".csv");
+        file.deleteOnExit();
         
         final EcobeeReadResult result = new EcobeeReadResult(serialNumbers.size(), file);
         String resultKey = readResultsCache.addResult(result);
+        result.setKey(resultKey);
         
         Runnable task = new Runnable() {
             
@@ -69,9 +70,11 @@ public class DataDownloadServiceImpl implements DataDownloadService {
                         try {
                             batchedReads = commService.readDeviceData(batch, dateRange);
                         } catch (EcobeeCommunicationException e) {
+                            // TODO Add retry mechanism
                             log.error("Unable to retreive data from ecobee service.", e);
-                            continue;
-                            //TODO add a retry mechanism?
+                            result.setComplete(true);
+                            result.setSuccessful(false);
+                            break;
                         }
                         
                         for (EcobeeDeviceReadings deviceReadings : batchedReads) {
@@ -100,9 +103,13 @@ public class DataDownloadServiceImpl implements DataDownloadService {
                             result.addCompleted(batch.size());
                         }
                     }
+                    
+                    result.setSuccessful(true);
+                    
                 } catch (IOException e) {
                     log.error("Unable to write ecobee data file.", e);
                     result.setComplete(true);
+                    result.setSuccessful(false);
                 }
             }
         };

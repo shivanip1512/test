@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -31,7 +32,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -66,7 +66,6 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.loadcontrol.tasks.RepeatingWeatherDataTask;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -172,8 +171,9 @@ public class EcobeeController {
     }
     
     @RequestMapping(value="/ecobee/download/start", method=RequestMethod.POST)
-    public @ResponseBody Map<String, String> ecobeeDataReport(HttpServletRequest request, 
+    public String ecobeeDataReport(HttpServletRequest request, 
                                  HttpServletResponse response, 
+                                 ModelMap model,
                                  Integer[] loadGroupIds,
                                  String ecobeeStartReportDate, 
                                  String ecobeeEndReportDate) throws IOException {
@@ -186,19 +186,33 @@ public class EcobeeController {
         if (specifiedDuration.isLongerThan(Duration.standardDays(7))) {
             log.debug("bogus date range: " + specifiedDuration);
             response.setStatus(400);
-            return null;
+            DateTime now = new DateTime();
+            model.addAttribute("now", now);
+            model.addAttribute("oneDayAgo", new DateTime(now.minusDays(1)));
+            
+            return "dr/ecobee/download.jsp";
         }
         
         if (loadGroupIds == null) {
             // Load groups are required.
             response.setStatus(400);
-            return null;
+            DateTime now = new DateTime();
+            model.addAttribute("now", now);
+            model.addAttribute("oneDayAgo", new DateTime(now.minusDays(1)));
+            
+            return "dr/ecobee/download.jsp";
         }
         List<String> serialNumbers = drGroupDeviceMappingDao.getSerialNumbersForLoadGroups(Lists.newArrayList(loadGroupIds));
         
         String resultKey = dataDownloadService.start(serialNumbers, Range.inclusive(startDate, endDate));
         
-        return ImmutableMap.of("resultKey", resultKey);
+        model.addAttribute("key", resultKey);
+        EcobeeReadResult result = readResultsCache.getResult(resultKey);
+        
+        model.addAttribute("download", result);
+        model.addAttribute("hideRow", true);
+        
+        return "dr/ecobee/download.row.jsp";
     }
     
     @RequestMapping("/ecobee/download")
@@ -209,8 +223,18 @@ public class EcobeeController {
         if (!result.isComplete()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         } else {
-            WebFileUtils.writeToCSV(response, result.getFile(), "ecobee_data_" + Instant.now().getMillis());
+            WebFileUtils.writeToCSV(response, result.getFile(), "ecobee_data_" + Instant.now().getMillis() + ".csv");
         }
+    }
+    
+    @RequestMapping("/ecobee/download/settings")
+    public String downloadSettings(ModelMap model) {
+        
+        DateTime now = new DateTime();
+        model.addAttribute("now", now);
+        model.addAttribute("oneDayAgo", new DateTime(now.minusDays(1)));
+        
+        return "dr/ecobee/download.jsp";
     }
     
     @RequestMapping(value="/ecobee/statistics", method=RequestMethod.GET)
@@ -300,28 +324,25 @@ public class EcobeeController {
         // TODO: fetch data download info
         List<String> pendingKeys = readResultsCache.getPendingKeys();
         List<String> completedKeys = readResultsCache.getCompletedKeys();
-        List<EcobeeReadResult> downloadsList = new ArrayList<EcobeeReadResult>();
+        Map<String, EcobeeReadResult> downloads = new HashMap<>();
         int pendingIndex;
         for (pendingIndex = 0; pendingIndex < 5 && pendingIndex < pendingKeys.size(); pendingIndex++) {
-            EcobeeReadResult result = readResultsCache.getResult(pendingKeys.get(pendingIndex));
-            downloadsList.add(result);
+            String key = pendingKeys.get(pendingIndex);
+            EcobeeReadResult result = readResultsCache.getResult(key);
+            downloads.put(key, result);
         }
         int completedIndex;
         int completedsToAdd = 5 - pendingIndex;
         for (completedIndex = 0; completedIndex < completedsToAdd && completedIndex < completedKeys.size(); completedIndex++) {
-            EcobeeReadResult result = readResultsCache.getResult(completedKeys.get(completedIndex));
-            downloadsList.add(result);
+            String key = completedKeys.get(completedIndex);
+            EcobeeReadResult result = readResultsCache.getResult(key);
+            downloads.put(key, result);
         }
-        model.addAttribute("downloadsList", downloadsList);
-        DateTime now = new DateTime();
-        DateTime sevenDaysAgo = new DateTime(now.minusDays(7));
-        DateTime oneDayAgo = new DateTime(now.minusDays(1));
-        model.addAttribute("now", now);
-        model.addAttribute("oneDayAgo", oneDayAgo);
-
+        model.addAttribute("downloads", downloads);
+        
         return "dr/ecobee/details.jsp";
     }
-
+    
     @InitBinder
     public void initialize(WebDataBinder dataBinder) {
         PropertyEditorSupport localDateEditor = new PropertyEditorSupport() {

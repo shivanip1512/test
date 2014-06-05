@@ -16,8 +16,10 @@ import com.cannontech.web.updater.RecentResultUpdateBackingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class EcobeeReadBackingService extends RecentResultUpdateBackingService {
+    
     private static final Logger log = YukonLogManager.getLogger(RecentResultUpdateBackingService.class);
-    private static final int recentDownloadsToReturn = 5;
+    private static final int maxResults = 5;
+    
     @Autowired @Qualifier("ecobeeReads") private RecentResultsCache<EcobeeReadResult> resultsCache;
     
     @Override
@@ -27,6 +29,7 @@ public class EcobeeReadBackingService extends RecentResultUpdateBackingService {
 
     @Override
     public Object getResultValue(String resultId, String resultTypeStr) {
+        
         if (resultTypeStr == "RECENT_DOWNLOADS") {
             return getRecentDownloads();
         }
@@ -40,18 +43,21 @@ public class EcobeeReadBackingService extends RecentResultUpdateBackingService {
         return updateType.getValue(result);
     }
     
+    /**
+     * Returns {@link RecentResultsCache} keys.
+     */
     private String getRecentDownloads() {
         List<String> recentDownloads = new ArrayList<>();
         
         List<String> pendingKeys = resultsCache.getPendingKeys();
         //TODO sort keys
-        if (pendingKeys.size() > recentDownloadsToReturn) {
-            recentDownloads = pendingKeys.subList(0, recentDownloadsToReturn);
-        } else if (pendingKeys.size() == recentDownloadsToReturn) {
+        if (pendingKeys.size() > maxResults) {
+            recentDownloads = pendingKeys.subList(0, maxResults);
+        } else if (pendingKeys.size() == maxResults) {
             recentDownloads = pendingKeys;
         } else {
             recentDownloads.addAll(pendingKeys);
-            int remainingSlots = recentDownloadsToReturn - pendingKeys.size();
+            int remainingSlots = maxResults - pendingKeys.size();
             
             List<String> completedKeys = resultsCache.getCompletedKeys();
             //TODO sort keys

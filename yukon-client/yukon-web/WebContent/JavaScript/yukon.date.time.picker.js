@@ -216,7 +216,7 @@ yukon.ui.dateTimePickers = function () {
 
 // this should be the only interface through which date and date time pickers are created
 yukon.ui.initDateTimePickers = function (cfgLocalization, cfgTimepickerArgs) {
-    var dateTimePicker = new yukon.ui.dateTimePickers ();
+    var dateTimePicker = new yukon.ui.dateTimePickers();
     try {
         dateTimePicker.init(cfgLocalization, cfgTimepickerArgs);
     } catch (datetimepickerex) {

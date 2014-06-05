@@ -433,7 +433,7 @@
 <!-- Ecobees -->
 <entry key="yukon.web.modules.dr.home.ecobee.title">ecobee Statistics</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.queries">Queries ({0})</entry>
-<entry key="yukon.web.modules.dr.home.ecobee.issues">Issues</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.issues">Sync Issues</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.devices">devices,</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.groups">groups</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.title">ecobee Configuration</entry>
@@ -446,20 +446,25 @@
 
 <entry key="yukon.web.modules.dr.ecobee.details.pageName">Ecobee Details</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.queryStats.title">Query Statistics</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.issues.title">Issues ({0})</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.title">Data Downloads (most recent five)</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.issues.title">Sync Issues ({0})</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.title">Data Downloads (5 most recent)</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.loadGroupPicker">Select a Load Group</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.none">No recent downloads.</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.started">Started</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.status">Status</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.endDate">End Date</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.startDate">Start Date</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.inProgress">Download In Progress</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.download.finished">Download Is Finished</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.ready">Ready</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.failed">Failed</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.DEVICE_NOT_IN_ECOBEE">Device not in ecobee</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.DEVICE_NOT_IN_YUKON">Device not in Yukon</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_ENROLLMENT_INCORRECT">ecobee enrollment incorrect</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_SET_DOES_NOT_MATCH">ecobee set does not match</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_SET_IN_INCORRECT_LOCATION">ecobee set is in the incorrect location</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.LOAD_GROUP_NOT_IN_ECOBEE">Load group is not in ecobee</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.statistics.title">Data Collection/Demand Response/System</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.statistics.title">Data Collection / Demand Response / System</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.issues.none">No ecobee sync issues.</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.serialNumber">SN:</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.group">Group:</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.fix.label">Fix</entry>
