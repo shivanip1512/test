@@ -190,7 +190,7 @@ yukon.dr.ecobee = (function () {
                         setTimeout(function () { btn.removeClass('flash animated'); }, 2000);
                     }
                 } else {
-                    row.find('.js-download-ready').show();
+                    row.find('.js-download-failed').show();
                     bar.addClass('progress-bar-danger');
                     btn.disable();
                 }
