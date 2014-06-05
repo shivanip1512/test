@@ -4,8 +4,9 @@ import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.validate.IntegerRangeValidator;
 
 public class IntegerField extends Field<Integer> {
-    public IntegerField(String displayName, String fieldName, String description, IntegerType inputType) {
-        super(displayName, fieldName, description, inputType, 
+    public IntegerField(String displayName, String fieldName, String description, IntegerType inputType,
+            String defaultValue) {
+        super(displayName, fieldName, description, inputType, defaultValue,
               createValidator(inputType.getMinValue(), inputType.getMaxValue()));
     }
     

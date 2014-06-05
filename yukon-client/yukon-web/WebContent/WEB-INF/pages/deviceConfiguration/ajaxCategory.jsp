@@ -16,9 +16,14 @@
     <input type="hidden" name="configId" value="${configId}"/>
     
     <cti:msgScope paths="modules.tools.configs, modules.tools.configs.category">
-        
-        <div class="warning stacked"><i:inline key=".category.changeWarning"/></div>
-        
+
+        <div class="stacked">
+            <span class="warning">
+                <i:inline key="yukon.common.warning"/>
+            </span>
+            <i:inline key=".category.changeWarning"/>
+        </div>
+
         <tags:nameValueContainer2 tableClass="stacked">
             
             <tags:inputNameValue nameKey=".categoryName" path="categoryName" size="50" maxlength="60"/>

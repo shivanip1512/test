@@ -13,97 +13,16 @@
 <tags:sectionContainer2 nameKey="categoryFields">
 
     <cti:includeScript link="/JavaScript/yukon.device.config.js"/>
-    
-    <c:forEach var="field" items="${categoryTemplate.fields}">
-        <%-- The setting box needs to be hidden in certain cases --%>
-        <c:set var="classes" value=""/>        
-        
+    <c:set var="categoryEditBean" value="${categoryEditBean}" scope="request"/>
+    <c:set var="categoryTemplate" value="${categoryTemplate}" scope="request"/>
+    <c:forEach var="field" items="${categoryTemplate.fields}" >
+        <c:set var="field" value="${field}" scope="request"/>
+        <c:set var="classes" value=""/>
+
         <div class="setting clearfix column-6-18 ${classes}" data-display-item="${field.fieldName}">
-            <div class="column one">${field.displayName}</div>
-            <div class="column two detail nogutter">
-                <c:choose>
-                    <c:when test="${empty field.inputType}">
-                        <%-- InputType is empty for fields that represent maps --%>
-                        <table>
-                            <c:forEach var="rate" items="${field.inputTypes}" varStatus="loopStatus">
-                                <c:set var="rowClass" value=""/>
-                                <c:set var="isMidnight" value="${loopStatus.index == 0}"/>
-                                
-                                <%-- Hide TOU entries whose values are midnight (but whose times are not!) --%>
-                                <c:if test="${categoryEditBean.isScheduleRateHidden(field.fieldName, rate.field) && !isMidnight}">
-                                    <c:set var="rowClass" value="class='dn'"/>
-                                </c:if>
-                                
-                                <tr ${rowClass} data-schedule-name="${field.fieldName}">
-                                    <td>
-                                        <i:inline key=".${categoryTemplate.categoryType}.${rate.field}"/>
-                                    </td>
-                                    <td id="${field.fieldName}_${rate.field}" data-field-name="${field.fieldName}" data-rate="${rate.field}">
-                                        <c:choose>
-                                            <c:when test="${!isMidnight}">
-                                                <cti:displayForPageEditModes modes="VIEW">
-                                                    ${categoryEditBean.scheduleInputs[(field.fieldName)].rateInputs[(rate.field)].time}
-                                                </cti:displayForPageEditModes>
-                                                <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                                    <tags:simpleInputType input="${rate.timeType}" path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time"/>
-                                                    <spring:bind path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time">
-                                                        <c:if test="${status.error}">
-                                                            <form:errors path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time" cssClass="error"/>
-                                                        </c:if>
-                                                    </spring:bind>
-                                                </cti:displayForPageEditModes>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <cti:displayForPageEditModes modes="VIEW">
-                                                    <i:inline key=".${categoryTemplate.categoryType}.midnightTime"/>
-                                                </cti:displayForPageEditModes>
-                                                <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                                    <select disabled>
-                                                        <option><i:inline key=".${categoryTemplate.categoryType}.midnightTime"/></option>
-                                                    </select>
-                                                </cti:displayForPageEditModes>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td>
-                                        <i:inline key="yukon.web.modules.tools.configs.rate"/>
-                                    </td>
-                                    <td>
-                                        <cti:displayForPageEditModes modes="VIEW">
-                                            ${categoryEditBean.scheduleInputs[(field.fieldName)].rateInputs[(rate.field)].rate}
-                                        </cti:displayForPageEditModes>
-                                        <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                            <tags:simpleInputType input="${rate.rateType}" path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].rate"/>
-                                        </cti:displayForPageEditModes>
-                                    </td>
-                                    <td>
-                                        <%-- This td intentionally left blank to store the Add Rate button in! --%>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </table>
-                    </c:when>
-                    <c:otherwise>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <c:choose>
-                                <c:when test="${field['enum']}">
-                                    <c:forEach var="option" items="${field.inputType.optionList}">
-                                        <c:if test="${option.value == categoryEditBean.categoryInputs[(field.fieldName)]}">
-                                            <input type="hidden" id="value_${field.fieldName}" value="${option.value}"/>
-                                            <cti:msg2 key="${option}"/>
-                                        </c:if>
-                                    </c:forEach>
-                                </c:when>
-                                <c:otherwise>
-                                    ${categoryEditBean.categoryInputs[(field.fieldName)]}
-                                </c:otherwise>
-                            </c:choose>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <tags:simpleInputType id="category-inputs-${field.fieldName}" input="${field.inputType}" path="categoryInputs[${field.fieldName}]"/>
-                        </cti:displayForPageEditModes>
-                    </c:otherwise>
-                </c:choose>
+            <div class="column one form-control">${field.displayName}</div>
+            <div class="column two nogutter">
+                <tags:simpleInputType input="${field.inputType}" path="categoryInputs[${field.fieldName}]"/>
                 <div id="fieldErrors">
                     <spring:bind path="categoryInputs[${field.fieldName}]">
                         <c:if test="${status.error}">

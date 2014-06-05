@@ -300,6 +300,22 @@
     <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.timeAdjustTolerance">Time Adjust Tolerance</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.timeAdjustTolerance.description">Adjust real time clock when the incoming time sync differs by this many seconds.</entry>
 
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.title">RFN Channel Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.definition">Settings for channel recording and reporting</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels">Channel Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels.note">Joe was here</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels.helpText">Attributes selected for Interval reporting are also reported with Billing attributes</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes">Recording Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes.description">Interval, in minutes, to record data for Interval reporting</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalHours">Reporting Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalHours.description">Interval, in hours, to report data for Interval reporting</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.reportingExceeded">Maximum of 15 Reporting channels</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.billingExceeded">Maximum of 80 Enabled channels</entry>
+
+    <entry key="yukon.web.modules.tools.configs.enum.read.INTERVAL">Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.read.BILLING">Billing</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.read.DISABLED">Disabled</entry>
+
     <entry key="yukon.web.modules.tools.configs.category.addressing.title">MCT-430/470 Addressing</entry>
     <entry key="yukon.web.modules.tools.configs.category.addressing.definition">Addressing information for the MCT-430 and MCT-470.</entry>
     <entry key="yukon.web.modules.tools.configs.category.addressing.serviceProviderId">Service Provider Id</entry>

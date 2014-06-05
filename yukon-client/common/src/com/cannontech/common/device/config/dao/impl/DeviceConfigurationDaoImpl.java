@@ -803,15 +803,36 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             params.addValue("Name", category.getCategoryName());
             params.addValue("Description", category.getDescription());
             sql.append("WHERE DeviceConfigCategoryId").eq(category.getCategoryId());
-            
+
             jdbcTemplate.update(sql);
-            
-            // Update the item values.
+
+            // retrieve all current field names associated with the category from the DataBase
+            Set<String> prevFieldNames = new HashSet<>();
+            DeviceConfigCategory prevCategory = getDeviceConfigCategory(category.getCategoryId());
+            for(DeviceConfigCategoryItem item : prevCategory.getDeviceConfigurationItems()) {
+                prevFieldNames.add(item.getFieldName());
+            }
+
+            // Update or insert the item values.
+            Set<String> fieldNames = new HashSet<>();
             for (DeviceConfigCategoryItem item : category.getDeviceConfigurationItems()) {
-                updateCategoryItem(item);
+                if (prevFieldNames.contains(item.getFieldName())) {
+                    updateCategoryItem(item);
+                } else {
+                    insertCategoryItem(item,categoryId);
+                }
+
+                // keep track of field names added
+                fieldNames.add(item.getFieldName());
+            }
+
+            // remove all category items that have no reason to be there anymore
+            prevFieldNames.removeAll(fieldNames);
+            for (String fieldName : prevFieldNames) {
+                deleteCategoryItem(fieldName, categoryId);
             }
         }
-        
+
         return categoryId;
     }
     
@@ -839,6 +860,16 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         jdbcTemplate.update(sql);
     }
     
+    private void deleteCategoryItem(String fieldName, int categoryId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("delete from DeviceConfigCategoryItem");
+        sql.append("where ItemName").eq(fieldName);
+        sql.append("and DeviceConfigCategoryId").eq(categoryId);
+
+        jdbcTemplate.update(sql);
+    }
+
     private void createCategory(int categoryId, DeviceConfigCategory category) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink params = sql.insertInto("DeviceConfigCategory");

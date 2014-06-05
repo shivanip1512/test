@@ -89,8 +89,26 @@
             <xs:enumeration value="DisconnectMode"/>
             <xs:enumeration value="DisconnectDemandInterval"/>
             <xs:enumeration value="ReconnectParameter"/>
+            <xs:enumeration value="ChannelType"/>
+            <xs:enumeration value="ReadType"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:complexType name="InputIndexed">
+        <xs:complexContent>
+            <xs:extension base="InputBase">
+                <xs:choice minOccurs="1" maxOccurs="unbounded">
+                    <xs:element name="integer" type="InputInteger"/>
+                    <xs:element name="float" type="InputFloat"/>
+                    <xs:element name="boolean" type="InputBoolean"/>
+                    <xs:element name="enum" type="InputEnum"/>
+                    <xs:element name="map" type="InputMap"/>
+                </xs:choice>
+                <xs:attribute name="minOccurs" type="xs:int" use="required"/>
+                <xs:attribute name="maxOccurs" type="xs:int" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
     <xs:complexType name="Category">
         <xs:choice minOccurs="1" maxOccurs="unbounded">
@@ -99,6 +117,7 @@
             <xs:element name="boolean" type="InputBoolean"/>
             <xs:element name="enum" type="InputEnum"/>
             <xs:element name="map" type="InputMap"/>
+            <xs:element name="indexed" type="InputIndexed"/>
         </xs:choice>
         <xs:attribute name="type" type="CategoryType"/>
     </xs:complexType>

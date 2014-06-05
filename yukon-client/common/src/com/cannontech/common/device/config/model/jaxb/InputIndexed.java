@@ -12,24 +12,24 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Category complex type.
+ * <p>Java class for InputIndexed complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Category">
+ * &lt;complexType name="InputIndexed">
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *     &lt;extension base="{}InputBase">
  *       &lt;choice maxOccurs="unbounded">
  *         &lt;element name="integer" type="{}InputInteger"/>
  *         &lt;element name="float" type="{}InputFloat"/>
  *         &lt;element name="boolean" type="{}InputBoolean"/>
  *         &lt;element name="enum" type="{}InputEnum"/>
  *         &lt;element name="map" type="{}InputMap"/>
- *         &lt;element name="indexed" type="{}InputIndexed"/>
  *       &lt;/choice>
- *       &lt;attribute name="type" type="{}CategoryType" />
- *     &lt;/restriction>
+ *       &lt;attribute name="minOccurs" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="maxOccurs" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -37,22 +37,25 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Category", propOrder = {
+@XmlType(name = "InputIndexed", propOrder = {
     "integerOrFloatOrBoolean"
 })
-public class Category {
+public class InputIndexed
+    extends InputBase
+{
 
     @XmlElements({
         @XmlElement(name = "integer", type = InputInteger.class),
         @XmlElement(name = "float", type = InputFloat.class),
         @XmlElement(name = "boolean", type = InputBoolean.class),
         @XmlElement(name = "enum", type = InputEnum.class),
-        @XmlElement(name = "map", type = InputMap.class),
-        @XmlElement(name = "indexed", type = InputIndexed.class)
+        @XmlElement(name = "map", type = InputMap.class)
     })
     protected List<InputBase> integerOrFloatOrBoolean;
-    @XmlAttribute(name = "type")
-    protected CategoryType type;
+    @XmlAttribute(name = "minOccurs", required = true)
+    protected int minOccurs;
+    @XmlAttribute(name = "maxOccurs", required = true)
+    protected int maxOccurs;
 
     /**
      * Gets the value of the integerOrFloatOrBoolean property.
@@ -77,7 +80,6 @@ public class Category {
      * {@link InputBoolean }
      * {@link InputEnum }
      * {@link InputMap }
-     * {@link InputIndexed }
      * 
      * 
      */
@@ -89,27 +91,34 @@ public class Category {
     }
 
     /**
-     * Gets the value of the type property.
+     * Gets the value of the minOccurs property.
      * 
-     * @return
-     *     possible object is
-     *     {@link CategoryType }
-     *     
      */
-    public CategoryType getType() {
-        return type;
+    public int getMinOccurs() {
+        return minOccurs;
     }
 
     /**
-     * Sets the value of the type property.
+     * Sets the value of the minOccurs property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link CategoryType }
-     *     
      */
-    public void setType(CategoryType value) {
-        this.type = value;
+    public void setMinOccurs(int value) {
+        this.minOccurs = value;
     }
 
+    /**
+     * Gets the value of the maxOccurs property.
+     * 
+     */
+    public int getMaxOccurs() {
+        return maxOccurs;
+    }
+
+    /**
+     * Sets the value of the maxOccurs property.
+     * 
+     */
+    public void setMaxOccurs(int value) {
+        this.maxOccurs = value;
+    }
 }

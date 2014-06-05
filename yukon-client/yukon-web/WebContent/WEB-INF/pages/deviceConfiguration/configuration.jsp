@@ -67,7 +67,12 @@
     
     <cti:displayForPageEditModes modes="VIEW,EDIT">
         <tags:sectionContainer2 nameKey="warning">
-            <div class="stacked"><i:inline key=".changeWarning"/></div>
+            <div class="stacked">
+            <span class="warning">
+                <i:inline key="yukon.common.warning"/>
+            </span>
+            <i:inline key=".changeWarning"/>
+        </div>
             <div><i:inline key=".unassignWarning"/></div>
         </tags:sectionContainer2>
 
@@ -142,7 +147,7 @@
     </cti:url>
     <cti:msg2 var="popupTitle" key="yukon.web.modules.tools.configs.config.addSupportedTypes.title"/>
     <div id="supportedTypePopup" dialog data-config-id="${deviceConfig.configId}"
-        data-url="${processAddTypes}" data-width="988" data-title="${popupTitle}" data-form="#supported-types-form" />
+        data-url="${processAddTypes}" data-width="900" data-title="${popupTitle}" data-form="#supported-types-form" />
     <div id="category-popup" class="dn" />
     
 </cti:standardPage>

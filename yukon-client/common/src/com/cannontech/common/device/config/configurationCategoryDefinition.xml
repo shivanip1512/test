@@ -182,6 +182,15 @@
         <integer field="timeAdjustTolerance" minValue="15" maxValue="255" default="15"/>
     </category>
     
+    <category type="rfnChannelConfiguration">
+        <integer field="recordingIntervalMinutes" minValue="15" maxValue="120" default="60"/>
+        <integer field="reportingIntervalHours" minValue="1" maxValue="24" default="12"/>
+        <indexed field="enabledChannels" minOccurs="0" maxOccurs="80">
+            <enum field="attribute" type="ChannelType"/>
+            <enum field="read" type="ReadType"/>
+        </indexed>
+    </category>
+
     <category type="addressing">
         <integer field="serviceProviderId" minValue="0" maxValue="254" default="0"/>
     </category>

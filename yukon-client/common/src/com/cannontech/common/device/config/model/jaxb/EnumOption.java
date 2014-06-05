@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="DisconnectMode"/>
  *     &lt;enumeration value="DisconnectDemandInterval"/>
  *     &lt;enumeration value="ReconnectParameter"/>
+ *     &lt;enumeration value="ChannelType"/>
+ *     &lt;enumeration value="ReadType"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -79,7 +81,11 @@ public enum EnumOption {
     @XmlEnumValue("DisconnectDemandInterval")
     DISCONNECT_DEMAND_INTERVAL("DisconnectDemandInterval"),
     @XmlEnumValue("ReconnectParameter")
-    RECONNECT_PARAMETER("ReconnectParameter");
+    RECONNECT_PARAMETER("ReconnectParameter"),
+    @XmlEnumValue("ChannelType")
+    CHANNEL_TYPE("ChannelType"),
+    @XmlEnumValue("ReadType")
+    READ_TYPE("ReadType");
     private final String value;
 
     EnumOption(String v) {

@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
     InputMap.class,
     InputEnum.class,
     InputFloat.class,
+    InputIndexed.class,
     InputInteger.class,
     InputBoolean.class
 })

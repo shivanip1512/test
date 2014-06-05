@@ -6,7 +6,7 @@ import com.cannontech.web.input.type.InputType;
 
 public class RateMapField extends Field<RateInput> {
     private List<DisplayableRate> inputTypes;
-    
+
     public static final class DisplayableRate {
         private final InputType<?> timeType;
         private final String field;
@@ -17,7 +17,7 @@ public class RateMapField extends Field<RateInput> {
             this.rateType = rateType;
             this.field = field;
         }
-        
+
         public InputType<?> getRateType() {
             return rateType;
         }
@@ -25,17 +25,17 @@ public class RateMapField extends Field<RateInput> {
         public InputType<?> getTimeType() {
             return timeType;
         }
-        
+
         public String getField() {
             return field;
         }
     }
-    
-    public RateMapField(String displayName, String fieldName, String description, List<DisplayableRate> inputTypes) {
-        super(displayName, fieldName, description, null);
+
+    public RateMapField(String displayName, String fieldName, String description, InputType<RateInput> rateInput, List<DisplayableRate> inputTypes) {
+        super(displayName, fieldName, description, rateInput, "", null);
         this.inputTypes = inputTypes;
     }
-    
+
     public List<DisplayableRate> getInputTypes() {
         return inputTypes;
     }

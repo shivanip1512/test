@@ -78,6 +78,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link InputIndexed }
+     * 
+     */
+    public InputIndexed createInputIndexed() {
+        return new InputIndexed();
+    }
+
+    /**
      * Create an instance of {@link InputInteger }
      * 
      */

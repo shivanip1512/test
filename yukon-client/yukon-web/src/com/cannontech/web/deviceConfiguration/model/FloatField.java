@@ -7,15 +7,16 @@ public class FloatField extends Field<Float> {
     private final int decimalDigits;
     private final boolean digitsLimited;
     
-    public FloatField(String displayName, String fieldName, String description, int decimalDigits, FloatType inputType) {
-        super(displayName, fieldName, description, inputType,
+    public FloatField(String displayName, String fieldName, String description, int decimalDigits, FloatType inputType,
+            String defaultValue) {
+        super(displayName, fieldName, description, inputType, defaultValue,
               createValidator(inputType.getMinValue(), inputType.getMaxValue()));
         this.decimalDigits = decimalDigits;
         this.digitsLimited = true;
     }
     
-    public FloatField(String displayName, String fieldName, String description, FloatType inputType) {
-        super(displayName, fieldName, description, inputType,
+    public FloatField(String displayName, String fieldName, String description, FloatType inputType, String defaultValue) {
+        super(displayName, fieldName, description, inputType, defaultValue,
               createValidator(inputType.getMinValue(), inputType.getMaxValue()));
         this.decimalDigits = Integer.MAX_VALUE;
         this.digitsLimited = false;

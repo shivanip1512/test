@@ -6962,6 +6962,7 @@
         </tags>
         <configuration>
             <category type="rfnTempAlarm" />
+            <category type="rfnChannelConfiguration" />
         </configuration>
     </pao>
 
