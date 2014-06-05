@@ -27,7 +27,7 @@ import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 
 public class AssignedProgramDaoImpl implements AssignedProgramDao {
-    @Autowired private YukonJdbcTemplate ydbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private WebConfigurationDao webConfigurationDao;
 
     @Override
@@ -37,7 +37,7 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         sql.append(rowMapper.getBaseQuery());
         sql.append("AND p.programId").eq(assignedProgramId);
 
-        AssignedProgram assignedProgram = ydbcTemplate.queryForObject(sql, rowMapper);
+        AssignedProgram assignedProgram = jdbcTemplate.queryForObject(sql, rowMapper);
         WebConfiguration webConfiguration = webConfigurationDao.getForAssignedProgram(assignedProgramId);
         assignedProgram.setWebConfiguration(webConfiguration);
 
@@ -49,7 +49,7 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         Map<Integer, WebConfiguration> webConfigurations =
             webConfigurationDao.getForAssignedPrograms(assignedProgramIds);
 
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(ydbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
 
         final AssignedProgramRowMapper rowMapper =
             new AssignedProgramRowMapper(SortBy.PROGRAM_NAME, false, -1, webConfigurations);
@@ -63,15 +63,14 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
             }
         };
 
-        List<AssignedProgram> retVal =
-            template.query(sqlGenerator, assignedProgramIds, rowMapper);
+        List<AssignedProgram> retVal = template.query(sqlGenerator, assignedProgramIds, rowMapper);
 
         return retVal;
     }
 
     @Override
     public Map<Integer, Integer> getProgramIdsByAssignedProgramIds(Iterable<Integer> assignedProgramIds) {
-        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(ydbcTemplate);
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -104,6 +103,6 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT MAX(programOrder) FROM lmProgramWebPublishing");
         sql.append("WHERE applianceCategoryId").eq(applianceCategoryId);
-        return ydbcTemplate.queryForInt(sql);
+        return jdbcTemplate.queryForInt(sql);
     }
 }
