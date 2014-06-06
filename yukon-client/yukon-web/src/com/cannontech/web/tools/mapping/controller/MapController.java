@@ -60,7 +60,9 @@ public class MapController {
      */
     @RequestMapping("/map/dynamic")
     public String dynamcic(ModelMap model, DeviceCollection deviceCollection) {
+        
         model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("description", deviceCollection.getDescription());
         model.addAttribute("dynamic", true);
         
         return "map/map.jsp";
@@ -68,7 +70,10 @@ public class MapController {
 
     @RequestMapping(value="/map")
     public String map(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext) {
+        
         model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("description", deviceCollection.getDescription());
+        
         Map<AttributeGroup, Set<BuiltInAttribute>> groups = BuiltInAttribute.getAllGroupedAttributes();
         model.addAttribute("attributes", objectFormattingService.sortDisplayableValues(groups, userContext));
         
@@ -80,6 +85,7 @@ public class MapController {
     
     @RequestMapping("/map/device/{id}/info")
     public String info(ModelMap model, @PathVariable int id) {
+        
         YukonPao pao = paoDao.getYukonPao(id);
         DisplayablePao displayable = paoLoadingService.getDisplayablePao(pao);
         PaoLocation location = paoLocationDao.getLocation(id);
@@ -92,6 +98,7 @@ public class MapController {
     
     @RequestMapping("/map/locations")
     public @ResponseBody FeatureCollection locations(DeviceCollection deviceCollection) {
+        
         FeatureCollection locations = paoLocationService.getLocationsAsGeoJson(deviceCollection.getDeviceList());
         
         return locations;
@@ -99,12 +106,15 @@ public class MapController {
     
     @RequestMapping("/map/filter/state-groups")
     public @ResponseBody List<LiteStateGroup> states(DeviceCollection deviceCollection, BuiltInAttribute attribute) {
+        
         List<LiteStateGroup> stateGroups = attributeService.findStateGroups(deviceCollection.getDeviceList(), attribute);
+        
         return stateGroups;
     }
     
     @RequestMapping("/map/filter")
     public @ResponseBody Map<Integer, Boolean> filter(DeviceCollection deviceCollection, @ModelAttribute Filter filter) {
+        
         Map<Integer, Boolean> results = new HashMap<>();
         Map<Integer, Group> groups = Maps.uniqueIndex(filter.getGroups(), Group.ID_FUNCTION);
         
@@ -114,6 +124,7 @@ public class MapController {
         
         Map<Integer, LitePoint> statusPoints = new HashMap<>();
         Map<Integer, LitePoint> nonStatusPoints = new HashMap<>();
+        
         for (LitePoint point : points.keySet()) {
             if (point.getPointTypeEnum().isStatus()) {
                 statusPoints.put(point.getLiteID(), point);

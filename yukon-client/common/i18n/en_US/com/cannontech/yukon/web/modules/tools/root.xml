@@ -18,7 +18,9 @@
     <entry key="yukon.web.modules.tools.bulk.disconnect.result.pageDescription">Results</entry>
     
     <!-- Map -->
-    <entry key="yukon.web.modules.tools.map.pageName">Map Devices</entry>
+    <entry key="yukon.web.modules.tools.map.pageTitle">Tools: Map Devices ({0})</entry>
+    <entry key="yukon.web.modules.tools.map.pageHeading">Map Devices</entry>
+    <entry key="yukon.web.modules.tools.map.crumbTitle">Map Devices</entry>
     <entry key="yukon.web.modules.tools.map.filter.label">Filter Devices</entry>
     <entry key="yukon.web.modules.tools.map.filtered">Filter:</entry>
     <entry key="yukon.web.modules.tools.map.filter.title">Filter Devices</entry>
