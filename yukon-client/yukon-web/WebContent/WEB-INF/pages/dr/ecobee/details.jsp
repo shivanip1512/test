@@ -53,7 +53,7 @@
                             <c:set var="key" value="${entry.key}"/>
                             <c:set var="download" value="${entry.value}"/>
                             <%@ include file="download.row.jsp" %>
-                        </c:forEach>
+                    </c:forEach>
                     </tbody>
                 </table>
                 <span class="empty-list ${fn:length(downloads) > 0 ? 'dn' : ''}"><i:inline key=".download.none"/></span>
@@ -71,44 +71,49 @@
             </tags:sectionContainer2>
         </div>
         <div class="column two nogutter">
-            <tags:sectionContainer2 nameKey="issues" arguments="${fn:length(issues)}">
+            <tags:sectionContainer2 nameKey="issues" arguments="${fn:length(report.errors)}">
                 <c:choose>
-                    <c:when test="${fn:length(issues) > 0}">
-                        <div class="scroll-large">
-                            <table class="compact-results-table dashed with-form-controls">
-                                <thead>
-                                    <tr><th><cti:msg2 key=".issues.type"/></th><th></th></tr>
-                                </thead>
-                                <tfoot></tfoot>
-                                <tbody>
-                                    <c:forEach items="${issues}" var="issue">
-                                        <tr>
-                                            <td><i:inline key="${issue.type}"/></td>
-                                            <td>
-                                                <c:if test="${issue.type.deviceIssue}"><cti:msg2 key=".issues.serialNumber"/>&nbsp;${issue.serialNumber}</c:if>
-                                                <c:if test="${!issue.type.deviceIssue}"><cti:msg2 key=".issues.group"/>&nbsp;${issue.loadGroupName}</c:if>
-                                                <c:if test="${issue.type.fixable}"><cti:button popup="#ecobee-fix" renderMode="buttonImage" classes="fr" icon="icon-wrench"/></c:if>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="action-area">
-                            <cti:button nameKey="issues.fixAll" icon="icon-wrench"/>
-                        </div>
-                        <div dialog 
-                            id="ecobee-fix" 
-                            data-width="400"
-                            data-event="yukon.dr.ecobee.fix" 
+                    <c:when test="${fn:length(report.errors) > 0}">
+                <div class="scroll-large">
+                    <table class="compact-results-table dashed with-form-controls">
+                        <thead>
+                            <tr>
+                                <th><cti:msg2 key=".issues.type"/></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach items="${report.errors}" var="issue">
+                                <tr>
+                                    <td data-report-id="${report.reportId}" data-error-id="${issue.errorId}">
+                                        <i:inline key="${issue.errorType.formatKey}" arguments="${issue.arguments}"/>
+                                    </td>
+                                    <td>
+                                        <c:if test="${issue.errorType.fixable}">
+                                            <cti:button popup="#ecobee-fix" renderMode="buttonImage" classes="fr" icon="icon-wrench"/>
+                                        </c:if>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="action-area">
+                    <cti:button nameKey="issues.fixAll" icon="icon-wrench"/>
+                </div>
+                <div dialog 
+                    id="ecobee-fix" 
+                    data-width="400"
+                    data-event="yukon.dr.ecobee.fix" 
                             data-title="<cti:msg2 key=".issues.fix.title"/>" 
-                            class="dn"></div>
+                            class="dn">
+                </div>
                     </c:when>
                     <c:otherwise>
                         <span class="empty-list"><i:inline key=".issues.none"/></span>
                     </c:otherwise>
                 </c:choose>
-                
             </tags:sectionContainer2>
         </div>
         <cti:dataUpdaterCallback function="yukon.dr.ecobee.updater" initialize="true" value="ECOBEE_READ/0/RECENT_DOWNLOADS"/>

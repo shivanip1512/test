@@ -441,8 +441,9 @@
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dataCollection">Data Collection</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dailyErrorCheck">Daily Error Check</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dailyDataCollection">Daily Collection</entry>
-<entry key="yukon.web.modules.dr.home.ecobee.configure.successful">Successful</entry>
-<entry key="yukon.web.modules.dr.home.ecobee.configure.failed">Failed</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.successful">Settings Successfully Saved</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.exceededDateRange">Exceeded 7 Day Date Range</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.downloadInitiated">Download Initiated</entry>
 
 <entry key="yukon.web.modules.dr.ecobee.details.pageName">Ecobee Details</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.queryStats.title">Query Statistics</entry>
@@ -457,13 +458,14 @@
 <entry key="yukon.web.modules.dr.ecobee.details.download.inProgress">Download In Progress</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.ready">Ready</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.failed">Failed</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.maxDayRange">(Maximum Seven Day Range)</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.DEVICE_NOT_IN_ECOBEE">Device not in ecobee</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.DEVICE_NOT_IN_YUKON">Device not in Yukon</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_ENROLLMENT_INCORRECT">ecobee enrollment incorrect</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_SET_DOES_NOT_MATCH">ecobee set does not match</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_SET_IN_INCORRECT_LOCATION">ecobee set is in the incorrect location</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.LOAD_GROUP_NOT_IN_ECOBEE">Load group is not in ecobee</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.statistics.title">Data Collection / Demand Response / System</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.statistics.title">Data Collection/Demand Response/System</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.none">No ecobee sync issues.</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.serialNumber">SN:</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.group">Group:</entry>
@@ -472,6 +474,13 @@
 <entry key="yukon.web.modules.dr.ecobee.details.issues.type">Type</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.fix.title">Fix ecobee Issue</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.loadGroups">Load Groups</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.MISSING_MANAGEMENT_SET">Management set "{0}" is missing</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.MISLOCATED_MANAGEMENT_SET">Management set "{1}" is mislocated</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.EXTRANEOUS_MANAGEMENT_SET">Management set "{1}" is extraneous</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.MISSING_DEVICE">Missing device SN: {2} correct location: "{0}"</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.MISLOCATED_DEVICE">Mislocated device: SN: "{2}", current location: "{1}", correct location: "{0}"</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.EXTRANEOUS_DEVICE">Extraneous device SN: "{2}", current location: "{1}"</entry>
+
 
 <entry key="yukon.web.modules.dr.ecobee.queryType.DATA_COLLECTION">Data Collection</entry>
 <entry key="yukon.web.modules.dr.ecobee.queryType.DEMAND_RESPONSE">Demand Response</entry>

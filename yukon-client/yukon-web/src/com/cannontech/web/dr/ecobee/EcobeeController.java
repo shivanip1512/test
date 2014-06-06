@@ -3,7 +3,6 @@ package com.cannontech.web.dr.ecobee;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -45,12 +43,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
+import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyCategory;
 import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
-import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeReconciliationService;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
@@ -59,6 +58,7 @@ import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.ecobee.service.DataDownloadService;
 import com.cannontech.web.dr.model.EcobeeQueryStats;
 import com.cannontech.web.dr.model.EcobeeSettings;
@@ -75,6 +75,7 @@ public class EcobeeController {
 
     private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
     private static DateTimeFormatter dateTimeFormatter;
+    private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EnergyCompanyDao ecDao;
@@ -89,8 +90,8 @@ public class EcobeeController {
         private YukonJobDefinition<RepeatingWeatherDataTask> ecobeePointUpdateJobDef;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired @Qualifier("ecobeeReads") RecentResultsCache<EcobeeReadResult> readResultsCache;
-    @Autowired EcobeeReconciliationService ecobeeReconciliation;
-    @Autowired DataDownloadService dataDownloadService;
+    @Autowired private EcobeeReconciliationService ecobeeReconciliation;
+    @Autowired private DataDownloadService dataDownloadService;
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
 
     @PostConstruct
@@ -130,7 +131,7 @@ public class EcobeeController {
     }
 
     @RequestMapping(value="/ecobee/settings", method=RequestMethod.POST)
-    public String saveSettings(EcobeeSettings ecobeeSettings) {
+    public String saveSettings(EcobeeSettings ecobeeSettings, FlashScope flash) {
         ScheduledRepeatingJob ecobeePointUpdateJob = getJob(ecobeePointUpdateJobDef);
         ScheduledRepeatingJob reconciliationReportJob = getJob(ecobeeReconciliationReportJobDef);
 
@@ -166,13 +167,12 @@ public class EcobeeController {
         } else if (!ecobeeSettings.isCheckErrors() && !reconciliationReportJob.isDisabled()) {
             jobManager.disableJob(reconciliationReportJob);
         }
-        
+        flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "successful"));
         return "redirect:/dr/home";
     }
     
     @RequestMapping(value="/ecobee/download/start", method=RequestMethod.POST)
-    public String ecobeeDataReport(HttpServletRequest request, 
-                                 HttpServletResponse response, 
+    public String ecobeeDataReport(HttpServletResponse response, 
                                  ModelMap model,
                                  Integer[] loadGroupIds,
                                  String ecobeeStartReportDate, 
@@ -239,7 +239,7 @@ public class EcobeeController {
     
     @RequestMapping(value="/ecobee/statistics", method=RequestMethod.GET)
     public String statistics(ModelMap model, LiteYukonUser user) {
-        
+
         ScheduledRepeatingJob reconciliationReportJob = getJob(ecobeeReconciliationReportJobDef);
         ScheduledRepeatingJob ecobeePointUpdateJob = getJob(ecobeePointUpdateJobDef);
 
@@ -263,26 +263,21 @@ public class EcobeeController {
         EcobeeQueryStats queryStats = new EcobeeQueryStats(currentMonthStats);
         model.addAttribute("ecobeeStats", queryStats);
 
-        // TODO deviceIssues and groupIssues need real counts
-        model.addAttribute("deviceIssues", 3);
-        model.addAttribute("groupIssues", 6);
+        int deviceIssues = 0;
+        int groupIssues = 0;
+        EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
+        if (report != null) {
+            deviceIssues = report.getErrorNumberByCategory(EcobeeDiscrepancyCategory.DEVICE);
+            groupIssues = report.getErrorNumberByCategory(EcobeeDiscrepancyCategory.GROUP);
+        }
+        model.addAttribute("deviceIssues", deviceIssues);
+        model.addAttribute("groupIssues", groupIssues);
 
-        log.debug(queryStats);
         return "dr/ecobee/statistics.jsp";
     }
 
     @RequestMapping(value="/ecobee", method=RequestMethod.GET)
     public String details(ModelMap model, YukonUserContext userContext) {
-
-        EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
-        if (report != null) {
-            // TODO: add report parsing here
-            Collection<EcobeeDiscrepancy> errors = report.getErrors();
-            model.addAttribute(errors);
-        }
-
-        // TODO: fetch issues via new API
-        //model.addAttribute("issues", issues);
 
         //get stats across a range of months
         MonthYear currentMonth = MonthYear.now();
@@ -299,7 +294,7 @@ public class EcobeeController {
             int dataCollectionCount = stats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
             int systemCount = stats.getQueryCountByType(EcobeeQueryType.SYSTEM);
             EcobeeQueryStats queryStats =
-                    new EcobeeQueryStats(month, demandResponseCount, dataCollectionCount, systemCount);
+                new EcobeeQueryStats(month, demandResponseCount, dataCollectionCount, systemCount);
             queryStatsList.add(queryStats);
         }
         // begin unit test
@@ -338,11 +333,18 @@ public class EcobeeController {
             EcobeeReadResult result = readResultsCache.getResult(key);
             downloads.put(key, result);
         }
+        DateTime now = new DateTime();
+        DateTime oneDayAgo = new DateTime(now.minusDays(1));
+        model.addAttribute("now", now);
+        model.addAttribute("oneDayAgo", oneDayAgo);
         model.addAttribute("downloads", downloads);
-        
+
+        EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
+        model.addAttribute("report", report);
+
         return "dr/ecobee/details.jsp";
     }
-    
+
     @InitBinder
     public void initialize(WebDataBinder dataBinder) {
         PropertyEditorSupport localDateEditor = new PropertyEditorSupport() {

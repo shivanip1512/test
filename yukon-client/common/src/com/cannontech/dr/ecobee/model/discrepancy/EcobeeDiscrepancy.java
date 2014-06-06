@@ -42,4 +42,12 @@ public abstract class EcobeeDiscrepancy {
     public String getCorrectLocation() {
         return null;
     }
+    
+    public String[] getArguments() {
+        return new String[] {getCorrectLocation(), getCurrentLocation(), getSerialNumber()};
+    }
+    
+    public boolean isFixable() {
+        return errorType.isFixable();
+    }
 }

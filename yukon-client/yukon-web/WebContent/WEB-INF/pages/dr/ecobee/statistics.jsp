@@ -21,8 +21,8 @@
                     <dr:ecobeeStats value="${ecobeeStats}"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".ecobee.issues">
-                    <c:set var="deviceClass" value="${deviceIssues > 0 ? 'label-danger' : ''}"/>
-                    <c:set var="groupClass" value="${groupIssues > 0 ? 'label-danger' : ''}"/>
+                    <c:set var="deviceClass" value="${deviceIssues > 0 ? 'label-danger' : 'label-default'}"/>
+                    <c:set var="groupClass" value="${groupIssues > 0 ? 'label-danger' : 'label-default'}"/>
                     <span class="label ${deviceClass}">${deviceIssues}</span>&nbsp;
                     <i:inline key=".ecobee.devices"/>&nbsp;
                     <span class="label ${groupClass}">${groupIssues}</span>&nbsp;
