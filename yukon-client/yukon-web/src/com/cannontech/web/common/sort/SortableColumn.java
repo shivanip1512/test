@@ -1,5 +1,7 @@
 package com.cannontech.web.common.sort;
 
+import com.cannontech.common.model.Direction;
+
 public class SortableColumn {
     
     private Direction dir = Direction.desc;

@@ -573,25 +573,25 @@
     <h4 class="subtle">Sort Request Mapping:</h4>
 <pre class="code prettyprint">
 @RequestMapping(&quot;/styleguide/tables/sort-example&quot;)
-public String tables(ModelMap model, String sort, Direction dir) {
+public String tables(ModelMap model, SortingParameters sorting) {
     
     List&lt;Population&gt; data = new ArrayList&lt;&gt;();
     data.add(new Population(&quot;Daluth&quot;, 86211));
     data.add(new Population(&quot;Minneapolis&quot;, 392880));
     data.add(new Population(&quot;St. Paul&quot;, 290770));
     
-    Comparator&lt;Population&gt; comparator = compares.get(sort);
+    Comparator&lt;Population&gt; comparator = compares.get(sorting.getSort());
     
-    if (dir == Direction.desc) {
+    if (sorting.getDirection() == Direction.desc) {
         comparator = Collections.reverseOrder(comparator);
     }
     
     Collections.sort(data, comparator);
     
-    boolean sortByCity = sort.equalsIgnoreCase(&quot;city&quot;) ? true : false;
-    boolean sortByPop = sort.equalsIgnoreCase(&quot;pop&quot;) ? true : false;
-    SortableColumn c1 = new SortableColumn(dir, sortByCity, true, &quot;City&quot;, &quot;city&quot;);
-    SortableColumn c2 = new SortableColumn(dir, sortByPop, true, &quot;Population&quot;, &quot;pop&quot;);
+    boolean sortByCity = sorting.getSort().equalsIgnoreCase(&quot;city&quot;) ? true : false;
+    boolean sortByPop = sorting.getSort().equalsIgnoreCase(&quot;pop&quot;) ? true : false;
+    SortableColumn c1 = new SortableColumn(sorting.getDirection(), sortByCity, true, &quot;City&quot;, &quot;city&quot;);
+    SortableColumn c2 = new SortableColumn(sorting.getDirection(), sortByPop, true, &quot;Population&quot;, &quot;pop&quot;);
     List&lt;SortableColumn&gt; columns = ImmutableList.of(c1, c2);
     
     SortableData pops = new SortableData(data, columns);

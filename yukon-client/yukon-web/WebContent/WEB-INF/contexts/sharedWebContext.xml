@@ -22,6 +22,7 @@
             <bean class="com.cannontech.web.login.UserContextHandlerMethodArgumentResolver"/>
             <bean class="com.cannontech.web.login.EnumHandlerMethodArgumentResolver"/>
             <bean class="com.cannontech.web.spring.PagingParametersHandlerMethodArgumentResolver"/>
+            <bean class="com.cannontech.web.spring.SortingParametersResolver"/>
             <bean class="com.cannontech.web.common.flashScope.FlashScopeHandlerMethodArgumentResolver"/>
             <bean class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentHandlerMethodArgumentResolver"/>
             <bean class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentHandlerMethodArgumentResolver"/>

@@ -291,7 +291,7 @@ yukon.ui = (function () {
             });
         
             /** Reload or page a container */
-            $(document).on('click', '[data-reload]', function(event) {
+            $(document).on('click', '[data-reload]', function(ev) {
                 var elem = $(this),
                     url = elem.data('reload'),
                     target = elem.closest('[data-reloadable]'),

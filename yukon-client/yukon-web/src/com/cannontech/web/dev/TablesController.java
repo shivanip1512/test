@@ -11,7 +11,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
-import com.cannontech.web.common.sort.Direction;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.common.sort.SortableData;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
@@ -58,25 +59,25 @@ public class TablesController {
     }
     
     @RequestMapping("/styleguide/tables/sort-example")
-    public String tables(ModelMap model, String sort, Direction dir) {
+    public String tables(ModelMap model, SortingParameters sorting) {
         
         List<Population> data = new ArrayList<>();
         data.add(new Population("Daluth", 86211));
         data.add(new Population("Minneapolis", 392880));
         data.add(new Population("St. Paul", 290770));
         
-        Comparator<Population> comparator = compares.get(sort);
+        Comparator<Population> comparator = compares.get(sorting.getSort());
         
-        if (dir == Direction.desc) {
+        if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
         }
         
         Collections.sort(data, comparator);
         
-        boolean sortByCity = sort.equalsIgnoreCase("city") ? true : false;
-        boolean sortByPop = sort.equalsIgnoreCase("pop") ? true : false;
-        SortableColumn c1 = new SortableColumn(dir, sortByCity, true, "City", "city");
-        SortableColumn c2 = new SortableColumn(dir, sortByPop, true, "Population", "pop");
+        boolean sortByCity = sorting.getSort().equalsIgnoreCase("city") ? true : false;
+        boolean sortByPop = sorting.getSort().equalsIgnoreCase("pop") ? true : false;
+        SortableColumn c1 = new SortableColumn(sorting.getDirection(), sortByCity, true, "City", "city");
+        SortableColumn c2 = new SortableColumn(sorting.getDirection(), sortByPop, true, "Population", "pop");
         List<SortableColumn> columns = ImmutableList.of(c1, c2);
         
         SortableData pops = new SortableData(data, columns);
