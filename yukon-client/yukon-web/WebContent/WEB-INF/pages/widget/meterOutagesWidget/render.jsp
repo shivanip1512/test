@@ -7,7 +7,7 @@
     <cti:msg2 key="${attribute}" var="attributeName" />
     <tags:nameValue name="${attributeName}">
         <c:if test="${not isBlinkConfigured}"><i:inline key=".blinkCountNotConfigured"/></c:if>
-        <c:if test="${isBlinkConfigured}"><tags:attributeValue device="${device}" attribute="${attribute}" /></c:if>
+        <c:if test="${isBlinkConfigured}"><tags:attributeValue pao="${device}" attribute="${attribute}" /></c:if>
     </tags:nameValue>
 </tags:nameValueContainer>
 

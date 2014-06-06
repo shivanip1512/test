@@ -1260,10 +1260,7 @@
 
     <bean id="operationsSetupTagPrototype" class="com.cannontech.web.taglib.OperationsSetupTag"/>
 
-    <bean id="attributeResolverTagPrototype" class="com.cannontech.web.taglib.AttributeResolverTag">
-        <property name="deviceDao" ref="deviceDao"/>
-        <property name="attributeService" ref="attributeService"/>
-    </bean>
+    <bean id="attributeResolverTagPrototype" class="com.cannontech.web.taglib.AttributeResolverTag"/>
 
     <bean id="globalSettingTagPrototype" class="com.cannontech.web.taglib.GlobalSettingTag">
         <property name="globalSettingDao" ref="globalSettingDao"/>

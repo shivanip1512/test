@@ -674,7 +674,7 @@
     <tag-class>com.cannontech.web.taglib.AttributeResolverTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
-      <name>device</name>
+      <name>pao</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -684,7 +684,7 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
-      <name>deviceId</name>
+      <name>paoId</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>

@@ -1,5 +1,6 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
@@ -12,4 +13,12 @@
     <tags:nameValue2 nameKey=".latitude">${location.latitude}</tags:nameValue2>
     <tags:nameValue2 nameKey=".longitude">${location.longitude}</tags:nameValue2>
 </tags:nameValueContainer2>
+
+<c:forEach items="${attributes}" var="attr">
+    <div>
+        <h4><i:inline key="${attr}"/></h4>
+        <div style="padding: 2px 10px;"><tags:attributeValue attribute="${attr}" pao="${pao}"/></div>
+    </div>
+</c:forEach>
+
 </cti:msgScope>

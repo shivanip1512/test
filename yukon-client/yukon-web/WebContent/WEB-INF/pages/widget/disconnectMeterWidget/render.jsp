@@ -33,7 +33,7 @@
 <tags:nameValueContainer2>
     <tags:nameValue2 label="${attribute}">
         <c:if test="${isConfigured}">
-            <tags:attributeValue device="${device}" attribute="${attribute}" />
+            <tags:attributeValue pao="${device}" attribute="${attribute}" />
         </c:if>
         <c:if test="${not isConfigured}">
             <cti:msg2 key=".notConfigured" />

@@ -5,12 +5,12 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="device" required="true" type="com.cannontech.common.pao.YukonDevice" %>
+<%@ attribute name="pao" required="true" type="com.cannontech.common.pao.YukonPao" %>
 <%@ attribute name="attribute" required="true" type="com.cannontech.common.pao.attribute.model.Attribute" %>
 
 <%@ attribute name="showHistoricalReadings" type="java.lang.Boolean" %>
 
-<cti:attributeResolver device="${device}" attribute="${attribute}" var="pointId"/>
+<cti:attributeResolver pao="${pao}" attribute="${attribute}" var="pointId"/>
 <c:choose>
     <c:when test="${pointId == 0}">
         <span class="error"><i:inline key="yukon.common.attributes.pointNotFound"/></span>

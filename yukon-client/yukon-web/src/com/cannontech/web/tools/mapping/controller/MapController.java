@@ -1,5 +1,6 @@
 package com.cannontech.web.tools.mapping.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -44,6 +46,7 @@ import com.google.common.collect.Sets;
 
 @Controller
 public class MapController {
+    
     @Autowired private AttributeService attributeService;
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private ObjectFormattingService objectFormattingService;
@@ -92,6 +95,24 @@ public class MapController {
         
         model.addAttribute("pao", displayable);
         model.addAttribute("location", location);
+        
+        List<Attribute> attributes = new ArrayList<>();
+        if (attributeService.isAttributeSupported(pao, BuiltInAttribute.VOLTAGE)) {
+            attributes.add(BuiltInAttribute.VOLTAGE);
+        }
+        if (attributeService.isAttributeSupported(pao, BuiltInAttribute.VOLTAGE_PHASE_A)) {
+            attributes.add(BuiltInAttribute.VOLTAGE_PHASE_A);
+        }
+        if (attributeService.isAttributeSupported(pao, BuiltInAttribute.VOLTAGE_PHASE_B)) {
+            attributes.add(BuiltInAttribute.VOLTAGE_PHASE_B);
+        }
+        if (attributeService.isAttributeSupported(pao, BuiltInAttribute.VOLTAGE_PHASE_C)) {
+            attributes.add(BuiltInAttribute.VOLTAGE_PHASE_C);
+        }
+        if (attributeService.isAttributeSupported(pao, BuiltInAttribute.USAGE)) {
+            attributes.add(BuiltInAttribute.USAGE);
+        }
+        model.addAttribute("attributes", attributes);
         
         return "map/info.jsp";
     }

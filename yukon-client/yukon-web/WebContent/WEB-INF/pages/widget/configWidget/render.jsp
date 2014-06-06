@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<tags:nameValueContainer2 naturalWidth="false">
+<tags:nameValueContainer2 naturalWidth="true">
     <tags:nameValue2 nameKey=".currentConfigurations">${fn:escapeXml(currentConfigName)}</tags:nameValue2>
 </tags:nameValueContainer2>
 <c:if test="${not empty currentConfigId}">
@@ -23,7 +23,7 @@
 </c:if>
 <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
     <tags:nameValueContainer2 naturalWidth="false" tableClass="with-form-controls">
-        <tags:nameValue2 nameKey=".deviceConfigurations">
+        <tags:nameValue2 nameKey=".deviceConfigurations" valueClass="full-width" nameClass="wsnw">
             <select id="configuration" name="configuration" class="fl left M0" style="max-width: 200px;">
                 <c:forEach var="config" items="${existingConfigs}">
                     <option value="${config.configurationId}" <c:if test="${config.configurationId == currentConfigId}">selected</c:if>>${fn:escapeXml(config.name)}</option>

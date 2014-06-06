@@ -13,12 +13,12 @@
         <tags:nameValueContainer2>
             <c:if test="${not empty usageAttribute}" >
                 <tags:nameValue2 label="${usageAttribute}" >
-                    <tags:attributeValue device="${meter}" attribute="${usageAttribute}" />
+                    <tags:attributeValue pao="${meter}" attribute="${usageAttribute}" />
                 </tags:nameValue2>
             </c:if>
             <c:if test="${not empty peakAttribute}" >
                 <tags:nameValue2 label="${peakAttribute}" >
-                    <tags:attributeValue device="${meter}" attribute="${peakAttribute}" />
+                    <tags:attributeValue pao="${meter}" attribute="${peakAttribute}" />
                 </tags:nameValue2>
             </c:if>
         </tags:nameValueContainer2>

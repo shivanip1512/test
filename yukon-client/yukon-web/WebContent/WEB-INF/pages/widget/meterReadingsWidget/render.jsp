@@ -19,7 +19,7 @@
             </c:when>
             <c:otherwise>
                 <tags:nameValue2 label="${attribute}">
-                    <tags:attributeValue device="${device}" attribute="${attribute}"/>
+                    <tags:attributeValue pao="${device}" attribute="${attribute}"/>
                 </tags:nameValue2>
                 <c:if test="${attribute == previousReadingsAttribute}">
                     <tags:nameValue2 nameKey=".previousUsage">
@@ -92,7 +92,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
 }
 </script>
 
-<cti:attributeResolver device="${device}" attributeName="${previousReadingsAttribute}" var="pointId" />
+<cti:attributeResolver pao="${device}" attributeName="${previousReadingsAttribute}" var="pointId" />
         
 <cti:dataUpdaterCallback
     function="${widgetParameters.widgetId}_prependPrevious"

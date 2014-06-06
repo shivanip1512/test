@@ -17,7 +17,7 @@
             
             <c:when test="${attributeInfo.supported}">
                 <tags:nameValue name="${attributeName}">
-                    <tags:attributeValue device="${device}" attribute="${attributeInfo.attribute}" />
+                    <tags:attributeValue pao="${device}" attribute="${attributeInfo.attribute}" />
                 </tags:nameValue>
             </c:when>
         </c:choose>
