@@ -51,10 +51,10 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
 
                 GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
                 Object value = InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value"));
-                if (type.isSensitiveInformation()) {
+                if (value != null && type.isSensitiveInformation()) {
                     try {
                         value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).decryptHexStr((String) value);
-                    } catch (CryptoException | IOException | JDOMException |DecoderException e) {
+                    } catch (CryptoException | IOException | JDOMException | DecoderException e) {
                         value = type.getDefaultValue();
                         log.error("Unable to decrypt value for setting " + type + ". Using the default value. ", e);
                     }

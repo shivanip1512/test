@@ -57,7 +57,7 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
         public void extractValues(MapSqlParameterSource parameterHolder, GlobalSetting setting) {
             parameterHolder.addValue("Name", setting.getType());
             Object value = setting.getValue();
-            if (setting.getType().isSensitiveInformation()) {
+            if (value != null && setting.getType().isSensitiveInformation()) {
                 try {
                     value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).encryptToHexStr((String) value);
                 } catch (CryptoException | IOException | JDOMException e) {

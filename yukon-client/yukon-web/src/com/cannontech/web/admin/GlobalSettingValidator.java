@@ -6,14 +6,15 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.admin.YukonConfigurationController.GlobalSettingsEditorBean;
-import com.cannontech.common.exception.BadConfigurationException;
 
 public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditorBean> {
     private static Map<GlobalSettingType, TypeValidator> validators =  new HashMap<>();
@@ -46,6 +47,18 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
                     } catch(BadConfigurationException e) {
                         errors.rejectValue("values[SYSTEM_TIMEZONE]", baseKey + "invalidTimeZone", null,"");
                     }
+                }
+            }
+        });
+        validators.put(GlobalSettingType.ECOBEE_SERVER_URL, new TypeValidator() {
+            private final String[] schemes = {"http", "https"};
+            @Override
+            public void validate(Object value, Errors errors) {
+                String ecobeeUrl = (String) value;
+
+                UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
+                if (!urlValidator.isValid(ecobeeUrl)) {
+                    errors.rejectValue("values[ECOBEE_SERVER_URL]", baseKey + "invalidURL");
                 }
             }
         });

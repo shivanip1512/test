@@ -170,7 +170,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
             GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
 
             Object value = rs.getObjectOfInputType("Value", type.getType());
-            if (type.isSensitiveInformation()) {
+            if (value != null && type.isSensitiveInformation()) {
                 try {
                     value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).decryptHexStr((String) value);
                 } catch (CryptoException | IOException | JDOMException |DecoderException e) {
