@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -15,6 +16,7 @@ import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.common.sort.SortableData;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 @Controller
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
@@ -32,7 +34,7 @@ public class TablesController {
             return Long.compare(o1.getPopulation(), o2.getPopulation());
         }
     };
-    List<Comparator<Population>> compares = ImmutableList.of(cityCompare, popCompare);
+    Map<String, Comparator<Population>> compares = ImmutableMap.of("city", cityCompare, "pop", popCompare);
     
     @RequestMapping("/styleguide/tables")
     public String tables(ModelMap model) {
@@ -45,8 +47,8 @@ public class TablesController {
         data.add(new Population("Minneapolis", 392880));
         data.add(new Population("St. Paul", 290770));
         
-        SortableColumn c1 = new SortableColumn(Direction.desc, false, true, "City");
-        SortableColumn c2 = new SortableColumn(Direction.desc, false, true, "Population");
+        SortableColumn c1 = new SortableColumn(Direction.desc, false, true, "City", "city");
+        SortableColumn c2 = new SortableColumn(Direction.desc, false, true, "Population", "pop");
         List<SortableColumn> columns = ImmutableList.of(c1, c2);
         
         SortableData pops = new SortableData(data, columns);
@@ -56,7 +58,7 @@ public class TablesController {
     }
     
     @RequestMapping("/styleguide/tables/sort-example")
-    public String tables(ModelMap model, int sort, Direction dir) {
+    public String tables(ModelMap model, String sort, Direction dir) {
         
         List<Population> data = new ArrayList<>();
         data.add(new Population("Daluth", 86211));
@@ -71,8 +73,10 @@ public class TablesController {
         
         Collections.sort(data, comparator);
         
-        SortableColumn c1 = new SortableColumn(dir, sort == 0 ? true : false, true, "City");
-        SortableColumn c2 = new SortableColumn(dir, sort == 1 ? true : false, true, "Population");
+        boolean sortByCity = sort.equalsIgnoreCase("city") ? true : false;
+        boolean sortByPop = sort.equalsIgnoreCase("pop") ? true : false;
+        SortableColumn c1 = new SortableColumn(dir, sortByCity, true, "City", "city");
+        SortableColumn c2 = new SortableColumn(dir, sortByPop, true, "Population", "pop");
         List<SortableColumn> columns = ImmutableList.of(c1, c2);
         
         SortableData pops = new SortableData(data, columns);

@@ -17,7 +17,7 @@
     <c:set var="classes" value="${classes} ${column.dir}"/>
 </c:if>
 <th>
-<a class="${pageScope.classes}" <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
+<a class="${pageScope.classes}" data-sort="${column.param}" <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
 ${fn:escapeXml(column.text)}<cti:icon icon="icon-blank"/>
 </a>
 </th>

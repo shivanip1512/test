@@ -573,7 +573,7 @@
     <h4 class="subtle">Sort Request Mapping:</h4>
 <pre class="code prettyprint">
 @RequestMapping(&quot;/styleguide/tables/sort-example&quot;)
-public String tables(ModelMap model, int sort, Direction dir) {
+public String tables(ModelMap model, String sort, Direction dir) {
     
     List&lt;Population&gt; data = new ArrayList&lt;&gt;();
     data.add(new Population(&quot;Daluth&quot;, 86211));
@@ -588,8 +588,10 @@ public String tables(ModelMap model, int sort, Direction dir) {
     
     Collections.sort(data, comparator);
     
-    SortableColumn c1 = new SortableColumn(dir, sort == 0 ? true : false, true, &quot;City&quot;);
-    SortableColumn c2 = new SortableColumn(dir, sort == 1 ? true : false, true, &quot;Population&quot;);
+    boolean sortByCity = sort.equalsIgnoreCase(&quot;city&quot;) ? true : false;
+    boolean sortByPop = sort.equalsIgnoreCase(&quot;pop&quot;) ? true : false;
+    SortableColumn c1 = new SortableColumn(dir, sortByCity, true, &quot;City&quot;, &quot;city&quot;);
+    SortableColumn c2 = new SortableColumn(dir, sortByPop, true, &quot;Population&quot;, &quot;pop&quot;);
     List&lt;SortableColumn&gt; columns = ImmutableList.of(c1, c2);
     
     SortableData pops = new SortableData(data, columns);

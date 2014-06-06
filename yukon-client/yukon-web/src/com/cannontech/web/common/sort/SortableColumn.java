@@ -6,12 +6,14 @@ public class SortableColumn {
     private boolean active;
     private boolean sortable = true;
     private String text;
+    private String param;
 
-    public SortableColumn(Direction dir, boolean active, boolean sortable, String text) {
+    public SortableColumn(Direction dir, boolean active, boolean sortable, String text, String param) {
         this.dir = dir;
         this.active = active;
         this.sortable = sortable;
         this.text = text;
+        this.param = param;
     }
 
     public Direction getDir() {
@@ -44,6 +46,14 @@ public class SortableColumn {
 
     public void setText(String text) {
         this.text = text;
+    }
+    
+    public String getParam() {
+        return param;
+    }
+    
+    public void setParam(String param) {
+        this.param = param;
     }
     
 }

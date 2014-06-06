@@ -313,7 +313,7 @@ yukon.ui = (function () {
             /** Sort a table */
             $(document).on('click', '.sortable', function(ev) {
                 var anchor = $(this),
-                    sort = anchor.parent().index(),
+                    sort = anchor.data('sort'),
                     container = anchor.closest('[data-url]'),
                     url = container.data('url'),
                     dir = anchor.is('.desc') ? 'asc' : 'desc';
