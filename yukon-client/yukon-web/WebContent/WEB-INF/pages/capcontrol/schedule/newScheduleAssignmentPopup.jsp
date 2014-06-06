@@ -54,7 +54,7 @@
         </div>
         <div class="action-area">
             <cti:button nameKey="add" type="submit" classes="primary action"/>
-            <cti:button nameKey="cancel" onclick="yukon.da.hideContentPopup();"/>
+            <cti:button id="newScheduleAssignmentCancelButton" nameKey="cancel"/>
         </div>
     </form>
 </cti:msgScope>

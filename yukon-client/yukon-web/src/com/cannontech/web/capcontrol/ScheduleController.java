@@ -32,6 +32,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CommandExecutionException;
@@ -53,6 +54,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.amr.vee.review.VeeReviewController.ExtendedReviewPoint;
 import com.cannontech.web.capcontrol.filter.ScheduleAssignmentCommandFilter;
 import com.cannontech.web.capcontrol.filter.ScheduleAssignmentFilter;
 import com.cannontech.web.capcontrol.filter.ScheduleAssignmentRowMapper;
@@ -88,48 +90,55 @@ public class ScheduleController {
 	    periodFormatter = builder.toFormatter();
 	}
 	
-	@RequestMapping("scheduleAssignments")
-	public String scheduleAssignments(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletRequestBindingException {
-	    
-        boolean hasEditingRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-	    boolean hasCapBankRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
+	private void setUpModel(HttpServletRequest request, LiteYukonUser user, ModelMap model, 
+	        PagingParameters pagingParameters) {
+	    boolean hasEditingRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        boolean hasCapBankRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
         boolean hasSubbusRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
-	    model.addAttribute("hasEditingRole", hasEditingRole);
-	    model.addAttribute("hasActionRoles", hasCapBankRole && hasSubbusRole);
-	    
-		//Get items per page and start index
-        int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
-		int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
-        int startIndex = (currentPage - 1) * itemsPerPage;
+        model.addAttribute("hasEditingRole", hasEditingRole);
+        model.addAttribute("hasActionRoles", hasCapBankRole && hasSubbusRole);
         
-		//Create filters
-		boolean isFiltered = false;
-		String filterByCommand = ServletRequestUtils.getStringParameter(request, "command", "");
-		String filterBySchedule = ServletRequestUtils.getStringParameter(request, "schedule", "");
-		List<UiFilter<PaoScheduleAssignment>> filters = new ArrayList<UiFilter<PaoScheduleAssignment>>();
-		if (StringUtils.isNotEmpty(filterByCommand) && !filterByCommand.equals("All")) {
-		    filters.add(new ScheduleAssignmentCommandFilter(ScheduleCommand.valueOf(filterByCommand)));
-		    isFiltered = true;
-		}
-		if (StringUtils.isNotEmpty(filterBySchedule) && !filterBySchedule.equals("All")) {
-		    filters.add(new ScheduleAssignmentFilter(filterBySchedule));
-		    isFiltered = true;
-		}
-		model.addAttribute("isFiltered", isFiltered);
-		UiFilter<PaoScheduleAssignment> filter = UiFilterList.wrap(filters);
-		
-		Comparator<PaoScheduleAssignment> sorter = new Comparator<PaoScheduleAssignment>() {
-		    public int compare(PaoScheduleAssignment assignment1, PaoScheduleAssignment assignment2) {
-		        return assignment1.compareTo(assignment2);
-		    }
-		};
-		
-		ScheduleAssignmentRowMapper rowMapper = new ScheduleAssignmentRowMapper();
-		
-		//Filter, sort and get search results
-		SearchResults<PaoScheduleAssignment> result = 
-		    filterService.filter(filter, sorter, startIndex, itemsPerPage, rowMapper);
-		
+        //Get items per page and start index
+        //int itemsPerPage = pagingParameters.getItemsPerPage();
+        
+//        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
+//        int startIndex = (currentPage - 1) * itemsPerPage;
+        
+        //Create filters
+        boolean isFiltered = false;
+        String filterByCommand = ServletRequestUtils.getStringParameter(request, "command", "");
+        String filterBySchedule = ServletRequestUtils.getStringParameter(request, "schedule", "");
+        List<UiFilter<PaoScheduleAssignment>> filters = new ArrayList<UiFilter<PaoScheduleAssignment>>();
+        if (StringUtils.isNotEmpty(filterByCommand) && !filterByCommand.equals("All")) {
+            filters.add(new ScheduleAssignmentCommandFilter(ScheduleCommand.valueOf(filterByCommand)));
+            isFiltered = true;
+        }
+        if (StringUtils.isNotEmpty(filterBySchedule) && !filterBySchedule.equals("All")) {
+            filters.add(new ScheduleAssignmentFilter(filterBySchedule));
+            isFiltered = true;
+        }
+        model.addAttribute("isFiltered", isFiltered);
+        UiFilter<PaoScheduleAssignment> filter = UiFilterList.wrap(filters);
+        
+        Comparator<PaoScheduleAssignment> sorter = new Comparator<PaoScheduleAssignment>() {
+            @Override
+            public int compare(PaoScheduleAssignment assignment1, PaoScheduleAssignment assignment2) {
+                return assignment1.compareTo(assignment2);
+            }
+        };
+        
+        ScheduleAssignmentRowMapper rowMapper = new ScheduleAssignmentRowMapper();
+        
+        //Filter, sort and get search results
+        SearchResults<PaoScheduleAssignment> result = filterService.filter(filter, sorter, 
+                pagingParameters.getStartIndex(), pagingParameters.getItemsPerPage(), rowMapper);
+        
+        //for pagination
+        SearchResults<PaoScheduleAssignment> pagedRows = SearchResults.pageBasedForSublist(result.getResultList(), 
+                pagingParameters.getPage(), pagingParameters.getItemsPerPage(),
+                result.getHitCount());
+        model.addAttribute("pagedResults", pagedRows);
+        
         model.addAttribute("searchResult", result);
         model.addAttribute("itemList", result.getResultList());
         model.addAttribute("commandList", ScheduleCommand.values());
@@ -137,9 +146,23 @@ public class ScheduleController {
         List<PAOSchedule> schedules = paoScheduleDao.getAllPaoScheduleNames(); 
         Collections.sort(schedules);
         model.addAttribute("scheduleList", schedules);
-        
-		return "schedule/scheduleassignment.jsp";
+	}
+	
+	@RequestMapping("scheduleAssignmentsTable")
+	public String scheduleAssignmentsTable(HttpServletRequest request, LiteYukonUser user, ModelMap model, 
+	        PagingParameters pagingParameters) {
+	    
+	    setUpModel(request, user, model, pagingParameters);
+		return "schedule/scheduleassignmentTable.jsp";
     }
+
+	@RequestMapping("scheduleAssignments")
+	public String scheduleAssignments(HttpServletRequest request, LiteYukonUser user, ModelMap model, 
+	        PagingParameters pagingParameters) {
+	    
+	    setUpModel(request, user, model, pagingParameters);
+	    return "schedule/scheduleassignment.jsp";
+	}
 	
 	@RequestMapping("schedules")
     public String schedules(HttpServletRequest request, LiteYukonUser user, ModelMap mav) throws ServletRequestBindingException {
@@ -557,6 +580,7 @@ public class ScheduleController {
         UiFilter<PaoScheduleAssignment> filter = UiFilterList.wrap(filters);
         
         Comparator<PaoScheduleAssignment> sorter = new Comparator<PaoScheduleAssignment>() {
+            @Override
             public int compare(PaoScheduleAssignment assignment1, PaoScheduleAssignment assignment2) {
                 return assignment1.compareTo(assignment2);
             }

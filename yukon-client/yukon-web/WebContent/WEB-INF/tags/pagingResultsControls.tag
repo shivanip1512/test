@@ -83,7 +83,7 @@
                     </button>
                 </c:when>
                 <c:otherwise>
-                    <button class="button naked" disabled="disabled">
+                    <button class="button naked fade-half" disabled="disabled">
                         <span class="b-label"><i:inline key="yukon.common.paging.next"/></span>
                         <i class="icon icon-resultset-next"></i>
                     </button>
