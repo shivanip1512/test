@@ -75,13 +75,8 @@
                 <c:choose>
                     <c:when test="${fn:length(report.errors) > 0}">
                 <div class="scroll-large">
-                    <table class="compact-results-table dashed with-form-controls">
-                        <thead>
-                            <tr>
-                                <th><cti:msg2 key=".issues.type"/></th>
-                                <th></th>
-                            </tr>
-                        </thead>
+                    <table class="compact-results-table with-form-controls separated no-stripes">
+                        <thead></thead>
                         <tfoot></tfoot>
                         <tbody>
                             <c:forEach items="${report.errors}" var="issue">
@@ -91,7 +86,7 @@
                                     </td>
                                     <td>
                                         <c:if test="${issue.errorType.fixable}">
-                                            <cti:button popup="#ecobee-fix" renderMode="buttonImage" classes="fr" icon="icon-wrench"/>
+                                            <cti:button popup="#ecobee-fix" renderMode="buttonImage" classes="fr M0" icon="icon-wrench"/>
                                         </c:if>
                                     </td>
                                 </tr>
