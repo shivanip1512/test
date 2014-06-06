@@ -78,7 +78,12 @@ yukon.alerts = (function () {
                 mod.clearAlert(alertId); 
             });
             
-            $('#yukon_alert_popup').dialog({autoOpen: false, width:'600', height: 'auto', position: {my: 'top', at: 'bottom+3', of: '.outer'}});
+            $('#yukon_alert_popup').dialog({
+                autoOpen: false, 
+                width:'600', 
+                height: 'auto', 
+                position: { my: 'top', at: 'bottom+3', of: '.outer' }
+            });
             
             _initialized = true;
         },
