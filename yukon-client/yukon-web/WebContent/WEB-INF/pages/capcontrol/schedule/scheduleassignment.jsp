@@ -7,6 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="scheduleAssignments">
+    <%@include file="/capcontrol/capcontrolHeader.jspf" %>
 
     <cti:includeScript link="/JavaScript/yukon.da.schedules.js" />
     <cti:includeScript link="/JavaScript/yukon.tables.js" />
@@ -71,9 +72,6 @@
             <c:url value="/capcontrol/schedule/scheduleAssignments" />
         </cti:linkTab>
     </cti:linkTabbedContainer>
-    
-    <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
-    <%@include file="/capcontrol/capcontrolHeader.jspf" %>
     
     <cti:url value="/capcontrol/schedule/scheduleAssignments" var="filterURL"/>
     <div id="filter-popup" data-title="<cti:msg2 key=".filterTitle"/>" class="dn">
