@@ -169,15 +169,15 @@
             <cti:button renderMode="buttonImage" icon="icon-bin"/>
         </div>
         <div class="clearfix stacked button-group">
-            <cti:button renderMode="buttonImage" icon="icon-resultset-first-grey"/>
-            <cti:button renderMode="buttonImage" icon="icon-resultset-previous-grey"/>
+            <cti:button renderMode="buttonImage" icon="icon-resultset-first-gray"/>
+            <cti:button renderMode="buttonImage" icon="icon-resultset-previous-gray"/>
             <cti:button label="1"/>
             <cti:button label="2"/>
             <cti:button label="3"/>
             <cti:button label="4"/>
             <cti:button label="5"/>
-            <cti:button renderMode="buttonImage" icon="icon-resultset-next-grey"/>
-            <cti:button renderMode="buttonImage" icon="icon-resultset-last-grey"/>
+            <cti:button renderMode="buttonImage" icon="icon-resultset-next-gray"/>
+            <cti:button renderMode="buttonImage" icon="icon-resultset-last-gray"/>
         </div>
         <div class="clearfix">
             <cti:button icon="icon-transmit-blue" label="Activate" classes="left"/>
@@ -194,15 +194,15 @@
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-bin&quot;/&gt;
 &lt;/div&gt;
 &lt;div class=&quot;clearfix stacked button-group&quot;&gt;
-    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-first-grey&quot;/&gt;
-    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-previous-grey&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-first-gray&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-previous-gray&quot;/&gt;
     &lt;cti:button label=&quot;1&quot;/&gt;
     &lt;cti:button label=&quot;2&quot;/&gt;
     &lt;cti:button label=&quot;3&quot;/&gt;
     &lt;cti:button label=&quot;4&quot;/&gt;
     &lt;cti:button label=&quot;5&quot;/&gt;
-    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-next-grey&quot;/&gt;
-    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-last-grey&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-next-gray&quot;/&gt;
+    &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-last-gray&quot;/&gt;
 &lt;/div&gt;
 &lt;div class=&quot;clearfix&quot;&gt;
     &lt;cti:button icon=&quot;icon-transmit-blue&quot; label=&quot;Activate&quot; classes=&quot;left&quot;/&gt;

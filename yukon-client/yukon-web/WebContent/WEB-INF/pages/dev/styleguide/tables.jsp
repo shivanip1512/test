@@ -453,7 +453,7 @@
     <p class="description">
         <span class="label label-info">.compact-results-table</span> and
         <span class="label label-info">.results-table</span> are striped by default.  Striping means every even row
-        has a slightly grey background.  You can add striping to other tables by adding the class 
+        has a slightly gray background.  You can add striping to other tables by adding the class 
         <span class="label label-info">.striped</span>.
     </p>
     <h4 class="subtle">Code:</h4>

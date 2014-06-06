@@ -1079,7 +1079,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-plus-blue { background-position: -480px -400px; }
 .icon-add-blue { background-position: -496px -400px; }
 .icon-home { background-position: -512px -400px; }
-.icon-resultset-first-grey { background-position: -528px -400px; }
+.icon-resultset-first-gray { background-position: -528px -400px; }
 .icon-arrow-join-right { background-position: -544px -400px; }
 .icon-flag-gray { background-position: -560px -400px; }
 .icon-read { background-position: -576px -400px; }
@@ -1092,9 +1092,9 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-mapquest { background-position: -64px -416px; }
 .icon-map-sat { background-position: -80px -416px; }
 .icon-map-hyb { background-position: -96px -416px; }
-.icon-resultset-last-grey { background-position: -112px -416px; }
-.icon-resultset-next-grey { background-position: -128px -416px; }
-.icon-resultset-previous-grey { background-position: -144px -416px; }
+.icon-resultset-last-gray { background-position: -112px -416px; }
+.icon-resultset-next-gray { background-position: -128px -416px; }
+.icon-resultset-previous-gray { background-position: -144px -416px; }
 
 /* 32 pixel icons */
 .icon-32-blank  { background-position: 32px 32px; }

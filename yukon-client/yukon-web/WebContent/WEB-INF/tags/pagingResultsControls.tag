@@ -41,13 +41,13 @@
                         <cti:param name="itemsPerPage" value="${result.count}"/>
                     </cti:url>
                     <button class="button naked" data-reload="${prevUrl}">
-                        <i class="icon icon-resultset-previous disabled"></i>
+                        <i class="icon icon-resultset-previous-gray"></i>
                         <span class="b-label"><i:inline key="yukon.common.paging.previous"/></span>
                     </button>
                 </c:when>
                 <c:otherwise>
                     <button class="button naked fade-half" disabled="disabled">
-                        <i class="icon icon-resultset-previous"></i>
+                        <i class="icon icon-resultset-previous-gray"></i>
                         <span class="b-label"><i:inline key="yukon.common.paging.previous"/></span>
                     </button>
                 </c:otherwise>
@@ -79,13 +79,13 @@
                     </cti:url>
                     <button class="button naked" data-reload="${nextUrl}">
                         <span class="b-label"><i:inline key="yukon.common.paging.next"/></span>
-                        <i class="icon icon-resultset-next disabled"></i>
+                        <i class="icon icon-resultset-next-gray"></i>
                     </button>
                 </c:when>
                 <c:otherwise>
                     <button class="button naked fade-half" disabled="disabled">
                         <span class="b-label"><i:inline key="yukon.common.paging.next"/></span>
-                        <i class="icon icon-resultset-next"></i>
+                        <i class="icon icon-resultset-next-gray"></i>
                     </button>
                 </c:otherwise>
             </c:choose>
