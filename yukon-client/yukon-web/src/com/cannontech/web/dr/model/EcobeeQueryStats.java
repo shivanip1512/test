@@ -1,5 +1,7 @@
 package com.cannontech.web.dr.model;
 
+import java.text.DecimalFormat;
+
 import org.joda.time.YearMonth;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -13,23 +15,26 @@ public class EcobeeQueryStats {
     private int dataCollectionCount;
     private int systemCount;
     private int countsTotal;
+    private int limit;
     private double demandResponsePercent;
     private double dataCollectionPercent;
     private double systemPercent;
 
-    public EcobeeQueryStats(YearMonth month, int demandResponseCount, int dataCollectionCount, int systemCount) {
+    public EcobeeQueryStats(YearMonth month, int demandResponseCount, int dataCollectionCount, int systemCount, int limit) {
         this.month = month;
         this.demandResponseCount = demandResponseCount;
         this.dataCollectionCount = dataCollectionCount;
         this.systemCount = systemCount;
+        this.limit = limit;
         createGeneratedData();
     }
 
-    public EcobeeQueryStats(EcobeeQueryStatistics monthQueryStats) {
+    public EcobeeQueryStats(EcobeeQueryStatistics monthQueryStats, int limit) {
         month = new YearMonth(monthQueryStats.getYear(), monthQueryStats.getMonth());
         demandResponseCount = monthQueryStats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
         dataCollectionCount = monthQueryStats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
         systemCount = monthQueryStats.getQueryCountByType(EcobeeQueryType.SYSTEM);
+        this.limit = limit;
         createGeneratedData();
     }
 
@@ -78,6 +83,24 @@ public class EcobeeQueryStats {
 
     public void setCountsTotal(int countsTotal) {
         this.countsTotal = countsTotal;
+    }
+    
+    public int getLimit() {
+        return limit;
+    }
+    
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+    
+    /**
+     * Returns the percentage of queries to the query limit, formatted as '###.#%'.
+     * If total queries is greater than the limit, '100.0%' is returned.
+     */
+    public String getLimitPercent() {
+        double percent = (double) countsTotal / limit;
+        if (percent > 1.0) percent = 1.0;
+        return new DecimalFormat("###.#%").format(percent);
     }
 
     public double getDemandResponsePercent() {

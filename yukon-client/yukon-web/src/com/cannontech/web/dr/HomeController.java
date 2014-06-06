@@ -61,6 +61,7 @@ import com.google.common.collect.Ordering;
 public class HomeController {
 
     private static final Logger log = YukonLogManager.getLogger(HomeController.class);
+    
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
@@ -70,7 +71,6 @@ public class HomeController {
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
     @Autowired private JobManager jobManager;
     @Autowired private EcobeeReconciliationService reconciliationService;
-
     @Autowired @Qualifier("rfnPerformanceVerification")
         private YukonJobDefinition<RfnPerformanceVerificationTask> rfnVerificationJobDef;
     @Autowired @Qualifier("rfnPerformanceVerificationEmail")

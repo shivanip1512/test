@@ -57,6 +57,8 @@ import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.ecobee.service.DataDownloadService;
@@ -93,6 +95,7 @@ public class EcobeeController {
     @Autowired private EcobeeReconciliationService ecobeeReconciliation;
     @Autowired private DataDownloadService dataDownloadService;
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     @PostConstruct
     public void init() {
@@ -239,7 +242,7 @@ public class EcobeeController {
     
     @RequestMapping(value="/ecobee/statistics", method=RequestMethod.GET)
     public String statistics(ModelMap model, LiteYukonUser user) {
-
+        
         ScheduledRepeatingJob reconciliationReportJob = getJob(ecobeeReconciliationReportJobDef);
         ScheduledRepeatingJob ecobeePointUpdateJob = getJob(ecobeePointUpdateJobDef);
 
@@ -260,7 +263,8 @@ public class EcobeeController {
         model.addAttribute("ecobeeSettings", ecobeeSettings);
 
         EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now());
-        EcobeeQueryStats queryStats = new EcobeeQueryStats(currentMonthStats);
+        int limit = globalSettingDao.getInteger(GlobalSettingType.ECOBEE_QUERY_LIMIT);
+        EcobeeQueryStats queryStats = new EcobeeQueryStats(currentMonthStats, limit);
         model.addAttribute("ecobeeStats", queryStats);
 
         int deviceIssues = 0;
@@ -286,15 +290,19 @@ public class EcobeeController {
 
         List<EcobeeQueryStatistics> rangeOfStatsList = ecobeeQueryCountDao.getCountsForRange(range);
         List<EcobeeQueryStats> queryStatsList = new ArrayList<>();
+        int limit = globalSettingDao.getInteger(GlobalSettingType.ECOBEE_QUERY_LIMIT);
+        
         for (EcobeeQueryStatistics stats : rangeOfStatsList) {
+            
             int statsMonth = stats.getMonth();
             int statsYear = stats.getYear();
             YearMonth month = new YearMonth().withYear(statsYear).withMonthOfYear(statsMonth);
             int demandResponseCount = stats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
             int dataCollectionCount = stats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
             int systemCount = stats.getQueryCountByType(EcobeeQueryType.SYSTEM);
+            
             EcobeeQueryStats queryStats =
-                new EcobeeQueryStats(month, demandResponseCount, dataCollectionCount, systemCount);
+                    new EcobeeQueryStats(month, demandResponseCount, dataCollectionCount, systemCount, limit);
             queryStatsList.add(queryStats);
         }
         // begin unit test
@@ -304,15 +312,18 @@ public class EcobeeController {
             DateTime dateTime = new DateTime();
             int maxTestVal = 100000;
             for (int i = 0; i < 12; i += 1) {
+                
                 int demandResponseCount = rand.nextInt(maxTestVal);
                 int dataCollectionCount = rand.nextInt(maxTestVal - demandResponseCount);
                 int systemCount = rand.nextInt(maxTestVal - demandResponseCount - dataCollectionCount);
                 int month = dateTime.minusMonths(i).getMonthOfYear();
                 int year = dateTime.minusMonths(i).getYear();
                 YearMonth yearMonth = new YearMonth().withYear(year).withMonthOfYear(month);
+                
                 EcobeeQueryStats queryStats =
-                    new EcobeeQueryStats(yearMonth, demandResponseCount, dataCollectionCount, systemCount);
+                    new EcobeeQueryStats(yearMonth, demandResponseCount, dataCollectionCount, systemCount, limit);
                 queryStatsList.add(queryStats);
+                
             }
         }
         model.addAttribute("statsList", queryStatsList);
@@ -338,13 +349,13 @@ public class EcobeeController {
         model.addAttribute("now", now);
         model.addAttribute("oneDayAgo", oneDayAgo);
         model.addAttribute("downloads", downloads);
-
+        
         EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
         model.addAttribute("report", report);
 
         return "dr/ecobee/details.jsp";
     }
-
+    
     @InitBinder
     public void initialize(WebDataBinder dataBinder) {
         PropertyEditorSupport localDateEditor = new PropertyEditorSupport() {

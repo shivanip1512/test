@@ -84,6 +84,11 @@ yukon.dr.ecobee = (function () {
                     },
                     error: function(xhr, status, error, $form) {
                         $('#ecobee-download-popup').html(xhr.responseText);
+                        // initialize the date/time pickers
+                        yukon.ui.initDateTimePickers().ancestorInit('#ecobee-download-popup');
+                        
+                        // initialize the load group picker
+                        loadGroupPicker.show.call(loadGroupPicker, true);
                     }
                 });
             });

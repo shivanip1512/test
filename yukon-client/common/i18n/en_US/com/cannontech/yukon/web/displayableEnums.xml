@@ -347,11 +347,13 @@
     <entry key="yukon.common.setting.RF_BROADCAST_PERFORMANCE">RF Broadcast Performance</entry>
     <entry key="yukon.common.setting.RF_BROADCAST_PERFORMANCE.description">Enables the RF broadcast performance feature for demand response messaging.</entry>
     <entry key="yukon.common.setting.ECOBEE_USERNAME">ecobee Username</entry>
-    <entry key="yukon.common.setting.ECOBEE_USERNAME.description">Username to authenticate with the ecobee service</entry>
+    <entry key="yukon.common.setting.ECOBEE_USERNAME.description">Username to authenticate with the ecobee service.</entry>
     <entry key="yukon.common.setting.ECOBEE_PASSWORD">ecobee Password</entry>
-    <entry key="yukon.common.setting.ECOBEE_PASSWORD.description">Password to authenticate with the ecobee service</entry>
+    <entry key="yukon.common.setting.ECOBEE_PASSWORD.description">Password to authenticate with the ecobee service.</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL">ecobee API URL</entry>
-    <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service</entry>
+    <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service.</entry>
+    <entry key="yukon.common.setting.ECOBEE_QUERY_LIMIT">ecobee Query Limit</entry>
+    <entry key="yukon.common.setting.ECOBEE_QUERY_LIMIT.description">Monthly limit of queries to the ecobee service.</entry>
 
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS">Admin Email Address</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS.description">Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.</entry>
