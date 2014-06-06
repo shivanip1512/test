@@ -13,6 +13,7 @@
 
 <!-- Alert Types -->
 <entry key="yukon.web.alerts.types.ALARM">Alarm</entry>
+<entry key="yukon.web.alerts.types.WARNING">Warning</entry>
 <entry key="yukon.web.alerts.types.CAPCONTROL_SERVER_RESPONSE">Server Response</entry>
 <entry key="yukon.web.alerts.types.GROUP_COMMAND_COMPLETION">Commander</entry>
 <entry key="yukon.web.alerts.types.GROUP_METER_READ_COMPLETION">Group Attribute Read</entry>

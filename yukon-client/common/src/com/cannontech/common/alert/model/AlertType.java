@@ -5,6 +5,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum AlertType implements DisplayableEnum {
 
     ALARM,
+    WARNING,
     CAPCONTROL_SERVER_RESPONSE,
     GROUP_COMMAND_COMPLETION,
     GROUP_METER_READ_COMPLETION,

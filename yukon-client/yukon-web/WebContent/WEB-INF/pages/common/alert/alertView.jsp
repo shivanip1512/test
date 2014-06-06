@@ -2,30 +2,26 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<cti:msgScope paths="yukon.web.alerts.table">
+<style>.yukon-alert-icon { margin-top: 4px !important; }</style>
 <div id="alertView" >
-    <table id="alertTable" class="compact-results-table">
-      <thead>
-        <tr class="wsnw">
-            <th><cti:msg key="yukon.web.alerts.table.type"/></th>
-            <th><cti:msg key="yukon.web.alerts.table.message"/></th>
-            <th><cti:msg key="yukon.web.alerts.table.date"/></th>
-            <th></th>
-        </tr> 
-      </thead>
+    <table id="alert-table" class="compact-results-table with-form-controls has-alerts separated no-stripes">
+      <thead></thead>
       <tfoot></tfoot>
       <tbody>
         <c:forEach var="alert" items="${alerts}">
-            <tr id="alertTableRow_${alert.id}" class="wsnw">
-                <td width="20%"><cti:msg key="${alert.type}"/></td>
-                <td id="msg"><cti:formatTemplate message="${alert.message}" /></td>
-                <td><cti:formatDate type="BOTH" value="${alert.date}"/></td>
+            <tr data-alert-id="${alert.id}" class="wsnw">
+                <cti:msg2 key="${alert.type}" var="iconTitle"/>
+                <td><cti:icon icon="${alert.icon}" title="${iconTitle}" classes="yukon-alert-icon"/></td>
+                <td><cti:formatTemplate message="${alert.message}" /></td>
                 <td>
-                    <input type="hidden" name="alertId" value="${alert.id}">
-                    <cti:msg key="yukon.web.alerts.table.clear.tooltip" var="tt"/>
-                    <cti:icon icon="icon-accept" title="${tt}" onclick="yukon.alerts.clearAlert(${alert.id});" classes="cp"/>
+                    <cti:formatDate type="BOTH" value="${alert.date}"/>
+                    <cti:msg2 key=".clear.tooltip" var="tt"/>
+                    <cti:button classes="js-clear-yukon-alert fr" renderMode="buttonImage" icon="icon-tick" title="${tt}"/>
                 </td>
             </tr>
         </c:forEach>
       </tbody>
     </table>
 </div>
+</cti:msgScope>

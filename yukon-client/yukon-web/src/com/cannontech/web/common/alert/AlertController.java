@@ -8,7 +8,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.alert.model.IdentifiableAlert;
@@ -22,7 +21,7 @@ public class AlertController {
     @Autowired private AlertService alertService;
     
     @RequestMapping("view")
-    public String view(ModelMap model, LiteYukonUser user, @RequestParam(defaultValue="alertView") String style) {
+    public String view(ModelMap model, LiteYukonUser user) {
         
         final Collection<IdentifiableAlert> alerts = alertService.getAll(user);
         model.addAttribute("alerts", alerts);
@@ -30,7 +29,7 @@ public class AlertController {
         int count = alerts.size();
         model.addAttribute("count", count);
         
-        return "alert/" + style + ".jsp";
+        return "alert/alertView.jsp";
     }
     
     @RequestMapping(value="clear", method=RequestMethod.POST)

@@ -13,7 +13,7 @@ yukon.alerts = (function () {
         _countInitialized = false,
         _oldCount = 0,
         _alert_button = '#yukon-alert-button',
-        _clear_button = '#yukon_clear_alerts_button',
+        _clear_button = '.js-clear-all-yukon-alerts',
         _viewAlertUrl = yukon.url('/common/alert/view'),
         _clearAlertUrl = yukon.url('/common/alert/clear'),
         
@@ -59,7 +59,7 @@ yukon.alerts = (function () {
             $('#yukon_alert_popup').dialog('close');
             $('#alert_body').empty();
         },
-        mod;
+        mod = {};
 
     mod = {
         
@@ -72,7 +72,11 @@ yukon.alerts = (function () {
             }
             
             $(_alert_button).on('click', _handleBtnClick);
-            $(_clear_button).on('click', function() {mod.clearAlert();});
+            $(_clear_button).on('click', function() { mod.clearAlert(); });
+            $(document).on('click', '.js-clear-yukon-alert', function (ev) {
+                var alertId = $(this).closest('tr').data('alertId');
+                mod.clearAlert(alertId); 
+            });
             
             $('#yukon_alert_popup').dialog({autoOpen: false, width:'600', height: 'auto', position: {my: 'top', at: 'bottom+3', of: '.outer'}});
             
@@ -90,12 +94,12 @@ yukon.alerts = (function () {
 
             if (alertId) {
                 alertIds.push(alertId);
-                $('#alertTableRow_' + alertId).remove();
-                remainingAlerts = $('#alertTable tbody tr').length;
+                $('[data-alert-id="' + alertId + '"]').remove();
+                remainingAlerts = $('#alert-table tbody tr').length;
                 _updateCount(remainingAlerts);
             } else {
-                $('#alertTable tbody tr input').each(function(i, item) {
-                    alertIds.push(item.value);
+                $('#alert-table tbody tr').each(function(i, item) {
+                    alertIds.push($(item).data('alertId'));
                 });
                 _updateCount(0);
                 _closeAlertWindow();

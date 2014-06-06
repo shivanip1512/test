@@ -8,6 +8,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -24,6 +25,7 @@ public class IconTag extends YukonTagSupport implements DynamicAttributes {
     private String nameKey = null;
     private String href = null;
     private String classes = "";
+    private String title;
 
     private Map<String, Object> dynamicAttributes = new HashMap<>();
 
@@ -46,6 +48,10 @@ public class IconTag extends YukonTagSupport implements DynamicAttributes {
     public void setClasses(String classes) {
         this.classes = classes;
     }
+    
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     @Override
     public void doTag() throws JspException, IOException, NoSuchMessageException {
@@ -60,18 +66,21 @@ public class IconTag extends YukonTagSupport implements DynamicAttributes {
         id = StringUtils.isBlank(id) ? UniqueIdentifierTag.generateIdentifier(getJspContext(), "icon_") : id;
         out.write(" id=\"" + id + '"');
         
+        String hoverText = null;
         if (StringUtils.isNotBlank(nameKey)) {
             try {
                 MessageScopeHelper.forRequest(getRequest()).pushScope("." + nameKey, "components.image." + nameKey);
-                String hoverText = getLocalMessage(messageScope, ".hoverText");
-                if (hoverText != null) {
-                    out.write(" title=\"");
-                    out.write(hoverText);
-                    out.write("\"");
-                }
+                hoverText = getLocalMessage(messageScope, ".hoverText");
             } finally {
                 MessageScopeHelper.forRequest(getRequest()).popScope();
             }
+        }
+        if (StringUtils.isNotBlank(title)) hoverText = StringEscapeUtils.escapeHtml4(title);
+        
+        if (StringUtils.isNotBlank(hoverText)) {
+            out.write(" title=\"");
+            out.write(hoverText);
+            out.write("\"");
         }
 
         for (String attributeName : dynamicAttributes.keySet()) {

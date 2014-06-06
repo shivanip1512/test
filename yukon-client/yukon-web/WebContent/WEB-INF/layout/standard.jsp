@@ -177,9 +177,8 @@
                 <tags:simplePopup title="${alertTitle}" id="yukon_alert_popup">
                     <div id="alert_body" class="scroll-large"></div>
                     <div class="action-area">
-                        <button id="yukon_clear_alerts_button">
-                            <span class="b-label"><cti:msg2 key="yukon.web.alerts.clearall"/></span>
-                        </button>
+                        <cti:msg2 key="yukon.web.alerts.clearall" var="clearAllLabel"/>
+                        <cti:button classes="js-clear-all-yukon-alerts" label="${clearAllLabel}" icon="icon-tick"/>
                     </div>
                 </tags:simplePopup>
                 <tags:updatedWarning />

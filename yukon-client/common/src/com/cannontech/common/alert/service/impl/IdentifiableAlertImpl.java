@@ -10,6 +10,7 @@ import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.user.checker.UserChecker;
 
 public class IdentifiableAlertImpl implements IdentifiableAlert {
+    
     private static final AtomicInteger source = new AtomicInteger(1);
     private final Alert alert;
     private int id;
@@ -55,6 +56,16 @@ public class IdentifiableAlertImpl implements IdentifiableAlert {
     @Override
     public AlertType getType() {
         return alert.getType();
+    }
+    
+    public String getIcon() {
+        if (alert.getType() == AlertType.ALARM) {
+            return "icon-exclamation";
+        } else if (alert.getType() == AlertType.WARNING) {
+            return "icon-error";
+        } else {
+            return "icon-information";
+        }
     }
 
 }

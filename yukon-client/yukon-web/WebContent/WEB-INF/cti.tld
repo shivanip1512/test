@@ -1516,7 +1516,15 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                Base i18n key used to find optional ".hoverText" for span element title attribute. 
+                Base i18n key used to find optional ".hoverText" for icon element title attribute. 
+            </description>
+        </attribute>
+        <attribute>
+            <name>title</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Icon element title attribute. 
             </description>
         </attribute>
         <attribute>
