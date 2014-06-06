@@ -29,4 +29,6 @@
 
     <target name="clean" />
 
+    <target name="runUnitTests" />
+
 </project>
