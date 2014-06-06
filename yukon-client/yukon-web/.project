@@ -18,6 +18,7 @@
 		<project>multispeak</project>
 		<project>tools</project>
 		<project>yukonappserver</project>
+		<project>yukon-shared</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -98,6 +98,7 @@
     <target name="callall">
         <!-- These groupings mean something to me. Talk to me if you rearrange. -Tmack -->
         <ant dir="${third-party}" target="${dotarget}" />
+        <ant dir="${yukon-shared}" target="${dotarget}" />
         <ant dir="${common}" target="${dotarget}" />
 
         <ant dir="${web-common}" target="${dotarget}" />

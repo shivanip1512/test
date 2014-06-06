@@ -1,0 +1,107 @@
+{
+        "metricMapping" : [
+                { "metricId" :  1, "attribute" : "DELIVERED_KWH" },
+                { "metricId" :  2, "attribute" : "RECEIVED_KWH" },
+                { "metricId" :  3, "attribute" : "SUM_KWH" },
+                { "metricId" :  4, "attribute" : "NET_KWH" },
+                { "metricId" :  5, "attribute" : "DEMAND" },
+
+                { "metricId" :  7, "attribute" : "PEAK_DEMAND" },
+
+                { "metricId" :  9, "attribute" : "PEAK_DEMAND_FROZEN" },
+
+                { "metricId" : 11, "attribute" : "USAGE_FROZEN" },
+                { "metricId" : 12, "attribute" : "RECEIVED_KWH_FROZEN" },
+
+
+                { "metricId" : 21, "attribute" : "KVARH" },
+                { "metricId" : 22, "attribute" : "RECEIVED_KVARH" },
+                { "metricId" : 23, "attribute" : "SUM_KVARH" },
+
+                { "metricId" : 25, "attribute" : "FORWARD_INDUCTIVE_KVARH" },
+                { "metricId" : 26, "attribute" : "REVERSE_INDUCTIVE_KVARH" },
+
+                { "metricId" : 29, "attribute" : "NET_DELIVERED_KVARH" },
+                { "metricId" : 30, "attribute" : "NET_RECEIVED_KVARH" },
+
+                { "metricId" : 32, "attribute" : "KVAR" },
+
+                { "metricId" : 34, "attribute" : "PEAK_KVAR" },
+
+                { "metricId" : 36, "attribute" : "PEAK_KVAR_COIN" },
+
+
+                { "metricId" : 41, "attribute" : "KVAH" },
+                { "metricId" : 42, "attribute" : "RECEIVED_KVAH" },
+                { "metricId" : 43, "attribute" : "SUM_KVAH" },
+
+
+                { "metricId" : 83, "attribute" : "POWER_FACTOR" },
+
+
+                { "metricId" : 100, "attribute" : "VOLTAGE_PHASE_A" },
+                { "metricId" : 101, "attribute" : "VOLTAGE_PHASE_B" },
+                { "metricId" : 102, "attribute" : "VOLTAGE_PHASE_C" },
+                { "metricId" : 103, "attribute" : "CURRENT_PHASE_A" },
+                { "metricId" : 104, "attribute" : "CURRENT_PHASE_B" },
+                { "metricId" : 105, "attribute" : "CURRENT_PHASE_C" },
+
+                { "metricId" : 112, "attribute" : "MINIMUM_VOLTAGE" },
+
+                { "metricId" : 114, "attribute" : "MAXIMUM_VOLTAGE" },
+                { "metricId" : 115, "attribute" : "VOLTAGE" },
+
+                { "metricId" : 162, "attribute" : "POWER_FACTOR_PHASE_A" },
+                { "metricId" : 163, "attribute" : "POWER_FACTOR_PHASE_B" },
+                { "metricId" : 164, "attribute" : "POWER_FACTOR_PHASE_C" },
+
+                { "metricId" : 1001, "attribute" : "USAGE_RATE_A" },
+                { "metricId" : 1002, "attribute" : "RECEIVED_KWH_RATE_A" },
+                { "metricId" : 1003, "attribute" : "SUM_KWH_RATE_A" },
+                { "metricId" : 1004, "attribute" : "NET_KWH_RATE_A" },
+                { "metricId" : 1007, "attribute" : "PEAK_DEMAND_RATE_A" },
+                { "metricId" : 1009, "attribute" : "PEAK_DEMAND_FROZEN_RATE_A" },
+                { "metricId" : 1021, "attribute" : "KVARH_RATE_A" },
+                { "metricId" : 1022, "attribute" : "RECEIVED_KVARH_RATE_A" },
+                { "metricId" : 1029, "attribute" : "NET_DELIVERED_KVARH_RATE_A" },
+                { "metricId" : 1030, "attribute" : "NET_RECEIVED_KVARH_RATE_A" },
+                { "metricId" : 1034, "attribute" : "PEAK_KVAR_RATE_A" },
+
+                { "metricId" : 2001, "attribute" : "USAGE_RATE_B" },
+                { "metricId" : 2002, "attribute" : "RECEIVED_KWH_RATE_B" },
+                { "metricId" : 2003, "attribute" : "SUM_KWH_RATE_B" },
+                { "metricId" : 2004, "attribute" : "NET_KWH_RATE_B" },
+                { "metricId" : 2007, "attribute" : "PEAK_DEMAND_RATE_B" },
+                { "metricId" : 2009, "attribute" : "PEAK_DEMAND_FROZEN_RATE_B" },
+                { "metricId" : 2021, "attribute" : "KVARH_RATE_B" },
+                { "metricId" : 2022, "attribute" : "RECEIVED_KVARH_RATE_B" },
+                { "metricId" : 2029, "attribute" : "NET_DELIVERED_KVARH_RATE_B" },
+                { "metricId" : 2030, "attribute" : "NET_RECEIVED_KVARH_RATE_B" },
+                { "metricId" : 2034, "attribute" : "PEAK_KVAR_RATE_B" },
+
+                { "metricId" : 3001, "attribute" : "USAGE_RATE_C" },
+                { "metricId" : 3002, "attribute" : "RECEIVED_KWH_RATE_C" },
+                { "metricId" : 3003, "attribute" : "SUM_KWH_RATE_C" },
+                { "metricId" : 3004, "attribute" : "NET_KWH_RATE_C" },
+                { "metricId" : 3007, "attribute" : "PEAK_DEMAND_RATE_C" },
+                { "metricId" : 3009, "attribute" : "PEAK_DEMAND_FROZEN_RATE_C" },
+                { "metricId" : 3021, "attribute" : "KVARH_RATE_C" },
+                { "metricId" : 3022, "attribute" : "RECEIVED_KVARH_RATE_C" },
+                { "metricId" : 3029, "attribute" : "NET_DELIVERED_KVARH_RATE_C" },
+                { "metricId" : 3030, "attribute" : "NET_RECEIVED_KVARH_RATE_C" },
+                { "metricId" : 3034, "attribute" : "PEAK_KVAR_RATE_C" },
+
+                { "metricId" : 4001, "attribute" : "USAGE_RATE_D" },
+                { "metricId" : 4002, "attribute" : "RECEIVED_KWH_RATE_D" },
+                { "metricId" : 4003, "attribute" : "SUM_KWH_RATE_D" },
+                { "metricId" : 4004, "attribute" : "NET_KWH_RATE_D" },
+                { "metricId" : 4007, "attribute" : "PEAK_DEMAND_RATE_D" },
+                { "metricId" : 4009, "attribute" : "PEAK_DEMAND_FROZEN_RATE_D" },
+                { "metricId" : 4021, "attribute" : "KVARH_RATE_D" },
+                { "metricId" : 4022, "attribute" : "RECEIVED_KVARH_RATE_D" },
+                { "metricId" : 4029, "attribute" : "NET_DELIVERED_KVARH_RATE_D" },
+                { "metricId" : 4030, "attribute" : "NET_RECEIVED_KVARH_RATE_D" },
+                { "metricId" : 4034, "attribute" : "PEAK_KVAR_RATE_D" }
+        ]
+}
+
