@@ -32,6 +32,7 @@
 #include "utility.h"
 #include "shlwapi.h"
 #include "encryption.h"
+#include "json.h"
 #include "xml.h"
 #include "thread_monitor.h"
 
@@ -103,6 +104,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
             setDatabaseParams(dbDll, dbName, dbUser, dbPassword);
 
             Cti::parseXmlFiles( getYukonBase() );
+            Cti::parseJsonFiles();
 
             break;
         }

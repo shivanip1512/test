@@ -248,7 +248,7 @@ desolvers.obj:	precompiled.h desolvers.h dlldefs.h dsm2.h cticonnect.h \
 deviceattributelookup.obj:	precompiled.h DeviceAttributeLookup.h \
 		devicetypes.h pointtypes.h PointAttribute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h
-deviceconfiglookup.obj:	precompiled.h DeviceConfigLookup.h \
+DeviceConfigDescription.obj:	precompiled.h DeviceConfigDescription.h \
 		devicetypes.h pointtypes.h PointAttribute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h
 dllbase.obj:	precompiled.h dsm2.h cticonnect.h yukon.h types.h \
@@ -479,5 +479,5 @@ xml.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h CtiPCPtrQueue.h xml.h devicetypes.h pointtypes.h \
 		PointAttribute.h yukon.h ctidbgmem.h DeviceAttributeLookup.h \
-		DeviceConfigLookup.h resolvers.h db_entry_defines.h
+		DeviceConfigDescription.h resolvers.h db_entry_defines.h
 #ENDUPDATE#

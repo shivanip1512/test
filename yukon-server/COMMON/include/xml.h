@@ -2,8 +2,9 @@
 
 #include "devicetypes.h"
 #include "pointtypes.h"
-#include "resource_ids.h"
+#include "resource_helper.h"
 #include "PointAttribute.h"
+#include "DeviceConfigDescription.h"
 
 #include <xercesc/sax2/DefaultHandler.hpp>
 
@@ -69,7 +70,7 @@ public:
                      const XMLCh * const qname );
 
     void characters( const XMLCh * const chars,
-                     const XMLSize_t  	 length );
+                     const XMLSize_t     length );
 
     void fatalError( const xercesc::SAXParseException & ex );
 
@@ -84,16 +85,9 @@ private:
 };
 
 
-
-typedef std::multimap<std::string, std::string>     XmlCategoryFieldMap;
-
-
-
 class DeviceConfigCategorySAX2Handler : public xercesc::DefaultHandler
 {
 public:
-
-    DeviceConfigCategorySAX2Handler( XmlCategoryFieldMap & categoryField );
 
     void startElement( const XMLCh * const uri,
                        const XMLCh * const localname,
@@ -102,13 +96,10 @@ public:
 
     void endElement( const XMLCh * const uri,
                      const XMLCh * const localname,
-                     const XMLCh * const qname )
-    {
-        // empty
-    }
+                     const XMLCh * const qname );
 
     void characters( const XMLCh * const chars,
-                     const XMLSize_t  	 length )
+                     const XMLSize_t     length )
     {
         // empty
     }
@@ -117,10 +108,22 @@ public:
 
 private:
 
-    XmlCategoryFieldMap & categoryFieldMap;
+    typedef DeviceConfigDescription::ContainerHandle ContainerHandle;
 
-    std::string currentCategoryName,
-                fieldPrefix;
+    std::vector<ContainerHandle> currentContainer;
+
+    void setCurrentCategory  ( const xercesc::Attributes & attrs );
+
+    void addField            ( const std::string & fieldName );
+
+    void insertField         ( const xercesc::Attributes & attrs );
+    void insertTimeRateField ( const xercesc::Attributes & attrs );
+    void setMapEntryPrefix   ( const xercesc::Attributes & attrs );
+
+    void pushIndexedField    ( const xercesc::Attributes & attrs );
+    void popIndexedField     ( void );
+
+    std::string mapEntryPrefix;
 };
 
 

@@ -3,8 +3,12 @@
 #include "logger.h"
 #include "xml.h"
 #include "DeviceAttributeLookup.h"
-#include "DeviceConfigLookup.h"
+#include "DeviceConfigDescription.h"
 #include "resolvers.h"
+#include "resource_helper.h"
+
+#include "std_helper.h"
+
 
 #include <shlwapi.h>
 
@@ -20,12 +24,12 @@
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/assign.hpp>
+#include <boost/lexical_cast.hpp>
 
 
-
-namespace Cti
-{
+namespace Cti {
 
 std::string XmlStringTranscode( const XMLCh * const xcode )
 {
@@ -37,83 +41,6 @@ std::string XmlStringTranscode( const XMLCh * const xcode )
 
     return transcodedString;
 }
-
-
-
-typedef std::vector<unsigned char>  DataBuffer;
-
-
-DataBuffer  loadResourceFromLibrary( const int resourceID, const char * resourceName, const char * libraryName )
-{
-    DataBuffer  loadedResource;
-
-    if ( HINSTANCE library = LoadLibrary( libraryName ) )
-    {
-        if ( HRSRC resourceSearch = FindResource( library, MAKEINTRESOURCE( resourceID ), resourceName ) )
-        {
-            if ( HGLOBAL resource = LoadResource( library, resourceSearch ) )
-            {
-                if ( const unsigned char * data = static_cast<unsigned char *>( LockResource( resource ) ) )
-                {
-                    if ( DWORD size = SizeofResource( library, resourceSearch ) )
-                    {
-                        loadedResource.assign( data, data + size );
-                    }
-                    else
-                    {
-                        DWORD errorCode = GetLastError();
-
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " ** Error sizing resource: " << resourceName << " in: " << libraryName
-                                << "  (error code: " << errorCode << ")" << std::endl;
-                    }
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ** Error locking resource: " << resourceName << " in: " << libraryName << std::endl;
-                }
-            }
-            else
-            {
-                DWORD errorCode = GetLastError();
-
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ** Error loading resource: " << resourceName << " in: " << libraryName
-                        << "  (error code: " << errorCode << ")" << std::endl;
-            }
-        }
-        else
-        {
-            DWORD errorCode = GetLastError();
-
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ** Error finding resource: " << resourceName << " in: " << libraryName
-                    << "  (error code: " << errorCode << ")" << std::endl;
-        }
-
-        if ( ! FreeLibrary( library ) )
-        {
-            DWORD errorCode = GetLastError();
-
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ** Error unloading library: " << libraryName
-                    << "  (error code: " << errorCode << ")" << std::endl;
-        }
-    }
-    else
-    {
-        DWORD errorCode = GetLastError();
-
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ** Error loading library: " << libraryName
-                << "  (error code: " << errorCode << ")" << std::endl;
-    }
-
-    return loadedResource;
-}
-
-
 
 IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
 {
@@ -138,12 +65,12 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
     PathCombine( deviceDefinition,
                  yukonBase.c_str(), "Server\\Config\\deviceDefinition.xml");
 
-    DataBuffer  paoDefinitionSchema = loadResourceFromLibrary( PAODEFINITION_XSD_ID, "SCHEMA", "yukon-resource.dll" );
-    DataBuffer  paoDefinitionXml    = loadResourceFromLibrary( PAODEFINITION_XML_ID, "XML",    "yukon-resource.dll" );
+    DataBuffer  paoDefinitionSchema = loadResourceFromLibrary( Resource_PaoDefinitionXsd, "SCHEMA", "yukon-resource.dll" );
+    DataBuffer  paoDefinitionXml    = loadResourceFromLibrary( Resource_PaoDefinitionXml, "XML",    "yukon-resource.dll" );
 
-    DataBuffer  configCategoryDefinitionXml = loadResourceFromLibrary( CONFIGCATEGORYDEFINITION_XML_ID, "XML",    "yukon-resource.dll" );
-    DataBuffer  configCategorySchema        = loadResourceFromLibrary( CONFIGCATEGORYDEFINITION_XSD_ID, "SCHEMA", "yukon-resource.dll" );
-    DataBuffer  devConfigCategorySchema     = loadResourceFromLibrary( DEVICECONFIGCATEGORY_XSD_ID,     "SCHEMA", "yukon-resource.dll" );
+    DataBuffer  configCategoryDefinitionXml = loadResourceFromLibrary( Resource_ConfigCategoryDefinitionXml, "XML",    "yukon-resource.dll" );
+    DataBuffer  configCategorySchema        = loadResourceFromLibrary( Resource_ConfigCategoryDefinitionXsd, "SCHEMA", "yukon-resource.dll" );
+    DataBuffer  devConfigCategorySchema     = loadResourceFromLibrary( Resource_DeviceConfigCategoryXsd,     "SCHEMA", "yukon-resource.dll" );
 
     {   // New scope as living quarters for the auto-pointer -- he needs to be deleted before
         // the call to Terminate()
@@ -208,11 +135,8 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
         configCategoryReader->setFeature( xercesc::XMLUni::fgSAX2CoreValidation, true );
         configCategoryReader->setFeature( xercesc::XMLUni::fgXercesCacheGrammarFromParse, true );
 
-        // this is where the parsed data will go
-        XmlCategoryFieldMap     configCategoryInfo;
-
-        // this guy handles the xml entities and fills the collection
-        EntityHandler  configCategoryHandler( new DeviceConfigCategorySAX2Handler( configCategoryInfo ) );
+        // this guy handles the xml entities and delegates to DeviceConfigDescription
+        EntityHandler  configCategoryHandler( new DeviceConfigCategorySAX2Handler );
 
         // associate the handlers with the reader
         configCategoryReader->setContentHandler( configCategoryHandler.get() );
@@ -347,17 +271,8 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
 
         for ( XmlPaoInfoCollection::iterator b = flattened.begin(), e = flattened.end(); b != e; ++b )
         {
-            DeviceConfigLookup::AddRelation( resolvePaoIdXmlType( b->first ), b->second.configCategories );
+            DeviceConfigDescription::AddCategoriesForDeviceType( resolvePaoIdXmlType( b->first ), b->second.configCategories );
         }
-
-////////////////////////////
-///
-
-        for ( XmlCategoryFieldMap::iterator b = configCategoryInfo.begin(), e = configCategoryInfo.end(); b != e; ++b )
-        {
-            DeviceConfigLookup::AddRelation( b->first, b->second );
-        }
-
 
     }
 
@@ -751,82 +666,154 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
 
 
 
-DeviceConfigCategorySAX2Handler::DeviceConfigCategorySAX2Handler( XmlCategoryFieldMap & categoryField )
-    :   categoryFieldMap( categoryField )
-{
-
-}
-
-
 void DeviceConfigCategorySAX2Handler::startElement( const XMLCh * const uri,
                                                     const XMLCh * const localname,
                                                     const XMLCh * const qname,
                                                     const xercesc::Attributes &  attrs )
 {
-    std::string element( XmlStringTranscode( localname ) );
+    typedef DeviceConfigCategorySAX2Handler This;
+    typedef boost::function<void (This *, const xercesc::Attributes &)> StartElementHandler;
 
-    if ( element == "category" )
+    static const std::map<std::string, StartElementHandler> elementHandlers = boost::assign::map_list_of
+        ("category", &This::setCurrentCategory)
+        ("enum",     &This::insertField)
+        ("boolean",  &This::insertField)
+        ("integer",  &This::insertField)
+        ("float",    &This::insertField)
+        ("entry",    &This::insertTimeRateField)  //  <--- These two need to be converted to indexed fields
+        ("map",      &This::setMapEntryPrefix)    //  <---
+        ("indexed",  &This::pushIndexedField);
+
+    const boost::optional<StartElementHandler> elementHandler = Cti::mapFind( elementHandlers, XmlStringTranscode( localname ) );
+
+    if ( elementHandler )
     {
-        for ( XMLSize_t i = 0; i < attrs.getLength(); i++ )
-        {
-            std::string name( XmlStringTranscode( attrs.getLocalName(i) ) );
+        (*elementHandler)(this, attrs);
+    }
+}
 
-            if ( name == "type" )
-            {
-                currentCategoryName = XmlStringTranscode( attrs.getValue(i) );
-            }
+
+void DeviceConfigCategorySAX2Handler::endElement( const XMLCh * const uri,
+                                                  const XMLCh * const localname,
+                                                  const XMLCh * const qname )
+{
+    typedef DeviceConfigCategorySAX2Handler This;
+    typedef boost::function<void (This *)> EndElementHandler;
+
+    static const std::map<std::string, EndElementHandler> elementHandlers = boost::assign::map_list_of
+        ("indexed", &This::popIndexedField);
+
+    const boost::optional<EndElementHandler> elementHandler = Cti::mapFind( elementHandlers, XmlStringTranscode( localname ) );
+
+    if ( elementHandler )
+    {
+        (*elementHandler)(this);
+    }
+}
+
+
+boost::optional<std::string> findAttribute( const xercesc::Attributes & attrs, const std::string & attributeName )
+{
+    for ( XMLSize_t i = 0; i < attrs.getLength(); i++ )
+    {
+        std::string name( XmlStringTranscode( attrs.getLocalName(i) ) );
+
+        if ( name == attributeName )
+        {
+            return XmlStringTranscode( attrs.getValue(i) );
         }
     }
 
-    if ( element == "enum" || element == "boolean" || element == "integer" || element == "float" )
-    {
-        for ( XMLSize_t i = 0; i < attrs.getLength(); i++ )
-        {
-            std::string name( XmlStringTranscode( attrs.getLocalName(i) ) );
+    return boost::none;
+}
 
-            if ( name == "field" )
-            {
-                categoryFieldMap.insert( std::make_pair( currentCategoryName, XmlStringTranscode( attrs.getValue(i) ) ) );
-            }
+
+void DeviceConfigCategorySAX2Handler::setCurrentCategory( const xercesc::Attributes & attrs )
+{
+    const boost::optional<std::string> typeAttr = findAttribute( attrs, "type" );
+
+    if ( typeAttr )
+    {
+        currentContainer.assign( 1, DeviceConfigDescription::AddCategory( *typeAttr ) );
+    }
+}
+
+void DeviceConfigCategorySAX2Handler::addField( const std::string & fieldName )
+{
+    if ( ! currentContainer.empty() )
+    {
+        DeviceConfigDescription::AddItem( currentContainer.back(), fieldName );
+    }
+}
+
+void DeviceConfigCategorySAX2Handler::insertField( const xercesc::Attributes & attrs )
+{
+    const boost::optional<std::string> fieldAttr = findAttribute( attrs, "field" );
+
+    if ( fieldAttr )
+    {
+        addField( *fieldAttr );
+    }
+}
+
+void DeviceConfigCategorySAX2Handler::setMapEntryPrefix( const xercesc::Attributes & attrs )
+{
+    const boost::optional<std::string> fieldAttr = findAttribute( attrs, "field" );
+
+    if ( fieldAttr )
+    {
+        mapEntryPrefix = *fieldAttr;
+    }
+}
+
+void DeviceConfigCategorySAX2Handler::insertTimeRateField( const xercesc::Attributes & attrs )
+{
+    const boost::optional<std::string> fieldAttr = findAttribute( attrs, "field" );
+
+    if ( fieldAttr )
+    {
+        // entrys are of the form "time0"  -- we need to add a time and rate entry...
+
+        // insert the time one...
+
+        addField( mapEntryPrefix + *fieldAttr );
+
+        // replace the word time with the word rate
+
+        std::string rateEntry = boost::algorithm::replace_head_copy( *fieldAttr, 4, "rate" );
+
+        addField( mapEntryPrefix + rateEntry );
+    }
+}
+
+void DeviceConfigCategorySAX2Handler::pushIndexedField( const xercesc::Attributes & attrs )
+{
+    const boost::optional<std::string> fieldAttr = findAttribute( attrs, "field" );
+    const boost::optional<std::string> minAttr   = findAttribute( attrs, "minOccurs" );
+    const boost::optional<std::string> maxAttr   = findAttribute( attrs, "maxOccurs" );
+
+    if ( ! currentContainer.empty() && fieldAttr && minAttr && maxAttr )
+    {
+        try
+        {
+            currentContainer.push_back(
+                    DeviceConfigDescription::AddIndexedItem(
+                            currentContainer.back(),
+                            *fieldAttr,
+                            boost::lexical_cast<unsigned>( *minAttr ),
+                            boost::lexical_cast<unsigned>( *maxAttr ) ) );
+        }
+        catch(const boost::bad_lexical_cast &)
+        {
         }
     }
+}
 
-    if ( element == "map" )
+void DeviceConfigCategorySAX2Handler::popIndexedField()
+{
+    if ( ! currentContainer.empty() )
     {
-        for ( XMLSize_t i = 0; i < attrs.getLength(); i++ )
-        {
-            std::string name( XmlStringTranscode( attrs.getLocalName(i) ) );
-
-            if ( name == "field" )
-            {
-                fieldPrefix = XmlStringTranscode( attrs.getValue(i) );
-            }
-        }
-    }
-
-    if ( element == "entry" )
-    {
-        for ( XMLSize_t i = 0; i < attrs.getLength(); i++ )
-        {
-            std::string name( XmlStringTranscode( attrs.getLocalName(i) ) );
-
-            if ( name == "field" )
-            {
-                std::string entryName( XmlStringTranscode( attrs.getValue(i) ) );
-
-                // entrys are of the form "time0"  -- we need to add a time and rate entry...
-
-                // insert the time one...
-
-                categoryFieldMap.insert( std::make_pair( currentCategoryName, fieldPrefix + entryName ) );
-
-                // replace the word time with the word rate
-
-                entryName.replace( 0, 4, "rate" );
-
-                categoryFieldMap.insert( std::make_pair( currentCategoryName, fieldPrefix + entryName ) );
-            }
-        }
+        currentContainer.pop_back();
     }
 }
 
