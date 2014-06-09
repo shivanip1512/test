@@ -146,7 +146,7 @@ public class DisconnectController {
                 template = new ResolvableTemplate("yukon.common.alerts.disconnectCompletion");
             }
             String url =
-                ServletUtil.createSafeUrl(request, "resultDetail?resultKey=" + result.getKey() + "&command="
+                ServletUtil.createSafeUrl(request, "/bulk/disconnect/resultDetail?resultKey=" + result.getKey() + "&command="
                                                   + result.getCommand());
             template.addData("url", url);
             template.addData("command", accessor.getMessage(result.getCommand()));
