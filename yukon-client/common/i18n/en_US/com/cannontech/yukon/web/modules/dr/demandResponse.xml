@@ -480,7 +480,7 @@
         </ul>
     ]]>
 </entry>
-<entry key=yukon.web.modules.dr.ecobee.details.fixAll">Yukon will attempt to fix all sync issues.</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.fixAll">Yukon will attempt to fix all sync issues.</entry>
 <entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISSING_MANAGEMENT_SET">Ecobee set "{0}" is missing</entry>
 <entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISLOCATED_MANAGEMENT_SET">Ecobee set "{1}" is mislocated</entry>
 <entry key="yukon.web.modules.dr.ecobee.discrepancyType.EXTRANEOUS_MANAGEMENT_SET">Ecobee set "{1}" does not correspond to any Yukon group</entry>
