@@ -33,7 +33,7 @@
     <c:forEach var="input" items="${categoryEditBean.channelInputs}" varStatus="loopStatus">
         <div class="clearfix stacked form-control">
             <cti:msg2 key="${input.attribute}" />
-            <div class="button-group js-toggle toggle-on-off fr dib">
+            <div class="button-group toggle-on-off fr dib">
                 <c:forEach var="readType" items="${field.readTypes}">
                     <c:set var="clazz" value="yes" />
                     <c:if test="${readType == 'DISABLED' }">
@@ -47,7 +47,7 @@
                         data-channel="${loopStatus.index}" data-value="${readType}" />
                 </c:forEach>
                 <spring:bind path="channelInputs[${loopStatus.index}].read" htmlEscape="true">
-                    <input type="hidden" name="${status.expression}" value="${status.value}" data-toggle-input />
+                    <input type="hidden" name="${status.expression}" value="${status.value}" data-radio />
                 </spring:bind>
             </div>
             <spring:bind path="channelInputs[${loopStatus.index}].attribute" htmlEscape="true">

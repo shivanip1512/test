@@ -26,7 +26,7 @@
         <cti:button label="${trueText}" classes="yes ${trueClass}" data-value="true"/>
         <cti:button label="${falseText}" classes="no ${falseClass}" data-value="false"/>
 
-        <input type="hidden" name="${status.expression}" value="${status.value}" data-toggle-input/>
+        <input type="hidden" name="${status.expression}" value="${status.value}" data-radio/>
 
     </div>
 </cti:displayForPageEditModes>
