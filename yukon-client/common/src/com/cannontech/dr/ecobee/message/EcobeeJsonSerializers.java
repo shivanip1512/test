@@ -85,7 +85,7 @@ public interface EcobeeJsonSerializers {
                 return null;
             }
             String[] split = str.split(",", -1);
-            if (split.length != 9) {
+            if (split.length < 9) {
                 throw new JsonParseException("Unable to parse RuntimeReportRow. The ecobee CSV did not contain the "
                     + "correct number of fields. ", parser.getCurrentLocation());
             }
