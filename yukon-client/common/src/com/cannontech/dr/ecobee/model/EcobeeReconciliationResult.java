@@ -1,5 +1,7 @@
 package com.cannontech.dr.ecobee.model;
 
+import com.cannontech.common.i18n.DisplayableEnum;
+
 public class EcobeeReconciliationResult {
     private final int errorId;
     private final boolean success;
@@ -31,11 +33,16 @@ public class EcobeeReconciliationResult {
         return errorType;
     }
     
-    public enum ErrorType {
+    public enum ErrorType implements DisplayableEnum {
         NONE,
         COMMUNICATION,
         NO_SET,
         NO_DEVICE,
-        NOT_FIXABLE,
+        NOT_FIXABLE,;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.dr.ecobee.reconciliationErrorType." + name();
+        }
     }
 }

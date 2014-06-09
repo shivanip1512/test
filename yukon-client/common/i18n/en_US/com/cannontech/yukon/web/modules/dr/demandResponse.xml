@@ -493,6 +493,11 @@
 <entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISSING_DEVICE.detail">Ecobee is missing the device "{2}". To fix this issue, Yukon will add the device to set "{0}".</entry>
 <entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISLOCATED_DEVICE.detail">Device "{2}" is in the wrong ecobee set. To fix this issue, Yukon will move the device from set "{1}" to set "{0}"</entry>
 <entry key="yukon.web.modules.dr.ecobee.discrepancyType.EXTRANEOUS_DEVICE.detail">Device "{2}" in ecobee set "{1}" does not correspond to any Yukon device. To fix this issue, create and enroll the device in Yukon.</entry>
+<entry key="yukon.web.modules.dr.ecobee.reconciliationErrorType.NONE">No error occurred.</entry>
+<entry key="yukon.web.modules.dr.ecobee.reconciliationErrorType.COMMUNICATION">The sync issue could not be fixed due to a communication error with the ecobee server.</entry>
+<entry key="yukon.web.modules.dr.ecobee.reconciliationErrorType.NO_SET">The sync issue could not be fixed because the specified set was not found.</entry>
+<entry key="yukon.web.modules.dr.ecobee.reconciliationErrorType.NO_DEVICE">The sync issue could not be fixed because the specified device was not found.</entry>
+<entry key="yukon.web.modules.dr.ecobee.reconciliationErrorType.NOT_FIXABLE">Yukon cannot fix this type of sync issue.</entry>
 
 <entry key="yukon.web.modules.dr.ecobee.queryType.DATA_COLLECTION">Data Collection</entry>
 <entry key="yukon.web.modules.dr.ecobee.queryType.DEMAND_RESPONSE">Demand Response</entry>
