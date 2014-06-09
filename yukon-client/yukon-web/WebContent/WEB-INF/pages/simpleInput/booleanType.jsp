@@ -1,19 +1,32 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"  %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"  %>
 
 <cti:displayForPageEditModes modes="VIEW">
     <cti:msg2 key="yukon.common.${status.value}"/>
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="CREATE,EDIT">
     <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
-    <select <tags:attributeHelper name="id" value="${param.id}"/> name="${status.expression}" class="${inputClass}">
-    <option value="true"<c:if test="${status.value}">selected</c:if>><cti:msg2 key="yukon.common.true"/></option>
-    <option value="false"<c:if test="${not status.value and not empty status.value}">selected</c:if>><cti:msg2 key="yukon.common.false"/></option>
-    </select>
+    <div class="button-group toggle-on-off clearfix">
+        <cti:msg2 var="trueText" key="yukon.common.true"/>
+        <cti:msg2 var="falseText" key="yukon.common.false"/>
+        <c:choose>
+            <c:when test="${status.value}">
+                <c:set var="trueClass" value="on" />
+                <c:set var="falseClass" value="" />
+            </c:when>
+            <c:otherwise>
+                <c:set var="trueClass" value="" />
+                <c:set var="falseClass" value="on" />
+            </c:otherwise>
+        </c:choose>
+
+        <cti:button label="${trueText}" classes="yes ${trueClass}" data-value="true"/>
+        <cti:button label="${falseText}" classes="no ${falseClass}" data-value="false"/>
+
+        <input type="hidden" name="${status.expression}" value="${status.value}" data-toggle-input/>
+
+    </div>
 </cti:displayForPageEditModes>

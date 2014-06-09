@@ -267,15 +267,6 @@ yukon.deviceConfig = (function () {
                 }
             });
 
-            $(document).on('click', '[data-channel]', function() {
-                var button = $(this),
-                    channel = button.data('channel'),
-                    value = button.data('value'),
-                    readInput = $('[data-channel="' + channel + '"][data-read-input]');
-
-                readInput.val(value);
-            });
-
             _registerScheduleButtons();
             
             // Find the first type and select his categories

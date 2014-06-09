@@ -326,8 +326,13 @@ yukon.ui = (function () {
             });
             
             /** Toggle buttons in a button group */
-            $(document).on('click', '.js-toggle .button, .toggle-on-off .button', function(ev) { 
-                $(this).addClass('on').siblings('.button').removeClass('on');
+            $(document).on('click', '.js-toggle .button, .toggle-on-off .button', function(ev) {
+                var button = $(this),
+                    value = button.data('value');
+                button.addClass('on').siblings('.button').removeClass('on');
+                if (typeof value !== 'undefined') {
+                    button.closest('.js-toggle, .toggle-on-off').find('[data-toggle-input]').val(value);
+                }
             });
             
             /** Elements that navigate on click */

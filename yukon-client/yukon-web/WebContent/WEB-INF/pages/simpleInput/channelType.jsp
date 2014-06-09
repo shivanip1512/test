@@ -46,11 +46,10 @@
                     <cti:button label="${readLabel}" classes="${clazz}" 
                         data-channel="${loopStatus.index}" data-value="${readType}" />
                 </c:forEach>
+                <spring:bind path="channelInputs[${loopStatus.index}].read" htmlEscape="true">
+                    <input type="hidden" name="${status.expression}" value="${status.value}" data-toggle-input />
+                </spring:bind>
             </div>
-            <spring:bind path="channelInputs[${loopStatus.index}].read" htmlEscape="true">
-                <input type="hidden" name="${status.expression}" value="${status.value}" 
-                    data-read-input data-channel="${loopStatus.index}" />
-            </spring:bind>
             <spring:bind path="channelInputs[${loopStatus.index}].attribute" htmlEscape="true">
                 <input type="hidden" name="${status.expression}" value="${status.value}"/>
             </spring:bind>
