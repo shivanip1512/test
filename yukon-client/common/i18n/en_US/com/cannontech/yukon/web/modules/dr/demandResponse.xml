@@ -458,12 +458,6 @@
 <entry key="yukon.web.modules.dr.ecobee.details.download.ready">Ready</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.failed">Failed</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.maxDayRange">(Maximum Seven Day Range)</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.DEVICE_NOT_IN_ECOBEE">Device not in ecobee</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.DEVICE_NOT_IN_YUKON">Device not in Yukon</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_ENROLLMENT_INCORRECT">ecobee enrollment incorrect</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_SET_DOES_NOT_MATCH">ecobee set does not match</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.ECOBEE_SET_IN_INCORRECT_LOCATION">ecobee set is in the incorrect location</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.LOAD_GROUP_NOT_IN_ECOBEE">Load group is not in ecobee</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.statistics.title">Data Collection / Demand Response / System</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.none">No ecobee sync issues.</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.serialNumber">SN:</entry>
@@ -473,13 +467,32 @@
 <entry key="yukon.web.modules.dr.ecobee.details.issues.type">Type</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.fix.title">Fix ecobee Issue</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.loadGroups">Load Groups</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.MISSING_MANAGEMENT_SET">Management set "{0}" is missing</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.MISLOCATED_MANAGEMENT_SET">Management set "{1}" is mislocated</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.EXTRANEOUS_MANAGEMENT_SET">Management set "{1}" is extraneous</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.MISSING_DEVICE">Missing device SN: {2} correct location: "{0}"</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.MISLOCATED_DEVICE">Mislocated device: SN: "{2}", current location: "{1}", correct location: "{0}"</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.EXTRANEOUS_DEVICE">Extraneous device SN: "{2}", current location: "{1}"</entry>
-
+<entry key="yukon.web.modules.dr.ecobee.details.issues.helpText">
+    <![CDATA[
+        These issues indicate that the Yukon system and the ecobee system are out of sync in some way.
+        <ul>
+            <li>Missing Set: A load management group exists in Yukon that does not have a corresponding management set in ecobee.</li>
+            <li>Mislocated Set: The management set in ecobee corresponds to a Yukon load management group, but the set is in an unexpected location in the ecobee hierarchy.</li>
+            <li>Extraneous Set: A management set exists in ecobee that does not correspond to any Yukon load management group.</li>
+            <li>Missing Device: A device exists in Yukon that has no corresponding device in ecobee.</li>
+            <li>Mislocated Device: The device in ecobee corresponds to a Yukon device, but the device is in an unexpected location in the ecobee hierarchy.</li>
+            <li>Extraneous Device: A device exists in ecobee that does not correspond to a device in Yukon.</li>
+        </ul>
+    ]]>
+</entry>
+<entry key=yukon.web.modules.dr.ecobee.details.fixAll">Yukon will attempt to fix all sync issues.</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISSING_MANAGEMENT_SET">Ecobee set "{0}" is missing</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISLOCATED_MANAGEMENT_SET">Ecobee set "{1}" is mislocated</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.EXTRANEOUS_MANAGEMENT_SET">Ecobee set "{1}" does not correspond to any Yukon group</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISSING_DEVICE">Ecobee is missing the device "{2}"</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISLOCATED_DEVICE">Device "{2}" is in the wrong ecobee set</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.EXTRANEOUS_DEVICE">Device "{2}" does not correspond to any Yukon device</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISSING_MANAGEMENT_SET.detail">Ecobee set "{0}" is missing. To fix this issue, Yukon will create the set in ecobee.</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISLOCATED_MANAGEMENT_SET.detail">Ecobee set "{1}" is mislocated. To fix this issue, Yukon will move the set to "{0}".</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.EXTRANEOUS_MANAGEMENT_SET.detail">Ecobee set "{1}" does not correspond to any Yukon group. To fix this issue, Yukon will delete the set.</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISSING_DEVICE.detail">Ecobee is missing the device "{2}". To fix this issue, Yukon will add the device to set "{0}".</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISLOCATED_DEVICE.detail">Device "{2}" is in the wrong ecobee set. To fix this issue, Yukon will move the device from set "{1}" to set "{0}"</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.EXTRANEOUS_DEVICE.detail">Device "{2}" in ecobee set "{1}" does not correspond to any Yukon device. To fix this issue, create and enroll the device in Yukon.</entry>
 
 <entry key="yukon.web.modules.dr.ecobee.queryType.DATA_COLLECTION">Data Collection</entry>
 <entry key="yukon.web.modules.dr.ecobee.queryType.DEMAND_RESPONSE">Demand Response</entry>

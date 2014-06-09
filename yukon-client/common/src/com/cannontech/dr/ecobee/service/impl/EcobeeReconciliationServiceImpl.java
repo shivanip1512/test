@@ -129,42 +129,42 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             switch (error.getErrorType()) {
                 //Set is in ecobee, doesn't correspond to a Yukon group
                 case EXTRANEOUS_MANAGEMENT_SET:
-                    communicationService.deleteManagementSetByPath(error.getCurrentLocation());
-                    return EcobeeReconciliationResult.newSuccessfulResult(error.getErrorId());
+                    communicationService.deleteManagementSet(error.getCurrentLocation());
+                    return EcobeeReconciliationResult.newSuccess(error.getErrorId());
                     
                 //ecobee device corresponds to a Yukon device, but is in the wrong management set
                 case MISLOCATED_DEVICE:
                     communicationService.moveDeviceToSet(error.getSerialNumber(), error.getCorrectLocation());
-                    return EcobeeReconciliationResult.newSuccessfulResult(error.getErrorId());
+                    return EcobeeReconciliationResult.newSuccess(error.getErrorId());
                 
                 //ecobee set corresponds to Yukon group, but is in the wrong location in the hierarchy
                 case MISLOCATED_MANAGEMENT_SET:
                     communicationService.moveManagementSet(error.getCurrentLocation(), error.getCorrectLocation());
-                    return EcobeeReconciliationResult.newSuccessfulResult(error.getErrorId());
+                    return EcobeeReconciliationResult.newSuccess(error.getErrorId());
                 
                 //Device in Yukon, not in ecobee
                 case MISSING_DEVICE:
                     communicationService.registerDevice(error.getSerialNumber());
                     communicationService.moveDeviceToSet(error.getSerialNumber(), error.getCorrectLocation());
-                    return EcobeeReconciliationResult.newSuccessfulResult(error.getErrorId());
+                    return EcobeeReconciliationResult.newSuccess(error.getErrorId());
                 
                 //Yukon group has no corresponding ecobee set
                 case MISSING_MANAGEMENT_SET:
                     communicationService.createManagementSet(error.getCorrectLocation());
-                    return EcobeeReconciliationResult.newSuccessfulResult(error.getErrorId());
+                    return EcobeeReconciliationResult.newSuccess(error.getErrorId());
                 
                 //Device in ecobee, not in Yukon
                 case EXTRANEOUS_DEVICE:
                 //Unknown discrepancy type, shouldn't happen
                 default:
-                    return EcobeeReconciliationResult.newFailureResult(error.getErrorId(), NOT_FIXABLE);
+                    return EcobeeReconciliationResult.newFailure(error.getErrorId(), NOT_FIXABLE);
             }
         } catch (EcobeeSetDoesNotExistException e) {
-            return EcobeeReconciliationResult.newFailureResult(error.getErrorId(), NO_SET);
+            return EcobeeReconciliationResult.newFailure(error.getErrorId(), NO_SET);
         } catch (EcobeeDeviceDoesNotExistException e) {
-            return EcobeeReconciliationResult.newFailureResult(error.getErrorId(), NO_DEVICE);
+            return EcobeeReconciliationResult.newFailure(error.getErrorId(), NO_DEVICE);
         } catch (EcobeeCommunicationException e) {
-            return EcobeeReconciliationResult.newFailureResult(error.getErrorId(), COMMUNICATION);
+            return EcobeeReconciliationResult.newFailure(error.getErrorId(), COMMUNICATION);
         }
     }
     

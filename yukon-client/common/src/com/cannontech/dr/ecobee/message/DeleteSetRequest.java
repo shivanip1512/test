@@ -13,23 +13,12 @@ public class DeleteSetRequest {
     private final String setPath;
     
     /**
-     * Creates a request for a set that is directly under the root "/" path.
+     * Creates a delete request for a set. If the path starts with a "/", it's assumed to be a full path, otherwise it's
+     * assumed to be the name of a set that is directly under the root "/" path.
      */
     @JsonCreator
-    public DeleteSetRequest(@JsonProperty("setPath") String setName) {
-        setPath = "/" + setName;
-    }
-    
-    /**
-     * Creates a request by specifying the full path, or a set name under the "/" path.
-     */
-    
-    public DeleteSetRequest(String setPath, boolean isFullPath) {
-        if (isFullPath) {
-            this.setPath = setPath;
-        } else {
-            this.setPath = "/" + setPath;
-        }
+    public DeleteSetRequest(@JsonProperty("setPath") String setPath) {
+        this.setPath = (setPath.startsWith("/") ? "" : "/") + setPath;
     }
     
     public String getSetPath() {

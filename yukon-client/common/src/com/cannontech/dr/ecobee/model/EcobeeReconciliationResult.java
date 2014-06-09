@@ -11,11 +11,11 @@ public class EcobeeReconciliationResult {
         this.errorType = errorType;
     }
     
-    public static EcobeeReconciliationResult newSuccessfulResult(int errorId) {
+    public static EcobeeReconciliationResult newSuccess(int errorId) {
         return new EcobeeReconciliationResult(errorId, true, ErrorType.NONE);
     }
     
-    public static EcobeeReconciliationResult newFailureResult(int errorId, ErrorType errorType) {
+    public static EcobeeReconciliationResult newFailure(int errorId, ErrorType errorType) {
         return new EcobeeReconciliationResult(errorId, false, errorType);
     }
     

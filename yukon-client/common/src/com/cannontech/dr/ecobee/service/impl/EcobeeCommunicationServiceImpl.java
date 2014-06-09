@@ -1,9 +1,6 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.NOT_AUTHORIZED;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.PROCESSING_ERROR;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.SUCCESS;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.VALIDATION_ERROR;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -213,19 +210,6 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         HttpEntity<DeleteSetRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
 
         log.info("Deleting set " + managementSetName + " URL: " + url);
-        StandardResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.SYSTEM, StandardResponse.class);
-
-        return response.getSuccess();
-    }
-    
-    @Override
-    public boolean deleteManagementSetByPath(String managementSetPath) {
-        String url = getUrlBase() + modifySetUrlPart;
-
-        DeleteSetRequest request = new DeleteSetRequest(managementSetPath, true);
-        HttpEntity<DeleteSetRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
-
-        log.info("Deleting set " + managementSetPath + " URL: " + url);
         StandardResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.SYSTEM, StandardResponse.class);
 
         return response.getSuccess();
