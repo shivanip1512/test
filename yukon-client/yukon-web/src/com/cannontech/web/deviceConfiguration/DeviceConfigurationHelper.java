@@ -4,6 +4,7 @@ import java.beans.PropertyEditor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceAttributeDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.jaxb.Category;
@@ -25,6 +27,7 @@ import com.cannontech.common.device.config.model.jaxb.InputMap;
 import com.cannontech.common.device.config.model.jaxb.MapType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dao.NotFoundException;
@@ -67,6 +70,7 @@ public class DeviceConfigurationHelper {
 
     @Autowired private ObjectFormattingService formattingService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private RfnDeviceAttributeDao rfnDeviceAttributeDao;
     @Autowired private List<DeviceConfigurationInputEnumeration> configurationInputEnumerations;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
@@ -376,15 +380,11 @@ public class DeviceConfigurationHelper {
         List<BuiltInAttribute> attributes = new ArrayList<>();
         if (configId != null) {
 
-            attributes = new ArrayList<>(BuiltInAttribute.getProfileAttributes());
-            //TOOD JOE set this up when ready
-            //Set<PaoType> supportedTypes = deviceConfigurationDao.getDeviceConfiguration(configId).getSupportedDeviceTypes();
-            //attributes = metricIdToAttributeDao.getAttributesForPaoTypes(supportedTypes);
+            Set<PaoType> supportedTypes = deviceConfigurationDao.getDeviceConfiguration(configId).getSupportedDeviceTypes();
+            attributes.addAll(rfnDeviceAttributeDao.getAttributesForPaoTypes(supportedTypes));
 
         } else {
-            attributes = new ArrayList<>(BuiltInAttribute.getAllGroupedAttributes().get(AttributeGroup.OTHER));
-            //TOOD JOE set this up when ready
-            //attributes = metricIdToAttributeDao.getAttributesForAllTypes();
+            attributes.addAll(rfnDeviceAttributeDao.getAttributesForAllTypes());
         }
         return attributes;
     }

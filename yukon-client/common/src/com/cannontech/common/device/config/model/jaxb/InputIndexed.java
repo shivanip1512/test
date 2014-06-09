@@ -121,4 +121,5 @@ public class InputIndexed
     public void setMaxOccurs(int value) {
         this.maxOccurs = value;
     }
+
 }

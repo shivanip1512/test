@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="mctDisconnectConfiguration"/>
  *     &lt;enumeration value="rfnOvUv"/>
  *     &lt;enumeration value="rfnTempAlarm"/>
+ *     &lt;enumeration value="rfnChannelConfiguration"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
