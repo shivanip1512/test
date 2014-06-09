@@ -5,7 +5,11 @@ import org.joda.time.Instant;
 import com.cannontech.dr.ecobee.message.partial.DutyCycleDr;
 import com.cannontech.dr.ecobee.message.partial.Selection;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class DutyCycleDrRequest {
     private final String operation = "create";
     private final Selection selection;
@@ -13,9 +17,16 @@ public class DutyCycleDrRequest {
 
     public DutyCycleDrRequest(String setName, String drName, int dutyCyclePercentage, Instant startDate, 
             boolean randomizeStartTime, Instant endDate, boolean randomizeEndTime) {
-        this.selection = new Selection(SelectionType.MANAGEMENT_SET, "/" + setName);
-        this.demandResponse = new DutyCycleDr(drName, "", dutyCyclePercentage, startDate, randomizeStartTime, endDate,
+        selection = new Selection(SelectionType.MANAGEMENT_SET, "/" + setName);
+        demandResponse = new DutyCycleDr(drName, "", dutyCyclePercentage, startDate, randomizeStartTime, endDate,
                                               randomizeEndTime);
+    }
+
+    @JsonCreator
+    public DutyCycleDrRequest(@JsonProperty("selection") Selection selection,
+            @JsonProperty("demandResponse") DutyCycleDr demandResponse) {
+        this.selection = selection;
+        this.demandResponse = demandResponse;
     }
 
     public Selection getSelection() {

@@ -1,5 +1,8 @@
 package com.cannontech.dr.ecobee.message;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Request to create a new set with the specified name beneath the root set ("/").
  */
@@ -8,7 +11,8 @@ public final class CreateSetRequest {
     private final String setName;
     private final String parentPath = "/";
     
-    public CreateSetRequest(String setName) {
+    @JsonCreator
+    public CreateSetRequest(@JsonProperty("setName") String setName) {
         this.setName = setName;
     }
     

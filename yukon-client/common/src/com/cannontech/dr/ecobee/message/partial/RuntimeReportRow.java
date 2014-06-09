@@ -6,8 +6,10 @@ import org.joda.time.LocalDateTime;
 
 import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonDeserialize(using=EcobeeJsonSerializers.RuntimeReportRowJson.class)
+@JsonDeserialize(using=EcobeeJsonSerializers.FROM_RUNTIME_REPORTS.class)
+@JsonSerialize(using=EcobeeJsonSerializers.TO_RUNTIME_REPORTS.class)
 public class RuntimeReportRow {
     private final LocalDateTime thermostatTime;
     private final String eventName;
@@ -17,7 +19,8 @@ public class RuntimeReportRow {
     private final Float heatSetPoint;
     private final int runtime;
 
-    public RuntimeReportRow(LocalDateTime thermostatTime, String eventName, Float indoorTemp, Float outdoorTemp, Float coolSetPoint,
+    public RuntimeReportRow(LocalDateTime thermostatTime, String eventName, Float indoorTemp, 
+            Float outdoorTemp, Float coolSetPoint,
                             Float heatSetPoint, int runtime) {
         this.thermostatTime = thermostatTime;
         this.eventName = eventName;
