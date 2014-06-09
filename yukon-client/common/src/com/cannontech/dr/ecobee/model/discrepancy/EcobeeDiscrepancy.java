@@ -35,16 +35,16 @@ public abstract class EcobeeDiscrepancy {
         return null;
     }
     
-    public String getCurrentLocation() {
+    public String getCurrentPath() {
         return null;
     }
     
-    public String getCorrectLocation() {
+    public String getCorrectPath() {
         return null;
     }
     
     public String[] getArguments() {
-        return new String[] {getCorrectLocation(), getCurrentLocation(), getSerialNumber()};
+        return new String[] {getCorrectPath(), getCurrentPath(), getSerialNumber()};
     }
     
     public boolean isFixable() {

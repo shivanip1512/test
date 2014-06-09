@@ -78,8 +78,8 @@ public class EcobeeReconciliationReportDaoImpl implements EcobeeReconciliationRe
             parameters.addValue("EcobeeReconReportId", reportId);
             parameters.addValue("ErrorType", error.getErrorType());
             parameters.addValue("SerialNumber", error.getSerialNumber());
-            parameters.addValue("CurrentLocation", error.getCurrentLocation());
-            parameters.addValue("CorrectLocation", error.getCorrectLocation());
+            parameters.addValue("CurrentLocation", error.getCurrentPath());
+            parameters.addValue("CorrectLocation", error.getCorrectPath());
             
             jdbcTemplate.update(sql);
         }

@@ -6,20 +6,20 @@ import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
  * A discrepancy that indicates an ecobee management set is missing.
  */
 public class EcobeeMissingSetDiscrepancy extends EcobeeDiscrepancy {
-    private final String correctLocation;
+    private final String correctPath;
     
-    public EcobeeMissingSetDiscrepancy( String correctLocation) {
+    public EcobeeMissingSetDiscrepancy(String correctPath) {
         super(EcobeeDiscrepancyType.MISSING_MANAGEMENT_SET);
-        this.correctLocation = correctLocation;
+        this.correctPath = correctPath;
     }
     
-    public EcobeeMissingSetDiscrepancy(int errorId, String correctLocation) {
+    public EcobeeMissingSetDiscrepancy(int errorId, String correctPath) {
         super(errorId, EcobeeDiscrepancyType.MISSING_MANAGEMENT_SET);
-        this.correctLocation = correctLocation;
+        this.correctPath = correctPath;
     }
     
     @Override
-    public String getCorrectLocation() {
-        return correctLocation;
+    public String getCorrectPath() {
+        return correctPath;
     }
 }

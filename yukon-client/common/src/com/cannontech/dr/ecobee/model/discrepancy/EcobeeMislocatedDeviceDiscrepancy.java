@@ -7,32 +7,32 @@ import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
  */
 public final class EcobeeMislocatedDeviceDiscrepancy extends EcobeeDiscrepancy {
     private final String serialNumber;
-    private final String correctLocation;
-    private final String currentLocation;
+    private final String correctPath;
+    private final String currentPath;
     
-    public EcobeeMislocatedDeviceDiscrepancy(String serialNumber, String currentLocation, String correctLocation) {
+    public EcobeeMislocatedDeviceDiscrepancy(String serialNumber, String currentPath, String correctPath) {
         super(EcobeeDiscrepancyType.MISLOCATED_DEVICE);
-        this.correctLocation = correctLocation;
-        this.currentLocation = currentLocation;
+        this.correctPath = correctPath;
+        this.currentPath = currentPath;
         this.serialNumber = serialNumber;
     }
     
-    public EcobeeMislocatedDeviceDiscrepancy(int errorId, String serialNumber, String currentLocation, 
-                                             String correctLocation) {
+    public EcobeeMislocatedDeviceDiscrepancy(int errorId, String serialNumber, String currentPath, 
+                                             String correctPath) {
         super(errorId, EcobeeDiscrepancyType.MISLOCATED_DEVICE);
-        this.correctLocation = correctLocation;
-        this.currentLocation = currentLocation;
+        this.correctPath = correctPath;
+        this.currentPath = currentPath;
         this.serialNumber = serialNumber;
     }
     
     @Override
-    public String getCorrectLocation() {
-        return correctLocation;
+    public String getCorrectPath() {
+        return correctPath;
     }
     
     @Override
-    public String getCurrentLocation() {
-        return currentLocation;
+    public String getCurrentPath() {
+        return currentPath;
     }
     
     @Override

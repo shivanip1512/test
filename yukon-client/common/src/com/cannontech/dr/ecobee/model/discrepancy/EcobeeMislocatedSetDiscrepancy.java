@@ -6,28 +6,28 @@ import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
  * A discrepancy that indicates an ecobee management set is mislocated.
  */
 public final class EcobeeMislocatedSetDiscrepancy extends EcobeeDiscrepancy {
-    private final String currentLocation;
-    private final String correctLocation;
+    private final String currentPath;
+    private final String correctPath;
     
-    public EcobeeMislocatedSetDiscrepancy(String currentLocation, String correctLocation) {
+    public EcobeeMislocatedSetDiscrepancy(String currentPath, String correctPath) {
         super(EcobeeDiscrepancyType.MISLOCATED_MANAGEMENT_SET);
-        this.correctLocation = correctLocation;
-        this.currentLocation = currentLocation;
+        this.correctPath = correctPath;
+        this.currentPath = currentPath;
     }
     
-    public EcobeeMislocatedSetDiscrepancy(int errorId, String currentLocation, String correctLocation) {
+    public EcobeeMislocatedSetDiscrepancy(int errorId, String currentPath, String correctPath) {
          super(errorId, EcobeeDiscrepancyType.MISLOCATED_MANAGEMENT_SET);
-         this.correctLocation = correctLocation;
-         this.currentLocation = currentLocation;
+         this.correctPath = correctPath;
+         this.currentPath = currentPath;
      }
     
     @Override
-    public String getCurrentLocation() {
-        return currentLocation;
+    public String getCurrentPath() {
+        return currentPath;
     }
     
     @Override
-    public String getCorrectLocation() {
-        return correctLocation;
+    public String getCorrectPath() {
+        return correctPath;
     }
 }

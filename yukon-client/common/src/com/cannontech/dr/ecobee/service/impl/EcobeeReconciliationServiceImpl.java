@@ -129,28 +129,28 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             switch (error.getErrorType()) {
                 //Set is in ecobee, doesn't correspond to a Yukon group
                 case EXTRANEOUS_MANAGEMENT_SET:
-                    communicationService.deleteManagementSet(error.getCurrentLocation());
+                    communicationService.deleteManagementSet(error.getCurrentPath());
                     return EcobeeReconciliationResult.newSuccess(error.getErrorId());
                     
                 //ecobee device corresponds to a Yukon device, but is in the wrong management set
                 case MISLOCATED_DEVICE:
-                    communicationService.moveDeviceToSet(error.getSerialNumber(), error.getCorrectLocation());
+                    communicationService.moveDeviceToSet(error.getSerialNumber(), error.getCorrectPath());
                     return EcobeeReconciliationResult.newSuccess(error.getErrorId());
                 
                 //ecobee set corresponds to Yukon group, but is in the wrong location in the hierarchy
                 case MISLOCATED_MANAGEMENT_SET:
-                    communicationService.moveManagementSet(error.getCurrentLocation(), error.getCorrectLocation());
+                    communicationService.moveManagementSet(error.getCurrentPath(), error.getCorrectPath());
                     return EcobeeReconciliationResult.newSuccess(error.getErrorId());
                 
                 //Device in Yukon, not in ecobee
                 case MISSING_DEVICE:
                     communicationService.registerDevice(error.getSerialNumber());
-                    communicationService.moveDeviceToSet(error.getSerialNumber(), error.getCorrectLocation());
+                    communicationService.moveDeviceToSet(error.getSerialNumber(), error.getCorrectPath());
                     return EcobeeReconciliationResult.newSuccess(error.getErrorId());
                 
                 //Yukon group has no corresponding ecobee set
                 case MISSING_MANAGEMENT_SET:
-                    communicationService.createManagementSet(error.getCorrectLocation());
+                    communicationService.createManagementSet(error.getCorrectPath());
                     return EcobeeReconciliationResult.newSuccess(error.getErrorId());
                 
                 //Device in ecobee, not in Yukon
