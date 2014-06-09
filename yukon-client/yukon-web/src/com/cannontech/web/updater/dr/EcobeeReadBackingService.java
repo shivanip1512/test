@@ -1,13 +1,11 @@
 package com.cannontech.web.updater.dr;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
@@ -16,9 +14,6 @@ import com.cannontech.web.updater.RecentResultUpdateBackingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class EcobeeReadBackingService extends RecentResultUpdateBackingService {
-    
-    private static final Logger log = YukonLogManager.getLogger(RecentResultUpdateBackingService.class);
-    private static final int maxResults = 5;
     
     @Autowired @Qualifier("ecobeeReads") private RecentResultsCache<EcobeeReadResult> resultsCache;
     
@@ -30,50 +25,24 @@ public class EcobeeReadBackingService extends RecentResultUpdateBackingService {
     @Override
     public Object getResultValue(String resultId, String resultTypeStr) {
         
-        if (resultTypeStr == "RECENT_DOWNLOADS") {
-            return getRecentDownloads();
+        if (resultTypeStr.equalsIgnoreCase("STATUS")) {
+            
+            EcobeeReadResult result = resultsCache.getResult(resultId);
+            Map<String, Object> status = new HashMap<>();
+            status.put("key", result.getKey());
+            status.put("complete", result.isComplete());
+            status.put("successful", result.isSuccessful());
+            status.put("percentDone", result.getPercentDone());
+            
+            try {
+                return JsonUtils.toJson(status);
+            } catch (JsonProcessingException e) {
+                return "";
+            }
+        } else {
+            throw new IllegalArgumentException("Unsupported Updater Type: " + resultTypeStr);
         }
         
-        EcobeeReadResult result = resultsCache.getResult(resultId);
-        if (result == null) {
-            return "";
-        }
-        
-        EcobeeReadUpdateType updateType = EcobeeReadUpdateType.valueOf(resultTypeStr);
-        return updateType.getValue(result);
     }
     
-    /**
-     * Returns {@link RecentResultsCache} keys.
-     */
-    private String getRecentDownloads() {
-        List<String> recentDownloads = new ArrayList<>();
-        
-        List<String> pendingKeys = resultsCache.getPendingKeys();
-        //TODO sort keys
-        if (pendingKeys.size() > maxResults) {
-            recentDownloads = pendingKeys.subList(0, maxResults);
-        } else if (pendingKeys.size() == maxResults) {
-            recentDownloads = pendingKeys;
-        } else {
-            recentDownloads.addAll(pendingKeys);
-            int remainingSlots = maxResults - pendingKeys.size();
-            
-            List<String> completedKeys = resultsCache.getCompletedKeys();
-            //TODO sort keys
-            if (completedKeys.size() > remainingSlots) {
-                List<String> subList = completedKeys.subList(0, remainingSlots);
-                recentDownloads.addAll(subList);
-            } else {
-                recentDownloads.addAll(completedKeys);
-            }
-        }
-        
-        try {
-            return JsonUtils.toJson(recentDownloads);
-        } catch (JsonProcessingException e) {
-            log.warn("Error converting recent download ids to json.", e);
-            return "";
-        }
-    }
 }

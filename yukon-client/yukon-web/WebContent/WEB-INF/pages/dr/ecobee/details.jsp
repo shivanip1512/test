@@ -101,8 +101,8 @@
                     id="ecobee-fix" 
                     data-width="400"
                     data-event="yukon.dr.ecobee.fix" 
-                            data-title="<cti:msg2 key=".issues.fix.title"/>" 
-                            class="dn">
+                    data-title="<cti:msg2 key=".issues.fix.title"/>" 
+                    class="dn">
                 </div>
                     </c:when>
                     <c:otherwise>
@@ -111,6 +111,5 @@
                 </c:choose>
             </tags:sectionContainer2>
         </div>
-        <cti:dataUpdaterCallback function="yukon.dr.ecobee.updater" initialize="true" value="ECOBEE_READ/0/RECENT_DOWNLOADS"/>
     </div>
 </cti:standardPage>

@@ -155,12 +155,6 @@ yukon.dr.ecobee = (function () {
             }
             return true;
         },
-        updater: function (stuff) {
-            var i;
-            for (i = 0; i < stuff.length; i += 1) {
-                console.log('arg[' + i + ']=' + arguments[i]);
-            }
-        },
         
         /**
          * Updater callback fired for each download.
