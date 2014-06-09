@@ -4,15 +4,52 @@
 #include "tbl_rfnidentifier.h"
 #include "config_data_rfn.h"
 #include "config_helpers.h"
+
+#include "cmd_rfn_TemperatureAlarm.h"
+#include "cmd_rfn_ChannelConfiguration.h"
+
+#include "PointAttribute.h"
+#include "MetricIdLookup.h"
+
 #include "std_helper.h"
 
 #include <boost/make_shared.hpp>
 #include <boost/assign/list_inserter.hpp>
+#include <boost/assign/list_of.hpp>
 
 #include <cmath>
 
 namespace Cti {
 namespace Devices {
+
+namespace { // anonymous namespace
+
+enum ReadingMode
+{
+    Interval,
+    Billing,
+    Disabled
+};
+
+std::map<std::string, ReadingMode> ReadingModeResolver = boost::assign::map_list_of
+    ("INTERVAL", Interval)
+    ("BILLING",  Billing)
+    ("DISABLED", Disabled);
+
+/**
+ * Convert a set of metrics ids to a vector of ids for dynamic info
+ * Note(1): will result in one metric per row in the database,
+*  Note(2): the order is garanty by the metrics set in argument
+ *
+ * @param metrics set of ids
+ * @return vector of ids (ordered) for dynamic info
+ */
+std::vector<unsigned long> makeMetricIdsDynamicInfo( const Commands::RfnChannelConfigurationCommand::MetricIds& metrics )
+{
+    return std::vector<unsigned long>( metrics.begin(), metrics.end() );
+}
+
+} // anonymous namespace
 
 const std::string RfnMeterDevice::ConfigPart::all              = "all";
 const std::string RfnMeterDevice::ConfigPart::freezeday        = "freezeday";
@@ -80,12 +117,14 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(bool readOnly)
     if ( readOnly )
     {
         boost::assign::insert( m )
+            ( ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executeGetConfigInstallChannels,     this ) )
             ( ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executeGetConfigTemperatureAlarm,    this ) )
                 ;
     }
     else
     {
         boost::assign::insert( m )
+            ( ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executePutConfigInstallChannels,     this ) )
             ( ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executePutConfigTemperatureAlarm,    this ) )
                 ;
     }
@@ -329,6 +368,162 @@ int RfnMeterDevice::executePutConfigDisconnect( CtiRequestMsg * pReq, CtiCommand
     return NoMethod;
 }
 
+int RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    * pReq,
+                                                     CtiCommandParser & parse,
+                                                     ReturnMsgList    & returnMsgs,
+                                                     RfnCommandList   & rfnRequests )
+{
+    using Commands::RfnChannelConfigurationCommand;
+    using Commands::RfnSetChannelSelectionCommand;
+    using Commands::RfnSetChannelIntervalRecordingCommand;
+
+    typedef Commands::RfnChannelConfigurationCommand::MetricIds MetricIds;
+    typedef std::vector<unsigned long> PaoMetricIds;
+
+    try
+    {
+        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+        if( ! deviceConfig )
+        {
+            return NoConfigData;
+        }
+
+        std::set<unsigned> billingMetrics;
+        std::set<unsigned> intervalMetrics;
+
+        {
+            struct AttributeAndMode
+            {
+                AttributeAndMode( const Config::DeviceConfig::ItemsByName &src ) :
+                    attributeName(getConfigData(src, Config::RfnStrings::ChannelConfiguration::EnabledChannels::Attribute)),
+                    readingMode  (getConfigData(src, Config::RfnStrings::ChannelConfiguration::EnabledChannels::Read))
+                {
+                }
+
+                std::string attributeName;
+                std::string readingMode;
+            };
+
+            // channel selection configuration data
+            const std::vector<AttributeAndMode> cfgChannelAttributes =
+                    getConfigDataVector<AttributeAndMode>( deviceConfig, Config::RfnStrings::ChannelConfiguration::EnabledChannels_Prefix );
+
+            for each( const AttributeAndMode &channel in cfgChannelAttributes )
+            {
+                ReadingMode mode =
+                    resolveConfigData(
+                            ReadingModeResolver,
+                            channel.readingMode,
+                            Config::RfnStrings::ChannelConfiguration::EnabledChannels::Read);
+
+                const Attribute &attr = Attribute::Lookup(channel.attributeName);
+
+                if( attr == Attribute::Unknown )
+                {
+                    throw InvalidConfigDataException(
+                            Config::RfnStrings::ChannelConfiguration::EnabledChannels::Attribute,
+                            "Invalid attribute name \"" + channel.attributeName + "\"");
+                }
+
+                MetricIdLookup::MetricId metric =
+                        MetricIdLookup::GetForAttribute(attr);
+
+                switch( mode )
+                {
+                    //  TODO: throw on duplicate insert
+                    case Interval:   intervalMetrics.insert(metric);
+                    case Billing:    billingMetrics .insert(metric);
+                    //  case Disabled:
+                }
+            }
+        }
+
+        {
+            const PaoMetricIds cfgBillingMetrics = makeMetricIdsDynamicInfo( billingMetrics );
+
+            boost::optional<PaoMetricIds> paoBillingMetrics = findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_BillingMetrics );
+
+            if( cfgBillingMetrics != paoBillingMetrics || parse.isKeyValid("force") )
+            {
+                if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+
+                rfnRequests.push_back(
+                        boost::make_shared<RfnSetChannelSelectionCommand>(
+                                billingMetrics ));
+            }
+        }
+
+        {
+            // channel recording interval configuration data
+            const PaoMetricIds cfgIntervalMetrics = makeMetricIdsDynamicInfo( intervalMetrics );
+
+            const unsigned cfgRecordingIntervalMinutes = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::ChannelConfiguration::RecordingIntervalMinutes );
+            const unsigned cfgRecordingIntervalSeconds = cfgRecordingIntervalMinutes * 60;
+            const unsigned cfgReportingIntervalHours   = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::ChannelConfiguration::ReportingIntervalHours );
+            const unsigned cfgReportingIntervalSeconds = cfgReportingIntervalHours * 3600;
+
+            // channel recording interval pao dynamic info
+            const boost::optional<PaoMetricIds> paoIntervalMetrics = findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics );
+            const boost::optional<unsigned>     paoRecordingIntervalSeconds = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds );
+            const boost::optional<unsigned>     paoReportingIntervalSeconds = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds );
+
+            if( cfgIntervalMetrics != paoIntervalMetrics ||
+                cfgRecordingIntervalSeconds != paoRecordingIntervalSeconds ||
+                cfgReportingIntervalSeconds != paoReportingIntervalSeconds ||
+                parse.isKeyValid("force") )
+            {
+                if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+
+                rfnRequests.push_back( boost::make_shared<RfnSetChannelIntervalRecordingCommand>(
+                        intervalMetrics,
+                        cfgRecordingIntervalSeconds,
+                        cfgReportingIntervalSeconds));
+            }
+        }
+
+        if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
+        {
+            return ConfigCurrent;
+        }
+
+        return NoError;
+    }
+    catch( const MissingConfigDataException &e )
+    {
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return NoConfigData;
+    }
+    catch( const InvalidConfigDataException &e )
+    {
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return ErrorInvalidConfigData;
+    }
+}
+
+int RfnMeterDevice::executeGetConfigInstallChannels( CtiRequestMsg    * pReq,
+                                                     CtiCommandParser & parse,
+                                                     ReturnMsgList    & returnMsgs,
+                                                     RfnCommandList   & rfnRequests )
+{
+    using Commands::RfnGetChannelSelectionFullDescriptionCommand;
+    using Commands::RfnGetChannelIntervalRecordingCommand;
+
+    rfnRequests.push_back( boost::make_shared<RfnGetChannelSelectionFullDescriptionCommand>() );
+    rfnRequests.push_back( boost::make_shared<RfnGetChannelIntervalRecordingCommand>() );
+
+    return NoError;
+}
+
 int RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnCommandList & rfnRequests )
 {
     using Commands::RfnTemperatureAlarmCommand;
@@ -436,6 +631,22 @@ void RfnMeterDevice::handleCommandResult( const Commands::RfnGetTemperatureAlarm
         setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount,       configuration.alarmRepeatCount );
         setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold, configuration.alarmHighTempThreshold );
     }
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelSelectionCommand & cmd )
+{
+    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
+
+    setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_BillingMetrics, paoMetrics );
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelIntervalRecordingCommand & cmd )
+{
+    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
+
+    setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoMetrics );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, cmd.getIntervalRecordingSecondsReceived() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, cmd.getIntervalReportingSecondsReceived() );
 }
 
 }

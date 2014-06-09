@@ -299,8 +299,8 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval,           "rfn temp alarm repeat interval" },
         { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount,              "rfn temp alarm repeat count" },
         { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold,        "rfn temp alarm high temp threshold" },
-        { CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds,   "rfn channel recording interval seconds" },
-        { CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds,   "rfn channel reporting interval seconds" },
+        { CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds,          "rfn recording interval seconds" },
+        { CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds,          "rfn reporting interval seconds" },
         { CtiTableDynamicPaoInfo::Key_RF_DA_DnpSlaveAddress,                 "rf da dnp slave address" },
     };
 
@@ -344,9 +344,9 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
     }
     const test_cases_indexed[] =
     {
-       { CtiTableDynamicPaoInfoIndexed::Key_Invalid,                               "" },
-       { CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelSelectionMetrics,           "rfn channel selection metrics" },
-       { CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelRecordingIntervalMetrics,   "rfn channel recording interval metrics" },
+       { CtiTableDynamicPaoInfoIndexed::Key_Invalid,             "" },
+       { CtiTableDynamicPaoInfoIndexed::Key_RFN_BillingMetrics,  "rfn billing metrics" },
+       { CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, "rfn interval metrics" },
     };
 
     {

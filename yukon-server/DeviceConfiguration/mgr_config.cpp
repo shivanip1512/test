@@ -4,7 +4,7 @@
 #include "dbaccess.h"
 #include "database_connection.h"
 #include "database_reader.h"
-#include "DeviceConfigLookup.h"
+#include "DeviceConfigDescription.h"
 #include "debug_timer.h"
 #include "logger.h"
 #include "std_helper.h"
@@ -95,24 +95,19 @@ void ConfigManager::executeLoadConfig( const std::string & sql )
 
     while( rdr() )
     {
-        long        configID;
-        std::string name;
+        long configID;
 
-        rdr["DeviceConfigurationID"]  >> configID;
-        rdr["Name"]                   >> name;
+        rdr["DeviceConfigurationID"] >> configID;
 
-        ConfigurationMap::iterator  configIter;
-
-        boost::tie( configIter, boost::tuples::ignore ) =
-            _configurations.insert( configID, new Config::Configuration( configID, name ) );
+        CategoryIds &configCategories = _configurations[configID];
 
         if ( ! rdr["DeviceConfigCategoryID"].isNull() )
         {
-            long    categoryID;
+            long categoryID;
 
             rdr["DeviceConfigCategoryID"] >> categoryID;
 
-            configIter->second->addCategory( categoryID );
+            configCategories.insert( categoryID );
         }
     }
 }
@@ -142,31 +137,56 @@ void ConfigManager::executeLoadItems( const std::string & sql )
 {
     Timing::DebugTimer timer( "loading device configuration category items", DebugLevel & 0x80000000, 5.0 );
 
+    const std::string orderedSql = sql +
+            " ORDER BY"
+                " C.DeviceConfigCategoryID ASC";
+
     Database::DatabaseConnection   connection;
-    Database::DatabaseReader       rdr(connection, sql);
+    Database::DatabaseReader       rdr(connection, orderedSql);
 
     rdr.execute();
 
+    struct CategoryBuffer
+    {
+        std::string type;
+
+        std::map<std::string, std::string> items;
+    };
+
+    typedef std::map<long, CategoryBuffer> CategoriesById;
+    CategoriesById categories;
+
+    boost::optional<long> currentCategoryId;
+    boost::optional<CategoryBuffer &> currentCategory;
+
     while( rdr() )
     {
-        long        categoryID;
-        std::string categoryType,
-                    itemName,
-                    value,
-                    name;
+        long categoryId;
 
-        rdr["DeviceConfigCategoryID"] >> categoryID;
-        rdr["CategoryType"]           >> categoryType;
-        rdr["ItemName"]               >> itemName;
-        rdr["ItemValue"]              >> value;
-        rdr["Name"]                   >> name;
+        rdr["DeviceConfigCategoryID"] >> categoryId;
 
-        CategoryMap::iterator   categoryIter;
+        if( categoryId != currentCategoryId )
+        {
+            currentCategoryId = categoryId;
+            currentCategory.reset(categories[categoryId]);
 
-        boost::tie( categoryIter, boost::tuples::ignore ) =
-            _categories.insert( categoryID, new Config::ConfigurationCategory( categoryID, name, categoryType ) );
+            rdr["CategoryType"] >> currentCategory->type;
+        }
 
-        categoryIter->second->addItem( itemName, value );
+        std::string itemName;
+
+        rdr["ItemName"]  >> itemName;
+        rdr["ItemValue"] >> currentCategory->items[itemName];
+    }
+
+    for each( const std::pair<long, CategoryBuffer> &pair in categories )
+    {
+        Config::CategorySPtr category = Config::Category::ConstructCategory( pair.second.type, pair.second.items );
+
+        if( category.get() )
+        {
+            boost::assign::insert( _categories )( pair.first, category );
+        }
     }
 }
 
@@ -250,13 +270,13 @@ void ConfigManager::processDBUpdate( const long          ID,
 
             // de-cache any config that contains this (category)ID
 
-            for each ( ConfigurationMap::value_type & configIter in _configurations )
+            for each ( const ConfigurationToCategoriesMap::value_type & configIter in _configurations )
             {
-                const Config::Configuration & config = *configIter.second;
+                const CategoryIds & configCategories = configIter.second;
 
-                if ( config.hasCategory( ID ) )     // found (category)ID in config
+                if ( configCategories.count( ID ) )     // found (category)ID in config
                 {
-                    _cache.erase( config.getId() );
+                    _cache.erase( configIter.first );
                 }
             }
 
@@ -278,56 +298,26 @@ void ConfigManager::processDBUpdate( const long          ID,
 }
 
 
-Config::DeviceConfigSPtr   ConfigManager::buildConfig( const long configID, const DeviceTypes deviceType )
+Config::DeviceConfigSPtr  ConfigManager::buildConfig( const long configID, const DeviceTypes deviceType )
 {
     // grab device type categories
-    DeviceConfigLookup::CategoryNames deviceCategories = DeviceConfigLookup::Lookup( deviceType );
+    DeviceConfigDescription::CategoryNames deviceCategories = DeviceConfigDescription::GetCategoryNamesForDeviceType( deviceType );
 
     // grab the config
-    ConfigurationMap::const_iterator configSearch = _configurations.find( configID );
-
-    if ( configSearch != _configurations.end() )
+    if ( const boost::optional<CategoryIds> configCategoryIds = mapFind( _configurations, configID ) )
     {
-        const Config::Configuration & config = *configSearch->second;
+        Config::DeviceConfigSPtr  deviceConfiguration( new Config::DeviceConfig );
 
-        Config::DeviceConfigSPtr    deviceConfiguration( new Config::DeviceConfig( config.getId(), config.getName() ) );
-
-        // iterate the configs categories
-        for each ( const long categoryID in config )
+        // iterate the config's categories
+        for each ( const long categoryID in *configCategoryIds )
         {
             // grab the category
-            CategoryMap::const_iterator categorySearch = _categories.find( categoryID );
-
-            if ( categorySearch != _categories.end() )
+            if ( const boost::optional<Config::CategorySPtr> category = mapFind( _categories, categoryID ) )
             {
-                const Config::ConfigurationCategory & category = *categorySearch->second;
-
-                // is it one of our actual physical devices categories?
-                if ( deviceCategories.find( category.getType() ) != deviceCategories.end() )
+                // is it one of our device's categories?
+                if ( deviceCategories.count( (*category)->getType() ) )
                 {
-                    // do we have all of the category items?
-                    DeviceConfigLookup::CategoryFieldIterPair   thePair =
-                        DeviceConfigLookup::equal_range( category.getType() );
-
-                    for ( ; thePair.first != thePair.second ; ++thePair.first )
-                    {
-                        const std::string & requiredFieldName = thePair.first->second;
-
-                        Config::ConfigurationCategory::const_iterator fieldName = category.find( requiredFieldName );
-
-                        if ( fieldName != category.end() )
-                        {
-                            deviceConfiguration->insertValue( fieldName->first, fieldName->second );
-                        }
-                        else
-                        {
-                            // print error message
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " - Error: missing configuration item: " << requiredFieldName << " in configuration: " << config.getName() << std::endl;
-
-                            return Config::DeviceConfigSPtr();
-                        }
-                    }
+                    deviceConfiguration->addCategory( *category );
                 }
             }
         }
@@ -339,12 +329,12 @@ Config::DeviceConfigSPtr   ConfigManager::buildConfig( const long configID, cons
 }
 
 
-Config::DeviceConfigSPtr ConfigManager::getConfigForIdAndType( const long deviceID, const DeviceTypes deviceType )
+Config::DeviceConfigSPtr  ConfigManager::getConfigForIdAndType( const long deviceID, const DeviceTypes deviceType )
 {
     return gConfigManager->fetchConfig(deviceID, deviceType);
 }
 
-Config::DeviceConfigSPtr   ConfigManager::fetchConfig( const long deviceID, const DeviceTypes deviceType )
+Config::DeviceConfigSPtr  ConfigManager::fetchConfig( const long deviceID, const DeviceTypes deviceType )
 {
     Config::DeviceConfigSPtr builtConfig;
     long configID;

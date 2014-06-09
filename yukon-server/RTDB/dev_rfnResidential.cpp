@@ -26,22 +26,6 @@ using Config::RfnStrings;
 namespace { // anonymous namespace
 
 /**
- * retrieve data from a local config map, throws MissingConfigDataException() if no config value can be found
- */
-template<class Map>
-typename Map::mapped_type getConfigData( const Map & configMap, const std::string & configKey )
-{
-    boost::optional<Map::mapped_type> val = mapFind(configMap, configKey);
-
-    if( ! val )
-    {
-        throw MissingConfigDataException( configKey );
-    }
-
-    return *val;
-}
-
-/**
  * create CtiDate object from string "mm/dd/yyyy"
  */
 CtiDate getDateFromString( std::string date )
@@ -118,19 +102,6 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
     return *meterId;
 }
 
-/**
- * Convert a set of metrics ids to a vector of ids for dynamic info
- * Note(1): will result in one metric per row in the database,
-*  Note(2): the order is garanty by the metrics set in argument
- *
- * @param metrics set of ids
- * @return vector of ids (ordered) for dynamic info
- */
-std::vector<unsigned long> makeMetricIdsDynamicInfo( const Commands::RfnChannelConfigurationCommand::MetricIds& metrics )
-{
-    return std::vector<unsigned long>( metrics.begin(), metrics.end() );
-}
-
 } // anonymous namespace
 
 RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
@@ -144,8 +115,6 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
             ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,               this ) )
             ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executeGetConfigVoltageAveragingInterval, this ) )
             ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executeGetConfigOvUv,                     this ) )
-//            TODO: YUK-12131 uncomment when Java support for this command is completed
-//            ( ConfigPart::channelconfig,    bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallChannels,          this ) )
                 ;
 
         if( disconnectConfigSupported() )
@@ -160,8 +129,6 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
             ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ) )
             ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executePutConfigVoltageAveragingInterval, this ) )
             ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executePutConfigOvUv,                     this ) )
-//            TODO: YUK-12131 uncomment when Java support for this command is completed
-//            ( ConfigPart::channelconfig,    bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallChannels,          this ) )
                 ;
 
         if( disconnectConfigSupported() )
@@ -1385,113 +1352,6 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
     }
 }
 
-int RfnResidentialDevice::executePutConfigInstallChannels( CtiRequestMsg    * pReq,
-                                                           CtiCommandParser & parse,
-                                                           ReturnMsgList    & returnMsgs,
-                                                           RfnCommandList   & rfnRequests )
-{
-    using Commands::RfnChannelConfigurationCommand;
-    using Commands::RfnSetChannelSelectionCommand;
-    using Commands::RfnSetChannelIntervalRecordingCommand;
-
-    typedef Commands::RfnChannelConfigurationCommand::MetricIds MetricIds;
-    typedef std::vector<unsigned long> PaoMetricIds;
-
-    try
-    {
-        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
-        if( ! deviceConfig )
-        {
-            return NoConfigData;
-        }
-
-        {
-            // channel selection configuration data
-            const MetricIds    cfgChannelSelectionMetrics          = getConfigDataSet<unsigned> ( deviceConfig, Config::RfnStrings::ChannelSelectionPrefix, Config::RfnStrings::ChannelSelectionMetric );
-            const PaoMetricIds cfgChannelSelectionMetricsToCompare = makeMetricIdsDynamicInfo   ( cfgChannelSelectionMetrics );
-
-            boost::optional<PaoMetricIds> paoChannelSelectionMetrics = findDynamicInfo<unsigned long> ( CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelSelectionMetrics );
-
-            if( cfgChannelSelectionMetricsToCompare != paoChannelSelectionMetrics ||
-                parse.isKeyValid("force") )
-            {
-                if( parse.isKeyValid("verify") )
-                {
-                    return ConfigNotCurrent;
-                }
-
-                rfnRequests.push_back( boost::make_shared<RfnSetChannelSelectionCommand>(
-                        cfgChannelSelectionMetrics ));
-            }
-
-        }
-
-        {
-            // channel recording interval configuration data
-            const MetricIds    cfgChannelRecordingIntervalMetrics          = getConfigDataSet<unsigned> ( deviceConfig, Config::RfnStrings::ChannelRecordingIntervalPrefix, Config::RfnStrings::ChannelRecordingIntervalMetric );
-            const PaoMetricIds cfgChannelRecordingIntervalMetricsToCompare = makeMetricIdsDynamicInfo   ( cfgChannelRecordingIntervalMetrics );
-            const unsigned     cfgChannelRecordingIntervalSeconds          = getConfigData<unsigned>    ( deviceConfig, Config::RfnStrings::ChannelRecordingIntervalSeconds );
-            const unsigned     cfgChannelReportingIntervalSeconds          = getConfigData<unsigned>    ( deviceConfig, Config::RfnStrings::ChannelReportingIntervalSeconds );
-
-            // channel recording interval pao dynamic info
-            const boost::optional<PaoMetricIds> paoChannelRecordingIntervalMetrics = findDynamicInfo<unsigned long> ( CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelRecordingIntervalMetrics );
-            const boost::optional<unsigned>     paoChannelRecordingIntervalSeconds = findDynamicInfo<unsigned>      ( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds );
-            const boost::optional<unsigned>     paoChannelReportingIntervalSeconds = findDynamicInfo<unsigned>      ( CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds );
-
-            if( cfgChannelRecordingIntervalMetricsToCompare != paoChannelRecordingIntervalMetrics ||
-                cfgChannelRecordingIntervalSeconds != paoChannelRecordingIntervalSeconds ||
-                cfgChannelReportingIntervalSeconds != paoChannelReportingIntervalSeconds ||
-                parse.isKeyValid("force") )
-            {
-                if( parse.isKeyValid("verify") )
-                {
-                    return ConfigNotCurrent;
-                }
-
-                rfnRequests.push_back( boost::make_shared<RfnSetChannelIntervalRecordingCommand>(
-                        cfgChannelRecordingIntervalMetrics,
-                        cfgChannelRecordingIntervalSeconds,
-                        cfgChannelReportingIntervalSeconds));
-            }
-        }
-
-        if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
-        {
-            return ConfigCurrent;
-        }
-
-        return NoError;
-    }
-    catch( const MissingConfigDataException &e )
-    {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
-
-        return NoConfigData;
-    }
-    catch( const InvalidConfigDataException &e )
-    {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
-
-        return ErrorInvalidConfigData;
-    }
-}
-
-int RfnResidentialDevice::executeGetConfigInstallChannels( CtiRequestMsg    * pReq,
-                                                           CtiCommandParser & parse,
-                                                           ReturnMsgList    & returnMsgs,
-                                                           RfnCommandList   & rfnRequests )
-{
-    using Commands::RfnGetChannelSelectionFullDescriptionCommand;
-    using Commands::RfnGetChannelIntervalRecordingCommand;
-
-    rfnRequests.push_back( boost::make_shared<RfnGetChannelSelectionFullDescriptionCommand>() );
-    rfnRequests.push_back( boost::make_shared<RfnGetChannelIntervalRecordingCommand>() );
-
-    return NoError;
-}
-
 bool RfnResidentialDevice::disconnectConfigSupported() const
 {
     return disconnectConfigTypes.count(getType());
@@ -1857,22 +1717,6 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouHolidayCon
         setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday2, (*holidays_received)[1].asStringUSFormat() );
         setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday3, (*holidays_received)[2].asStringUSFormat() );
     }
-}
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnChannelSelectionCommand & cmd )
-{
-    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
-
-    setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelSelectionMetrics, paoMetrics );
-}
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnChannelIntervalRecordingCommand & cmd )
-{
-    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
-
-    setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelRecordingIntervalMetrics, paoMetrics );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds, cmd.getIntervalRecordingSecondsReceived() );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds, cmd.getIntervalReportingSecondsReceived() );
 }
 
 }

@@ -126,7 +126,7 @@ const MetricInfo metricInfos[] = {
         { 157,  TouRates,  "VA Phase B"                            },
         { 158,  TouRates,  "VA Phase C"                            },
         { 159,  TouRates,  "PF degree Phase A"                     },
-        { 160,  TouRates,  "PF degree Phase A"                     },
+        { 160,  TouRates,  "PF degree Phase B"                     },
         { 161,  TouRates,  "PF degree Phase C"                     },
         { 162,  TouRates,  "PF Phase A"                            },
         { 163,  TouRates,  "PF Phase B"                            },

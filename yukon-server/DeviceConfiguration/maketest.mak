@@ -129,7 +129,7 @@ mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
 		os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		macro_offset.h config_device.h hashkey.h hash_functions.h \
 		devicetypes.h dbaccess.h database_connection.h \
-		database_reader.h row_reader.h DeviceConfigLookup.h \
+		database_reader.h row_reader.h DeviceConfigDescription.h \
 		pointtypes.h PointAttribute.h debug_timer.h logger.h thread.h \
 		CtiPCPtrQueue.h
 test_device_config.obj:	boostutil.h utility.h ctitime.h dlldefs.h \

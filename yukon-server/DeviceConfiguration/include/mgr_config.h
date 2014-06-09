@@ -13,19 +13,20 @@ class IM_EX_CONFIG ConfigManager
 {
 private:
 
-    typedef boost::ptr_map<long, Config::Configuration>            ConfigurationMap;
-    typedef boost::ptr_map<long, Config::ConfigurationCategory>    CategoryMap;
-    typedef std::map<long, long>                                   DeviceToConfigAssignmentMap;
+    typedef std::set<long> CategoryIds;
 
-    typedef std::map<DeviceTypes, Config::DeviceConfigSPtr>        DeviceTypeToDeviceConfigMap;
-    typedef std::map<long, DeviceTypeToDeviceConfigMap>            DeviceConfigCache;
+    typedef std::map<long, CategoryIds>                      ConfigurationToCategoriesMap;
+    typedef std::map<long, Config::CategorySPtr>             CategoryMap;
+    typedef std::map<long, long>                             DeviceToConfigAssignmentMap;
+    typedef std::map<DeviceTypes, Config::DeviceConfigSPtr>  DeviceTypeToDeviceConfigMap;
+    typedef std::map<long, DeviceTypeToDeviceConfigMap>      DeviceConfigCache;
 
-    ConfigurationMap            _configurations;
-    CategoryMap                 _categories;
-    DeviceToConfigAssignmentMap _deviceAssignments;
-    DeviceConfigCache           _cache;
+    ConfigurationToCategoriesMap  _configurations;
+    CategoryMap                   _categories;
+    DeviceToConfigAssignmentMap   _deviceAssignments;
+    DeviceConfigCache             _cache;
 
-    readers_writer_lock_t       _lock;
+    readers_writer_lock_t         _lock;
 
     void loadAllConfigs();
     void loadConfig( const long configID );

@@ -339,8 +339,8 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
 
         (Dpi::Key_RF_DA_DnpSlaveAddress, "rf da dnp slave address")
 
-        (Dpi::Key_RFN_ChannelRecordingIntervalSeconds, "rfn channel recording interval seconds")
-        (Dpi::Key_RFN_ChannelReportingIntervalSeconds, "rfn channel reporting interval seconds")
+        (Dpi::Key_RFN_RecordingIntervalSeconds, "rfn recording interval seconds")
+        (Dpi::Key_RFN_ReportingIntervalSeconds, "rfn reporting interval seconds")
         ;
 
 typedef CtiTableDynamicPaoInfoIndexed DpiIndexed;
@@ -349,8 +349,8 @@ typedef CtiTableDynamicPaoInfoIndexed DpiIndexed;
 typedef boost::bimap<CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed, std::string> PaoInfoKeyNamesIndexed;
 
 const PaoInfoKeyNamesIndexed KeyNamesIndexed = boost::assign::list_of<PaoInfoKeyNamesIndexed::relation>
-        (DpiIndexed::Key_RFN_ChannelSelectionMetrics,         "rfn channel selection metrics")
-        (DpiIndexed::Key_RFN_ChannelRecordingIntervalMetrics, "rfn channel recording interval metrics")
+        (DpiIndexed::Key_RFN_BillingMetrics,  "rfn billing metrics")
+        (DpiIndexed::Key_RFN_IntervalMetrics, "rfn interval metrics")
         ;
 
 } // anonymous

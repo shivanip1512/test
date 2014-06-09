@@ -18,6 +18,22 @@ namespace Devices {
 namespace {
 
 /**
+ * retrieve data from a local config map, throws MissingConfigDataException() if no config value can be found
+ */
+template<class Map>
+typename Map::mapped_type getConfigData( const Map & configMap, const std::string & configKey )
+{
+    boost::optional<Map::mapped_type> val = mapFind(configMap, configKey);
+
+    if( ! val )
+    {
+        throw MissingConfigDataException( configKey );
+    }
+
+    return *val;
+}
+
+/**
  * throws MissingConfigDataException() if no config value exist
  */
 template<typename T>
@@ -34,6 +50,21 @@ T getConfigData( const Config::DeviceConfigSPtr & deviceConfig, const std::strin
 }
 
 
+template<typename T>
+T require( long input, const std::string & configKey )
+{
+    // Rudimentary check to see that we can coerce the 'long' into an unsigned type.
+    if( input < 0 || input > std::numeric_limits<T>::max() )
+    {
+        std::ostringstream cause;
+        cause << "invalid value " << input << " is out of range, expected [0 - " << std::numeric_limits<T>::max() << "]";
+
+        throw InvalidConfigDataException( configKey, cause.str() );
+    }
+
+    return static_cast<T>( input );
+}
+
 /**
  * Specialization of getConfigData()
  * throws InvalidConfigDataException() if config data is out of range
@@ -41,18 +72,7 @@ T getConfigData( const Config::DeviceConfigSPtr & deviceConfig, const std::strin
 template<>
 unsigned char getConfigData<unsigned char>( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
 {
-    long l_val = getConfigData<long>(deviceConfig, configKey);
-
-    // Rudimentary check to see that we can coerce the 'long' into an 'unsigned char'.
-    if( l_val < 0 || l_val > std::numeric_limits<unsigned char>::max() )
-    {
-        std::ostringstream cause;
-        cause << "invalid value " << l_val << " is out range, expected [0 - " << std::numeric_limits<unsigned char>::max() << "]";
-
-        throw InvalidConfigDataException( configKey, cause.str() );
-    }
-
-    return static_cast<unsigned char>( l_val );
+    return require<unsigned char>( getConfigData<long>(deviceConfig, configKey), configKey );
 }
 
 
@@ -63,18 +83,7 @@ unsigned char getConfigData<unsigned char>( const Config::DeviceConfigSPtr & dev
 template<>
 unsigned getConfigData<unsigned>( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
 {
-    long l_val = getConfigData<long>(deviceConfig, configKey);
-
-    // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-    if( l_val < 0 )
-    {
-        std::ostringstream cause;
-        cause << "invalid value " << l_val << ", expected >= 0";
-
-        throw InvalidConfigDataException( configKey, cause.str() );
-    }
-
-    return static_cast<unsigned>( l_val );
+    return require<unsigned>( getConfigData<long>(deviceConfig, configKey), configKey );
 }
 
 /**
@@ -82,48 +91,18 @@ unsigned getConfigData<unsigned>( const Config::DeviceConfigSPtr & deviceConfig,
  * throws MissingConfigDataException() if config data is missing
  */
 template <typename T>
-std::vector<T> getConfigData( Config::DeviceConfigSPtr &deviceConfig, const std::string &prefix, const std::string &key )
+std::vector<T> getConfigDataVector( Config::DeviceConfigSPtr deviceConfig, const std::string &prefix )
 {
-    unsigned index = 0;
-    std::vector<T> result;
+    const boost::optional<Config::DeviceConfig::IndexedItem> indexed = deviceConfig->getIndexedItem(prefix);
 
-    boost::optional<std::vector<Config::DeviceConfigSPtr>> indexedConfig = deviceConfig->getIndexedConfig( prefix );
-    if( ! indexedConfig )
+    if( ! indexed )
     {
         throw MissingConfigDataException( prefix );
     }
 
-    for each( const Config::DeviceConfigSPtr& config in *indexedConfig )
-    {
-        if( ! config )
-        {
-            std::string configKey = prefix + boost::lexical_cast<std::string>(index) + key;
-
-            // this is not expected, but better safe than sorry
-            throw MissingConfigDataException( configKey );
-        }
-
-        try
-        {
-            result.push_back( getConfigData<T>( config, key ));
-        }
-        catch( MissingConfigDataException& )
-        {
-            std::string configKey = prefix + boost::lexical_cast<std::string>(index) + key;
-
-            throw MissingConfigDataException( configKey );
-        }
-        catch( InvalidConfigDataException& ex )
-        {
-            std::string configKey = prefix + boost::lexical_cast<std::string>(index) + key;
-
-            throw InvalidConfigDataException( configKey, ex.cause );
-        }
-
-        index++;
-    }
-
-    return result;
+    return std::vector<T>(
+                indexed->begin(),
+                indexed->end());
 }
 
 
@@ -138,13 +117,13 @@ std::set<T> getConfigDataSet( Config::DeviceConfigSPtr &deviceConfig, const std:
     unsigned index = 0;
     std::set<T> result;
 
-    std::vector<T> values = getConfigData<T>(deviceConfig, prefix, key );
+    std::vector<T> values = getConfigDataVector<T>( deviceConfig, prefix, key );
 
     for each( const T& val in values )
     {
         if( ! result.insert(val).second )
         {
-            std::string configKey = prefix + boost::lexical_cast<std::string>(index) + key;
+            std::string configKey = prefix + "." + boost::lexical_cast<std::string>(index) + "."+ key;
 
             std::ostringstream cause;
             cause << "Unexpected duplicated config data \"" << val << "\"";

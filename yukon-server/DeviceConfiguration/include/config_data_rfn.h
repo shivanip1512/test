@@ -62,6 +62,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string DefaultTouRate;
 
     // schedule 1
+    static const std::string Schedule1Time0;
     static const std::string Schedule1Rate0;
     static const std::string Schedule1Time1;
     static const std::string Schedule1Rate1;
@@ -75,6 +76,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string Schedule1Rate5;
 
     // schedule 2
+    static const std::string Schedule2Time0;
     static const std::string Schedule2Rate0;
     static const std::string Schedule2Time1;
     static const std::string Schedule2Rate1;
@@ -88,6 +90,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string Schedule2Rate5;
 
     // schedule 3
+    static const std::string Schedule3Time0;
     static const std::string Schedule3Rate0;
     static const std::string Schedule3Time1;
     static const std::string Schedule3Rate1;
@@ -101,6 +104,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string Schedule3Rate5;
 
     // schedule 4
+    static const std::string Schedule4Time0;
     static const std::string Schedule4Rate0;
     static const std::string Schedule4Time1;
     static const std::string Schedule4Rate1;
@@ -137,13 +141,19 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string TemperatureAlarmRepeatCount;
     static const std::string TemperatureAlarmHighTempThreshold;
 
-     // Channel configuration
-    static const std::string ChannelSelectionPrefix;
-    static const std::string ChannelSelectionMetric;
-    static const std::string ChannelRecordingIntervalPrefix;
-    static const std::string ChannelRecordingIntervalMetric;
-    static const std::string ChannelRecordingIntervalSeconds;
-    static const std::string ChannelReportingIntervalSeconds;
+    struct IM_EX_CONFIG ChannelConfiguration
+    {
+        static const std::string RecordingIntervalMinutes;
+        static const std::string ReportingIntervalHours;
+
+        static const std::string EnabledChannels_Prefix;
+
+        struct IM_EX_CONFIG EnabledChannels
+        {
+            static const std::string Attribute;
+            static const std::string Read;
+        };
+    };
 };
 
 }

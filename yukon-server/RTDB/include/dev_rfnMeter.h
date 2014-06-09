@@ -1,7 +1,6 @@
 #pragma once
 
 #include "dev_rfn.h"
-#include "cmd_rfn_TemperatureAlarm.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/container/flat_map.hpp>
@@ -69,8 +68,13 @@ protected:
     virtual int executePutConfigTemperatureAlarm(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     virtual int executeGetConfigTemperatureAlarm(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
+    int executePutConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeGetConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+
     void handleCommandResult( const Commands::RfnSetTemperatureAlarmConfigurationCommand    & cmd );
     void handleCommandResult( const Commands::RfnGetTemperatureAlarmConfigurationCommand    & cmd );
+    void handleCommandResult( const Commands::RfnChannelSelectionCommand                    & cmd );
+    void handleCommandResult( const Commands::RfnChannelIntervalRecordingCommand            & cmd );
 
 private:
 

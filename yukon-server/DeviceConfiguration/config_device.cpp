@@ -1,74 +1,45 @@
 #include "precompiled.h"
 
+#include "config_device.h"
+
+#include "DeviceConfigDescription.h"
+#include "std_helper.h"
+
 #include <boost/make_shared.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
-#include "std_helper.h"
-#include "config_device.h"
 
-
-namespace Cti       {
-namespace Config    {
-
-namespace {
-
-// checks if the string contains the prefix
-bool containsPrefix( const std::string &str, const std::string &prefix )
-{
-    return (prefix.length() <= str.length()) && (! str.compare(0, prefix.length(), prefix));
-}
-
-} // anonymous
+namespace Cti {
+namespace Config {
 
 const std::string BoolTrue = "true";
-
-
-DeviceConfig::DeviceConfig( const long ID, const std::string & name )
-    :   _id(ID),
-        _name(name)
-{
-
-}
 
 
 // Inserts a value into the mapping, this is a protected function and is
 // not meant to be called by devices
 bool DeviceConfig::insertValue( std::string identifier, const std::string & value )
 {
-    CtiToLower(identifier);
-    CtiHashKey insertKey(identifier);
-
-    std::pair<ConfigValueMap::iterator, bool> retVal = _configurationValues.insert(ConfigValueMap::value_type(insertKey, value));
-
-    IndexedConfigMap::iterator itr = _cashedIndexedConfig.begin();
-    while( itr != _cashedIndexedConfig.end() )
-    {
-        if( containsPrefix(itr->first, identifier) )
-        {
-            _cashedIndexedConfig.erase( itr );
-            break;
-        }
-        itr++;
-    }
+    std::pair<ItemsByName::iterator, bool> retVal = _items.insert(ItemsByName::value_type(identifier, value));
 
     return retVal.second;
+}
+
+void DeviceConfig::addCategory( const CategorySPtr & category )
+{
+    const Category::ItemMap items = category->getItems();
+
+    _items.insert( items.begin(), items.end() );
+
+    const Category::IndexedItemMap indexedItems = category->getIndexedItems();
+
+    _indexedItems.insert( indexedItems.begin(), indexedItems.end() );
 }
 
 
 boost::optional<std::string> DeviceConfig::lookup( std::string key ) const
 {
-    CtiToLower(key);
-    CtiHashKey findKey(key);
-
-    ConfigValueMap::const_iterator searchResult = _configurationValues.find( findKey );
-
-    if ( searchResult != _configurationValues.end() )
-    {
-        return searchResult->second;
-    }
-
-    return boost::none;
+    return Cti::mapFind( _items, key );
 }
 
 
@@ -168,197 +139,143 @@ double DeviceConfig::getFloatValueFromKey( const std::string & key ) const
     return std::atof( result->c_str() );
 }
 
-boost::optional<DeviceConfig::IndexedConfig> DeviceConfig::getIndexedConfig( const std::string & prefix )
+boost::optional<DeviceConfig::IndexedItem> DeviceConfig::getIndexedItem( const std::string & prefix )
 {
-    const std::string prefixLower = boost::algorithm::to_lower_copy( prefix );
+    return mapFind( _indexedItems, prefix );
+}
 
-    // check if we already have this config
-    boost::optional<boost::optional<IndexedConfig>> cashedIndexedConfig = mapFind( _cashedIndexedConfig, prefixLower );
-    if( cashedIndexedConfig )
+
+///////////////////
+
+
+typedef DeviceConfigDescription::ItemDescription ItemDescription;
+typedef boost::optional<std::string> OptionalString;
+
+
+Category::Category( const std::string & type ) :
+    _type(type)
+{
+}
+
+
+Category::IndexedItem ConstructIndexedItem( const ItemDescription & itemDesc, const std::map<std::string, std::string> & items )
+{
+    Category::IndexedItem item;
+
+    //  indexed item - check for the count, then validate we have all of the subitems
+    OptionalString value = mapFind(items, itemDesc.name);
+
+    if( ! value )
     {
-        return *cashedIndexedConfig;
+        //  error
     }
 
-    IndexedConfig indexedConfig;
+    unsigned count = boost::lexical_cast<unsigned>(*value);
 
-    const size_t prefixLen  = prefixLower.length();
-    const size_t digitStart = prefixLen + 1; // prefix size + 1 char separator
-
-    int numberOfIndex = -1;
-
-    for each( ConfigValueMap::value_type p in _configurationValues )
+    if( count >= itemDesc.minOccurs &&
+        count <= itemDesc.maxOccurs )
     {
-        const std::string configKey = p.first.getHashStr();
+		item.resize(count);
 
-        // check if beginning of string matches prefix
-        if( containsPrefix(configKey, prefixLower) )
+        for( unsigned i = 0; i < count; ++i )
         {
-            if( prefixLen == configKey.length() )
+            const std::string prefix =
+                itemDesc.name
+                + "."
+                + boost::lexical_cast<std::string>(i+1)  //  1-based indexing
+                + ".";
+
+            for each( const ItemDescription &subItemDesc in itemDesc.elements )
             {
-                try
+                if( subItemDesc.minOccurs || subItemDesc.maxOccurs )
                 {
-                    numberOfIndex = boost::lexical_cast<int>(p.second);
+                    //  error
                 }
-                catch( boost::bad_lexical_cast& )
+
+                const std::string qualifiedName = prefix + subItemDesc.name;
+
+                OptionalString subValue = mapFind(items, qualifiedName);
+
+                if( subValue )
                 {
-                    _cashedIndexedConfig[prefixLower] = boost::none;
-                    return boost::none;
+                    item[i][subItemDesc.name] = *subValue;
                 }
-            }
-            else if( digitStart < configKey.length() && configKey[ prefixLen ] == '.' )
-            {
-                // find second separator : corresponds to 1 char past the last digit
-                const size_t digitEnd = configKey.find_first_of('.', digitStart );
-
-                if( digitEnd != std::string::npos )
+                else
                 {
-                    const std::string indexStr = configKey.substr( digitStart, digitEnd - digitStart );
-
-                    try
-                    {
-                        const int index = boost::lexical_cast<int>(indexStr);
-
-                        if( index >= 0 )
-                        {
-                            // the length of the config key string is expected to be at least digitEnd + 1
-                            const std::string identifier = configKey.substr(digitEnd + 1, std::string::npos);
-
-                            if( ! identifier.empty() )
-                            {
-                                if( indexedConfig.size() < index + 1 )
-                                {
-                                    // resize with uninitialized shared_ptr
-                                    indexedConfig.resize( index + 1 );
-                                }
-
-                                boost::shared_ptr<DeviceConfig>& devConfig = indexedConfig[index];
-
-                                if( ! devConfig )
-                                {
-                                    const std::string name = _name + "_" + prefixLower + boost::lexical_cast<std::string>(index);
-                                    devConfig = boost::make_shared<DeviceConfig>( 0, name );
-                                }
-
-                                devConfig->insertValue( identifier, p.second );
-                            }
-                        }
-                    }
-                    catch( boost::bad_lexical_cast& )
-                    {
-                        // this config key maybe not for us, let it continue
-                    }
+                    //  error
                 }
             }
         }
     }
-
-    // validate the size and make sure there are no null shared_ptr
-    if( indexedConfig.size() != numberOfIndex || std::find(indexedConfig.begin(), indexedConfig.end(), boost::shared_ptr<DeviceConfig>()) != indexedConfig.end() )
+    else
     {
-        _cashedIndexedConfig[prefixLower] = boost::none;
-        return boost::none;
+        //  error
     }
 
-    _cashedIndexedConfig[prefixLower] = indexedConfig;
-    return indexedConfig;
+    return item;
 }
 
 
-///////////////////
-
-ConfigurationCategory::ConfigurationCategory( const long ID, const std::string & name, const std::string & type )
-    :   _id( ID ),
-        _name( name ),
-        _type( type )
+CategorySPtr Category::ConstructCategory( const std::string & type, const std::map<std::string, std::string> & databaseItems )
 {
+    const DeviceConfigDescription::OptionalCategoryDescription categoryDescription =
+            DeviceConfigDescription::GetCategoryDescription( type );
 
+    if( ! categoryDescription )
+    {
+        return CategorySPtr();
+    }
+
+    try
+    {
+        CategorySPtr category = boost::make_shared<Config::Category>( type );
+
+        for each( const ItemDescription & itemDesc in categoryDescription->elements )
+        {
+            if( itemDesc.maxOccurs || itemDesc.minOccurs )
+            {
+                category->_indexedItems[itemDesc.name] =
+                        ConstructIndexedItem( itemDesc, databaseItems );
+
+                //  error if it doesn't create it?
+            }
+            else
+            {
+                if( const boost::optional<std::string> value = mapFind(databaseItems, itemDesc.name) )
+                {
+                    category->_items[itemDesc.name] = *value;
+                }
+                else
+                {
+                    //  error
+                }
+            }
+        }
+
+        return category;
+    }
+    catch( boost::bad_lexical_cast& )
+    {
+        //  error
+    }
+
+    return CategorySPtr();
 }
 
 
-void ConfigurationCategory::addItem( const std::string & fieldName, const std::string & value )
-{
-    _items[ fieldName ] = value;
-}
-
-
-long ConfigurationCategory::getId() const
-{
-    return _id;
-}
-
-
-std::string ConfigurationCategory::getName() const
-{
-    return _name;
-}
-
-
-std::string ConfigurationCategory::getType() const
+std::string Category::getType() const
 {
     return _type;
 }
 
-
-ConfigurationCategory::const_iterator ConfigurationCategory::begin() const
+Category::ItemMap Category::getItems() const
 {
-    return _items.begin();
+    return _items;
 }
 
-
-ConfigurationCategory::const_iterator ConfigurationCategory::end() const
+Category::IndexedItemMap Category::getIndexedItems() const
 {
-    return _items.end();
-}
-
-
-ConfigurationCategory::const_iterator ConfigurationCategory::find( const std::string & fieldName ) const
-{
-    return _items.find( fieldName );
-}
-
-///////////////////
-
-Configuration::Configuration( const long ID, const std::string & name )
-    :   _id( ID ),
-        _name( name )
-{
-
-}
-
-
-void Configuration::addCategory( const long category )
-{
-    _categoryIDs.insert( category );
-}
-
-
-long Configuration::getId() const
-{
-    return _id;
-}
-
-
-std::string Configuration::getName() const
-{
-    return _name;
-}
-
-
-bool Configuration::hasCategory( const long category ) const
-{
-    return _categoryIDs.end() != _categoryIDs.find( category );
-}
-
-
-Configuration::const_iterator Configuration::begin() const
-{
-    return _categoryIDs.begin();
-}
-
-
-Configuration::const_iterator Configuration::end() const
-{
-    return _categoryIDs.end();
+    return _indexedItems;
 }
 
 

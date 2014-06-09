@@ -2002,145 +2002,156 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_channel_configur
 BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 {
     using boost::assign::list_of;
+    using boost::assign::map_list_of;
 
     test_RfnResidentialDevice dut;
     dut._type = TYPE_RFN410FX;
 
-    typedef std::pair<std::string, std::string> ConfigItem;
-    typedef std::vector<ConfigItem>             ConfigInstallItems;
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
 
-    const std::vector<ConfigInstallItems> configurations = list_of<ConfigInstallItems>
+    const ConfigInstallItems configurations = list_of<CategoryDefinition>
 
-            ( list_of<ConfigItem> // demand freeze day config
-                    ( ConfigItem( RfnStrings::demandFreezeDay, "7" )))
+            // demand freeze day config
+            ( CategoryDefinition(
+                "demandFreeze", map_list_of
+                    ( RfnStrings::demandFreezeDay, "7" )))
 
-            ( list_of<ConfigItem> // OVUV config
-                    ( ConfigItem( RfnStrings::OvUvEnabled,                "true"    ))
-                    ( ConfigItem( RfnStrings::OvUvAlarmReportingInterval, "5"       ))
-                    ( ConfigItem( RfnStrings::OvUvAlarmRepeatInterval,    "60"      ))
-                    ( ConfigItem( RfnStrings::OvUvRepeatCount,            "2"       ))
-                    ( ConfigItem( RfnStrings::OvThreshold,                "123.456" ))
-                    ( ConfigItem( RfnStrings::UvThreshold,                "78.901"  )))
+            // OVUV config
+            ( CategoryDefinition(
+                "rfnOvUv", map_list_of
+                    ( RfnStrings::OvUvEnabled,                "true"    )
+                    ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
+                    ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )
+                    ( RfnStrings::OvUvRepeatCount,            "2"       )
+                    ( RfnStrings::OvThreshold,                "123.456" )
+                    ( RfnStrings::UvThreshold,                "78.901"  )))
 
-            ( list_of<ConfigItem> // TOU config
+            // TOU config
+            ( CategoryDefinition(
+                "tou", map_list_of
                     // Schedule 1
-                    ( ConfigItem( RfnStrings::Schedule1Time1, "00:01" ))
-                    ( ConfigItem( RfnStrings::Schedule1Time2, "10:06" ))
-                    ( ConfigItem( RfnStrings::Schedule1Time3, "12:22" ))
-                    ( ConfigItem( RfnStrings::Schedule1Time4, "23:33" ))
-                    ( ConfigItem( RfnStrings::Schedule1Time5, "23:44" ))
+                    ( RfnStrings::Schedule1Time0, "00:00" )
+                    ( RfnStrings::Schedule1Time1, "00:01" )
+                    ( RfnStrings::Schedule1Time2, "10:06" )
+                    ( RfnStrings::Schedule1Time3, "12:22" )
+                    ( RfnStrings::Schedule1Time4, "23:33" )
+                    ( RfnStrings::Schedule1Time5, "23:44" )
 
-                    ( ConfigItem( RfnStrings::Schedule1Rate0, "A" ))
-                    ( ConfigItem( RfnStrings::Schedule1Rate1, "B" ))
-                    ( ConfigItem( RfnStrings::Schedule1Rate2, "C" ))
-                    ( ConfigItem( RfnStrings::Schedule1Rate3, "D" ))
-                    ( ConfigItem( RfnStrings::Schedule1Rate4, "A" ))
-                    ( ConfigItem( RfnStrings::Schedule1Rate5, "B" ))
+                    ( RfnStrings::Schedule1Rate0, "A" )
+                    ( RfnStrings::Schedule1Rate1, "B" )
+                    ( RfnStrings::Schedule1Rate2, "C" )
+                    ( RfnStrings::Schedule1Rate3, "D" )
+                    ( RfnStrings::Schedule1Rate4, "A" )
+                    ( RfnStrings::Schedule1Rate5, "B" )
 
                     // Schedule 2
-                    ( ConfigItem( RfnStrings::Schedule2Time1, "01:23" ))
-                    ( ConfigItem( RfnStrings::Schedule2Time2, "03:12" ))
-                    ( ConfigItem( RfnStrings::Schedule2Time3, "04:01" ))
-                    ( ConfigItem( RfnStrings::Schedule2Time4, "05:23" ))
-                    ( ConfigItem( RfnStrings::Schedule2Time5, "16:28" ))
+                    ( RfnStrings::Schedule2Time0, "00:00" )
+                    ( RfnStrings::Schedule2Time1, "01:23" )
+                    ( RfnStrings::Schedule2Time2, "03:12" )
+                    ( RfnStrings::Schedule2Time3, "04:01" )
+                    ( RfnStrings::Schedule2Time4, "05:23" )
+                    ( RfnStrings::Schedule2Time5, "16:28" )
 
-                    ( ConfigItem( RfnStrings::Schedule2Rate0, "D" ))
-                    ( ConfigItem( RfnStrings::Schedule2Rate1, "A" ))
-                    ( ConfigItem( RfnStrings::Schedule2Rate2, "B" ))
-                    ( ConfigItem( RfnStrings::Schedule2Rate3, "C" ))
-                    ( ConfigItem( RfnStrings::Schedule2Rate4, "D" ))
-                    ( ConfigItem( RfnStrings::Schedule2Rate5, "A" ))
+                    ( RfnStrings::Schedule2Rate0, "D" )
+                    ( RfnStrings::Schedule2Rate1, "A" )
+                    ( RfnStrings::Schedule2Rate2, "B" )
+                    ( RfnStrings::Schedule2Rate3, "C" )
+                    ( RfnStrings::Schedule2Rate4, "D" )
+                    ( RfnStrings::Schedule2Rate5, "A" )
 
                     // Schedule 3
-                    ( ConfigItem( RfnStrings::Schedule3Time1, "01:02" ))
-                    ( ConfigItem( RfnStrings::Schedule3Time2, "02:03" ))
-                    ( ConfigItem( RfnStrings::Schedule3Time3, "04:05" ))
-                    ( ConfigItem( RfnStrings::Schedule3Time4, "05:06" ))
-                    ( ConfigItem( RfnStrings::Schedule3Time5, "06:07" ))
+                    ( RfnStrings::Schedule3Time0, "00:00" )
+                    ( RfnStrings::Schedule3Time1, "01:02" )
+                    ( RfnStrings::Schedule3Time2, "02:03" )
+                    ( RfnStrings::Schedule3Time3, "04:05" )
+                    ( RfnStrings::Schedule3Time4, "05:06" )
+                    ( RfnStrings::Schedule3Time5, "06:07" )
 
-                    ( ConfigItem( RfnStrings::Schedule3Rate0, "C" ))
-                    ( ConfigItem( RfnStrings::Schedule3Rate1, "D" ))
-                    ( ConfigItem( RfnStrings::Schedule3Rate2, "A" ))
-                    ( ConfigItem( RfnStrings::Schedule3Rate3, "B" ))
-                    ( ConfigItem( RfnStrings::Schedule3Rate4, "C" ))
-                    ( ConfigItem( RfnStrings::Schedule3Rate5, "D" ))
+                    ( RfnStrings::Schedule3Rate0, "C" )
+                    ( RfnStrings::Schedule3Rate1, "D" )
+                    ( RfnStrings::Schedule3Rate2, "A" )
+                    ( RfnStrings::Schedule3Rate3, "B" )
+                    ( RfnStrings::Schedule3Rate4, "C" )
+                    ( RfnStrings::Schedule3Rate5, "D" )
 
                     // Schedule 4
-                    ( ConfigItem( RfnStrings::Schedule4Time1, "00:01" ))
-                    ( ConfigItem( RfnStrings::Schedule4Time2, "08:59" ))
-                    ( ConfigItem( RfnStrings::Schedule4Time3, "12:12" ))
-                    ( ConfigItem( RfnStrings::Schedule4Time4, "23:01" ))
-                    ( ConfigItem( RfnStrings::Schedule4Time5, "23:55" ))
+                    ( RfnStrings::Schedule4Time0, "00:00" )
+                    ( RfnStrings::Schedule4Time1, "00:01" )
+                    ( RfnStrings::Schedule4Time2, "08:59" )
+                    ( RfnStrings::Schedule4Time3, "12:12" )
+                    ( RfnStrings::Schedule4Time4, "23:01" )
+                    ( RfnStrings::Schedule4Time5, "23:55" )
 
-                    ( ConfigItem( RfnStrings::Schedule4Rate0, "B" ))
-                    ( ConfigItem( RfnStrings::Schedule4Rate1, "C" ))
-                    ( ConfigItem( RfnStrings::Schedule4Rate2, "D" ))
-                    ( ConfigItem( RfnStrings::Schedule4Rate3, "A" ))
-                    ( ConfigItem( RfnStrings::Schedule4Rate4, "B" ))
-                    ( ConfigItem( RfnStrings::Schedule4Rate5, "C" ))
+                    ( RfnStrings::Schedule4Rate0, "B" )
+                    ( RfnStrings::Schedule4Rate1, "C" )
+                    ( RfnStrings::Schedule4Rate2, "D" )
+                    ( RfnStrings::Schedule4Rate3, "A" )
+                    ( RfnStrings::Schedule4Rate4, "B" )
+                    ( RfnStrings::Schedule4Rate5, "C" )
 
                     // day table
-                    ( ConfigItem( RfnStrings::SundaySchedule,    "Schedule 1" ))
-                    ( ConfigItem( RfnStrings::MondaySchedule,    "Schedule 1" ))
-                    ( ConfigItem( RfnStrings::TuesdaySchedule,   "Schedule 3" ))
-                    ( ConfigItem( RfnStrings::WednesdaySchedule, "Schedule 2" ))
-                    ( ConfigItem( RfnStrings::ThursdaySchedule,  "Schedule 4" ))
-                    ( ConfigItem( RfnStrings::FridaySchedule,    "Schedule 2" ))
-                    ( ConfigItem( RfnStrings::SaturdaySchedule,  "Schedule 3" ))
-                    ( ConfigItem( RfnStrings::HolidaySchedule,   "Schedule 3" ))
+                    ( RfnStrings::SundaySchedule,    "Schedule 1" )
+                    ( RfnStrings::MondaySchedule,    "Schedule 1" )
+                    ( RfnStrings::TuesdaySchedule,   "Schedule 3" )
+                    ( RfnStrings::WednesdaySchedule, "Schedule 2" )
+                    ( RfnStrings::ThursdaySchedule,  "Schedule 4" )
+                    ( RfnStrings::FridaySchedule,    "Schedule 2" )
+                    ( RfnStrings::SaturdaySchedule,  "Schedule 3" )
+                    ( RfnStrings::HolidaySchedule,   "Schedule 3" )
 
                     // default rate
-                    ( ConfigItem( RfnStrings::DefaultTouRate, "B" ))
+                    ( RfnStrings::DefaultTouRate, "B" )
 
                     // set TOU enabled
-                    ( ConfigItem( RfnStrings::touEnabled, "true" )))
+                    ( RfnStrings::touEnabled, "true" )))
 
-            ( list_of<ConfigItem> // voltage averaging config
-                    ( ConfigItem( RfnStrings::demandInterval,  "1" ))
-                    ( ConfigItem( RfnStrings::profileInterval, "2" )))
+            // voltage averaging config
+            ( CategoryDefinition(
+                "demandProfile", map_list_of
+                    ( RfnStrings::demandInterval,  "1" )
+                    ( RfnStrings::profileInterval, "2" )))
 
-            ( list_of<ConfigItem> // temperature alarming config
-                    ( ConfigItem( RfnStrings::TemperatureAlarmEnabled,           "true" ))
-                    ( ConfigItem( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   ))
-                    ( ConfigItem( RfnStrings::TemperatureAlarmRepeatCount,       "3"    ))
-                    ( ConfigItem( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   )))
+            // temperature alarming config
+            ( CategoryDefinition(
+                "rfnTempAlarm", map_list_of
+                    ( RfnStrings::TemperatureAlarmEnabled,           "true" )
+                    ( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   )
+                    ( RfnStrings::TemperatureAlarmRepeatCount,       "3"    )
+                    ( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   )))
 
-//            ( list_of<ConfigItem> // channel config
-//                    ( ConfigItem( RfnStrings::ChannelSelectionPrefix,          "0"   ))
-//                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalPrefix,  "0"   ))
-//                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalSeconds, "123" ))
-//                    ( ConfigItem( RfnStrings::ChannelReportingIntervalSeconds, "456" )))
+            // channel config
+            ( CategoryDefinition(
+                "rfnChannelConfiguration", map_list_of
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" )
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
+                      + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
+                      + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "BILLING" )
+                    ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )
+                    ( RfnStrings::ChannelConfiguration::ReportingIntervalHours,   "456" )))
             ;
 
     const std::vector<int> requestMsgsExp = list_of
             ( 0 )   // no config data                   -> no request
             ( 1 )   // add demand freeze day config     -> +1 request
             ( 7 )   // add OVUV config                  -> +6 request
-            ( 9 )   // add TOU config                   -> +1 request
+            ( 9 )   // add TOU config                   -> +2 request
             ( 10 )  // add voltage averaging config     -> +1 request
             ( 11 )  // add temperature alarming config  -> +1 request
-//            ( 13 )  // add channel config               -> +2 request
+            ( 13 )  // add channel config               -> +2 request
             ;
-
-//    const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-//            ( list_of<bool>(true)(true)(true)(true)(true)(false) )  // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
-//            ( list_of<bool>(true)(true)(true)(true)(true)(true) )   // add demand freeze day config     -> 5 error messages + 1 config sent message
-//            ( list_of<bool>(true)(true)(true)(true)(true) )         // add OVUV config                  -> 4 error messages + 2 config sent message
-//            ( list_of<bool>(true)(true)(true)(true) )               // add TOU config                   -> 3 error messages + 3 config sent message
-//            ( list_of<bool>(true)(true)(true) )                     // add voltage averaging config     -> 2 error messages + 4 config sent message
-//            ( list_of<bool>(true)(true) )                           // add temperature alarming config  -> 1 error messages + 5 config sent message
-//            ( list_of<bool>(true) )                                 // add channel config               -> 6 config sent message
-//            ;
 
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(true)(true)(true)(false) )  // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true)(true)(true)(true) )   // add demand freeze day config     -> 5 error messages + 1 config sent message
-            ( list_of<bool>(true)(true)(true)(true) )         // add OVUV config                  -> 4 error messages + 2 config sent message
-            ( list_of<bool>(true)(true)(true) )               // add TOU config                   -> 3 error messages + 3 config sent message
-            ( list_of<bool>(true)(true) )                     // add voltage averaging config     -> 2 error messages + 4 config sent message
-            ( list_of<bool>(true) )                           // add temperature alarming config  -> 1 error messages + 5 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(true)(false) )  // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true)(true)(true) )   // add demand freeze day config     -> 5 error messages + 1 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(true) )         // add OVUV config                  -> 4 error messages + 2 config sent message
+            ( list_of<bool>(true)(true)(true)(true) )               // add TOU config                   -> 3 error messages + 3 config sent message
+            ( list_of<bool>(true)(true)(true) )                     // add voltage averaging config     -> 2 error messages + 4 config sent message
+            ( list_of<bool>(true)(true) )                           // add temperature alarming config  -> 1 error messages + 5 config sent message
+            ( list_of<bool>(true) )                                 // add channel config               -> 6 config sent message
             ;
-
 
     std::vector<int> requestMsgsRcv;
     std::vector< std::vector<bool> > returnExpectMoreRcv;
@@ -2164,14 +2175,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-    for each( const ConfigInstallItems& config in configurations )
+    for each( const CategoryDefinition & category in configurations )
     {
         resetTestState(); // note: reset test state does not erase the current configuration
 
-        for each( const ConfigItem& item in config )
-        {
-            cfg.insertValue( item.first, item.second );
-        }
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
@@ -2192,119 +2203,135 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 {
     using boost::assign::list_of;
+    using boost::assign::map_list_of;
 
     test_RfnResidentialDevice dut;
     dut._type = TYPE_RFN420CD;
 
-    typedef std::pair<std::string, std::string> ConfigItem;
-    typedef std::vector<ConfigItem>             ConfigInstallItems;
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
 
-    const std::vector<ConfigInstallItems> configurations = list_of<ConfigInstallItems>
+    const ConfigInstallItems configurations = list_of<CategoryDefinition>
 
-            ( list_of<ConfigItem> // remote disconnect config
-                    ( ConfigItem( RfnStrings::DisconnectMode, "CYCLING" ))
-                    ( ConfigItem( RfnStrings::ConnectMinutes, "100" ))
-                    ( ConfigItem( RfnStrings::DisconnectMinutes, "60" )))
+            ( CategoryDefinition( // remote disconnect config
+                "rfnDisconnectConfiguration", map_list_of
+                    ( RfnStrings::DisconnectMode, "CYCLING" )
+                    ( RfnStrings::ConnectMinutes, "100" )
+                    ( RfnStrings::DisconnectMinutes, "60" )))
 
-            ( list_of<ConfigItem> // demand freeze day config
-                    ( ConfigItem( RfnStrings::demandFreezeDay, "7" )))
+            ( CategoryDefinition( // demand freeze day config
+                "demandFreeze", map_list_of
+                    ( RfnStrings::demandFreezeDay, "7" )))
 
-            ( list_of<ConfigItem> // OVUV config
-                    ( ConfigItem( RfnStrings::OvUvEnabled,                "true"    ))
-                    ( ConfigItem( RfnStrings::OvUvAlarmReportingInterval, "5"       ))
-                    ( ConfigItem( RfnStrings::OvUvAlarmRepeatInterval,    "60"      ))
-                    ( ConfigItem( RfnStrings::OvUvRepeatCount,            "2"       ))
-                    ( ConfigItem( RfnStrings::OvThreshold,                "123.456" ))
-                    ( ConfigItem( RfnStrings::UvThreshold,                "78.901"  )))
+            ( CategoryDefinition( // OVUV config
+                "rfnOvUv", map_list_of
+                    ( RfnStrings::OvUvEnabled,                "true"    )
+                    ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
+                    ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )
+                    ( RfnStrings::OvUvRepeatCount,            "2"       )
+                    ( RfnStrings::OvThreshold,                "123.456" )
+                    ( RfnStrings::UvThreshold,                "78.901"  )))
 
-            ( list_of<ConfigItem> // TOU config
+            ( CategoryDefinition( // TOU config
+                "tou", map_list_of
                     // Schedule 1
-                    ( ConfigItem( RfnStrings::Schedule1Time1, "00:01" ))
-                    ( ConfigItem( RfnStrings::Schedule1Time2, "10:06" ))
-                    ( ConfigItem( RfnStrings::Schedule1Time3, "12:22" ))
-                    ( ConfigItem( RfnStrings::Schedule1Time4, "23:33" ))
-                    ( ConfigItem( RfnStrings::Schedule1Time5, "23:44" ))
+                    ( RfnStrings::Schedule1Time0, "00:00" )
+                    ( RfnStrings::Schedule1Time1, "00:01" )
+                    ( RfnStrings::Schedule1Time2, "10:06" )
+                    ( RfnStrings::Schedule1Time3, "12:22" )
+                    ( RfnStrings::Schedule1Time4, "23:33" )
+                    ( RfnStrings::Schedule1Time5, "23:44" )
 
-                    ( ConfigItem( RfnStrings::Schedule1Rate0, "A" ))
-                    ( ConfigItem( RfnStrings::Schedule1Rate1, "B" ))
-                    ( ConfigItem( RfnStrings::Schedule1Rate2, "C" ))
-                    ( ConfigItem( RfnStrings::Schedule1Rate3, "D" ))
-                    ( ConfigItem( RfnStrings::Schedule1Rate4, "A" ))
-                    ( ConfigItem( RfnStrings::Schedule1Rate5, "B" ))
+                    ( RfnStrings::Schedule1Rate0, "A" )
+                    ( RfnStrings::Schedule1Rate1, "B" )
+                    ( RfnStrings::Schedule1Rate2, "C" )
+                    ( RfnStrings::Schedule1Rate3, "D" )
+                    ( RfnStrings::Schedule1Rate4, "A" )
+                    ( RfnStrings::Schedule1Rate5, "B" )
 
                     // Schedule 2
-                    ( ConfigItem( RfnStrings::Schedule2Time1, "01:23" ))
-                    ( ConfigItem( RfnStrings::Schedule2Time2, "03:12" ))
-                    ( ConfigItem( RfnStrings::Schedule2Time3, "04:01" ))
-                    ( ConfigItem( RfnStrings::Schedule2Time4, "05:23" ))
-                    ( ConfigItem( RfnStrings::Schedule2Time5, "16:28" ))
+                    ( RfnStrings::Schedule2Time0, "00:00" )
+                    ( RfnStrings::Schedule2Time1, "01:23" )
+                    ( RfnStrings::Schedule2Time2, "03:12" )
+                    ( RfnStrings::Schedule2Time3, "04:01" )
+                    ( RfnStrings::Schedule2Time4, "05:23" )
+                    ( RfnStrings::Schedule2Time5, "16:28" )
 
-                    ( ConfigItem( RfnStrings::Schedule2Rate0, "D" ))
-                    ( ConfigItem( RfnStrings::Schedule2Rate1, "A" ))
-                    ( ConfigItem( RfnStrings::Schedule2Rate2, "B" ))
-                    ( ConfigItem( RfnStrings::Schedule2Rate3, "C" ))
-                    ( ConfigItem( RfnStrings::Schedule2Rate4, "D" ))
-                    ( ConfigItem( RfnStrings::Schedule2Rate5, "A" ))
+                    ( RfnStrings::Schedule2Rate0, "D" )
+                    ( RfnStrings::Schedule2Rate1, "A" )
+                    ( RfnStrings::Schedule2Rate2, "B" )
+                    ( RfnStrings::Schedule2Rate3, "C" )
+                    ( RfnStrings::Schedule2Rate4, "D" )
+                    ( RfnStrings::Schedule2Rate5, "A" )
 
                     // Schedule 3
-                    ( ConfigItem( RfnStrings::Schedule3Time1, "01:02" ))
-                    ( ConfigItem( RfnStrings::Schedule3Time2, "02:03" ))
-                    ( ConfigItem( RfnStrings::Schedule3Time3, "04:05" ))
-                    ( ConfigItem( RfnStrings::Schedule3Time4, "05:06" ))
-                    ( ConfigItem( RfnStrings::Schedule3Time5, "06:07" ))
+                    ( RfnStrings::Schedule3Time0, "00:00" )
+                    ( RfnStrings::Schedule3Time1, "01:02" )
+                    ( RfnStrings::Schedule3Time2, "02:03" )
+                    ( RfnStrings::Schedule3Time3, "04:05" )
+                    ( RfnStrings::Schedule3Time4, "05:06" )
+                    ( RfnStrings::Schedule3Time5, "06:07" )
 
-                    ( ConfigItem( RfnStrings::Schedule3Rate0, "C" ))
-                    ( ConfigItem( RfnStrings::Schedule3Rate1, "D" ))
-                    ( ConfigItem( RfnStrings::Schedule3Rate2, "A" ))
-                    ( ConfigItem( RfnStrings::Schedule3Rate3, "B" ))
-                    ( ConfigItem( RfnStrings::Schedule3Rate4, "C" ))
-                    ( ConfigItem( RfnStrings::Schedule3Rate5, "D" ))
+                    ( RfnStrings::Schedule3Rate0, "C" )
+                    ( RfnStrings::Schedule3Rate1, "D" )
+                    ( RfnStrings::Schedule3Rate2, "A" )
+                    ( RfnStrings::Schedule3Rate3, "B" )
+                    ( RfnStrings::Schedule3Rate4, "C" )
+                    ( RfnStrings::Schedule3Rate5, "D" )
 
                     // Schedule 4
-                    ( ConfigItem( RfnStrings::Schedule4Time1, "00:01" ))
-                    ( ConfigItem( RfnStrings::Schedule4Time2, "08:59" ))
-                    ( ConfigItem( RfnStrings::Schedule4Time3, "12:12" ))
-                    ( ConfigItem( RfnStrings::Schedule4Time4, "23:01" ))
-                    ( ConfigItem( RfnStrings::Schedule4Time5, "23:55" ))
+                    ( RfnStrings::Schedule4Time0, "00:00" )
+                    ( RfnStrings::Schedule4Time1, "00:01" )
+                    ( RfnStrings::Schedule4Time2, "08:59" )
+                    ( RfnStrings::Schedule4Time3, "12:12" )
+                    ( RfnStrings::Schedule4Time4, "23:01" )
+                    ( RfnStrings::Schedule4Time5, "23:55" )
 
-                    ( ConfigItem( RfnStrings::Schedule4Rate0, "B" ))
-                    ( ConfigItem( RfnStrings::Schedule4Rate1, "C" ))
-                    ( ConfigItem( RfnStrings::Schedule4Rate2, "D" ))
-                    ( ConfigItem( RfnStrings::Schedule4Rate3, "A" ))
-                    ( ConfigItem( RfnStrings::Schedule4Rate4, "B" ))
-                    ( ConfigItem( RfnStrings::Schedule4Rate5, "C" ))
+                    ( RfnStrings::Schedule4Rate0, "B" )
+                    ( RfnStrings::Schedule4Rate1, "C" )
+                    ( RfnStrings::Schedule4Rate2, "D" )
+                    ( RfnStrings::Schedule4Rate3, "A" )
+                    ( RfnStrings::Schedule4Rate4, "B" )
+                    ( RfnStrings::Schedule4Rate5, "C" )
 
                     // day table
-                    ( ConfigItem( RfnStrings::SundaySchedule,    "Schedule 1" ))
-                    ( ConfigItem( RfnStrings::MondaySchedule,    "Schedule 1" ))
-                    ( ConfigItem( RfnStrings::TuesdaySchedule,   "Schedule 3" ))
-                    ( ConfigItem( RfnStrings::WednesdaySchedule, "Schedule 2" ))
-                    ( ConfigItem( RfnStrings::ThursdaySchedule,  "Schedule 4" ))
-                    ( ConfigItem( RfnStrings::FridaySchedule,    "Schedule 2" ))
-                    ( ConfigItem( RfnStrings::SaturdaySchedule,  "Schedule 3" ))
-                    ( ConfigItem( RfnStrings::HolidaySchedule,   "Schedule 3" ))
+                    ( RfnStrings::SundaySchedule,    "Schedule 1" )
+                    ( RfnStrings::MondaySchedule,    "Schedule 1" )
+                    ( RfnStrings::TuesdaySchedule,   "Schedule 3" )
+                    ( RfnStrings::WednesdaySchedule, "Schedule 2" )
+                    ( RfnStrings::ThursdaySchedule,  "Schedule 4" )
+                    ( RfnStrings::FridaySchedule,    "Schedule 2" )
+                    ( RfnStrings::SaturdaySchedule,  "Schedule 3" )
+                    ( RfnStrings::HolidaySchedule,   "Schedule 3" )
 
                     // default rate
-                    ( ConfigItem( RfnStrings::DefaultTouRate, "B" ))
+                    ( RfnStrings::DefaultTouRate, "B" )
 
                     // set TOU enabled
-                    ( ConfigItem( RfnStrings::touEnabled, "true" )))
+                    ( RfnStrings::touEnabled, "true" )))
 
-            ( list_of<ConfigItem> // voltage averaging config
-                    ( ConfigItem( RfnStrings::demandInterval,  "1" ))
-                    ( ConfigItem( RfnStrings::profileInterval, "2" )))
+            ( CategoryDefinition( // voltage averaging config
+                "demandProfile", map_list_of
+                    ( RfnStrings::demandInterval,  "1" )
+                    ( RfnStrings::profileInterval, "2" )))
 
-            ( list_of<ConfigItem> // temperature alarming config
-                    ( ConfigItem( RfnStrings::TemperatureAlarmEnabled,           "true" ))
-                    ( ConfigItem( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   ))
-                    ( ConfigItem( RfnStrings::TemperatureAlarmRepeatCount,       "3"    ))
-                    ( ConfigItem( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   )))
+            ( CategoryDefinition( // temperature alarming config
+                "rfnTempAlarm", map_list_of
+                    ( RfnStrings::TemperatureAlarmEnabled,           "true" )
+                    ( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   )
+                    ( RfnStrings::TemperatureAlarmRepeatCount,       "3"    )
+                    ( RfnStrings::TemperatureAlarmHighTempThreshold, "50"   )))
 
-//            ( list_of<ConfigItem> // channel config
-//                    ( ConfigItem( RfnStrings::ChannelSelectionPrefix,          "0"   ))
-//                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalPrefix,  "0"   ))
-//                    ( ConfigItem( RfnStrings::ChannelRecordingIntervalSeconds, "123" ))
-//                    ( ConfigItem( RfnStrings::ChannelReportingIntervalSeconds, "456" )))
+            ( CategoryDefinition( // channel config
+                "rfnChannelConfiguration", map_list_of
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" )
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix +
+                                  ".1." + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix +
+                                  ".1." + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "BILLING" )
+                    ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )
+                    ( RfnStrings::ChannelConfiguration::ReportingIntervalHours,   "456" )))
             ;
 
     const std::vector<int> requestMsgsExp = list_of
@@ -2315,28 +2342,18 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
             ( 10 )  // add TOU config                   -> +1 request
             ( 11 )  // add voltage averaging config     -> +1 request
             ( 12 )  // add temperature alarming config  -> +1 request
-//            ( 14 )  // add channel config               -> +2 request
+            ( 14 )  // add channel config               -> +2 request
             ;
 
-//    const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-//            ( list_of<bool>(true)(true)(true)(true)(true)(true)(false) )    // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
-//            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true) )     // add remote disconnect config     -> 6 error messages + 1 config sent message
-//            ( list_of<bool>(true)(true)(true)(true)(true)(true) )           // add demand freeze day config     -> 5 error messages + 2 config sent message
-//            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add OVUV config                  -> 4 error messages + 3 config sent message
-//            ( list_of<bool>(true)(true)(true)(true) )                       // add TOU config                   -> 3 error messages + 4 config sent message
-//            ( list_of<bool>(true)(true)(true) )                             // add voltage averaging config     -> 2 error messages + 5 config sent message
-//            ( list_of<bool>(true)(true) )                                   // add temperature alarming config  -> 1 error messages + 6 config sent message
-//            ( list_of<bool>(true) )                                         // add channel config               -> 7 config sent message
-//            ;
-
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(true)(true)(true)(true)(false) )    // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true)(true)(true)(true)(true) )     // add remote disconnect config     -> 6 error messages + 1 config sent message
-            ( list_of<bool>(true)(true)(true)(true)(true) )           // add demand freeze day config     -> 5 error messages + 2 config sent message
-            ( list_of<bool>(true)(true)(true)(true) )                 // add OVUV config                  -> 4 error messages + 3 config sent message
-            ( list_of<bool>(true)(true)(true) )                       // add TOU config                   -> 3 error messages + 4 config sent message
-            ( list_of<bool>(true)(true) )                             // add voltage averaging config     -> 2 error messages + 5 config sent message
-            ( list_of<bool>(true) )                                   // add temperature alarming config  -> 1 error messages + 6 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(true)(true)(false) )    // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true) )     // add remote disconnect config     -> 6 error messages + 1 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(true)(true) )           // add demand freeze day config     -> 5 error messages + 2 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add OVUV config                  -> 4 error messages + 3 config sent message
+            ( list_of<bool>(true)(true)(true)(true) )                       // add TOU config                   -> 3 error messages + 4 config sent message
+            ( list_of<bool>(true)(true)(true) )                             // add voltage averaging config     -> 2 error messages + 5 config sent message
+            ( list_of<bool>(true)(true) )                                   // add temperature alarming config  -> 1 error messages + 6 config sent message
+            ( list_of<bool>(true) )                                         // add channel config               -> 7 config sent message
             ;
 
     std::vector<int> requestMsgsRcv;
@@ -2361,14 +2378,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-    for each( const ConfigInstallItems& config in configurations )
+    for each( const CategoryDefinition & category in configurations )
     {
         resetTestState(); // note: reset test state does not erase the current configuration
 
-        for each( const ConfigItem& item in config )
-        {
-            cfg.insertValue( item.first, item.second );
-        }
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
