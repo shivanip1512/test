@@ -11,3 +11,5 @@ CONFIGCATEGORYDEFINITION_XML_ID     XML     "..\\..\\yukon-client\\common\\src\\
 CONFIGCATEGORYDEFINITION_XSD_ID     SCHEMA  "..\\..\\yukon-client\\common\\src\\com\\cannontech\\common\\device\\config\\configurationCategoryDefinition.xsd"
 DEVICECONFIGCATEGORY_XSD_ID         SCHEMA  "..\\..\\yukon-client\\common\\src\\com\\cannontech\\common\\device\\config\\deviceConfigurationCategory.xsd"
 
+METRIC_ID_TO_ATTRIBUTE_MAPPING_ID   JSON    "..\\..\\yukon-shared\\resources\\metricIdToAttributeMapping.json"
+

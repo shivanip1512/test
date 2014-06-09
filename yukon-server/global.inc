@@ -81,6 +81,9 @@ THRIFT          = $(CPP_LIBRARIES)\apache\thrift\0.9.0
 THRIFT_INCLUDE  = $(THRIFT)\include
 THRIFT_LIB      = $(THRIFT)\lib\libthrift.lib
 
+CAJUN           = $(CPP_LIBRARIES)\cajun\2.0.2
+CAJUN_INCLUDE   = $(CAJUN)\include
+
 MICROSOFT       = $(CPP_LIBRARIES)\microsoft
 MICROSOFT_VC    = $(MICROSOFT)\vc\9.0
 MICROSOFT_SQL   = $(MICROSOFT)\sql-server-client-dll\2000.80.194.0
