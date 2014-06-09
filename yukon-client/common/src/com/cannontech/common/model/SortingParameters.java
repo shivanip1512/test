@@ -2,8 +2,8 @@ package com.cannontech.common.model;
 
 public class SortingParameters {
 
-    private String sort; 
-    private Direction direction;
+    private final String sort; 
+    private final Direction direction;
     
     public SortingParameters(String sort, Direction direction) {
         this.sort = sort;
@@ -14,16 +14,8 @@ public class SortingParameters {
         return sort;
     }
 
-    public void setSort(String sort) {
-        this.sort = sort;
-    }
-
     public Direction getDirection() {
         return direction;
-    }
-
-    public void setDirection(Direction direction) {
-        this.direction = direction;
     }
 
     @Override
