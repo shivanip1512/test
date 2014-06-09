@@ -19,7 +19,8 @@ ApplicationLayer::ApplicationLayer() :
     _request_function(RequestConfirm),
     _seqno(0),
     _appState(Uninitialized),
-    _comm_errors(0)
+    _comm_errors(0),
+    _config(0)
 {
     memset( &_request,     0, sizeof(request_t) );
     memset( &_response,    0, sizeof(response_t) );
