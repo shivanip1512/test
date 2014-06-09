@@ -162,7 +162,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         // Send the re-enable command if hardware status is unavailable.
                         // Whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property.
                         if (autoConfig) {
-                            if (!trackAddressing || hardwareType.isZigbee()) {
+                            if (!trackAddressing || hardwareType.isZigbee() || hardwareType.isEcobee()) {
                                 LmHardwareCommand command = new LmHardwareCommand();
                                 command.setDevice(liteHw);
                                 command.setType(LmHardwareCommandType.CONFIG);
@@ -171,8 +171,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 lmHardwareCommandService.sendConfigCommand(command);
                             }
                         } else if (inventoryBaseDao.getDeviceStatus(liteHw.getInventoryID())
-                                == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL
-                                || hardwareType.isEcobee()) {
+                                == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
                             LmHardwareCommand command = new LmHardwareCommand();
                             command.setDevice(liteHw);
                             command.setType(LmHardwareCommandType.IN_SERVICE);

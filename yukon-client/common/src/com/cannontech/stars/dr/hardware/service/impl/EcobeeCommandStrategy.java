@@ -55,8 +55,6 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
             int groupId;
             switch(command.getType()) {
             case IN_SERVICE:
-                groupId = getGroupId(device.getInventoryID());
-                ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupId));
                 break;
             case OUT_OF_SERVICE:
                 ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
@@ -73,6 +71,9 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                 ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupId));
                 break;
             case CONFIG:
+                groupId = getGroupId(device.getInventoryID());
+                ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupId));
+                break;
             case PERFORMANCE_VERIFICATION:
             case READ_NOW:
             default:
