@@ -219,7 +219,8 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                         devicesAwaitingVerification.put(pointDao.getPointId(paoPointIdentifier), dvi);
                         devicesWithoutPoint.remove(device.getPaoIdentifier());
                     } catch (NotFoundException e) {
-                       //devices without a point can't be verified
+                        // devices without a point can't be verified
+                        log.trace("failed to find a point for device " + dvi.device, e);
                     }
                 }
             }
