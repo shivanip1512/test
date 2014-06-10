@@ -585,7 +585,7 @@ tbl_ptdispatch.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		tbl_ptdispatch.h ctibase.h ctinexus.h socket_helper.h \
 		critical_section.h dbmemobject.h pointdefs.h row_reader.h \
 		database_connection.h database_reader.h database_writer.h \
-		row_writer.h database_util.h ctidate.h
+		row_writer.h database_util.h database_exceptions.h ctidate.h
 tbl_pt_accum.obj:	precompiled.h tbl_pt_accum.h row_reader.h ctitime.h \
 		dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h netports.h mutex.h guard.h utility.h queues.h \

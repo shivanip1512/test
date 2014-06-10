@@ -68,9 +68,9 @@ con_mgr.obj:	precompiled.h dlldefs.h collectable.h con_mgr.h \
 		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
 		dbaccess.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h configkey.h configval.h readers_writer_lock.h \
-		critical_section.h connection_base.h connection_listener.h \
-		ctibase.h ctinexus.h socket_helper.h msg_server_resp.h \
-		msg_cmd.h
+		critical_section.h connection_base.h worker_thread.h \
+		timing_util.h connection_listener.h ctibase.h ctinexus.h \
+		socket_helper.h msg_server_resp.h msg_cmd.h
 ctique.obj:	precompiled.h
 dlldbmemmgr.obj:	precompiled.h dlldefs.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h
@@ -85,7 +85,8 @@ executor.obj:	precompiled.h executor.h message.h ctitime.h dlldefs.h \
 		database_connection.h dbaccess.h database_reader.h \
 		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
 		readers_writer_lock.h critical_section.h connection_base.h \
-		connection_listener.h ctibase.h ctinexus.h socket_helper.h
+		worker_thread.h timing_util.h connection_listener.h ctibase.h \
+		ctinexus.h socket_helper.h
 executorfactory.obj:	precompiled.h executorfactory.h collectable.h \
 		message.h ctitime.h dlldefs.h ctidbgmem.h executor.h \
 		exe_cmd.h exe_reg.h
@@ -99,9 +100,10 @@ exe_cmd.obj:	precompiled.h dlldefs.h con_mgr.h connection_server.h \
 		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
 		dbaccess.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h configkey.h configval.h readers_writer_lock.h \
-		critical_section.h connection_base.h connection_listener.h \
-		ctibase.h ctinexus.h socket_helper.h server_b.h smartmap.h \
-		msg_cmd.h exe_cmd.h executor.h
+		critical_section.h connection_base.h worker_thread.h \
+		timing_util.h connection_listener.h ctibase.h ctinexus.h \
+		socket_helper.h server_b.h smartmap.h msg_cmd.h exe_cmd.h \
+		executor.h
 exe_reg.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		collectable.h exe_reg.h executor.h con_mgr.h \
 		connection_server.h connection.h exchange.h dllbase.h dsm2.h \
@@ -113,10 +115,10 @@ exe_reg.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h readers_writer_lock.h \
-		critical_section.h connection_base.h connection_listener.h \
-		ctibase.h ctinexus.h socket_helper.h con_mgr_vg.h \
-		vgexe_factory.h exe_ptchg.h executorfactory.h exe_cmd.h \
-		msg_cmd.h server_b.h smartmap.h
+		critical_section.h connection_base.h worker_thread.h \
+		timing_util.h connection_listener.h ctibase.h ctinexus.h \
+		socket_helper.h con_mgr_vg.h vgexe_factory.h exe_ptchg.h \
+		executorfactory.h exe_cmd.h msg_cmd.h server_b.h smartmap.h
 id_svr.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h id_svr.h
 server_b.obj:	precompiled.h server_b.h con_mgr.h connection_server.h \
@@ -130,6 +132,7 @@ server_b.obj:	precompiled.h server_b.h con_mgr.h connection_server.h \
 		database_connection.h dbaccess.h database_reader.h \
 		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
 		readers_writer_lock.h critical_section.h connection_base.h \
-		connection_listener.h ctibase.h ctinexus.h socket_helper.h \
-		smartmap.h executor.h msg_cmd.h id_svr.h
+		worker_thread.h timing_util.h connection_listener.h ctibase.h \
+		ctinexus.h socket_helper.h smartmap.h executor.h msg_cmd.h \
+		id_svr.h
 #ENDUPDATE#

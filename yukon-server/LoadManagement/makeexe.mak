@@ -588,7 +588,8 @@ lmgroupexpresscom.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		lmprogramdirectgear.h tbl_lmprogramhistory.h \
 		ConstraintViolation.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
-		socket_helper.h ctistring.h ctitokenizer.h
+		socket_helper.h ctistring.h ctitokenizer.h \
+		lmProgramThermostatGear.h
 lmgroupgolay.obj:	precompiled.h lmgroupgolay.h lmgroupbase.h \
 		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h dbmemobject.h msg_pcrequest.h \

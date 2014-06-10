@@ -159,12 +159,12 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		message.h collectable.h msg_dbchg.h connection_client.h \
 		connection.h exchange.h string_utility.h msg_multi.h \
 		msg_pdata.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h connection_base.h fdrdebuglevel.h \
-		msg_cmd.h socket_helper.h fdrdnphelper.h \
-		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
-		dnp_object_time.h prot_dnp.h packet_finder.h \
-		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_configuration.h \
+		configkey.h configval.h connection_base.h worker_thread.h \
+		timing_util.h fdrdebuglevel.h msg_cmd.h socket_helper.h \
+		fdrdnphelper.h dnp_object_analoginput.h dnp_objects.h \
+		prot_base.h xfer.h dnp_object_time.h prot_dnp.h \
+		packet_finder.h dnp_application.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h boost_test_helpers.h \
 		millisecond_timer.h
 test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
@@ -178,10 +178,10 @@ test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
 		database_connection.h dbaccess.h database_reader.h \
 		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
 		readers_writer_lock.h critical_section.h connection_base.h \
-		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
-		fdrdebuglevel.h fdrpointlist.h msg_cmd.h fdrasciiimportbase.h \
-		telegyrgroup.h telegyrcontrolcenter.h rtdb.h hashkey.h \
-		hash_functions.h
+		worker_thread.h timing_util.h mgr_fdrpoint.h smartmap.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h msg_cmd.h fdrasciiimportbase.h telegyrgroup.h \
+		telegyrcontrolcenter.h rtdb.h hashkey.h hash_functions.h
 test_fdrtextimport.obj:	fdrtextimport.h dlldefs.h fdrtextfilebase.h \
 		fdrinterface.h message.h ctitime.h ctidbgmem.h collectable.h \
 		msg_dbchg.h yukon.h types.h connection_client.h connection.h \
@@ -193,9 +193,10 @@ test_fdrtextimport.obj:	fdrtextimport.h dlldefs.h fdrtextfilebase.h \
 		cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h readers_writer_lock.h \
-		critical_section.h connection_base.h mgr_fdrpoint.h \
-		smartmap.h fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h msg_cmd.h TextFileInterfaceParts.h ctistring.h
+		critical_section.h connection_base.h worker_thread.h \
+		timing_util.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
+		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
+		msg_cmd.h TextFileInterfaceParts.h ctistring.h
 test_fdrtristatesub.obj:	fdrTriStateSub.h dlldefs.h fdrftpinterface.h \
 		fdrinterface.h message.h ctitime.h ctidbgmem.h collectable.h \
 		msg_dbchg.h yukon.h types.h connection_client.h connection.h \
@@ -207,7 +208,8 @@ test_fdrtristatesub.obj:	fdrTriStateSub.h dlldefs.h fdrftpinterface.h \
 		cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h readers_writer_lock.h \
-		critical_section.h connection_base.h mgr_fdrpoint.h \
-		smartmap.h fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h msg_cmd.h ctidate.h
+		critical_section.h connection_base.h worker_thread.h \
+		timing_util.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
+		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
+		msg_cmd.h ctidate.h
 #ENDUPDATE#

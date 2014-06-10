@@ -105,21 +105,21 @@ mgr_device_scannable.obj:	precompiled.h mgr_device_scannable.h \
 		tbl_paoexclusion.h row_reader.h rwutil.h \
 		database_connection.h dbaccess.h database_reader.h \
 		boost_time.h config_device.h rte_base.h dbmemobject.h \
-		ctibase.h ctinexus.h socket_helper.h message.h collectable.h \
-		tbl_pao_lite.h tbl_rtcomm.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h logger.h thread.h \
-		CtiPCPtrQueue.h msg_signal.h tbl_static_paoinfo.h pointdefs.h \
-		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h slctdev.h smartmap.h \
-		readers_writer_lock.h critical_section.h dev_single.h \
+		ctibase.h ctinexus.h socket_helper.h critical_section.h \
+		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
+		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
+		logger.h thread.h CtiPCPtrQueue.h msg_signal.h \
+		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		slctdev.h smartmap.h readers_writer_lock.h dev_single.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h connection_base.h xfer.h dev_carrier.h \
-		dev_dlcbase.h tbl_route.h tbl_carrier.h prot_emetcon.h \
-		cmd_dlc.h cmd_device.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
-		debug_timer.h
+		configval.h connection_base.h worker_thread.h timing_util.h \
+		xfer.h dev_carrier.h dev_dlcbase.h tbl_route.h tbl_carrier.h \
+		prot_emetcon.h cmd_dlc.h cmd_device.h tbl_metergrp.h \
+		vcomdefs.h tbl_loadprofile.h da_load_profile.h \
+		tbl_dv_mctiedport.h debug_timer.h
 scanglob.obj:	precompiled.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
@@ -129,9 +129,9 @@ scanmain.obj:	precompiled.h ctitime.h dlldefs.h scansvc.h cservice.h \
 		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
 		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
 		optional.h macro_offset.h ctibase.h ctinexus.h \
-		socket_helper.h logger.h thread.h CtiPCPtrQueue.h \
-		thread_monitor.h smartmap.h boostutil.h readers_writer_lock.h \
-		critical_section.h cparms.h rwutil.h database_connection.h \
+		socket_helper.h critical_section.h logger.h thread.h \
+		CtiPCPtrQueue.h thread_monitor.h smartmap.h boostutil.h \
+		readers_writer_lock.h cparms.h rwutil.h database_connection.h \
 		dbaccess.h database_reader.h row_reader.h boost_time.h \
 		configkey.h configval.h queue.h string_utility.h \
 		thread_register_data.h connection_base.h
@@ -146,17 +146,18 @@ scanner.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		tbl_paoexclusion.h row_reader.h rwutil.h \
 		database_connection.h database_reader.h boost_time.h \
 		config_device.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
-		socket_helper.h message.h collectable.h tbl_pao_lite.h \
-		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h logger.h thread.h CtiPCPtrQueue.h msg_signal.h \
-		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
-		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
-		slctdev.h smartmap.h readers_writer_lock.h critical_section.h \
-		mgr_point.h mgr_config.h mgr_dyn_paoinfo.h dev_single.h \
-		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h connection_base.h xfer.h dev_mct.h dev_carrier.h \
+		socket_helper.h critical_section.h message.h collectable.h \
+		tbl_pao_lite.h tbl_rtcomm.h resolvers.h pointtypes.h \
+		db_entry_defines.h desolvers.h logger.h thread.h \
+		CtiPCPtrQueue.h msg_signal.h tbl_static_paoinfo.h pointdefs.h \
+		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h slctdev.h smartmap.h \
+		readers_writer_lock.h mgr_point.h mgr_config.h \
+		mgr_dyn_paoinfo.h dev_single.h msg_pcrequest.h msg_pcreturn.h \
+		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h connection_base.h \
+		worker_thread.h timing_util.h xfer.h dev_mct.h dev_carrier.h \
 		dev_dlcbase.h tbl_route.h tbl_carrier.h prot_emetcon.h \
 		cmd_dlc.h cmd_device.h tbl_metergrp.h vcomdefs.h \
 		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \

@@ -180,9 +180,9 @@ ctilocalconnect.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
 		critical_section.h
 ctinexus.obj:	precompiled.h os2_2w32.h dlldefs.h types.h ctinexus.h \
 		cticonnect.h yukon.h ctidbgmem.h netports.h socket_helper.h \
-		numstr.h logger.h thread.h mutex.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h CtiPCPtrQueue.h dsm2.h \
-		dsm2err.h words.h optional.h macro_offset.h \
+		numstr.h critical_section.h guard.h utility.h ctitime.h \
+		queues.h cticalls.h logger.h thread.h mutex.h CtiPCPtrQueue.h \
+		dsm2.h dsm2err.h words.h optional.h macro_offset.h \
 		millisecond_timer.h
 ctistring.obj:	precompiled.h ctistring.h dlldefs.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h
@@ -196,8 +196,8 @@ database_connection.obj:	precompiled.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
-		words.h optional.h macro_offset.h logger.h thread.h \
-		CtiPCPtrQueue.h
+		words.h optional.h macro_offset.h database_exceptions.h \
+		logger.h thread.h CtiPCPtrQueue.h std_helper.h
 database_reader.obj:	precompiled.h database_reader.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
@@ -212,12 +212,13 @@ database_transaction.obj:	precompiled.h database_transaction.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		macro_offset.h
-database_util.obj:	precompiled.h database_util.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
-		database_writer.h database_connection.h dbaccess.h dllbase.h \
-		dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h \
-		words.h optional.h macro_offset.h row_writer.h
+database_util.obj:	precompiled.h database_exceptions.h database_util.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		CtiPCPtrQueue.h database_writer.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h yukon.h ctidbgmem.h \
+		netports.h dsm2err.h words.h optional.h macro_offset.h \
+		row_writer.h database_reader.h row_reader.h
 database_writer.obj:	precompiled.h database_writer.h ctitime.h \
 		dlldefs.h database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
@@ -248,17 +249,19 @@ desolvers.obj:	precompiled.h desolvers.h dlldefs.h dsm2.h cticonnect.h \
 deviceattributelookup.obj:	precompiled.h DeviceAttributeLookup.h \
 		devicetypes.h pointtypes.h PointAttribute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h
-DeviceConfigDescription.obj:	precompiled.h DeviceConfigDescription.h \
+deviceconfigdescription.obj:	precompiled.h DeviceConfigDescription.h \
 		devicetypes.h pointtypes.h PointAttribute.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h
+		ctidbgmem.h dlldefs.h std_helper.h utility.h ctitime.h \
+		queues.h cticalls.h os2_2w32.h numstr.h
 dllbase.obj:	precompiled.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
 		words.h optional.h macro_offset.h dbaccess.h dllbase.h \
-		ctinexus.h socket_helper.h logger.h thread.h CtiPCPtrQueue.h \
-		encryption.h xml.h devicetypes.h pointtypes.h \
-		PointAttribute.h thread_monitor.h smartmap.h boostutil.h \
-		readers_writer_lock.h critical_section.h cparms.h rwutil.h \
+		ctinexus.h socket_helper.h critical_section.h logger.h \
+		thread.h CtiPCPtrQueue.h encryption.h json.h xml.h \
+		devicetypes.h pointtypes.h resource_helper.h PointAttribute.h \
+		DeviceConfigDescription.h thread_monitor.h smartmap.h \
+		boostutil.h readers_writer_lock.h cparms.h rwutil.h \
 		database_connection.h database_reader.h row_reader.h \
 		boost_time.h configkey.h configval.h queue.h string_utility.h \
 		thread_register_data.h
@@ -286,6 +289,8 @@ guard.obj:	precompiled.h guard.h utility.h ctitime.h dlldefs.h \
 hash_functions.obj:	precompiled.h hash_functions.h dlldefs.h
 id_ctibase.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h id_ctibase.h
+json.obj:	precompiled.h MetricIdLookup.h PointAttribute.h yukon.h \
+		types.h ctidbgmem.h dlldefs.h resource_helper.h
 litepoint.obj:	precompiled.h LitePoint.h dlldefs.h pointtypes.h
 logger.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h cparms.h rwutil.h \
@@ -299,6 +304,8 @@ master.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		cti_asmc.h queues.h dsm2.h cticonnect.h yukon.h ctidbgmem.h \
 		netports.h mutex.h guard.h utility.h ctitime.h numstr.h \
 		dsm2err.h words.h optional.h macro_offset.h master.h
+metricidlookup.obj:	precompiled.h MetricIdLookup.h PointAttribute.h \
+		yukon.h types.h ctidbgmem.h dlldefs.h
 millisecond_timer.obj:	precompiled.h millisecond_timer.h dlldefs.h
 mutex.obj:	precompiled.h mutex.h dlldefs.h
 numstr.obj:	precompiled.h numstr.h dlldefs.h
@@ -309,7 +316,8 @@ pexec.obj:	precompiled.h porter.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
 		words.h optional.h macro_offset.h devicetypes.h logger.h \
-		thread.h CtiPCPtrQueue.h ctinexus.h socket_helper.h
+		thread.h CtiPCPtrQueue.h ctinexus.h socket_helper.h \
+		critical_section.h
 pointattribute.obj:	precompiled.h PointAttribute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h
 queue.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h yukon.h \
@@ -341,6 +349,10 @@ resolvers.obj:	precompiled.h dsm2.h cticonnect.h yukon.h types.h \
 		words.h optional.h macro_offset.h resolvers.h pointtypes.h \
 		db_entry_defines.h devicetypes.h logger.h thread.h \
 		CtiPCPtrQueue.h std_helper.h
+resource_helper.obj:	precompiled.h resource_helper.h dlldefs.h \
+		logger.h thread.h mutex.h guard.h utility.h ctitime.h \
+		queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		CtiPCPtrQueue.h
 rtdb.obj:	precompiled.h dlldefs.h rtdb.h hashkey.h hash_functions.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h string_utility.h dllbase.h dsm2.h cticonnect.h \
@@ -449,6 +461,7 @@ thread_timer.obj:	precompiled.h thread_timer.h thread.h mutex.h \
 		os2_2w32.h types.h numstr.h thread_register_data.h \
 		boost_time.h boostutil.h
 timeperiod.obj:	precompiled.h ctitime.h dlldefs.h timeperiod.h
+timing_util.obj:	precompiled.h numstr.h dlldefs.h timing_util.h
 ucttime.obj:	precompiled.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -471,6 +484,10 @@ words.obj:	precompiled.h words.h dlldefs.h cticalls.h os2_2w32.h \
 		types.h optional.h cti_asmc.h yukon.h ctidbgmem.h logger.h \
 		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
 		numstr.h CtiPCPtrQueue.h
+worker_thread.obj:	precompiled.h utility.h ctitime.h dlldefs.h \
+		queues.h cticalls.h os2_2w32.h types.h numstr.h logger.h \
+		thread.h mutex.h guard.h CtiPCPtrQueue.h worker_thread.h \
+		timing_util.h
 xfer.obj:	precompiled.h xfer.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
@@ -478,6 +495,7 @@ xfer.obj:	precompiled.h xfer.h dsm2.h cticonnect.h yukon.h types.h \
 xml.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h CtiPCPtrQueue.h xml.h devicetypes.h pointtypes.h \
-		PointAttribute.h yukon.h ctidbgmem.h DeviceAttributeLookup.h \
-		DeviceConfigDescription.h resolvers.h db_entry_defines.h
+		resource_helper.h PointAttribute.h yukon.h ctidbgmem.h \
+		DeviceConfigDescription.h DeviceAttributeLookup.h resolvers.h \
+		db_entry_defines.h std_helper.h
 #ENDUPDATE#

@@ -105,12 +105,9 @@ dbsigsend.obj:	precompiled.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		dsm2err.h words.h optional.h macro_offset.h tbl_signal.h \
 		row_reader.h database_connection.h dbaccess.h dbmemobject.h
 tbl_rawpthistory.obj:	precompiled.h tbl_rawpthistory.h ctitime.h \
-		dlldefs.h pointdefs.h utility.h queues.h cticalls.h \
-		os2_2w32.h types.h numstr.h yukon.h ctidbgmem.h row_reader.h \
-		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h mutex.h guard.h dsm2err.h words.h \
-		optional.h macro_offset.h logger.h thread.h CtiPCPtrQueue.h \
-		database_writer.h row_writer.h database_reader.h
+		dlldefs.h row_writer.h logger.h thread.h mutex.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		CtiPCPtrQueue.h
 tbl_signal.obj:	precompiled.h tbl_signal.h ctitime.h dlldefs.h \
 		row_reader.h database_connection.h dbaccess.h dllbase.h \
 		dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h netports.h \

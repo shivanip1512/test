@@ -108,7 +108,9 @@ config_device.obj:	precompiled.h config_device.h yukon.h types.h \
 		ctidbgmem.h dllbase.h dsm2.h cticonnect.h dlldefs.h \
 		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
-		macro_offset.h hashkey.h hash_functions.h
+		macro_offset.h hashkey.h hash_functions.h \
+		DeviceConfigDescription.h devicetypes.h pointtypes.h \
+		PointAttribute.h std_helper.h
 config_strings.obj:	precompiled.h config_data_mct.h yukon.h types.h \
 		ctidbgmem.h dllbase.h dsm2.h cticonnect.h dlldefs.h \
 		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
@@ -128,10 +130,11 @@ mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		macro_offset.h config_device.h hashkey.h hash_functions.h \
-		devicetypes.h dbaccess.h database_connection.h \
-		database_reader.h row_reader.h DeviceConfigDescription.h \
-		pointtypes.h PointAttribute.h debug_timer.h logger.h thread.h \
-		CtiPCPtrQueue.h
+		devicetypes.h readers_writer_lock.h critical_section.h \
+		dbaccess.h database_connection.h database_reader.h \
+		row_reader.h DeviceConfigDescription.h pointtypes.h \
+		PointAttribute.h debug_timer.h logger.h thread.h \
+		CtiPCPtrQueue.h std_helper.h
 test_device_config.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		config_device.h yukon.h ctidbgmem.h dllbase.h dsm2.h \

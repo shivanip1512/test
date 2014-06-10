@@ -175,7 +175,8 @@ test_mc_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		queue.h cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h boost_time.h boostutil.h configkey.h \
 		configval.h readers_writer_lock.h critical_section.h \
-		connection_base.h connection_listener.h
+		connection_base.h worker_thread.h timing_util.h \
+		connection_listener.h
 test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		logger.h thread.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
