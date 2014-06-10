@@ -21,4 +21,18 @@ public class GlobalSettingTypeTest {
         }
     }
 
+    @Test
+    public void test_defaultValueType() {
+        for (GlobalSettingType settingType : GlobalSettingType.values()) {
+            Object defaultValue = settingType.getDefaultValue();
+            Class<?> typeClass = settingType.getType().getTypeClass();
+            try {
+                typeClass.cast(defaultValue);
+            } catch (ClassCastException e) {
+                Assert.fail(settingType + "'s default value:'" + defaultValue + "' type:" 
+                        + defaultValue.getClass().getSimpleName() + "  cannot be cast to setting type: " 
+                        + typeClass.getSimpleName());
+            }
+        }
+    }
 }
