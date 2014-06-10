@@ -792,20 +792,37 @@ void DeviceConfigCategorySAX2Handler::pushIndexedField( const xercesc::Attribute
     const boost::optional<std::string> minAttr   = findAttribute( attrs, "minOccurs" );
     const boost::optional<std::string> maxAttr   = findAttribute( attrs, "maxOccurs" );
 
-    if ( ! currentContainer.empty() && fieldAttr && minAttr && maxAttr )
+    if ( ! currentContainer.empty() && fieldAttr )
     {
-        try
+        boost::optional<unsigned> minOccurs, maxOccurs;
+
+        if ( minAttr )
         {
-            currentContainer.push_back(
-                    DeviceConfigDescription::AddIndexedItem(
-                            currentContainer.back(),
-                            *fieldAttr,
-                            boost::lexical_cast<unsigned>( *minAttr ),
-                            boost::lexical_cast<unsigned>( *maxAttr ) ) );
+            try
+            {
+                minOccurs = boost::lexical_cast<unsigned>( *minAttr );
+            }
+            catch(const boost::bad_lexical_cast &)
+            {
+            }
         }
-        catch(const boost::bad_lexical_cast &)
+
+        if ( maxAttr )
         {
+            try
+            {
+                maxOccurs = boost::lexical_cast<unsigned>( *maxAttr );
+            }
+            catch(const boost::bad_lexical_cast &)
+            {
+            }
         }
+
+        currentContainer.push_back(
+                DeviceConfigDescription::AddIndexedItem(
+                        currentContainer.back(),
+                        *fieldAttr,
+                        minOccurs, maxOccurs ) );
     }
 }
 

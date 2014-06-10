@@ -37,10 +37,10 @@ const ContainerHandle DeviceConfigDescription::AddCategory( const std::string &c
 
 void DeviceConfigDescription::AddItem( const ContainerHandle handle, const std::string &itemName )
 {
-    handle.itemContainer->elements.push_back( ItemDescription(itemName, 0, 0) );
+    handle.itemContainer->elements.push_back( ItemDescription(itemName) );
 }
 
-const ContainerHandle DeviceConfigDescription::AddIndexedItem( const ContainerHandle handle, const std::string &itemName, const unsigned minOccurs, const unsigned maxOccurs )
+const ContainerHandle DeviceConfigDescription::AddIndexedItem( const ContainerHandle handle, const std::string &itemName, const boost::optional<unsigned> minOccurs, const boost::optional<unsigned> maxOccurs )
 {
     handle.itemContainer->elements.push_back( ItemDescription(itemName, minOccurs, maxOccurs) );
 

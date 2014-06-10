@@ -172,10 +172,10 @@ Category::IndexedItem ConstructIndexedItem( const ItemDescription & itemDesc, co
 
     unsigned count = boost::lexical_cast<unsigned>(*value);
 
-    if( count >= itemDesc.minOccurs &&
-        count <= itemDesc.maxOccurs )
+    if( ( ! itemDesc.minOccurs || count >= *itemDesc.minOccurs) &&
+        ( ! itemDesc.maxOccurs || count <= *itemDesc.maxOccurs) )
     {
-		item.resize(count);
+        item.resize(count);
 
         for( unsigned i = 0; i < count; ++i )
         {
@@ -187,9 +187,9 @@ Category::IndexedItem ConstructIndexedItem( const ItemDescription & itemDesc, co
 
             for each( const ItemDescription &subItemDesc in itemDesc.elements )
             {
-                if( subItemDesc.minOccurs || subItemDesc.maxOccurs )
+                if( subItemDesc.isIndexed )
                 {
-                    //  error
+                    //  error, we don't support nested indexed items yet
                 }
 
                 const std::string qualifiedName = prefix + subItemDesc.name;
@@ -232,7 +232,7 @@ CategorySPtr Category::ConstructCategory( const std::string & type, const std::m
 
         for each( const ItemDescription & itemDesc in categoryDescription->elements )
         {
-            if( itemDesc.maxOccurs || itemDesc.minOccurs )
+            if( itemDesc.isIndexed )
             {
                 category->_indexedItems[itemDesc.name] =
                         ConstructIndexedItem( itemDesc, databaseItems );

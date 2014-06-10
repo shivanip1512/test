@@ -21,15 +21,23 @@ public:
 
     struct ItemDescription : ItemContainer
     {
-        ItemDescription( const std::string & name_, unsigned minOccurs_, unsigned maxOccurs_ )
+        ItemDescription( const std::string & name_ )
+            :   name( name_ ),
+                isIndexed( false )
+        { }
+
+        ItemDescription( const std::string & name_, boost::optional<unsigned> minOccurs_, boost::optional<unsigned> maxOccurs_ )
             :   name( name_ ),
                 minOccurs( minOccurs_ ),
-                maxOccurs( maxOccurs_ )
+                maxOccurs( maxOccurs_ ),
+                isIndexed( true )
         { }
 
         std::string name;
 
-        unsigned minOccurs, maxOccurs;
+        bool isIndexed;
+
+        boost::optional<unsigned> minOccurs, maxOccurs;
     };
 
     struct CategoryDescription : ItemContainer
@@ -48,7 +56,7 @@ public:
 
     static const ContainerHandle AddCategory   ( const std::string & categoryName );
     static void                  AddItem       ( const ContainerHandle container, const std::string & itemName );
-    static const ContainerHandle AddIndexedItem( const ContainerHandle container, const std::string & itemName, const unsigned minOccurs, const unsigned maxOccurs );
+    static const ContainerHandle AddIndexedItem( const ContainerHandle container, const std::string & itemName, const boost::optional<unsigned> minOccurs, const boost::optional<unsigned> maxOccurs );
 
     typedef std::set<std::string>  CategoryNames;
 
