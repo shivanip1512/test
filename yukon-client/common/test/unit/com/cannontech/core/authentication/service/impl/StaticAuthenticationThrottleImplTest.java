@@ -36,39 +36,61 @@ public class StaticAuthenticationThrottleImplTest {
 
     private static final MockRolePropertyDaoImpl rolePropertyDaoMock = new MockRolePropertyDaoImpl();
     {
-        rolePropertyDaoMock.setupRolesFor(USER_ONE).withRoleProperty(LOCKOUT_DURATION, 6).withRoleProperty(
-            LOCKOUT_THRESHOLD, 3).withRoleProperty(MAXIMUM_PASSWORD_AGE, 20).withRoleProperty(MINIMUM_PASSWORD_AGE, 1).withRoleProperty(
-            MINIMUM_PASSWORD_LENGTH, 6).withRoleProperty(PASSWORD_HISTORY, 3).withRoleProperty(POLICY_QUALITY_CHECK, 2)
+        // @formatter:off
+        rolePropertyDaoMock.setupRolesFor(USER_ONE)
+        .withRoleProperty(LOCKOUT_DURATION, 6)
+        .withRoleProperty(LOCKOUT_THRESHOLD, 3)
+        .withRoleProperty(MAXIMUM_PASSWORD_AGE, 20)
+        .withRoleProperty(MINIMUM_PASSWORD_AGE, 1)
+        .withRoleProperty(MINIMUM_PASSWORD_LENGTH, 6)
+        .withRoleProperty(PASSWORD_HISTORY, 3)
+        .withRoleProperty(POLICY_QUALITY_CHECK, 2)
+        .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true)
+        .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, false)
+        .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true)
+        .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true);
 
-        .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true).withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS,
-            false).withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true).withRoleProperty(
-            POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true);
+        rolePropertyDaoMock.setupRolesFor(USER_TWO)
+        .withRoleProperty(LOCKOUT_DURATION, 120)
+        .withRoleProperty(LOCKOUT_THRESHOLD, 8)
+        .withRoleProperty(MAXIMUM_PASSWORD_AGE, 15)
+        .withRoleProperty(MINIMUM_PASSWORD_AGE, 0)
+        .withRoleProperty(MINIMUM_PASSWORD_LENGTH, 9)
+        .withRoleProperty(PASSWORD_HISTORY, 10)
+        .withRoleProperty(POLICY_QUALITY_CHECK, 1)
+        .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, false)
+        .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, true)
+        .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, false)
+        .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, false);
 
-        rolePropertyDaoMock.setupRolesFor(USER_TWO).withRoleProperty(LOCKOUT_DURATION, 120).withRoleProperty(
-            LOCKOUT_THRESHOLD, 8).withRoleProperty(MAXIMUM_PASSWORD_AGE, 15).withRoleProperty(MINIMUM_PASSWORD_AGE, 0).withRoleProperty(
-            MINIMUM_PASSWORD_LENGTH, 9).withRoleProperty(PASSWORD_HISTORY, 10).withRoleProperty(POLICY_QUALITY_CHECK, 1)
+        rolePropertyDaoMock.setupRolesFor(USER_NO_POLICY)
+        .withRoleProperty(LOCKOUT_DURATION, 0)
+        .withRoleProperty(LOCKOUT_THRESHOLD, 0)
+        .withRoleProperty(MAXIMUM_PASSWORD_AGE, 0)
+        .withRoleProperty(MINIMUM_PASSWORD_AGE, 0)
+        .withRoleProperty(MINIMUM_PASSWORD_LENGTH, 0)
+        .withRoleProperty(PASSWORD_HISTORY, 0)
+        .withRoleProperty(POLICY_QUALITY_CHECK, 0)
+        .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true)
+        .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS,true)
+        .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true)
+        .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true);
 
-        .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, false).withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS,
-            true).withRoleProperty(POLICY_RULE_BASE_10_DIGITS, false).withRoleProperty(
-            POLICY_RULE_NONALPHANUMERIC_CHARACTERS, false);
-
-        rolePropertyDaoMock.setupRolesFor(USER_NO_POLICY).withRoleProperty(LOCKOUT_DURATION, 0).withRoleProperty(
-            LOCKOUT_THRESHOLD, 0).withRoleProperty(MAXIMUM_PASSWORD_AGE, 0).withRoleProperty(MINIMUM_PASSWORD_AGE, 0).withRoleProperty(
-            MINIMUM_PASSWORD_LENGTH, 0).withRoleProperty(PASSWORD_HISTORY, 0).withRoleProperty(POLICY_QUALITY_CHECK, 0)
-
-        .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true).withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS,
-            true).withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true).withRoleProperty(
-            POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true);
-
-        rolePropertyDaoMock.setupRolesFor(USER_SHORT_LOCKOUT).withRoleProperty(LOCKOUT_DURATION, 1).withRoleProperty(
-            LOCKOUT_THRESHOLD, 3).withRoleProperty(MAXIMUM_PASSWORD_AGE, 0).withRoleProperty(MINIMUM_PASSWORD_AGE, 0).withRoleProperty(
-            MINIMUM_PASSWORD_LENGTH, 0).withRoleProperty(PASSWORD_HISTORY, 0).withRoleProperty(POLICY_QUALITY_CHECK, 0)
-
-        .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true).withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS,
-            true).withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true).withRoleProperty(
-            POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true);
+        rolePropertyDaoMock.setupRolesFor(USER_SHORT_LOCKOUT)
+        .withRoleProperty(LOCKOUT_DURATION, 1)
+        .withRoleProperty(LOCKOUT_THRESHOLD, 3)
+        .withRoleProperty(MAXIMUM_PASSWORD_AGE, 0)
+        .withRoleProperty(MINIMUM_PASSWORD_AGE, 0)
+        .withRoleProperty(MINIMUM_PASSWORD_LENGTH, 0)
+        .withRoleProperty(PASSWORD_HISTORY, 0)
+        .withRoleProperty(POLICY_QUALITY_CHECK, 0)
+        .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true)
+        .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, true)
+        .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true)
+        .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true);
 
         rolePropertyDaoMock.setupRolesFor(USER_SYSTEM_POLICY).withRole(PASSWORD_POLICY, false);
+     // @formatter:on
     }
 
     private static final YukonUserDao yukonUserDaoMock = new YukonUserDaoImpl() {
