@@ -87,6 +87,7 @@
         <include name="xercesImpl-2.11.0.jar"/>
         <include name="xml-apis-1.4.01.jar"/>
         <include name="yc.jar"/>
+        <include name="yukon-shared.jar"/>
         <include name="yukonappserver.jar"/>
     </fileset>
 
