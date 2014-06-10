@@ -182,7 +182,7 @@ Category::IndexedItem ConstructIndexedItem( const ItemDescription & itemDesc, co
             const std::string prefix =
                 itemDesc.name
                 + "."
-                + boost::lexical_cast<std::string>(i+1)  //  1-based indexing
+                + boost::lexical_cast<std::string>(i)
                 + ".";
 
             for each( const ItemDescription &subItemDesc in itemDesc.elements )

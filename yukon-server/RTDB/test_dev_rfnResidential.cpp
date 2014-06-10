@@ -2125,9 +2125,9 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
             ( CategoryDefinition(
                 "rfnChannelConfiguration", map_list_of
                     ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" )
-                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
                       + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
-                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
                       + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "BILLING" )
                     ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )
                     ( RfnStrings::ChannelConfiguration::ReportingIntervalHours,   "456" )))
@@ -2326,10 +2326,10 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
             ( CategoryDefinition( // channel config
                 "rfnChannelConfiguration", map_list_of
                     ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" )
-                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix +
-                                  ".1." + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
-                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix +
-                                  ".1." + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "BILLING" )
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "BILLING" )
                     ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )
                     ( RfnStrings::ChannelConfiguration::ReportingIntervalHours,   "456" )))
             ;
