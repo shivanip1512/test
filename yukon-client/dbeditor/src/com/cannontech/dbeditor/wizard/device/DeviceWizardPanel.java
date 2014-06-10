@@ -302,8 +302,8 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
             getDeviceBaseNamePanel().setFirstFocus();
             return getDeviceBaseNamePanel();
         }
-		else if( devType.isMeter()
-					  && !DeviceTypesFuncs.isIon(devType.getDeviceTypeId())
+		else if((DeviceTypesFuncs.isMeter(devType.getDeviceTypeId())
+					  && !DeviceTypesFuncs.isIon(devType.getDeviceTypeId()))
 					  || devType == PaoType.DAVISWEATHER)
 		{
 			getDeviceIEDNamePanel().setDeviceType(devType);
@@ -325,7 +325,7 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 	}
 	else if (currentInputPanel == getDeviceBaseNamePanel()) {
 	    PaoType devType = getDeviceTypePanel().getDeviceType();
-	    if (devType.isMeter()) {
+	    if (DeviceTypesFuncs.isMeter(devType.getDeviceTypeId())) {
     	    getDeviceMeterNumberPanel().setFirstFocus();
             return getDeviceMeterNumberPanel();
 	    } else {
@@ -337,7 +337,7 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 	{
 		PaoType devType = getDeviceTypePanel().getDeviceType();
 
-		if(devType.isMeter() || devType.isMct() )
+		if(DeviceTypesFuncs.isMeter(devType.getDeviceTypeId()) || devType.isMct() )
 		{
 			getDeviceMeterNumberPanel().setValue(null);
 			if( DeviceTypesFuncs.isMCT2XXORMCT310XX(devType.getDeviceTypeId()) )
