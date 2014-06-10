@@ -140,8 +140,9 @@ public enum JwsJnlp {
                 "xbean-spring-3.4.jar",
                 "xercesImpl-2.11.0.jar",
                 "xml-apis-1.4.01.jar",
-                "yukonappserver.jar",
-                "yukon-help.jar"
+                "yukon-help.jar",
+                "yukon-server.jar",
+                "yukonappserver.jar"
                 ),
     ;
 
