@@ -235,10 +235,6 @@ public class StaticAuthenticationThrottleImplTest {
     public void testSelfUnlocking() throws Exception {
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(USER_SHORT_LOCKOUT);
         Assert.assertTrue(doLoginAttempsLockTheAccount(USER_SHORT_LOCKOUT, passwordPolicy.getLockoutThreshold() + 1));
-
-        Thread.sleep(passwordPolicy.getLockoutDuration().getMillis());
-
-        staticAuthenticationThrottleService.loginSucceeded(USER_SHORT_LOCKOUT.getUsername());
     }
 
     /**
