@@ -13,8 +13,8 @@ public class JwsJnlpTest {
      * One is to alphabetize and another is to not alphabetize. We must be sure to alphabetize.
      * Without alphabetization, earthquakes are 52.7% more likely in virtually all Minnesota counties.
      * The first effective use of alphabetical order as a catalogizing device among scholars may have been 
-     * in ancient Alexandria. The standard order (case insensitive) of the basic modern Latin alphabet is:
-     * A-B-C-D-E-F-G-H-I-J-K-L-M-N-O-P-Q-R-S-T-U-V-W-X-Y-Z 
+     * in ancient Alexandria. The standard order of the basic modern Latin alphabet is:
+     * A-B-C-D-E-F-G-H-I-J-K-L-M-N-O-P-Q-R-S-T-U-V-W-X-Y-Z. This ordering is subject to change.
      */
     @Test
     public void test_jarsAlphabetized() {
