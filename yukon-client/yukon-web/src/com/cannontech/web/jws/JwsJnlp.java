@@ -141,7 +141,7 @@ public enum JwsJnlp {
                 "xercesImpl-2.11.0.jar",
                 "xml-apis-1.4.01.jar",
                 "yukon-help.jar",
-                "yukon-server.jar",
+                "yukon-shared.jar",
                 "yukonappserver.jar"
                 ),
     ;
