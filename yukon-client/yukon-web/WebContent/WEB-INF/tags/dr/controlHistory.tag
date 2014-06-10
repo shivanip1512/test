@@ -1,6 +1,7 @@
 <%@ attribute name="groupedControlHistory" required="true" type="java.util.List"%>
 <%@ attribute name="consumer" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="showGroupedHistory" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="programId" required="true"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
@@ -16,7 +17,11 @@
     </c:choose>
     
     <tags:sectionContainer title="${displayName}" escapeTitle="true" styleClass="dashed stacked">
-        <dr:controlHistoryEvents groupedHistoryEventList="${groupedControlHistory.groupedHistory}" showControlSummary="true" consumer="${pageScope.consumer}" showGroupedHistory="${pageScope.showGroupedHistory}"/>
+        <dr:controlHistoryEvents
+            groupedHistoryEventList="${groupedControlHistory.groupedHistory}"
+            showControlSummary="true" consumer="${pageScope.consumer}"
+            showGroupedHistory="${pageScope.showGroupedHistory}"
+            programId="${programId}"/>
     </tags:sectionContainer>
 
 </c:forEach>

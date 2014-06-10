@@ -2,6 +2,8 @@ package com.cannontech.stars.dr.controlHistory.dao;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 import com.cannontech.stars.dr.controlHistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlHistory.model.ControlPeriod;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
@@ -36,4 +38,15 @@ public interface ControlHistoryEventDao {
      */
     public List<ControlHistoryEvent> toEventList(Integer programId, StarsLMControlHistory controlHistory, YukonUserContext userContext);
  
+    /**
+     * This method takes a programId and event start/stop times and attempts to look up the historical gear name
+     * in use at that time.  If no gear name is found in the duration specified, then the first gear name found prior
+     *  to the event is used.  If a name is still not found, the defaultName parameter is returned as the gear name.
+     * @param programId The assigned program id for which the control event took place.
+     * @param startDateTime The beginning of the control event.
+     * @param endDateTime The end of the control event.
+     * @return The gear name used during the control event, or the most recently used gear name, or default name.
+     */
+    String getHistoricalGearName(int programId, DateTime startDateTime, DateTime endDateTime, String defaultName);
+
 }

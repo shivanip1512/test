@@ -29,7 +29,7 @@
                     <tr>
                         <c:if test="${!empty enrollment.applianceLogo}">
                             <td rowspan="2" class="applianceCategoryIcon">
-                                <img src="../../../WebConfig/${enrollment.applianceLogo}">
+                                <img src="<cti:url value="/WebConfig/${enrollment.applianceLogo}"/>">
                             </td>
                         </c:if>
                         <td class="applianceCategoryName">
@@ -66,7 +66,7 @@
                                     </td>
                                     <td class="programDescriptionIcon">
                                         <c:if test="${!empty enrollmentProgram.program.savingsDescriptionIcon}">
-                                            <img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.savingsDescriptionIcon}">
+                                            <img src="<cti:url value="/WebConfig/yukon/Icons/${enrollmentProgram.program.savingsDescriptionIcon}"/>">
                                             <c:set var="savingsDescriptionIconDisplayed" value="true"/>
                                         </c:if>
                                         <c:if test="${empty enrollmentProgram.program.savingsDescriptionIcon}">
@@ -75,7 +75,7 @@
                                     </td>
                                     <td class="programDescriptionIcon">
                                         <c:if test="${!empty enrollmentProgram.program.controlPercentDescriptionIcon}">
-                                            <img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.controlPercentDescriptionIcon}">
+                                            <img src="<cti:url value="/WebConfig/yukon/Icons/${enrollmentProgram.program.controlPercentDescriptionIcon}"/>">
                                             <c:set var="controlPercentDescriptionIconDisplayed" value="true"/>
                                         </c:if>
                                         <c:if test="${empty enrollmentProgram.program.controlPercentDescriptionIcon}">
@@ -84,7 +84,7 @@
                                     </td>
                                     <td class="programDescriptionIcon">
                                         <c:if test="${!empty enrollmentProgram.program.environmentDescriptionIcon}">
-                                            <img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.environmentDescriptionIcon}">
+                                            <img src="<cti:url value="/WebConfig/yukon/Icons/${enrollmentProgram.program.environmentDescriptionIcon}"/>">
                                             <c:set var="environmentDescriptionIconDisplayed" value="true"/>
                                         </c:if>
                                         <c:if test="${empty enrollmentProgram.program.environmentDescriptionIcon}">
@@ -130,15 +130,15 @@
             <h1>${iconKeyTitle}</h1>
             <table>
             <c:if test="${savingsDescriptionIconDisplayed}">
-                <tr><td><img src="<cti:msg key="yukon.dr.consumer.enrollment.savingsIconUrl"/>"></td>
+                <tr><td><img src="<cti:url value="/WebConfig/yukon/Icons/$$Sm.gif"/>"/></td>
                 <td><cti:msg key="yukon.dr.consumer.enrollment.savingsIconDescription"/></td></tr>
             </c:if>
             <c:if test="${controlPercentDescriptionIconDisplayed}">
-                <tr><td><img src="<cti:msg key="yukon.dr.consumer.enrollment.controlPercentIconUrl"/>"></td>
+                <tr><td><img src="<cti:url value="/WebConfig/yukon/Icons/ThirdSm.gif"/>"></td>
                 <td><cti:msg key="yukon.dr.consumer.enrollment.controlPercentIconDescription"/></td></tr>
             </c:if>
             <c:if test="${environmentDescriptionIconDisplayed}">
-                <tr><td><img src="<cti:msg key="yukon.dr.consumer.enrollment.environmentIconUrl"/>"></td>
+                <tr><td><img src="<cti:url value="/WebConfig/yukon/Icons/Tree2Sm.gif"/>"/></td>
                 <td><cti:msg key="yukon.dr.consumer.enrollment.environmentIconDescription"/></td></tr>
             </c:if>
             </table>

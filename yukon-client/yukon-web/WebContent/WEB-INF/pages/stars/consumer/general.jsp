@@ -80,7 +80,7 @@
                             
                             <tr>
                                 <td class="${logoClass}" width="5%">
-                                    <img src="../../../WebConfig/${program.applianceCategoryLogo}">
+                                    <img src="<cti:url value="/WebConfig/${program.applianceCategoryLogo}"/>">
                                 </td>
                                 <td class="${tableDataClass}">
                                     <b><cti:msg key="${program.displayName}" htmlEscape="true"></cti:msg></b>

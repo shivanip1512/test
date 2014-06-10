@@ -7,7 +7,8 @@
 <c:if test="${fn:length(gears) > 1}">
     <h4 class="dialogQuestion"><cti:msg2 key=".instructions" argument="${program.name}"/></h4>
 
-    <form id="sendEnableForm" action="/dr/program/changeGear">
+    <cti:url var="changeGearUrl" value="/dr/program/changeGear"/>
+    <form id="sendEnableForm" action="${changeGearUrl}">
         <input type="hidden" name="programId" value="${program.paoIdentifier.paoId}"/>
         <cti:msg2 key=".gearSelect"/>
         <select name="gearNumber">

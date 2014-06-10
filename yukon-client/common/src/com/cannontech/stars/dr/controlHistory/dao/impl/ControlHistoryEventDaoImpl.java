@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.StringRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -32,6 +31,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
+    @Override
     public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId,
                                                           int loadGroupId, int inventoryId,
                                                           YukonUserContext userContext, boolean past) {
@@ -56,6 +56,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         return lastControlHistoryEvent;
     }
 
+    @Override
     public StarsLMControlHistory getEventsByGroup(final int customerAccountId,  int lmGroupId, int inventoryId,
                                                   final ControlPeriod period, final YukonUserContext yukonUserContext, boolean past) {
 
@@ -73,8 +74,10 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
 
     @Override
     public List<ControlHistoryEvent> toEventList(Integer programId, StarsLMControlHistory controlHistory, YukonUserContext userContext) {
-        if (controlHistory == null) return Collections.emptyList();
-
+        if (controlHistory == null) {
+            return Collections.emptyList();
+        }
+        
         final List<ControlHistoryEvent> eventList = new ArrayList<ControlHistoryEvent>();
 
         for (int j = controlHistory.getControlHistoryCount() - 1; j >= 0; j--) {
@@ -89,46 +92,43 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
             event.setEndDate(endDateTime);
             event.setControlling(history.isCurrentlyControlling());
             
-            String gears;
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String na = messageSourceAccessor.getMessage("yukon.web.components.controlHistoryEvent.na");
-            if(programId != null) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT DISTINCT gh.GearName");
-                sql.append("FROM LMProgramGearHistory gh");
-                sql.append("  JOIN LMProgramHistory h on h.LMProgramHistoryId = gh.LMProgramHistoryId");
-                sql.append("  JOIN LMProgramWebPublishing wp on wp.DeviceID = h.ProgramId");
-                sql.append("WHERE wp.ProgramId").eq(programId);
-                sql.append("  AND gh.EventTime").gte(startDateTime);
-                sql.append("  AND gh.EventTime").lt(endDateTime);
-                sql.append("  AND (gh.Action").eq("Start").append("OR gh.Action").eq("Gear Change").append(")");
-                
-                List<String> gearNames = yukonJdbcTemplate.query(sql, new StringRowMapper());
-                
-                if(gearNames.isEmpty()){
-                    sql = new SqlStatementBuilder();
-                    sql.append("SELECT gh.GearName");
-                    sql.append("FROM LMProgramGearHistory gh");
-                    sql.append("  JOIN LMProgramHistory h on h.LMProgramHistoryId = gh.LMProgramHistoryId");
-                    sql.append("  JOIN LMProgramWebPublishing wp on wp.DeviceID = h.ProgramId");
-                    sql.append("WHERE wp.ProgramId").eq(programId);
-                    sql.append("  AND gh.EventTime").lt(startDateTime);
-                    sql.append("ORDER BY gh.EventTime desc");
-                    
-                    gearNames = yukonJdbcTemplate.query(sql, new StringRowMapper());
-                    gears = gearNames.isEmpty() ? na : gearNames.get(0);
-                } else {
-                    gears = StringUtils.join(gearNames, ",");  
-                }
-            } else {
-                gears = na;
-            }
-            
-            event.setGears(gears);
             eventList.add(event);
         }  
 
         return eventList;
+    }
+
+    @Override
+    public String getHistoricalGearName(int programId, DateTime startDateTime, DateTime endDateTime, String defaultName) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        List<String> name = null;
+        
+        sql.append("select pgh.GearName");
+        sql.append("from LMProgramGearHistory pgh");
+        sql.append("join LMProgramHistory ph on ph.LMProgramHistoryId = pgh.LMProgramHistoryId");
+        sql.append("join LMProgramWebPublishing pwp on pwp.DeviceID = ph.ProgramId");
+        sql.append("where pwp.ProgramId").eq(programId);
+        sql.append("and pgh.EventTime").gte(startDateTime);
+        sql.append("and pgh.EventTime").lt(endDateTime);
+        sql.append("and (pgh.Action = 'Start' or pgh.Action = 'Gear Change')");
+        
+        name = yukonJdbcTemplate.query(sql, RowMapper.STRING);
+        
+        if(name.size() == 0){
+            // Didn't find gear name within interval. Try to find the most recent gear name prior to startDateTime.
+            sql = new SqlStatementBuilder();
+            sql.append("select GearName from (");
+            sql.append("    select pgh.GearName, row_number() over (order by pgh.EventTime desc) as RowNumber");
+            sql.append("    from LMProgramGearHistory pgh");
+            sql.append("    join LMProgramHistory ph on ph.LMProgramHistoryId = pgh.LMProgramHistoryId");
+            sql.append("    join LMProgramWebPublishing pwp on pwp.DeviceID = ph.ProgramId");
+            sql.append("    where pwp.ProgramId").eq(programId);
+            sql.append("    and pgh.EventTime").lt(startDateTime).append(") T");
+            sql.append("where T.RowNumber = 1");
+            
+            name = yukonJdbcTemplate.query(sql, RowMapper.STRING);
+        }
+        return name.size() > 0 ? name.get(0) : defaultName;
     }
 
     protected static class Holder {

@@ -11,6 +11,7 @@
 <%@ attribute name="consumer" type="java.lang.Boolean"%>
 <%@ attribute name="groupedHistoryEventList" type="java.util.Set"%>
 <%@ attribute name="showGroupedHistory" type="java.lang.Boolean"%>
+<%@ attribute name="programId" required="true"%>
 
 <c:choose>
     <c:when test="${consumer}">
@@ -75,8 +76,7 @@
                                                 </c:choose>
                                                 <c:if test="${not consumer}">
                                                     <td>
-                                                        <cti:uniqueIdentifier prefix="history_dialog_" var="historyDialogId" />
-                                                        <d:inline okEvent="none" nameKey="detailDialog" id="${historyDialogId}" on=".f-show-${historyDialogId}">
+                                                        <div title="<cti:msg2 key=".detailDialog.title"/>" class="dn">
                                                             <c:set var="detailDuration" value="${0}"/>
                                                             <table class="compact-results-table">
                                                                 <thead>
@@ -100,7 +100,12 @@
                                                                                     <td><cti:formatDate value="${detailEvent.endDate}" type="BOTH" /></td>
                                                                                 </c:otherwise>
                                                                             </c:choose>
-                                                                            <td>${detailEvent.gears}</td>
+                                                                            <td>
+                                                                                <div class="js-gear-names"><i:inline key="yukon.web.components.controlHistoryEvent.loading"/></div>
+                                                                                <input hidden="true" name="startDate" value="${detailEvent.startDate.millis}"/>
+                                                                                <input hidden="true" name="endDate" value="${detailEvent.endDate.millis}"/>
+                                                                                <input hidden="true" name="programId" value="${programId}"/>
+                                                                            </td>
                                                                             <td><cti:formatDuration type="HM" startDate="${detailEvent.startDate}"
                                                                                     endDate="${detailEvent.endDate}" /></td>
                                                                             <c:set var="detailDuration" value="${detailEvent.duration.millis + detailDuration}" />
@@ -118,7 +123,7 @@
                                                                     </c:if>
                                                                 </tbody>
                                                             </table>
-                                                        </d:inline> <a href="javascript:void(0);" class="f-show-${historyDialogId}"><cti:msg2 key=".history" /></a></td>
+                                                        </div> <a href="javascript:void(0);" class="js-show-details"><cti:msg2 key=".history" /></a></td>
                                                 </c:if>
                                                 <td><cti:formatDuration type="HM" startDate="${groupedEvent.startDate}"
                                                         endDate="${groupedEvent.endDate}" /></td>

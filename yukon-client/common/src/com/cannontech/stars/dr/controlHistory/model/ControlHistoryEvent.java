@@ -10,7 +10,6 @@ public class ControlHistoryEvent {
     private Instant endDate;
     private Duration duration;
     private boolean controlling;
-    private String gears;
 
     public Instant getStartDate() {
         return startDate;
@@ -41,13 +40,6 @@ public class ControlHistoryEvent {
     }
     public void setControlling(boolean controlling) {
         this.controlling = controlling;
-    }
-
-    public String getGears() {
-        return gears;
-    }
-    public void setGears(String gears) {
-        this.gears = gears;
     }
 
     public static Ordering<ControlHistoryEvent> getStartDateComparator() {

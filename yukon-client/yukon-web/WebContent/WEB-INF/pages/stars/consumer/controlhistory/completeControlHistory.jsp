@@ -4,7 +4,6 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:url var="controlHistoryView" value="/stars/consumer/controlhistory"/>
-<cti:url var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
 
 <cti:standardPage module="consumer" page="completecontrolhistory">
     <cti:standardMenu />
@@ -37,7 +36,7 @@ $(function() {
 function updateControlEvents(controlPeriod) {
     yukon.ui.elementGlass.show($('#controlEventsDiv'));
     $.ajax({
-        url: '${innerViewUrl}',
+        url: yukon.url('stars/consumer/controlhistory/innerCompleteHistoryView'),
         method: 'POST',
         data: { 
             'programId': '${program.programId}',

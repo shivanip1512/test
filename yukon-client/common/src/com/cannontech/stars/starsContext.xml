@@ -243,6 +243,7 @@
     
     <bean id="controlHistoryDao" class="com.cannontech.stars.dr.controlHistory.dao.impl.ControlHistoryDaoImpl"/>
     
+    <bean class="com.cannontech.stars.dr.controlHistory.service.impl.ControlHistoryEventServiceImpl"/>
     <bean id="controlHistoryEventDao" class="com.cannontech.stars.dr.controlHistory.dao.impl.ControlHistoryEventDaoImpl"/>
 
     <bean id="controlHistoryService" class="com.cannontech.stars.dr.controlHistory.service.impl.ControlHistoryServiceImpl"/>

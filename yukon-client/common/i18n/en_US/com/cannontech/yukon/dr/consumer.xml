@@ -393,11 +393,8 @@
     <entry key="yukon.dr.consumer.enrollment.result.NOT_CONFIGURED_CORRECTLY">&lt;i&gt;** Program not defined correctly.  Contact your administrator.&lt;/i&gt;</entry>
     <entry key="yukon.dr.consumer.enrollment.iconKeyTitle">Icon Key</entry>
     <entry key="yukon.dr.consumer.enrollment.savingsIconDescription">Savings: More dollar signs means more savings!</entry>
-    <entry key="yukon.dr.consumer.enrollment.savingsIconUrl">/WebConfig/yukon/Icons/$$Sm.gif</entry>
     <entry key="yukon.dr.consumer.enrollment.controlPercentIconDescription">Percent of Control</entry>
-    <entry key="yukon.dr.consumer.enrollment.controlPercentIconUrl">/WebConfig/yukon/Icons/ThirdSm.gif</entry>
     <entry key="yukon.dr.consumer.enrollment.environmentIconDescription">Environment: More trees means a healthier environment.</entry>
-    <entry key="yukon.dr.consumer.enrollment.environmentIconUrl">/WebConfig/yukon/Icons/Tree2Sm.gif</entry>
 
     <!-- selectHardware.jsp -->
     <entry key="yukon.dr.consumer.selectHardware.query">Choose which devices you wish to enroll in {0}:</entry>

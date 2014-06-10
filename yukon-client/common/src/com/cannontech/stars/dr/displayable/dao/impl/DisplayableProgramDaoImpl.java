@@ -71,15 +71,11 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         
         List<DisplayableControlHistory> displayableControlHistoryList = Lists.newArrayListWithExpectedSize(controlHistoryList.size());
 
+        DisplayableControlHistoryType displayableType = null;
+        displayableType = controlHistoryList.size() == 1 ? 
+                DisplayableControlHistoryType.CONTROLSTATUS : DisplayableControlHistoryType.DEVICELABEL_CONTROLSTATUS;  
+        
         for (final ControlHistory controlHistory : controlHistoryList) {
-            DisplayableControlHistoryType displayableType = null;
-            
-            if (controlHistoryList.size() == 1) {
-                displayableType = DisplayableControlHistoryType.CONTROLSTATUS;
-            }else {
-                displayableType = DisplayableControlHistoryType.DEVICELABEL_CONTROLSTATUS;
-            }
-            
             DisplayableControlHistory displayableControlHistory = 
                     new DisplayableControlHistory(displayableType, controlHistory);
                 displayableControlHistoryList.add(displayableControlHistory);

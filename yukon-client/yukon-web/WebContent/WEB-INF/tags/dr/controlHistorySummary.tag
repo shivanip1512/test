@@ -97,7 +97,7 @@
                                 <c:if test="${status.count eq 1}">
                                     <td rowspan="${controlHistorySize}">
                                         <c:if test="${program.logoAssigned}">
-                                           <img src="../../../WebConfig/${program.applianceCategoryLogo}">
+                                           <img src="<cti:url value="/WebConfig/${program.applianceCategoryLogo}"/>">
                                         </c:if>
                                     </td>
                                 </c:if>

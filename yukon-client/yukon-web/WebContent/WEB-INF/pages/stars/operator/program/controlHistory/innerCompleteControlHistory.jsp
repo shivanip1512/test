@@ -1,6 +1,6 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:msgScope paths="modules.operator.controlHistory">
-   <dr:controlHistory groupedControlHistory="${groupedControlHistory}" />
+   <dr:controlHistory groupedControlHistory="${groupedControlHistory}" programId="${programId}" />
 </cti:msgScope>
