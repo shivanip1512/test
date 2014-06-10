@@ -179,7 +179,7 @@ void ConfigManager::executeLoadItems( const std::string & sql )
         rdr["ItemValue"] >> currentCategory->items[itemName];
     }
 
-    for each( const std::pair<long, CategoryBuffer> &pair in categories )
+    for each( const std::pair<long, CategoryBuffer> pair in categories )
     {
         Config::CategorySPtr category = Config::Category::ConstructCategory( pair.second.type, pair.second.items );
 
