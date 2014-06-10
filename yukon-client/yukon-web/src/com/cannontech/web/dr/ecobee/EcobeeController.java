@@ -369,6 +369,8 @@ public class EcobeeController {
             FlashScope flash) throws IllegalArgumentException {
         
         List<EcobeeReconciliationResult> results = null;
+        // TODO: schedule a date to test this as this action could be very
+        // disruptive to several people's test data
         try {
 //            results = ecobeeReconciliation.fixAllDiscrepancies(reportId);
 //            for (EcobeeReconciliationResult result: results) {
