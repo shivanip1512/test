@@ -31,4 +31,8 @@ public enum EcobeeDiscrepancyType implements DisplayableEnum {
     public String getFormatKey() {
         return "yukon.web.modules.dr.ecobee.discrepancyType." + name();
     }
+    
+    public String getDetailKey() {
+        return getFormatKey() + ".detail";
+    }
 }

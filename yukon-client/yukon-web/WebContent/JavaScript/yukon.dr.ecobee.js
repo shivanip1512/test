@@ -37,7 +37,7 @@ yukon.dr.ecobee = (function () {
         $(containingDivSelector + ' .f-time-label').text(_timeFormatter.formatTime(value, 0));
     },
     
-    mod;
+    mod = null;
 
     mod = {
         /** 
@@ -93,6 +93,20 @@ yukon.dr.ecobee = (function () {
                 });
             });
 
+            $(document).on('yukon.dr.ecobee.fix', function (ev) {
+                var form = $('#ecobee-fix form');
+                form.submit();
+            });
+
+            $(document).on('yukon.dr.ecobee.fixall', function (ev) {
+                var form = $('#ecobee-fixall form');
+                form.submit();
+            });
+
+            $(document).on('yukon.dr.ecobee.fix.init', function (ev, originalTarget) {
+                mod.initFixIssue(ev, originalTarget);
+            });
+
             $(document).on('click', '#ecobee-error-checking-toggle .toggle-on-off .button', function () {
                 var checkErrorsOn = $('#ecobee-error-checking-toggle .toggle-on-off .button.yes').hasClass('on');
                 if (checkErrorsOn) {
@@ -136,12 +150,17 @@ yukon.dr.ecobee = (function () {
                 $('#ecobee-data-collection-schedule').hide();
             }
         },
-        assignInputs: function (devices) {
+        /**
+         * Callback fired by load group id picker as its endAction (download.jsp).
+         * @callback
+         * @param {object} loadGroups - load groups selected in picker
+         */
+        assignInputs: function (loadGroups) {
             var pickerThis = loadGroupPicker,
                 loadGroupDiv = document.getElementById('loadGroup'),
                 ssInputId = 'picker_' + pickerThis.pickerId + '_ss',
                 ssInputElem = document.getElementById(ssInputId);
-            $.each(devices, function (key, selectedItem) {
+            $.each(loadGroups, function (key, selectedItem) {
                 var inputElement = document.createElement('input');
                 inputElement.type = 'hidden';
                 inputElement.value = selectedItem[pickerThis.idFieldName];
@@ -196,7 +215,35 @@ yukon.dr.ecobee = (function () {
             }
             
             row.find('.js-percent-done').html(status.percentDone);
-        }
+        },
+        /**
+         * Callback fired when data-load-event specified in popup but no data-url specified.
+         * @callback
+         * @param {module:yukon.dr.ecobee#event:yukon.dr.ecobee.fix.init} ev - A yukon.dr.ecobee.fix.init event.
+         *        {object} originalTarget - in this case, the button that was clicked that has data attributes on it.
+         */
+        initFixIssue: function (ev, originalTarget) {
+            var popupId = $(ev.target).attr('id'), 
+                reportId = $(originalTarget).closest('table').data('reportId'),
+                errorId = $(originalTarget).closest('button').data('errorId'),
+                issueExplanation = $(originalTarget).closest('button').data('explanation');
+            switch (popupId) {
+            case 'ecobee-fix':
+                $('#ecobee-report-id').val(reportId);
+                $('#ecobee-error-id').val(errorId);
+                $('#ecobee-issue-explanation').html(issueExplanation);
+                break;
+            case 'ecobee-unfixable':
+                $('#ecobee-unfixable-explanation').html(issueExplanation);
+                break;
+            case 'ecobee-fixall':
+                $('#ecobee-fixall-report-id').val($(ev.target).closest('button').data('reportId'));
+                $('#ecobee-fixall-explanation').html(issueExplanation);
+                break;
+            default:
+                break;
+            }
+        } 
     };
     return mod;
 })();

@@ -65,7 +65,7 @@
                         data-load-event="yukon.dr.ecobee.download.settings.load"
                         data-event="yukon.dr.ecobee.download.start" 
                         data-width="600" 
-                        data-title="<cti:msg2 key=".dataDownloads.title"/>" 
+                        data-title="<cti:msg2 key=".download.title"/>" 
                         class="dn"></div>
                 </div>
             </tags:sectionContainer2>
@@ -75,18 +75,23 @@
                 <c:choose>
                     <c:when test="${fn:length(report.errors) > 0}">
                 <div class="scroll-large">
-                    <table class="compact-results-table with-form-controls separated no-stripes">
+                    <table class="compact-results-table with-form-controls separated no-stripes" data-report-id="${report.reportId}">
                         <thead></thead>
                         <tfoot></tfoot>
                         <tbody>
                             <c:forEach items="${report.errors}" var="issue">
                                 <tr>
-                                    <td data-report-id="${report.reportId}" data-error-id="${issue.errorId}">
+                                    <td>
                                         <i:inline key="${issue.errorType.formatKey}" arguments="${issue.arguments}"/>
                                     </td>
                                     <td>
                                         <c:if test="${issue.errorType.fixable}">
-                                            <cti:button popup="#ecobee-fix" renderMode="buttonImage" classes="fr M0" icon="icon-wrench"/>
+                                            <cti:msg2 var="explanation" key="${issue.errorType.detailKey}" arguments="${issue.arguments}"/>
+                                            <cti:button popup="#ecobee-fix" renderMode="buttonImage" classes="fr M0" icon="icon-wrench" data-error-id="${issue.errorId}" data-explanation="${fn:escapeXml(explanation)}" data-fixable="${issue.errorType.fixable}"/>
+                                        </c:if>
+                                        <c:if test="${not issue.errorType.fixable}">
+                                            <cti:msg2 var="explanation" key="${issue.errorType.detailKey}" arguments="${issue.arguments}"/>
+                                            <cti:button popup="#ecobee-unfixable" renderMode="buttonImage" classes="fr M0" icon="icon-error" data-error-id="${issue.errorId}" data-explanation="${fn:escapeXml(explanation)}" data-fixable="${issue.errorType.fixable}"/>
                                         </c:if>
                                     </td>
                                 </tr>
@@ -95,14 +100,44 @@
                     </table>
                 </div>
                 <div class="action-area">
-                    <cti:button nameKey="issues.fixAll" icon="icon-wrench"/>
+                    <cti:msg2 var="explanation" key=".details.fixAll"/>
+                    <cti:button popup="#ecobee-fixall" nameKey="issues.fixAll" icon="icon-wrench" data-explanation="${fn:escapeXml(explanation)}" data-report-id="${report.reportId}"/>
                 </div>
-                <div dialog 
+                <div dialog
                     id="ecobee-fix" 
                     data-width="400"
                     data-event="yukon.dr.ecobee.fix" 
                     data-title="<cti:msg2 key=".issues.fix.title"/>" 
+                    data-load-event="yukon.dr.ecobee.fix.init"
                     class="dn">
+                    <form action="ecobee/fixIssue" method="POST">
+                        <cti:csrfToken/>
+                        <p id="ecobee-issue-explanation"></p>
+                        <input type="hidden" name="reportId" id="ecobee-report-id">
+                        <input type="hidden" name="errorId" id="ecobee-error-id">
+                    </form>
+                </div>
+                <div
+                    id="ecobee-unfixable" 
+                    data-width="400"
+                    data-title="<cti:msg2 key=".issues.unfixable.title"/>" 
+                    data-load-event="yukon.dr.ecobee.fix.init"
+                    class="dn">
+                    <p id="ecobee-unfixable-explanation"></p>
+                </div>
+                <div dialog
+                    id="ecobee-fixall" 
+                    data-width="400"
+                    data-event="yukon.dr.ecobee.fixall" 
+                    data-title="<cti:msg2 key=".issues.fixall.title"/>" 
+                    data-load-event="yukon.dr.ecobee.fix.init"
+                    data-report-id="${report.reportId}"
+                    class="dn">
+                    <form action="ecobee/fixAllIssues" method="POST">
+                        <cti:csrfToken/>
+                        <input type="hidden" name="reportId" id="ecobee-fixall-report-id">
+                        <p id="ecobee-fixall-explanation"></p>
+                    </form>
                 </div>
                     </c:when>
                     <c:otherwise>

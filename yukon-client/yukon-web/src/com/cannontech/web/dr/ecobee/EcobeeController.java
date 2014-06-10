@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +45,7 @@ import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyCategory;
 import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
+import com.cannontech.dr.ecobee.model.EcobeeReconciliationResult;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeReconciliationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -77,6 +77,7 @@ public class EcobeeController {
     private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
     private static DateTimeFormatter dateTimeFormatter;
     private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
+    private static final String fixIssueKey = "yukon.web.modules.dr.ecobee.details.issues.";
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EnergyCompanyDao ecDao;
@@ -185,8 +186,8 @@ public class EcobeeController {
         
         Duration specifiedDuration = new Duration(startDate, endDate);
         
-        if (specifiedDuration.isLongerThan(Duration.standardDays(7))) {
-            log.debug("bogus date range: " + specifiedDuration);
+        if (specifiedDuration.isLongerThan(Duration.standardDays(7)) ||
+                startDate.isAfter(endDate)) {
             response.setStatus(400);
             DateTime now = new DateTime();
             model.addAttribute("now", now);
@@ -304,29 +305,8 @@ public class EcobeeController {
                     new EcobeeQueryStats(month, demandResponseCount, dataCollectionCount, systemCount, limit);
             queryStatsList.add(queryStats);
         }
-        // begin unit test
-        if (rangeOfStatsList.isEmpty()) {
-            // fake data for testing
-            Random rand = new Random();
-            DateTime dateTime = new DateTime();
-            int maxTestVal = 100000;
-            for (int i = 0; i < 12; i += 1) {
-                
-                int demandResponseCount = rand.nextInt(maxTestVal);
-                int dataCollectionCount = rand.nextInt(maxTestVal - demandResponseCount);
-                int systemCount = rand.nextInt(maxTestVal - demandResponseCount - dataCollectionCount);
-                int month = dateTime.minusMonths(i).getMonthOfYear();
-                int year = dateTime.minusMonths(i).getYear();
-                YearMonth yearMonth = new YearMonth().withYear(year).withMonthOfYear(month);
-                
-                EcobeeQueryStats queryStats =
-                    new EcobeeQueryStats(yearMonth, demandResponseCount, dataCollectionCount, systemCount, limit);
-                queryStatsList.add(queryStats);
-                
-            }
-        }
         model.addAttribute("statsList", queryStatsList);
-        // TODO: fetch data download info
+
         List<String> pendingKeys = readResultsCache.getPendingKeys();
         List<String> completedKeys = readResultsCache.getCompletedKeys();
         Map<String, EcobeeReadResult> downloads = new HashMap<>();
@@ -355,6 +335,56 @@ public class EcobeeController {
         return "dr/ecobee/details.jsp";
     }
     
+    @RequestMapping(value="/ecobee/runReport")
+    public String runReport() {
+        ecobeeReconciliation.runReconciliationReport();
+        return "";
+    }
+    
+    @RequestMapping(value="/ecobee/fixIssue", method=RequestMethod.POST)
+    public String fixIssue(ModelMap model,
+            YukonUserContext userContext,
+            Integer reportId,
+            Integer errorId,
+            FlashScope flash) throws IllegalArgumentException {
+        
+        EcobeeReconciliationResult result = null;
+        try {
+            result = ecobeeReconciliation.fixDiscrepancy(reportId, errorId);
+            if (result.isSuccess()) {
+                flash.setConfirm(new YukonMessageSourceResolvable(fixIssueKey + "fixSucceeded"));
+            } else {
+                flash.setError(new YukonMessageSourceResolvable(result.getErrorType().getFormatKey()));
+            }
+        } catch (IllegalArgumentException e) {
+            flash.setError(new YukonMessageSourceResolvable(fixIssueKey + "fixFailed"));
+        }
+        return "redirect:/dr/ecobee";
+    }
+
+    @RequestMapping(value="/ecobee/fixAllIssues", method=RequestMethod.POST)
+    public String fixAllIssues(ModelMap model,
+            YukonUserContext userContext,
+            Integer reportId,
+            FlashScope flash) throws IllegalArgumentException {
+        
+        List<EcobeeReconciliationResult> results = null;
+        try {
+//            results = ecobeeReconciliation.fixAllDiscrepancies(reportId);
+//            for (EcobeeReconciliationResult result: results) {
+//                
+//            }
+//            if (results.isSuccess()) {
+//                flash.setConfirm(new YukonMessageSourceResolvable(fixIssueKey + "fixSucceeded"));
+//            } else {
+//                flash.setError(new YukonMessageSourceResolvable(result.getErrorType().getFormatKey()));
+//            }
+        } catch (IllegalArgumentException e) {
+            flash.setError(new YukonMessageSourceResolvable(fixIssueKey + "fixFailed"));
+        }
+        return "redirect:/dr/ecobee";
+    }
+
     @InitBinder
     public void initialize(WebDataBinder dataBinder) {
         PropertyEditorSupport localDateEditor = new PropertyEditorSupport() {
@@ -380,44 +410,6 @@ public class EcobeeController {
         dataBinder.registerCustomEditor(LocalTime.class, localDateEditor);
     }
 
-    // TODO: remove, now using real data
-    public class EcobeeDataDownload {
-        private DateTime startDate;
-        private DateTime endDate;
-        private boolean downloadFinished = false;
-        
-        public EcobeeDataDownload(DateTime startDate, DateTime endDate,
-                boolean downloadFinished) {
-            super();
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.downloadFinished = downloadFinished;
-        }
-        public EcobeeDataDownload(DateTime startDate, boolean downloadFinished) {
-            super();
-            this.startDate = startDate;
-            this.endDate = null;
-            this.downloadFinished = downloadFinished;
-        }
-        public DateTime getStartDate() {
-            return startDate;
-        }
-        public void setStartDate(DateTime startDate) {
-            this.startDate = startDate;
-        }
-        public DateTime getEndDate() {
-            return endDate;
-        }
-        public void setEndDate(DateTime endDate) {
-            this.endDate = endDate;
-        }
-        public boolean isDownloadFinished() {
-            return downloadFinished;
-        }
-        public void setDownloadFinished(boolean downloadFinished) {
-            this.downloadFinished = downloadFinished;
-        }
-    }
     
     private ScheduledRepeatingJob getJob(YukonJobDefinition<? extends YukonTask> jobDefinition) {
         List<ScheduledRepeatingJob> activeJobs = jobManager.getNotDeletedRepeatingJobsByDefinition(jobDefinition);

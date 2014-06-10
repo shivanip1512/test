@@ -508,9 +508,11 @@ yukon.ui = (function () {
                         popup.dialog(options);
                     });
                 } else {
+                    if (popup.is('[data-load-event]')) {
+                        popup.trigger(popup.data('loadEvent'), ev.target);
+                    }
                     popup.dialog(options);
                 }
-                
             });
         },
 
