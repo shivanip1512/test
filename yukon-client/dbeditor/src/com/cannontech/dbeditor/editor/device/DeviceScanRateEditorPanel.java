@@ -23,13 +23,13 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IEDMeter;
 import com.cannontech.database.data.device.LCUBase;
 import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.data.device.TapTerminalBase;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.RTUBase;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.TCUBase;
+import com.cannontech.database.data.device.TapTerminalBase;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -1940,7 +1940,7 @@ public void setDeviceType(PaoType paoType)
 			getPeriodicHealthIntervalComboBox().setSelectedItem("1 hour");
 	}
 	else if( paoType == PaoType.DAVISWEATHER 
-				|| paoType.isMeter() )
+				|| DeviceTypesFuncs.isMeter(paoType.getDeviceTypeId()))
 	{
 		getPeriodicHealthCheckBox().setText("General Data Collection");
 		getPeriodicHealthIntervalComboBox().setSelectedItem("1 hour");
