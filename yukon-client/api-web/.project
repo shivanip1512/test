@@ -10,6 +10,7 @@
 		<project>common</project>
 		<project>commander</project>
 		<project>notification</project>
+		<project>yukon-shared</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
