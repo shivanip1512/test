@@ -95,23 +95,23 @@
     <%-- BULK UPDATE RESULTS --%>
     <c:if test="${not empty resultsList}">
     
-        <cti:msg var="recentBulkOperationsHeaderTitle" key=".recentBulkOperations.header"/>
+        <cti:msg2 var="recentBulkOperationsHeaderTitle" key=".recentBulkOperations.header"/>
         <tags:boxContainer title="${recentBulkOperationsHeaderTitle}" id="recentBulkOperationsContainer" hideEnabled="false">
         
-            <cti:msg var="performNewActionLinkTitle" key=".recentBulkOperations.performNewActionLinkTitle"/>
+            <cti:msg2 var="performNewActionLinkTitle" key=".recentBulkOperations.performNewActionLinkTitle"/>
             <table class="compact-results-table">
                 <thead>
                     <tr>
-                        <th><cti:msg key=".recentBulkOperations.operationType"/></th>
-                        <th><cti:msg key=".recentBulkOperations.updateTime"/></th>
-                        <th><cti:msg key=".recentBulkOperations.success"/></th>
-                        <th><cti:msg key=".recentBulkOperations.processingException"/></th>
+                        <th><cti:msg2 key=".recentBulkOperations.operationType"/></th>
+                        <th><cti:msg2 key=".recentBulkOperations.updateTime"/></th>
+                        <th><cti:msg2 key=".recentBulkOperations.success"/></th>
+                        <th><cti:msg2 key=".recentBulkOperations.processingException"/></th>
                         <th></th>
-                        <th><cti:msg key=".recentBulkOperations.fields"/></th>
+                        <th><cti:msg2 key=".recentBulkOperations.fields"/></th>
                         <c:if test="${hasBulkImportRP || hasBulkUpdateRP || hasMassChangeRP}">
-                            <th><cti:msg key=".recentBulkOperations.detailHeader"/></th>
+                            <th><cti:msg2 key=".recentBulkOperations.detailHeader"/></th>
                         </c:if>
-                        <th><cti:msg key=".recentBulkOperations.status"/></th>
+                        <th><cti:msg2 key=".recentBulkOperations.status"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -147,7 +147,7 @@
                                     <a href="javascript:submitForm('${successFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/></a> 
                                     <tags:selectedDevicesPopup deviceCollection="${callbackResult.successDeviceCollection}" />
                                     
-                                    <form id="${successFormName}" method="post" action="/bulk/collectionActions">
+                                    <form id="${successFormName}" method="post" action="<cti:url value="/bulk/collectionActions"/>">
                                         <cti:csrfToken/>
                                         <cti:deviceCollection deviceCollection="${callbackResult.successDeviceCollection}" />
                                     </form>
@@ -176,7 +176,7 @@
                                               <c:set var="processingExceptionCollectionActionFormName" value="processingExceptionCollectionActionForm${resultsId}"/>
                                               <a href="javascript:submitForm('${processingExceptionCollectionActionFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/></a> 
                                               <tags:selectedDevicesPopup deviceCollection="${callbackResult.failureDeviceCollection}" />
-                                              <form id="${processingExceptionCollectionActionFormName}" method="post" action="/bulk/collectionActions">
+                                              <form id="${processingExceptionCollectionActionFormName}" method="post" action="<cti:url value="/bulk/collectionActions"/>">
                                                   <cti:csrfToken/>
                                                   <cti:deviceCollection deviceCollection="${callbackResult.failureDeviceCollection}" />
                                               </form>
@@ -216,7 +216,7 @@
                                     <cti:param name="resultsId" value="${resultsId}" />
                                 </cti:url>
                                 <td>
-                                    <a href="${resultDetailUrl}"><cti:msg key=".recentBulkOperations.detailLink"/></a>
+                                    <a href="${resultDetailUrl}"><cti:msg2 key=".recentBulkOperations.detailLink"/></a>
                                 </td>
                             </c:when>
                             <c:when test="${hasBulkImportRP || hasBulkUpdateRP || hasMassChangeRP}">

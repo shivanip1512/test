@@ -22,7 +22,7 @@
     <cti:icon icon="icon-page-white-excel"/>
 </a> 
 
-<form id="${formName}" method="post" action="/bulk/processingExceptionFileDownload">
+<form id="${formName}" method="post" action="<cti:url value="/bulk/processingExceptionFileDownload"/>">
     <cti:csrfToken/>
     <input type="hidden" name="resultsId" value="${resultsId}">
 </form>
