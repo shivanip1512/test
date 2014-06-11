@@ -136,12 +136,12 @@ yukon.ui.dateTimePickers = function () {
                 
                 if (self.hasClass('f-dateStart')) {
                     self.change(function () {
-                        $(this).closest('.f-dateRange').find('.f-dateEnd').datetimeEntry('change', 'minDatetime', $(this).datetimeEntry('getDatetime'));
+                        $(this).closest('.f-dateRange').find('.f-dateEnd').datetimeEntry('option', 'minDatetime', $(this).datetimeEntry('getDatetime'));
                     });
                 }
                 if (self.hasClass('f-dateEnd')) {
                     self.change(function () {
-                        $(this).closest('.f-dateRange').find('.f-dateStart').datetimeEntry('change', 'maxDatetime', $(this).datetimeEntry('getDatetime'));
+                        $(this).closest('.f-dateRange').find('.f-dateStart').datetimeEntry('option', 'maxDatetime', $(this).datetimeEntry('getDatetime'));
                     });
                 }
                 
