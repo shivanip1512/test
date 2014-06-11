@@ -47,7 +47,6 @@ public class EcobeeMessageListener {
         }
     }
 
-
     public void handleRestoreMessage(Message message) {
         log.debug("Received message on yukon.notif.stream.dr.EcobeeRestoreMessage queue.");
 
@@ -93,8 +92,8 @@ public class EcobeeMessageListener {
         int groupId = message.readInt();
         int dutyCyclePercent = message.readByte();
         byte rampingOptions = message.readByte();
-        int utcStartTimeSeconds = message.readInt();
-        int utcEndTimeSeconds = message.readInt();
+        long utcStartTimeSeconds = message.readInt();
+        long utcEndTimeSeconds = message.readInt();
 
         //Massage the data into the form we want
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
