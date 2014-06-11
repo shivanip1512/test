@@ -32,20 +32,9 @@
 
     <div class="column-12-12">
         <div class="column one">
-            <tags:sectionContainer2 nameKey="queryStats" styleClass="stacked">
-                <tags:nameValueContainer2 naturalWidth="false">
-                    <c:forEach items="${statsList}" var="stats">
-                        <tr>
-                            <td class="name"><cti:formatDate type="MONTH_YEAR" value="${stats.month}"/>:</td>
-                            <td class="value full-width">
-                                <dr:ecobeeStats value="${stats}"/>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tags:nameValueContainer2>
-            </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="dataDownloads" id="data-downloads">
-                <table class="name-value-table with-form-controls ${fn:length(downloads) <= 0 ? 'dn' : ''}" id="downloads-table">
+                <table class="name-value-table with-form-controls id="downloads-table"
+                    ${fn:length(downloads) <= 0 ? 'dn' : ''}">
                     <thead></thead>
                     <tfoot></tfoot>
                     <tbody>
@@ -70,12 +59,13 @@
                 </div>
             </tags:sectionContainer2>
         </div>
-        <div class="column two nogutter">
+        <div class="column two nogutter" id="sync-issues" data-report-id="${report.reportId}">
             <tags:sectionContainer2 nameKey="issues" arguments="${fn:length(report.errors)}">
                 <c:choose>
                     <c:when test="${fn:length(report.errors) > 0}">
                 <div class="scroll-large">
-                    <table class="compact-results-table with-form-controls separated no-stripes" data-report-id="${report.reportId}">
+                    <table class="compact-results-table with-form-controls separated no-stripes"
+                        data-report-id="${report.reportId}">
                         <thead></thead>
                         <tfoot></tfoot>
                         <tbody>
@@ -86,12 +76,18 @@
                                     </td>
                                     <td>
                                         <c:if test="${issue.errorType.fixable}">
-                                            <cti:msg2 var="explanation" key="${issue.errorType.detailKey}" arguments="${issue.arguments}"/>
-                                            <cti:button popup="#ecobee-fix" renderMode="buttonImage" classes="fr M0" icon="icon-wrench" data-error-id="${issue.errorId}" data-explanation="${fn:escapeXml(explanation)}" data-fixable="${issue.errorType.fixable}"/>
+                                            <cti:msg2 var="explanation" key="${issue.errorType.detailKey}"
+                                                arguments="${issue.arguments}"/>
+                                            <cti:button popup="#ecobee-fix" renderMode="buttonImage" classes="fr M0"
+                                                icon="icon-wrench" data-error-id="${issue.errorId}"
+                                                data-explanation="${fn:escapeXml(explanation)}"/>
                                         </c:if>
                                         <c:if test="${not issue.errorType.fixable}">
-                                            <cti:msg2 var="explanation" key="${issue.errorType.detailKey}" arguments="${issue.arguments}"/>
-                                            <cti:button popup="#ecobee-unfixable" renderMode="buttonImage" classes="fr M0" icon="icon-error" data-error-id="${issue.errorId}" data-explanation="${fn:escapeXml(explanation)}" data-fixable="${issue.errorType.fixable}"/>
+                                            <cti:msg2 var="explanation" key="${issue.errorType.detailKey}"
+                                                arguments="${issue.arguments}"/>
+                                            <cti:button popup="#ecobee-unfixable" renderMode="buttonImage" classes="fr M0"
+                                                icon="icon-error" data-error-id="${issue.errorId}"
+                                                data-explanation="${fn:escapeXml(explanation)}"/>
                                         </c:if>
                                     </td>
                                 </tr>
@@ -101,10 +97,12 @@
                 </div>
                 <div class="action-area">
                     <cti:msg2 var="explanation" key=".details.fixAll"/>
-                    <cti:button popup="#ecobee-fixall" nameKey="issues.fixAll" icon="icon-wrench" data-explanation="${fn:escapeXml(explanation)}" data-report-id="${report.reportId}"/>
+                    <cti:button popup="#ecobee-fixall" nameKey="issues.fixAll" icon="icon-wrench"
+                        data-explanation="${fn:escapeXml(explanation)}"/>
                 </div>
                 <div dialog
-                    id="ecobee-fix" 
+                    id="ecobee-fix"
+                    data-form
                     data-width="400"
                     data-event="yukon.dr.ecobee.fix" 
                     data-title="<cti:msg2 key=".issues.fix.title"/>" 
@@ -127,6 +125,7 @@
                 </div>
                 <div dialog
                     id="ecobee-fixall" 
+                    data-form
                     data-width="400"
                     data-event="yukon.dr.ecobee.fixall" 
                     data-title="<cti:msg2 key=".issues.fixall.title"/>" 

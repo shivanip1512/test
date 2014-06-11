@@ -2,7 +2,6 @@ package com.cannontech.web.dr.ecobee;
 
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,7 +17,6 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
-import org.joda.time.YearMonth;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.MonthYear;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -40,9 +37,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
-import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyCategory;
-import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationResult;
@@ -56,12 +51,10 @@ import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
-import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.ecobee.service.DataDownloadService;
-import com.cannontech.web.dr.model.EcobeeQueryStats;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.loadcontrol.tasks.RepeatingWeatherDataTask;
@@ -262,11 +255,6 @@ public class EcobeeController {
         }
         model.addAttribute("ecobeeSettings", ecobeeSettings);
 
-        EcobeeQueryStatistics currentMonthStats = ecobeeQueryCountDao.getCountsForMonth(MonthYear.now());
-        int limit = globalSettingDao.getInteger(GlobalSettingType.ECOBEE_QUERY_LIMIT);
-        EcobeeQueryStats queryStats = new EcobeeQueryStats(currentMonthStats, limit);
-        model.addAttribute("ecobeeStats", queryStats);
-
         int deviceIssues = 0;
         int groupIssues = 0;
         EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
@@ -282,30 +270,6 @@ public class EcobeeController {
 
     @RequestMapping(value="/ecobee", method=RequestMethod.GET)
     public String details(ModelMap model, YukonUserContext userContext) {
-
-        //get stats across a range of months
-        MonthYear currentMonth = MonthYear.now();
-        MonthYear yearAgoMonth = currentMonth.minus(0, 1);
-        Range<MonthYear> range = Range.inclusive(yearAgoMonth, currentMonth);
-
-        List<EcobeeQueryStatistics> rangeOfStatsList = ecobeeQueryCountDao.getCountsForRange(range);
-        List<EcobeeQueryStats> queryStatsList = new ArrayList<>();
-        int limit = globalSettingDao.getInteger(GlobalSettingType.ECOBEE_QUERY_LIMIT);
-        
-        for (EcobeeQueryStatistics stats : rangeOfStatsList) {
-            
-            int statsMonth = stats.getMonth();
-            int statsYear = stats.getYear();
-            YearMonth month = new YearMonth().withYear(statsYear).withMonthOfYear(statsMonth);
-            int demandResponseCount = stats.getQueryCountByType(EcobeeQueryType.DEMAND_RESPONSE);
-            int dataCollectionCount = stats.getQueryCountByType(EcobeeQueryType.DATA_COLLECTION);
-            int systemCount = stats.getQueryCountByType(EcobeeQueryType.SYSTEM);
-            
-            EcobeeQueryStats queryStats =
-                    new EcobeeQueryStats(month, demandResponseCount, dataCollectionCount, systemCount, limit);
-            queryStatsList.add(queryStats);
-        }
-        model.addAttribute("statsList", queryStatsList);
 
         List<String> pendingKeys = readResultsCache.getPendingKeys();
         List<String> completedKeys = readResultsCache.getCompletedKeys();
@@ -333,12 +297,6 @@ public class EcobeeController {
         model.addAttribute("report", report);
 
         return "dr/ecobee/details.jsp";
-    }
-    
-    @RequestMapping(value="/ecobee/runReport")
-    public String runReport() {
-        ecobeeReconciliation.runReconciliationReport();
-        return "";
     }
     
     @RequestMapping(value="/ecobee/fixIssue", method=RequestMethod.POST)
@@ -369,17 +327,16 @@ public class EcobeeController {
             FlashScope flash) throws IllegalArgumentException {
         
         List<EcobeeReconciliationResult> results = null;
-        // TODO: schedule a date to test this as this action could be very
-        // disruptive to several people's test data
         try {
+            // TODO: enable after Sam's final changes
+            // TODO: if all are successful, put up good flashscope
 //            results = ecobeeReconciliation.fixAllDiscrepancies(reportId);
 //            for (EcobeeReconciliationResult result: results) {
-//                
-//            }
-//            if (results.isSuccess()) {
-//                flash.setConfirm(new YukonMessageSourceResolvable(fixIssueKey + "fixSucceeded"));
-//            } else {
-//                flash.setError(new YukonMessageSourceResolvable(result.getErrorType().getFormatKey()));
+//                if (result.isSuccess()) {
+//                    flash.setConfirm(new YukonMessageSourceResolvable(fixIssueKey + "fixSucceeded"));
+//                } else {
+//                    flash.setError(new YukonMessageSourceResolvable(result.getErrorType().getFormatKey()));
+//                }
 //            }
         } catch (IllegalArgumentException e) {
             flash.setError(new YukonMessageSourceResolvable(fixIssueKey + "fixFailed"));

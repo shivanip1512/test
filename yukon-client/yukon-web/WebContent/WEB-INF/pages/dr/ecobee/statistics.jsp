@@ -16,10 +16,6 @@
     <tags:sectionContainer2 nameKey="ecobee">
         <div class="stacked">
             <tags:nameValueContainer2 naturalWidth="false">
-                <cti:formatDate type="SHORT_MONTH_YEAR" value="${ecobeeStats.month}" var="currentMonth"/>
-                <tags:nameValue2 nameKey=".ecobee.queries" argument="${currentMonth}" valueClass="full-width">
-                    <dr:ecobeeStats value="${ecobeeStats}"/>
-                </tags:nameValue2>
                 <tags:nameValue2 nameKey=".ecobee.issues">
                     <c:set var="deviceClass" value="${deviceIssues > 0 ? 'label-danger' : 'label-default'}"/>
                     <c:set var="groupClass" value="${groupIssues > 0 ? 'label-danger' : 'label-default'}"/>

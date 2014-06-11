@@ -93,16 +93,6 @@ yukon.dr.ecobee = (function () {
                 });
             });
 
-            $(document).on('yukon.dr.ecobee.fix', function (ev) {
-                var form = $('#ecobee-fix form');
-                form.submit();
-            });
-
-            $(document).on('yukon.dr.ecobee.fixall', function (ev) {
-                var form = $('#ecobee-fixall form');
-                form.submit();
-            });
-
             $(document).on('yukon.dr.ecobee.fix.init', function (ev, originalTarget) {
                 mod.initFixIssue(ev, originalTarget);
             });
@@ -152,8 +142,9 @@ yukon.dr.ecobee = (function () {
         },
         /**
          * Callback fired by load group id picker as its endAction (download.jsp).
+         * Adds chosen loadgroup ids from the picker as hidden inputs to the download form
          * @callback
-         * @param {object} loadGroups - load groups selected in picker
+         * @param {Object} loadGroups - load groups selected in picker
          */
         assignInputs: function (loadGroups) {
             var pickerThis = loadGroupPicker,
@@ -179,9 +170,9 @@ yukon.dr.ecobee = (function () {
          * Updater callback fired for each download.
          * @callback
          * @param {string} status - JSON object string with the following properties:
-         *        {boolean} complete - true if data retrieval from ecobee is finished, false otherwise.
-         *        {string}  percentDone - percentage in the form '###.#%'.
-         *        {boolean} successful - true if the data retrieval is complete without errors, false otherwise.
+         * @param {boolean} complete - true if data retrieval from ecobee is finished, false otherwise.
+         * @param {string}  percentDone - percentage in the form '###.#%'.
+         * @param {boolean} successful - true if the data retrieval is complete without errors, false otherwise.
          */
         downloadStatus: function (status) {
             
@@ -217,14 +208,16 @@ yukon.dr.ecobee = (function () {
             row.find('.js-percent-done').html(status.percentDone);
         },
         /**
-         * Callback fired when data-load-event specified in popup but no data-url specified.
+         * Initialize contents in popups for fixing ecobee issues before displaying them.
+         * This callback is fired when a data-load-event attribute is specified in popup but
+         * no data-url specified.
          * @callback
          * @param {module:yukon.dr.ecobee#event:yukon.dr.ecobee.fix.init} ev - A yukon.dr.ecobee.fix.init event.
-         *        {object} originalTarget - in this case, the button that was clicked that has data attributes on it.
+         * @param {Object} originalTarget - in this case, the button that was clicked that has data attributes on it.
          */
         initFixIssue: function (ev, originalTarget) {
             var popupId = $(ev.target).attr('id'), 
-                reportId = $(originalTarget).closest('table').data('reportId'),
+                reportId = $('#sync-issues').data('reportId'),
                 errorId = $(originalTarget).closest('button').data('errorId'),
                 issueExplanation = $(originalTarget).closest('button').data('explanation');
             switch (popupId) {
@@ -237,7 +230,7 @@ yukon.dr.ecobee = (function () {
                 $('#ecobee-unfixable-explanation').html(issueExplanation);
                 break;
             case 'ecobee-fixall':
-                $('#ecobee-fixall-report-id').val($(ev.target).closest('button').data('reportId'));
+                $('#ecobee-fixall-report-id').val(reportId);
                 $('#ecobee-fixall-explanation').html(issueExplanation);
                 break;
             default:
