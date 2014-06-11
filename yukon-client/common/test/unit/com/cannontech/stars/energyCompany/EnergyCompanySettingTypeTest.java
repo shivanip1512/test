@@ -1,9 +1,8 @@
 package com.cannontech.stars.energyCompany;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
-import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import org.junit.Test;
 
 public class EnergyCompanySettingTypeTest {
 
@@ -15,7 +14,7 @@ public class EnergyCompanySettingTypeTest {
             try {
                 typeClass.cast(defaultValue);
             } catch (ClassCastException e) {
-                Assert.fail(settingType + "'s default value:'" + defaultValue + "' type:" 
+                fail(settingType + "'s default value:'" + defaultValue + "' type:" 
                         + defaultValue.getClass().getSimpleName() + "  cannot be cast to setting type: " 
                         + typeClass.getSimpleName());
             }
