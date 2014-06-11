@@ -303,7 +303,7 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes">Recording Interval</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes.description">Interval to record data internally in the meter to be returned with Interval reporting</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalHours">Reporting Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalHours.description">Interval to report Interval data recorded in the meter</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalHours.description">Interval at which to report Interval data recorded in the meter</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.reportingExceeded">Maximum of 15 Reporting channels</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.billingExceeded">Maximum of 80 Enabled channels</entry>
 

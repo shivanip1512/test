@@ -11,6 +11,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.type.InputOption;
+import com.google.common.base.CaseFormat;
 
 @Component
 public final class ElectronicMeter implements DeviceConfigurationInputEnumeration {
@@ -26,7 +27,7 @@ public final class ElectronicMeter implements DeviceConfigurationInputEnumeratio
         ALPHA_P_PLUS("3"),
         GEKV("4"),
         GEKV2("5"),
-        SENTINAL("6"),
+        SENTINEL("6"),
         DNP("7"),
         GEKV2C("8");
 
@@ -38,7 +39,7 @@ public final class ElectronicMeter implements DeviceConfigurationInputEnumeratio
 
         @Override
         public String getFormatKey() {
-            return baseKey + name();
+            return baseKey + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, name()) ;
         }
     }
 

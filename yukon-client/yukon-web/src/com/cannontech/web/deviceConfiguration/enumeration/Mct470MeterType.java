@@ -16,7 +16,7 @@ import com.google.common.base.CaseFormat;
 @Component
 public final class Mct470MeterType implements DeviceConfigurationInputEnumeration {
 
-    private static final String baseKey = "yukon.web.modules.tools.configs.enum.meterType";
+    private static final String baseKey = "yukon.web.modules.tools.configs.enum.meterType.";
 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 

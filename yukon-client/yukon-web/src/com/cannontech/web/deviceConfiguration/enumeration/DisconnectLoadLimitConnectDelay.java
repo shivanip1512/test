@@ -26,7 +26,6 @@ public class DisconnectLoadLimitConnectDelay implements DeviceConfigurationInput
 
         for (int value : values) {
             validDelayValues.add( new InputOption( Integer.toString(value), 
-                //TODO JOE
                 durationService.formatDuration(value, TimeUnit.MINUTES, DurationFormat.DHMS_REDUCED, userContext)));
         }
 
