@@ -1,13 +1,14 @@
 package com.cannontech.dr.ecobee.model;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.Instant;
 
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Multimap;
 
 /**
@@ -20,20 +21,22 @@ public class EcobeeReconciliationReport {
     private final Instant reportDate;
     private final Multimap<EcobeeDiscrepancyCategory, EcobeeDiscrepancy> errorsByCategory = ArrayListMultimap.create();
     private final Multimap<EcobeeDiscrepancyType, EcobeeDiscrepancy> errorsByType = ArrayListMultimap.create();
-    private final Map<Integer, EcobeeDiscrepancy> errorsById = new HashMap<>();
+    private final Map<Integer, EcobeeDiscrepancy> errorsById;
     
     public EcobeeReconciliationReport(Integer reportId, Instant reportDate, Iterable<EcobeeDiscrepancy> errors) {
         this.reportId = reportId;
         this.reportDate = reportDate;
         
+        Builder<Integer, EcobeeDiscrepancy> errorsByIdBuilder = ImmutableMap.builder();
         for (EcobeeDiscrepancy error : errors) {
             errorsByCategory.put(error.getErrorType().getCategory(), error);
             errorsByType.put(error.getErrorType(), error);
             //only populate this map if the error has an id
             if (error.getErrorId() != null) {
-                errorsById.put(error.getErrorId(), error);
+                errorsByIdBuilder.put(error.getErrorId(), error);
             }
         }
+        errorsById = errorsByIdBuilder.build();
     }
     
     public EcobeeReconciliationReport(Iterable<EcobeeDiscrepancy> errors) {

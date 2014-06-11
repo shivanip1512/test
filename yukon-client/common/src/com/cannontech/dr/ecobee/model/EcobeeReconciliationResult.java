@@ -1,28 +1,33 @@
 package com.cannontech.dr.ecobee.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
 
 public class EcobeeReconciliationResult {
-    private final int errorId;
     private final boolean success;
     private final ErrorType errorType;
+    private final EcobeeDiscrepancy originalDiscrepancy;
     
-    private EcobeeReconciliationResult(int errorId, boolean success, ErrorType errorType) {
-        this.errorId = errorId;
+    private EcobeeReconciliationResult(EcobeeDiscrepancy originalDiscrepancy, boolean success, ErrorType errorType) {
+        this.originalDiscrepancy = originalDiscrepancy;
         this.success = success;
         this.errorType = errorType;
     }
     
-    public static EcobeeReconciliationResult newSuccess(int errorId) {
-        return new EcobeeReconciliationResult(errorId, true, ErrorType.NONE);
+    public static EcobeeReconciliationResult newSuccess(EcobeeDiscrepancy originalDiscrepancy) {
+        return new EcobeeReconciliationResult(originalDiscrepancy, true, ErrorType.NONE);
     }
     
-    public static EcobeeReconciliationResult newFailure(int errorId, ErrorType errorType) {
-        return new EcobeeReconciliationResult(errorId, false, errorType);
+    public static EcobeeReconciliationResult newFailure(EcobeeDiscrepancy originalDiscrepancy, ErrorType errorType) {
+        return new EcobeeReconciliationResult(originalDiscrepancy, false, errorType);
     }
     
     public int getErrorId() {
-        return errorId;
+        return originalDiscrepancy.getErrorId();
+    }
+    
+    public EcobeeDiscrepancy getOriginalDiscrepancy() {
+        return originalDiscrepancy;
     }
     
     public boolean isSuccess() {

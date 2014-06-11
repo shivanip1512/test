@@ -12,7 +12,7 @@ public interface EcobeeGroupDeviceMappingDao {
     /**
      * Gets a multimap of ecobee load group ids to the serial number of the ecobee thermostats enrolled in each group.
      */
-    public Multimap<String, String> getSerialNumbersByGroupId();
+    public Multimap<Integer, String> getSerialNumbersByGroupId();
     
     public List<String> getAllEcobeeSerialNumbers();
 }

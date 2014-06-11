@@ -57,7 +57,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
         List<SetNode> ecobeeHierarchy = communicationService.getHierarchy();
         
         //get structure from Yukon
-        Multimap<String, String> groupToDevicesMap = 
+        Multimap<Integer, String> groupToDevicesMap = 
                 ecobeeGroupDeviceMappingDao.getSerialNumbersByGroupId();
         List<String> allSerialNumbers = ecobeeGroupDeviceMappingDao.getAllEcobeeSerialNumbers();
         
@@ -130,59 +130,59 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
                 //Set is in ecobee, doesn't correspond to a Yukon group
                 case EXTRANEOUS_MANAGEMENT_SET:
                     communicationService.deleteManagementSet(error.getCurrentPath());
-                    return EcobeeReconciliationResult.newSuccess(error.getErrorId());
+                    return EcobeeReconciliationResult.newSuccess(error);
                     
                 //ecobee device corresponds to a Yukon device, but is in the wrong management set
                 case MISLOCATED_DEVICE:
                     communicationService.moveDeviceToSet(error.getSerialNumber(), error.getCorrectPath());
-                    return EcobeeReconciliationResult.newSuccess(error.getErrorId());
+                    return EcobeeReconciliationResult.newSuccess(error);
                 
                 //ecobee set corresponds to Yukon group, but is in the wrong location in the hierarchy
                 case MISLOCATED_MANAGEMENT_SET:
                     communicationService.moveManagementSet(error.getCurrentPath(), error.getCorrectPath());
-                    return EcobeeReconciliationResult.newSuccess(error.getErrorId());
+                    return EcobeeReconciliationResult.newSuccess(error);
                 
                 //Device in Yukon, not in ecobee
                 case MISSING_DEVICE:
                     communicationService.registerDevice(error.getSerialNumber());
                     communicationService.moveDeviceToSet(error.getSerialNumber(), error.getCorrectPath());
-                    return EcobeeReconciliationResult.newSuccess(error.getErrorId());
+                    return EcobeeReconciliationResult.newSuccess(error);
                 
                 //Yukon group has no corresponding ecobee set
                 case MISSING_MANAGEMENT_SET:
                     communicationService.createManagementSet(error.getCorrectPath());
-                    return EcobeeReconciliationResult.newSuccess(error.getErrorId());
+                    return EcobeeReconciliationResult.newSuccess(error);
                 
                 //Device in ecobee, not in Yukon
                 case EXTRANEOUS_DEVICE:
                 //Unknown discrepancy type, shouldn't happen
                 default:
-                    return EcobeeReconciliationResult.newFailure(error.getErrorId(), NOT_FIXABLE);
+                    return EcobeeReconciliationResult.newFailure(error, NOT_FIXABLE);
             }
         } catch (EcobeeSetDoesNotExistException e) {
-            return EcobeeReconciliationResult.newFailure(error.getErrorId(), NO_SET);
+            return EcobeeReconciliationResult.newFailure(error, NO_SET);
         } catch (EcobeeDeviceDoesNotExistException e) {
-            return EcobeeReconciliationResult.newFailure(error.getErrorId(), NO_DEVICE);
+            return EcobeeReconciliationResult.newFailure(error, NO_DEVICE);
         } catch (EcobeeCommunicationException e) {
-            return EcobeeReconciliationResult.newFailure(error.getErrorId(), COMMUNICATION);
+            return EcobeeReconciliationResult.newFailure(error, COMMUNICATION);
         }
     }
     
     /**
      * Compares the Yukon groups and devices to the ecobee hierarchy and builds a report of discrepancies.
      */
-    private EcobeeReconciliationReport generateReport(Multimap<String, String> groupToDevicesMap, 
+    private EcobeeReconciliationReport generateReport(Multimap<Integer, String> groupToDevicesMap, 
                                                       List<String> allYukonSerialNumbers, List<SetNode> ecobeeHierarchy) {
         
         //Wrangle some data into useful structures
         EcobeeHierarchyInfo hierarchyInfo = new EcobeeHierarchyInfo(ecobeeHierarchy);
-        Collection<String> allEcobeeSerialNumbers = hierarchyInfo.getSetsAndSerialNumbers().values();
-        Set<String> yukonGroupNames = groupToDevicesMap.keySet();
+        Collection<String> allEcobeeSerialNumbers = hierarchyInfo.getSetNameToSerialNumbers().values();
+        Set<Integer> yukonGroupIds = groupToDevicesMap.keySet();
         
         //Check for different types of discrepancies and add them to the errors list
         List<EcobeeDiscrepancy> errorsList = new ArrayList<>();
-        checkForMissingAndMislocated(hierarchyInfo, yukonGroupNames, groupToDevicesMap, allEcobeeSerialNumbers, errorsList);
-        checkForExtraneousSets(hierarchyInfo, yukonGroupNames, errorsList);
+        checkForMissingAndMislocated(hierarchyInfo, yukonGroupIds, groupToDevicesMap, allEcobeeSerialNumbers, errorsList);
+        checkForExtraneousSets(hierarchyInfo, yukonGroupIds, errorsList);
         checkForExtraneousDevices(hierarchyInfo, allYukonSerialNumbers, allEcobeeSerialNumbers, errorsList);
         
         //Build the actual report
@@ -196,13 +196,13 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
      * Also checks for devices that are present in Yukon, but are missing from ecobee, or in an incorrect management
      * set.
      */
-    private void checkForMissingAndMislocated(EcobeeHierarchyInfo hierarchyInfo, Set<String> yukonGroupNames, 
-                                              Multimap<String, String> groupToDevicesMap, 
+    private void checkForMissingAndMislocated(EcobeeHierarchyInfo hierarchyInfo, Set<Integer> yukonGroupIds, 
+                                              Multimap<Integer, String> groupToDevicesMap, 
                                               Collection<String> allEcobeeSerialNumbers,
                                               List<EcobeeDiscrepancy> errorsList) {
         
-        for (String groupId : yukonGroupNames) {
-            String setPath = hierarchyInfo.getSetNamesAndPaths().get(groupId);
+        for (Integer groupId : yukonGroupIds) {
+            String setPath = hierarchyInfo.getSetNameToSetPath().get(Integer.toString(groupId));
             String correctPath = "/" + groupId;
             
             if (setPath == null) {
@@ -214,9 +214,9 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             } else {
                 //Set exists, in the correct location
                 Collection<String> yukonSerialNumbersForGroup = groupToDevicesMap.get(groupId);
-                Collection<String> ecobeeSerialNumbersForGroup = hierarchyInfo.getSetsAndSerialNumbers().get(groupId);
+                Collection<String> ecobeeSerialNumbersForGroup = hierarchyInfo.getSetNameToSerialNumbers().get(Integer.toString(groupId));
                 Collection<String> optedOutSerialNumbers = 
-                        hierarchyInfo.getSetsAndSerialNumbers().get(EcobeeCommunicationService.OPT_OUT_SET);
+                        hierarchyInfo.getSetNameToSerialNumbers().get(EcobeeCommunicationService.OPT_OUT_SET);
                 
                 for (String yukonSerialNumber : yukonSerialNumbersForGroup) {
                     if (!allEcobeeSerialNumbers.contains(yukonSerialNumber)) {
@@ -236,17 +236,25 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     /**
      * Checks for ecobee sets that do not match a Yukon group.
      */
-    private void checkForExtraneousSets(EcobeeHierarchyInfo hierarchyInfo, Set<String> yukonGroupNames, 
+    private void checkForExtraneousSets(EcobeeHierarchyInfo hierarchyInfo, Set<Integer> yukonGroupIds, 
                                           List<EcobeeDiscrepancy> errorsList) {
         
-        Set<String> ecobeeSetNames = hierarchyInfo.getSetNamesAndPaths().keySet();
+        Set<String> ecobeeSetNames = hierarchyInfo.getSetNameToSetPath().keySet();
         for (String ecobeeSetName : ecobeeSetNames) {
-            if (!yukonGroupNames.contains(ecobeeSetName)
-                    && !ecobeeSetName.equals(EcobeeCommunicationService.OPT_OUT_SET)
-                    && !ecobeeSetName.equals(EcobeeCommunicationService.UNENROLLED_SET)) {
-                //ecobee set does not match any yukon group
-                String setPath = hierarchyInfo.getSetNamesAndPaths().get(ecobeeSetName);
-                errorsList.add(new EcobeeExtraneousSetDiscrepancy(setPath));
+            try {
+                Integer ecobeeSetNameAsInteger = Integer.parseInt(ecobeeSetName);
+                if (!yukonGroupIds.contains(ecobeeSetNameAsInteger)) {
+                    //ecobee set name does not match any Yukon group id
+                    String setPath = hierarchyInfo.getSetNameToSetPath().get(ecobeeSetName);
+                    errorsList.add(new EcobeeExtraneousSetDiscrepancy(setPath));
+                }
+            } catch (NumberFormatException e) {
+                //ecobee set is not an integer, so it can't match a Yukon group id
+                if (!ecobeeSetName.equals(EcobeeCommunicationService.OPT_OUT_SET)
+                        && !ecobeeSetName.equals(EcobeeCommunicationService.UNENROLLED_SET)) {
+                    String setPath = hierarchyInfo.getSetNameToSetPath().get(ecobeeSetName);
+                    errorsList.add(new EcobeeExtraneousSetDiscrepancy(setPath));
+                }
             }
         }
     }
@@ -273,9 +281,9 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
      * compared with Yukon.
      */
     private final class EcobeeHierarchyInfo {
-        private final Map<String, String> setNamesAndPaths = new HashMap<>();
-        private final Multimap<String, String> setsAndSerialNumbers = ArrayListMultimap.create();
-        private final Multimap<String, String> serialNumbersAndSets = ArrayListMultimap.create();
+        private final Map<String, String> setNameToSetPath = new HashMap<>();
+        private final Multimap<String, String> setNameToSerialNumbers = ArrayListMultimap.create();
+        private final Multimap<String, String> serialNumberToSetName = ArrayListMultimap.create();
         
         public EcobeeHierarchyInfo(List<SetNode> ecobeeHierarchy) {
             //the root, "/", should be the only top-level element 
@@ -283,29 +291,29 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             for (SetNode childNode : root.getChildren()) {
                 initialize(childNode);
             }
-            Multimaps.invertFrom(setsAndSerialNumbers, serialNumbersAndSets);
+            Multimaps.invertFrom(setNameToSerialNumbers, serialNumberToSetName);
         }
         
         public void initialize(SetNode node) {
             for (SetNode childNode : node.getChildren()) {
                 initialize(childNode);
             }
-            setNamesAndPaths.put(node.getSetName(), node.getSetPath());
-            setsAndSerialNumbers.putAll(node.getSetName(), node.getThermostats());
+            setNameToSetPath.put(node.getSetName(), node.getSetPath());
+            setNameToSerialNumbers.putAll(node.getSetName(), node.getThermostats());
         }
 
-        public Map<String, String> getSetNamesAndPaths() {
-            return setNamesAndPaths;
+        public Map<String, String> getSetNameToSetPath() {
+            return setNameToSetPath;
         }
 
-        public Multimap<String, String> getSetsAndSerialNumbers() {
-            return setsAndSerialNumbers;
+        public Multimap<String, String> getSetNameToSerialNumbers() {
+            return setNameToSerialNumbers;
         }
         
         public String getSetPathForSerialNumber(String serialNumber) {
             //Multimaps.invertFrom gives us a multimap, but each serial number should only be in one set
-            String setName = Iterables.getOnlyElement(serialNumbersAndSets.get(serialNumber));
-            return setNamesAndPaths.get(setName);
+            String setName = Iterables.getOnlyElement(serialNumberToSetName.get(serialNumber));
+            return setNameToSetPath.get(setName);
         }
     }
 }

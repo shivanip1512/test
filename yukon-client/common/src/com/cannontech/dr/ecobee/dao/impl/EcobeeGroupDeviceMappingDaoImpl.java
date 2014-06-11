@@ -19,7 +19,7 @@ public class EcobeeGroupDeviceMappingDaoImpl implements EcobeeGroupDeviceMapping
     @Autowired YukonJdbcTemplate jdbcTemplate;
     
     @Override
-    public Multimap<String, String> getSerialNumbersByGroupId() {
+    public Multimap<Integer, String> getSerialNumbersByGroupId() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select AddressingGroupId, ManufacturerSerialNumber");
         sql.append("from LmHardwareConfiguration lmhc");
@@ -27,11 +27,11 @@ public class EcobeeGroupDeviceMappingDaoImpl implements EcobeeGroupDeviceMapping
         sql.append("join YukonPaObject ypo on ypo.PaObjectId = lmhc.AddressingGroupId");
         sql.append("where ypo.Type").eq_k(PaoType.LM_GROUP_ECOBEE);
         
-        final Multimap<String, String> groupToDevicesMap = ArrayListMultimap.create();
+        final Multimap<Integer, String> groupToDevicesMap = ArrayListMultimap.create();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                groupToDevicesMap.put(rs.getString("AddressingGroupId"), rs.getString("ManufacturerSerialNumber"));
+                groupToDevicesMap.put(rs.getInt("AddressingGroupId"), rs.getString("ManufacturerSerialNumber"));
             }
         });
         return groupToDevicesMap;
