@@ -201,6 +201,12 @@ WHERE
                     AND DCCI.ItemName = 'disconnectMode');
 /* End YUK-13323 */
 
+/* Start YUK-13416 */
+UPDATE EventLog 
+SET EventType = 'system.maintenance.systemLogWeatherDataUpdate' 
+WHERE EventType = 'system.mantenance.systemLogWeatherDataUpdate';
+/* End YUK-13416 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
