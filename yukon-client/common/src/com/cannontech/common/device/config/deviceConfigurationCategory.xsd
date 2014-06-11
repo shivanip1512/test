@@ -29,7 +29,6 @@
             <xs:enumeration value="mctDisconnectConfiguration"/>
             <xs:enumeration value="rfnOvUv"/>
             <xs:enumeration value="rfnTempAlarm"/>
-            <xs:enumeration value="rfnChannelConfiguration"/>
         </xs:restriction>
     </xs:simpleType>
 
