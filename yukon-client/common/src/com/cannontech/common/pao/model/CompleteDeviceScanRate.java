@@ -49,25 +49,23 @@ public class CompleteDeviceScanRate {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hashCode(intervalRate, scanGroup, alternateRate, scanType);
     }
-    
+
     @Override
-    public boolean equals(Object object){
-        if (object instanceof CompleteDeviceScanRate) {
-            CompleteDeviceScanRate that = (CompleteDeviceScanRate) object;
-            return Objects.equal(this.intervalRate, that.intervalRate)
-                && Objects.equal(this.scanGroup, that.scanGroup)
-                && Objects.equal(this.alternateRate, that.alternateRate)
-                && Objects.equal(this.scanType, that.scanType);
+    public boolean equals(Object other) {
+        if (other.getClass() != CompleteDeviceScanRate.class) {
+            return false;
         }
-        return false;
+        CompleteDeviceScanRate that = (CompleteDeviceScanRate) other;
+        return intervalRate == that.intervalRate && scanGroup == that.scanGroup && alternateRate == that.alternateRate
+            && scanType == that.scanType;
     }
 
     @Override
     public String toString() {
-        return "CompleteDeviceScanRate [intervalRate=" + intervalRate + ", scanGroup=" + scanGroup
-               + ", alternateRate=" + alternateRate + ", scanType=" + scanType + "]";
+        return "CompleteDeviceScanRate [intervalRate=" + intervalRate + ", scanGroup=" + scanGroup + ", alternateRate="
+            + alternateRate + ", scanType=" + scanType + "]";
     }
 }

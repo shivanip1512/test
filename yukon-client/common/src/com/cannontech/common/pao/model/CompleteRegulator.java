@@ -5,8 +5,8 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(idColumnName="RegulatorId", 
-          paoTypes={PaoType.LOAD_TAP_CHANGER, PaoType.GANG_OPERATED, PaoType.PHASE_OPERATED})
+@YukonPao(idColumnName = "RegulatorId", paoTypes = { PaoType.LOAD_TAP_CHANGER, PaoType.GANG_OPERATED,
+    PaoType.PHASE_OPERATED })
 public class CompleteRegulator extends CompleteYukonPao {
     private int keepAliveTimer;
     private int keepAliveConfig;
@@ -40,19 +40,19 @@ public class CompleteRegulator extends CompleteYukonPao {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hashCode(super.hashCode(), keepAliveTimer, keepAliveConfig, voltChangePerTap);
     }
-    
+
     @Override
-    public boolean equals(Object object){
+    protected boolean localEquals(Object object) {
         if (object instanceof CompleteRegulator) {
-            if (!super.equals(object)) 
+            if (!super.localEquals(object)) {
                 return false;
+            }
             CompleteRegulator that = (CompleteRegulator) object;
-            return Objects.equal(this.keepAliveTimer, that.keepAliveTimer)
-                && Objects.equal(this.keepAliveConfig, that.keepAliveConfig)
-                && Objects.equal(this.voltChangePerTap, that.voltChangePerTap);
+            return keepAliveTimer == that.keepAliveTimer && keepAliveConfig == that.keepAliveConfig
+                && voltChangePerTap == that.voltChangePerTap;
         }
         return false;
     }
@@ -60,7 +60,7 @@ public class CompleteRegulator extends CompleteYukonPao {
     @Override
     public String toString() {
         return super.toString() + " CompleteRegulator [keepAliveTimer=" + keepAliveTimer + ", keepAliveConfig="
-               + keepAliveConfig + ", voltChangePerTap=" + voltChangePerTap + "]";
+            + keepAliveConfig + ", voltChangePerTap=" + voltChangePerTap + "]";
     }
 
 }

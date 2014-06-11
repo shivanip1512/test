@@ -90,20 +90,35 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), paoIdentifier, paoName, description, statistics, disabled);
+        return Objects.hashCode(paoIdentifier, paoName, description, statistics, disabled);
+    }
+
+    /**
+     * Compares all fields local to this object and its parents. Unlike {@link #equals(Object)}, this can
+     * return true even if the "other" parameter is a superclass of CompleteYukonPao. This allows us to avoid
+     * duplicating this code in equals methods in subclasses of this class.
+     * 
+     * Because this class' {@link #equals(Object)} method uses this, we don't need to override equals in
+     * subclasses. It is sufficient to override this method properly.
+     */
+    protected boolean localEquals(Object other) {
+        if (other instanceof CompleteYukonPao) {
+            CompleteYukonPao that = (CompleteYukonPao) other;
+            return Objects.equal(paoIdentifier, that.paoIdentifier) && Objects.equal(paoName, that.paoName)
+                && Objects.equal(description, that.description) && Objects.equal(statistics, that.statistics)
+                && disabled == that.disabled;
+        }
+        return false;
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (object instanceof CompleteYukonPao) {
-            if (!super.equals(object)) {
-                return false;
-            }
-            CompleteYukonPao that = (CompleteYukonPao) object;
-            return Objects.equal(paoIdentifier, that.paoIdentifier) && Objects.equal(paoName, that.paoName)
-                && Objects.equal(description, that.description) && Objects.equal(statistics, that.statistics)
-                && Objects.equal(disabled, that.disabled);
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
         }
-        return false;
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        return localEquals(other);
     }
 }

@@ -8,7 +8,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(idColumnName = "deviceId", paoTypes=PaoType.CAPBANK)
+@YukonPao(idColumnName = "deviceId", paoTypes = PaoType.CAPBANK)
 public class CompleteCapBank extends CompleteDevice {
     private BankOpState operationalState = BankOpState.SWITCHED;
     private int controlDeviceId = 0;
@@ -22,12 +22,12 @@ public class CompleteCapBank extends CompleteDevice {
     private String mapLocationId = "0";
     private boolean maxOpDisable = false;
     private CompleteCapBankAdditional capBankAdditional = new CompleteCapBankAdditional();
-    
+
     @YukonPaoField
     public CompleteCapBankAdditional getCapBankAdditional() {
         return capBankAdditional;
     }
-    
+
     public void setCapBankAdditional(CompleteCapBankAdditional capBankAdditional) {
         this.capBankAdditional = capBankAdditional;
     }
@@ -104,7 +104,7 @@ public class CompleteCapBank extends CompleteDevice {
         this.controllerType = controllerType;
     }
 
-    @YukonPaoField(columnName="SwitchManufacture")
+    @YukonPaoField(columnName = "SwitchManufacture")
     public String getSwitchManufacturer() {
         return switchManufacturer;
     }
@@ -132,30 +132,26 @@ public class CompleteCapBank extends CompleteDevice {
     }
 
     @Override
-    public int hashCode(){
-        return Objects.hashCode(super.hashCode(), operationalState, controlDeviceId, controlPointId, 
-                                bankSize, recloseDelay, maxDailyOps, typeOfSwitch, controllerType, 
-                                switchManufacturer, mapLocationId, maxOpDisable, capBankAdditional);
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), operationalState, controlDeviceId, controlPointId, bankSize,
+            recloseDelay, maxDailyOps, typeOfSwitch, controllerType, switchManufacturer, mapLocationId, maxOpDisable,
+            capBankAdditional);
     }
-    
+
     @Override
-    public boolean equals(Object object){
+    protected boolean localEquals(Object object) {
         if (object instanceof CompleteCapBank) {
-            if (!super.equals(object)) 
+            if (!super.localEquals(object)) {
                 return false;
+            }
             CompleteCapBank that = (CompleteCapBank) object;
-            return Objects.equal(this.operationalState, that.operationalState)
-                && Objects.equal(this.controlDeviceId, that.controlDeviceId)
-                && Objects.equal(this.controlPointId, that.controlPointId)
-                && Objects.equal(this.bankSize, that.bankSize)
-                && Objects.equal(this.recloseDelay, that.recloseDelay)
-                && Objects.equal(this.maxDailyOps, that.maxDailyOps)
-                && Objects.equal(this.typeOfSwitch, that.typeOfSwitch)
-                && Objects.equal(this.controllerType, that.controllerType)
-                && Objects.equal(this.switchManufacturer, that.switchManufacturer)
-                && Objects.equal(this.mapLocationId, that.mapLocationId)
-                && Objects.equal(this.maxOpDisable, that.maxOpDisable)
-                && Objects.equal(this.capBankAdditional, that.capBankAdditional);
+            return operationalState == that.operationalState && controlDeviceId == that.controlDeviceId
+                && controlPointId == that.controlPointId && bankSize == that.bankSize
+                && recloseDelay == that.recloseDelay && maxDailyOps == that.maxDailyOps
+                && Objects.equal(typeOfSwitch, that.typeOfSwitch) && Objects.equal(controllerType, that.controllerType)
+                && Objects.equal(switchManufacturer, that.switchManufacturer)
+                && Objects.equal(mapLocationId, that.mapLocationId) && maxOpDisable == that.maxOpDisable
+                && Objects.equal(capBankAdditional, that.capBankAdditional);
         }
         return false;
     }
@@ -163,11 +159,9 @@ public class CompleteCapBank extends CompleteDevice {
     @Override
     public String toString() {
         return super.toString() + " CompleteCapBank [operationalState=" + operationalState + ", controlDeviceId="
-               + controlDeviceId + ", controlPointId=" + controlPointId + ", bankSize=" + bankSize
-               + ", recloseDelay=" + recloseDelay + ", maxDailyOps=" + maxDailyOps
-               + ", typeOfSwitch=" + typeOfSwitch + ", controllerType=" + controllerType
-               + ", switchManufacturer=" + switchManufacturer + ", mapLocationId=" + mapLocationId
-               + ", maxOpDisable=" + maxOpDisable + ", capBankAdditional=" + capBankAdditional
-               + "]";
+            + controlDeviceId + ", controlPointId=" + controlPointId + ", bankSize=" + bankSize + ", recloseDelay="
+            + recloseDelay + ", maxDailyOps=" + maxDailyOps + ", typeOfSwitch=" + typeOfSwitch + ", controllerType="
+            + controllerType + ", switchManufacturer=" + switchManufacturer + ", mapLocationId=" + mapLocationId
+            + ", maxOpDisable=" + maxOpDisable + ", capBankAdditional=" + capBankAdditional + "]";
     }
 }

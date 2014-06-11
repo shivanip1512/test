@@ -15,10 +15,10 @@ public class CompleteCapBankAdditional {
     private int commStrength = 0;
     private double latitude = 0.0;
     private double longitude = 0.0;
-    private Instant lastMaintenanceVisit = new Instant(CapBankAdditional.getBeginningTime());
-    private Instant lastInspection = new Instant(CapBankAdditional.getBeginningTime());
-    private Instant opCountResetDate = new Instant(CapBankAdditional.getBeginningTime());
-    private Instant cbcInstallDate = new Instant(CapBankAdditional.getBeginningTime());
+    private Instant lastMaintenanceVisit;
+    private Instant lastInspection;
+    private Instant opCountResetDate;
+    private Instant cbcInstallDate;
     private String capbankConfig = CtiUtilities.STRING_NONE;
     private String commMedium = CtiUtilities.STRING_NONE;
     private String driveDirections = CtiUtilities.STRING_NONE;
@@ -28,6 +28,14 @@ public class CompleteCapBankAdditional {
     private String otherComments = CtiUtilities.STRING_NONE;
     private boolean extAntenna = false;
     private boolean maintenanceRequired = false;
+
+    public CompleteCapBankAdditional() {
+        Instant beginningTime = new Instant(CapBankAdditional.getBeginningTime());
+        lastMaintenanceVisit = beginningTime;
+        lastInspection = beginningTime;
+        opCountResetDate = beginningTime;
+        cbcInstallDate = beginningTime;
+    }
 
     @YukonPaoField
     public int getMaintenanceAreaId() {
@@ -74,7 +82,7 @@ public class CompleteCapBankAdditional {
         this.longitude = longitude;
     }
 
-    @YukonPaoField(columnName="LastMaintVisit")
+    @YukonPaoField(columnName = "LastMaintVisit")
     public Instant getLastMaintenanceVisit() {
         return lastMaintenanceVisit;
     }
@@ -83,7 +91,7 @@ public class CompleteCapBankAdditional {
         this.lastMaintenanceVisit = lastMaintenanceVisit;
     }
 
-    @YukonPaoField(columnName="LastInspVisit")
+    @YukonPaoField(columnName = "LastInspVisit")
     public Instant getLastInspection() {
         return lastInspection;
     }
@@ -101,7 +109,7 @@ public class CompleteCapBankAdditional {
         this.opCountResetDate = opCountResetDate;
     }
 
-    @YukonPaoField(columnName="CbcBattInstallDate")
+    @YukonPaoField(columnName = "CbcBattInstallDate")
     public Instant getCbcInstallDate() {
         return cbcInstallDate;
     }
@@ -182,7 +190,7 @@ public class CompleteCapBankAdditional {
         this.extAntenna = extAntenna;
     }
 
-    @YukonPaoField(columnName="MaintenanceReqPend")
+    @YukonPaoField(columnName = "MaintenanceReqPend")
     public boolean isMaintenanceRequired() {
         return maintenanceRequired;
     }
@@ -192,51 +200,40 @@ public class CompleteCapBankAdditional {
     }
 
     @Override
-    public int hashCode(){
-        return Objects.hashCode(maintenanceAreaId, poleNumber, commStrength, latitude, longitude, 
-                                lastMaintenanceVisit, lastInspection, opCountResetDate, 
-                                cbcInstallDate, capbankConfig, commMedium, driveDirections, 
-                                potentialTransformer, opTeamComments, antennaType, otherComments, 
-                                extAntenna, maintenanceRequired);
+    public int hashCode() {
+        return Objects.hashCode(maintenanceAreaId, poleNumber, commStrength, latitude, longitude, lastMaintenanceVisit,
+            lastInspection, opCountResetDate, cbcInstallDate, capbankConfig, commMedium, driveDirections,
+            potentialTransformer, opTeamComments, antennaType, otherComments, extAntenna, maintenanceRequired);
     }
-    
+
     @Override
-    public boolean equals(Object object){
-        if (object instanceof CompleteCapBankAdditional) {
-            CompleteCapBankAdditional that = (CompleteCapBankAdditional) object;
-            return Objects.equal(this.maintenanceAreaId, that.maintenanceAreaId)
-                && Objects.equal(this.poleNumber, that.poleNumber)
-                && Objects.equal(this.commStrength, that.commStrength)
-                && Objects.equal(this.latitude, that.latitude)
-                && Objects.equal(this.longitude, that.longitude)
-                && Objects.equal(this.lastMaintenanceVisit, that.lastMaintenanceVisit)
-                && Objects.equal(this.lastInspection, that.lastInspection)
-                && Objects.equal(this.opCountResetDate, that.opCountResetDate)
-                && Objects.equal(this.cbcInstallDate, that.cbcInstallDate)
-                && Objects.equal(this.capbankConfig, that.capbankConfig)
-                && Objects.equal(this.commMedium, that.commMedium)
-                && Objects.equal(this.driveDirections, that.driveDirections)
-                && Objects.equal(this.potentialTransformer, that.potentialTransformer)
-                && Objects.equal(this.opTeamComments, that.opTeamComments)
-                && Objects.equal(this.antennaType, that.antennaType)
-                && Objects.equal(this.otherComments, that.otherComments)
-                && Objects.equal(this.extAntenna, that.extAntenna)
-                && Objects.equal(this.maintenanceRequired, that.maintenanceRequired);
+    public boolean equals(Object object) {
+        if (object.getClass() != CompleteCapBankAdditional.class) {
+            return false;
         }
-        return false;
+        CompleteCapBankAdditional that = (CompleteCapBankAdditional) object;
+        return maintenanceAreaId == that.maintenanceAreaId && poleNumber == that.poleNumber
+            && commStrength == that.commStrength && latitude == that.latitude && longitude == that.longitude
+            && Objects.equal(lastMaintenanceVisit, that.lastMaintenanceVisit)
+            && Objects.equal(lastInspection, that.lastInspection)
+            && Objects.equal(opCountResetDate, that.opCountResetDate)
+            && Objects.equal(cbcInstallDate, that.cbcInstallDate) && Objects.equal(capbankConfig, that.capbankConfig)
+            && Objects.equal(commMedium, that.commMedium) && Objects.equal(driveDirections, that.driveDirections)
+            && Objects.equal(potentialTransformer, that.potentialTransformer)
+            && Objects.equal(opTeamComments, that.opTeamComments) && Objects.equal(antennaType, that.antennaType)
+            && Objects.equal(otherComments, that.otherComments) && extAntenna == that.extAntenna
+            && maintenanceRequired == that.maintenanceRequired;
     }
 
     @Override
     public String toString() {
-        return "CompleteCapBankAdditional [maintenanceAreaId=" + maintenanceAreaId
-               + ", poleNumber=" + poleNumber + ", commStrength=" + commStrength + ", latitude="
-               + latitude + ", longitude=" + longitude + ", lastMaintenanceVisit="
-               + lastMaintenanceVisit + ", lastInspection=" + lastInspection
-               + ", opCountResetDate=" + opCountResetDate + ", cbcInstallDate=" + cbcInstallDate
-               + ", capbankConfig=" + capbankConfig + ", commMedium=" + commMedium
-               + ", driveDirections=" + driveDirections + ", potentialTransformer="
-               + potentialTransformer + ", opTeamComments=" + opTeamComments + ", antennaType="
-               + antennaType + ", otherComments=" + otherComments + ", extAntenna=" + extAntenna
-               + ", maintenanceRequired=" + maintenanceRequired + "]";
+        return "CompleteCapBankAdditional [maintenanceAreaId=" + maintenanceAreaId + ", poleNumber=" + poleNumber
+            + ", commStrength=" + commStrength + ", latitude=" + latitude + ", longitude=" + longitude
+            + ", lastMaintenanceVisit=" + lastMaintenanceVisit + ", lastInspection=" + lastInspection
+            + ", opCountResetDate=" + opCountResetDate + ", cbcInstallDate=" + cbcInstallDate + ", capbankConfig="
+            + capbankConfig + ", commMedium=" + commMedium + ", driveDirections=" + driveDirections
+            + ", potentialTransformer=" + potentialTransformer + ", opTeamComments=" + opTeamComments
+            + ", antennaType=" + antennaType + ", otherComments=" + otherComments + ", extAntenna=" + extAntenna
+            + ", maintenanceRequired=" + maintenanceRequired + "]";
     }
 }

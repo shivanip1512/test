@@ -5,12 +5,12 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(idColumnName="DeviceId", paoTypes=PaoType.ZIGBEE_ENDPOINT)
+@YukonPao(idColumnName = "DeviceId", paoTypes = PaoType.ZIGBEE_ENDPOINT)
 public class CompleteZbEndpoint extends CompleteDevice {
     private String installCode;
     private String macAddress;
-    private int endPointId = 1;  /*Constant place holder until Firmware change*/
-    private int nodeId = 0; /*Constant place holder until Firmware change*/
+    private int endPointId = 1; // Constant place holder until Firmware change
+    private int nodeId = 0; // Constant place holder until Firmware change
 
     @YukonPaoField
     public String getInstallCode() {
@@ -30,7 +30,7 @@ public class CompleteZbEndpoint extends CompleteDevice {
         this.macAddress = macAddress;
     }
 
-    @YukonPaoField(columnName="DestinationEndPointId")
+    @YukonPaoField(columnName = "DestinationEndPointId")
     public int getEndPointId() {
         return endPointId;
     }
@@ -49,20 +49,19 @@ public class CompleteZbEndpoint extends CompleteDevice {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hashCode(super.hashCode(), installCode, macAddress, endPointId, nodeId);
     }
-    
+
     @Override
-    public boolean equals(Object object){
+    protected boolean localEquals(Object object) {
         if (object instanceof CompleteZbEndpoint) {
-            if (!super.equals(object)) 
+            if (!super.localEquals(object)) {
                 return false;
+            }
             CompleteZbEndpoint that = (CompleteZbEndpoint) object;
-            return Objects.equal(this.installCode, that.installCode)
-                && Objects.equal(this.macAddress, that.macAddress)
-                && Objects.equal(this.endPointId, that.endPointId)
-                && Objects.equal(this.nodeId, that.nodeId);
+            return Objects.equal(installCode, that.installCode) && Objects.equal(macAddress, that.macAddress)
+                && endPointId == that.endPointId && nodeId == that.nodeId;
         }
         return false;
     }
@@ -70,6 +69,6 @@ public class CompleteZbEndpoint extends CompleteDevice {
     @Override
     public String toString() {
         return super.toString() + " CompleteZbEndpoint [installCode=" + installCode + ", macAddress=" + macAddress
-               + ", endPointId=" + endPointId + ", nodeId=" + nodeId + "]";
+            + ", endPointId=" + endPointId + ", nodeId=" + nodeId + "]";
     }
 }

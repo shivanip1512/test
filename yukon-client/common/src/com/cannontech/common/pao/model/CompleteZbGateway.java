@@ -4,7 +4,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(idColumnName="DeviceId")
+@YukonPao(idColumnName = "DeviceId")
 public class CompleteZbGateway extends CompleteDevice {
     private String firmwareVersion;
     private String macAddress;
@@ -28,18 +28,18 @@ public class CompleteZbGateway extends CompleteDevice {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hashCode(super.hashCode(), firmwareVersion, macAddress);
     }
-    
+
     @Override
-    public boolean equals(Object object){
+    protected boolean localEquals(Object object) {
         if (object instanceof CompleteZbGateway) {
-            if (!super.equals(object)) 
+            if (!super.localEquals(object)) {
                 return false;
+            }
             CompleteZbGateway that = (CompleteZbGateway) object;
-            return Objects.equal(this.firmwareVersion, that.firmwareVersion)
-                && Objects.equal(this.macAddress, that.macAddress);
+            return Objects.equal(firmwareVersion, that.firmwareVersion) && Objects.equal(macAddress, that.macAddress);
         }
         return false;
     }
@@ -47,6 +47,6 @@ public class CompleteZbGateway extends CompleteDevice {
     @Override
     public String toString() {
         return super.toString() + " CompleteZbGateway [firmwareVersion=" + firmwareVersion + ", macAddress="
-               + macAddress + "]";
+            + macAddress + "]";
     }
 }

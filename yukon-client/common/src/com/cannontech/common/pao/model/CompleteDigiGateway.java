@@ -24,12 +24,13 @@ public class CompleteDigiGateway extends CompleteZbGateway {
     }
     
     @Override
-    public boolean equals(Object object){
+    protected boolean localEquals(Object object){
         if (object instanceof CompleteDigiGateway) {
-            if (!super.equals(object)) 
+            if (!super.localEquals(object)) {
                 return false;
+            }
             CompleteDigiGateway that = (CompleteDigiGateway) object;
-            return Objects.equal(this.digiId, that.digiId);
+            return digiId == that.digiId;
         }
         return false;
     }

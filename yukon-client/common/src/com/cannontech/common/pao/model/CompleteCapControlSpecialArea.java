@@ -5,7 +5,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(idColumnName="AreaId", paoTypes=PaoType.CAP_CONTROL_SPECIAL_AREA)
+@YukonPao(idColumnName = "AreaId", paoTypes = PaoType.CAP_CONTROL_SPECIAL_AREA)
 public class CompleteCapControlSpecialArea extends CompleteYukonPao {
     private int voltReductionPointId;
 
@@ -19,17 +19,18 @@ public class CompleteCapControlSpecialArea extends CompleteYukonPao {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hashCode(super.hashCode(), voltReductionPointId);
     }
-    
+
     @Override
-    public boolean equals(Object object){
+    protected boolean localEquals(Object object) {
         if (object instanceof CompleteCapControlSpecialArea) {
-            if (!super.equals(object)) 
+            if (!super.localEquals(object)) {
                 return false;
+            }
             CompleteCapControlSpecialArea that = (CompleteCapControlSpecialArea) object;
-            return Objects.equal(this.voltReductionPointId, that.voltReductionPointId);
+            return voltReductionPointId == that.voltReductionPointId;
         }
         return false;
     }

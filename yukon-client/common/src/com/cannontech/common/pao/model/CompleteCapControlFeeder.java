@@ -5,7 +5,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(idColumnName="FeederId", paoTypes=PaoType.CAP_CONTROL_FEEDER)
+@YukonPao(idColumnName = "FeederId", paoTypes = PaoType.CAP_CONTROL_FEEDER)
 public class CompleteCapControlFeeder extends CompleteYukonPao {
     private int currentVarLoadPointId = 0;
     private int currentWattLoadPointId = 0;
@@ -99,27 +99,24 @@ public class CompleteCapControlFeeder extends CompleteYukonPao {
     }
 
     @Override
-    public int hashCode(){
-        return Objects.hashCode(super.hashCode(), currentVarLoadPointId, currentWattLoadPointId, 
-                                currentVoltLoadPointId, phaseB, phaseC, mapLocationId, 
-                                multiMonitorControl, usePhaseData, controlFlag);
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), currentVarLoadPointId, currentWattLoadPointId,
+            currentVoltLoadPointId, phaseB, phaseC, mapLocationId, multiMonitorControl, usePhaseData, controlFlag);
     }
-    
+
     @Override
-    public boolean equals(Object object){
+    protected boolean localEquals(Object object) {
         if (object instanceof CompleteCapControlFeeder) {
-            if (!super.equals(object)) 
+            if (!super.localEquals(object)) {
                 return false;
+            }
             CompleteCapControlFeeder that = (CompleteCapControlFeeder) object;
-            return Objects.equal(this.currentVarLoadPointId, that.currentVarLoadPointId)
-                && Objects.equal(this.currentWattLoadPointId, that.currentWattLoadPointId)
-                && Objects.equal(this.currentVoltLoadPointId, that.currentVoltLoadPointId)
-                && Objects.equal(this.phaseB, that.phaseB)
-                && Objects.equal(this.phaseC, that.phaseC)
-                && Objects.equal(this.mapLocationId, that.mapLocationId)
-                && Objects.equal(this.multiMonitorControl, that.multiMonitorControl)
-                && Objects.equal(this.usePhaseData, that.usePhaseData)
-                && Objects.equal(this.controlFlag, that.controlFlag);
+            return currentVarLoadPointId == that.currentVarLoadPointId
+                && currentWattLoadPointId == that.currentWattLoadPointId
+                && currentVoltLoadPointId == that.currentVoltLoadPointId && phaseB == that.phaseB
+                && phaseC == that.phaseC && Objects.equal(mapLocationId, that.mapLocationId)
+                && multiMonitorControl == that.multiMonitorControl && usePhaseData == that.usePhaseData
+                && controlFlag == that.controlFlag;
         }
         return false;
     }
@@ -127,10 +124,9 @@ public class CompleteCapControlFeeder extends CompleteYukonPao {
     @Override
     public String toString() {
         return super.toString() + " CompleteCapControlFeeder [currentVarLoadPointId=" + currentVarLoadPointId
-               + ", currentWattLoadPointId=" + currentWattLoadPointId + ", currentVoltLoadPointId="
-               + currentVoltLoadPointId + ", phaseB=" + phaseB + ", phaseC=" + phaseC
-               + ", mapLocationId=" + mapLocationId + ", multiMonitorControl="
-               + multiMonitorControl + ", usePhaseData=" + usePhaseData + ", controlFlag="
-               + controlFlag + "]";
+            + ", currentWattLoadPointId=" + currentWattLoadPointId + ", currentVoltLoadPointId="
+            + currentVoltLoadPointId + ", phaseB=" + phaseB + ", phaseC=" + phaseC + ", mapLocationId=" + mapLocationId
+            + ", multiMonitorControl=" + multiMonitorControl + ", usePhaseData=" + usePhaseData + ", controlFlag="
+            + controlFlag + "]";
     }
 }

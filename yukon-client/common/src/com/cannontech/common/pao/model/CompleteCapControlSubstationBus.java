@@ -5,7 +5,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(idColumnName="SubstationBusId", paoTypes=PaoType.CAP_CONTROL_SUBBUS)
+@YukonPao(idColumnName = "SubstationBusId", paoTypes = PaoType.CAP_CONTROL_SUBBUS)
 public class CompleteCapControlSubstationBus extends CompleteYukonPao {
     private int currentVarLoadPointId = 0;
     private int currentWattLoadPointId = 0;
@@ -149,33 +149,27 @@ public class CompleteCapControlSubstationBus extends CompleteYukonPao {
     }
 
     @Override
-    public int hashCode(){
-        return Objects.hashCode(super.hashCode(), currentVarLoadPointId, currentWattLoadPointId, 
-                                mapLocationId, currentVoltLoadPointId, altSubId, switchPointId, 
-                                phaseB, phaseC, voltReductionPointId, controlFlag, dualBusEnabled, 
-                                multiMonitorControl, usePhaseData, disableBusPointId);
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), currentVarLoadPointId, currentWattLoadPointId, mapLocationId,
+            currentVoltLoadPointId, altSubId, switchPointId, phaseB, phaseC, voltReductionPointId, controlFlag,
+            dualBusEnabled, multiMonitorControl, usePhaseData, disableBusPointId);
     }
-    
+
     @Override
-    public boolean equals(Object object){
+    protected boolean localEquals(Object object) {
         if (object instanceof CompleteCapControlSubstationBus) {
-            if (!super.equals(object)) 
+            if (!super.localEquals(object)) {
                 return false;
+            }
             CompleteCapControlSubstationBus that = (CompleteCapControlSubstationBus) object;
-            return Objects.equal(this.currentVarLoadPointId, that.currentVarLoadPointId)
-                && Objects.equal(this.currentWattLoadPointId, that.currentWattLoadPointId)
-                && Objects.equal(this.mapLocationId, that.mapLocationId)
-                && Objects.equal(this.currentVoltLoadPointId, that.currentVoltLoadPointId)
-                && Objects.equal(this.altSubId, that.altSubId)
-                && Objects.equal(this.switchPointId, that.switchPointId)
-                && Objects.equal(this.phaseB, that.phaseB)
-                && Objects.equal(this.phaseC, that.phaseC)
-                && Objects.equal(this.voltReductionPointId, that.voltReductionPointId)
-                && Objects.equal(this.controlFlag, that.controlFlag)
-                && Objects.equal(this.dualBusEnabled, that.dualBusEnabled)
-                && Objects.equal(this.multiMonitorControl, that.multiMonitorControl)
-                && Objects.equal(this.usePhaseData, that.usePhaseData)
-                && Objects.equal(this.disableBusPointId, that.disableBusPointId);
+            return currentVarLoadPointId == that.currentVarLoadPointId
+                && currentWattLoadPointId == that.currentWattLoadPointId
+                && Objects.equal(mapLocationId, that.mapLocationId)
+                && currentVoltLoadPointId == that.currentVoltLoadPointId && altSubId == that.altSubId
+                && switchPointId == that.switchPointId && phaseB == that.phaseB && phaseC == that.phaseC
+                && voltReductionPointId == that.voltReductionPointId && controlFlag == that.controlFlag
+                && dualBusEnabled == that.dualBusEnabled && multiMonitorControl == that.multiMonitorControl
+                && usePhaseData == that.usePhaseData && disableBusPointId == that.disableBusPointId;
         }
         return false;
     }
@@ -183,12 +177,11 @@ public class CompleteCapControlSubstationBus extends CompleteYukonPao {
     @Override
     public String toString() {
         return super.toString() + " CompleteCapControlSubstationBus [currentVarLoadPointId=" + currentVarLoadPointId
-               + ", currentWattLoadPointId=" + currentWattLoadPointId + ", mapLocationId="
-               + mapLocationId + ", currentVoltLoadPointId=" + currentVoltLoadPointId
-               + ", altSubId=" + altSubId + ", switchPointId=" + switchPointId + ", phaseB="
-               + phaseB + ", phaseC=" + phaseC + ", voltReductionPointId=" + voltReductionPointId
-               + ", controlFlag=" + controlFlag + ", dualBusEnabled=" + dualBusEnabled
-               + ", multiMonitorControl=" + multiMonitorControl + ", usePhaseData=" + usePhaseData
-               + ", disableBusPointId=" + disableBusPointId + "]";
+            + ", currentWattLoadPointId=" + currentWattLoadPointId + ", mapLocationId=" + mapLocationId
+            + ", currentVoltLoadPointId=" + currentVoltLoadPointId + ", altSubId=" + altSubId + ", switchPointId="
+            + switchPointId + ", phaseB=" + phaseB + ", phaseC=" + phaseC + ", voltReductionPointId="
+            + voltReductionPointId + ", controlFlag=" + controlFlag + ", dualBusEnabled=" + dualBusEnabled
+            + ", multiMonitorControl=" + multiMonitorControl + ", usePhaseData=" + usePhaseData
+            + ", disableBusPointId=" + disableBusPointId + "]";
     }
 }

@@ -5,24 +5,24 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
 import com.google.common.base.Objects;
 
-@YukonPaoPart(idColumnName="deviceId")
+@YukonPaoPart(idColumnName = "deviceId")
 public class CompleteDeviceWindow {
     private DeviceWindowType type = DeviceWindowType.SCAN;
     private int windowOpen = 0;
     private int windowClose = 0;
     private int alternateOpen = 0;
     private int alternateClose = 0;
-    
+
     @YukonPaoField
     public DeviceWindowType getType() {
         return type;
     }
-    
+
     public void setType(DeviceWindowType type) {
         this.type = type;
     }
 
-    @YukonPaoField(columnName="WinOpen")
+    @YukonPaoField(columnName = "WinOpen")
     public int getWindowOpen() {
         return windowOpen;
     }
@@ -31,7 +31,7 @@ public class CompleteDeviceWindow {
         this.windowOpen = windowOpen;
     }
 
-    @YukonPaoField(columnName="WinClose")
+    @YukonPaoField(columnName = "WinClose")
     public int getWindowClose() {
         return windowClose;
     }
@@ -59,27 +59,23 @@ public class CompleteDeviceWindow {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hashCode(type, windowOpen, windowClose, alternateOpen, alternateClose);
     }
-    
+
     @Override
-    public boolean equals(Object object){
-        if (object instanceof CompleteDeviceWindow) {
-            CompleteDeviceWindow that = (CompleteDeviceWindow) object;
-            return Objects.equal(this.type, that.type)
-                && Objects.equal(this.windowOpen, that.windowOpen)
-                && Objects.equal(this.windowClose, that.windowClose)
-                && Objects.equal(this.alternateOpen, that.alternateOpen)
-                && Objects.equal(this.alternateClose, that.alternateClose);
+    public boolean equals(Object other) {
+        if (other.getClass() != CompleteDeviceWindow.class) {
+            return false;
         }
-        return false;
+        CompleteDeviceWindow that = (CompleteDeviceWindow) other;
+        return type == that.type && windowOpen == that.windowOpen && windowClose == that.windowClose
+            && alternateOpen == that.alternateOpen && alternateClose == that.alternateClose;
     }
 
     @Override
     public String toString() {
-        return "CompleteDeviceWindow [type=" + type + ", windowOpen=" + windowOpen
-               + ", windowClose=" + windowClose + ", alternateOpen=" + alternateOpen
-               + ", alternateClose=" + alternateClose + "]";
+        return "CompleteDeviceWindow [type=" + type + ", windowOpen=" + windowOpen + ", windowClose=" + windowClose
+            + ", alternateOpen=" + alternateOpen + ", alternateClose=" + alternateClose + "]";
     }
 }

@@ -8,4 +8,14 @@ import com.cannontech.common.pao.annotation.YukonPao;
                     PaoType.CBC_FP_2800, PaoType.CAPBANKCONTROLLER})
 public class CompleteOneWayCbc extends CompleteCbcBase {
     // This page intentionally left blank.
+
+    @Override
+    protected boolean localEquals(Object object) {
+        if (object instanceof CompleteOneWayCbc) {
+            if (!super.localEquals(object)) {
+                return false;
+            }
+        }
+        return false;
+    }
 }

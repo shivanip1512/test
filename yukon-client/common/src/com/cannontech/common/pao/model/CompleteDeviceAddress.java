@@ -38,24 +38,23 @@ public class CompleteDeviceAddress {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hashCode(masterAddress, slaveAddress, postCommWait);
     }
-    
+
     @Override
-    public boolean equals(Object object){
-        if (object instanceof CompleteDeviceAddress) {
-            CompleteDeviceAddress that = (CompleteDeviceAddress) object;
-            return Objects.equal(this.masterAddress, that.masterAddress)
-                && Objects.equal(this.slaveAddress, that.slaveAddress)
-                && Objects.equal(this.postCommWait, that.postCommWait);
+    public boolean equals(Object other) {
+        if (other.getClass() != CompleteDeviceAddress.class) {
+            return false;
         }
-        return false;
+        CompleteDeviceAddress that = (CompleteDeviceAddress) other;
+        return masterAddress == that.masterAddress && slaveAddress == that.slaveAddress
+            && postCommWait == that.postCommWait;
     }
 
     @Override
     public String toString() {
-        return "CompleteDeviceAddress [masterAddress=" + masterAddress + ", slaveAddress="
-               + slaveAddress + ", postCommWait=" + postCommWait + "]";
+        return "CompleteDeviceAddress [masterAddress=" + masterAddress + ", slaveAddress=" + slaveAddress
+            + ", postCommWait=" + postCommWait + "]";
     }
 }

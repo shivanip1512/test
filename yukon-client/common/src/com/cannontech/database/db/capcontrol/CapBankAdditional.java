@@ -9,12 +9,10 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
-@SuppressWarnings("serial")
-public class CapBankAdditional extends DBPersistent implements CTIDbChange{
-
+public class CapBankAdditional extends DBPersistent implements CTIDbChange {
     public static final String STR_Y = "Y";
     public static final String TABLE_NAME = "CapBankAdditional";
-    private static final Date BEGINNING_TIME = getBeginningTime();
+
     private static final String STR_N = new String("N");
     private static final Integer INT_ZERO = new Integer(0);
     private static final Double DBL_ZERO = new Double(0.0);
@@ -32,14 +30,14 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange{
     private Integer commStrengh = INT_ZERO;
     private String extAntenna = STR_N;
     private String antennaType = STR_NONE;
-    private Date lastMaintVisit = BEGINNING_TIME;
-    private Date lastInspVisit = BEGINNING_TIME;
-    private Date opCountResetDate = BEGINNING_TIME;
+    private Date lastMaintVisit = getBeginningTime();
+    private Date lastInspVisit = getBeginningTime();
+    private Date opCountResetDate = getBeginningTime();
     private String potentTransformer = STR_NONE;
     private String maintReqPending = STR_N;
     private String otherComments = STR_NONE;
     private String opTeamComments = STR_NONE;
-    private Date cbcBattInstallDate = BEGINNING_TIME;
+    private Date cbcBattInstallDate = getBeginningTime();
 
     private Boolean extAnt = Boolean.TRUE;
     private Boolean reqPend = Boolean.TRUE;
@@ -71,10 +69,12 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange{
         return calendar.getTime();
     }
 
+    @Override
     public void delete() throws SQLException {
         delete(TABLE_NAME, "DeviceID", getDeviceID());
     }
 
+    @Override
     public void retrieve() throws SQLException {
         Object[] values = new Object[] { getDeviceID() };
         Object[] results = retrieve(SETTER_COLUMNS,
@@ -102,12 +102,13 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange{
             setOpTeamComments((String) results[16]);
             setCbcBattInstallDate((Date) results[17]);
 
-        } else
-            
+        } else {
             throw new Error(getClass() + " - Incorrect Number of results retrieved. Bank ID is " + getDeviceID());
+        }
 
     }
 
+    @Override
     public void update() throws SQLException {
         update(TABLE_NAME,
                SETTER_COLUMNS,
@@ -310,6 +311,7 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange{
         this.reqPend = reqPend;
     }
 
+    @Override
     public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
         DBChangeMsg[] dbChange = new DBChangeMsg[1];
 
@@ -321,5 +323,4 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange{
 
         return dbChange;
     }
-
 }

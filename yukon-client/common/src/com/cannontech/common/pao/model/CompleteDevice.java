@@ -5,7 +5,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(idColumnName="DeviceId", paoTypes=PaoType.ECOBEE_SMART_SI)
+@YukonPao(idColumnName = "DeviceId", paoTypes = PaoType.ECOBEE_SMART_SI)
 public class CompleteDevice extends CompleteYukonPao {
     private boolean alarmInhibit = false;
     private boolean controlInhibit = false;
@@ -29,19 +29,18 @@ public class CompleteDevice extends CompleteYukonPao {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hashCode(super.hashCode(), alarmInhibit, controlInhibit);
     }
-    
+
     @Override
-    public boolean equals(Object object){
+    protected boolean localEquals(Object object) {
         if (object instanceof CompleteDevice) {
-            if (!super.equals(object)) {
+            if (!super.localEquals(object)) {
                 return false;
             }
             CompleteDevice that = (CompleteDevice) object;
-            return Objects.equal(this.alarmInhibit, that.alarmInhibit)
-                && Objects.equal(this.controlInhibit, that.controlInhibit);
+            return alarmInhibit == that.alarmInhibit && controlInhibit == that.controlInhibit;
         }
         return false;
     }
@@ -49,6 +48,6 @@ public class CompleteDevice extends CompleteYukonPao {
     @Override
     public String toString() {
         return super.toString() + " CompleteDevice [alarmInhibit=" + alarmInhibit + ", controlInhibit="
-               + controlInhibit + "]";
+            + controlInhibit + "]";
     }
 }
