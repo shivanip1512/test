@@ -6,9 +6,7 @@
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.scheduleAssignments">
 
-<cti:url var="startUrl" value="/capcontrol/schedule/startMultiple"/>
-<form name="startMultipleSchedulesForm" id="startMultipleSchedulesForm" action="${startUrl}">
-    
+<form id="start-multiple-schedules-form">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".schedules">
             <select name="startSchedule" id="startSchedule">
@@ -41,11 +39,6 @@
             </select>
         </tags:nameValue2>
     </tags:nameValueContainer2>
-                    
-    <div class="action-area">
-        <cti:button nameKey="start" type="submit" classes="primary action"/>
-        <cti:button nameKey="cancel" id="startScheduleAssignmentCancelButton"/>
-    </div>
 </form>
 
 </cti:msgScope>

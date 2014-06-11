@@ -10,7 +10,7 @@
 
 <c:choose>
     <c:when test="${searchResult.hitCount == 0}">
-        <span class="empty-list"><i:inline key=".noScheduleAssignments" /></span>
+        <span class="empty-list"><i:inline key=".scheduleAssignments.noScheduleAssignments" /></span>
     </c:when>
     
     <c:otherwise>
@@ -74,10 +74,12 @@
                             <c:if test="${(item.commandName != confirmCommand)&&(item.commandName != sendTimeSyncsCommand)}">
                                 <c:choose>
                                     <c:when test="${item.disableOvUv == 'Y'}">
-                                        <cm:dropdownOption icon="icon-accept" key=".scheduleAssignments.enableOvuv" classes="js-enable-ovuv"/>
+                                        <cm:dropdownOption icon="icon-accept" value="${item.eventId}" key=".scheduleAssignments.enableOvuv" classes="js-enable-ovuv"/>
+                                        <cm:dropdownOption icon="icon-delete" value="${item.eventId}" key=".scheduleAssignments.disableOvuv" style="display: none;" classes="js-disable-ovuv"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cm:dropdownOption icon="icon-delete" key=".scheduleAssignments.disableOvuv" classes="js-disable-ovuv"/>
+                                        <cm:dropdownOption icon="icon-delete" value="${item.eventId}" key=".scheduleAssignments.disableOvuv" classes="js-disable-ovuv"/>
+                                        <cm:dropdownOption icon="icon-accept" value="${item.eventId}" key=".scheduleAssignments.enableOvuv" style="display: none;" classes="js-enable-ovuv"/>
                                     </c:otherwise>
                                 </c:choose>
                             </c:if>

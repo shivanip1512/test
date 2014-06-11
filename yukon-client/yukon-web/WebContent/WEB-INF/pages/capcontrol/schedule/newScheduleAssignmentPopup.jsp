@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="modules.capcontrol.scheduleAssignments">
-    <form name="newScheduleAssignmentForm" id="newScheduleAssignmentForm" method="post" action="addPao">
+    <form id="add-schedule-assignment-form" method="post" action="addPao">
         <cti:csrfToken/>
         <input type="hidden" name="paoIdList" id="paoIdList" />
         <input type="hidden" name="filterCommand" value="${param.command}" />
@@ -51,10 +51,6 @@
                     </td>
                 </tr>
             </table>
-        </div>
-        <div class="action-area">
-            <cti:button nameKey="add" type="submit" classes="primary action"/>
-            <cti:button id="newScheduleAssignmentCancelButton" nameKey="cancel"/>
         </div>
     </form>
 </cti:msgScope>

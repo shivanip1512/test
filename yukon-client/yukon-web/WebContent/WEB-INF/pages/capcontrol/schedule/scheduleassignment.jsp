@@ -18,19 +18,35 @@
         <cti param name="schedule" value="${param.schedule}" />
         <cti param name="command" value="${param.command}" />
     </cti:url>
-    <div id="startAssignments" data-title="<cti:msg2 key=".play.label"/>" data-url="${startAssignmentsUrl}" data-width="500" class="dn"></div>
+    <div id="start-assignments"
+        dialog
+        data-event="yukon.vv.schedules.start.all" 
+        data-title="<cti:msg2 key=".play.label"/>" 
+        data-url="${startAssignmentsUrl}" 
+        data-width="500" 
+        class="dn"></div>
     
     <cti:url value="/capcontrol/schedule/stopMultiScheduleAssignmentPopup" var="stopAssignmentsUrl">
         <cti param name="schedule" value="${param.schedule}" />
         <cti param name="command" value="${param.command}" />
     </cti:url>
-    <div id="stopAssignments" data-title="<cti:msg2 key=".stop.label"/>" data-url="${stopAssignmentsUrl}" data-width="500" class="dn"></div>
+    <div id="stop-assignments" 
+        dialog
+        data-event="yukon.vv.schedules.stop.all"
+        data-title="<cti:msg2 key=".stop.label"/>" 
+        data-url="${stopAssignmentsUrl}" 
+        data-width="500" class="dn"></div>
 
     <cti:url value="/capcontrol/schedule/newScheduleAssignmentPopup" var="newAssignmentsUrl">
         <cti param name="schedule" value="${param.schedule}" />
         <cti param name="command" value="${param.command}" />
     </cti:url>
-    <div id="addAssignments" data-title="<cti:msg2 key=".add.label"/>" data-url="${newAssignmentsUrl}" data-width="500" class="dn"></div>
+    <div id="add-assignments" 
+        dialog
+        data-event="yukon.vv.schedules.add"
+        data-title="<cti:msg2 key=".add.label"/>" 
+        data-url="${newAssignmentsUrl}" 
+        data-width="500" class="dn"></div>
     
     <div id="page-buttons" class="dn">
          <cti:button nameKey="filter" classes="js-show-filter" icon="icon-filter" popup="#filter-popup"/>
@@ -39,7 +55,7 @@
         <li class="divider"></li>
         <c:choose>
             <c:when test="${hasActionRoles == true}">
-                <cm:dropdownOption id="systemStartScheduleAssignments" popup="#startAssignments" icon="icon-control-play-blue" key=".play.label"/>
+                <cm:dropdownOption id="systemStartScheduleAssignments" popup="#start-assignments" icon="icon-control-play-blue" key=".play.label"/>
             </c:when>
             <c:otherwise>
                 <cm:dropdownOption id="systemStartScheduleAssignments" icon="icon-control-play-blue" key=".playDisabled.label"/>
@@ -47,7 +63,7 @@
         </c:choose>
         <c:choose>
             <c:when test="${hasActionRoles == true}">
-                <cm:dropdownOption id="systemStopScheduleAssignments" popup="#stopAssignments" icon="icon-control-stop-blue" key=".stop.label"/>
+                <cm:dropdownOption id="systemStopScheduleAssignments" popup="#stop-assignments" icon="icon-control-stop-blue" key=".stop.label"/>
             </c:when>
             <c:otherwise>
                 <cm:dropdownOption id="systemStopScheduleAssignments" icon="icon-control-stop-blue" key=".stopDisabled.label"/>
@@ -56,7 +72,7 @@
         
         <c:choose>
             <c:when test="${hasEditingRole == true}">
-                <cm:dropdownOption id="systemAddScheduleAssignments" popup="#addAssignments" icon="icon-add" key=".add.label"/>
+                <cm:dropdownOption id="systemAddScheduleAssignments" popup="#add-assignments" icon="icon-add" key=".add.label"/>
             </c:when>
             <c:otherwise>
                 <cm:dropdownOption id="systemAddScheduleAssignments" icon="icon-add" key=".addDisabled.label"/>
@@ -73,7 +89,7 @@
         </cti:linkTab>
     </cti:linkTabbedContainer>
     
-    <cti:url value="/capcontrol/schedule/scheduleAssignments" var="filterURL"/>
+    <cti:url value="/capcontrol/schedule/filter" var="filterURL"/>
     <div id="filter-popup" data-title="<cti:msg2 key=".filterTitle"/>" class="dn">
         <form action="${filterURL}">
             <tags:nameValueContainer2>
@@ -106,8 +122,8 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2>
             <div class="action-area">
-                <cti:button nameKey="filter" type="submit" classes="primary action"/>
-                <cti:button nameKey="clearFilter" onclick="clearFilter()"/>
+                <cti:button nameKey="filter" id="set-filter" classes="primary action"/>
+                <cti:button nameKey="clearFilter" id="clear-filter"/>
             </div>
         </form>
     </div>
@@ -137,7 +153,7 @@
         </c:choose>
     </c:if>
     
-    <div id="scheduleAssignmentsTable" data-reloadable>
+    <div id="schedule-assignments-table" data-reloadable>
         <%@include file="scheduleassignmentTable.jsp" %>
     </div>
     
