@@ -19,7 +19,12 @@
         <c:set var="field" value="${field}" scope="request"/>
         <c:set var="classes" value=""/>
 
-        <div class="setting clearfix column-6-18 ${classes}" data-display-item="${field.fieldName}">
+        <c:set var="displayItem" value="" />
+        <c:if test="${fn:startsWith(field.fieldName, 'displayItem') }">
+            <c:set var="displayItem" value="data-display-item" />
+        </c:if>
+
+        <div class="setting clearfix column-6-18 ${classes}" data-field="${field.fieldName}" ${displayItem}>
             <div class="column one form-control">${field.displayName}</div>
             <div class="column two nogutter">
                 <tags:simpleInputType input="${field.inputType}" path="categoryInputs[${field.fieldName}]"/>

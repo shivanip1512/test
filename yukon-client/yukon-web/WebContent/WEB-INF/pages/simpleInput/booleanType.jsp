@@ -6,6 +6,7 @@
 
 <cti:displayForPageEditModes modes="VIEW">
     <cti:msg2 key="yukon.common.${status.value}"/>
+    <input type="hidden" value="${status.value}"/>
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="CREATE,EDIT">
     <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>

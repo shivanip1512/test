@@ -7,6 +7,7 @@
     <c:forEach var="option" items="${inputType.optionList}">
         <c:if test="${status.value == option.value}">
             <cti:msg2 key="${option}"/>
+            <input type="hidden" value="${option.value}"/>
         </c:if>
     </c:forEach>
 </cti:displayForPageEditModes>

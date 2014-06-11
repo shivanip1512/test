@@ -93,29 +93,29 @@ yukon.deviceConfig = (function () {
 
     _hidingMap = [
         {
-            keyHolder: '#disconnectMode',
+            keyHolder: 'disconnectMode',
             valueHideMap : [
                 {
                     value : 'ON_DEMAND',
-                    hide : ['#demandInterval', '#disconnectDemandThreshold', '#disconnectLoadLimitConnectDelay', '#maxDisconnects', '#disconnectMinutes', '#connectMinutes'],
-                    show : ['#reconnectParam']
+                    hide : ['demandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects', 'disconnectMinutes', 'connectMinutes'],
+                    show : ['reconnectParam']
                 },
                 {
                     value : 'DEMAND_THRESHOLD',
-                    hide : ['#disconnectMinutes', '#connectMinutes'],
-                    show : ['#reconnectParam', '#demandInterval', '#disconnectDemandThreshold', '#disconnectLoadLimitConnectDelay', '#maxDisconnects']
+                    hide : ['disconnectMinutes', 'connectMinutes'],
+                    show : ['reconnectParam', 'demandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects']
                 },
                 {
                     value : 'CYCLING',
-                    hide : ['#reconnectParam', '#demandInterval', '#disconnectDemandThreshold', '#disconnectLoadLimitConnectDelay', '#maxDisconnects'],
-                    show : ['#disconnectMinutes', '#connectMinutes']
+                    hide : ['reconnectParam', 'demandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects'],
+                    show : ['disconnectMinutes', 'connectMinutes']
                 }
             ]
         }
     ],
 
     _hideShowElement = function (hidingMapEntry, timeout) {
-        var value = $(hidingMapEntry.keyHolder).find(':input').val(),
+        var value = $('[data-field="' + hidingMapEntry.keyHolder + '"]').find(':input').val(),
             currentEntry,
             ii,
             jj,
@@ -130,11 +130,11 @@ yukon.deviceConfig = (function () {
             if (value === currentEntry.value) {
                 for (jj = 0; jj < currentEntry.hide.length; jj += 1) {
                     elem = currentEntry.hide[jj];
-                    $(elem).slideUp(timeout);
+                    $('[data-field="' + elem + '"]').slideUp(timeout);
                 }
                 for (jj = 0; jj < currentEntry.show.length; jj += 1) {
                     elem = currentEntry.show[jj];
-                    $(elem).slideDown(timeout);
+                    $('[data-field="' + elem + '"]').slideDown(timeout);
                 }
             }
         }
@@ -147,7 +147,7 @@ yukon.deviceConfig = (function () {
 
         for (ii = 0; ii < _hidingMap.length; ii += 1) {
             currentEntry = _hidingMap[ii];
-            input = $(currentEntry.keyHolder).find(':input');
+            input = $('[data-field="' + currentEntry.keyHolder + '"]').find(':input');
             _hideShowElement(currentEntry, 0);
 
             $(document).on('change', input, function () {
