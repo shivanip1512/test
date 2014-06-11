@@ -66,6 +66,7 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange {
     public static Date getBeginningTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(calendar.get(Calendar.YEAR), 0, 1, 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         return calendar.getTime();
     }
 

@@ -12,9 +12,7 @@ public class CompleteOneWayCbc extends CompleteCbcBase {
     @Override
     protected boolean localEquals(Object object) {
         if (object instanceof CompleteOneWayCbc) {
-            if (!super.localEquals(object)) {
-                return false;
-            }
+            return super.localEquals(object);
         }
         return false;
     }
