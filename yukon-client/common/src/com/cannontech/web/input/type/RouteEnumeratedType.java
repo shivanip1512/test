@@ -19,22 +19,19 @@ public class RouteEnumeratedType extends BaseEnumeratedType<String> {
     private PaoDao paoDao = null;
     private List<InputOptionProvider> optionList = Lists.newArrayList();
     private InputType<String> enumeratedType;
-    
+
     public List<InputOptionProvider> getOptionList() {
 
         // re-get available routes
         LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
         optionList = Lists.newArrayListWithCapacity(routes.length);
         for (LiteYukonPAObject route : routes) {
-            
+
             String routeName = route.getPaoName();
-            
-            InputOption option = new InputOption();
-            option.setText(routeName);
-            option.setValue(routeName);
-            optionList.add(option);
+
+            optionList.add( new InputOption(routeName, routeName));
         }
-        
+
         return optionList;
     }
 

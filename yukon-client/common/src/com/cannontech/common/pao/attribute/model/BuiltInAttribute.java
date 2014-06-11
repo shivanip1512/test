@@ -10,6 +10,7 @@ import java.util.Set;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableMap;
@@ -18,7 +19,7 @@ import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Sets;
 
 
-public enum BuiltInAttribute implements Attribute {
+public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // NOTE: Remember to add any new attributes to point.xml for i18n'ing, too
 
     BLINK_COUNT("Blink Count"),
@@ -898,6 +899,11 @@ public enum BuiltInAttribute implements Attribute {
     @Override
     public String getKey() {
         return this.name();
+    }
+
+    @Override
+    public String getFormatKey() {
+        return keyPrefix + name();
     }
 
     @Override

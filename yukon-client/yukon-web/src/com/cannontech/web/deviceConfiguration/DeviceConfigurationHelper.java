@@ -28,14 +28,12 @@ import com.cannontech.common.device.config.model.jaxb.MapType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.deviceConfiguration.enumeration.DeviceConfigurationInputEnumeration;
-import com.cannontech.web.deviceConfiguration.enumeration.DeviceConfigurationInputEnumeration.DisplayableValue;
 import com.cannontech.web.deviceConfiguration.model.CategoryTemplate;
 import com.cannontech.web.deviceConfiguration.model.ChannelField;
 import com.cannontech.web.deviceConfiguration.model.ChannelInput;
@@ -49,7 +47,6 @@ import com.cannontech.web.input.type.BooleanType;
 import com.cannontech.web.input.type.DelegatingEnumeratedType;
 import com.cannontech.web.input.type.FloatType;
 import com.cannontech.web.input.type.InputOption;
-import com.cannontech.web.input.type.InputOptionProvider;
 import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.type.StringType;
@@ -202,40 +199,18 @@ public class DeviceConfigurationHelper {
         List<DisplayableRate> inputTypes = new ArrayList<>();
 
         DeviceConfigurationInputEnumeration enumeration = fieldToMapTypeMap.get(inputMap.getType());
+        List<InputOption> timeOptions = enumeration.getDisplayableValues(userContext);
+        DelegatingEnumeratedType<String> timeEnumeratedType = new DelegatingEnumeratedType<>();
+        timeEnumeratedType.setOptionList(timeOptions);
+        timeEnumeratedType.setEnumeratedType(new StringType());
+
+        DeviceConfigurationInputEnumeration rateEnum = fieldToEnumerationMap.get(EnumOption.RATE);
+        List<InputOption> rateOptions = rateEnum.getDisplayableValues(userContext);
+        DelegatingEnumeratedType<String> rateEnumeratedType = new DelegatingEnumeratedType<>();
+        rateEnumeratedType.setOptionList(rateOptions);
+        rateEnumeratedType.setEnumeratedType(new StringType());
 
         for (InputMap.Entry entry : entries) {
-            // Handle the time.
-            DelegatingEnumeratedType<String> timeEnumeratedType = new DelegatingEnumeratedType<>();
-
-            List<InputOptionProvider> options = new ArrayList<>();
-            for (DisplayableValue displayableValue : enumeration.getDisplayableValues()) {
-                InputOption option = new InputOption();
-
-                option.setValue(displayableValue.getValue());
-                option.setText(displayableValue.getValue());
-                options.add(option);
-            }
-
-            timeEnumeratedType.setOptionList(options);
-            timeEnumeratedType.setEnumeratedType(new StringType());
-
-            // Handle the rate.
-            DelegatingEnumeratedType<String> rateEnumeratedType = new DelegatingEnumeratedType<>();
-
-            options = new ArrayList<>();
-
-            DeviceConfigurationInputEnumeration rateEnum = fieldToEnumerationMap.get(EnumOption.RATE);
-            for (DisplayableValue displayableValue : rateEnum.getDisplayableValues()) {
-                InputOption option = new InputOption();
-
-                option.setValue(displayableValue.getValue());
-                option.setText(formattingService.formatObjectAsString(displayableValue.getMessage(), userContext));
-                options.add(option);
-            }
-
-            rateEnumeratedType.setOptionList(options);
-            rateEnumeratedType.setEnumeratedType(new StringType());
-
             inputTypes.add(new DisplayableRate(timeEnumeratedType, rateEnumeratedType, entry.getField()));
         }
 
@@ -356,14 +331,7 @@ public class DeviceConfigurationHelper {
         DelegatingEnumeratedType<String> inputType = new DelegatingEnumeratedType<>();
         DeviceConfigurationInputEnumeration enumeration = fieldToEnumerationMap.get(input.getType());
 
-        List<InputOptionProvider> options = new ArrayList<>();
-
-        for (DisplayableValue displayableValue : enumeration.getDisplayableValues()) {
-            InputOption option = new InputOption();
-            option.setValue(displayableValue.getValue());
-            option.setText(formattingService.formatObjectAsString(displayableValue.getMessage(), userContext));
-            options.add(option);
-        }
+        List<InputOption> options = enumeration.getDisplayableValues(userContext);
 
         inputType.setOptionList(options);
         inputType.setEnumeratedType(new StringType());

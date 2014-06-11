@@ -183,8 +183,8 @@
     </category>
     
     <category type="rfnChannelConfiguration">
-        <integer field="recordingIntervalMinutes" minValue="15" maxValue="120" default="60"/>
-        <integer field="reportingIntervalHours" minValue="1" maxValue="24" default="12"/>
+        <enum field="recordingIntervalMinutes" type="RecordingInterval" default="60"/>
+        <enum field="reportingIntervalHours" type="ReportingInterval" default="12"/>
         <indexed field="enabledChannels" minOccurs="0" maxOccurs="80">
             <enum field="attribute" type="ChannelType"/>
             <enum field="read" type="ReadType"/>

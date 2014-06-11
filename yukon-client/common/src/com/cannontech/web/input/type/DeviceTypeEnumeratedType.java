@@ -30,11 +30,7 @@ public class DeviceTypeEnumeratedType extends BaseEnumeratedType<Integer> {
         for (String key : deviceGroupMap.keySet()) {
             
             for (PaoDefinition def :  deviceGroupMap.get(key)) {
-                
-                InputOption option = new InputOption();
-                option.setText(def.getDisplayName());
-                option.setValue(def.getDisplayName());
-                optionList.add(option);
+                optionList.add(new InputOption(def.getDisplayName(), def.getDisplayName()));
             }
         }
         

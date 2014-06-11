@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="ReconnectParameter"/>
  *     &lt;enumeration value="ChannelType"/>
  *     &lt;enumeration value="ReadType"/>
+ *     &lt;enumeration value="RecordingInterval"/>
+ *     &lt;enumeration value="ReportingInterval"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -85,7 +87,11 @@ public enum EnumOption {
     @XmlEnumValue("ChannelType")
     CHANNEL_TYPE("ChannelType"),
     @XmlEnumValue("ReadType")
-    READ_TYPE("ReadType");
+    READ_TYPE("ReadType"),
+    @XmlEnumValue("RecordingInterval")
+    RECORDING_INTERVAL("RecordingInterval"),
+    @XmlEnumValue("ReportingInterval")
+    REPORTING_INTERVAL("ReportingInterval");
     private final String value;
 
     EnumOption(String v) {

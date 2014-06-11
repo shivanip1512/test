@@ -44,9 +44,7 @@ public class InputTypeFactory {
                 Builder<InputOptionProvider> builder = ImmutableList.builder();
                 T[] enumConstants = enumClass.getEnumConstants();
                 for (T entry : enumConstants) {
-                    InputOption inputOption = new InputOption();
-                    inputOption.setEnum(entry);
-                    inputOption.setValue(entry.name());
+                    InputOption inputOption = new InputOption(entry);
                     builder.add(inputOption);
                 }
                 optionList = builder.build();

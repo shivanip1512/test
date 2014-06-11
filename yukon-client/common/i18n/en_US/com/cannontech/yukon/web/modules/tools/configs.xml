@@ -7,14 +7,10 @@
     <entry key="yukon.web.modules.tools.configs.enum.relayTiming.millis">{0} ms</entry>
     <entry key="yukon.web.modules.tools.configs.enum.relayTiming.both">{0} sec {1} ms</entry>
     
-    <entry key="yukon.web.modules.tools.configs.enum.tableReadInterval.minutes">{0} min</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.tableReadInterval.seconds">{0} sec</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.tableReadInterval.both">{0} min {1} sec</entry>
-    
     <entry key="yukon.web.modules.tools.configs.enum.meterType.channelNotUsed">Channel Not Used</entry>
     <entry key="yukon.web.modules.tools.configs.enum.meterType.electronicMeter">Electronic Meter</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.meterType.twoWire">2-wire KYZ (form A)</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.meterType.threeWire">3-wire KYZ (form C)</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.meterType.twoWireKyzFormA">2-wire KYZ (form A)</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.meterType.threeWireKyzFormC">3-wire KYZ (form C)</entry>
     
     <entry key="yukon.web.modules.tools.configs.enum.whResolution.minusTwo">0.01 Wh</entry>
     <entry key="yukon.web.modules.tools.configs.enum.whResolution.minusOne">0.1 Wh</entry>
@@ -303,12 +299,11 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.title">RFN Channel Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.definition">Settings for channel recording and reporting</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels">Channel Configuration</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels.note">Joe was here</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels.helpText">Attributes selected for Interval reporting are also reported with Billing attributes</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels.helpText">Enabling Interval will report both Interval and Billing data; Enabling Billing will report only Billing data.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes">Recording Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes.description">Interval, in minutes, to record data for Interval reporting</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes.description">Interval to record data internally in the meter to be returned with Interval reporting</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalHours">Reporting Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalHours.description">Interval, in hours, to report data for Interval reporting</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalHours.description">Interval to report Interval data recorded in the meter</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.reportingExceeded">Maximum of 15 Reporting channels</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.billingExceeded">Maximum of 80 Enabled channels</entry>
 
@@ -331,7 +326,7 @@
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.title">MCT-470 Precanned Table</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.definition">The table number and read intervals that the MCT-470 uses to scan any attached IED.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableReadInterval">Table Read Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableReadInterval.description">Seconds between each read of the attached IED. In 15 second increments.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableReadInterval.description">Time between each read of the attached IED.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.meterNumber">Meter Number</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.meterNumber.description">Meter number to be read.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableType">Table Type</entry>

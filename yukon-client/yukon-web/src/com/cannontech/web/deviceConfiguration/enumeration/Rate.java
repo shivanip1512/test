@@ -1,37 +1,35 @@
 package com.cannontech.web.deviceConfiguration.enumeration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.google.common.collect.ImmutableList.Builder;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.input.type.InputOption;
 
 @Component
 public final class Rate implements DeviceConfigurationInputEnumeration {
 
-    private static final List<DisplayableValue> rates;
-    
-    static {
-        Builder<DisplayableValue> rateBuilder = new Builder<>();
-        
-        for (char rate : new char[] { 'A', 'B', 'C', 'D' }) {
-            rateBuilder.add(
-                new DisplayableValue(
-                    Character.toString(rate), 
-                    YukonMessageSourceResolvable.createDefaultWithoutCode(String.valueOf(rate))));
-        }
-        
-        rates = rateBuilder.build();
-    }
-    
-    @Override
-    public String getEnumOptionName() {
-        return "Rate";
+    private enum RateType {
+        A,
+        B,
+        C,
+        D;
     }
 
     @Override
-    public List<DisplayableValue> getDisplayableValues() {
+    public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
+        List<InputOption> rates = new ArrayList<>();
+
+        for (RateType rateType : RateType.values()) {
+            rates.add( new InputOption(rateType.name(), rateType.name()));
+        }
         return rates;
+    }
+
+    @Override
+    public String getEnumOptionName() {
+        return "Rate";
     }
 }

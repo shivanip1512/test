@@ -9,10 +9,22 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 /**
  * Class which represents an input option to be used with a drop down box
  */
-public class InputOption implements InputOptionProvider {
 
+public class InputOption implements InputOptionProvider {
     private String value = null;
     private MessageSourceResolvable messageSourceResolvable;
+
+    public InputOption(){};
+
+    public InputOption(String value, String text) {
+        this.value = value;
+        setText(text);
+    }
+
+    public InputOption(Enum<?> enumEntry) {
+        this.value = enumEntry.name();
+        setEnum(enumEntry);
+    }
 
     @Override
     public MessageSourceResolvable getMessage() {

@@ -21,10 +21,7 @@ public class CommandRequestExecutionTypeType extends BaseEnumeratedType<DeviceRe
             
             String typeName = type.getShortName();
             
-            InputOption option = new InputOption();
-            option.setText(typeName);
-            option.setValue(type.name());
-            optionList.add(option);
+            optionList.add( new InputOption(type.name(), typeName));
         }
         
         return optionList;

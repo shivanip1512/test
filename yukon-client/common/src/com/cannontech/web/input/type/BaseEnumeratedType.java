@@ -14,7 +14,7 @@ public abstract class BaseEnumeratedType<T> implements InputType<T> {
 
     private String renderer = "enumeratedType.jsp";
 
-    public abstract List<InputOptionProvider> getOptionList();
+    public abstract List<? extends InputOptionProvider> getOptionList();
 
     public BaseEnumeratedType() {
         super();
@@ -39,7 +39,7 @@ public abstract class BaseEnumeratedType<T> implements InputType<T> {
                 
                 String valueString = value.toString();
 
-                List<InputOptionProvider> optionList = getOptionList();
+                List<? extends InputOptionProvider> optionList = getOptionList();
                 for (InputOptionProvider option : optionList) {
                     if (valueString.equalsIgnoreCase(option.getValue())) {
                         // is valid option - in option list

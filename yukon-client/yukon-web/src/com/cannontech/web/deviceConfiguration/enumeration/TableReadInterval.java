@@ -1,52 +1,36 @@
 package com.cannontech.web.deviceConfiguration.enumeration;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import org.springframework.context.MessageSourceResolvable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.google.common.collect.ImmutableList.Builder;
+import com.cannontech.core.service.DurationFormattingService;
+import com.cannontech.core.service.durationFormatter.DurationFormat;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.input.type.InputOption;
 
 @Component
 public class TableReadInterval implements DeviceConfigurationInputEnumeration {
 
-    private static final String baseKey = "yukon.web.modules.tools.configs.enum.tableReadInterval";
-    
-    private static final List<DisplayableValue> readIntervals;
-    
-    static {
-        Builder<DisplayableValue> intervalBuilder = new Builder<>();
-        
-        MessageSourceResolvable resolvable;
-        for (int dbValue = 1; dbValue <= 30; dbValue++) {
-            if (dbValue % 4 == 0) {
-                // If dbValue mod 4 is zero, this value is only minutes with no seconds.
-                resolvable = new YukonMessageSourceResolvable(baseKey + ".minutes", dbValue / 4 );
-            } else if (dbValue < 4) {
-                // There aren't any minutes if dbValue is less than 4, just seconds.
-                resolvable = new YukonMessageSourceResolvable(baseKey + ".seconds", dbValue * 15);
-            } else {
-                // We have a dbValue representing both minutes and seconds.
-                int minutes = dbValue / 4;
-                int seconds = (dbValue % 4) * 15;
-                resolvable = new YukonMessageSourceResolvable(baseKey + ".both", minutes, seconds);
-            }
-            
-            intervalBuilder.add(new DisplayableValue(Integer.toString(dbValue), resolvable));
-        }
-        
-        readIntervals = intervalBuilder.build();
-    }
-    
-    
+    @Autowired private DurationFormattingService durationService;
+
     @Override
-    public String getEnumOptionName() {
-        return "TableReadInterval";
+    public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
+        List<InputOption> readIntervals = new ArrayList<>();
+
+        for (int dbValue = 1; dbValue <= 30; dbValue++) {
+            readIntervals.add( new InputOption( Integer.toString(dbValue), 
+                    durationService.formatDuration(dbValue * 15, TimeUnit.SECONDS, DurationFormat.DHMS_REDUCED, userContext)));
+        }
+
+        return readIntervals;
     }
 
     @Override
-    public List<DisplayableValue> getDisplayableValues() {
-        return readIntervals;
+    public String getEnumOptionName() {
+        return "TableReadInterval";
     }
 }

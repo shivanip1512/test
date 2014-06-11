@@ -1,34 +1,37 @@
 package com.cannontech.web.deviceConfiguration.enumeration;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.google.common.collect.ImmutableList.Builder;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.input.type.InputOption;
 
 @Component
 public final class Channel implements DeviceConfigurationInputEnumeration {
 
-    private static final List<DisplayableValue> displayableChannels;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    static {
-        Builder<DisplayableValue> typeBuilder = new Builder<>();
+    @Override
+    public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
+        MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
 
-        for (BuiltInAttribute channel : BuiltInAttribute.values()) {
-            typeBuilder.add(new DisplayableValue(channel.name(), channel.getKey()));
+        List<InputOption> displayableChannels = new ArrayList<>();
+
+        for (BuiltInAttribute attribute : BuiltInAttribute.values()) {
+            displayableChannels.add(new InputOption(attribute.name(), messageAccessor.getMessage(attribute)));
         }
 
-        displayableChannels = typeBuilder.build();
+        return displayableChannels;
     }
 
     @Override
     public String getEnumOptionName() {
         return "ChannelType";
-    }
-
-    @Override
-    public List<DisplayableValue> getDisplayableValues() {
-        return displayableChannels;
     }
 }

@@ -11,14 +11,14 @@ import com.google.common.collect.Lists;
  */
 public class DelegatingEnumeratedType<T> extends BaseEnumeratedType<T> {
 
-    private List<InputOptionProvider> optionList = Lists.newArrayList();
+    private List<? extends InputOptionProvider> optionList = Lists.newArrayList();
     private InputType<T> enumeratedType;
 
-    public List<InputOptionProvider> getOptionList() {
+    public List<? extends InputOptionProvider> getOptionList() {
         return optionList;
     }
 
-    public void setOptionList(List<InputOptionProvider> optionList) {
+    public void setOptionList(List<? extends InputOptionProvider> optionList) {
         this.optionList = optionList;
     }
 

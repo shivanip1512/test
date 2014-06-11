@@ -1,18 +1,25 @@
 package com.cannontech.web.deviceConfiguration.enumeration;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.google.common.collect.ImmutableList.Builder;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.input.type.InputOption;
 
 @Component
 public final class Read implements DeviceConfigurationInputEnumeration {
-    private static final String baseKey = "yukon.web.modules.tools.configs.enum.read.";
-    private static final List<DisplayableValue> displayableReadTypes;
 
-   public enum ReadType implements DisplayableEnum {
+    private static final String baseKey = "yukon.web.modules.tools.configs.enum.read.";
+
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+
+    public enum ReadType implements DisplayableEnum {
         INTERVAL,
         BILLING,
         DISABLED;
@@ -25,22 +32,19 @@ public final class Read implements DeviceConfigurationInputEnumeration {
     }
 
     @Override
-    public String getEnumOptionName() {
-        return "ReadType";
-    }
+    public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
+        MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
 
-    static {
-        Builder<DisplayableValue> typeBuilder = new Builder<>();
+        List<InputOption> displayableReadTypes = new ArrayList<>();
 
         for (ReadType readType : ReadType.values()) {
-            typeBuilder.add(new DisplayableValue(readType.name(),readType.getFormatKey()));
+            displayableReadTypes.add( new InputOption( readType.name(), messageAccessor.getMessage(readType)));
         }
-
-        displayableReadTypes = typeBuilder.build();
+        return displayableReadTypes;
     }
 
     @Override
-    public List<DisplayableValue> getDisplayableValues() {
-        return displayableReadTypes;
+    public String getEnumOptionName() {
+        return "ReadType";
     }
 }

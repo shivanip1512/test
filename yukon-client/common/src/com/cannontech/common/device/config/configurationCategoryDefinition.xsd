@@ -91,6 +91,8 @@
             <xs:enumeration value="ReconnectParameter"/>
             <xs:enumeration value="ChannelType"/>
             <xs:enumeration value="ReadType"/>
+            <xs:enumeration value="RecordingInterval"/>
+            <xs:enumeration value="ReportingInterval"/>
         </xs:restriction>
     </xs:simpleType>
 

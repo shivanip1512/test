@@ -1,51 +1,57 @@
 package com.cannontech.web.deviceConfiguration.enumeration;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.ImmutableList.Builder;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.input.type.InputOption;
+import com.google.common.base.CaseFormat;
 
 @Component
 public final class ScheduleInput implements DeviceConfigurationInputEnumeration {
 
-    private static final String baseKey = "yukon.web.modules.tools.configs.enum.schedules";
-    
-    private static final List<DisplayableValue> validSchedules;
-    
-    public enum Schedule {
-        SCHEDULE_1("Schedule 1", ".schedule1"),
-        SCHEDULE_2("Schedule 2", ".schedule2"),
-        SCHEDULE_3("Schedule 3", ".schedule3"),
-        SCHEDULE_4("Schedule 4", ".schedule4"),
-        ;
-        
+    private static final String baseKey = "yukon.web.modules.tools.configs.enum.schedules.";
+
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+
+    public enum Schedule implements DisplayableEnum {
+        SCHEDULE_1("Schedule 1"),
+        SCHEDULE_2("Schedule 2"),
+        SCHEDULE_3("Schedule 3"),
+        SCHEDULE_4("Schedule 4");
+
         private final String dbValue;
-        private final String messageKey;
-        
-        private Schedule(String dbValue, String messageKey) {
+
+        private Schedule(String dbValue) {
             this.dbValue = dbValue;
-            this.messageKey = messageKey;
         }
-    }
-    
-    static {
-        Builder<DisplayableValue> builder = new Builder<>();
-        
-        for (Schedule schedule : Schedule.values()) {
-            builder.add(new DisplayableValue(schedule.dbValue, baseKey + schedule.messageKey));
+
+        @Override
+        public String getFormatKey() {
+            return baseKey + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.name()) ;
         }
-        
-        validSchedules = builder.build();
-    }
-    
-    @Override
-    public String getEnumOptionName() {
-        return "Schedule";
     }
 
     @Override
-    public List<DisplayableValue> getDisplayableValues() {
+    public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
+        MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
+
+        List<InputOption> validSchedules = new ArrayList<>();
+
+        for (Schedule schedule : Schedule.values()) {
+            validSchedules.add( new InputOption( schedule.dbValue, messageAccessor.getMessage(schedule)));
+        }
         return validSchedules;
+    }
+
+    @Override
+    public String getEnumOptionName() {
+        return "Schedule";
     }
 }

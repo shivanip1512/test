@@ -1,37 +1,28 @@
 package com.cannontech.web.deviceConfiguration.enumeration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.google.common.collect.ImmutableList.Builder;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.input.type.InputOption;
 
 @Component
 public final class PhysicalChannel implements DeviceConfigurationInputEnumeration {
 
-    private static final List<DisplayableValue> channels;
-    
-    static {
-        Builder<DisplayableValue> channelBuilder = new Builder<>();
-        
-        for (int channel = 1; channel <= 16; channel++) {
-            channelBuilder.add(
-                new DisplayableValue(
-                    Integer.toString(channel - 1),
-                    YukonMessageSourceResolvable.createDefaultWithoutCode(Integer.toString(channel))));
-        }
-        
-        channels = channelBuilder.build();
-    }
-    
     @Override
-    public String getEnumOptionName() {
-        return "PhysicalChannel";
+    public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
+        List<InputOption> channels = new ArrayList<>();
+
+        for (int i=1; i <= 16; i++) {
+            channels.add( new InputOption(Integer.toString(i-1), Integer.toString(i)));
+        }
+        return channels;
     }
 
     @Override
-    public List<DisplayableValue> getDisplayableValues() {
-        return channels;
+    public String getEnumOptionName() {
+        return "PhysicalChannel";
     }
 }
