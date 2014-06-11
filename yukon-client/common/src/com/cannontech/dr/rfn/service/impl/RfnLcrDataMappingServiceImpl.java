@@ -114,13 +114,14 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                 messagesToSend.add(pointData);
             }
         }
-        List<PointData> intervalData;
         
         /** This may be useful some day */
         boolean readNow = (data.evaluateAsInt("/DRReport/Info/Flags") & 0x01) == 1;
         
-        intervalData = mapIntervalData(data, device, assetAvailabilityTimes);
-        messagesToSend.addAll(intervalData);
+        List<PointData> intervalData = mapIntervalData(data, device, assetAvailabilityTimes);
+        if (intervalData != null) {
+            messagesToSend.addAll(intervalData);
+        }
         
         //Update asset availability times for this device
         dynamicLcrCommunicationsDao.insertData(assetAvailabilityTimes);
@@ -129,8 +130,18 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     }
 
     private List<PointData> mapIntervalData(SimpleXPathTemplate data, RfnDevice device, AssetAvailabilityPointDataTimes assetAvailabilityTimes) {
-        
-        int intervalLengthMinutes = evaluateArchiveReadValue(data, RfnLcrPointDataMap.RECORDING_INTERVAL).intValue();
+        int intervalLengthMinutes = 0;
+        Double recordingInterval = evaluateArchiveReadValue(data, RfnLcrPointDataMap.RECORDING_INTERVAL);
+        if (recordingInterval != null) {
+            intervalLengthMinutes = recordingInterval.intValue();
+        }
+        if (intervalLengthMinutes <= 0) {
+            log.error("Invalid recording interval found for device: " + device.getName() + " "
+                    + device.getPaoIdentifier() + " Recording interval value: " + intervalLengthMinutes);
+            // If the device doesn't report a value for the recording interval or reports a zero, there is no way to 
+            // determine the number of valid recorded intervals sent back- so no way to extract valid data.
+            return null;
+        }
         
         List<PointData> intervalPointData = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();

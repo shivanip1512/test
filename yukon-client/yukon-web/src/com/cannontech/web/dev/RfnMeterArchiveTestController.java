@@ -97,7 +97,7 @@ public class RfnMeterArchiveTestController {
         return "rfn/dataSimulator.jsp";
     }
 
-    @RequestMapping(value="startDataSimulator", method=RequestMethod.POST)
+    @RequestMapping(value="startDataSimulator", method=RequestMethod.GET)
     public String startDataSimulator(@RequestParam int lcr6200serialFrom, @RequestParam int lcr6200serialTo,
             @RequestParam int lcr6600serialFrom, @RequestParam int lcr6600serialTo,
             @RequestParam long messageId, @RequestParam long messageIdTimestamp) {
@@ -109,7 +109,7 @@ public class RfnMeterArchiveTestController {
         return "redirect:viewLcrDataSimulator";
     }
 
-    @RequestMapping("stopDataSimulator")
+    @RequestMapping(value="stopDataSimulator", method=RequestMethod.GET)
     public String stopDataSimulator() {
         dataSimulator.stopSimulator();
         return "redirect:viewLcrDataSimulator";

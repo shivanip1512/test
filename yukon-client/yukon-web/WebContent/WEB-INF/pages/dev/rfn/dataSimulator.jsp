@@ -15,7 +15,7 @@ $(function() {
                 'messageId': $("input[name='messageId']").val(),
                 'messageIdTimestamp': $("input[name='messageIdTimestamp']").val()};
         $.ajax({
-            url: '/dev/rfn/startDataSimulator',
+            url: yukon.url('/dev/rfn/startDataSimulator'),
             type: 'GET',
             data: data 
         });
@@ -23,7 +23,7 @@ $(function() {
     
     $('#stop').click(function(event) {
         $.ajax({
-            url: '/dev/rfn/stopDataSimulator',
+            url: yukon.url('/dev/rfn/stopDataSimulator'),
             type: 'GET'
         });
     });
