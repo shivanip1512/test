@@ -23,19 +23,7 @@
   
   <bean id="templateProcessorFactory" class="com.cannontech.common.util.TemplateProcessorFactory"/>
   
-  <bean id="pointFormattingService"
-      class="com.cannontech.core.service.impl.PointFormattingServiceImpl" abstract="false"
-      scope="singleton" lazy-init="default" autowire="default">
-      <property name="stateDao">
-          <ref bean="stateDao" />
-      </property>
-      <property name="pointDao">
-          <ref bean="pointDao" />
-      </property>
-      <property name="unitMeasureDao">
-          <ref bean="unitMeasureDao" />
-      </property>
-  </bean>
+  <bean id="pointFormattingService" class="com.cannontech.core.service.impl.PointFormattingServiceImpl" />
   
   <bean id="activityLoggerService"
       class="com.cannontech.core.service.impl.ActivityLoggerServiceImpl" abstract="false"

@@ -659,9 +659,8 @@
                                 </td>
                                 <td>${fn:escapeXml(gateway.displayType)}</td>
                                 <td class="pointStateColumn">
-                                    <cti:pointStatusColor pointId="${gateway.commissionedId}" >
-                                        <cti:pointValue pointId="${gateway.commissionedId}" format="VALUE"/>
-                                    </cti:pointStatusColor>
+                                    <cti:pointStatus pointId="${gateway.commissionedId}" />
+                                    <cti:pointValue pointId="${gateway.commissionedId}" format="VALUE"/>
                                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                         <c:if test="${inventoryChecking}">
                                             <cm:dropdown triggerClasses="fr">

@@ -42,9 +42,8 @@
                                     <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertSerialNumber}"/>
                                 </c:when>
                                 <c:when test="${point.stateGroupID != 0}">
-                                    <cti:pointStatusColor pointId="${point.pointID}">
-                                        <cti:pointValue pointId="${point.pointID}" format="{state}"/>
-                                    </cti:pointStatusColor>
+                                    <cti:pointStatus pointId="${point.pointID}" />
+                                    <cti:pointValue pointId="${point.pointID}" format="{state}"/>
                                 </c:when>
                                 <c:otherwise>
                                     <cti:pointValue pointId="${point.pointID}" format="SHORT"/>
@@ -91,9 +90,8 @@
                     <tr>
                         <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
                         <td class="b">
-                            <cti:pointStatusColor pointId="${point.pointID}">
-                               <cti:pointValue pointId="${point.pointID}" format="VALUE"/>
-                            </cti:pointStatusColor>
+                            <cti:pointStatus pointId="${point.pointID}" />
+                            <cti:pointValue pointId="${point.pointID}" format="VALUE"/>
                         </td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                     </tr>

@@ -512,33 +512,19 @@
   </tag>
   
   <tag>
-    <name>pointStatusColor</name>
-    <tag-class>com.cannontech.web.taglib.PointStatusColorTag</tag-class>
-    <body-content>scriptless</body-content>
+    <name>pointStatus</name>
+    <tag-class>com.cannontech.web.taglib.PointStatusTag</tag-class>
+    <body-content>empty</body-content>
     <attribute>
       <name>pointId</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <attribute>
-      <name>format</name>
+        <attribute>
+      <name>rawState</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>var</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>background</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <description>Only for status points. State to be used instead of current state. Useful for historical data.</description>
     </attribute>
   </tag>
   

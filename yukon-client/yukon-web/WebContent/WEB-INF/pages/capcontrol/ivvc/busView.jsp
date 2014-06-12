@@ -184,9 +184,8 @@
                         <tr>
                             <td>${fn:escapeXml(point.pointName)}:&nbsp;</td>
                             <td>
-                                <cti:pointStatusColor pointId="${point.liteID}">
-                                    <cti:pointValue pointId="${point.liteID}" format="VALUE"/>
-                                </cti:pointStatusColor>
+                                <cti:pointStatus pointId="${point.liteID}" />
+                                <cti:pointValue pointId="${point.liteID}" format="VALUE"/>
                             </td>
                         </tr>
                     </c:forEach>

@@ -94,7 +94,7 @@
                                 <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
                                     <td class="state-indicator tar">
                                         <c:if test="${row.pointType.status}">
-                                            <cti:pointStatusColor pointId="${row.pointId}" styleClass="box state-box" background="true">&nbsp;</cti:pointStatusColor>
+                                            <cti:pointStatus pointId="${row.pointId}" />
                                         </c:if>
                                     </td>
                                     <td><cti:pointValue pointId="${row.pointId}" format="VALUE_UNIT" /></td>

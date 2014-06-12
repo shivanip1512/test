@@ -73,8 +73,8 @@
                             <td><tags:paoType yukonPao="${event.meter}"/></td>
                             <td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
                             <td>${fn:escapeXml(event.pointName)}</td>
-                            <cti:pointColor pointId="${event.pointValueHolder.id}" rawState="${event.pointValueHolder.value}" var="color"/>
-                            <td class="${color}">
+                            <td>
+                                <cti:pointStatus pointId="${event.pointValueHolder.id}" rawState="${event.pointValueHolder.value}"/>
                                 <cti:pointValueFormatter format="VALUE" value="${event.pointValueHolder}" />
                             </td>
                             <td>

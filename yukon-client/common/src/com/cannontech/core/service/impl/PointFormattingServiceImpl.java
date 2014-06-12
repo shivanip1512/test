@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.util.Colors;
@@ -20,6 +19,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
+import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.CachingPointFormattingService;
@@ -34,46 +34,22 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
 public class PointFormattingServiceImpl implements PointFormattingService {
-    private PointDao pointDao;
-    private StateDao stateDao;
-    private UnitMeasureDao unitMeasureDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private TemplateProcessorFactory templateProcessorFactory;
+    @Autowired private PointDao pointDao;
+    @Autowired private StateDao stateDao;
+    @Autowired private UnitMeasureDao unitMeasureDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private TemplateProcessorFactory templateProcessorFactory;
+    @Autowired private PointService pointService;
     private Logger log = YukonLogManager.getLogger(PointFormattingServiceImpl.class);
 
-    @Required
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
-    @Required
-    public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
-        this.unitMeasureDao = unitMeasureDao;
-    }
-    
-    @Required
-    public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setTemplateProcessorFactory(
-            TemplateProcessorFactory templateProcessorFactory) {
-        this.templateProcessorFactory = templateProcessorFactory;
-    }
-    
     @Override
     public CachingPointFormattingService getCachedInstance() {
     	CachingPointFormattingService impl = new CachingPointFormattingService() {
             
             private Map<Integer, LitePoint> litePointCache = new HashMap<Integer, LitePoint>();
             private Map<Integer, LitePointUnit> pointUnitCache = new HashMap<Integer, LitePointUnit>();
-            
+
+            @Override
             public String getValueString(PointValueHolder data, String format, YukonUserContext userContext) {
                 FormattingTemplateProcessor templateProcessor = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
                 Object value = "";
@@ -105,8 +81,15 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 // However, it is expected that this stategroup is truly not being utilized for actual state information
                 // Excluding this group allows us to have a little more control over calls to stateDao (YUK-10270)
                 if (litePoint.getStateGroupID() != StateGroupUtils.SYSTEM_STATEGROUPID) {
-	                LiteState liteState = stateDao.findLiteState(litePoint.getStateGroupID(),(int)data.getValue());
-	                
+                    LiteState liteState;
+
+                    if (litePoint.getPointTypeEnum().isStatus()) {
+                        liteState = stateDao.findLiteState(litePoint.getStateGroupID(),(int)data.getValue());
+                    } else {
+                        //For non-status points, state is determined by alarm conditions (signals)
+                        liteState = pointService.getCurrentStateForNonStatusPoint(litePoint.getPointID());
+                    }
+
 	                if (liteState != null) {
 	                    value = liteState.getStateText();
 	                    valueStr = liteState.getStateText();
@@ -176,6 +159,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 return result.trim();
             }
 
+            @Override
             public String getValueString(PointValueHolder value, Format format, YukonUserContext userContext) {
                 MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
                 String message = messageSourceAccessor.getMessage(format.getFormatKey());
@@ -183,6 +167,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 return result;
             }
             
+            @Override
             public void addLitePointsToCache(Iterable<LitePoint> litePoints) {
             	for (LitePoint litePoint : litePoints) {
             		litePointCache.put(litePoint.getPointID(), litePoint);
@@ -205,12 +190,13 @@ public class PointFormattingServiceImpl implements PointFormattingService {
         return message;
     }
 
+    @Override
     public String getValueString(PointValueHolder value, Format format, YukonUserContext userContext) {
         return getCachedInstance().getValueString(value, format, userContext);
     }
-    
+
+    @Override
     public String getValueString(PointValueHolder value, String format, YukonUserContext userContext) {
         return getCachedInstance().getValueString(value, format, userContext);
     }
-
 }

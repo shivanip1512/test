@@ -26,8 +26,8 @@
                         <tr>
                             <td><cti:formatDate type="BOTH" value="${entry.pointValueHolder.pointDataTimeStamp}"/></td>
                             <td><spring:escapeBody>${entry.pointName}</spring:escapeBody></td>
-                            <cti:pointColor pointId="${entry.pointValueHolder.id}" rawState="${entry.pointValueHolder.value}" var="color"/>
-                            <td class="${color}">
+                            <td>
+                                <cti:pointStatus pointId="${event.pointValueHolder.id}" rawState="${entry.pointValueHolder.value}"/>
                                 <cti:pointValueFormatter format="VALUE" value="${entry.pointValueHolder}" />
                             </td>
                         </tr>

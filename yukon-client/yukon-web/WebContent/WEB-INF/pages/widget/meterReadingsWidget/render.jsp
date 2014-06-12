@@ -135,7 +135,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
                  <td>${fn:escapeXml(pointResultRow.pointName)}</td>
                  <td class="state-indicator tar">
                     <c:if test="${pointResultRow.paoPointIdentifier.pointIdentifier.pointType.status}">
-                        <cti:pointStatusColor pointId="${pointResultRow.pointId}" styleClass="box state-box" background="true">&nbsp;</cti:pointStatusColor>
+                        <cti:pointStatus pointId="${pointResultRow.pointId}" />
                     </c:if>
                  </td>
                  <td><cti:pointValue pointId="${pointResultRow.pointId}" format="SHORT"/></td>

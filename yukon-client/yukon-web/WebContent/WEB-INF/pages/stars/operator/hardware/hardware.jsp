@@ -358,11 +358,10 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                 <tbody>
                                 <tr>
                                     <td>
-                                        <cti:pointStatusColor pointId="${hardware.commissionedId}" >
-                                            <span class="fwb">
-                                                <cti:pointValue pointId="${hardware.commissionedId}" format="VALUE"/>
-                                            </span>
-                                        </cti:pointStatusColor>
+                                        <cti:pointStatus pointId="${hardware.commissionedId}" />
+                                        <span class="fwb">
+                                            <cti:pointValue pointId="${hardware.commissionedId}" format="VALUE"/>
+                                        </span>
                                     </td>
                                     <td>
                                         <cti:pointValue pointId="${hardware.commissionedId}" format="DATE"/>
@@ -437,9 +436,8 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                 </cti:url>
                                                 <td><a href="${viewUrl}">${device.serialNumber}</a></td>
                                                 <td class="pointStateColumn">
-                                                    <cti:pointStatusColor pointId="${device.commissionId}">
-                                                        <cti:pointValue pointId="${device.commissionId}" format="VALUE"/>
-                                                    </cti:pointStatusColor>
+                                                    <cti:pointStatus pointId="${device.commissionId}" />
+                                                    <cti:pointValue pointId="${device.commissionId}" format="VALUE"/>
                                                 </td>
                                                 <td class="wsnw last">
                                                     <cti:button nameKey="assignedDevices.commission" renderMode="image" classes="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}" icon="icon-accept"/>
