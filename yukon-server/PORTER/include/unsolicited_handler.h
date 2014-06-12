@@ -107,11 +107,12 @@ private:
     void deletePort( void );
     void updatePort( void );
 
-    void purgeDeviceWork(const device_activity_map::value_type &active_device, int error_code);
-    void purgePortWork(int error_code);
+    void purgeDeviceWork(const device_activity_map::value_type &active_device, const YukonError_t error_code);
+    void purgePortWork(const YukonError_t error_code);
 
     bool distributeRequests(const Cti::Timing::MillisecondTimer &timer, const unsigned long slice);
     void handleDeviceRequest(OUTMESS *om);
+    void handleDeviceError(OUTMESS *om, const YukonError_t error);
 
     bool startPendingRequests(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
     void startPendingRequest(device_record *dr);

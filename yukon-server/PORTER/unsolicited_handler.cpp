@@ -357,7 +357,7 @@ void UnsolicitedHandler::updatePort(void)
 }
 
 
-void UnsolicitedHandler::purgePortWork(int error_code)
+void UnsolicitedHandler::purgePortWork(const YukonError_t error_code)
 {
     for each( const device_activity_map::value_type &active_device in _active_devices )
     {
@@ -368,19 +368,14 @@ void UnsolicitedHandler::purgePortWork(int error_code)
 }
 
 
-void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &active_device, int error_code)
+void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &active_device, const YukonError_t error_code)
 {
     device_record &dr = *active_device.first;
 
     //  first, purge all of the work
     for each( OUTMESS *om in dr.outbound )
     {
-        INMESS im;
-
-        OutEchoToIN(om, &im);
-
-        //  deletes the OM
-        ReturnResultMessage(error_code, &im, om);
+        handleDeviceError(om, error_code);
     }
 
     dr.outbound.clear();
@@ -433,59 +428,25 @@ bool UnsolicitedHandler::processQueue(std::list<Element> &queue, void (Unsolicit
 }
 
 
+void UnsolicitedHandler::handleDeviceError(OUTMESS *om, const YukonError_t error)
+{
+    //  return an error - this deletes the OM
+    INMESS im;
+    OutEchoToIN(om, &im);
+    ReturnResultMessage(error, &im, om);
+    _port->incQueueProcessed();
+}
+
 void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
 {
     if( _port->isInhibited() )
     {
-        //  return an error - this deletes the OM
-        INMESS im;
-        ReturnResultMessage(PORTINHIBITED, &im, om);
-        return;
+        return handleDeviceError(om, PORTINHIBITED);
     }
 
-    if( device_record *dr = getDeviceRecordById(om->DeviceID) )
-    {
-        if( dr->device->isInhibited() )
-        {
-            //  return an error - this deletes the OM
-            INMESS im;
-            OutEchoToIN(om, &im);
-            ReturnResultMessage(DEVICEINHIBITED, &im, om);
-            return;
-        }
+    device_record *dr = getDeviceRecordById(om->DeviceID);
 
-        if( om->ExpirationTime && om->ExpirationTime < CtiTime::now() )
-        {
-            //  return an error - this deletes the OM
-            INMESS im;
-            OutEchoToIN(om, &im);
-            ReturnResultMessage(ErrRequestExpired, &im, om);
-            return;
-        }
-
-        if( isDeviceDisconnected(dr->device->getID()) )
-        {
-            //  return an error - this deletes the OM
-            INMESS im;
-            OutEchoToIN(om, &im);
-            ReturnResultMessage(ErrorDeviceNotConnected, &im, om);
-            return;
-        }
-
-        if( gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Porter::UnsolicitedHandler::handleDeviceRequest - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        dr->outbound.push_back(om);
-
-        if( _active_devices.find(dr) == _active_devices.end() )
-        {
-            _active_devices[dr] = _request_pending.insert(_request_pending.end(), dr);
-        }
-    }
-    else
+    if( ! dr )
     {
         if( gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
         {
@@ -493,10 +454,35 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
             dout << CtiTime() << " Porter::UnsolicitedHandler::handleDeviceRequest - no device found for device id (" << om->DeviceID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        //  return an error - this deletes the OM
-        INMESS im;
-        ReturnResultMessage(IDNF, &im, om);
-        return;
+        return handleDeviceError(om, IDNF);
+    }
+
+    if( dr->device->isInhibited() )
+    {
+        return handleDeviceError(om, DEVICEINHIBITED);
+    }
+
+    if( om->ExpirationTime && om->ExpirationTime < CtiTime::now() )
+    {
+        return handleDeviceError(om, ErrRequestExpired);
+    }
+
+    if( isDeviceDisconnected(dr->device->getID()) )
+    {
+        return handleDeviceError(om, ErrorDeviceNotConnected);
+    }
+
+    if( gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Porter::UnsolicitedHandler::handleDeviceRequest - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    dr->outbound.push_back(om);
+
+    if( _active_devices.find(dr) == _active_devices.end() )
+    {
+        _active_devices[dr] = _request_pending.insert(_request_pending.end(), dr);
     }
 }
 
