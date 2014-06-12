@@ -116,8 +116,9 @@
                                 <td><cti:dataUpdaterValue
                                     type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION" /></td>
                             </cti:checkRolesAndProperties>
-
-                            <td><dr:loadGroupListActions pao="${loadGroup}" /></td>
+                            
+                            <c:set var="allowShed" value="${loadGroup.paoIdentifier.paoType != 'LM_GROUP_ECOBEE'}"/>
+                            <td><dr:loadGroupListActions pao="${loadGroup}" allowShed="${allowShed}" /></td>
                         </tr>
                     </c:forEach>
                 </tbody>

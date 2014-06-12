@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 import javax.servlet.http.HttpServletResponse;
+
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,15 +22,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.cannontech.core.roleproperties.YukonRole;
+
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
@@ -103,7 +107,13 @@ public class LoadGroupController extends DemandResponseControllerBase {
                               programService.findProgramsForLoadGroup(loadGroupId, userContext));
         model.addAttribute("parentLoadGroups",
                               loadGroupService.findLoadGroupsForMacroLoadGroup(loadGroupId, userContext));
-
+        
+        boolean allowShed = true;
+        if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_ECOBEE) {
+            allowShed = false;
+        }
+        model.addAttribute("allowShed", allowShed);
+        
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForMacroLoadGroupFilter(loadGroupId);
         loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
                                                bindingResult, detailFilter, flashScope);
@@ -231,8 +241,12 @@ public class LoadGroupController extends DemandResponseControllerBase {
     @RequestMapping("/loadGroup/sendShedConfirm")
     public String sendShedConfirm(ModelMap modelMap, int loadGroupId,
             YukonUserContext userContext) {
-
+        
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_ECOBEE) {
+            throw new IllegalArgumentException("Ecobee load groups cannot be directly shed.");
+        }
+        
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      loadGroup, 
                                                      Permission.LM_VISIBLE, 
@@ -248,6 +262,10 @@ public class LoadGroupController extends DemandResponseControllerBase {
                                                       YukonUserContext userContext, FlashScope flashScope) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_ECOBEE) {
+            throw new IllegalArgumentException("Ecobee load groups cannot be directly shed.");
+        }
+        
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      loadGroup, 

@@ -81,12 +81,14 @@
                             <tags:dynamicChooseOption optionId="unknown">
                                 <%-- Actions are disabled when Load Management doesn't know about the Load group --%>
                                 <cti:msg var="loadGroupUnknown" key="yukon.web.modules.dr.loadGroupDetail.unknown"/>
-                                <li>
-                                    <a class="clearfix" title="${programUnknown}">
-                                        <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.sendShed"/></span>
-                                    </a>
-                                </li>
+                                <c:if test="${allowShed}">
+                                    <li>
+                                        <a class="clearfix" title="${programUnknown}">
+                                            <cti:icon icon="icon-control-play-blue" classes="disabled"/>
+                                            <span class="dib disabled"><cti:msg2 key=".actions.sendShed"/></span>
+                                        </a>
+                                    </li>
+                                </c:if>
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
@@ -103,14 +105,16 @@
 
                             <tags:dynamicChooseOption optionId="enabled">
                                 <%-- Actions shown when the Load Group is enabled --%>
-                                <cti:url var="sendShedUrl" value="/dr/loadGroup/sendShedConfirm">
-                                    <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendShedConfirm.title" 
-                                        dialogId="drDialog" actionUrl="${sendShedUrl}" icon="icon-control-play-blue"
-                                        labelKey="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
-                                </li>
+                                <c:if test="${allowShed}">
+                                    <cti:url var="sendShedUrl" value="/dr/loadGroup/sendShedConfirm">
+                                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                                    </cti:url>
+                                    <li>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendShedConfirm.title" 
+                                            dialogId="drDialog" actionUrl="${sendShedUrl}" icon="icon-control-play-blue"
+                                            labelKey="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
+                                    </li>
+                                </c:if>
                                 <cti:url var="sendRestoreUrl" value="/dr/loadGroup/sendRestoreConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                 </cti:url>
@@ -148,12 +152,14 @@
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}" invert="true">
                         <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
                         <cti:msg var="noLoadGroupControl" key="yukon.web.modules.dr.loadGroupDetail.noControl"/>
-                        <li>
-                            <a class="clearfix" title="${noLoadGroupControl}">
-                                <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                <span class="dib disabled"><cti:msg2 key=".actions.sendShed"/></span>
-                            </a>
-                        </li>
+                        <c:if test="${allowShed}">
+                            <li>
+                                <a class="clearfix" title="${noLoadGroupControl}">
+                                    <cti:icon icon="icon-control-play-blue" classes="disabled"/>
+                                    <span class="dib disabled"><cti:msg2 key=".actions.sendShed"/></span>
+                                </a>
+                            </li>
+                        </c:if>
                         <li>
                             <a class="clearfix" title="${noLoadGroupControl}">
                                 <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
