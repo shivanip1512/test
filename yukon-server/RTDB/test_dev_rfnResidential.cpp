@@ -971,11 +971,20 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_on_demand )
 
         {
             std::vector<unsigned char> response = boost::assign::list_of
-                    (0x83)(0x00)(0x00)(0x01)(0x00);
+                    (0x83)  //  response
+                    (0x00)  //  set config
+                    (0x00)  //  success
+                    (0x01)  //  current disconnect mode (on-demand)
+                    (0x01)  //  1 tlv
+                    (0x01)  //  type 1 (on-demand)
+                    (0x01)  //  length 1
+                    (0x00); //  reconnect:  arm
 
             const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
 
-            const std::string exp = "Status: Success (0)";
+            const std::string exp = "Status: Success (0)"
+                                    "\nDisconnect mode: On Demand"
+                                    "\nReconnect param: Arm reconnect";
 
             BOOST_CHECK_EQUAL(rcv.description, exp);
         }
@@ -1040,13 +1049,18 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_demand_thresh
 
         {
             std::vector<unsigned char> response = boost::assign::list_of
-                    (0x83)(0x00)(0x00)(0x02)(0x00);
+                    (0x83)(0x00)(0x00)(0x02)(0x01)(0x02)(0x05)(0x01)(0x05)(0x66)(0x0f)(0x0a);
 
             const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
 
-            const std::string exp = "Status: Success (0)";
-
-            BOOST_CHECK_EQUAL(rcv.description, exp);
+            BOOST_CHECK_EQUAL( rcv.description,
+                                     "Status: Success (0)"
+                                     "\nDisconnect mode: Demand Threshold"
+                                     "\nReconnect param: Immediate reconnect"
+                                     "\nDisconnect demand interval: 5 minutes"
+                                     "\nDisconnect demand threshold: 10.2 kW"
+                                     "\nConnect delay: 15 minutes"
+                                     "\nMax disconnects: 10" );
         }
 
         dut.extractCommandResult( *command );
@@ -1112,11 +1126,16 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_cycling )
 
         {
             std::vector<unsigned char> response = boost::assign::list_of
-                    (0x83)(0x00)(0x00)(0x03)(0x00);
+                    (0x83)(0x00)(0x00)(0x03)(0x01)(0x03)(0x05)(0x01)(0x00)(0x0a)(0x00)(0x14);
 
             const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
 
-            const std::string exp = "Status: Success (0)";
+            const std::string exp =
+                    "Status: Success (0)"
+                    "\nDisconnect mode: Cycling"
+                    "\nReconnect param: Immediate reconnect"
+                    "\nDisconnect minutes: 10"
+                    "\nConnect minutes: 20";
 
             BOOST_CHECK_EQUAL(rcv.description, exp);
         }

@@ -66,17 +66,14 @@ protected:
     void handleCommandResult( const Commands::RfnSetOvUvNewAlarmReportIntervalCommand             & cmd );
     void handleCommandResult( const Commands::RfnSetOvUvSetOverVoltageThresholdCommand            & cmd );
     void handleCommandResult( const Commands::RfnSetOvUvSetUnderVoltageThresholdCommand           & cmd );
-    void handleCommandResult( const Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand  & cmd );
-    void handleCommandResult( const Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand & cmd );
-    void handleCommandResult( const Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand   & cmd );
-    void handleCommandResult( const Commands::RfnRemoteDisconnectGetConfigurationCommand          & cmd );
+    void handleCommandResult( const Commands::RfnRemoteDisconnectConfigurationCommand                          & cmd );
 
 private:
 
     bool disconnectConfigSupported() const;
 
-    std::string getDisconnectModeString( Commands::RfnRemoteDisconnectCommand::DisconnectMode disconnectMode );
-    std::string getReconnectParamString( Commands::RfnRemoteDisconnectCommand::Reconnect reconnectParam );
+    std::string getDisconnectModeString( Commands::RfnRemoteDisconnectConfigurationCommand::DisconnectMode disconnectMode );
+    std::string getReconnectParamString( Commands::RfnRemoteDisconnectConfigurationCommand::Reconnect reconnectParam );
 
     bool isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig, std::map<std::string, std::string> &configMap );
 };

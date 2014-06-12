@@ -57,7 +57,7 @@ class IM_EX_DEVDB RfnChannelSelectionCommand : public RfnChannelConfigurationCom
     unsigned char getCommandCode() const;
     unsigned char getResponseCommandCode() const;
 
-    void decodeTlvs( const TlvList& tlvs, RfnCommandResult &result );
+    void decodeTlvs( const TlvList& tlvs, RfnCommandResult &result, const unsigned char tlv_expected );
 
     void decodeTlvChannelSelection( const Bytes &data, RfnCommandResult &result );
 
@@ -77,6 +77,8 @@ protected:
 
     RfnChannelSelectionCommand()
     {};
+
+    virtual unsigned char getExpectedTlvType() const = 0;
 
 public:
     void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
@@ -98,6 +100,8 @@ class IM_EX_DEVDB RfnSetChannelSelectionCommand : public RfnChannelSelectionComm
     TlvList       getTlvsToSend() const;
     unsigned char getOperation() const;
 
+    virtual unsigned char getExpectedTlvType() const;
+
 public:
     RfnSetChannelSelectionCommand( const MetricIds& metrics );
 
@@ -109,6 +113,8 @@ public:
 class IM_EX_DEVDB RfnGetChannelSelectionCommand : public RfnChannelSelectionCommand
 {
     unsigned char getOperation() const;
+
+    virtual unsigned char getExpectedTlvType() const;
 };
 
 /**
@@ -117,6 +123,8 @@ class IM_EX_DEVDB RfnGetChannelSelectionCommand : public RfnChannelSelectionComm
 class IM_EX_DEVDB RfnGetChannelSelectionFullDescriptionCommand : public RfnChannelSelectionCommand
 {
     unsigned char getOperation() const;
+
+    virtual unsigned char getExpectedTlvType() const;
 };
 
 /**
@@ -136,7 +144,7 @@ class IM_EX_DEVDB RfnChannelIntervalRecordingCommand : public RfnChannelConfigur
     unsigned char getCommandCode() const;
     unsigned char getResponseCommandCode() const;
 
-    void decodeTlvs( const TlvList& tlvs, RfnCommandResult &result );
+    void decodeTlvs( const TlvList& tlvs, RfnCommandResult &result, unsigned char tlv_expected );
     void decodeChannelIntervalRecording( const Bytes &response, RfnCommandResult &result );
 
 protected:
@@ -154,6 +162,8 @@ protected:
 
     RfnChannelIntervalRecordingCommand()
     {};
+
+    virtual unsigned char getExpectedTlvType() const = 0;
 
 public:
     void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
@@ -179,6 +189,8 @@ class IM_EX_DEVDB RfnSetChannelIntervalRecordingCommand : public RfnChannelInter
 
     unsigned char getOperation() const;
 
+    virtual unsigned char getExpectedTlvType() const;
+
 public:
     RfnSetChannelIntervalRecordingCommand( const MetricIds& metrics,
                                            unsigned intervalRecordingSeconds,
@@ -191,6 +203,8 @@ public:
 class IM_EX_DEVDB RfnGetChannelIntervalRecordingCommand : public RfnChannelIntervalRecordingCommand
 {
     unsigned char getOperation() const;
+
+    virtual unsigned char getExpectedTlvType() const;
 };
 
 

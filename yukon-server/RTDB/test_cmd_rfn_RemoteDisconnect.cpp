@@ -6,7 +6,7 @@
 
 using Cti::Devices::Commands::RfnCommand;
 using Cti::Devices::Commands::RfnCommandResult;
-using Cti::Devices::Commands::RfnRemoteDisconnectCommand;
+using Cti::Devices::Commands::RfnRemoteDisconnectConfigurationCommand;
 using Cti::Devices::Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand;
 using Cti::Devices::Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand;
 using Cti::Devices::Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand;
@@ -33,7 +33,7 @@ const CtiTime execute_time( CtiDate( 6, 3, 2014 ) , 12 );
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_OnDemand_SetConfiguration )
 {
-    RfnRemoteDisconnectSetOnDemandConfigurationCommand cmd( RfnRemoteDisconnectCommand::Reconnect_Arm );
+    RfnRemoteDisconnectSetOnDemandConfigurationCommand cmd( RfnRemoteDisconnectConfigurationCommand::Reconnect_Arm );
 
     // execute
     {
@@ -49,11 +49,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_OnDemand_SetConfiguration )
     // decode -- success response
     {
         const std::vector< unsigned char > response = boost::assign::list_of
-            (0x83)(0x00)(0x00)(0x01)(0x00);
+            (0x83)(0x00)(0x00)(0x01)(0x01)(0x01)(0x01)(0x01);
 
         RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+        BOOST_CHECK_EQUAL( rcv.description,
+                                 "Status: Success (0)"
+                                 "\nDisconnect mode: On Demand"
+                                 "\nReconnect param: Immediate reconnect" );
     }
 
     // decode -- failure response
@@ -77,8 +80,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_OnDemand_SetConfiguration )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfiguration )
 {
-    RfnRemoteDisconnectSetThresholdConfigurationCommand cmd( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                             RfnRemoteDisconnectCommand::DemandInterval_Five,
+    RfnRemoteDisconnectSetThresholdConfigurationCommand cmd( RfnRemoteDisconnectConfigurationCommand::Reconnect_Arm,
+                                                             RfnRemoteDisconnectConfigurationCommand::DemandInterval_Five,
                                                              5.0,
                                                              10,
                                                              0 );
@@ -97,11 +100,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     // decode -- success response
     {
         const std::vector< unsigned char > response = boost::assign::list_of
-            (0x83)(0x00)(0x00)(0x02)(0x00);
+            (0x83)(0x00)(0x00)(0x02)(0x01)(0x02)(0x05)(0x01)(0x0f)(0x64)(0x0a)(0x00);
 
         RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+        BOOST_CHECK_EQUAL( rcv.description,
+                                 "Status: Success (0)"
+                                 "\nDisconnect mode: Demand Threshold"
+                                 "\nReconnect param: Immediate reconnect"
+                                 "\nDisconnect demand interval: 15 minutes"
+                                 "\nDisconnect demand threshold: 10.0 kW"
+                                 "\nConnect delay: 10 minutes"
+                                 "\nMax disconnects: disable" );
     }
 
     // decode -- failure response
@@ -141,11 +151,16 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration )
     // decode -- success response
     {
         const std::vector< unsigned char > response = boost::assign::list_of
-            (0x83)(0x00)(0x00)(0x03)(0x00);
+            (0x83)(0x00)(0x00)(0x03)(0x01)(0x03)(0x05)(0x01)(0x03)(0xe8)(0x00)(0x3c);
 
         RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+        BOOST_CHECK_EQUAL( rcv.description,
+                                 "Status: Success (0)"
+                                 "\nDisconnect mode: Cycling"
+                                 "\nReconnect param: Immediate reconnect"
+                                 "\nDisconnect minutes: 1000"
+                                 "\nConnect minutes: 60" );
     }
 
     // decode -- failure response
@@ -180,8 +195,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     // Demand threshold underflow
     try
     {
-        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                                     RfnRemoteDisconnectCommand::DemandInterval_Five,
+        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectConfigurationCommand::Reconnect_Arm,
+                                                                     RfnRemoteDisconnectConfigurationCommand::DemandInterval_Five,
                                                                      0.0,
                                                                      0,
                                                                      0);
@@ -194,8 +209,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     // Demand threshold overflow
     try
     {
-        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                                     RfnRemoteDisconnectCommand::DemandInterval_Five,
+        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectConfigurationCommand::Reconnect_Arm,
+                                                                     RfnRemoteDisconnectConfigurationCommand::DemandInterval_Five,
                                                                      13.0,
                                                                      0,
                                                                      0);
@@ -208,8 +223,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     // Connect delay overflow
     try
     {
-        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                                     RfnRemoteDisconnectCommand::DemandInterval_Five,
+        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectConfigurationCommand::Reconnect_Arm,
+                                                                     RfnRemoteDisconnectConfigurationCommand::DemandInterval_Five,
                                                                      0.5,
                                                                      31,
                                                                      0);
@@ -222,8 +237,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     // Max disconnects overflow
     try
     {
-        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                                     RfnRemoteDisconnectCommand::DemandInterval_Five,
+        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectConfigurationCommand::Reconnect_Arm,
+                                                                     RfnRemoteDisconnectConfigurationCommand::DemandInterval_Five,
                                                                      0.5,
                                                                      0,
                                                                      21);
@@ -282,12 +297,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OnDemand_SetConfiguration_decoding_exceptions
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x8f)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid current disconnect mode received (2 != 1)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) );
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (0)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type received in response (0)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
-    RfnRemoteDisconnectSetOnDemandConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm );
+    RfnRemoteDisconnectSetOnDemandConfigurationCommand command( RfnRemoteDisconnectConfigurationCommand::Reconnect_Arm );
 
     for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
@@ -320,13 +335,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandThreshold_SetConfiguration_decoding_exc
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x8f)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid current disconnect mode received (3 != 2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) );
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (0)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type received in response (0)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
-    RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                                 RfnRemoteDisconnectCommand::DemandInterval_Five,
+    RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectConfigurationCommand::Reconnect_Arm,
+                                                                 RfnRemoteDisconnectConfigurationCommand::DemandInterval_Five,
                                                                  10.0,
                                                                  10,
                                                                  10 );
@@ -362,8 +377,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_Cycling_SetConfiguration_decoding_exceptions 
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x8f)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid current disconnect mode received (1 != 3)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) );
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (0)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type received in response (0)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -407,10 +422,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_OnDemand )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x83 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x01 )( 0x01 );
 
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::DisconnectMode_OnDemand, command.getDisconnectMode() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::Reconnect_Arm, command.getReconnectParam() );
-
         // These should be empty to begin
+        BOOST_CHECK( ! command.getDisconnectMode() );
+        BOOST_CHECK( ! command.getReconnectParam() );
         BOOST_CHECK( ! command.getConnectDelay() );
         BOOST_CHECK( ! command.getMaxDisconnects() );
         BOOST_CHECK( ! command.getDemandInterval() );
@@ -425,8 +439,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_OnDemand )
                                  "\nDisconnect mode: On Demand"
                                  "\nReconnect param: Immediate reconnect" );
 
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::DisconnectMode_OnDemand, command.getDisconnectMode() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::Reconnect_Immediate, command.getReconnectParam() );
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DisconnectMode_OnDemand, command.getDisconnectMode() );
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::Reconnect_Immediate, command.getReconnectParam() );
 
         // Still shouldn't have any of these
         BOOST_CHECK( ! command.getConnectDelay() );
@@ -476,10 +490,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_DemandThres
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0f )( 0x64 )( 0x0a )( 0x00 );
 
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::DisconnectMode_OnDemand, command.getDisconnectMode() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::Reconnect_Arm, command.getReconnectParam() );
-
         // These should be empty to begin
+        BOOST_CHECK( ! command.getDisconnectMode() );
+        BOOST_CHECK( ! command.getReconnectParam() );
         BOOST_CHECK( ! command.getConnectDelay() );
         BOOST_CHECK( ! command.getMaxDisconnects() );
         BOOST_CHECK( ! command.getDemandInterval() );
@@ -498,9 +511,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_DemandThres
                                  "\nConnect delay: 10 minutes"
                                  "\nMax disconnects: disable" );
 
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::DisconnectMode_DemandThreshold, command.getDisconnectMode() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::Reconnect_Immediate, command.getReconnectParam() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::DemandInterval_Fifteen,  *command.getDemandInterval() );
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DisconnectMode_DemandThreshold, command.getDisconnectMode() );
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::Reconnect_Immediate, command.getReconnectParam() );
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DemandInterval_Fifteen,  *command.getDemandInterval() );
         BOOST_CHECK_EQUAL(   10, *command.getConnectDelay() );
         BOOST_CHECK_EQUAL(    0, *command.getMaxDisconnects() );
         BOOST_CHECK_EQUAL( 10.0, *command.getDemandThreshold() );
@@ -549,10 +562,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_Cycling )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x03 )( 0xe8 )( 0x00 )( 0x3c );
 
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::DisconnectMode_OnDemand, command.getDisconnectMode() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::Reconnect_Arm, command.getReconnectParam() );
-
         // These should be empty to begin
+        BOOST_CHECK( ! command.getDisconnectMode() );
+        BOOST_CHECK( ! command.getReconnectParam() );
         BOOST_CHECK( ! command.getConnectDelay() );
         BOOST_CHECK( ! command.getMaxDisconnects() );
         BOOST_CHECK( ! command.getDemandInterval() );
@@ -569,8 +581,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_Cycling )
                                  "\nDisconnect minutes: 1000"
                                  "\nConnect minutes: 60" );
 
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::DisconnectMode_Cycling, command.getDisconnectMode() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectCommand::Reconnect_Immediate, command.getReconnectParam() );
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DisconnectMode_Cycling, command.getDisconnectMode() );
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::Reconnect_Immediate, command.getReconnectParam() );
         BOOST_CHECK_EQUAL( 1000, *command.getDisconnectMinutes() );
         BOOST_CHECK_EQUAL( 60, *command.getConnectMinutes() );
 
@@ -623,26 +635,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_decoding_ex
         ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x01 )( 0x17 ) )
         //  response TLV too small                                 \/\/
         ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x04 )( 0x01 )( 0x0f )( 0x64 )( 0x0a ) )
-        //  demand interval invalid                                                \/\/
-        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0e )( 0x64 )( 0x0a )( 0x00 ) )
-        //  threshold invalid                                                              \/\/
-        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0f )( 0xcc )( 0x0a )( 0x00 ) )
-        //  connect delay invalid                                                                  \/\/
-        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0f )( 0x64 )( 0x2a )( 0x00 ) )
-        //  max disconnects invalid                                                                        \/\/
-        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0f )( 0x64 )( 0x0a )( 0x15 ) )
         //  response TLV too small                                 \/\/
         ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x04 )( 0x01 )( 0x03 )( 0xe8 )( 0x00 )( 0x3c ) )
         //  reconnect param invalid                                        \/\/
         ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x02 )( 0x03 )( 0xe8 )( 0x00 )( 0x3c ) )
-        //  disconnect minutes invalid                                             \/\/\/\/\/\/
-        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x00 )( 0x04 )( 0x00 )( 0x3c ) )
-        //  disconnect minutes invalid                                             \/\/\/\/\/\/
-        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x05 )( 0xa1 )( 0x00 )( 0x3c ) )
-        //  connect minutes invalid                                                                \/\/\/\/\/\/
-        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x00 )( 0x3c )( 0x00 )( 0x04 ) )
-        //  connect minutes invalid                                                                \/\/\/\/\/\/
-        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x00 )( 0x3c )( 0x05 )( 0xa1 ) )
         ;
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
@@ -659,17 +655,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_decoding_ex
         ( RfnCommand::CommandException( ErrorInvalidData, "Response reconnect param invalid (23) expecting 0 or 1" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Response TLV too small (4 != 5)" ) )
         //  10
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response demand interval invalid (14) expecting 5, 10, or 15." ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response hectoWatt threshold invalid (204) expecting <= 120" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response connect delay invalid (42) expecting <= 30" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response max disconnects invalid (21) expecting <= 20" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Response TLV too small (4 != 5)" ) )
-        //  15
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response reconnect param invalid (2) expecting 0 or 1" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response disconnect minutes invalid (4) expecting >= 5" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response disconnect minutes invalid (1441) expecting <= 1440" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response connect minutes invalid (4) expecting >= 5" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response connect minutes invalid (1441) expecting <= 1440" ) );
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response reconnect param invalid (2) expecting 0 or 1" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 

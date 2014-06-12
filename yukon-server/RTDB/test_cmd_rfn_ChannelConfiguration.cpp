@@ -734,15 +734,13 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_allMetrics )
             {
                 RfnSetChannelSelectionCommand cmd( metrics );
 
-                std::vector<unsigned char> response = list_of(0x79)(0x00)(0X00)(0x02);    // command code + operation + status + 2 tlv
+                std::vector<unsigned char> response = list_of(0x79)(0x00)(0X00)(0x01);    // command code + operation + status + 1 tlv
 
                 // create the response
                 {
-                    const std::vector<unsigned char> tlv_channel_config     = test_createChannelSelectionConfigurationTlv( metrics );
-                    const std::vector<unsigned char> tlv_channel_descrition = test_createChannelSelectionDescriptionTlv( metrics );
+                    const std::vector<unsigned char> tlv_channel_description = test_createChannelSelectionDescriptionTlv( metrics );
 
-                    response.insert( response.end(), tlv_channel_config.begin(),     tlv_channel_config.end());
-                    response.insert( response.end(), tlv_channel_descrition.begin(), tlv_channel_descrition.end());
+                    response.insert( response.end(), tlv_channel_description.begin(), tlv_channel_description.end());
                 }
 
                 RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
@@ -757,15 +755,6 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_allMetrics )
 
                 std::string desc_exp =
                         "Status: Success (0)\n"
-                        "Channel Selection Configuration:\n"
-                        "Metric(s) list:\n";
-
-                for each( const std::string & desc in descriptions )
-                {
-                    desc_exp += desc + "\n";
-                }
-
-                desc_exp +=
                         "Channel Registration Full Description:\n"
                         "Metric(s) descriptors:\n";
 
@@ -866,8 +855,6 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand )
 
 BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand )
 {
-    RfnChannelConfigurationCommand::MetricIds zeroMetrics;
-
     RfnGetChannelSelectionFullDescriptionCommand cmd;
 
     // execute
@@ -887,10 +874,7 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand )
     // decode
     {
         const std::vector<unsigned char> response = list_of
-                (0x79)(0x02)(0X00)(0x02)  // command code + operation + status + 2 tlv
-                (0x01)                    // tlv type 1
-                (0x00)(0x01)              // tlv size (2-bytes)
-                (0x00)                    // number of metrics
+                (0x79)(0x02)(0X00)(0x01)  // command code + operation + status + 1 tlv
                 (0x02)                    // tlv type 2
                 (0x00)(0x71)              // tlv size (2-bytes)
                 (0x1c)                    // number of metrics descriptor
@@ -927,9 +911,6 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand )
 
         const std::string desc_exp =
                 "Status: Success (0)\n"
-                "Channel Selection Configuration:\n"
-                "Metric(s) list:\n"
-                "none\n"
                 "Channel Registration Full Description:\n"
                 "Metric(s) descriptors:\n"
                 "Watt hour delivered (1): Scaling Factor: 1\n"
@@ -962,7 +943,13 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand )
                 "VA hour received (42): Scaling Factor: 10e-1 (deci)\n";
 
         BOOST_CHECK_EQUAL( rcv.description, desc_exp );
-        BOOST_CHECK_EQUAL( cmd.getMetricsReceived(), zeroMetrics );
+
+        const RfnChannelConfigurationCommand::MetricIds metricsExpected = boost::assign::list_of
+            (0x01)(0x02)(0x03)(0x05)(0x06)(0x07)(0x08)(0x09)
+            (0x0a)(0x0b)(0x0c)(0x15)(0x16)(0x17)(0x1f)(0x20)
+            (0x21)(0x22)(0x23)(0x29)(0x2a);
+
+        BOOST_CHECK_EQUAL( cmd.getMetricsReceived(), metricsExpected );
     }
 }
 
@@ -1011,23 +998,17 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                 ( list_of(0x79)(0x01)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x01)(0x00) )
                 ( list_of(0x79)(0x00)(0X03)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x01)(0x00) )
                 // tlv types
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x07)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x01)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x01)(0x00)(0x01)(0x00)                           )
-                // tlv channel selection configuration
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x00)                                (0x02)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x03)                          (0x02)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x03)(0x01)(0xff)(0xff)              (0x02)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x05)(0x02)(0x00)(0x01)(0x00)(0x01)  (0x02)(0x00)(0x01)(0x00) )
+                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x07)(0x00)(0x01)(0x00)                           )
+                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x02)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x01)(0x00) )
                 // tlv full description
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x00) )
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x01)(0x03) )
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x09)(0x02)(0x00)(0x01)(0x00)(0x00)(0x00)(0x01)(0x00)(0x00) )
+                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x00) )
+                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x01)(0x03) )
+                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
+                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x09)(0x02)(0x00)(0x01)(0x00)(0x00)(0x00)(0x01)(0x00)(0x00) )
                 // tlv full description - metric qualifier
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x18)(0x00) );
+                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
+                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
+                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x18)(0x00) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
@@ -1035,14 +1016,8 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
                 // tlv types
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected duplicated TLV of type (1)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received TLV of type(s): (1), expected: (1, 2)" ) )
-                // tlv channel selection configuration
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 0, expected >= 1" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 7" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7), expected (2)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
                 // tlv full description
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
@@ -1055,17 +1030,19 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
 
 
         const RfnChannelConfigurationCommand::MetricIds metrics;
-        RfnSetChannelSelectionCommand cmd( metrics );
 
         std::vector< RfnCommand::CommandException > actual;
 
         for each ( const RfnCommand::RfnResponsePayload & response in responses )
         {
-            BOOST_CHECK_THROW( cmd.decodeCommand( execute_time, response ), RfnCommand::CommandException );
+            RfnSetChannelSelectionCommand cmd( metrics );
 
             try
             {
                 RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
+
+                BOOST_ERROR( "cmd.decodeCommand() did not throw with payload " );
+                BOOST_ERROR( response );
             }
             catch ( const RfnCommand::CommandException & ex )
             {
@@ -1104,9 +1081,9 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x00)" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
                 // tlv types
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected duplicated TLV of type (1)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received TLV of type(s): (), expected: (1)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7), expected (1)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (0), expected (1)" ) )
                 // tlv channel selection configuration
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 7" ) )
@@ -1119,11 +1096,12 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand_exceptions )
 
         for each ( const RfnCommand::RfnResponsePayload & response in responses )
         {
-            BOOST_CHECK_THROW( cmd.decodeCommand( execute_time, response ), RfnCommand::CommandException );
-
             try
             {
                 RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
+
+                BOOST_ERROR( "cmd.decodeCommand() did not throw with payload " );
+                BOOST_ERROR( response );
             }
             catch ( const RfnCommand::CommandException & ex )
             {
@@ -1143,27 +1121,21 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand_exceptio
     {
         const std::vector<RfnCommand::RfnResponsePayload> responses = list_of
                 ( list_of(0x79)(0x02)(0X00) )
-                ( list_of(0x7a)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x01)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x02)(0X03)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x01)(0x00) )
+                ( list_of(0x7a)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x01)(0x00) )
+                ( list_of(0x79)(0x01)(0X00)(0x01)  (0x02)(0x00)(0x01)(0x00) )
+                ( list_of(0x79)(0x02)(0X03)(0x01)  (0x02)(0x00)(0x01)(0x00) )
                 // tlv types
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x07)(0x01)(0x00)        (0x02)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x01)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x01)(0x00)(0x01)(0x00)                           )
-                // tlv channel selection configuration
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x00)                                (0x02)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x03)                          (0x02)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x03)(0x01)(0xff)(0xff)              (0x02)(0x00)(0x01)(0x00) )
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x05)(0x02)(0x00)(0x01)(0x00)(0x01)  (0x02)(0x00)(0x01)(0x00) )
+                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x07)(0x01)(0x00)       )
+                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x02)(0x00)(0x01)(0x00) (0x02)(0x00)(0x01)(0x00) )
                 // tlv full description
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x00) )
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x01)(0x03) )
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x09)(0x02)(0x00)(0x01)(0x00)(0x00)(0x00)(0x01)(0x00)(0x00) )
+                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x00) )
+                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x01)(0x03) )
+                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
+                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x09)(0x02)(0x00)(0x01)(0x00)(0x00)(0x00)(0x01)(0x00)(0x00) )
                 // tlv full description - metric qualifier
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
-                ( list_of(0x79)(0x02)(0X00)(0x02)  (0x01)(0x00)(0x01)(0x00)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x18)(0x00) );
+                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
+                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
+                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x18)(0x00) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
@@ -1171,14 +1143,8 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand_exceptio
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
                 // tlv types
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected duplicated TLV of type (1)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received TLV of type(s): (1), expected: (1, 2)" ) )
-                // tlv channel selection configuration
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 0, expected >= 1" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 7" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7), expected (2)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
                 // tlv full description
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
@@ -1189,17 +1155,18 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand_exceptio
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) );
 
-        RfnGetChannelSelectionFullDescriptionCommand cmd;
-
         std::vector<RfnCommand::CommandException> actual;
 
         for each ( const RfnCommand::RfnResponsePayload & response in responses )
         {
-            BOOST_CHECK_THROW( cmd.decodeCommand( execute_time, response ), RfnCommand::CommandException );
+            RfnGetChannelSelectionFullDescriptionCommand cmd;
 
             try
             {
                 RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
+
+                BOOST_ERROR( "cmd.decodeCommand() did not throw with payload " );
+                BOOST_ERROR( response );
             }
             catch ( const RfnCommand::CommandException & ex )
             {
@@ -1247,52 +1214,20 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand )
     // decode
     {
         const std::vector<unsigned char> response = list_of
-                (0x7b)(0x00)(0X00)(0x02)    // command code + operation + status + 2 tlv
-                (0x01)                      // tlv type
-                (0x27)                      // tlv size (1-byte)
-                (0x12)(0x34)(0x56)(0x78)    // interval recording
-                (0xa5)(0xa5)(0xa5)(0xa5)    // interval reporting
-                (0x0f)                      // number of metrics
-                (0x00)(0x01)  (0x00)(0x02)  (0x00)(0x03)  (0x00)(0x04)
-                (0x00)(0x05)  (0x00)(0x06)  (0x00)(0x07)  (0x00)(0x08)
-                (0x00)(0x09)  (0x00)(0x0a)  (0x00)(0x0b)  (0x00)(0x0c)
-                (0x00)(0x15)  (0x00)(0x16)  (0x00)(0x17)
+                (0x7b)(0x00)(0X00)(0x01)    // command code + operation + status + 1 tlv
                 (0x02)                      // tlv type 2
-                (0x79)                      // tlv size (1-byte)
-                (0x1e)                      // number of metrics descriptor
+                (0x3d)                      // tlv size (1-byte)
+                (0x0f)                      // number of metrics descriptor
                 (0x00)(0x01)(0x00)(0x00)  (0x00)(0x02)(0x00)(0x00)  (0x00)(0x03)(0x00)(0x00)  (0x00)(0x04)(0x00)(0x00)
                 (0x00)(0x05)(0x00)(0x00)  (0x00)(0x06)(0x00)(0x00)  (0x00)(0x07)(0x00)(0x00)  (0x00)(0x08)(0x00)(0x00)
                 (0x00)(0x09)(0x00)(0x00)  (0x00)(0x0a)(0x00)(0x00)  (0x00)(0x0b)(0x00)(0x00)  (0x00)(0x0c)(0x00)(0x00)
-                (0x00)(0x15)(0x00)(0x00)  (0x00)(0x16)(0x00)(0x00)  (0x00)(0x17)(0x00)(0x00)  (0x00)(0x18)(0x00)(0x00)
-                (0x00)(0x19)(0x00)(0x00)  (0x00)(0x1a)(0x00)(0x00)  (0x00)(0x1b)(0x00)(0x00)  (0x00)(0x1c)(0x00)(0x00)
-                (0x00)(0x1d)(0x00)(0x00)  (0x00)(0x1e)(0x00)(0x00)  (0x00)(0x1f)(0x00)(0x00)  (0x00)(0x20)(0x00)(0x00)
-                (0x00)(0x21)(0x00)(0x00)  (0x00)(0x22)(0x00)(0x00)  (0x00)(0x23)(0x00)(0x00)  (0x00)(0x29)(0x00)(0x00)
-                (0x00)(0x2a)(0x00)(0x00)  (0x00)(0x2b)(0x00)(0x00);
+                (0x00)(0x15)(0x00)(0x00)  (0x00)(0x16)(0x00)(0x00)  (0x00)(0x17)(0x00)(0x00);
 
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
                 "Status: Success (0)\n"
-                "Channel Interval Recording Configuration:\n"
-                "Interval Recording: 305419896 seconds\n"
-                "Interval Reporting: 2779096485 seconds\n"
-                "Metric(s) list:\n"
-                "Watt hour delivered (1)\n"
-                "Watt hour received (2)\n"
-                "Watt hour total/sum (3)\n"
-                "Watt hour net (4)\n"
-                "Watts delivered, current demand (5)\n"
-                "Watts received, current demand (6)\n"
-                "Watts delivered, peak demand (7)\n"
-                "Watts received, peak demand (8)\n"
-                "Watts delivered, peak demand (Frozen) (9)\n"
-                "Watts received, peak demand (Frozen) (10)\n"
-                "Watt hour delivered (Frozen) (11)\n"
-                "Watt hour received (Frozen) (12)\n"
-                "Var hour delivered (21)\n"
-                "Var hour received (22)\n"
-                "Var hour total/sum (23)\n"
-                "Channel Interval Recoding Full Description:\n"
+                "Channel Interval Recording Full Description:\n"
                 "Metric(s) descriptors:\n"
                 "Watt hour delivered (1): Scaling Factor: 1\n"
                 "Watt hour received (2): Scaling Factor: 1\n"
@@ -1308,22 +1243,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand )
                 "Watt hour received (Frozen) (12): Scaling Factor: 1\n"
                 "Var hour delivered (21): Scaling Factor: 1\n"
                 "Var hour received (22): Scaling Factor: 1\n"
-                "Var hour total/sum (23): Scaling Factor: 1\n"
-                "Var hour net (24): Scaling Factor: 1\n"
-                "Var hour Q1 (25): Scaling Factor: 1\n"
-                "Var hour Q2 (26): Scaling Factor: 1\n"
-                "Var hour Q3 (27): Scaling Factor: 1\n"
-                "Var hour Q4 (28): Scaling Factor: 1\n"
-                "Var hour Q1 + Q4 (29): Scaling Factor: 1\n"
-                "Var hour Q2 + Q3 (30): Scaling Factor: 1\n"
-                "Var hour Q1 - Q4 (31): Scaling Factor: 1\n"
-                "Var delivered, current demand (32): Scaling Factor: 1\n"
-                "Var received, current demand (33): Scaling Factor: 1\n"
-                "Var delivered, peak demand (34): Scaling Factor: 1\n"
-                "Var received, peak demand (35): Scaling Factor: 1\n"
-                "VA hour delivered (41): Scaling Factor: 1\n"
-                "VA hour received (42): Scaling Factor: 1\n"
-                "VA hour total/sum (43): Scaling Factor: 1\n";
+                "Var hour total/sum (23): Scaling Factor: 1\n";
 
         BOOST_CHECK_EQUAL( rcv.description, desc_exp );
         BOOST_CHECK_EQUAL( cmd.getMetricsReceived(), metrics );
@@ -1351,15 +1271,12 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand )
     // decode
     {
         const std::vector<unsigned char> response = list_of
-                (0x7b)(0x01)(0X00)(0x02)    // command code + operation + status + 2 tlv
+                (0x7b)(0x01)(0X00)(0x01)    // command code + operation + status + 1 tlv
                 (0x01)                      // tlv type
                 (0x09)                      // tlv size (1-byte)
                 (0x12)(0x34)(0x56)(0x78)    // interval recording
                 (0xa5)(0xa5)(0xa5)(0xa5)    // interval reporting
-                (0x00)                      // number of metrics
-                (0x02)                      // tlv type 2
-                (0x01)                      // tlv size (1-byte)
-                (0x00);                     // number of metrics descriptor
+                (0x00);                     // number of metrics
 
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
@@ -1369,9 +1286,6 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand )
                 "Interval Recording: 305419896 seconds\n"
                 "Interval Reporting: 2779096485 seconds\n"
                 "Metric(s) list:\n"
-                "none\n"
-                "Channel Interval Recoding Full Description:\n"
-                "Metric(s) descriptors:\n"
                 "none\n";
 
         BOOST_CHECK_EQUAL( rcv.description, desc_exp );
@@ -1416,27 +1330,21 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
     {
         const std::vector<RfnCommand::RfnResponsePayload> responses = list_of
                 ( list_of(0x7b)(0x00)(0X00) )
-                ( list_of(0x79)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x00)(0X03)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x01)(0x00) )
+                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x01)(0x00) )
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x02)(0x01)(0x00) )
+                ( list_of(0x7b)(0x00)(0X03)(0x01)  (0x02)(0x01)(0x00) )
                 // tlv types
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x07)(0x01)(0x00)                                                  (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00) )
-                // tlv interval recording configuration
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x00)                                                                                (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)                          (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x0b)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)(0xff)(0xff)              (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x0d)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x02)(0x00)(0x01)(0x00)(0x01)  (0x02)(0x01)(0x00) )
+                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x07)(0x01)(0x00) )
+                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x02)(0x01)(0x00)  (0x02)(0x01)(0x00) )
                 // tlv full description
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x01)(0x03) )
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x09)(0x02)(0x00)(0x01)(0x00)(0x00)(0x00)(0x01)(0x00)(0x00) )
+                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x00) )
+                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x01)(0x03) )
+                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
+                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x09)(0x02)(0x00)(0x01)(0x00)(0x00)(0x00)(0x01)(0x00)(0x00) )
                 // tlv full description - metric qualifier
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x18)(0x00) );
+                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
+                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
+                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x18)(0x00) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
@@ -1444,14 +1352,8 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
                 // tlv types
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected duplicated TLV of type (1)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received TLV of type(s): (1), expected: (1, 2)" ) )
-                // tlv channel selection configuration
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for interval recording received 0, expected >= 9" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 3" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7), expected (2)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
                 // tlv full description
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
@@ -1464,17 +1366,19 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
 
 
         const RfnChannelConfigurationCommand::MetricIds metrics;
-        RfnSetChannelIntervalRecordingCommand cmd( metrics, 0, 0 );
 
         std::vector< RfnCommand::CommandException > actual;
 
         for each ( const RfnCommand::RfnResponsePayload & response in responses )
         {
-            BOOST_CHECK_THROW( cmd.decodeCommand( execute_time, response ), RfnCommand::CommandException );
+            RfnSetChannelIntervalRecordingCommand cmd( metrics, 0, 0 );
 
             try
             {
                 RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
+
+                BOOST_ERROR( "cmd.decodeCommand() did not throw with payload " );
+                BOOST_ERROR( response );
             }
             catch ( const RfnCommand::CommandException & ex )
             {
@@ -1493,27 +1397,17 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand_exceptions )
     {
         const std::vector<RfnCommand::RfnResponsePayload> responses = list_of
                 ( list_of(0x7b)(0x01)(0X00) )
-                ( list_of(0x79)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x01)(0X03)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x01)(0x00) )
+                ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00) )
+                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00) )
+                ( list_of(0x7b)(0x01)(0X03)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00) )
                 // tlv types
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x07)(0x01)(0x00)                                                  (0x02)(0x01)(0x00) )
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x07)(0x01)(0x00) )
                 ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00) )
-                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00) )
                 // tlv interval recording configuration
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x00)                                                                                (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)                          (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x0b)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)(0xff)(0xff)              (0x02)(0x01)(0x00) )
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x0d)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x02)(0x00)(0x01)(0x00)(0x01)  (0x02)(0x01)(0x00) )
-                // tlv full description
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x00) )
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x01)(0x03) )
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x09)(0x02)(0x00)(0x01)(0x00)(0x00)(0x00)(0x01)(0x00)(0x00) )
-                // tlv full description - metric qualifier
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
-                ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x18)(0x00) );
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x00)                                                                               )
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)                         )
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x0b)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)(0xff)(0xff)             )
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x0d)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x02)(0x00)(0x01)(0x00)(0x01) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
@@ -1521,35 +1415,26 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x00)" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
                 // tlv types
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected duplicated TLV of type (1)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received TLV of type(s): (1), expected: (1, 2)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7), expected (1)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
                 // tlv channel selection configuration
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for interval recording received 0, expected >= 9" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 3" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) )
-                // tlv full description
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) )
-                // tlv full description - metric qualifier
-                ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) );
-
-        RfnGetChannelIntervalRecordingCommand cmd;
+                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) );
 
         std::vector< RfnCommand::CommandException > actual;
 
         for each ( const RfnCommand::RfnResponsePayload & response in responses )
         {
-            BOOST_CHECK_THROW( cmd.decodeCommand( execute_time, response ), RfnCommand::CommandException );
+            RfnGetChannelIntervalRecordingCommand cmd;
 
             try
             {
                 RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
+
+                BOOST_ERROR( "cmd.decodeCommand() did not throw with payload " );
+                BOOST_ERROR( response );
             }
             catch ( const RfnCommand::CommandException & ex )
             {

@@ -70,24 +70,26 @@ const std::set<int> disconnectConfigTypes = boost::assign::list_of
         (TYPE_RFN420FRD)
         ;
 
-typedef boost::bimap<Commands::RfnRemoteDisconnectCommand::Reconnect, std::string> ReconnectDisplayMap;
-typedef boost::bimap<Commands::RfnRemoteDisconnectCommand::DisconnectMode, std::string> DisconnectModeDisplayMap;
+typedef Commands::RfnRemoteDisconnectConfigurationCommand DisconnectCmd;
+
+typedef boost::bimap<DisconnectCmd::Reconnect, std::string> ReconnectDisplayMap;
+typedef boost::bimap<DisconnectCmd::DisconnectMode, std::string> DisconnectModeDisplayMap;
 
 const ReconnectDisplayMap reconnectResolver = boost::assign::list_of< ReconnectDisplayMap::relation >
-    ( Commands::RfnRemoteDisconnectCommand::Reconnect_Arm, "ARM" )
-    ( Commands::RfnRemoteDisconnectCommand::Reconnect_Immediate, "IMMEDIATE" )
+    ( DisconnectCmd::Reconnect_Arm, "ARM" )
+    ( DisconnectCmd::Reconnect_Immediate, "IMMEDIATE" )
     ;
 
 const DisconnectModeDisplayMap disconnectModeResolver = boost::assign::list_of< DisconnectModeDisplayMap::relation >
-    ( Commands::RfnRemoteDisconnectCommand::DisconnectMode_OnDemand, "ON_DEMAND" )
-    ( Commands::RfnRemoteDisconnectCommand::DisconnectMode_DemandThreshold, "DEMAND_THRESHOLD" )
-    ( Commands::RfnRemoteDisconnectCommand::DisconnectMode_Cycling, "CYCLING" )
+    ( DisconnectCmd::DisconnectMode_OnDemand, "ON_DEMAND" )
+    ( DisconnectCmd::DisconnectMode_DemandThreshold, "DEMAND_THRESHOLD" )
+    ( DisconnectCmd::DisconnectMode_Cycling, "CYCLING" )
     ;
 
-const std::map<unsigned, Commands::RfnRemoteDisconnectCommand::DemandInterval> intervalResolver = boost::assign::map_list_of
-    (  5, Commands::RfnRemoteDisconnectCommand::DemandInterval_Five    )
-    ( 10, Commands::RfnRemoteDisconnectCommand::DemandInterval_Ten     )
-    ( 15, Commands::RfnRemoteDisconnectCommand::DemandInterval_Fifteen )
+const std::map<unsigned, DisconnectCmd::DemandInterval> intervalResolver = boost::assign::map_list_of
+    (  5, DisconnectCmd::DemandInterval_Five    )
+    ( 10, DisconnectCmd::DemandInterval_Ten     )
+    ( 15, DisconnectCmd::DemandInterval_Fifteen )
     ;
 
 Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const int deviceType )
@@ -1213,11 +1215,6 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                                                       ReturnMsgList    & returnMsgs,
                                                       RfnCommandList   & rfnRequests )
 {
-    using Commands::RfnRemoteDisconnectCommand;
-    using Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand;
-    using Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand;
-    using Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand;
-
     try
     {
         if( ! disconnectConfigSupported() )
@@ -1235,18 +1232,18 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
         const std::string configDisconnectMode               = getConfigData   <std::string> ( deviceConfig, Config::RfnStrings::DisconnectMode );
         const boost::optional<std::string> paoDisconnectMode = findDynamicInfo <std::string> ( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode );
 
-        const RfnRemoteDisconnectCommand::DisconnectMode disconnectMode = resolveConfigData( disconnectModeResolver.right, configDisconnectMode, Config::RfnStrings::DisconnectMode );
+        const DisconnectCmd::DisconnectMode disconnectMode = resolveConfigData( disconnectModeResolver.right, configDisconnectMode, Config::RfnStrings::DisconnectMode );
 
         const bool disconnectModesMatch = (configDisconnectMode == paoDisconnectMode);
 
         switch( disconnectMode )
         {
-            case RfnRemoteDisconnectCommand::DisconnectMode_OnDemand:
+            case DisconnectCmd::DisconnectMode_OnDemand:
             {
                 const std::string configReconnectParam               = getConfigData   <std::string> ( deviceConfig, Config::RfnStrings::ReconnectParam );
                 const boost::optional<std::string> paoReconnectParam = findDynamicInfo <std::string> ( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam );
 
-                const RfnRemoteDisconnectCommand::Reconnect reconnectParam = resolveConfigData( reconnectResolver.right, configReconnectParam, Config::RfnStrings::ReconnectParam );
+                const DisconnectCmd::Reconnect reconnectParam = resolveConfigData( reconnectResolver.right, configReconnectParam, Config::RfnStrings::ReconnectParam );
 
                 if( ! disconnectModesMatch ||
                     configReconnectParam != paoReconnectParam  ||
@@ -1257,12 +1254,12 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                         return ConfigNotCurrent;
                     }
 
-                    rfnRequests.push_back( boost::make_shared<RfnRemoteDisconnectSetOnDemandConfigurationCommand>( reconnectParam ));
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand>( reconnectParam ));
                 }
 
                 break;
             }
-            case RfnRemoteDisconnectCommand::DisconnectMode_DemandThreshold:
+            case DisconnectCmd::DisconnectMode_DemandThreshold:
             {
                 const std::string configReconnectParam               = getConfigData   <std::string> ( deviceConfig, Config::RfnStrings::ReconnectParam );
                 const unsigned configDemandInterval                  = getConfigData   <unsigned>    ( deviceConfig, Config::RfnStrings::DisconnectDemandInterval );
@@ -1276,8 +1273,8 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                 const boost::optional<unsigned> paoConnectDelay      = findDynamicInfo <unsigned>    ( CtiTableDynamicPaoInfo::Key_RFN_ConnectDelay );
                 const boost::optional<unsigned> paoMaxDisconnect     = findDynamicInfo <unsigned>    ( CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects );
 
-                const RfnRemoteDisconnectCommand::Reconnect      reconnectParam = resolveConfigData( reconnectResolver.right, configReconnectParam, Config::RfnStrings::ReconnectParam );
-                const RfnRemoteDisconnectCommand::DemandInterval demandInterval = resolveConfigData( intervalResolver,        configDemandInterval, Config::RfnStrings::DisconnectDemandInterval );
+                const DisconnectCmd::Reconnect      reconnectParam = resolveConfigData( reconnectResolver.right, configReconnectParam, Config::RfnStrings::ReconnectParam );
+                const DisconnectCmd::DemandInterval demandInterval = resolveConfigData( intervalResolver,        configDemandInterval, Config::RfnStrings::DisconnectDemandInterval );
 
                 if ( ! disconnectModesMatch ||
                      configReconnectParam  != paoReconnectParam  ||
@@ -1292,7 +1289,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                         return ConfigNotCurrent;
                     }
 
-                    rfnRequests.push_back( boost::make_shared<RfnRemoteDisconnectSetThresholdConfigurationCommand>(
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand>(
                             reconnectParam,
                             demandInterval,
                             configDemandThreshold,
@@ -1302,7 +1299,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
 
                 break;
             }
-            case RfnRemoteDisconnectCommand::DisconnectMode_Cycling:
+            case DisconnectCmd::DisconnectMode_Cycling:
             {
                 const unsigned configDisconnectMinutes               = getConfigData   <unsigned> ( deviceConfig, Config::RfnStrings::DisconnectMinutes );
                 const unsigned configConnectMinutes                  = getConfigData   <unsigned> ( deviceConfig, Config::RfnStrings::ConnectMinutes );
@@ -1320,7 +1317,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                         return ConfigNotCurrent;
                     }
 
-                    rfnRequests.push_back( boost::make_shared<RfnRemoteDisconnectSetCyclingConfigurationCommand>(
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand>(
                             configDisconnectMinutes,
                             configConnectMinutes ));
                 }
@@ -1453,43 +1450,20 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnDemandFreezeC
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, cmd.freezeDay );
 }
 
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand & cmd )
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectConfigurationCommand & cmd )
 {
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, getDisconnectModeString( cmd.getDisconnectMode() ) );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, getReconnectParamString( cmd.reconnectParam ) );
-}
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand & cmd )
-{
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, getDisconnectModeString( cmd.getDisconnectMode() ) );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, getReconnectParamString( cmd.reconnectParam ) );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectDemandInterval, cmd.demandInterval );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandThreshold, cmd.demandThreshold );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectDelay, cmd.connectDelay );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects, cmd.maxDisconnects );
-}
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand & cmd )
-{
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, getDisconnectModeString( cmd.getDisconnectMode() ) );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes, cmd.disconnectMinutes );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectMinutes, cmd.connectMinutes );
-}
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectGetConfigurationCommand & cmd )
-{
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, getDisconnectModeString( cmd.getDisconnectMode() ) );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, getReconnectParamString( cmd.getReconnectParam() ) );
+    if( cmd.getDisconnectMode() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, getDisconnectModeString( *cmd.getDisconnectMode() ) );
+    if( cmd.getReconnectParam() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, getReconnectParamString( *cmd.getReconnectParam() ) );
 
     if( cmd.getDemandInterval() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectDemandInterval, *cmd.getDemandInterval() );
-    if( cmd.getDemandThreshold() )   setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandThreshold, *cmd.getDemandThreshold() );
-    if( cmd.getConnectDelay() )      setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectDelay, *cmd.getConnectDelay() );
-    if( cmd.getMaxDisconnects() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects, *cmd.getMaxDisconnects() );
-    if( cmd.getDisconnectMinutes() ) setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes, *cmd.getDisconnectMinutes() );
-    if( cmd.getConnectMinutes() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectMinutes, *cmd.getConnectMinutes() );
+    if( cmd.getDemandThreshold() )   setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandThreshold,          *cmd.getDemandThreshold() );
+    if( cmd.getConnectDelay() )      setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectDelay,             *cmd.getConnectDelay() );
+    if( cmd.getMaxDisconnects() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects,           *cmd.getMaxDisconnects() );
+    if( cmd.getDisconnectMinutes() ) setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes,        *cmd.getDisconnectMinutes() );
+    if( cmd.getConnectMinutes() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectMinutes,           *cmd.getConnectMinutes() );
 }
 
-std::string RfnResidentialDevice::getDisconnectModeString( Commands::RfnRemoteDisconnectCommand::DisconnectMode disconnectMode )
+std::string RfnResidentialDevice::getDisconnectModeString( Commands::RfnRemoteDisconnectConfigurationCommand::DisconnectMode disconnectMode )
 {
     boost::optional<std::string> disconnectStr = bimapFind<std::string>( disconnectModeResolver.left, disconnectMode );
 
@@ -1505,7 +1479,7 @@ std::string RfnResidentialDevice::getDisconnectModeString( Commands::RfnRemoteDi
     return *disconnectStr;
 }
 
-std::string RfnResidentialDevice::getReconnectParamString( Commands::RfnRemoteDisconnectCommand::Reconnect reconnectMode )
+std::string RfnResidentialDevice::getReconnectParamString( Commands::RfnRemoteDisconnectConfigurationCommand::Reconnect reconnectMode )
 {
     boost::optional<std::string> reconnectStr = bimapFind<std::string>( reconnectResolver.left, reconnectMode );
 

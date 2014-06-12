@@ -471,9 +471,9 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
         return;
     }
 
-    std::set<unsigned> metricsIdsReceived, metricsIdsCoincidentReceived;
+    std::set<unsigned> metricsIdsCoincidentReceived;
 
-    unsigned coincidentValue = -1; // start with -1 in case the first metric as a none-zero coincident value
+    unsigned coincidentValue = -1; // start with -1 in case the first metric has a non-zero coincident value
 
     while( offset < expectedSize )
     {
@@ -498,7 +498,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
         if( metricQFields.coincidentValue == 0 )
         {
             // check for duplicated metricId
-            const bool isNewInsert = metricsIdsReceived.insert(metricId).second;
+            const bool isNewInsert = _metricsReceived.insert(metricId).second;
             validate( Condition( isNewInsert, ErrorInvalidData )
                     << "Received unexpected duplicated metric: " << metricDescription << " (" << metricId << ")" );
 
@@ -554,50 +554,36 @@ RfnCommandResult RfnChannelSelectionCommand::decodeCommand( const CtiTime now,
 
     decodeHeader( response, result );
 
-    decodeTlvs( getTlvsFromBytes( Bytes( response.begin() + 3, response.end()), longTlvs ), result );
+    decodeTlvs( getTlvsFromBytes( Bytes( response.begin() + 3, response.end()), longTlvs ), result, getExpectedTlvType() );
 
     return result;
 }
 
-void RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResult &result )
+void RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResult &result, const unsigned char tlvTypeExpected )
 {
-    std::set<unsigned char> tlvs_received;
+    validate( Condition( tlvs.size() == 1, ErrorInvalidData )
+            << "Unexpected TLV count (" << tlvs.size() << "), expected (1)" );
 
-    const std::set<unsigned char> tlvs_expected = (getOperation() == Operation_GetChannelSelectionConfiguration) ?
-            boost::assign::list_of
-                (static_cast<unsigned char>(TlvType_ChannelSelectionConfiguration)) :
-            boost::assign::list_of
-                (static_cast<unsigned char>(TlvType_ChannelSelectionConfiguration))
-                (static_cast<unsigned char>(TlvType_ChannelSelectionFullDescription));
+    const TypeLengthValue & tlv = tlvs[0];
 
-    for each( const TypeLengthValue& tlv in tlvs )
+    validate( Condition( tlv.type == tlvTypeExpected, ErrorInvalidData )
+             << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)tlvTypeExpected << ")" );
+
+    switch( tlv.type )
     {
-         validate( Condition( tlvs_expected.count(tlv.type), ErrorInvalidData )
-                 << "Unexpected TLV of type (" << tlv.type << ")" );
-
-         const bool isNewInsert = tlvs_received.insert(tlv.type).second;
-         validate( Condition( isNewInsert, ErrorInvalidData )
-                 << "Unexpected duplicated TLV of type (" << tlv.type << ")" );
-
-         switch( tlv.type )
-         {
-         case TlvType_ChannelSelectionConfiguration :
-             {
-                 result.description += "Channel Selection Configuration:\n";
-                 decodeMetricsIds( tlv.value, result );
-                 break;
-             }
-         case TlvType_ChannelSelectionFullDescription :
-             {
-                 result.description += "Channel Registration Full Description:\n";
-                 decodeChannelDescriptors( tlv.value, result );
-                 break;
-             }
-         }
+        case TlvType_ChannelSelectionConfiguration :
+        {
+            result.description += "Channel Selection Configuration:\n";
+            decodeMetricsIds( tlv.value, result );
+            break;
+        }
+        case TlvType_ChannelSelectionFullDescription :
+        {
+            result.description += "Channel Registration Full Description:\n";
+            decodeChannelDescriptors( tlv.value, result );
+            break;
+        }
     }
-
-    validate( Condition( tlvs_received == tlvs_expected, ErrorInvalidData )
-            << "Received TLV of type(s): (" << tlvs_received << "), expected: (" << tlvs_expected << ")" );
 }
 
 //----------------------------------------------------------------------------
@@ -633,6 +619,11 @@ unsigned char RfnSetChannelSelectionCommand::getOperation() const
     return Operation_SetChannelSelectionConfiguration;
 }
 
+unsigned char RfnSetChannelSelectionCommand::getExpectedTlvType() const
+{
+    return TlvType_ChannelSelectionFullDescription;
+}
+
 //----------------------------------------------------------------------------
 // Class RfnGetChannelSelectionCommand
 //----------------------------------------------------------------------------
@@ -642,6 +633,11 @@ unsigned char RfnGetChannelSelectionCommand::getOperation() const
     return Operation_GetChannelSelectionConfiguration;
 }
 
+unsigned char RfnGetChannelSelectionCommand::getExpectedTlvType() const
+{
+    return TlvType_ChannelSelectionConfiguration;
+}
+
 //----------------------------------------------------------------------------
 // Class RfnGetChannelSelectionFullDescriptionCommand
 //----------------------------------------------------------------------------
@@ -649,6 +645,11 @@ unsigned char RfnGetChannelSelectionCommand::getOperation() const
 unsigned char RfnGetChannelSelectionFullDescriptionCommand::getOperation() const
 {
     return Operation_GetChannelSelectionFullDescription;
+}
+
+unsigned char RfnGetChannelSelectionFullDescriptionCommand::getExpectedTlvType() const
+{
+    return TlvType_ChannelSelectionFullDescription;
 }
 
 //----------------------------------------------------------------------------
@@ -677,47 +678,36 @@ RfnCommandResult RfnChannelIntervalRecordingCommand::decodeCommand( const CtiTim
 
     decodeHeader( response, result );
 
-    decodeTlvs( getTlvsFromBytes( Bytes( response.begin() + 3, response.end()) ), result );
+    decodeTlvs( getTlvsFromBytes( Bytes( response.begin() + 3, response.end()) ), result, getExpectedTlvType() );
 
     return result;
 }
 
-void RfnChannelIntervalRecordingCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResult &result )
+void RfnChannelIntervalRecordingCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResult &result, const unsigned char tlvTypeExpected )
 {
-    std::set<unsigned char> tlvs_received;
+    validate( Condition( tlvs.size() == 1, ErrorInvalidData )
+            << "Unexpected TLV count (" << tlvs.size() << "), expected (1)" );
 
-    const std::set<unsigned char> tlvs_expected = boost::assign::list_of
-            (static_cast<unsigned char>(TlvType_ChannelIntervalRecordingConfiguration))
-            (static_cast<unsigned char>(TlvType_ChannelIntervalRecordingFullDescription));
+    const TypeLengthValue & tlv = tlvs[0];
 
-    for each( const TypeLengthValue& tlv in tlvs )
+     validate( Condition( tlv.type == tlvTypeExpected, ErrorInvalidData )
+             << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)tlvTypeExpected << ")" );
+
+    switch( tlv.type )
     {
-         validate( Condition( tlvs_expected.count(tlv.type), ErrorInvalidData )
-                 << "Unexpected TLV of type (" << tlv.type << ")" );
-
-         const bool isNewInsert = tlvs_received.insert(tlv.type).second;
-         validate( Condition( isNewInsert, ErrorInvalidData )
-                 << "Unexpected duplicated TLV of type (" << tlv.type << ")" );
-
-         switch( tlv.type )
-         {
-         case TlvType_ChannelIntervalRecordingConfiguration :
-             {
-                 result.description += "Channel Interval Recording Configuration:\n";
-                 decodeChannelIntervalRecording( tlv.value, result );
-                 break;
-             }
-         case TlvType_ChannelIntervalRecordingFullDescription :
-             {
-                 result.description += "Channel Interval Recoding Full Description:\n";
-                 decodeChannelDescriptors( tlv.value, result );
-                 break;
-             }
-         }
+        case TlvType_ChannelIntervalRecordingConfiguration:
+        {
+            result.description += "Channel Interval Recording Configuration:\n";
+            decodeChannelIntervalRecording( tlv.value, result );
+            break;
+        }
+        case TlvType_ChannelIntervalRecordingFullDescription:
+        {
+            result.description += "Channel Interval Recording Full Description:\n";
+            decodeChannelDescriptors( tlv.value, result );
+            break;
+        }
     }
-
-    validate( Condition( tlvs_received == tlvs_expected, ErrorInvalidData )
-            << "Received TLV of type(s): (" << tlvs_received << "), expected: (" << tlvs_expected << ")" );
 }
 
 void RfnChannelIntervalRecordingCommand::decodeChannelIntervalRecording( const Bytes &response, RfnCommandResult &result )
@@ -787,6 +777,11 @@ unsigned char RfnSetChannelIntervalRecordingCommand::getOperation() const
     return Operation_SetChannelIntervalRecordingConfiguration;
 }
 
+unsigned char RfnSetChannelIntervalRecordingCommand::getExpectedTlvType() const
+{
+    return TlvType_ChannelIntervalRecordingFullDescription;
+}
+
 //----------------------------------------------------------------------------
 // Class RfnGetChannelIntervalRecordingCommand
 //----------------------------------------------------------------------------
@@ -794,6 +789,11 @@ unsigned char RfnSetChannelIntervalRecordingCommand::getOperation() const
 unsigned char RfnGetChannelIntervalRecordingCommand::getOperation() const
 {
     return Operation_GetChannelIntervalRecordingConfiguration;
+}
+
+unsigned char RfnGetChannelIntervalRecordingCommand::getExpectedTlvType() const
+{
+    return TlvType_ChannelIntervalRecordingConfiguration;
 }
 
 } // Commands

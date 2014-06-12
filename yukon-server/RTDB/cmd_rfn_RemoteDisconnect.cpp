@@ -16,25 +16,30 @@ const std::map<unsigned char, std::string>  remoteDisconnectStatusResolver = boo
     ( 0, "Success" )
     ( 1, "Failure" );
 
-const std::map<RfnRemoteDisconnectCommand::DisconnectMode, std::string>  disconnectModeResolver = boost::assign::map_list_of
-    ( RfnRemoteDisconnectCommand::DisconnectMode_OnDemand,        "On Demand" )
-    ( RfnRemoteDisconnectCommand::DisconnectMode_DemandThreshold, "Demand Threshold" )
-    ( RfnRemoteDisconnectCommand::DisconnectMode_Cycling,         "Cycling" )
+typedef RfnRemoteDisconnectConfigurationCommand BaseCmd;
+typedef BaseCmd::DemandInterval DemandInterval;
+typedef BaseCmd::DisconnectMode DisconnectMode;
+typedef BaseCmd::Reconnect      Reconnect;
+
+const std::map<DisconnectMode, std::string>  disconnectModeResolver = boost::assign::map_list_of
+    ( BaseCmd::DisconnectMode_OnDemand,        "On Demand" )
+    ( BaseCmd::DisconnectMode_DemandThreshold, "Demand Threshold" )
+    ( BaseCmd::DisconnectMode_Cycling,         "Cycling" )
     ;
 
-const std::map<unsigned char, RfnRemoteDisconnectCommand::DemandInterval> remoteDisconnectIntervalResolver = boost::assign::map_list_of
-    (  5, RfnRemoteDisconnectCommand::DemandInterval_Five    )
-    ( 10, RfnRemoteDisconnectCommand::DemandInterval_Ten     )
-    ( 15, RfnRemoteDisconnectCommand::DemandInterval_Fifteen );
+const std::map<unsigned char, DemandInterval> remoteDisconnectIntervalResolver = boost::assign::map_list_of
+    (  5, BaseCmd::DemandInterval_Five    )
+    ( 10, BaseCmd::DemandInterval_Ten     )
+    ( 15, BaseCmd::DemandInterval_Fifteen );
 
-const std::map<unsigned char, RfnRemoteDisconnectCommand::Reconnect>  remoteDisconnectReconnectResolver = boost::assign::map_list_of
-    ( 0, RfnRemoteDisconnectCommand::Reconnect_Arm       )
-    ( 1, RfnRemoteDisconnectCommand::Reconnect_Immediate );
+const std::map<unsigned char, Reconnect>  remoteDisconnectReconnectResolver = boost::assign::map_list_of
+    ( 0, BaseCmd::Reconnect_Arm       )
+    ( 1, BaseCmd::Reconnect_Immediate );
 
-const std::map<unsigned char, RfnRemoteDisconnectCommand::DisconnectMode> disconnectModes = boost::assign::map_list_of
-    ( 1, RfnRemoteDisconnectCommand::DisconnectMode_OnDemand        )
-    ( 2, RfnRemoteDisconnectCommand::DisconnectMode_DemandThreshold )
-    ( 3, RfnRemoteDisconnectCommand::DisconnectMode_Cycling         )
+const std::map<unsigned char, DisconnectMode> disconnectModes = boost::assign::map_list_of
+    ( 1, BaseCmd::DisconnectMode_OnDemand        )
+    ( 2, BaseCmd::DisconnectMode_DemandThreshold )
+    ( 3, BaseCmd::DisconnectMode_Cycling         )
     ;
 
 } // anonymous namespace
@@ -42,23 +47,23 @@ const std::map<unsigned char, RfnRemoteDisconnectCommand::DisconnectMode> discon
 //-----------------------------------------------------------
 // Remote Disconnect Command Constructor
 //-----------------------------------------------------------
-RfnRemoteDisconnectCommand::RfnRemoteDisconnectCommand( const Operation operation )
+RfnRemoteDisconnectConfigurationCommand::RfnRemoteDisconnectConfigurationCommand( const Operation operation )
     :   _operation( operation )
 {
     // Empty
 }
 
-unsigned char RfnRemoteDisconnectCommand::getCommandCode() const
+unsigned char RfnRemoteDisconnectConfigurationCommand::getCommandCode() const
 {
     return CommandCode_Request;
 }
 
-unsigned char RfnRemoteDisconnectCommand::getOperation() const
+unsigned char RfnRemoteDisconnectConfigurationCommand::getOperation() const
 {
     return _operation;
 }
 
-RfnCommandResult RfnRemoteDisconnectCommand::decodeResponseHeader( const CtiTime now, const RfnResponsePayload & response )
+RfnCommandResult RfnRemoteDisconnectConfigurationCommand::decodeResponseHeader( const CtiTime now, const RfnResponsePayload & response )
 {
     RfnCommandResult result;
 
@@ -87,7 +92,7 @@ RfnCommandResult RfnRemoteDisconnectCommand::decodeResponseHeader( const CtiTime
     return result;
 }
 
-RfnRemoteDisconnectCommand::TlvList RfnRemoteDisconnectCommand::getTlvsFromPayload( const RfnResponsePayload & response )
+BaseCmd::TlvList RfnRemoteDisconnectConfigurationCommand::getTlvsFromPayload( const RfnResponsePayload & response )
 {
     validate( Condition( response.size() >= 5, ErrorInvalidData )
             << "Response too small (" << response.size() << " < 5)" );
@@ -97,21 +102,155 @@ RfnRemoteDisconnectCommand::TlvList RfnRemoteDisconnectCommand::getTlvsFromPaylo
     return getTlvsFromBytes( payload );
 }
 
-RfnCommand::Bytes RfnRemoteDisconnectCommand::getCommandData()
+RfnCommand::Bytes RfnRemoteDisconnectConfigurationCommand::getCommandData()
 {
     return getBytesFromTlvs( getTlvs() );
 }
 
-RfnRemoteDisconnectCommand::TlvList RfnRemoteDisconnectCommand::getTlvs()
+BaseCmd::TlvList RfnRemoteDisconnectConfigurationCommand::getTlvs()
 {
     return TlvList();
 }
+
+std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( TypeLengthValue tlv )
+{
+    std::ostringstream description;
+
+    _disconnectMode = mapFind( disconnectModes, tlv.type );
+
+    validate( Condition( _disconnectMode, ErrorInvalidData )
+            << "Invalid TLV type received in response (" << tlv.type << ")" );
+
+    description << "\nDisconnect mode: " << *mapFind( disconnectModeResolver, *_disconnectMode );
+
+    // Byte 0 in all three tlv types
+    boost::optional<Reconnect> reconnect = mapFind( remoteDisconnectReconnectResolver, tlv.value[0] );
+
+    // invalid reconnect byte -- not found in map
+    validate( Condition( reconnect, ErrorInvalidData )
+            << "Response reconnect param invalid (" << tlv.value[0]
+            << ") expecting 0 or 1" );
+
+    _reconnectParam = *reconnect;
+
+    std::string reconnectStr = _reconnectParam == Reconnect_Arm ? "Arm" : "Immediate";
+    description << "\nReconnect param: " << reconnectStr << " reconnect";
+
+    switch( tlv.type )
+    {
+        case DisconnectMode_DemandThreshold:
+        {
+            validate( Condition( tlv.value.size() == 5, ErrorInvalidData )
+            << "Response TLV too small (" << tlv.value.size() << " != 5)");
+
+            // Byte 1 - demand interval
+            boost::optional<DemandInterval> interval = mapFind( remoteDisconnectIntervalResolver, tlv.value[1] );
+
+            _demandInterval = *interval;
+
+            description << "\nDisconnect demand interval: " << CtiNumStr( tlv.value[1] ) << " minutes";
+
+            if( ! interval )
+            {
+                // invalid interval - not found in map, but we store it anyway
+                description << ", invalid (expecting 5, 10, or 15)";
+            }
+
+            // Byte 2 - demand threshold
+            const unsigned hectoWattThreshold = tlv.value[2];
+
+            _demandThreshold = hectoWattThreshold / 10.0; // Convert to kW.
+
+            description << "\nDisconnect demand threshold: " << CtiNumStr( *_demandThreshold, 1 ) << " kW";
+
+            if( hectoWattThreshold > 120 )
+            {
+                description << ", invalid (expecting <= 120)";
+            }
+
+            // Byte 3 - connect delay
+            _connectDelay = tlv.value[3];
+
+            description << "\nConnect delay: " << CtiNumStr( *_connectDelay ) << " minutes";
+
+            if( *_connectDelay > 30 )
+            {
+                description << ", invalid (expecting <= 30)";
+            }
+
+            // Byte 4 - max disconnects
+            _maxDisconnects = tlv.value[4];
+
+            const std::string disconnectsStr = CtiNumStr( *_maxDisconnects );
+            description << "\nMax disconnects: " << ( *_maxDisconnects ? disconnectsStr : "disable" );
+
+            if( *_maxDisconnects > 20 )
+            {
+                description << ", invalid (expecting <= 20)";
+            }
+
+            break;
+        }
+        case DisconnectMode_Cycling:
+        {
+            validate( Condition( tlv.value.size() == 5, ErrorInvalidData )
+                    << "Response TLV too small (" << tlv.value.size() << " != 5)" );
+
+            validate( Condition( getReconnectParam() == Reconnect_Immediate, ErrorInvalidData ) // must be 1 for cycling!
+                    << "Response reconnect param invalid " << getReconnectParam()
+                    << ") expecting 1)" );
+
+            // Bytes 1-2 : disconnect minutes
+            _disconnectMinutes = tlv.value[1] << 8 | tlv.value[2];
+
+            description << "\nDisconnect minutes: " << CtiNumStr( *_disconnectMinutes );
+
+            if( *_disconnectMinutes < 5 )
+            {
+                description << ", invalid (expecting >= 5)";
+            }
+            else if( *_disconnectMinutes > 1440 )
+            {
+                description << ", invalid (expecting <= 1440)";
+            }
+
+            // Bytes 3-4 : connect minutes
+            _connectMinutes = tlv.value[3] << 8 | tlv.value[4];
+
+            description << "\nConnect minutes: " << CtiNumStr( *_connectMinutes );
+
+            if( *_connectMinutes < 5 )
+            {
+                description << ", invalid (expecting >= 5)";
+            }
+            else if( *_connectMinutes > 1440 )
+            {
+                description << ", invalid (expecting <= 1440)";
+            }
+
+            break;
+        }
+    }
+
+    return description.str();
+}
+
+
+boost::optional<Reconnect>      RfnRemoteDisconnectConfigurationCommand::getReconnectParam() const  {  return _reconnectParam;  }
+boost::optional<DisconnectMode> RfnRemoteDisconnectConfigurationCommand::getDisconnectMode() const  {  return _disconnectMode;  }
+
+boost::optional<unsigned> RfnRemoteDisconnectConfigurationCommand::getDemandInterval()    const  {  return _demandInterval;     }
+boost::optional<double>   RfnRemoteDisconnectConfigurationCommand::getDemandThreshold()   const  {  return _demandThreshold;    }
+boost::optional<unsigned> RfnRemoteDisconnectConfigurationCommand::getConnectDelay()      const  {  return _connectDelay;       }
+boost::optional<unsigned> RfnRemoteDisconnectConfigurationCommand::getMaxDisconnects()    const  {  return _maxDisconnects;     }
+boost::optional<unsigned> RfnRemoteDisconnectConfigurationCommand::getDisconnectMinutes() const  {  return _disconnectMinutes;  }
+boost::optional<unsigned> RfnRemoteDisconnectConfigurationCommand::getConnectMinutes()    const  {  return _connectMinutes;     }
 
 //-----------------------------------------------------------
 // Remote Disconnect Set-Configuration Functions
 //-----------------------------------------------------------
 RfnRemoteDisconnectSetConfigurationCommand::RfnRemoteDisconnectSetConfigurationCommand()
-    :   RfnRemoteDisconnectCommand( Operation_SetConfiguration )
+    :   RfnRemoteDisconnectConfigurationCommand( Operation_SetConfiguration )
 {
     // Empty
 }
@@ -120,30 +259,28 @@ RfnCommandResult RfnRemoteDisconnectSetConfigurationCommand::decodeCommand( cons
 {
     RfnCommandResult result = decodeResponseHeader( now, response );
 
-    // We're a success, we should have a current disconnect mode.
+    // We're a success, we should have a current disconnect mode and TLV.
     validate( Condition( response.size() >= 4, ErrorInvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     currentDisconnectMode = response[3];
 
-    validate( Condition( currentDisconnectMode == getDisconnectMode(), ErrorInvalidData )
-            << "Invalid current disconnect mode received (" << currentDisconnectMode 
-            << " != " << getDisconnectMode() << ")" );
-
     const TlvList tlvs = getTlvsFromPayload( response );
 
-    validate( Condition( tlvs.size() == 0, ErrorInvalidData )
+    validate( Condition( tlvs.size() == 1, ErrorInvalidData )
             << "Invalid TLV count (" << tlvs.size() << ")" );
+
+    result.description += decodeDisconnectConfigTlv( tlvs[0] );
 
     return result;
 }
 
 
-RfnRemoteDisconnectCommand::TlvList RfnRemoteDisconnectSetConfigurationCommand::getTlvs()
+BaseCmd::TlvList RfnRemoteDisconnectSetConfigurationCommand::getTlvs()
 {
     RfnCommand::Bytes data = getData();
 
-    TypeLengthValue tlv( getDisconnectMode(), data );
+    TypeLengthValue tlv( getConfigurationDisconnectMode(), data );
 
     return boost::assign::list_of(tlv);
 }
@@ -162,9 +299,9 @@ void RfnRemoteDisconnectSetOnDemandConfigurationCommand::invokeResultHandler( Rf
     rh.handleCommandResult( *this );
 }
 
-RfnRemoteDisconnectCommand::DisconnectMode RfnRemoteDisconnectSetOnDemandConfigurationCommand::getDisconnectMode() const
+DisconnectMode RfnRemoteDisconnectSetOnDemandConfigurationCommand::getConfigurationDisconnectMode() const
 {
-    return DisconnectMode_OnDemand; 
+    return DisconnectMode_OnDemand;
 }
 
 RfnCommand::Bytes RfnRemoteDisconnectSetOnDemandConfigurationCommand::getData()
@@ -214,18 +351,18 @@ void RfnRemoteDisconnectSetThresholdConfigurationCommand::invokeResultHandler( R
     rh.handleCommandResult( *this );
 }
 
-RfnRemoteDisconnectCommand::DisconnectMode RfnRemoteDisconnectSetThresholdConfigurationCommand::getDisconnectMode() const
+DisconnectMode RfnRemoteDisconnectSetThresholdConfigurationCommand::getConfigurationDisconnectMode() const
 {
-    return DisconnectMode_DemandThreshold; 
+    return DisconnectMode_DemandThreshold;
 }
 
 RfnCommand::Bytes RfnRemoteDisconnectSetThresholdConfigurationCommand::getData()
 {
     RfnCommand::Bytes data;
 
-    // This calculation should always yield a whole number because of the 
+    // This calculation should always yield a whole number because of the
     // restriction of one digit after the decimal place. If that isn't the
-    // case, this calculation ends up rounding the number down to the 
+    // case, this calculation ends up rounding the number down to the
     // nearest whole (i.e. 10 * 7.29 cast to unsigned char would yield 72).
     const unsigned char hw_threshold = demandThreshold * 10;
 
@@ -268,9 +405,9 @@ void RfnRemoteDisconnectSetCyclingConfigurationCommand::invokeResultHandler( Rfn
     rh.handleCommandResult( *this );
 }
 
-RfnRemoteDisconnectCommand::DisconnectMode RfnRemoteDisconnectSetCyclingConfigurationCommand::getDisconnectMode() const
+DisconnectMode RfnRemoteDisconnectSetCyclingConfigurationCommand::getConfigurationDisconnectMode() const
 {
-    return DisconnectMode_Cycling; 
+    return DisconnectMode_Cycling;
 }
 
 RfnCommand::Bytes RfnRemoteDisconnectSetCyclingConfigurationCommand::getData()
@@ -290,9 +427,7 @@ RfnCommand::Bytes RfnRemoteDisconnectSetCyclingConfigurationCommand::getData()
 // Remote Disconnect Get-Configuration Functions
 //-----------------------------------------------------------
 RfnRemoteDisconnectGetConfigurationCommand::RfnRemoteDisconnectGetConfigurationCommand()
-    :   RfnRemoteDisconnectCommand( Operation_GetConfiguration ),
-        _disconnectMode( DisconnectMode_OnDemand ),
-        _reconnectParam( Reconnect_Arm )
+    :   RfnRemoteDisconnectConfigurationCommand( Operation_GetConfiguration )
 {
     // Empty
 }
@@ -311,161 +446,9 @@ RfnCommandResult RfnRemoteDisconnectGetConfigurationCommand::decodeCommand( cons
     validate( Condition( tlvs.size() == 1, ErrorInvalidData )
             << "Invalid TLV count (" << tlvs.size() << " != 1)" );
 
-    const TypeLengthValue & tlv = tlvs[0];
-
-    boost::optional<DisconnectMode> disconnect_mode = mapFind( disconnectModes, tlv.type );
-
-    validate( Condition( disconnect_mode, ErrorInvalidData )
-            << "Invalid TLV type received in response (" << tlv.type << ")" );
-
-    _disconnectMode = *disconnect_mode;
-
-    result.description += "\nDisconnect mode: " + *mapFind( disconnectModeResolver, _disconnectMode );
-
-    // Byte 0 in all three tlv types
-    boost::optional<Reconnect> reconnect = mapFind( remoteDisconnectReconnectResolver, tlv.value[0] );
-
-    // invalid reconnect byte -- not found in map
-    validate( Condition( reconnect, ErrorInvalidData )
-            << "Response reconnect param invalid (" << tlv.value[0] 
-            << ") expecting 0 or 1" );
-
-    _reconnectParam = *reconnect;
-
-    std::string reconnectStr = _reconnectParam == Reconnect_Arm ? "Arm" : "Immediate";
-    result.description += "\nReconnect param: " + reconnectStr + " reconnect";
-
-    switch( tlv.type )
-    {
-        case DisconnectMode_DemandThreshold:
-        {
-            validate( Condition( tlv.value.size() == 5, ErrorInvalidData )
-            << "Response TLV too small (" << tlv.value.size() << " != 5)");
-
-            // Byte 1 - demand interval
-            boost::optional<DemandInterval> interval = mapFind( remoteDisconnectIntervalResolver, tlv.value[1] );
-
-            // invalid interval byte -- not found in map
-            validate( Condition( interval, ErrorInvalidData )
-                    << "Response demand interval invalid (" << tlv.value[1] 
-                    << ") expecting 5, 10, or 15." );
-
-            _demandInterval = *interval;
-
-            result.description += "\nDisconnect demand interval: " + CtiNumStr( *_demandInterval ) + " minutes";
-
-            // Byte 2 - demand threshold
-            const unsigned hectoWattThreshold = tlv.value[2];
-
-            validate( Condition( hectoWattThreshold <= 120, ErrorInvalidData )
-                    << "Response hectoWatt threshold invalid (" << tlv.value[2] 
-                    << ") expecting <= 120" );
-
-            _demandThreshold = hectoWattThreshold / 10.0; // Convert to kW.
-
-            result.description += "\nDisconnect demand threshold: " + CtiNumStr( *_demandThreshold, 1 ) + " kW";
-
-            // Byte 3 - connect delay
-            _connectDelay = tlv.value[3];
-
-            validate( Condition( *_connectDelay <= 30, ErrorInvalidData )
-                    << "Response connect delay invalid (" << tlv.value[3]
-                    << ") expecting <= 30" );
-
-            result.description += "\nConnect delay: " + CtiNumStr( *_connectDelay ) + " minutes";
-
-            // Byte 4 - max disconnects
-            _maxDisconnects = tlv.value[4];
-
-            validate( Condition( *_maxDisconnects <= 20, ErrorInvalidData )
-                    << "Response max disconnects invalid (" << tlv.value[4]
-                    << ") expecting <= 20" );
-
-            std::string disconnectsStr = CtiNumStr( *_maxDisconnects );
-            result.description += "\nMax disconnects: " + ( *_maxDisconnects ? disconnectsStr : "disable" );
-
-            break;
-        }
-        case DisconnectMode_Cycling:
-        {
-            validate( Condition( tlv.value.size() == 5, ErrorInvalidData )
-                    << "Response TLV too small (" << tlv.value.size() << " != 5)" );
-
-            validate( Condition( getReconnectParam() == Reconnect_Immediate, ErrorInvalidData ) // must be 1 for cycling!
-                    << "Response reconnect param invalid " << getReconnectParam()
-                    << ") expecting 1)" );
-
-            // Bytes 1-2 : disconnect minutes
-            _disconnectMinutes = tlv.value[1] << 8 | tlv.value[2];
-
-            validate( Condition( *_disconnectMinutes >= 5, ErrorInvalidData )
-                    << "Response disconnect minutes invalid (" << *_disconnectMinutes
-                    << ") expecting >= 5" );
-
-            validate( Condition( *_disconnectMinutes <= 1440, ErrorInvalidData )
-                    << "Response disconnect minutes invalid (" << *_disconnectMinutes
-                    << ") expecting <= 1440" );
-
-            result.description += "\nDisconnect minutes: " + CtiNumStr( *_disconnectMinutes );
-
-            // Bytes 3-4 : connect minutes
-            _connectMinutes = tlv.value[3] << 8 | tlv.value[4];
-
-            validate( Condition( *_connectMinutes >= 5, ErrorInvalidData )
-                    << "Response connect minutes invalid (" << *_connectMinutes
-                    << ") expecting >= 5" );
-
-            validate( Condition( *_connectMinutes <= 1440, ErrorInvalidData )
-                    << "Response connect minutes invalid (" << *_connectMinutes
-                    << ") expecting <= 1440" );
-
-            result.description += "\nConnect minutes: " + CtiNumStr( *_connectMinutes );
-
-            break;
-        }
-    }
+    result.description += decodeDisconnectConfigTlv( tlvs[0] );
 
     return result;
-}
-
-RfnRemoteDisconnectCommand::Reconnect RfnRemoteDisconnectGetConfigurationCommand::getReconnectParam() const
-{
-    return _reconnectParam;
-}
-
-RfnRemoteDisconnectCommand::DisconnectMode RfnRemoteDisconnectGetConfigurationCommand::getDisconnectMode() const
-{
-    return _disconnectMode;
-}
-
-boost::optional<RfnRemoteDisconnectCommand::DemandInterval> RfnRemoteDisconnectGetConfigurationCommand::getDemandInterval() const
-{
-    return _demandInterval;
-}
-
-boost::optional<double> RfnRemoteDisconnectGetConfigurationCommand::getDemandThreshold() const
-{
-    return _demandThreshold;
-}
-
-boost::optional<unsigned> RfnRemoteDisconnectGetConfigurationCommand::getConnectDelay() const
-{
-    return _connectDelay;
-}
-
-boost::optional<unsigned> RfnRemoteDisconnectGetConfigurationCommand::getMaxDisconnects() const
-{
-    return _maxDisconnects;
-}
-
-boost::optional<unsigned> RfnRemoteDisconnectGetConfigurationCommand::getDisconnectMinutes() const
-{
-    return _disconnectMinutes;
-}
-
-boost::optional<unsigned> RfnRemoteDisconnectGetConfigurationCommand::getConnectMinutes() const
-{
-    return _connectMinutes;
 }
 
 }

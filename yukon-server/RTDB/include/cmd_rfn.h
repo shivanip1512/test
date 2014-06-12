@@ -34,10 +34,7 @@ class RfnSetOvUvAlarmRepeatIntervalCommand;
 class RfnSetOvUvNewAlarmReportIntervalCommand;
 class RfnSetOvUvSetOverVoltageThresholdCommand;
 class RfnSetOvUvSetUnderVoltageThresholdCommand;
-class RfnRemoteDisconnectSetOnDemandConfigurationCommand;
-class RfnRemoteDisconnectSetThresholdConfigurationCommand;
-class RfnRemoteDisconnectSetCyclingConfigurationCommand;
-class RfnRemoteDisconnectGetConfigurationCommand;
+class RfnRemoteDisconnectConfigurationCommand;
 class RfnChannelSelectionCommand;
 class RfnChannelIntervalRecordingCommand;
 class RfnSetTemperatureAlarmConfigurationCommand;
@@ -89,10 +86,7 @@ public:
         virtual void handleCommandResult(const RfnSetOvUvNewAlarmReportIntervalCommand &)             {}
         virtual void handleCommandResult(const RfnSetOvUvSetOverVoltageThresholdCommand &)            {}
         virtual void handleCommandResult(const RfnSetOvUvSetUnderVoltageThresholdCommand &)           {}
-        virtual void handleCommandResult(const RfnRemoteDisconnectSetOnDemandConfigurationCommand &)  {}
-        virtual void handleCommandResult(const RfnRemoteDisconnectSetThresholdConfigurationCommand &) {}
-        virtual void handleCommandResult(const RfnRemoteDisconnectSetCyclingConfigurationCommand &)   {}
-        virtual void handleCommandResult(const RfnRemoteDisconnectGetConfigurationCommand &)          {}
+        virtual void handleCommandResult(const RfnRemoteDisconnectConfigurationCommand &)                          {}
         virtual void handleCommandResult(const RfnChannelSelectionCommand &)                          {}
         virtual void handleCommandResult(const RfnChannelIntervalRecordingCommand &)                  {}
         virtual void handleCommandResult(const RfnSetTemperatureAlarmConfigurationCommand &)          {}
