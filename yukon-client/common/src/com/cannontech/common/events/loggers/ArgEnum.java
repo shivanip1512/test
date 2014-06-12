@@ -52,6 +52,10 @@ public enum ArgEnum {
     totalRequests,
     successRequests,
     failureRequests,
-    notAttemptedRequests
+    notAttemptedRequests,
+    startReportDate,
+    endReportDate,
+    loadGroupIds,
+    syncIssueType
     ;
 }

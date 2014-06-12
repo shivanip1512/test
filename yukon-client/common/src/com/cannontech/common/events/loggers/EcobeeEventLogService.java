@@ -1,0 +1,28 @@
+package com.cannontech.common.events.loggers;
+
+import org.joda.time.Instant;
+
+import com.cannontech.common.events.Arg;
+import com.cannontech.common.events.YukonEventLog;
+import com.cannontech.common.events.model.EventSource;
+import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
+import com.cannontech.database.data.lite.LiteYukonUser;
+
+public interface EcobeeEventLogService {
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee.syncIssue")
+    public void syncIssueFixed(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                      @Arg(ArgEnum.syncIssueType) String type,
+                                      @Arg(ArgEnum.eventSource) EventSource source);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee.syncIssueAll")
+    public void allSyncIssuesFixed(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                         @Arg(ArgEnum.eventSource) EventSource source);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee.download")
+    public void dataDownloaded(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                      @Arg(ArgEnum.startReportDate) Instant startReportDate,
+                                      @Arg(ArgEnum.endReportDate) Instant endReportDate,
+                                      @Arg(ArgEnum.loadGroupIds) String loadGroupIds,
+                                      @Arg(ArgEnum.eventSource) EventSource source);
+}

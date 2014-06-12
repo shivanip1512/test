@@ -73,6 +73,10 @@
     <bean id="zigbeeEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.ZigbeeEventLogService"/>
     </bean>
+    
+    <bean id="ecobeeEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.EcobeeEventLogService"/>
+    </bean>
 
     <bean id="disconnectEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.DisconnectEventLogService"/>

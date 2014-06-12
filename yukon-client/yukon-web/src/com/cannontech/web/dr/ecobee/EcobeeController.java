@@ -2,6 +2,7 @@ package com.cannontech.web.dr.ecobee;
 
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.EcobeeEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -89,6 +92,7 @@ public class EcobeeController {
     @Autowired private DataDownloadService dataDownloadService;
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private EcobeeEventLogService ecobeeEventLogService;
 
     @PostConstruct
     public void init() {
@@ -172,7 +176,8 @@ public class EcobeeController {
                                  ModelMap model,
                                  Integer[] loadGroupIds,
                                  String ecobeeStartReportDate, 
-                                 String ecobeeEndReportDate) throws IOException {
+                                 String ecobeeEndReportDate,
+                                 LiteYukonUser yukonUser) throws IOException {
 
         Instant startDate = new Instant(dateTimeFormatter.parseMillis(ecobeeStartReportDate));
         Instant endDate = new Instant(dateTimeFormatter.parseMillis(ecobeeEndReportDate));
@@ -201,6 +206,9 @@ public class EcobeeController {
         List<String> serialNumbers = drGroupDeviceMappingDao.getSerialNumbersForLoadGroups(Lists.newArrayList(loadGroupIds));
         
         String resultKey = dataDownloadService.start(serialNumbers, Range.inclusive(startDate, endDate));
+        
+        ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, Arrays.toString(loadGroupIds), 
+                                                    EventSource.OPERATOR);
         
         model.addAttribute("key", resultKey);
         EcobeeReadResult result = readResultsCache.getResult(resultKey);
@@ -304,11 +312,15 @@ public class EcobeeController {
             YukonUserContext userContext,
             Integer reportId,
             Integer errorId,
-            FlashScope flash) throws IllegalArgumentException {
+            FlashScope flash
+            ) throws IllegalArgumentException {
         
         EcobeeReconciliationResult result = null;
         try {
             result = ecobeeReconciliation.fixDiscrepancy(reportId, errorId);
+            ecobeeEventLogService.syncIssueFixed(userContext.getYukonUser(), 
+                                                 result.getOriginalDiscrepancy().getErrorType().toString(), 
+                                                 EventSource.OPERATOR);
             if (result.isSuccess()) {
                 flash.setConfirm(new YukonMessageSourceResolvable(fixIssueKey + "fixSucceeded"));
             } else {
@@ -331,6 +343,7 @@ public class EcobeeController {
             // TODO: enable after Sam's final changes
             // TODO: if all are successful, put up good flashscope
 //            results = ecobeeReconciliation.fixAllDiscrepancies(reportId);
+//            ecobeeEventLogService.allSyncIssuesFixed(userContext.getYukonUser(), EventSource.OPERATOR);
 //            for (EcobeeReconciliationResult result: results) {
 //                if (result.isSuccess()) {
 //                    flash.setConfirm(new YukonMessageSourceResolvable(fixIssueKey + "fixSucceeded"));

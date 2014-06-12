@@ -19,6 +19,7 @@ import com.cannontech.common.events.loggers.CommandRequestExecutorEventLogServic
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
 import com.cannontech.common.events.loggers.DatabaseMigrationEventLogService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
@@ -33,6 +34,7 @@ import com.cannontech.common.i18n.Displayable;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.GlobalSettingType;
@@ -57,6 +59,7 @@ public class DevEventLogCreationService {
     private static ValidationEventLogService validationEventLogService;
     private static VeeReviewEventLogService veeReviewEventLogService;
     private static ZigbeeEventLogService zigbeeEventLogService;
+    private static EcobeeEventLogService ecobeeEventLogService;
 
     public interface DevEventLogExecutable {
         public void execute(DevEventLog devEventLog);
@@ -594,6 +597,25 @@ public class DevEventLogCreationService {
             // This should represent the number of method calls to this logging service
             @Override public int numMethods() {return 12;}
         }),
+        ECOBEE_EVENT_LOG("EcobeeEventLogService", EcobeeEventLogService.class.getMethods().length, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
+                Instant endDate = Instant.now();
+                Instant startDate = Instant.now().minus(Duration.standardDays(1));
+                String loadGroupIds = devEventLog.getIndicatorString() + "123, 456, 789";
+                
+                ecobeeEventLogService.syncIssueFixed(yukonUser, EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString(), 
+                                                            devEventLog.getEventSource());
+                ecobeeEventLogService.allSyncIssuesFixed(yukonUser, devEventLog.getEventSource());
+                ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, loadGroupIds, 
+                                                            devEventLog.getEventSource());
+            }
+            // This should represent the number of method calls to this logging service
+            @Override public int numMethods() {
+                return 3;
+            }
+        })
         ;
 
         private final String logServiceName;
