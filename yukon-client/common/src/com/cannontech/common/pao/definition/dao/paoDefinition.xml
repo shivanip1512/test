@@ -6105,7 +6105,8 @@
 
     <!-- ################################### RFN_COMMON ################################### -->
     <pao id="RFN_COMMON" abstract="true"
-        inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, RFN_PTCALC__ALL, SUPPORTS_COMMANDER_REQUESTS_TAG">
+        inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, RFN_PTCALC__ALL, SUPPORTS_COMMANDER_REQUESTS_TAG,
+        SUPPORTS_DEVICE_CONFIGURATION">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>
