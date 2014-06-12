@@ -291,7 +291,7 @@
     <category type="rfnDisconnectConfiguration">
         <enum field="disconnectMode" type="DisconnectMode" default="ON_DEMAND"/>
         <enum field="reconnectParam" type="ReconnectParameter" default="ARM"/>
-        <enum field="demandInterval" type="DisconnectDemandInterval" default="5"/>
+        <enum field="disconnectDemandInterval" type="DisconnectDemandInterval" default="5"/>
         <float field="disconnectDemandThreshold" minValue="0.5" maxValue="12.0" default="0.5" decimalDigits="1"/>
         <integer field="disconnectLoadLimitConnectDelay" minValue="0" maxValue="30" default="5"/>
         <integer field="maxDisconnects" minValue="0" maxValue="20" default="0"/>

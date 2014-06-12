@@ -435,8 +435,8 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectMode.description">The disconnect mode the RFN device is configured to use.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.reconnectParam">Reconnect Parameter</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.reconnectParam.description">When set to Arm, the meter's reconnect button must be pressed to complete a reconnect to the meter. When set to Immediate, the reconnect is automatically completed.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.demandInterval">Disconnect Demand Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.demandInterval.description">The interval over which to calculate the meter's disconnect demand.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectDemandInterval">Disconnect Demand Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectDemandInterval.description">The interval over which to calculate the meter's disconnect demand.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectDemandThreshold">Disconnect Demand Threshold</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectDemandThreshold.description">Demand threshold at which a disconnect will be triggered.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectLoadLimitConnectDelay">Disconnect Load Limit Connect Delay</entry>
