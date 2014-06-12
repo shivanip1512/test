@@ -20,6 +20,7 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.yukon.api.account.endpoint.RemoveAccountsRequestEndpoint;
+import com.cannontech.yukon.api.loadManagement.mocks.MockAccountEventLogService;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -43,10 +44,10 @@ public class RemoveAccountsRequestEndpointTest {
             }
 
         });
+        impl.setAccountEventLogService(new MockAccountEventLogService());
     }
 
     @Test
-    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         /*
          * Test the success file 

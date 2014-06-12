@@ -73,7 +73,6 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
     }
 
     @Test
-    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
 
         // init
@@ -106,11 +105,10 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         Assert.assertNotNull("No programStatuses node present.",
             outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"));
         Assert.assertEquals("Incorrect number of programStatuses nodes.", 1,
-            outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses)").longValue());
+            outputTemplate.evaluateAsNodeList("/y:currentlyActiveProgramsResponse/y:programStatuses").size());
         Assert.assertEquals(
-            "Incorrect number of programStatus nodes.",
-            0,
-            outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus)").longValue());
+            "Incorrect number of programStatus nodes.", 0, outputTemplate.
+            evaluateAsNodeList("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus").size());
 
         // 2 programs, one with no stop datetime
         // ==========================================================================================
@@ -130,9 +128,10 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         Assert.assertNotNull("No programStatuses node present.",
             outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"));
         Assert.assertEquals("Incorrect number of programStatuses nodes.", 1,
-            outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses)").longValue());
+            outputTemplate.evaluateAsNodeList("/y:currentlyActiveProgramsResponse/y:programStatuses").size());
         Assert.assertEquals("Incorrect number of programStatus nodes.", 2,
-            outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus)").longValue());
+            outputTemplate.evaluateAsNodeList
+            ("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus").size());
 
         Assert.assertEquals("Incorrect programName.", "Program1",
             outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:programName"));

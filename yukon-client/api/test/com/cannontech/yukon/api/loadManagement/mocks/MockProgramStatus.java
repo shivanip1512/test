@@ -29,6 +29,7 @@ public class MockProgramStatus extends ProgramStatus {
     public String getProgramName() {
         return programName;
     }
+    @Override
     public boolean isActive() {
         return programStatus == LMProgramBase.STATUS_ACTIVE;
     }
@@ -40,5 +41,13 @@ public class MockProgramStatus extends ProgramStatus {
     }
     public String getGearName() {
         return gearName;
+    }
+    @Override
+    public boolean isScheduled() {
+        return programStatus == LMProgramBase.STATUS_SCHEDULED;
+    }
+    @Override
+    public boolean isInactive() {
+        return programStatus == LMProgramBase.STATUS_INACTIVE;
     }
 }

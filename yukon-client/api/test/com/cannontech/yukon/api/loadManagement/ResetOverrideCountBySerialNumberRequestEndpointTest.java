@@ -15,12 +15,12 @@ import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ResetOverrideCountBySerialNumberRequestEndpoint;
+import com.cannontech.yukon.api.loadManagement.mocks.MockAccountEventLogService;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
-@Ignore("YUK-11816")
 public class ResetOverrideCountBySerialNumberRequestEndpointTest {
 	
 	private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
@@ -47,6 +47,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
         impl = new ResetOverrideCountBySerialNumberRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
         impl.setRolePropertyDao(new MockRolePropertyDao());
+        impl.setAccountEventLogService(new MockAccountEventLogService());
     }
    
     @Test

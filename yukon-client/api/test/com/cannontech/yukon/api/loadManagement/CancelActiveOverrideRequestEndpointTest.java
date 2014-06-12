@@ -24,6 +24,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany.Builder;
 import com.cannontech.yukon.api.loadManagement.adapters.CustomerAccountDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.EnergyCompanyDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.LmHardwareBaseDaoAdapter;
@@ -34,7 +35,6 @@ import com.cannontech.yukon.api.loadManagement.mocks.MockAccountEventLogService;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.utils.TestUtils;
 
-@Ignore("YUK-11816")
 public class CancelActiveOverrideRequestEndpointTest {
     private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
     private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
@@ -183,13 +183,16 @@ public class CancelActiveOverrideRequestEndpointTest {
             account.setAccountNumber(accountNumber);
             return account;
         }
+        
     }
     
     private class MockEnergyCompanyDao extends EnergyCompanyDaoAdapter {
 
         @Override
         public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
-            return null;
+            Builder ecBuilder = new EnergyCompany.Builder();
+            ecBuilder.addEnergyCompany(1, "test energy company", new LiteYukonUser(122, "yukon") , 1, null);
+            return ecBuilder.build().get(1);
         }
     }
     

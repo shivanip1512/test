@@ -21,10 +21,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProgramControlHistoryRequestEndpoint;
+import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
-@Ignore("YUK-11816")
 public class ProgramControlHistoryRequestEndpointTest {
 
 	private ProgramControlHistoryRequestEndpoint impl;
@@ -38,6 +38,7 @@ public class ProgramControlHistoryRequestEndpointTest {
         
         impl = new ProgramControlHistoryRequestEndpoint();
         impl.setLoadControlService(mockService);
+        impl.setRolePropertyDao(new MockRolePropertyDao());
     }
     
     private class MockLoadControlService extends LoadControlServiceAdapter {
@@ -109,7 +110,7 @@ public class ProgramControlHistoryRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 0, outputTemplate.evaluateAsLong("count(/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory)").longValue());
+        Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 0, outputTemplate.evaluateAsNodeList("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory").size());
         
         Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
         Assert.assertEquals("Incorrect stopDateTime.", null, mockService.getStopTime());
@@ -123,7 +124,7 @@ public class ProgramControlHistoryRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 2, outputTemplate.evaluateAsLong("count(/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory)").longValue());
+        Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 2, outputTemplate.evaluateAsNodeList("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory").size());
         
         Assert.assertEquals("Incorrect programName.", "Program1", outputTemplate.evaluateAsString("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[1]/y:programName"));
         Assert.assertEquals("Incorrect startGearName.", "Gear1", outputTemplate.evaluateAsString("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[1]/y:gearName"));
@@ -142,7 +143,7 @@ public class ProgramControlHistoryRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 2, outputTemplate.evaluateAsLong("count(/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory)").longValue());
+        Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 2, outputTemplate.evaluateAsNodeList("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory").size());
         
         Assert.assertEquals("Incorrect programName.", "Program2", outputTemplate.evaluateAsString("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[2]/y:programName"));
         Assert.assertEquals("Incorrect startGearName.", "Gear2", outputTemplate.evaluateAsString("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[2]/y:gearName"));

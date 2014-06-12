@@ -25,10 +25,10 @@ import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountServiceHelper;
 import com.cannontech.yukon.api.account.endpoint.UpdateAccountsRequestEndpoint;
+import com.cannontech.yukon.api.loadManagement.mocks.MockAccountEventLogService;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.utils.TestUtils;
 
-@Ignore("YUK-11816")
 public class UpdateAccountsRequestEndpointTest {
 	
 	private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
@@ -73,7 +73,7 @@ public class UpdateAccountsRequestEndpointTest {
                 return workingAccount;
             }
         });
-
+        impl.setAccountEventLogService(new MockAccountEventLogService());
     }
 
     @Test

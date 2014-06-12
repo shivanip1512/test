@@ -28,6 +28,7 @@ import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany.Builder;
 import com.cannontech.yukon.api.loadManagement.adapters.CustomerAccountDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.EnergyCompanyDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.LmHardwareBaseDaoAdapter;
@@ -98,7 +99,6 @@ public class OverrideRequestEndpointTest {
     }
     
     @Test
-    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         
         // test with unauthorized user
@@ -241,7 +241,9 @@ public class OverrideRequestEndpointTest {
 
         @Override
         public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
-            return null;
+            Builder ecBuilder = new EnergyCompany.Builder();
+            ecBuilder.addEnergyCompany(1, "test energy company", new LiteYukonUser(122, "yukon") , 1, null);
+            return ecBuilder.build().get(1);
         }
     }
     

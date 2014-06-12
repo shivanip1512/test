@@ -5,8 +5,8 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -19,6 +19,7 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProgramStatusRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockProgramStatus;
+import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 public class ProgramStatusRequestEndpointTest {
@@ -35,6 +36,7 @@ public class ProgramStatusRequestEndpointTest {
         
         impl = new ProgramStatusRequestEndpoint();
         impl.setLoadControlService(mockService);
+        ReflectionTestUtils.setField(impl, "rolePropertyDao", new MockRolePropertyDao());
         impl.initialize();
     }
     
@@ -60,7 +62,6 @@ public class ProgramStatusRequestEndpointTest {
     }
    
     @Test
-    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         
         // init

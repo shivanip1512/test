@@ -8,7 +8,6 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -22,10 +21,10 @@ import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ListAllScenarioProgramsRequestEndpoint;
+import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.utils.TestUtils;
 import com.google.common.collect.Lists;
 
-@Ignore("YUK-11816")
 public class ListAllScenarioProgramsRequestEndpointTest {
 
     private ListAllScenarioProgramsRequestEndpoint impl;
@@ -41,6 +40,7 @@ public class ListAllScenarioProgramsRequestEndpointTest {
         
         impl = new ListAllScenarioProgramsRequestEndpoint();
         impl.setLoadControlService(mockService);
+        impl.setRolePropertyDao(new MockRolePropertyDao());
         impl.initialize();
     }
     
@@ -136,17 +136,17 @@ public class ListAllScenarioProgramsRequestEndpointTest {
         Assert.assertEquals("Wrong scenario name", "Scenario2", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[2]/y:scenarioName"));
         Assert.assertEquals("Wrong scenario name", "Scenario3", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[3]/y:scenarioName"));
         
-        Assert.assertEquals("Wrong number of programs", 1, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[1]/y:scenarioProgramsList/y:scenarioProgram)").longValue());
-        Assert.assertEquals("Wrong number of programs", 2, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[2]/y:scenarioProgramsList/y:scenarioProgram)").longValue());
-        Assert.assertEquals("Wrong number of programs", 3, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[3]/y:scenarioProgramsList/y:scenarioProgram)").longValue());
+        Assert.assertEquals("Wrong number of programs", 1, outputTemplate.evaluateAsNodeList("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[1]/y:scenarioProgramsList/y:scenarioProgram").size());
+        Assert.assertEquals("Wrong number of programs", 2, outputTemplate.evaluateAsNodeList("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[2]/y:scenarioProgramsList/y:scenarioProgram").size());
+        Assert.assertEquals("Wrong number of programs", 3, outputTemplate.evaluateAsNodeList("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[3]/y:scenarioProgramsList/y:scenarioProgram").size());
         
         Assert.assertEquals("Wrong program name", "Program1", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[3]/y:scenarioProgramsList/y:scenarioProgram[1]/y:programName"));
         Assert.assertEquals("Wrong gear name", "Gear2", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[3]/y:scenarioProgramsList/y:scenarioProgram[2]/y:startGearName"));
         Assert.assertEquals("Wrong program name", "Program1", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario[2]/y:scenarioProgramsList/y:scenarioProgram[1]/y:programName"));
         
         Assert.assertNotNull("No scenarioList node present.", outputTemplate.evaluateAsNode("/y:listAllScenarioProgramsResponse/y:scenarioList"));
-        Assert.assertEquals("Incorrect number of scenario nodes.", 3, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario)").longValue());
-        Assert.assertEquals("Incorrect number of scenario nodes.", 0, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenario)").longValue());
+        Assert.assertEquals("Incorrect number of scenario nodes.", 3, outputTemplate.evaluateAsNodeList("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario").size());
+        Assert.assertEquals("Incorrect number of scenario nodes.", 0, outputTemplate.evaluateAsNodeList("/y:listAllScenarioProgramsResponse/y:scenario").size());
         
         // scenario name, empty program starting gears
         //==========================================================================================
@@ -165,8 +165,8 @@ public class ListAllScenarioProgramsRequestEndpointTest {
         Assert.assertNotNull("No scenarioName node present.", outputTemplate.evaluateAsNode("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario/y:scenarioName"));
         Assert.assertNotNull("No scenario node present.", outputTemplate.evaluateAsNode("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario"));
         Assert.assertEquals("Incorrect scenarioName", EMTPY_RETURN_SCENARIO, mockService.getScenarioName());
-        Assert.assertEquals("Incorrect number of scenarioProgramsList nodes.", 1, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario)").longValue());
-        Assert.assertEquals("Incorrect number of scenarioProgram nodes.", 0, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario/y:scenarioProgram)").longValue());
+        Assert.assertEquals("Incorrect number of scenarioProgramsList nodes.", 1, outputTemplate.evaluateAsNodeList("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario").size());
+        Assert.assertEquals("Incorrect number of scenarioProgram nodes.", 0, outputTemplate.evaluateAsNodeList("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario/y:scenarioProgram").size());
         
         // scenario name, 3 program starting gears
         //==========================================================================================
@@ -185,9 +185,9 @@ public class ListAllScenarioProgramsRequestEndpointTest {
         Assert.assertNotNull("No scenarioName node present.", outputTemplate.evaluateAsNode("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario/y:scenarioName"));
         Assert.assertNotNull("No scenario node present.", outputTemplate.evaluateAsNode("/y:listAllScenarioProgramsResponse//y:scenarioList/y:scenario"));
         Assert.assertEquals("Incorrect scenarioName", "Test Scenario", mockService.getScenarioName());
-        Assert.assertEquals("Incorrect number of scenario nodes.", 1, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario)").longValue());
+        Assert.assertEquals("Incorrect number of scenario nodes.", 1, outputTemplate.evaluateAsNodeList("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario").size());
         
-        Assert.assertEquals("Incorrect number of scenarioProgram nodes.", 3, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario/y:scenarioProgramsList/y:scenarioProgram)").longValue());
+        Assert.assertEquals("Incorrect number of scenarioProgram nodes.", 3, outputTemplate.evaluateAsNodeList("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario/y:scenarioProgramsList/y:scenarioProgram").size());
         Assert.assertEquals("Incorrect programName.", "Program1", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario/y:scenarioProgramsList/y:scenarioProgram[1]/y:programName"));
         Assert.assertEquals("Incorrect startGearName.", "Gear1", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario/y:scenarioProgramsList/y:scenarioProgram[1]/y:startGearName"));
         Assert.assertEquals("Incorrect programName.", "Program2", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioList/y:scenario/y:scenarioProgramsList/y:scenarioProgram[2]/y:programName"));

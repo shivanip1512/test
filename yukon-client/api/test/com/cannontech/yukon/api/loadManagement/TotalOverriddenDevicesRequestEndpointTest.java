@@ -60,7 +60,6 @@ public class TotalOverriddenDevicesRequestEndpointTest {
     }
     
     @Test
-    @Ignore("YUK-11816")
     public void testInvokeDevicesByAccountSuccess() throws Exception {
 
     	// Load the schemas
@@ -176,7 +175,6 @@ public class TotalOverriddenDevicesRequestEndpointTest {
     }
     
     @Test
-    @Ignore("YUK-11816")
     public void testInvokeDevicesByProgramSuccess() throws Exception {
         
     	// Load schemas

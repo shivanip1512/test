@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom.Element;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -29,6 +28,7 @@ import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint.ErrorCodeMapper;
+import com.cannontech.yukon.api.stars.mocks.MockHardwareEventLogService;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -85,9 +85,11 @@ public class ControllableDevicesRequestEndPointTest {
 
         impl = new ControllableDevicesRequestEndPoint();
         impl.setStarsControllableDeviceHandler(mockHelper);
+        impl.setHardwareEventLogService(new MockHardwareEventLogService());
         ReflectionTestUtils.setField(impl, "rolePropertyDao", new MockRolePropertyDao());
     }
 
+    
     private class MockControllableDeviceHelper implements
             StarsControllableDeviceHelper {
 
@@ -140,7 +142,6 @@ public class ControllableDevicesRequestEndPointTest {
     }
 
     @Test
-    @Ignore("YUK-11816")
     public void testInvokeAddDeviceAuthUser() throws Exception {
 
         // init
@@ -217,7 +218,6 @@ public class ControllableDevicesRequestEndPointTest {
     }
 
     @Test(expected=NotAuthorizedException.class)
-    @Ignore("YUK-11816")
     public void testInvokeAddDeviceUnauthUser() throws Exception {
 
         // init
@@ -233,7 +233,6 @@ public class ControllableDevicesRequestEndPointTest {
     }
     
     @Test
-    @Ignore("YUK-11816")
     public void testInvokeUpdateDeviceAuthUser() throws Exception {
 
         // init
@@ -325,7 +324,6 @@ public class ControllableDevicesRequestEndPointTest {
     }
 
     @Test
-    @Ignore("YUK-11816")
     public void testInvokeRemoveDeviceAuthUser() throws Exception {
 
         // init
@@ -483,6 +481,5 @@ public class ControllableDevicesRequestEndPointTest {
         public void setFailErrorDesc(String failErrorDesc) {
             this.failErrorDesc = failErrorDesc;
         }
-
     }
 }

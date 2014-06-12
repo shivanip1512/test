@@ -7,17 +7,16 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentResponse;
+import com.cannontech.yukon.api.loadManagement.mocks.MockAccountEventLogService;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.ProgramEnrollmentElementResponseMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 
-@Ignore("YUK-11816")
 public class UnenrollmentRequestEndpointTest {
 
     private UnenrollmentRequestEndpoint impl;
@@ -31,6 +30,7 @@ public class UnenrollmentRequestEndpointTest {
         enrollmentTestService = new EnrollmentHelperEndpointServiceMock();
         
         impl = new UnenrollmentRequestEndpoint();
+        impl.setAccountEventLogService(new MockAccountEventLogService());
         impl.setEnrollmentHelperService(enrollmentTestService);
     }
     
