@@ -432,8 +432,8 @@
     <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassigned">ZigBee device {1} unassigned from ZigBee gateway {2}.</entry>
     
 <!-- Ecobee Communication Service-->
-    <entry key="yukon.common.events.ecobee.syncIssue">User {1} fixed an ecobee sync issue of type {2}.</entry>
-    <entry key="yukon.common.events.ecobee.syncIssueAll">User {1} fixed all ecobee sync issues.</entry>
-    <entry key="yukon.common.events.ecobee.download">User {1} attempted to download an ecobee data report with start: {11}, end: {12}, load group ids: {2}.</entry>
+    <entry key="yukon.common.events.ecobee.syncIssueFixed">User {1} fixed an ecobee sync issue of type {2}.</entry>
+    <entry key="yukon.common.events.ecobee.allSyncIssuesFixed">User {1} fixed all ecobee sync issues.</entry>
+    <entry key="yukon.common.events.ecobee.dataDownloaded">User {1} attempted to download an ecobee data report with start: {11}, end: {12}, load group ids: {2}.</entry>
     
 </properties>

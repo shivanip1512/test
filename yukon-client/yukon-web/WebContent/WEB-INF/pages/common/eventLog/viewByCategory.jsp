@@ -25,7 +25,7 @@
     <%-- Filter Options --%>
     <cti:msg2 var="filterOptionsLabel" key=".filterOptions"/>
     <tags:sectionContainer title="${filterOptionsLabel}">
-        <form:form id="byCategoryForm" action="/common/eventLog/viewByCategory" 
+        <form:form id="byCategoryForm" action="${baseUrl}" 
                    commandName="eventLogCategoryBackingBean" method="get">
             <tags:hidden path="itemsPerPage"/>
  

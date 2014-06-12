@@ -10,19 +10,19 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface EcobeeEventLogService {
     
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee.syncIssue")
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee")
     public void syncIssueFixed(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                      @Arg(ArgEnum.syncIssueType) String type,
-                                      @Arg(ArgEnum.eventSource) EventSource source);
+                               @Arg(ArgEnum.syncIssueType) String type,
+                               @Arg(ArgEnum.eventSource) EventSource source);
     
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee.syncIssueAll")
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee")
     public void allSyncIssuesFixed(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                         @Arg(ArgEnum.eventSource) EventSource source);
+                                   @Arg(ArgEnum.eventSource) EventSource source);
     
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee.download")
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee")
     public void dataDownloaded(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                      @Arg(ArgEnum.startReportDate) Instant startReportDate,
-                                      @Arg(ArgEnum.endReportDate) Instant endReportDate,
-                                      @Arg(ArgEnum.loadGroupIds) String loadGroupIds,
-                                      @Arg(ArgEnum.eventSource) EventSource source);
+                               @Arg(ArgEnum.startReportDate) Instant startReportDate,
+                               @Arg(ArgEnum.endReportDate) Instant endReportDate,
+                               @Arg(ArgEnum.loadGroupIds) String loadGroupIds,
+                               @Arg(ArgEnum.eventSource) EventSource source);
 }
