@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Describes a selection of Ecobee thermostats.
@@ -63,7 +64,7 @@ public class Selection {
     public Selection(@JsonProperty("selectionType") SelectionType selectionType,
             @JsonProperty("selectionMatch") Collection<String> serialNumbers) {
         this.selectionType = selectionType;
-        this.serialNumbers = serialNumbers;
+        this.serialNumbers = ImmutableSet.copyOf(serialNumbers);
     }
 
     public Selection(SelectionType selectionType, String serialNumber) {
@@ -77,5 +78,39 @@ public class Selection {
     @JsonGetter("selectionMatch")
     public Collection<String> getSerialNumbers() {
         return serialNumbers;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((selectionType == null) ? 0 : selectionType.hashCode());
+        result = prime * result + ((serialNumbers == null) ? 0 : serialNumbers.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Selection other = (Selection) obj;
+        if (selectionType != other.selectionType) {
+            return false;
+        }
+        if (serialNumbers == null) {
+            if (other.serialNumbers != null) {
+                return false;
+            }
+        } else if (!serialNumbers.equals(other.serialNumbers)) {
+            return false;
+        }
+        return true;
     }
 }

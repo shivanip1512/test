@@ -54,4 +54,58 @@ public class DutyCycleDr {
     public boolean getRandomizeEndTime() {
         return randomizeEndTime;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((event == null) ? 0 : event.hashCode());
+        result = prime * result + ((message == null) ? 0 : message.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + (randomizeEndTime ? 1231 : 1237);
+        result = prime * result + (randomizeStartTime ? 1231 : 1237);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DutyCycleDr other = (DutyCycleDr) obj;
+        if (event == null) {
+            if (other.event != null) {
+                return false;
+            }
+        } else if (!event.equals(other.event)) {
+            return false;
+        }
+        if (message == null) {
+            if (other.message != null) {
+                return false;
+            }
+        } else if (!message.equals(other.message)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (randomizeEndTime != other.randomizeEndTime) {
+            return false;
+        }
+        if (randomizeStartTime != other.randomizeStartTime) {
+            return false;
+        }
+        return true;
+    }
 }

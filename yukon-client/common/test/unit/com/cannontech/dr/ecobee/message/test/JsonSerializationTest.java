@@ -24,7 +24,6 @@ import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
-import com.cannontech.dr.ecobee.message.partial.DutyCycleDr;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReport;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.Selection;
@@ -41,8 +40,7 @@ public class JsonSerializationTest {
         Selection request = new Selection(SelectionType.REGISTERED, ImmutableList.of("abcd", "1234", "efgh"));
         Selection testRequest = testSerialization(request);
 
-        Assert.assertEquals(request.getSelectionType(), testRequest.getSelectionType());
-        Assert.assertEquals(request.getSerialNumbers(), testRequest.getSerialNumbers());
+        Assert.assertEquals(request, testRequest);
     }
 
     @Test
@@ -50,8 +48,7 @@ public class JsonSerializationTest {
         RegisterDeviceRequest request = new RegisterDeviceRequest("123abc321");
         RegisterDeviceRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request.getOperation(), testRequest.getOperation());
-        Assert.assertEquals(request.getThermostats(), testRequest.getThermostats());
+        Assert.assertEquals(request, testRequest);
     }
 
     @Test
@@ -69,9 +66,7 @@ public class JsonSerializationTest {
         MoveDeviceRequest request = new MoveDeviceRequest("123abc321", "bogusPath");
         MoveDeviceRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request.getOperation(), testRequest.getOperation());
-        Assert.assertEquals(request.getSetPath(), testRequest.getSetPath());
-        Assert.assertEquals(request.getThermostats(), testRequest.getThermostats());
+        Assert.assertEquals(request, testRequest);
     }
 
     @Test
@@ -85,13 +80,7 @@ public class JsonSerializationTest {
                 ImmutableList.of("bogusColumn1", "anotherBogusColumn"));
         RuntimeReportRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request.getStartDate(), testRequest.getStartDate());
-        Assert.assertEquals(request.getEndDate(), testRequest.getEndDate());
-        Assert.assertEquals(request.getColumns(), testRequest.getColumns());
-        Assert.assertEquals(request.getSelection().getSelectionType(), testRequest.getSelection().getSelectionType());
-        Assert.assertEquals(request.getSelection().getSerialNumbers(), testRequest.getSelection().getSerialNumbers());
-        Assert.assertEquals(request.getStartInterval(), testRequest.getStartInterval());
-        Assert.assertEquals(request.getEndInterval(), testRequest.getEndInterval());
+        Assert.assertEquals(request, testRequest);
     }
 
     @Test
@@ -113,27 +102,7 @@ public class JsonSerializationTest {
         DeviceDataResponse response = new DeviceDataResponse(status, reportList);
         DeviceDataResponse testResponse = testSerialization(response);
 
-        Assert.assertEquals(response.getStatus().getMessage(), testResponse.getStatus().getMessage());
-        Assert.assertEquals(response.getStatus().getCode(), testResponse.getStatus().getCode());
-        Assert.assertEquals(response.getReportList().size(), testResponse.getReportList().size());
-        for (int i = 0; i < numThermostats; i++) {
-            RuntimeReport runtimeReport = response.getReportList().get(i);
-            RuntimeReport testRuntimeReport = testResponse.getReportList().get(i);
-            Assert.assertEquals(runtimeReport.getThermostatIdentifier(), testRuntimeReport.getThermostatIdentifier());
-            Assert.assertEquals(runtimeReport.getRowCount(), testRuntimeReport.getRowCount());
-            Assert.assertEquals(runtimeReport.getRuntimeReports().size(), testRuntimeReport.getRuntimeReports().size());
-            for (int j = 0; j < numRows; j++) {
-                RuntimeReportRow runtimeReportRow = runtimeReport.getRuntimeReports().get(j);
-                RuntimeReportRow testRuntimeReportRow = testRuntimeReport.getRuntimeReports().get(j);
-                Assert.assertEquals(runtimeReportRow.getEventName(), testRuntimeReportRow.getEventName());
-                Assert.assertEquals(runtimeReportRow.getCoolSetPoint(), testRuntimeReportRow.getCoolSetPoint());
-                Assert.assertEquals(runtimeReportRow.getHeatSetPoint(), testRuntimeReportRow.getHeatSetPoint());
-                Assert.assertEquals(runtimeReportRow.getIndoorTemp(), testRuntimeReportRow.getIndoorTemp());
-                Assert.assertEquals(runtimeReportRow.getOutdoorTemp(), testRuntimeReportRow.getOutdoorTemp());
-                Assert.assertEquals(runtimeReportRow.getRuntime(), testRuntimeReportRow.getRuntime());
-                Assert.assertEquals(runtimeReportRow.getThermostatTime(), testRuntimeReportRow.getThermostatTime());
-            }
-        }
+        Assert.assertEquals(response, testResponse);
     }
 
     @Test
@@ -141,9 +110,7 @@ public class JsonSerializationTest {
         CreateSetRequest request = new CreateSetRequest("bogusSet");
         CreateSetRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request.getOperation(), testRequest.getOperation());
-        Assert.assertEquals(request.getParentPath(), testRequest.getParentPath());
-        Assert.assertEquals(request.getSetName(), testRequest.getSetName());
+        Assert.assertEquals(request, testRequest);
     }
 
     // @Test
@@ -151,8 +118,7 @@ public class JsonSerializationTest {
         DeleteSetRequest request = new DeleteSetRequest("bogusSet");
         DeleteSetRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request.getOperation(), testRequest.getOperation());
-        Assert.assertEquals(request.getSetPath(), testRequest.getSetPath());
+        Assert.assertEquals(request, testRequest);
     }
 
     @Test
@@ -160,8 +126,7 @@ public class JsonSerializationTest {
         MoveSetRequest request = new MoveSetRequest("bogusCurrentPath", "bogusToPath");
         MoveSetRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request.getOperation(), testRequest.getOperation());
-        Assert.assertEquals(request.getSetPath(), testRequest.getSetPath());
+        Assert.assertEquals(request, testRequest);
     }
 
     @Test
@@ -173,20 +138,9 @@ public class JsonSerializationTest {
 
         DutyCycleDrRequest request =
             new DutyCycleDrRequest("bogusSetName", "bogusDrName", 99, startDate, false, endDate, false);
-        DutyCycleDrRequest testRrequest = testSerialization(request);
+        DutyCycleDrRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request.getOperation(), testRrequest.getOperation());
-        DutyCycleDr demandResponse = request.getDemandResponse();
-        DutyCycleDr testDemandResponse = testRrequest.getDemandResponse();
-        Assert.assertEquals(demandResponse.getMessage(), testDemandResponse.getMessage());
-        Assert.assertEquals(demandResponse.getRandomizeEndTime(), testDemandResponse.getRandomizeEndTime());
-        Assert.assertEquals(demandResponse.getRandomizeStartTime(), testDemandResponse.getRandomizeStartTime());
-        Assert.assertEquals(demandResponse.getName(), testDemandResponse.getName());
-        Selection selection = request.getSelection();
-        Selection testSelection = testRrequest.getSelection();
-        Assert.assertEquals(selection.getSelectionType(), testSelection.getSelectionType());
-        Assert.assertTrue(selection.getSerialNumbers().containsAll(testSelection.getSerialNumbers()));
-        Assert.assertTrue(testSelection.getSerialNumbers().containsAll(selection.getSerialNumbers()));
+        Assert.assertEquals(request, testRequest);
     }
 
     @Test
@@ -194,9 +148,7 @@ public class JsonSerializationTest {
         DrRestoreRequest request = new DrRestoreRequest("demandResponseRef");
         DrRestoreRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request.getOperation(), testRequest.getOperation());
-        Assert.assertEquals(request.getDemandResponse().getDemandResponseRef(),
-            testRequest.getDemandResponse().getDemandResponseRef());
+        Assert.assertEquals(request, testRequest);
     }
 
     @Test
@@ -204,10 +156,7 @@ public class JsonSerializationTest {
         ListHierarchyRequest request = new ListHierarchyRequest();
         ListHierarchyRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request.getOperation(), testRequest.getOperation());
-        Assert.assertEquals(request.getSetPath(), testRequest.getSetPath());
-        Assert.assertEquals(request.isIncludeThermostats(), testRequest.isIncludeThermostats());
-        Assert.assertEquals(request.isRecursive(), testRequest.isRecursive());
+        Assert.assertEquals(request, testRequest);
     }
 
     @Test
@@ -232,31 +181,7 @@ public class JsonSerializationTest {
         HierarchyResponse response = new HierarchyResponse(sets, status);
         HierarchyResponse testResponse = testSerialization(response);
 
-        Assert.assertEquals(response.getStatus().getMessage(), testResponse.getStatus().getMessage());
-        Assert.assertEquals(response.getStatus().getCode(), testResponse.getStatus().getCode());
-        Assert.assertEquals(response.getSets().size(), testResponse.getSets().size());
-        for (int i = 0; i < numSets; i++) {
-            SetNode set = response.getSets().get(i);
-            SetNode testSet = testResponse.getSets().get(i);
-            assertEquals(set, testSet);
-        }
-    }
-
-    public void assertEquals(SetNode nodeA, SetNode nodeB) {
-        Assert.assertEquals(nodeA.getChildren().size(), nodeB.getChildren().size());
-        Assert.assertEquals(nodeA.getSetName(), nodeB.getSetName());
-        Assert.assertEquals(nodeA.getSetPath(), nodeB.getSetPath());
-        int numChildren = nodeA.getChildren().size();
-        for (int i = 0; i < numChildren; i++) {
-            SetNode nodeAChild = nodeA.getChildren().get(i);
-            SetNode nodeBChild = nodeB.getChildren().get(i);
-            assertEquals(nodeAChild, nodeBChild);
-        }
-        Assert.assertEquals(nodeA.getThermostats().size(), nodeB.getThermostats().size());
-        int numThermostats = nodeA.getThermostats().size();
-        for (int i = 0; i < numThermostats; i++) {
-            Assert.assertEquals(nodeA.getThermostats().get(i), nodeB.getThermostats().get(i));
-        }
+        Assert.assertEquals(response, testResponse);
     }
 
     /**
