@@ -3,6 +3,7 @@ package com.cannontech.core.authentication.service.impl;
 import static com.cannontech.core.roleproperties.YukonRole.*;
 import static com.cannontech.core.roleproperties.YukonRoleProperty.*;
 
+import org.joda.time.DateTimeUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.junit.Assert;
@@ -30,6 +31,7 @@ public class StaticAuthenticationThrottleImplTest {
     private static final LiteYukonUser USER_NO_POLICY = new LiteYukonUser(3, "userNoPolicy");
     private static final LiteYukonUser USER_SYSTEM_POLICY = new LiteYukonUser(4, "userSystemPolicy");
     private static final LiteYukonUser USER_SHORT_LOCKOUT = new LiteYukonUser(5, "userShortLockout");
+    private long accumulatedTimeAdjustments = 0;
 
     private static final LiteYukonUser[] USERS_IN_TEST_ARRAY = { USER_ONE, USER_TWO, USER_NO_POLICY,
         USER_SYSTEM_POLICY, USER_SHORT_LOCKOUT };
@@ -344,10 +346,17 @@ public class StaticAuthenticationThrottleImplTest {
         }
     }
 
-    private void testAuthenticationThrottleDtoData(String username, Duration expectedThrottleDuration,
-            int expectedRetryCount) throws InterruptedException {
-        Thread.sleep(FIVE_SECONDS.getMillis());
+    /**
+     * Causes calls to new Instant() to return a value this number of seconds different
+     */
+    private void adjustSystemTimeBySeconds(int numberOfSeconds) {
+        accumulatedTimeAdjustments += (long) numberOfSeconds * 1000;
+        DateTimeUtils.setCurrentMillisOffset(accumulatedTimeAdjustments);
+    }
 
+    private void testAuthenticationThrottleDtoData(String username, Duration expectedThrottleDuration,
+            int expectedRetryCount) {
+        adjustSystemTimeBySeconds(5);
         Instant now = Instant.now();
         AuthenticationThrottleDto authenticationThrottleData =
             staticAuthenticationThrottleService.getAuthenticationThrottleData(username);
@@ -364,6 +373,7 @@ public class StaticAuthenticationThrottleImplTest {
         // Testing last failed login time
         Instant lastFailedLoginTime = new Instant(authenticationThrottleData.getLastFailedLoginTime());
         Instant roughExpectedLastFailedLoginTime = now.minus(FIVE_SECONDS);
+
         Assert.assertTrue("The last failed login for " + username + " is earlier than expected. [Expected: "
             + lastFailedLoginTime + ", Actual:" + roughExpectedLastFailedLoginTime.minus(TEST_DURATION_BUFFER) + "]",
             lastFailedLoginTime.isAfter(roughExpectedLastFailedLoginTime.minus(TEST_DURATION_BUFFER)));

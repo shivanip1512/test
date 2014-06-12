@@ -10,6 +10,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -214,7 +216,7 @@ public class SimpleEqualsTest {
      */
     private static class MockList extends ForwardingList<Object> {
         int uniqueNumber;
-        List<Object> delegate = new ArrayList<>();
+        List<Object> delegate = Collections.emptyList();
 
         public MockList(int uniqueNumber) {
             this.uniqueNumber = uniqueNumber;
@@ -226,6 +228,11 @@ public class SimpleEqualsTest {
             return other.uniqueNumber == uniqueNumber;
         }
 
+        @Override
+        public int hashCode() {
+            return uniqueNumber;
+        }
+        
         @Override
         protected List<Object> delegate() {
             return delegate;
@@ -450,10 +457,10 @@ public class SimpleEqualsTest {
                 return new PaoIdentifier(uniqueNumber, PaoType.values()[uniqueNumber % PaoType.values().length]);
             //@formatter:on
             default:
-                if (Iterable.class.isAssignableFrom(objType)) {
-                    // It would be nice to initialize collections properly like we do for arrays but there
-                    // isn't an easy way to determine the type of the list. If we want to properly initialize
-                    // these collections we will need to determine the generic type.
+                // It would be nice to initialize collections properly like we do for arrays but there
+                // isn't an easy way to determine the type of the list. If we want to properly initialize
+                // these collections we will need to determine the generic type.
+                if (List.class.isAssignableFrom(objType) || objType == Collection.class) {
                     return new MockList(uniqueNumber);
                 }
                 if (objType.isArray()) {
