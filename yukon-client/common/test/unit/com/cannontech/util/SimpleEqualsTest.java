@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Instant;
 import org.junit.Ignore;
@@ -50,6 +52,8 @@ import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.google.common.collect.ForwardingList;
+import com.google.common.collect.ForwardingMap;
+import com.google.common.collect.ForwardingSet;
 
 /**
  * Tests simple POJOs, immutable POJOs, and JavaBeans for equality.
@@ -231,9 +235,59 @@ public class SimpleEqualsTest {
         public int hashCode() {
             return uniqueNumber;
         }
-        
+
         @Override
         protected List<Object> delegate() {
+            return delegate;
+        }
+    }
+
+    private static class MockSet extends ForwardingSet<Object> {
+        int uniqueNumber;
+        Set<Object> delegate = Collections.emptySet();
+
+        public MockSet(int uniqueNumber) {
+            this.uniqueNumber = uniqueNumber;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            MockSet other = (MockSet) obj;
+            return other.uniqueNumber == uniqueNumber;
+        }
+
+        @Override
+        public int hashCode() {
+            return uniqueNumber;
+        }
+
+        @Override
+        protected Set<Object> delegate() {
+            return delegate;
+        }
+    }
+
+    private static class MockMap extends ForwardingMap<Object, Object> {
+        int uniqueNumber;
+        Map<Object, Object> delegate = Collections.emptyMap();
+
+        public MockMap(int uniqueNumber) {
+            this.uniqueNumber = uniqueNumber;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            MockMap other = (MockMap) obj;
+            return other.uniqueNumber == uniqueNumber;
+        }
+
+        @Override
+        public int hashCode() {
+            return uniqueNumber;
+        }
+
+        @Override
+        protected Map<Object, Object> delegate() {
             return delegate;
         }
     }
@@ -461,6 +515,12 @@ public class SimpleEqualsTest {
                 // these collections we will need to determine the generic type.
                 if (objType.isAssignableFrom(MockList.class)) {
                     return new MockList(uniqueNumber);
+                }
+                if (objType.isAssignableFrom(MockSet.class)) {
+                    return new MockSet(uniqueNumber);
+                }
+                if (objType.isAssignableFrom(MockMap.class)) {
+                    return new MockMap(uniqueNumber);
                 }
                 if (objType.isArray()) {
                     int numItems = uniqueNumber % 10;
