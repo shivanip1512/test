@@ -160,7 +160,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     
                     if (toConfig) {
                         // Send the re-enable command if hardware status is unavailable.
-                        // Whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property.
+                        // Whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION energy
+                        // company setting.
                         if (autoConfig) {
                             if (!trackAddressing || hardwareType.isZigbee() || hardwareType.isEcobee()) {
                                 LmHardwareCommand command = new LmHardwareCommand();
