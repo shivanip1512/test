@@ -34,6 +34,7 @@ function useRandom() {
                         <option value="EE">EE</option>
                         <option value="GE">GE</option>
                         <option value="ELO">ELO</option>
+                        <option value="ITRN">ITRN</option>
                     </select>
                 </tags:nameValue>
                 
@@ -49,6 +50,7 @@ function useRandom() {
                         <option value="FocusAXR">FocusAXR</option>
                         <option value="2131T">2131T</option>
                         <option value="2131xT">2131xT</option>
+                        <option value="C2SX">C2SX</option>
                     </select>
                 </tags:nameValue>
                 
