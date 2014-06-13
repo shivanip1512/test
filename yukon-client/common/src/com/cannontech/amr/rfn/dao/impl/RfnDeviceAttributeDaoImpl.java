@@ -85,15 +85,17 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
     @Override
     public Collection<BuiltInAttribute> getAttributesForPaoTypes(Set<PaoType> paoTypes) {
 
-        Set<Attribute> paoAttributes = Sets.newHashSet();
+        Set<BuiltInAttribute> paoAttributes = Sets.newHashSet();
+        
+        paoAttributes.addAll(metricAttributes);
 
         Multimap<PaoType, Attribute> definedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
 
         for (PaoType type : paoTypes) {
-            paoAttributes.addAll(definedAttributes.get(type));
+            paoAttributes = Sets.intersection(paoAttributes,  new HashSet<Attribute>(definedAttributes.get(type)));
         }
 
-        return Sets.intersection(metricAttributes, paoAttributes);
+        return paoAttributes;
     }
 
     @Override

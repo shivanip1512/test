@@ -22,6 +22,9 @@ import com.google.common.collect.Sets;
 public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // NOTE: Remember to add any new attributes to point.xml for i18n'ing, too
 
+    // This ordering is shared by our C++ code. 
+    // Any changes/additions here need to be reflected there as well.
+    
     BLINK_COUNT("Blink Count"),
     COMM_STATUS("Communication Status"),
     CONNECTION_STATUS("Connection Status"),
@@ -898,7 +901,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     @Override
     public String getKey() {
-        return this.name();
+        return name();
     }
 
     @Override
