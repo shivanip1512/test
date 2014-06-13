@@ -306,7 +306,13 @@ yukon.ami.billing = (function() {
         },
 
         do_delete_format: function(event) {
-            return _do_format_ajax_op(event, 'delete', _url_format_delete);
+            var currFormat = $('#availableFormat :selected');
+            var currFormatId = currFormat.val();
+            the_data = {'availableFormat': currFormatId};
+            $.post(_url_format_delete, the_data).done(function(result) {
+                $('#billing_setup_overview').html(result);
+                reset_setup_tab();
+            });
         },
 
         do_save_format: function(event) {

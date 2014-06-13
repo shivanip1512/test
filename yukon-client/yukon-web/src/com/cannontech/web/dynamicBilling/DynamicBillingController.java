@@ -82,7 +82,7 @@ public class DynamicBillingController {
     }
 
     @RequestMapping(value = "delete.json")
-    public @ResponseBody Map<String, ?> delete(int availableFormat, ModelMap model) {
+    public String delete(int availableFormat, ModelMap model) {
         // delete the selected format
         dynamicBillingFileDao.delete(availableFormat);
         //delete jobs using this format
@@ -92,7 +92,7 @@ public class DynamicBillingController {
         List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
         model.addAttribute("allRows", allRows);
 
-        return Collections.singletonMap("success", true);
+        return "_overview.jsp";
     }
 
     @RequestMapping(value = "_edit.html")
@@ -195,7 +195,7 @@ public class DynamicBillingController {
     }
 
     @RequestMapping(value = "save.json")
-    public @ResponseBody Map<String, ?> save(int formatId, String formatName, String footer,
+    public String save(int formatId, String formatName, String footer,
                                          String header, String delimiter, String fieldArray, ModelMap model)
             throws IOException {
         // retrieve all information from the page and save it to db
@@ -207,7 +207,7 @@ public class DynamicBillingController {
 
         model.addAttribute("allRows", allRows);
 
-        return Collections.singletonMap("success", true);
+        return "_overview.jsp";
     }
 
     /**

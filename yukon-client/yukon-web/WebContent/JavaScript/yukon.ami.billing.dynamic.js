@@ -206,9 +206,11 @@ function saveButton () {
         }
     }
     else {
-//        document.billingFormatForm.submit();
-//        yukon.ami.billing.do_save_format();
-        form.submit();
+        var saveUrl = yukon.url('dynamicBilling/save.json');
+        $.post(saveUrl, $('#billingFormatForm').serialize()).done(function(result) {
+            $('#billing_setup_overview').html(result);
+            yukon.ami.billing.reset_setup_tab();
+        });
     }
     return false;
 }
