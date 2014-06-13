@@ -14,6 +14,7 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceAttributeDao;
@@ -32,8 +33,8 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
 
     @Autowired private PaoDefinitionDao paoDefinitionDao;
 
-    private Resource inputFile;
-
+    @Value("classpath:metricIdToAttributeMapping.json") private Resource inputFile;
+    
     private Map<Integer, BuiltInAttribute> attributeLookup = null;
     private Set<BuiltInAttribute> metricAttributes = null;
 
@@ -85,14 +86,14 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
     @Override
     public Collection<BuiltInAttribute> getAttributesForPaoTypes(Set<PaoType> paoTypes) {
 
-        Set<BuiltInAttribute> paoAttributes = Sets.newHashSet();
+        Set<BuiltInAttribute> paoAttributes = new HashSet<>();
         
         paoAttributes.addAll(metricAttributes);
 
         Multimap<PaoType, Attribute> definedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
 
         for (PaoType type : paoTypes) {
-            paoAttributes = Sets.intersection(paoAttributes,  new HashSet<Attribute>(definedAttributes.get(type)));
+            paoAttributes = Sets.intersection(paoAttributes,  new HashSet<>(definedAttributes.get(type)));
         }
 
         return paoAttributes;
