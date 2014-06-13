@@ -2,6 +2,7 @@ package com.cannontech.web.dr.ecobee;
 
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -28,10 +29,12 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.common.events.model.EventSource;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -44,9 +47,11 @@ import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyCategory;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationResult;
+import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeReconciliationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
@@ -93,6 +98,7 @@ public class EcobeeController {
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @PostConstruct
     public void init() {
@@ -332,29 +338,43 @@ public class EcobeeController {
         return "redirect:/dr/ecobee";
     }
 
-    @RequestMapping(value="/ecobee/fixAllIssues", method=RequestMethod.POST)
-    public String fixAllIssues(ModelMap model,
+    // TODO: remove this prior to committing - this is only for test purposes
+    @RequestMapping(value="/ecobee/runReport")
+    public String runReport() {
+        ecobeeReconciliation.runReconciliationReport();
+        return "";
+    }
+
+    @RequestMapping(value="/ecobee/fix-all", method=RequestMethod.GET)
+    public @ResponseBody List<Map<String, Object>> fixAllIssues(
+            HttpServletResponse response,
             YukonUserContext userContext,
             Integer reportId,
             FlashScope flash) throws IllegalArgumentException {
         
-        List<EcobeeReconciliationResult> results = null;
+        List<Map<String, Object>> fixResponse = new ArrayList<>();
         try {
-            // TODO: enable after Sam's final changes
-            // TODO: if all are successful, put up good flashscope
-//            results = ecobeeReconciliation.fixAllDiscrepancies(reportId);
-//            ecobeeEventLogService.allSyncIssuesFixed(userContext.getYukonUser(), EventSource.OPERATOR);
-//            for (EcobeeReconciliationResult result: results) {
-//                if (result.isSuccess()) {
-//                    flash.setConfirm(new YukonMessageSourceResolvable(fixIssueKey + "fixSucceeded"));
-//                } else {
-//                    flash.setError(new YukonMessageSourceResolvable(result.getErrorType().getFormatKey()));
-//                }
-//            }
+            List<EcobeeReconciliationResult> results = ecobeeReconciliation.fixAllDiscrepancies(reportId);
+            for (EcobeeReconciliationResult result: results) {
+                EcobeeDiscrepancy originalError = result.getOriginalDiscrepancy();
+                Integer originalErrorId = originalError.getErrorId();
+                Boolean success = result.isSuccess();
+                Map<String, Object> json = new HashMap<>();
+                json.put("originalErrorId", originalErrorId);
+                json.put("success", success);
+                if (!success) {
+                    String fixErrorKey = result.getErrorType().getFormatKey();
+                    MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+                    String fixErrorString = accessor.getMessage(fixErrorKey);
+                    json.put("fixErrorString", fixErrorString);
+                }
+                fixResponse.add(json);
+            }
         } catch (IllegalArgumentException e) {
             flash.setError(new YukonMessageSourceResolvable(fixIssueKey + "fixFailed"));
         }
-        return "redirect:/dr/ecobee";
+        response.setStatus(200); // TODO: use enum or whatever instead of hardcoded 200
+        return fixResponse;
     }
 
     @InitBinder

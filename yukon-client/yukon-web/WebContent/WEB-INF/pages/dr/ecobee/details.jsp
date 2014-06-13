@@ -80,7 +80,7 @@
                                                 arguments="${issue.arguments}"/>
                                             <cti:button popup="#ecobee-fix" renderMode="buttonImage" classes="fr M0"
                                                 icon="icon-wrench" data-error-id="${issue.errorId}"
-                                                data-explanation="${fn:escapeXml(explanation)}"/>
+                                                data-explanation="${fn:escapeXml(explanation)}" busy="true"/>
                                         </c:if>
                                         <c:if test="${not issue.errorType.fixable}">
                                             <cti:msg2 var="explanation" key="${issue.errorType.detailKey}"
@@ -96,9 +96,7 @@
                     </table>
                 </div>
                 <div class="action-area">
-                    <cti:msg2 var="explanation" key=".details.fixAll"/>
-                    <cti:button popup="#ecobee-fixall" nameKey="issues.fixAll" icon="icon-wrench"
-                        data-explanation="${fn:escapeXml(explanation)}"/>
+                    <cti:button nameKey="issues.fixAll" icon="icon-wrench" id="fix-all-btn"/>
                 </div>
                 <div dialog
                     id="ecobee-fix"
@@ -122,21 +120,6 @@
                     data-load-event="yukon.dr.ecobee.fix.init"
                     class="dn">
                     <p id="ecobee-unfixable-explanation"></p>
-                </div>
-                <div dialog
-                    id="ecobee-fixall" 
-                    data-form
-                    data-width="400"
-                    data-event="yukon.dr.ecobee.fixall" 
-                    data-title="<cti:msg2 key=".issues.fixall.title"/>" 
-                    data-load-event="yukon.dr.ecobee.fix.init"
-                    data-report-id="${report.reportId}"
-                    class="dn">
-                    <form action="ecobee/fixAllIssues" method="POST">
-                        <cti:csrfToken/>
-                        <input type="hidden" name="reportId" id="ecobee-fixall-report-id">
-                        <p id="ecobee-fixall-explanation"></p>
-                    </form>
                 </div>
                     </c:when>
                     <c:otherwise>

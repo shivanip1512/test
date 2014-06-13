@@ -139,6 +139,60 @@ yukon.dr.ecobee = (function () {
                 $('#ecobee-data-collection-toggle .toggle-on-off .yes').removeClass('on');
                 $('#ecobee-data-collection-schedule').hide();
             }
+            
+            $(document).on('click', '#fix-all-btn', function (ev) {
+                var reportId = $('#sync-issues').data('reportId');
+                
+                // disable all buttons
+                $('#sync-issues table tr').each(function (index,elem) {
+                    if ('#ecobee-unfixable' !== $(elem).find('button').attr('popup')) {
+                        yukon.ui.busy($(elem).find('button'));
+                        $(elem).find('button').prop('disabled', true);
+                    }
+                });
+
+                $.ajax({
+                    url: yukon.url('dr/ecobee/fix-all'),
+                    type: 'get',
+                    data: {reportId: reportId}
+                })
+                .done(function (data, textStatus, jqXHR) {
+                    var errorIds = [],
+                        i;
+                    // make note of issues successfully fixed by server
+                    for (i = 0; i < data.length; i += 1) {
+                        if (true === data[i].success || 'true' === data[i].success) {
+                            errorIds.push(data[i].originalErrorId);
+                        }
+                    }
+                    
+                    // check the error id of each issue in table against the ids
+                    // of the successfullly fixed issues reported by the server
+                    $('#sync-issues table tr').each(function (index,elem) {
+                        var errorId,
+                            // TODO: I know, not the most efficient algorithm
+                            isInList = function (val) {
+                                var ind,
+                                    found = false;
+                                for (ind = 0; ind < errorIds.length; ind += 1) {
+                                    if (val === errorIds[ind]) {
+                                        found = true;
+                                        errorIds.slice(ind, ind + 1);
+                                        break;
+                                    }
+                                }
+                                return found;
+                            };
+                        errorId = $(elem).find('button').data('errorId');
+                        if (isInList(errorId)) {
+                            $(elem).remove();
+                        }
+                    });
+                })
+                .fail(function(jqXHR, textStatus, errorThrown) {
+                    debug.log('fixAllIssues: fail: textStatus: ' + textStatus + ' errorThrown:' + errorThrown);
+                });
+            });
         },
         /**
          * Callback fired by load group id picker as its endAction (download.jsp).
