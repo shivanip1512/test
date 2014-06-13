@@ -21,9 +21,9 @@ public:
 
     enum DisplayDigits
     {
-        DisplayDigits4x1 = 2,
-        DisplayDigits5x1 = 0,
-        DisplayDigits6x1 = 1,
+        DisplayDigits4x1 = 4,
+        DisplayDigits5x1 = 5,
+        DisplayDigits6x1 = 6,
     };
 
     virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const = 0;

@@ -68,9 +68,9 @@ const std::map<unsigned, std::string> MetricNames = boost::assign::map_list_of
     ( 0x24, "TOU Rate D Time of Peak Demand"              );
 
 const std::map<unsigned, std::string> DisplayDigitNames = boost::assign::map_list_of
-    ( 0x00, "5x1" )
-    ( 0x01, "6x1" )
-    ( 0x02, "4x1" );
+    ( 0x04, "4x1" )
+    ( 0x05, "5x1" )
+    ( 0x06, "6x1" );
 
 const std::map<unsigned, std::string> DisconnectDisplayNames = boost::assign::map_list_of
     ( 0x00, "Disabled" )

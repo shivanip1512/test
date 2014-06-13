@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Centron_putconfig_display )
                     (0x10)(0x00)(0x11)(0x00)(0x12)(0x00)(0x13)(0x00)
                     (0x14)(0x00)(0x15)(0x00)(0x16)(0x00)(0x17)(0x00)
                     (0x18)(0x00)(0x19)(0x00)
-                    (0xfd)(0x00)(0xfe)(0x00)(0xff)(0x00);
+                    (0xfd)(0x05)(0xfe)(0x00)(0xff)(0x00);
 
             BOOST_CHECK_EQUAL( rcv, exp );
         }
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Centron_putconfig_display )
 
         BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdCycleTime), 0x00);
         BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisconnectDisplayDisabled), 0x01);
-        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisplayDigits), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisplayDigits), 0x05);
     }
 }
 
