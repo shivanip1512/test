@@ -6,11 +6,12 @@
 
 <cti:standardPage module="consumer" page="controlhistory">
     <cti:standardMenu />
-    <tags:sectionContainer2 nameKey="controlhistory">
+    <cti:msg2 var="sectionTitle" key=".header"/>
+    <tags:sectionContainer title="${sectionTitle}">
         <div id="programs">
             <dr:controlHistorySummary displayableProgramList="${displayablePrograms}" 
                 completeHistoryUrl="/stars/consumer/controlhistory/completeHistoryView"
                 past="false"/>
         </div>
-    </tags:sectionContainer2>
+    </tags:sectionContainer>
 </cti:standardPage>

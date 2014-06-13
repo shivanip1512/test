@@ -6,10 +6,11 @@
 <cti:url var="controlHistoryView" value="/stars/consumer/controlhistory"/>
 
 <cti:standardPage module="consumer" page="completecontrolhistory">
+    <cti:includeScript link="/JavaScript/yukon.assets.controlhistory.consumer.js"/>
     <cti:standardMenu />
     <c:set var="controls">    
         <i:inline key="yukon.dr.consumer.completecontrolhistory.viewTitle"/>
-        <select onchange="updateControlEvents(this.options[this.options.selectedIndex].value)">
+        <select onchange="yukon.assets.controlHistory.consumer.updateControlEvents(this.options[this.options.selectedIndex].value)">
             <c:forEach var="controlPeriod" items="${controlPeriods}" >
                 <option value="${controlPeriod}">
                     <i:inline key="${controlPeriod.formatKey}"/>
@@ -20,34 +21,13 @@
 
     <cti:msg key="${program.displayName}" htmlEscape="true" var="controlEventsTitle"/>
     <tags:sectionContainer title="${controlEventsTitle}" escapeTitle="true" controls="${controls}" styleClass="form-controls">
-        <div id="controlEventsDiv" class="f-block-this"><cti:msg key="yukon.dr.consumer.completecontrolhistory.loading"/></div>
+        <div id="controlEventsDiv" class="f-block-this" data-program-id="${program.programId}">
+            <cti:msg key="yukon.dr.consumer.completecontrolhistory.loading"/>
+        </div>
     </tags:sectionContainer>
 
     <div class="page-action-area">
         <cti:msg key="yukon.dr.consumer.completecontrolhistory.back" var="backText"/>
         <cti:button label="${backText}" onclick="location.href='${controlHistoryView}';"/>
     </div>
-    
-<script type="text/javascript">
-$(function() {
-    updateControlEvents('PAST_DAY');
-});
-
-function updateControlEvents(controlPeriod) {
-    yukon.ui.elementGlass.show($('#controlEventsDiv'));
-    $.ajax({
-        url: yukon.url('stars/consumer/controlhistory/innerCompleteHistoryView'),
-        method: 'POST',
-        data: { 
-            'programId': '${program.programId}',
-            'controlPeriod': controlPeriod
-        }
-    }).done(function(data){
-        $('#controlEventsDiv').html(data);
-    }).always(function() {
-        yukon.ui.elementGlass.hide($('#controlEventsDiv'));
-    });
-}
-</script>  
-        
 </cti:standardPage>    

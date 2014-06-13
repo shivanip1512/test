@@ -113,7 +113,6 @@
     
     <!-- controlHistory.jsp -->
     <entry key="yukon.web.modules.consumer.controlhistory.header">Programs - Control History</entry>
-    <entry key="yukon.web.modules.consumer.controlhistory.controlhistory.title">Control History</entry>
     <entry key="yukon.dr.consumer.controlhistory.header">Programs - Control History</entry>
     <entry key="yukon.dr.consumer.controlhistory.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.controlhistory.enrolledProgramsTitle">Your Enrolled Programs</entry>
