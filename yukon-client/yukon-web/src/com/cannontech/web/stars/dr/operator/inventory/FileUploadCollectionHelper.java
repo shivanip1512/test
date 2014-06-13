@@ -26,11 +26,11 @@ import com.cannontech.web.security.annotation.CheckRole;
 @CheckRole(YukonRole.INVENTORY)
 public class FileUploadCollectionHelper {
     
-    private InventoryCollectionFactoryImpl inventoryCollectionFactory;
-    private StarsDatabaseCache starsDatabaseCache;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    @RequestMapping("fileUpload")
+    @RequestMapping("")
     public String fileUpload(HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext) throws ServletRequestBindingException {
         
         try {
@@ -51,20 +51,4 @@ public class FileUploadCollectionHelper {
         
         return "redirect:inventoryActions";
     }
-
-    @Autowired
-    public void setInventoryCollectionFactory(InventoryCollectionFactoryImpl inventoryCollectionFactory) {
-        this.inventoryCollectionFactory = inventoryCollectionFactory;
-    }
-
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
 }
