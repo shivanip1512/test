@@ -9,13 +9,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.dao.EcobeeGroupDeviceMappingDao;
 import com.cannontech.dr.ecobee.dao.EcobeeReconciliationReportDao;
+import com.cannontech.dr.ecobee.dao.impl.EcobeeReconciliationReportDaoImpl;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
@@ -36,6 +39,9 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 
 public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationService {
+    
+    private static final Logger log = YukonLogManager.getLogger(EcobeeReconciliationReportDaoImpl.class);
+    
     @Autowired private EcobeeReconciliationReportDao reconciliationReportDao;
     @Autowired private EcobeeCommunicationService communicationService;
     @Autowired private EcobeeGroupDeviceMappingDao ecobeeGroupDeviceMappingDao;
@@ -75,6 +81,8 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     
     @Override
     public EcobeeReconciliationResult fixDiscrepancy(int reportId, int errorId) throws IllegalArgumentException {
+        log.debug("Fixing ecobee discrepancy. ReportId: " + reportId + " ErrorId: " + errorId);
+        
         //get discrepancy
         EcobeeReconciliationReport report = reconciliationReportDao.findReport();
         if (report.getReportId() != reportId) {
@@ -85,6 +93,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
         if(error == null) {
             throw new IllegalArgumentException("Invalid error id.");
         }
+        log.debug("Discrepancy type: " + error.getErrorType());
         
         //fix discrepancy
         EcobeeReconciliationResult result = fixDiscrepancy(error);
@@ -99,11 +108,14 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     
     @Override
     public List<EcobeeReconciliationResult> fixAllDiscrepancies(int reportId) throws IllegalArgumentException {
+        log.debug("Fixing all ecobee discrepancies. ReportId: " + reportId);
+        
         //get discrepancies
         EcobeeReconciliationReport report = reconciliationReportDao.findReport();
         if (report.getReportId() != reportId) {
             throw new IllegalArgumentException("Report id is outdated.");
         }
+        log.debug("Total number of discrepancies: " + report.getErrors().size());
         
         List<EcobeeReconciliationResult> results = new ArrayList<>();
         

@@ -34,6 +34,8 @@ public class EcobeePointUpdateTask extends YukonTaskBase {
 
     @Override
     public void start() {
+        log.info("Starting ecobee daily reads.");
+        
         List<LiteYukonPAObject> ecobeeDevices = paoDao.getLiteYukonPAObjectByType(PaoType.ECOBEE_SMART_SI);
 
         Map<String, PaoIdentifier> ecobeeDevicesBySerialNumber = Maps.newHashMapWithExpectedSize(ecobeeDevices.size());
@@ -61,5 +63,7 @@ public class EcobeePointUpdateTask extends YukonTaskBase {
                     updatePointData(ecobeeDevicesBySerialNumber.get(deviceReadings.getSerialNumber()), deviceReadings);
             }
         }
+        
+        log.info("Ecobee daily reads complete.");
     }
 }

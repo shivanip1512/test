@@ -3,11 +3,13 @@ package com.cannontech.dr.ecobee.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
@@ -27,6 +29,9 @@ import com.cannontech.dr.ecobee.model.discrepancy.EcobeeMissingDeviceDiscrepancy
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeMissingSetDiscrepancy;
 
 public class EcobeeReconciliationReportDaoImpl implements EcobeeReconciliationReportDao {
+    
+    private static final Logger log = YukonLogManager.getLogger(EcobeeReconciliationReportDaoImpl.class);
+    
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
@@ -61,6 +66,8 @@ public class EcobeeReconciliationReportDaoImpl implements EcobeeReconciliationRe
     @Override
     @Transactional
     public int insertReport(EcobeeReconciliationReport report) {
+        log.debug("Inserting new reconciliation report.");
+        
         int reportId = nextValueHelper.getNextValue("EcobeeReconciliationReport");
         
         //clear out the previous report, we're inserting a new one
@@ -109,6 +116,8 @@ public class EcobeeReconciliationReportDaoImpl implements EcobeeReconciliationRe
     
     @Override
     public boolean removeError(int reportId, int errorId) {
+        log.debug("Removing discrepancy from ecobee reconciliation report. ReportId: " + reportId + " ErrorId: " + errorId);
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("delete from EcobeeReconReportError");
         sql.append("where EcobeeReconReportErrorId").eq(errorId);

@@ -80,7 +80,7 @@ public class EcobeeRestProxyFactory {
     }
 
     /**
-     * Searches arguments for an HttpHeader. If one is found  an ecobee authorization header will be added.
+     * Searches arguments for an HttpHeader. If one is found an ecobee authorization header will be added.
      */
     private void addAuthorizationToken(Object[] args) throws EcobeeAuthenticationException {
         for (int i = 0; i < args.length; i++) {

@@ -74,6 +74,7 @@ public class EcobeeMessageListener {
      */
     private int getRestoreGroupId(StreamMessage message) throws JMSException {
         int groupId = message.readInt();
+        log.trace("Parsed group id " + groupId);
         return groupId;
     }
 
@@ -100,7 +101,10 @@ public class EcobeeMessageListener {
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
         boolean rampIn = (rampingOptions & 2) == 2;
         boolean rampOut = (rampingOptions & 1) == 1;
-
+        log.trace("Parsed duty cycle dr parameters. Start time: " + startTime + " (" + utcStartTimeSeconds 
+                  + ") End time: " + endTime + " (" + utcEndTimeSeconds + ") Ramp in: " + rampIn + " Ramp out: " 
+                  + rampOut);
+        
         return new EcobeeDutyCycleDrParameters(startTime, endTime, dutyCyclePercent, rampIn, rampOut, groupId);
     }
 }

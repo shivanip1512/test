@@ -84,6 +84,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     @Override
     public boolean registerDevice(String serialNumber) {
+        log.debug("Registering ecobee device with serial number " + serialNumber);
+        
         String url = getUrlBase() + modifyThermostatUrlPart;
 
         RegisterDeviceRequest request = new RegisterDeviceRequest(serialNumber);
@@ -93,6 +95,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
         if (response.hasCode(VALIDATION_ERROR)) {
             //device already exists
+            log.debug("Ecobee response code was 7 (validation error). Message: \"" + response.getStatus().getMessage()
+                      + "\". Assuming device already exists.");
             return true;
         }
 
@@ -102,10 +106,14 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     @Override
     public boolean moveDeviceToSet(String serialNumber, String setPath) 
             throws EcobeeDeviceDoesNotExistException, EcobeeSetDoesNotExistException {
+        
+        log.debug("Moving ecobee device with serial number " + serialNumber + " to set " + setPath);
+        
         boolean success = false;
         try {
             success = attemptMoveDeviceToSet(serialNumber, setPath);
         } catch (EcobeeSetDoesNotExistException e) {
+            log.debug("The specified does not exist. Attempting to create it.");
             createManagementSet(setPath);
             success = attemptMoveDeviceToSet(serialNumber, setPath);
         }
@@ -124,8 +132,12 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
         // Set doesn't exist, or we don't have permission
         if (response.hasCode(NOT_AUTHORIZED)) {
+            log.debug("Ecobee response code was 2 (not authorized). Message: \"" + response.getStatus().getMessage()
+                      + "\".");
             throw new EcobeeSetDoesNotExistException(setPath);
         } else if (response.hasCode(PROCESSING_ERROR)) {
+            log.debug("Ecobee response code was 3 (processing error). Message: \"" + response.getStatus().getMessage()
+                      + "\".");
             throw new EcobeeDeviceDoesNotExistException(serialNumber);
         }
 
@@ -134,6 +146,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     @Override
     public List<EcobeeDeviceReadings> readDeviceData(Collection<String> serialNumbers, Range<Instant> dateRange) {
+        log.trace("Reading ecobee devices: " + serialNumbers + " Date range: " + dateRange);
+        
         MutableDateTime mutableStartDate = new MutableDateTime(dateRange.getMin());
         mutableStartDate.setMillisOfSecond(0);
         mutableStartDate.setSecondOfMinute(0);
@@ -187,6 +201,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     @Override
     public boolean createManagementSet(String managementSetName) {
+        log.debug("Creating ecobee management set: " + managementSetName);
+        
         String url = getUrlBase() + modifySetUrlPart;
 
         CreateSetRequest request = new CreateSetRequest(managementSetName);
@@ -204,6 +220,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     @Override
     public boolean deleteManagementSet(String managementSetName) {
+        log.debug("Deleting ecobee management set: " + managementSetName);
+        
         String url = getUrlBase() + modifySetUrlPart;
 
         DeleteSetRequest request = new DeleteSetRequest(managementSetName);
@@ -217,6 +235,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     @Override
     public boolean moveManagementSet(String currentPath, String newPath) {
+        log.debug("Moving ecobee management set: " + currentPath + " New path: " + newPath);
+        
         String url = getUrlBase() + modifySetUrlPart;
 
         MoveSetRequest request = new MoveSetRequest(currentPath, newPath);
@@ -229,6 +249,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     @Override
     public String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters) {
+        log.debug("Sending ecobee duty cycle DR.");
+        
         String url = getUrlBase() + demandResponseUrlPart;
 
         String groupIdString = Integer.toString(parameters.getGroupId());
@@ -245,7 +267,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     @Override
     public boolean sendRestore(String drIdentifier) {
-
+        log.debug("Sending ecobee DR restore. Event ID: " + drIdentifier);
+        
         String url = getUrlBase() + demandResponseUrlPart;
 
         DrRestoreRequest request = new DrRestoreRequest(drIdentifier);
@@ -258,7 +281,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     @Override
     public List<SetNode> getHierarchy() {
-
+        log.debug("Retrieving ecobee management set hierarchy.");
+        
         //Create base url
         String url = getUrlBase() + modifySetUrlPart + "&body={bodyJson}";
 

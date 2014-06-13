@@ -14,10 +14,12 @@ public class EcobeeReconciliationReportTask extends YukonTaskBase {
     
     @Override
     public void start() {
+        log.info("Building ecobee reconciliation report.");
         try {
             reconciliationService.runReconciliationReport();
         } catch (EcobeeCommunicationException e) {
             log.error("Unable to complete the ecobee reconciliation report.", e);
         }
+        log.info("Ecobee reconciliation report finished.");
     }
 }
