@@ -129,8 +129,8 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string DisconnectMode;
     static const std::string ReconnectParam;
     static const std::string DisconnectDemandInterval;
-    static const std::string DemandThreshold;
-    static const std::string ConnectDelay;
+    static const std::string DisconnectDemandThreshold;
+    static const std::string LoadLimitConnectDelay;
     static const std::string MaxDisconnects;
     static const std::string DisconnectMinutes;
     static const std::string ConnectMinutes;

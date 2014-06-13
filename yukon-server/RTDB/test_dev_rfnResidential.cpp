@@ -1012,8 +1012,8 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_demand_thresh
     cfg.insertValue( RfnStrings::DisconnectMode, "DEMAND_THRESHOLD" );
     cfg.insertValue( RfnStrings::ReconnectParam, "IMMEDIATE" );
     cfg.insertValue( RfnStrings::DisconnectDemandInterval, "5" );
-    cfg.insertValue( RfnStrings::DemandThreshold, "10.2" );
-    cfg.insertValue( RfnStrings::ConnectDelay, "15" );
+    cfg.insertValue( RfnStrings::DisconnectDemandThreshold, "10.2" );
+    cfg.insertValue( RfnStrings::LoadLimitConnectDelay, "15" );
     cfg.insertValue( RfnStrings::MaxDisconnects, "10" );
     {
         CtiCommandParser parse("putconfig install disconnect");

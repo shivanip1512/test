@@ -1263,8 +1263,8 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
             {
                 const std::string configReconnectParam               = getConfigData   <std::string> ( deviceConfig, Config::RfnStrings::ReconnectParam );
                 const unsigned configDemandInterval                  = getConfigData   <unsigned>    ( deviceConfig, Config::RfnStrings::DisconnectDemandInterval );
-                const double configDemandThreshold                   = getConfigData   <double>      ( deviceConfig, Config::RfnStrings::DemandThreshold );
-                const unsigned configConnectDelay                    = getConfigData   <unsigned>    ( deviceConfig, Config::RfnStrings::ConnectDelay );
+                const double configDemandThreshold                   = getConfigData   <double>      ( deviceConfig, Config::RfnStrings::DisconnectDemandThreshold );
+                const unsigned configConnectDelay                    = getConfigData   <unsigned>    ( deviceConfig, Config::RfnStrings::LoadLimitConnectDelay );
                 const unsigned configMaxDisconnect                   = getConfigData   <unsigned>    ( deviceConfig, Config::RfnStrings::MaxDisconnects );
 
                 const boost::optional<std::string> paoReconnectParam = findDynamicInfo <std::string> ( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam );
