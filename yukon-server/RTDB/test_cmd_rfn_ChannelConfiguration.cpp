@@ -907,10 +907,10 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand )
                 "Channel Registration Full Description:\n"
                 "Metric(s) descriptors:\n"
                 "Watt hour delivered (1): Scaling Factor: 1\n"
-                "Watt hour received (2): Primary, Scaling Factor: 1\n"
-                "Watt hour total/sum (3): Secondary, Scaling Factor: 1\n"
-                "Watts delivered, current demand (5): Fundamental, Scaling Factor: 1\n"
-                "Watts received, current demand (6): Harmonic, Scaling Factor: 1\n"
+                "Watt hour received (2): Fundamental, Scaling Factor: 1\n"
+                "Watt hour total/sum (3): Harmonic, Scaling Factor: 1\n"
+                "Watts delivered, current demand (5): Primary, Scaling Factor: 1\n"
+                "Watts received, current demand (6): Secondary, Scaling Factor: 1\n"
                 "Watts delivered, peak demand (7): Segmentation: A to B, Scaling Factor: 1\n"
                 "Watts received, peak demand (8): Segmentation: B to C, Scaling Factor: 1\n"
                 "Watts delivered, peak demand (Frozen) (9): Segmentation: C to A, Scaling Factor: 1\n"
@@ -1016,8 +1016,8 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
                 // tlv full description - metric qualifier
                 ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) );
+                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) );
 
 
         const RfnChannelConfigurationCommand::MetricIds metrics;
@@ -1139,8 +1139,8 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand_exceptio
                 ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
                 // tlv full description - metric qualifier
                 ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) );
+                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) );
 
         std::vector<RfnCommand::CommandException> actual;
 
@@ -1390,8 +1390,8 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
                 // tlv full description - metric qualifier
                 ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) );
+                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
+                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) );
 
 
         const RfnChannelConfigurationCommand::MetricIds metrics;

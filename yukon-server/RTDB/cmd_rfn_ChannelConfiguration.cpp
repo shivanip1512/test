@@ -310,8 +310,8 @@ struct MetricQualifierFields
 
     MetricQualifierFields( unsigned val ) :
             extensionBit         ( getBitsField <15, 1> (val) ),
-            primarySecondary     ( getBitsField <13, 2> (val) ),
-            fundHarmonic         ( getBitsField <11, 2> (val) ),
+            fundHarmonic         ( getBitsField <13, 2> (val) ),
+            primarySecondary     ( getBitsField <11, 2> (val) ),
             segmentation         ( getBitsField < 8, 3> (val) ),
             continuousCumulative ( getBitsField < 7, 1> (val) ),
             cumulative           ( getBitsField < 6, 1> (val) ),
