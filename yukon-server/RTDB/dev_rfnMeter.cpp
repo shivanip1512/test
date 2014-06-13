@@ -375,7 +375,6 @@ int RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    * pReq,
 {
     using Commands::RfnChannelConfigurationCommand;
     using Commands::RfnSetChannelSelectionCommand;
-    using Commands::RfnSetChannelIntervalRecordingCommand;
 
     typedef Commands::RfnChannelConfigurationCommand::MetricIds MetricIds;
     typedef std::vector<unsigned long> PaoMetricIds;
@@ -480,7 +479,7 @@ int RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    * pReq,
                     return ConfigNotCurrent;
                 }
 
-                rfnRequests.push_back( boost::make_shared<RfnSetChannelIntervalRecordingCommand>(
+                rfnRequests.push_back( boost::make_shared<Commands::RfnChannelIntervalRecording::SetConfigurationCommand>(
                         intervalMetrics,
                         cfgRecordingIntervalSeconds,
                         cfgReportingIntervalSeconds));
@@ -515,11 +514,8 @@ int RfnMeterDevice::executeGetConfigInstallChannels( CtiRequestMsg    * pReq,
                                                      ReturnMsgList    & returnMsgs,
                                                      RfnCommandList   & rfnRequests )
 {
-    using Commands::RfnGetChannelSelectionFullDescriptionCommand;
-    using Commands::RfnGetChannelIntervalRecordingCommand;
-
-    rfnRequests.push_back( boost::make_shared<RfnGetChannelSelectionFullDescriptionCommand>() );
-    rfnRequests.push_back( boost::make_shared<RfnGetChannelIntervalRecordingCommand>() );
+    rfnRequests.push_back( boost::make_shared<Commands::RfnGetChannelSelectionFullDescriptionCommand>() );
+    rfnRequests.push_back( boost::make_shared<Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand>() );
 
     return NoError;
 }
@@ -633,14 +629,41 @@ void RfnMeterDevice::handleCommandResult( const Commands::RfnGetTemperatureAlarm
     }
 }
 
-void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelSelectionCommand & cmd )
+//  Don't do anything with this yet - this command returns the filter, not the enabled channels!
+void RfnMeterDevice::handleCommandResult( const Commands::RfnGetChannelSelectionCommand & cmd )
+{
+  /*std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
+
+    setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_BillingMetrics, paoMetrics );*/
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnGetChannelSelectionFullDescriptionCommand & cmd )
 {
     std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
 
     setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_BillingMetrics, paoMetrics );
 }
 
-void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelIntervalRecordingCommand & cmd )
+void RfnMeterDevice::handleCommandResult( const Commands::RfnSetChannelSelectionCommand & cmd )
+{
+    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
+
+    setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_BillingMetrics, paoMetrics );
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelIntervalRecording::GetConfigurationCommand & cmd )
+{
+    //  Don't do anything with this yet - this command returns the filter, not the enabled channels!
+    /*
+    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
+
+    setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoMetrics );
+    */
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, cmd.getIntervalRecordingSecondsReceived() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, cmd.getIntervalReportingSecondsReceived() );
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand & cmd )
 {
     std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
 
@@ -649,5 +672,13 @@ void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelIntervalReco
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, cmd.getIntervalReportingSecondsReceived() );
 }
 
+void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelIntervalRecording::SetConfigurationCommand & cmd )
+{
+    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
+
+    setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoMetrics );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, cmd.getIntervalRecordingSecondsReceived() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, cmd.getIntervalReportingSecondsReceived() );
+}
 }
 }

@@ -8,14 +8,7 @@
 
 using boost::assign::list_of;
 
-using Cti::Devices::Commands::RfnCommand;
-using Cti::Devices::Commands::RfnCommandResult;
-using Cti::Devices::Commands::RfnChannelConfigurationCommand;
-using Cti::Devices::Commands::RfnSetChannelSelectionCommand;
-using Cti::Devices::Commands::RfnGetChannelSelectionCommand;
-using Cti::Devices::Commands::RfnGetChannelSelectionFullDescriptionCommand;
-using Cti::Devices::Commands::RfnSetChannelIntervalRecordingCommand;
-using Cti::Devices::Commands::RfnGetChannelIntervalRecordingCommand;
+using namespace Cti::Devices::Commands;
 
 namespace boost      {
 namespace test_tools {
@@ -838,7 +831,7 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand )
                 }
 
                 descriptions_exp.push_back( desc_exp );
-                metrics_exp.push_back( metrics );
+                metrics_exp.push_back( RfnChannelConfigurationCommand::MetricIds() );  //  empty
             }
         }
 
@@ -1004,7 +997,6 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                 ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x00) )
                 ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x01)(0x03) )
                 ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
-                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x09)(0x02)(0x00)(0x01)(0x00)(0x00)(0x00)(0x01)(0x00)(0x00) )
                 // tlv full description - metric qualifier
                 ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
                 ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
@@ -1022,7 +1014,6 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) )
                 // tlv full description - metric qualifier
                 ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) )
@@ -1072,8 +1063,7 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand_exceptions )
                 // tlv channel selection configuration
                 ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x00)(0x00) )
                 ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x00)(0x01)(0x03) )
-                ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x00)(0x03)(0x01)(0xff)(0xff) )
-                ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x00)(0x05)(0x02)(0x00)(0x01)(0x00)(0x01) );
+                ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x00)(0x03)(0x01)(0xff)(0xff) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
@@ -1087,8 +1077,7 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand_exceptions )
                 // tlv channel selection configuration
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 7" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) );
+                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) );
 
         RfnGetChannelSelectionCommand cmd;
 
@@ -1131,7 +1120,6 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand_exceptio
                 ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x00) )
                 ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x01)(0x03) )
                 ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
-                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x09)(0x02)(0x00)(0x01)(0x00)(0x00)(0x00)(0x01)(0x00)(0x00) )
                 // tlv full description - metric qualifier
                 ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
                 ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
@@ -1149,7 +1137,6 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand_exceptio
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) )
                 // tlv full description - metric qualifier
                 ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) )
@@ -1188,7 +1175,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand )
     const unsigned intervalRecordingSeconds = 0x12345678;
     const unsigned intervalReportingSeconds = 0xa5a5a5a5;
 
-    RfnSetChannelIntervalRecordingCommand cmd( metrics, intervalRecordingSeconds, intervalReportingSeconds );
+    RfnChannelIntervalRecording::SetConfigurationCommand cmd( metrics, intervalRecordingSeconds, intervalReportingSeconds );
 
     // execute
     {
@@ -1250,11 +1237,11 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand )
+BOOST_AUTO_TEST_CASE( test_RfnChannelIntervalRecordingGetConfigurationCommand )
 {
     RfnChannelConfigurationCommand::MetricIds zeroMetrics;
 
-    RfnGetChannelIntervalRecordingCommand cmd;
+    RfnChannelIntervalRecording::GetConfigurationCommand cmd;
 
     // execute
     {
@@ -1294,6 +1281,50 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_RfnChannelIntervalRecordingGetActiveConfigurationCommand )
+{
+    RfnChannelConfigurationCommand::MetricIds zeroMetrics;
+
+    RfnChannelIntervalRecording::GetActiveConfigurationCommand cmd;
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
+
+        RfnCommand::RfnRequestPayload exp = list_of
+                (0x7a)(0x02)(0x00);          // command code + operation + 0 tlv
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                rcv.begin(), rcv.end(),
+                exp.begin(), exp.end());
+    }
+
+    // decode
+    {
+        const std::vector<unsigned char> response = list_of
+                (0x7b)(0x02)(0X00)(0x01)    // command code + operation + status + 1 tlv
+                (0x03)                      // tlv type
+                (0x09)                      // tlv size (1-byte)
+                (0x12)(0x34)(0x56)(0x78)    // interval recording
+                (0xa5)(0xa5)(0xa5)(0xa5)    // interval reporting
+                (0x00);                     // number of metrics
+
+        RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
+
+        const std::string desc_exp =
+                "Status: Success (0)\n"
+                "Channel Interval Recording Active Configuration:\n"
+                "Interval Recording: 305419896 seconds\n"
+                "Interval Reporting: 2779096485 seconds\n"
+                "Metric(s) descriptors:\n"
+                "none\n";
+
+        BOOST_CHECK_EQUAL( rcv.description, desc_exp );
+        BOOST_CHECK_EQUAL( cmd.getMetricsReceived(), zeroMetrics );
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
 {
     // execute exceptions
@@ -1314,7 +1345,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
         {
             try
             {
-                RfnSetChannelIntervalRecordingCommand cmd( metricIds, 0, 0 );
+                RfnChannelIntervalRecording::SetConfigurationCommand cmd( metricIds, 0, 0 );
             }
             catch ( const RfnCommand::CommandException & ex )
             {
@@ -1340,7 +1371,6 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
                 ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x00) )
                 ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x01)(0x03) )
                 ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
-                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x09)(0x02)(0x00)(0x01)(0x00)(0x00)(0x00)(0x01)(0x00)(0x00) )
                 // tlv full description - metric qualifier
                 ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
                 ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
@@ -1358,7 +1388,6 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) )
                 // tlv full description - metric qualifier
                 ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) )
@@ -1371,7 +1400,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
 
         for each ( const RfnCommand::RfnResponsePayload & response in responses )
         {
-            RfnSetChannelIntervalRecordingCommand cmd( metrics, 0, 0 );
+            RfnChannelIntervalRecording::SetConfigurationCommand cmd( metrics, 0, 0 );
 
             try
             {
@@ -1404,10 +1433,9 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand_exceptions )
                 ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x07)(0x01)(0x00) )
                 ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00) )
                 // tlv interval recording configuration
-                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x00)                                                                               )
-                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)                         )
-                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x0b)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)(0xff)(0xff)             )
-                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x0d)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x02)(0x00)(0x01)(0x00)(0x01) );
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x00)                                                                   )
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)             )
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x0b)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)(0xff)(0xff) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
@@ -1420,14 +1448,13 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand_exceptions )
                 // tlv channel selection configuration
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for interval recording received 0, expected >= 9" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 3" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unexpected duplicated metric: Watt hour delivered (1)" ) );
+                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) );
 
         std::vector< RfnCommand::CommandException > actual;
 
         for each ( const RfnCommand::RfnResponsePayload & response in responses )
         {
-            RfnGetChannelIntervalRecordingCommand cmd;
+            RfnChannelIntervalRecording::GetConfigurationCommand cmd;
 
             try
             {

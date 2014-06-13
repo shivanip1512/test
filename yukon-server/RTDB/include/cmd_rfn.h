@@ -35,8 +35,14 @@ class RfnSetOvUvNewAlarmReportIntervalCommand;
 class RfnSetOvUvSetOverVoltageThresholdCommand;
 class RfnSetOvUvSetUnderVoltageThresholdCommand;
 class RfnRemoteDisconnectConfigurationCommand;
-class RfnChannelSelectionCommand;
-class RfnChannelIntervalRecordingCommand;
+class RfnGetChannelSelectionCommand;
+class RfnGetChannelSelectionFullDescriptionCommand;
+class RfnSetChannelSelectionCommand;
+namespace RfnChannelIntervalRecording {
+class GetConfigurationCommand;
+class GetActiveConfigurationCommand;
+class SetConfigurationCommand;
+}
 class RfnSetTemperatureAlarmConfigurationCommand;
 class RfnGetTemperatureAlarmConfigurationCommand;
 
@@ -86,9 +92,13 @@ public:
         virtual void handleCommandResult(const RfnSetOvUvNewAlarmReportIntervalCommand &)             {}
         virtual void handleCommandResult(const RfnSetOvUvSetOverVoltageThresholdCommand &)            {}
         virtual void handleCommandResult(const RfnSetOvUvSetUnderVoltageThresholdCommand &)           {}
-        virtual void handleCommandResult(const RfnRemoteDisconnectConfigurationCommand &)                          {}
-        virtual void handleCommandResult(const RfnChannelSelectionCommand &)                          {}
-        virtual void handleCommandResult(const RfnChannelIntervalRecordingCommand &)                  {}
+        virtual void handleCommandResult(const RfnRemoteDisconnectConfigurationCommand &)             {}
+        virtual void handleCommandResult(const RfnGetChannelSelectionCommand &)                       {}
+        virtual void handleCommandResult(const RfnGetChannelSelectionFullDescriptionCommand &)        {}
+        virtual void handleCommandResult(const RfnSetChannelSelectionCommand &)                       {}
+        virtual void handleCommandResult(const RfnChannelIntervalRecording::SetConfigurationCommand &)        {}
+        virtual void handleCommandResult(const RfnChannelIntervalRecording::GetConfigurationCommand &)        {}
+        virtual void handleCommandResult(const RfnChannelIntervalRecording::GetActiveConfigurationCommand &)  {}
         virtual void handleCommandResult(const RfnSetTemperatureAlarmConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnGetTemperatureAlarmConfigurationCommand &)          {}
     };

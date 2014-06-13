@@ -443,9 +443,12 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
 
         result.description += metricDescription + " (" + CtiNumStr(metricId) + ")\n";
 
+        //  this is the desired metric list, which is a filter on the meter's available channels.
+        /*
         const bool isNewInsert = _metricsReceived.insert(metricId).second;
         validate( Condition( isNewInsert, ErrorInvalidData )
                 << "Received unexpected duplicated metric: " << metricDescription << " (" << metricId << ")" );
+        */
     }
 }
 
@@ -497,10 +500,15 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
 
         if( metricQFields.coincidentValue == 0 )
         {
-            // check for duplicated metricId
             const bool isNewInsert = _metricsReceived.insert(metricId).second;
+            //  Do not treat duplicates as errors - it's currently possible to
+            //  receive multiple voltage metrics with different qualifiers (as of June 2014).
+            //  This will need to be rectified in a future firmware release.
+            /*
+            // check for duplicated metricId
             validate( Condition( isNewInsert, ErrorInvalidData )
                     << "Received unexpected duplicated metric: " << metricDescription << " (" << metricId << ")" );
+            */
 
             coincidentValue = 0;
             metricsIdsCoincidentReceived.clear();
@@ -529,8 +537,8 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
 //----------------------------------------------------------------------------
 
 const RfnChannelSelectionCommand::LongTlvList RfnChannelSelectionCommand::longTlvs = boost::assign::list_of
-        (TlvType_ChannelSelectionConfiguration)
-        (TlvType_ChannelSelectionFullDescription);
+        (TlvType_ChannelSelection_Configuration)
+        (TlvType_ChannelSelection_ActiveChannels);
 
 void RfnChannelSelectionCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
 {
@@ -571,13 +579,13 @@ void RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResu
 
     switch( tlv.type )
     {
-        case TlvType_ChannelSelectionConfiguration :
+        case TlvType_ChannelSelection_Configuration :
         {
             result.description += "Channel Selection Configuration:\n";
             decodeMetricsIds( tlv.value, result );
             break;
         }
-        case TlvType_ChannelSelectionFullDescription :
+        case TlvType_ChannelSelection_ActiveChannels :
         {
             result.description += "Channel Registration Full Description:\n";
             decodeChannelDescriptors( tlv.value, result );
@@ -611,7 +619,7 @@ RfnSetChannelSelectionCommand::RfnSetChannelSelectionCommand( const MetricIds& m
 RfnChannelConfigurationCommand::TlvList RfnSetChannelSelectionCommand::getTlvsToSend() const
 {
     return boost::assign::list_of
-            (TypeLengthValue::makeLongTlv( TlvType_ChannelSelectionConfiguration, _setChannelSelectionTlvPayload ));
+            (TypeLengthValue::makeLongTlv( TlvType_ChannelSelection_Configuration, _setChannelSelectionTlvPayload ));
 }
 
 unsigned char RfnSetChannelSelectionCommand::getOperation() const
@@ -621,7 +629,7 @@ unsigned char RfnSetChannelSelectionCommand::getOperation() const
 
 unsigned char RfnSetChannelSelectionCommand::getExpectedTlvType() const
 {
-    return TlvType_ChannelSelectionFullDescription;
+    return TlvType_ChannelSelection_ActiveChannels;
 }
 
 //----------------------------------------------------------------------------
@@ -635,7 +643,7 @@ unsigned char RfnGetChannelSelectionCommand::getOperation() const
 
 unsigned char RfnGetChannelSelectionCommand::getExpectedTlvType() const
 {
-    return TlvType_ChannelSelectionConfiguration;
+    return TlvType_ChannelSelection_Configuration;
 }
 
 //----------------------------------------------------------------------------
@@ -644,12 +652,12 @@ unsigned char RfnGetChannelSelectionCommand::getExpectedTlvType() const
 
 unsigned char RfnGetChannelSelectionFullDescriptionCommand::getOperation() const
 {
-    return Operation_GetChannelSelectionFullDescription;
+    return Operation_GetChannelSelectionActiveChannels;
 }
 
 unsigned char RfnGetChannelSelectionFullDescriptionCommand::getExpectedTlvType() const
 {
-    return TlvType_ChannelSelectionFullDescription;
+    return TlvType_ChannelSelection_ActiveChannels;
 }
 
 //----------------------------------------------------------------------------
@@ -695,16 +703,22 @@ void RfnChannelIntervalRecordingCommand::decodeTlvs( const TlvList& tlvs, RfnCom
 
     switch( tlv.type )
     {
-        case TlvType_ChannelIntervalRecordingConfiguration:
+        case TlvType_ChannelIntervalRecording_Configuration:
         {
             result.description += "Channel Interval Recording Configuration:\n";
             decodeChannelIntervalRecording( tlv.value, result );
             break;
         }
-        case TlvType_ChannelIntervalRecordingFullDescription:
+        case TlvType_ChannelIntervalRecording_ActiveChannels:
         {
             result.description += "Channel Interval Recording Full Description:\n";
             decodeChannelDescriptors( tlv.value, result );
+            break;
+        }
+        case TlvType_ChannelIntervalRecording_ActiveConfiguration:
+        {
+            result.description += "Channel Interval Recording Active Configuration:\n";
+            decodeActiveConfiguration( tlv.value, result );
             break;
         }
     }
@@ -729,6 +743,25 @@ void RfnChannelIntervalRecordingCommand::decodeChannelIntervalRecording( const B
     decodeMetricsIds( Bytes(response.begin() + 8 , response.end()), result );
 }
 
+void RfnChannelIntervalRecordingCommand::decodeActiveConfiguration( const Bytes &response, RfnCommandResult &result )
+{
+    validate( Condition( response.size() >= 9, ErrorInvalidData )
+            << "Number of bytes for interval recording received " << response.size() << ", expected >= 9" );
+
+    unsigned offset = 0;
+
+    _intervalRecordingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
+    offset += 4;
+
+    _intervalReportingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
+    offset += 4;
+
+    result.description += "Interval Recording: " + CtiNumStr(_intervalRecordingSecondsReceived) + " seconds\n" +
+                          "Interval Reporting: " + CtiNumStr(_intervalReportingSecondsReceived) + " seconds\n";
+
+    decodeChannelDescriptors( Bytes(response.begin() + 8, response.end()), result );
+}
+
 unsigned RfnChannelIntervalRecordingCommand::getIntervalRecordingSecondsReceived() const
 {
     return _intervalRecordingSecondsReceived;
@@ -739,13 +772,15 @@ unsigned RfnChannelIntervalRecordingCommand::getIntervalReportingSecondsReceived
     return _intervalReportingSecondsReceived;
 }
 
+namespace RfnChannelIntervalRecording {
+
 //----------------------------------------------------------------------------
 // Class RfnSetChannelIntervalRecordingCommand
 //----------------------------------------------------------------------------
 
-RfnSetChannelIntervalRecordingCommand::RfnSetChannelIntervalRecordingCommand( const MetricIds& metrics,
-                                                                              unsigned intervalRecordingSeconds,
-                                                                              unsigned intervalReportingSeconds )
+SetConfigurationCommand::SetConfigurationCommand( const MetricIds& metrics,
+                                                  unsigned intervalRecordingSeconds,
+                                                  unsigned intervalReportingSeconds )
 {
     insertValue_bEndian<4> ( _setIntervalRecordingTlvPayload, intervalRecordingSeconds );
     insertValue_bEndian<4> ( _setIntervalRecordingTlvPayload, intervalReportingSeconds );
@@ -766,35 +801,51 @@ RfnSetChannelIntervalRecordingCommand::RfnSetChannelIntervalRecordingCommand( co
     }
 }
 
-RfnChannelConfigurationCommand::TlvList RfnSetChannelIntervalRecordingCommand::getTlvsToSend() const
+RfnChannelConfigurationCommand::TlvList SetConfigurationCommand::getTlvsToSend() const
 {
     return boost::assign::list_of
-            (TypeLengthValue( TlvType_ChannelIntervalRecordingConfiguration, _setIntervalRecordingTlvPayload ));
+            (TypeLengthValue( TlvType_ChannelIntervalRecording_Configuration, _setIntervalRecordingTlvPayload ));
 }
 
-unsigned char RfnSetChannelIntervalRecordingCommand::getOperation() const
+unsigned char SetConfigurationCommand::getOperation() const
 {
     return Operation_SetChannelIntervalRecordingConfiguration;
 }
 
-unsigned char RfnSetChannelIntervalRecordingCommand::getExpectedTlvType() const
+unsigned char SetConfigurationCommand::getExpectedTlvType() const
 {
-    return TlvType_ChannelIntervalRecordingFullDescription;
+    return TlvType_ChannelIntervalRecording_ActiveChannels;
 }
 
 //----------------------------------------------------------------------------
-// Class RfnGetChannelIntervalRecordingCommand
+// Class RfnChannelIntervalRecording::GetConfigurationCommand
 //----------------------------------------------------------------------------
 
-unsigned char RfnGetChannelIntervalRecordingCommand::getOperation() const
+unsigned char GetConfigurationCommand::getOperation() const
 {
     return Operation_GetChannelIntervalRecordingConfiguration;
 }
 
-unsigned char RfnGetChannelIntervalRecordingCommand::getExpectedTlvType() const
+unsigned char GetConfigurationCommand::getExpectedTlvType() const
 {
-    return TlvType_ChannelIntervalRecordingConfiguration;
+    return TlvType_ChannelIntervalRecording_Configuration;
 }
+
+//----------------------------------------------------------------------------
+// Class RfnChannelIntervalRecording::GetActiveConfigurationCommand
+//----------------------------------------------------------------------------
+
+unsigned char GetActiveConfigurationCommand::getOperation() const
+{
+    return Operation_GetChannelIntervalRecordingActiveConfiguration;
+}
+
+unsigned char GetActiveConfigurationCommand::getExpectedTlvType() const
+{
+    return TlvType_ChannelIntervalRecording_ActiveConfiguration;
+}
+
+} // RfnChannelIntervalRecording
 
 } // Commands
 } // Devices

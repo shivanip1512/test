@@ -64,15 +64,15 @@ class IM_EX_DEVDB RfnChannelSelectionCommand : public RfnChannelConfigurationCom
 protected:
     enum
     {
-        Operation_SetChannelSelectionConfiguration   = 0x00,
-        Operation_GetChannelSelectionConfiguration   = 0x01,
-        Operation_GetChannelSelectionFullDescription = 0x02
+        Operation_SetChannelSelectionConfiguration  = 0x00,
+        Operation_GetChannelSelectionConfiguration  = 0x01,
+        Operation_GetChannelSelectionActiveChannels = 0x02
     };
 
     enum
     {
-        TlvType_ChannelSelectionConfiguration   = 0x01,
-        TlvType_ChannelSelectionFullDescription = 0x02
+        TlvType_ChannelSelection_Configuration  = 0x01,
+        TlvType_ChannelSelection_ActiveChannels = 0x02
     };
 
     RfnChannelSelectionCommand()
@@ -146,18 +146,21 @@ class IM_EX_DEVDB RfnChannelIntervalRecordingCommand : public RfnChannelConfigur
 
     void decodeTlvs( const TlvList& tlvs, RfnCommandResult &result, unsigned char tlv_expected );
     void decodeChannelIntervalRecording( const Bytes &response, RfnCommandResult &result );
+    void decodeActiveConfiguration( const Bytes &response, RfnCommandResult &result );
 
 protected:
     enum
     {
-        Operation_SetChannelIntervalRecordingConfiguration = 0x00,
-        Operation_GetChannelIntervalRecordingConfiguration = 0x01
+        Operation_SetChannelIntervalRecordingConfiguration  = 0x00,
+        Operation_GetChannelIntervalRecordingConfiguration  = 0x01,
+        Operation_GetChannelIntervalRecordingActiveConfiguration = 0x02
     };
 
     enum
     {
-        TlvType_ChannelIntervalRecordingConfiguration   = 0x01,
-        TlvType_ChannelIntervalRecordingFullDescription = 0x02
+        TlvType_ChannelIntervalRecording_Configuration       = 0x01,
+        TlvType_ChannelIntervalRecording_ActiveChannels      = 0x02,
+        TlvType_ChannelIntervalRecording_ActiveConfiguration = 0x03
     };
 
     RfnChannelIntervalRecordingCommand()
@@ -178,10 +181,12 @@ public:
     unsigned getIntervalReportingSecondsReceived() const;
 };
 
+namespace RfnChannelIntervalRecording {
+
 /**
- * Set channel interval recording
+ * Set channel interval recording channels and intervals
  */
-class IM_EX_DEVDB RfnSetChannelIntervalRecordingCommand : public RfnChannelIntervalRecordingCommand
+class IM_EX_DEVDB SetConfigurationCommand : public RfnChannelIntervalRecordingCommand
 {
     Bytes _setIntervalRecordingTlvPayload;
 
@@ -192,21 +197,33 @@ class IM_EX_DEVDB RfnSetChannelIntervalRecordingCommand : public RfnChannelInter
     virtual unsigned char getExpectedTlvType() const;
 
 public:
-    RfnSetChannelIntervalRecordingCommand( const MetricIds& metrics,
-                                           unsigned intervalRecordingSeconds,
-                                           unsigned intervalReportingSeconds );
+    SetConfigurationCommand( const MetricIds& metrics,
+                             unsigned intervalRecordingSeconds,
+                             unsigned intervalReportingSeconds );
 };
 
 /**
- * Get channel interval recording
+ * Get channel interval recording channel and interval
+ * configuration
  */
-class IM_EX_DEVDB RfnGetChannelIntervalRecordingCommand : public RfnChannelIntervalRecordingCommand
+class IM_EX_DEVDB GetConfigurationCommand : public RfnChannelIntervalRecordingCommand
 {
     unsigned char getOperation() const;
 
     virtual unsigned char getExpectedTlvType() const;
 };
 
+/**
+ * Get actual active channels
+ */
+class IM_EX_DEVDB GetActiveConfigurationCommand : public RfnChannelIntervalRecordingCommand
+{
+    unsigned char getOperation() const;
+
+    virtual unsigned char getExpectedTlvType() const;
+};
+
+}
 
 }
 }
