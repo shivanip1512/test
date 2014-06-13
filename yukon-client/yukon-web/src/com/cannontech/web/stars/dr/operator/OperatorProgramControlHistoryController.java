@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.AccountCheckerService;
@@ -37,7 +36,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @Controller
 public class OperatorProgramControlHistoryController {
 	
-    private static final String viewName = "operator/program/controlHistory/controlHistory.jsp";
     @Autowired private AccountCheckerService accountCheckerService;
     @Autowired private ControlHistoryEventService controlHistoryEventService;
     @Autowired private DisplayableProgramDao displayableProgramDao;
@@ -49,18 +47,7 @@ public class OperatorProgramControlHistoryController {
         int accountId = accountInfoFragment.getAccountId();
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
-        boolean isNotEnrolled = !enrollmentDao.isAccountEnrolled(accountId);
-        modelMap.addAttribute("isNotEnrolled", isNotEnrolled);
-        
-        if (isNotEnrolled) {
-            // If there are no programs enrolled, skip retrieving the current enrollment control history.
-        	return viewName; 
-        }
-        List<DisplayableProgram> currentControlHistory = 
-            displayableProgramDao.getAllControlHistorySummary(accountId, userContext, ControlPeriod.PAST_YEAR, false);
-        modelMap.addAttribute("currentControlHistory", currentControlHistory);
-        
-        return viewName;
+        return "operator/program/controlHistory/controlHistory.jsp";
     }
     
     @RequestMapping(value = "/controlHistory/pastEnrollment")
@@ -74,6 +61,24 @@ public class OperatorProgramControlHistoryController {
         modelMap.addAttribute("previousControlHistory", previousControlHistory);
         
         return "operator/program/controlHistory/pastEnrollmentControlHistory.jsp";
+    }
+
+    @RequestMapping(value = "/controlHistory/currentEnrollment")
+    public String currentEnrollmentControlHistory(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
+        int accountId = accountInfoFragment.getAccountId();
+        boolean isNotEnrolled = !enrollmentDao.isAccountEnrolled(accountId);
+        modelMap.addAttribute("isNotEnrolled", isNotEnrolled);
+        modelMap.addAttribute("accountId", accountId);
+        
+        if (isNotEnrolled) {
+            // If there are no programs enrolled, skip retrieving the current enrollment control history.
+            return "operator/program/controlHistory/currentEnrollmentControlHistory.jsp"; 
+        }
+        List<DisplayableProgram> currentControlHistory = 
+            displayableProgramDao.getAllControlHistorySummary(accountId, userContext, ControlPeriod.PAST_YEAR, false);
+        modelMap.addAttribute("currentControlHistory", currentControlHistory);
+        
+        return "operator/program/controlHistory/currentEnrollmentControlHistory.jsp";
     }
 
     @RequestMapping(value = "/controlHistory/completeHistoryView")
@@ -126,8 +131,7 @@ public class OperatorProgramControlHistoryController {
     
     @RequestMapping(value = "/controlHistory/controlHistoryEventGearName",
             method=RequestMethod.GET)
-    @ResponseBody
-    public String controlHistoryEventDetail(
+    public @ResponseBody List<String> controlHistoryEventDetail(
             @RequestParam(value="programId") int programId, 
             @RequestParam(value="startDates") String[] startDates, 
             @RequestParam(value="endDates") String[] endDates, 
@@ -147,7 +151,7 @@ public class OperatorProgramControlHistoryController {
         
         List<String> gearNames = controlHistoryEventService.getHistoricalGearNames(
                 programId, eventStartDates, eventEndDates, userContext);
-        return JsonUtils.toJson(gearNames);
+        return gearNames;
     }
     
 } 

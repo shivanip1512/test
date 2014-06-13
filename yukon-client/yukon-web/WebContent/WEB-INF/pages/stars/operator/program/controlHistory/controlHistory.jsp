@@ -6,18 +6,16 @@
 
 <cti:standardPage module="operator" page="controlHistory">
     <cti:includeScript link="/JavaScript/yukon.assets.controlhistory.js"/>
-        
-        <div id="programs" class="f-block-this">
-            <div class="clearfix stacked">
-                <dr:controlHistorySummary displayableProgramList="${currentControlHistory}"
-                                          showControlHistorySummary="${true}" 
-                                          past="false"
-                                          completeHistoryUrl="/stars/operator/program/controlHistory/completeHistoryView" 
-                                          titleKey="yukon.web.modules.operator.controlHistory.currentEnrollmentControlHistory"/>
+    <div data-account-id="${accountId}">
+        <tags:sectionContainer2 nameKey="currentEnrollmentControlHistory">
+            <div class="clearfix stacked f-block-this js-current-enrollment-history" style="min-height: 50px">
+                <i:inline key="yukon.common.loading"/>
             </div>
-            <div class="clearfix stacked js-past-enrollment-history">
-                <input name="accountId" value="${accountId}" hidden="true"/>
-                <a href="javascript:void(0);" class="js-show-past-enrollment-history"><i:inline key=".viewPastEnrollments"/></a>
+        </tags:sectionContainer2>
+        <tags:sectionContainer2 nameKey="previousEnrollmentControlHistory">
+            <div class="clearfix stacked f-block-this js-past-enrollment-history" style="min-height: 50px">
+                <i:inline key="yukon.common.loading"/>
             </div>
-        </div>
+        </tags:sectionContainer2>
+    </div>
 </cti:standardPage>

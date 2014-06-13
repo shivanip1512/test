@@ -1,8 +1,8 @@
 /**
  * Handles display of gear names in control history detail popups
  * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
+ * @requires JQUERY
+ * @requires JQUERYUI
  */
 
 yukon.namespace('yukon.assets.controlHistory.detail');
@@ -19,10 +19,11 @@ yukon.assets.controlHistory.detail = (function () {
                 return;
             }
             
-            $(function () {
-                mod.updateControlEvents('PAST_DAY');
-            });
-            
+            mod.updateControlEvents('PAST_DAY');
+
+            /** This function gathers control history start and end dates from all of the detail control events 
+             * contained in a single grouped control history event.  It passes the start/end dates to the server
+             * where the historical gear names are retrieved up and returned via AJAX to be displayed in a dialog.*/
             $(document).on('click', '.js-show-details', function (ev) {
                 var link = $(this),
                     popup = link.data('popup'),
@@ -35,51 +36,46 @@ yukon.assets.controlHistory.detail = (function () {
                     link.data('popup', popup);
                 }
                 
-                programId = popup.find('input[name=programId]').val(),
-                popup.find('input[name=startDate]').each(function (index, item) {
-                    startDates.push($(item).val());
+                programId = popup.find('[data-program-id]').data('programId');
+                
+                popup.find('[data-start-date]').each(function (index, item) {
+                    startDates.push($(item).data('startDate'));
                 });
-                popup.find('input[name=endDate]').each(function (index,item) {
-                    endDates.push($(item).val());
+                popup.find('[data-end-date]').each(function (index,item) {
+                    endDates.push($(item).data('endDate'));
                 });
                 
-                $.get(yukon.url('stars/operator/program/controlHistory/controlHistoryEventGearName'), 
-                        {programId: programId, startDates: startDates.toString(), endDates: endDates.toString()},
-                        function (data) {
-                            var gearNames = $.parseJSON(data);
-                            popup.find('.js-gear-names').each(function (index, item) {
-                                $(item).html(gearNames[index]);
-                            });
-                        },
-                        'text');
-                popup.dialog({width:650});
+                var params = {programId: programId, startDates: startDates.toString(), endDates: endDates.toString()}; 
+                $.getJSON(yukon.url('/stars/operator/program/controlHistory/controlHistoryEventGearName'), params)
+                    .done(function (gearNames) {
+                        popup.find('.js-gear-names').each(function (index, item) {
+                            $(item).html(gearNames[index]);
+                        });
+                    });
+                popup.dialog({ width: 650 });
             });
             _initialized = true;
         },
         
+        /** Retrieves a collection of control history event data for the control period selected by the user
+         * and replaces the contents of the program control history detail view with the new data set  */
         updateControlEvents: function (controlPeriod) {
             var accountId,
                 programId,
-                past;
+                past, 
+                data;
             yukon.ui.elementGlass.show($('.js-control-events'));
-            accountId = $('input[name=accountId]').val();
-            programId = $('input[name=programId]').val();
-            past = $('input[name=past]').val();
+            accountId = $('[data-account-id]').data('accountId');
+            programId = $('[data-program-id]').data('programId');
+            past = $('[data-past]').data('past');
             
-            $.ajax({
-                url: yukon.url('stars/operator/program/controlHistory/innerCompleteHistoryView'),
-                method: 'POST',
-                data: { 
-                    'programId': programId,
-                    'past': past,
-                    'accountId': accountId,
-                    'controlPeriod': controlPeriod
-                }
-            }).done(function(data){
-                $('.js-control-events').html(data);
-            }).always(function() {
-                yukon.ui.elementGlass.hide($('.js-control-events'));
-            });
+            data = {'accountId': accountId, 'programId': programId, 'past': past, 'controlPeriod': controlPeriod};
+            
+            $('.js-control-events').load(yukon.url('/stars/operator/program/controlHistory/innerCompleteHistoryView'),
+                data,
+                function() {
+                    yukon.ui.elementGlass.hide($('.js-control-events'));
+                });
         }
     };
     

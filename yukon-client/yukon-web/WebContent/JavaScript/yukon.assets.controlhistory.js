@@ -1,8 +1,8 @@
 /**
  * Handles loading control history event lists
  * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
+ * @requires JQUERY
+ * @requires JQUERYUI
  */
 
 yukon.namespace('yukon.assets.controlHistory');
@@ -16,21 +16,22 @@ yukon.assets.controlHistory = (function () {
             if (_initialized) {
                 return;
             }
-            $(document).on('click', '.js-show-past-enrollment-history', function (ev) {
-                var accountId, 
-                    link = $(this);
-                
-                yukon.ui.elementGlass.show(ev);
-                accountId = link.parent().find('input[name=accountId]').val();
-                
-                $.get(yukon.url('stars/operator/program/controlHistory/pastEnrollment'), 
-                        {accountId: accountId},
-                        function(data){
-                            $('.js-past-enrollment-history').html(data);
-                            yukon.ui.elementGlass.hide(ev);
-                        }
-                );
-            });
+            
+            yukon.ui.elementGlass.show($('.js-current-enrollment-history'));
+            yukon.ui.elementGlass.show($('.js-past-enrollment-history'));
+            accountId = $('[data-account-id]').data('accountId');
+            
+            $('.js-current-enrollment-history').load(yukon.url('/stars/operator/program/controlHistory/currentEnrollment'),
+                {accountId: accountId},
+                function () {
+                    yukon.ui.elementGlass.hide($('.js-current-enrollment-history'));
+                });
+            $('.js-past-enrollment-history').load(yukon.url('/stars/operator/program/controlHistory/pastEnrollment'),
+                {accountId: accountId},
+                function () {
+                    yukon.ui.elementGlass.hide($('.js-past-enrollment-history'));
+                });
+            
             _initialized = true;
         }
     };

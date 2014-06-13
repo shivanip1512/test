@@ -101,10 +101,12 @@
                                                                                 </c:otherwise>
                                                                             </c:choose>
                                                                             <td>
-                                                                                <div class="js-gear-names"><i:inline key="yukon.web.components.controlHistoryEvent.loading"/></div>
-                                                                                <input hidden="true" name="startDate" value="${detailEvent.startDate.millis}"/>
-                                                                                <input hidden="true" name="endDate" value="${detailEvent.endDate.millis}"/>
-                                                                                <input hidden="true" name="programId" value="${programId}"/>
+                                                                                <div class="js-gear-names" 
+                                                                                    data-program-id="${programId}"
+                                                                                    data-start-date="${detailEvent.startDate.millis}"
+                                                                                    data-end-date="${detailEvent.endDate.millis}">
+                                                                                    <i:inline key="yukon.web.components.controlHistoryEvent.loading"/>
+                                                                                </div>
                                                                             </td>
                                                                             <td><cti:formatDuration type="HM" startDate="${detailEvent.startDate}"
                                                                                     endDate="${detailEvent.endDate}" /></td>

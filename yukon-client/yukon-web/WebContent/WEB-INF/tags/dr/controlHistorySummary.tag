@@ -2,7 +2,6 @@
 <%@ attribute name="displayableProgramList" required="true" type="java.util.List" %>
 <%@ attribute name="past" type="java.lang.Boolean" %>
 <%@ attribute name="showControlHistorySummary" type="java.lang.Boolean" %>
-<%@ attribute name="titleKey" required="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -37,7 +36,6 @@
                     <c:if test="${showControlHistorySummary}">
                         <tr>
                             <th colspan="3">
-                                <i:inline key="${titleKey}"/>
                                 <cti:icon icon="icon-help" classes="cp fn f-help-${uniqueId}"/>
                             </th>
                             <th><i:inline key=".day"/></th>

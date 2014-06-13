@@ -5,19 +5,20 @@
 
 <cti:standardPage module="operator" page="completeControlHistory">
     <cti:includeScript link="/JavaScript/yukon.assets.controlhistory.detail.js"/>
-    <input name="accountId" value="${accountId}" hidden="true"/>
-    <input name="programId" value="${program.programId}" hidden="true"/>
-    <input name="past" value="${past}" hidden="true"/>
     
     <c:set var="controls">
         <i:inline key=".viewTitle"/>
-        <select onchange="yukon.assets.controlHistory.detail.updateControlEvents(this.options[this.options.selectedIndex].value);">
-            <c:forEach var="controlPeriod" items="${controlPeriods}" >
-                <option value="${controlPeriod}">
-                    <i:inline key="${controlPeriod.formatKey}"/>
-                </option>
-            </c:forEach>
-        </select>
+        <div data-account-id="${accountId}"
+             data-program-id="${program.programId}"
+             data-past="${past}">
+            <select onchange="yukon.assets.controlHistory.detail.updateControlEvents(this.options[this.options.selectedIndex].value);">
+                <c:forEach var="controlPeriod" items="${controlPeriods}" >
+                    <option value="${controlPeriod}">
+                        <i:inline key="${controlPeriod.formatKey}"/>
+                    </option>
+                </c:forEach>
+            </select>
+        </div>
     </c:set>
     
     <tags:sectionContainer2 nameKey="controlEventsTitle" controls="${controls}" styleClass="form-controls">
