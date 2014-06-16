@@ -1,522 +1,291 @@
 package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
-/**
- * This type was created in VisualAge.
- */
 
+import java.awt.event.ActionListener;
+
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+
+import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 
-public class LMTriggerProjectionPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
-	private javax.swing.JComboBox ivjJComboBoxType = null;
-	private javax.swing.JLabel ivjJLabelType = null;
-	private javax.swing.JLabel ivjJLabelAhead = null;
-	private javax.swing.JLabel ivjJLabelSamples = null;
-	private javax.swing.JComboBox ivjJComboBoxAhead = null;
-	private javax.swing.JComboBox ivjJComboBoxSamples = null;
+public class LMTriggerProjectionPanel extends DataInputPanel implements ActionListener {
+    private JComboBox<String> ivjJComboBoxType = null;
+    private JLabel ivjJLabelType = null;
+    private JLabel ivjJLabelAhead = null;
+    private JLabel ivjJLabelSamples = null;
+    private JComboBox<String> ivjJComboBoxAhead = null;
+    private JComboBox<Integer> ivjJComboBoxSamples = null;
 
-/**
- * Constructor
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public LMTriggerProjectionPanel() {
-	super();
-	initialize();
-}
+    public LMTriggerProjectionPanel() {
+        super();
+        initialize();
+    }
 
+    @Override
+    public void actionPerformed(java.awt.event.ActionEvent e) {
+        try {
+            if (e.getSource() == getJComboBoxType()) {
+                this.jComboBoxType_ActionPerformed(e);
+            }
+            
+            if (e.getSource() == getJComboBoxAhead() ||
+                    e.getSource() == getJComboBoxSamples()) {
+                this.fireInputUpdate();
+            }
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
 
-/**
- * Method to handle events for the ActionListener interface.
- * @param e java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void actionPerformed(java.awt.event.ActionEvent e) {
-	// user code begin {1}
-	// user code end
-	if (e.getSource() == getJComboBoxType()) 
-		connEtoC1(e);
-	if (e.getSource() == getJComboBoxAhead()) 
-		connEtoC4(e);
-	if (e.getSource() == getJComboBoxSamples()) 
-		connEtoC2(e);
-	// user code begin {2}
-	// user code end
-}
+    private JComboBox<String> getJComboBoxAhead() {
+        if (ivjJComboBoxAhead == null) {
+            try {
+                ivjJComboBoxAhead = new JComboBox<String>();
+                ivjJComboBoxAhead.setName("JComboBoxAhead");
 
-/**
- * connEtoC1:  (JComboBoxType.action.actionPerformed(java.awt.event.ActionEvent) --> LMControlAreaTriggerPanel.jComboBoxType_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC1(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.jComboBoxType_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+                ivjJComboBoxAhead.addItem("5 minute");
+                ivjJComboBoxAhead.addItem("10 minute");
+                ivjJComboBoxAhead.addItem("15 minute");
+                ivjJComboBoxAhead.addItem("20 minute");
+                ivjJComboBoxAhead.addItem("25 minute");
+                ivjJComboBoxAhead.addItem("30 minute");
+                ivjJComboBoxAhead.addItem("35 minute");
+                ivjJComboBoxAhead.addItem("40 minute");
+                ivjJComboBoxAhead.addItem("45 minute");
+                ivjJComboBoxAhead.addItem("50 minute");
+                ivjJComboBoxAhead.addItem("55 minute");
+                ivjJComboBoxAhead.addItem("1 hour");
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJComboBoxAhead;
+    }
 
+    private JComboBox<Integer> getJComboBoxSamples() {
+        if (ivjJComboBoxSamples == null) {
+            try {
+                ivjJComboBoxSamples = new JComboBox<Integer>();
+                ivjJComboBoxSamples.setName("JComboBoxSamples");
 
-/**
- * connEtoC2:  (JCheckBoxPeakTracking.action.actionPerformed(java.awt.event.ActionEvent) --> LMControlAreaTriggerModifyPanel.jCheckBoxPeakTracking_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC2(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+                for (int i = 2; i < 13; i++) {
+                    ivjJComboBoxSamples.addItem(i);
+                }
+                ivjJComboBoxSamples.setSelectedItem(new Integer(5));
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJComboBoxSamples;
+    }
 
-/**
- * connEtoC4:  (JComboBoxNormalState.action.actionPerformed(java.awt.event.ActionEvent) --> LMControlAreaTriggerModifyPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC4(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+    private JComboBox<String> getJComboBoxType() {
+        if (ivjJComboBoxType == null) {
+            try {
+                ivjJComboBoxType = new JComboBox<String>();
+                ivjJComboBoxType.setName("JComboBoxType");
 
+                ivjJComboBoxType.addItem(IlmDefines.PROJ_TYPE_NONE);
+                ivjJComboBoxType.addItem(IlmDefines.PROJ_TYPE_LSF);
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJComboBoxType;
+    }
 
-/**
- * 
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private static void getBuilderData() {
-/*V1.1
-**start of data**
-	D0CB838494G88G88G2FD50FAEGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E155DB8DF4D555154611BACCE535E9252DCE51B208DD28E831B24AEA1996EDEC31E225EBA02243E82C28F40AAE3A0A9D5420A7AFBF0F1FC082899AA010G8102041717BFFEDEA29292C2FE9E64A5F944A881F213F713BCF8FF5EF7C39220BAFB1FF34FF9B7AF77A586072E192C35F36F7976B97B6C3D4FBE671E336FFDA4A3FBD2D23CA9031078A4227D9D0AA7E4ECA5A1D3FFF9E1B3475A5FDAE0A63A3F9D
-	C09B485C5309F08DGAF25BC461CC63E3DE6951447C23964E00C798338CFA78BEDD34A61A6C2BF570077E3773372707DD46D677D18E9790B3694382E879A8758B42095C0E9647BED199ABE8F4A6B35FB24F893E0EFE39D1BA3D307173F4D6ACD016BCC20796FE01D075A32B4FEA6142DC0D1C0D35EE1F5E741F5B5556E9B3643DA3D366FCCA54BFFFB44348E7B5249671495475A9E532EB964B16A088472595ECFD18F47256E231DFE2F25D372797CBED56E6C3138BAE417DB75AB16BE7795C9F1D9DC72E5F727EC
-	71F8BB21026277C80AAC59EC76D3152CD881C527626E6E1615D3FE173BEB40A179E48F481E9E07B635BBD6517E886907F279CA4496BA500F4B211C82655C155C2E5F2FAB57741EF0E9AA093DBBBF22DDE3D6EA7EDB9932AB6B2E0EA4673BA87FF9BACE58EEB17033GE3B6EF69E87A1AB6EB06BA947FC539D3F57BFD1A314C561D67382D373F4BED3D3396F5198765A5C064BD0E3B6A904F0432952866BD6E030F76F29F34DEFD144C7D452F93D3A378207DBDE67B3877C2BE080A6AC85ACCE3F5DEBE46DBB47016
-	G458165109873B120F6202DF40E5C3A7FC338D6F42815FE2F576F2B88840EFBDCB80A32876EEDB660E8D8135C69D7DC0430F9A0BB728D7461548F7243B1E65BA704476D34268749AC6FEF92138CEC1B31204CB4DE13B1C93B22ED4B884EF535917DB69B6E63298D04B07C960A174407F0968BAF50D843328BF84494237939F5BD57451EB81924951EB7198DF4397D71E653C49353E106A9248B7371FD9674F1AC60F1C09989B166FCA0BB10A7017BF8417E6211FCDC8BB12878A4CFF3EFC7C0D254633DEE0FCBD6
-	B4DF47368D67EBA3E26D5E98F5BB661729457AB1DA7470B9C33FAC1AFA5CB4AEC19B230410DFD85FFB4FC56AFBF6425058D8AF46F0831D9373935898A688FCAB45976BF0B636F7533905656540EBCD0CB1337A8BE97DD9092C3ED948D94C646BF0A667A245313C94F80E2498B39B5F9AAB2E47B320BC8FE88990C90EB167G1583B9127998676497FC45F964500DAFEB7BDC7E7BF0157BD5C52A7585D54957A937C80ADB6A7048C1225579C3BE6A56B1285DEBF4FEF7C29FA7E51F2CC8ECB1D2A42F8C4194E4F516
-	65EF40BA30F6A15769764A5001B7C0385C9579B8AFBCD2D0BD93F0C92A9C2A417864G4644E52985A402G9C6BE47463B53A268760FEFCB277D5EFA1E20B219CA77CF27540C63856C3F04B9E1B2D4ACDD7CCC99960B1FA25B1972EE96698F3B410E3D50CB996A830BA46DC32864692E8625A98F3EE8A1F33EF3472582CDA77G49DF50E6981BB4F6D3D81CC527044766F85A67D240D35641FC853283F9004683CD831A8B34940855DF6C088A131D2669EA9447E8876A9FE90E21DDDFF5BEF25B697C5035C39FB15D
-	56B6066B1620453111BCDCEB578E535F3A2F2857FA5AB7DBD371BED50763B831F8F8398867D44A7A98F39ED04DFA9E930F9C48E1F365389414796CE8D0A030E5D7A8C2D85D07ADA8DB3EAC7B54AAB9A07BDCF09354E273E7165521F9536597B1BD1B62380ED6C2E087857EEB4B8606038C7DAC647C5FD13E242A0A3B23D7151BE5D5F57B3AC36DE328AE41C1CBF4D0337515E234359DEC6C879AA7EC3DD0102E0BFF3B5FFF29B76044192D4D2323F43FB0916A4FD84F477403BA5CF3AE94659D349C625FDB5BBA0A
-	F17A2A047D051E9D0F5F10BE92087E7974C29D5F23E5EB3149707F22F89C68131B8AF3B3155B9D28EBA521391EF49D7DE78F43E3FD7C936DC32F67E87B98CEAF9693CD5648B17D2955B826AFD80DE3DA368E9F33DE2BD14CB21EEAC5DD7DFDBE5D9C983062FA8DDBDE9F5B5C0AA6046D1F5FF0229DEE1FDB7D446D6A1655E67795B8C1CDCC45D83E0DBE93D4389F174A576B3EDDFC3D4E3DF2AF19FD611049E83FF77BBDAD2658D496FF4BD3C36BB55369CAA146036C113D6028CAFF2FCFE578987A3C5170E08245
-	7E53F78F364D2B0367F0077F383F5FB9901073A5EA0B05DD9C325265D73C32AB6F22F4D932C8FD2A050E05250232CF607D3E1C83870E660CF040493F286F64C2C518F4FBE471E57BDA76D935B8CBA7EF56FF41F4F64238D73BE50F4B592348419E3F47155F892B15EA217F59831AAA5DEF897641B0EB02AB11BB8A353B5C0ADC6B8B74F20920CC8957455DFBF318AE275C3EA65892B4F4F585E5756F25CFE109264F4BC5B78F9E4F5360DC58A72BD071C68D2B11BE251ABE25679F51746911BBAF01BE8ED93A64D4
-	244ECBE07F0D0BB3034EC69BEFC5E20C1FE8FC0059F03CD7D5C102B8495EB07D43BB9A2D6E25E22EDC2E3B6BFFF3FE9B9F663F7644E63ABE693DF683E2B7024A06C14B7478F6D9E4BD8A7F9E0A9431BD522ED2DC47B352E0BF88F4AC0D6F11628A114F77C85AC630526F71B031401B19064F17A79AB3F44F0CD640B07FB6852E0CDF5DE444A79BB87FB7067C8C412FE9B66267897E13067CF2412FF39A719D027F14A15FA57876B3C67CFE41FF5A10BFFE8377639F0B5270D9AFFF5EAB439192B7197572GBF8796
-	ED8C6335C81E5E5079F2C5911E8BBC3A7DA9437FD4EC7C6C7DF3B16EC9AF8979EF96A793BCA7B219EC2FB0DDC21981456D056DBCEE3835BC6819F37ABC68A4509FF32631F0DD8E44E2F68141BA1102EC6EC6744736FA1EABCD01F2AED055C6A6EB6CC63607E075DE9275B253E34CD6A0C7BA2B97152E2FF73901571B8E789C20A5E17572B2305EFDA21FD9A03047A87697F04256A41EC7B915264F51364537A49B6DFD10BC99CC7E180C707CD26BC114BB89706999FC1C7DA57AB3C5C5B0686FF453633DB6E67BCA
-	757BA206D9CA57409566E6D02D058DE7BF9F7712D254954F7F9A2C0D5D7D7BBFA2C37399A7E806149F59AA7B68FA6074D77ADDF28D04CE2558B6363865BE42F322F10D5CDF5199FCDF7837EAFD1EF7D6EA15E9ED845F44E9BE495A9472CDDED4C792137D37A6AE3B8D788CFBD7E0938476E5B347668A0CB8B91678BE47EE92D83940CCE7B8268A6CE601CD93D8E28B479683467CF8078DF3FFC67966CE6AD8CBF72F5B522B3AB1B9A22992DDB8D9C219497CA5BD9F6239BC6B0398ADEFBC5306F3F28C14EF871A8E
-	44F2D85575A95A784D810CE472F56325AB7AF563F0A6BBEB36E7723976C0FD91DCC77F9C6031E2B363D8FE1DE7A60B09496947B49D67BEB81914FF395BE414779E17DAE0D2B3D9ACCC4C8C45C4EE39B3F9D6D127167FDFE3673ED882F5F2B6F3DF5CD1E6640B564D5C97479B3E1EAF2277EDE473AC6C9948730CBFEA60FAF9204FA9C2AFA5E82457A221D73263FA7552726EC57A35E8F6EC2561B98CE959E6665344AD61EBD179E10C459C40CB36703568A7259BF4EBD1934CFE49576D4117EA0CFF6EA06A8F4F89
-	2DAC9D44FE69F30270B3F7FC53E87254B5DBF83EF160887A2C8D4A7DC0D1C0D30166885D169C9CB16FFE22FF183C7BBF0CCA2FA5DBF81EA221F9B46D62C43B3123EA17361537CBF20E26DD2EE8F74B285A9D966D4CE7C6534EAE5A0D9BD53BF651EEF54BE85A2922DD74B94C650C5B2A2D95F01D3EF5645CEB34C11D0500AD8D43597B84EB994EE712455EA72C937847944F5561EC7E7F022E5DD82E815E0CAC2E2B3DBE5C461CED037BAB8FAB33F61F8DE937BD5C0FE16D58BA556D41B9C21FCB3A833C4DA64E88
-	5A73A7732AF8F73B0D4F3BE7EC38CF1A8E6539C00B0148F658FF819D83F2ED67736F50A123BD44607997E983914A4DB2BB536C57671F6DC35AD9424AE3378FEE476C1ED7466D1E381D0F51BD8D57274343C35A056BB05FD007FB03DC07255B396FD34B914B4D06B5B81B7BF942A10CA73E86BB7CEE1FCA787ADBF1987765FE58C53BFD9C2B26D827DF2109BF16074E24FB26AA1059AE645EF4A4F21EF25C9163BC65370E9867A9A79C99BE77BE71C824BCA6536F8E211F8A4430AD4D9C9BA7309F8AEC2240321C9C
-	1BAE30BB8596AD306DE7B836D0E0BF9258D2016534F00C64F06CD53ACF4B00F23E40CE1DC76CB0146D82D31368FBB3A80F95588F4C08CD05F23440B24EA236904A4B84D65AC67B5881FD6C60B1F9308C4FC947205C8A2482C581CD830A96F5CE50BA31BB5899096CE4E7201C1D6C0C232D153676301824EB690E21EBE12BA6FB1A46BBE6D0A71C22F6685FAD3CE85817D12E9D57AA0CED7E4EAAE104FE10D6EB57ED347E136F2752388B8665A0DDECF0172D71DED3B79103DC77E949AB931E433939FE35D667046A
-	2FAC94B6EC3BBA5CB369584E21BE515E755AA24F29D81B711CFA5506BE887AFB15CEB9FC5E3CEE4B943C506AD92B4ADEB4035579ABED2FCACA37BCE45E2D246D99AFD27B6432C8F313796824DD6F2392612385E5437948E960A3A6EFD103DEDE111077E0F0B8F9BD91FD1ED10E4F60FED14E246581421F05F245FA610393BE17360032F3FD81DDF74C09041CA09C1BCE31B7C159FB84D6C8571DAF81FBD6E0BF25581FG7BC7019553F5A79E647DB11EE3B3A8768C54F38B2C142EBB87G7BC834FD04E2EF19G97
-	758E513528906A7DC478EF65B91CAF2A5F6FF13A831847A75740B7F0AABCCEC49D57F9FC86F478959A8C47F6212C2B67F9DEE6B654DF881481F85EAE66D7566E56A4EC6711867C3DAAEFB7B909379B8765C9C0F300968DEA772099E3B02048DD322248AE765A086467523C9CDD7F16C3FD124B4F4D8F75218DDD0A6405D0EB8E481DA4F1B7565DFF167795003AE30126GC583AD4E65E7A5FB9B360506EEEF2F1776447AF15175538EF2DAF70BBC53BA4C0B5459258E590387D72E6FB7691C9914E59636242FDEA7
-	5AB4CB5EG7DCCC363ADA9D92FEFD751A3CBAE4E0BB93DD634E38C0647FD1C26EF2309E467422B034E2BE3F733F361545D7C5C58FA5608BFCB70DFCCB7624F5B4D1FA9A5D779F3E631401616F12CE48F471E88F2EC6C9E1E43F9662C7ECC19764F45A61CD7C6E74A79FBD8AC446E891DA9356FF74E736FF7B27642F3F2AF9F7FFFDB036F473ED25E4469D6BD72F19A49EC5FD4FBE115B637476E65B913FFCF245F83C1F9BE50523D5C067EBDBC8FB56D471309FD4CB9436F8DE31DD52644BCAD87189732E1CA947F
-	5E7037C97CDD368B789373389D056DD9C4374F46D33A4DF6D2F13B0ECB5DF6BA0B184EF312D7E96D6767F11D7F1ACC3F1F58874FED20F2A0B60FDF298A4D6355E7F3606A137BF2C492204A6D15FD7831CEDE3135B8BF2770C849BEE66B24BE7DF89DDED39BB187605C47EC6C512E9397F862191E0DE7391E130037F09F46461703E29075FA0930BDAE63BFB4080F4F12ED0378AF8F62232E59A6BDFFD31B1E0FBA6F555AB33B1E5A4D47B06E296944732F75913F994D791059D325DD2DD3BC718B4FF5A6B13FFE3F
-	BA64579F5A36C776EB21955CEA95B91F3FF4E5924333941D694CEFBF25F38A1FE357BE647942EF1F65588C013D1F41312500356EC77B6B2FD699582277C7020EF2214DE120DD9A4F8E77FE4D9FCCDEC279C8724CBAF91342644D98A2EFD1F0A4F9FA9DE707491B2F13474EB815A7F19C5833BA25F2B7DCDB240B069968BAF0F7C3873E99F0CA5D046F934C97C64A97446EB7BA27ED9A31DD78591A35BBCD5B456D9FF99F0C14164F3FD1BCC9570C5CFC16A3C0E2380362D69D4E56186792799AD38E3CC9797CCC68
-	2B4178CBBCGFBFA2043C08E20G5078837CAC672C4475F4583338539F3043465423BB1EE9F922646B7B7EF442F536FBFA546D185FAE1A51BF138E047BB3C871E987427D99174C7DB993F8D9966E4F6F56629C9C836509966E3F8FCF6C0F9407GBA94FFC0D654810652B7EB1AADADE72F6F9B5C474CFCCD1B71337B484CDB56C6FCBFB24B4262EE11F61DB359930FD7E6CBDC9D46C6CA816C63006CC0AE20FE202882EE5B67A772D9EC207A952AAAF57650B7C7BCB070E5CE88464D98336D51C17B7BA9852C7F19
-	5AF5EE415079204545A01F44EA7516EB57D556C86D36E6685BE5E9752C5A354A20DDB6E15FA82EA27CEF5947C3B1226D0FDF3393617F17D2387F336E3F1BD4BD3B5634AB027FDB35FE27DAC37B8272D4E712D15F2C1F4653A402EE0C7FE583165899F5F6BABE4B5CBE0F5BA7D732AFFD894F0948F41F938B7D2E3072FD5A59C444D28AE1ADA864E77BD374F7AFDABC6A6EDFCC3C915F788D9E3395B7348F963FFDB5114F54DF54981F2947569867293ED9B37C77F45F2D097CBD5D9DB57A6F6934EF964DA1FF8F68
-	6ECD669B6F7B2DB7348FE6738FEA576B7D4516BE0DF7D7AD6E5B70DBC13764F1DF212F281B21222F1B2DCD8D8E6467C31C56GF90046GCDA8646B524E3A1D042ECB86EB5289D7B766BB70EBF9157717D49FB98ED26AC77E46FED3BD1E85BB7C2A6A7722FC0EEF2DC7FF2A7EG85356F7DE9DEC8F1F777282C2A066F29477967113BA84C66646F685EEFBA58B53B104FD34BD14466C3F93140EEBBAAF2FE823B7FACEFFB2C08E315593C2DD3E0D332F95BF60195513D64F4A84F96582FAE5236D0DEAC3062CB225F
-	A27E8CFC209177F4470AE34CEDC0E300EE871A86948D3490E8A990A909B1E782D9012A00DA01BCC057002200261470314CBF855B65084FCF6DC0C487D411D87E1A6D432FDDC0BF2BF8442B76D31C1D65A75035EFA6480FAE61E7F9057E160856A5FCCD3F2B190831794491B9BE4EBBC60E0FEE7A0D078C630A69G06F99CB43FCEBF0E6475BEF724892CB66870875D9879CC47D74A703B19AEB00559718E0D0D65E083A965F61CB80AF5D4D00659701893EDE0FB6D7B0E8E3757CE8823433A3DB6BE3B2C5047916D
-	1E75BF1F46D7B960B5257CFC797619D0FFBF4F9E293F24E17A6B87197CAC46EC2B4D98EC7F859A23E321DE14307F790B036D4F7BA424CF5D251174B18F234FEC68E32FF64F466A314648B1B127F1641878FD23711A71EC6350B5E3D123711A7107C67D1A217D3627917D5A8D7322D554DBAA30CF8576E7AA9331CF5CAE35C7607FCD75C23CC6468EC53E176A55C731D68DB3B50530CFB54C5C04F18DA6777895F196EB22E36776F8D8B90D56F17BA04CC3EBE8936A688EC8BA3D37886CD3B1AFCB5B08080906C4DC
-	67871D35F12E676DF441F3435F3DB3BF874F5BA57BF85B1876D05B1DC7C75776AD09889D5ADDA1B90732C7A767E6B9A467456E101CC7AF0ECE0E490DED596F15B36DF341D153DEA7C9B0DCC105EC9C1AFA287856F34FCE3BD015E1A226DA125CC3072C16A475615877632F3A9E0760AE88FECE3E20B10EB13086A4258AC935F434E2AF975B92DE3EBB41C492C18C0B5EDA1208A1885294A6B58122174A64B38ACFA089D4F6228E45BECC82B569D1152C89FD382712A4DCB6EDAAD925E5B861B61966C1ED20623AC1
-	7EFA62DFCADF1D7BC2CBB001A457124D38DCB44B8A5DC548AEFC03237D9C2D1A2C8EE0369E133C20FF10DE12026A00C736130C2EA67C5CB1284A2E8A3EBF892AE4937D9429GF30785B5D230C74579DCE6A709BE7C619C5948589E4957DD40B6ABE554897195B46A68B2030313CE75C5A996A1A57D67293BF754AD1E19C0CC55E40D47AF392A25CEF84C551255AA7F223FBF7071B1AAE8D55FAA61D305EC95662331964C5A8B25AF755FB9FE5D12F555605BFE0594501A38BADAC48DD7E50F24C0D732D22B628F81
-	7DCA2E605D34DD5D7374498F5ACCA4DEB39247EAFDFFC0E58E936101A6DB2AC1EB7579571F1C7C9F654B16C213EA12C4BF56010E53C235CE77FABBE46516E95F5B36F6C26C2D28D7G5DC323E0A30CEA1764F5FB8660260AC6BD47D743CA6A8B62C7CB50E9CE18451CA594375C762475FB773E7D99D5BC54D4A559EC0820E9C1376C7796D4F4F54169C888007182715B04F82CE3892B33317FBB1B6A963C578171D5C5923CD6AB7DDFC87F97617FC20A94D224308886ED999976AF1C5F5F0FB6EF6D2726278C099F
-	C45306868242991479BED6471B4D420BD84A224C6D747F0E6B53E9CF3F182C38AC73F4EE427FBDCD8F7C3F5134A40226AC17306FCBFD5EFD45B7BE0C18F7F714339C022BBC7C5B3BDFB5506F00811FD54E7754698D87C8645CE833D772F8D449F329426742BC697181D58E1DE367B4207CA02F23B1996F997A7E75222E4D7FGD0CB8788F785DBCC7E96GG2CC3GGD0CB818294G94G88G88G2FD50FAEF785DBCC7E96GG2CC3GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1
-	F4E1D0CB8586GGGG81G81GBAGGGB897GGGG
-**end of data**/
-}
+    private JLabel getJLabelAhead() {
+        if (ivjJLabelAhead == null) {
+            try {
+                ivjJLabelAhead = new JLabel();
+                ivjJLabelAhead.setName("JLabelAhead");
+                ivjJLabelAhead.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjJLabelAhead.setText("Ahead:");
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJLabelAhead;
+    }
 
-/**
- * Return the JComboBoxNormalState property value.
- * @return javax.swing.JComboBox
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxAhead() {
-	if (ivjJComboBoxAhead == null) {
-		try {
-			ivjJComboBoxAhead = new javax.swing.JComboBox();
-			ivjJComboBoxAhead.setName("JComboBoxAhead");
-			// user code begin {1}
+    private JLabel getJLabelSamples() {
+        if (ivjJLabelSamples == null) {
+            try {
+                ivjJLabelSamples = new JLabel();
+                ivjJLabelSamples.setName("JLabelSamples");
+                ivjJLabelSamples.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjJLabelSamples.setText("Samples:");
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJLabelSamples;
+    }
 
-			ivjJComboBoxAhead.addItem("5 minute");
-			ivjJComboBoxAhead.addItem("10 minute");
-			ivjJComboBoxAhead.addItem("15 minute");
-			ivjJComboBoxAhead.addItem("20 minute");
-			ivjJComboBoxAhead.addItem("25 minute");
-			ivjJComboBoxAhead.addItem("30 minute");
-			ivjJComboBoxAhead.addItem("35 minute");
-			ivjJComboBoxAhead.addItem("40 minute");
-			ivjJComboBoxAhead.addItem("45 minute");
-			ivjJComboBoxAhead.addItem("50 minute");
-			ivjJComboBoxAhead.addItem("55 minute");
-			ivjJComboBoxAhead.addItem("1 hour");
-			
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJComboBoxAhead;
-}
+    private JLabel getJLabelType() {
+        if (ivjJLabelType == null) {
+            try {
+                ivjJLabelType = new JLabel();
+                ivjJLabelType.setName("JLabelType");
+                ivjJLabelType.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjJLabelType.setText("Type:");
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJLabelType;
+    }
 
-/**
- * Return the JComboBoxNormalState1 property value.
- * @return javax.swing.JComboBox
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxSamples() {
-	if (ivjJComboBoxSamples == null) {
-		try {
-			ivjJComboBoxSamples = new javax.swing.JComboBox();
-			ivjJComboBoxSamples.setName("JComboBoxSamples");
-			// user code begin {1}
+    public String getSelectedType() {
+        return getJComboBoxType().getSelectedItem().toString();
+    }
 
-			ivjJComboBoxSamples.addItem( new Integer(2) );
-			ivjJComboBoxSamples.addItem( new Integer(3) );
-			ivjJComboBoxSamples.addItem( new Integer(4) );
-			ivjJComboBoxSamples.addItem( new Integer(5) );
-			ivjJComboBoxSamples.addItem( new Integer(6) );
-			ivjJComboBoxSamples.addItem( new Integer(7) );
-			ivjJComboBoxSamples.addItem( new Integer(8) );
-			ivjJComboBoxSamples.addItem( new Integer(9) );
-			ivjJComboBoxSamples.addItem( new Integer(10) );
-			ivjJComboBoxSamples.addItem( new Integer(11) );
-			ivjJComboBoxSamples.addItem( new Integer(12) );
-			ivjJComboBoxSamples.setSelectedItem(new Integer(5));
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJComboBoxSamples;
-}
+    @Override
+    public Object getValue(Object o) {
+        LMControlAreaTrigger trigger = null;
+        if (o == null) {
+            return o;
+        } else {
+            trigger = (LMControlAreaTrigger) o;
+        }
 
-/**
- * Return the JComboBoxType property value.
- * @return javax.swing.JComboBox
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxType() {
-	if (ivjJComboBoxType == null) {
-		try {
-			ivjJComboBoxType = new javax.swing.JComboBox();
-			ivjJComboBoxType.setName("JComboBoxType");
-			// user code begin {1}
+        trigger.setProjectionType(getJComboBoxType().getSelectedItem().toString());
+        trigger.setProjectionPoints((Integer) getJComboBoxSamples().getSelectedItem());
 
-			ivjJComboBoxType.addItem( IlmDefines.PROJ_TYPE_NONE );
-			ivjJComboBoxType.addItem( IlmDefines.PROJ_TYPE_LSF );
-			
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJComboBoxType;
-}
+        trigger.setProjectAheadDuration(SwingUtil.getIntervalComboBoxSecondsValue(getJComboBoxAhead()));
 
-/**
- * Return the JLabelMinRestOffset property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelAhead() {
-	if (ivjJLabelAhead == null) {
-		try {
-			ivjJLabelAhead = new javax.swing.JLabel();
-			ivjJLabelAhead.setName("JLabelAhead");
-			ivjJLabelAhead.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelAhead.setText("Ahead:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJLabelAhead;
-}
+        return trigger;
+    }
 
-/**
- * Return the JLabelNormalStateAndThreshold property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelSamples() {
-	if (ivjJLabelSamples == null) {
-		try {
-			ivjJLabelSamples = new javax.swing.JLabel();
-			ivjJLabelSamples.setName("JLabelSamples");
-			ivjJLabelSamples.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelSamples.setText("Samples:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJLabelSamples;
-}
+    /**
+     * Called whenever the part throws an exception.
+     */
+    private void handleException(Throwable exception) {
+        /* Uncomment the following lines to print uncaught exceptions to stdout */
+        com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+        com.cannontech.clientutils.CTILogger.error(exception.getMessage(), exception);
+    }
 
-/**
- * Return the JLabelType property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelType() {
-	if (ivjJLabelType == null) {
-		try {
-			ivjJLabelType = new javax.swing.JLabel();
-			ivjJLabelType.setName("JLabelType");
-			ivjJLabelType.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelType.setText("Type:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJLabelType;
-}
+    /**
+     * Initializes connections
+     */
+    private void initConnections() throws java.lang.Exception {
+        getJComboBoxType().addActionListener(this);
+        getJComboBoxAhead().addActionListener(this);
+        getJComboBoxSamples().addActionListener(this);
+    }
 
-/**
- * Insert the method's description here.
- * Creation date: (2/6/2002 9:51:17 AM)
- * @return java.lang.Integer
- */
-public String getSelectedType() 
-{
-	return getJComboBoxType().getSelectedItem().toString();
-}
+    /**
+     * Initialize the class.
+     */
+    private void initialize() {
+        try {
+            com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
+            ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
+            ivjLocalBorder.setTitleFont(new java.awt.Font("dialog", 0, 14));
+            ivjLocalBorder.setTitle("Projection");
+            setName("LMTriggerProjectionPanel");
+            setToolTipText("");
+            setBorder(ivjLocalBorder);
+            setLayout(new java.awt.GridBagLayout());
+            setPreferredSize(new java.awt.Dimension(303, 194));
+            setSize(271, 112);
+            setMinimumSize(new java.awt.Dimension(10, 10));
 
+            java.awt.GridBagConstraints constraintsJLabelType = new java.awt.GridBagConstraints();
+            constraintsJLabelType.gridx = 1;
+            constraintsJLabelType.gridy = 1;
+            constraintsJLabelType.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJLabelType.ipadx = 28;
+            constraintsJLabelType.insets = new java.awt.Insets(3, 8, 5, 1);
+            add(getJLabelType(), constraintsJLabelType);
 
-/**
- * getValue method comment.
- */
-public Object getValue(Object o) 
-{
-	LMControlAreaTrigger trigger = null ;
-	if( o == null )
-		return o;
-	else
-		trigger = (LMControlAreaTrigger)o;
+            java.awt.GridBagConstraints constraintsJComboBoxType = new java.awt.GridBagConstraints();
+            constraintsJComboBoxType.gridx = 2;
+            constraintsJComboBoxType.gridy = 1;
+            constraintsJComboBoxType.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsJComboBoxType.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJComboBoxType.weightx = 1.0;
+            constraintsJComboBoxType.ipadx = 55;
+            constraintsJComboBoxType.insets = new java.awt.Insets(3, 3, 7, 11);
+            add(getJComboBoxType(), constraintsJComboBoxType);
 
+            java.awt.GridBagConstraints constraintsJLabelSamples = new java.awt.GridBagConstraints();
+            constraintsJLabelSamples.gridx = 1;
+            constraintsJLabelSamples.gridy = 2;
+            constraintsJLabelSamples.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJLabelSamples.ipadx = 6;
+            constraintsJLabelSamples.insets = new java.awt.Insets(3, 8, 5, 1);
+            add(getJLabelSamples(), constraintsJLabelSamples);
 
-	trigger.setProjectionType( getJComboBoxType().getSelectedItem().toString() );
-	trigger.setProjectionPoints( (Integer)getJComboBoxSamples().getSelectedItem() );
+            java.awt.GridBagConstraints constraintsJComboBoxAhead = new java.awt.GridBagConstraints();
+            constraintsJComboBoxAhead.gridx = 2;
+            constraintsJComboBoxAhead.gridy = 3;
+            constraintsJComboBoxAhead.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsJComboBoxAhead.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJComboBoxAhead.weightx = 1.0;
+            constraintsJComboBoxAhead.ipadx = 55;
+            constraintsJComboBoxAhead.insets = new java.awt.Insets(2, 3, 7, 10);
+            add(getJComboBoxAhead(), constraintsJComboBoxAhead);
 
-	trigger.setProjectAheadDuration(SwingUtil.getIntervalComboBoxSecondsValue(getJComboBoxAhead()) );
+            java.awt.GridBagConstraints constraintsJLabelAhead = new java.awt.GridBagConstraints();
+            constraintsJLabelAhead.gridx = 1;
+            constraintsJLabelAhead.gridy = 3;
+            constraintsJLabelAhead.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJLabelAhead.ipadx = 19;
+            constraintsJLabelAhead.insets = new java.awt.Insets(3, 8, 5, 1);
+            add(getJLabelAhead(), constraintsJLabelAhead);
 
-	return trigger;
-}
+            java.awt.GridBagConstraints constraintsJComboBoxSamples = new java.awt.GridBagConstraints();
+            constraintsJComboBoxSamples.gridx = 2;
+            constraintsJComboBoxSamples.gridy = 2;
+            constraintsJComboBoxSamples.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsJComboBoxSamples.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJComboBoxSamples.weightx = 1.0;
+            constraintsJComboBoxSamples.ipadx = 55;
+            constraintsJComboBoxSamples.insets = new java.awt.Insets(2, 3, 2, 10);
+            add(getJComboBoxSamples(), constraintsJComboBoxSamples);
+            initConnections();
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+        // act like the ComboBox was changed
+        jComboBoxType_ActionPerformed(null);
+    }
 
+    @Override
+    public boolean isInputValid() {
+        return true;
+    }
 
-/**
- * Called whenever the part throws an exception.
- * @param exception java.lang.Throwable
- */
-private void handleException(Throwable exception) {
+    public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+        boolean enabled = !IlmDefines.PROJ_TYPE_NONE.equalsIgnoreCase(getJComboBoxType().getSelectedItem().toString());
 
-	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-}
+        getJLabelSamples().setEnabled(enabled);
+        getJComboBoxSamples().setEnabled(enabled);
 
+        getJLabelAhead().setEnabled(enabled);
+        getJComboBoxAhead().setEnabled(enabled);
 
-/**
- * Initializes connections
- * @exception java.lang.Exception The exception description.
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
+        fireInputUpdate();
+        return;
+    }
 
+    @Override
+    public void setValue(Object o) {
+        LMControlAreaTrigger trigger = null;
 
-	// user code end
-	getJComboBoxType().addActionListener(this);
-	getJComboBoxAhead().addActionListener(this);
-	getJComboBoxSamples().addActionListener(this);
-}
+        if (o == null) {
+            return;
+        } else {
+            trigger = (LMControlAreaTrigger) o;
+        }
 
-/**
- * Initialize the class.
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initialize() {
-	try {
-		// user code begin {1}
-		// user code end
-		com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
-		ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
-		ivjLocalBorder.setTitleFont(new java.awt.Font("dialog", 0, 14));
-		ivjLocalBorder.setTitle("Projection");
-		setName("LMTriggerProjectionPanel");
-		setToolTipText("");
-		setBorder(ivjLocalBorder);
-		setLayout(new java.awt.GridBagLayout());
-		setPreferredSize(new java.awt.Dimension(303, 194));
-		setSize(271, 112);
-		setMinimumSize(new java.awt.Dimension(10, 10));
+        getJComboBoxType().setSelectedItem(trigger.getProjectionType());
+        getJComboBoxSamples().setSelectedItem(trigger.getProjectionPoints());
 
-		java.awt.GridBagConstraints constraintsJLabelType = new java.awt.GridBagConstraints();
-		constraintsJLabelType.gridx = 1; constraintsJLabelType.gridy = 1;
-		constraintsJLabelType.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJLabelType.ipadx = 28;
-		constraintsJLabelType.insets = new java.awt.Insets(3, 8, 5, 1);
-		add(getJLabelType(), constraintsJLabelType);
-
-		java.awt.GridBagConstraints constraintsJComboBoxType = new java.awt.GridBagConstraints();
-		constraintsJComboBoxType.gridx = 2; constraintsJComboBoxType.gridy = 1;
-		constraintsJComboBoxType.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJComboBoxType.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJComboBoxType.weightx = 1.0;
-		constraintsJComboBoxType.ipadx = 55;
-		constraintsJComboBoxType.insets = new java.awt.Insets(3, 3, 7, 11);
-		add(getJComboBoxType(), constraintsJComboBoxType);
-
-		java.awt.GridBagConstraints constraintsJLabelSamples = new java.awt.GridBagConstraints();
-		constraintsJLabelSamples.gridx = 1; constraintsJLabelSamples.gridy = 2;
-		constraintsJLabelSamples.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJLabelSamples.ipadx = 6;
-		constraintsJLabelSamples.insets = new java.awt.Insets(3, 8, 5, 1);
-		add(getJLabelSamples(), constraintsJLabelSamples);
-
-		java.awt.GridBagConstraints constraintsJComboBoxAhead = new java.awt.GridBagConstraints();
-		constraintsJComboBoxAhead.gridx = 2; constraintsJComboBoxAhead.gridy = 3;
-		constraintsJComboBoxAhead.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJComboBoxAhead.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJComboBoxAhead.weightx = 1.0;
-		constraintsJComboBoxAhead.ipadx = 55;
-		constraintsJComboBoxAhead.insets = new java.awt.Insets(2, 3, 7, 10);
-		add(getJComboBoxAhead(), constraintsJComboBoxAhead);
-
-		java.awt.GridBagConstraints constraintsJLabelAhead = new java.awt.GridBagConstraints();
-		constraintsJLabelAhead.gridx = 1; constraintsJLabelAhead.gridy = 3;
-		constraintsJLabelAhead.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJLabelAhead.ipadx = 19;
-		constraintsJLabelAhead.insets = new java.awt.Insets(3, 8, 5, 1);
-		add(getJLabelAhead(), constraintsJLabelAhead);
-
-		java.awt.GridBagConstraints constraintsJComboBoxSamples = new java.awt.GridBagConstraints();
-		constraintsJComboBoxSamples.gridx = 2; constraintsJComboBoxSamples.gridy = 2;
-		constraintsJComboBoxSamples.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJComboBoxSamples.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJComboBoxSamples.weightx = 1.0;
-		constraintsJComboBoxSamples.ipadx = 55;
-		constraintsJComboBoxSamples.insets = new java.awt.Insets(2, 3, 2, 10);
-		add(getJComboBoxSamples(), constraintsJComboBoxSamples);
-		initConnections();
-	} catch (java.lang.Throwable ivjExc) {
-		handleException(ivjExc);
-	}
-	// user code begin {2}
-
-	//act like the ComboBox was changed
-	jComboBoxType_ActionPerformed(null);
-
-	// user code end
-}
-
-/**
- * This method was created in VisualAge.
- * @return boolean
- */
-public boolean isInputValid() 
-{
-	return true;
-}
-
-
-/**
- * Comment
- */
-public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
-{
-	boolean enabled = !IlmDefines.PROJ_TYPE_NONE.equalsIgnoreCase(
-				getJComboBoxType().getSelectedItem().toString() );
-
-	getJLabelSamples().setEnabled( enabled );
-	getJComboBoxSamples().setEnabled( enabled );
-	
-	getJLabelAhead().setEnabled( enabled );
-	getJComboBoxAhead().setEnabled( enabled );
-
-	
-	fireInputUpdate();
-	return;
-}
-
-
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		LMControlAreaTriggerModifyPanel aLMControlAreaTriggerModifyPanel;
-		aLMControlAreaTriggerModifyPanel = new LMControlAreaTriggerModifyPanel();
-		frame.setContentPane(aLMControlAreaTriggerModifyPanel);
-		frame.setSize(aLMControlAreaTriggerModifyPanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
-
-
-/**
- * setValue method comment.
- */
-public void setValue(Object o) 
-{
-	LMControlAreaTrigger trigger = null ;
-
-	if( o == null )
-		return;
-	else
-		trigger = (LMControlAreaTrigger)o;
-
-
-	getJComboBoxType().setSelectedItem( trigger.getProjectionType() );
-	getJComboBoxSamples().setSelectedItem( trigger.getProjectionPoints() );
-
-	SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxAhead(), trigger.getProjectAheadDuration().doubleValue() );
-}
+        SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxAhead(), trigger.getProjectAheadDuration().doubleValue());
+    }
 }
