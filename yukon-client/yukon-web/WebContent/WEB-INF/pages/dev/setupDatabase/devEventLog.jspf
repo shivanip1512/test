@@ -14,7 +14,15 @@
             <h4>Select which Event Log Service(s) to use</h4>
             <ul>
             <c:forEach items="${devEventLog.eventLogTypes}" var="eventType">
-                <li><label><tags:checkbox path="eventLogTypes[${eventType.key}]"/><i:inline key="${eventType.key}"/></label></li>
+                <li><label>
+                    <tags:checkbox path="eventLogTypes[${eventType.key}]"/>
+                    <i:inline key="${eventType.key}"/>
+                    <c:set var="missingMethods"
+                         value="${eventType.key.actualNumberOfMethods - eventType.key.numberOfMethodsTested}"/>
+                    <c:if test="${missingMethods ne 0}">
+                        <span class='error'>Note: ${missingMethods} methods from this service are not included in this tool.</span>
+                    </c:if>
+                </label></li>
             </c:forEach>
             </ul>
             <br>

@@ -59,7 +59,7 @@ public class DevEventLog {
         int total = 0;
 
         for(DevEventLogCreationService.LogType logType : DevEventLogCreationService.LogType.values()) {
-            total += eventLogTypes.get(logType) ? logType.getNumberOfMethods() : 0;
+            total += eventLogTypes.get(logType) ? logType.getNumberOfMethodsTested() : 0;
         }
 
         return total * iterations;
