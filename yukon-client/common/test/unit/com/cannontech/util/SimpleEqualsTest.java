@@ -69,148 +69,148 @@ public class SimpleEqualsTest {
 
     @Test
     public void test_RegisterDeviceRequest() {
-        testClassEqualsMethod(RegisterDeviceRequest.class, true);
+        testEqualsAndHashCode(RegisterDeviceRequest.class, true);
     }
 
     @Test
     public void test_StandardResponse() {
-        testClassEqualsMethod(StandardResponse.class, true);
+        testEqualsAndHashCode(StandardResponse.class, true);
     }
 
     @Test
     public void test_MoveDeviceRequest() {
-        testClassEqualsMethod(MoveDeviceRequest.class, true);
+        testEqualsAndHashCode(MoveDeviceRequest.class, true);
     }
 
     @Test
     public void test_RuntimeReportRequest() {
-        testClassEqualsMethod(RuntimeReportRequest.class, true);
+        testEqualsAndHashCode(RuntimeReportRequest.class, true);
     }
 
     @Test
     public void test_CreateSetRequest() {
-        testClassEqualsMethod(CreateSetRequest.class, true);
+        testEqualsAndHashCode(CreateSetRequest.class, true);
     }
 
     @Test
     public void test_DeleteSetRequest() {
-        testClassEqualsMethod(DeleteSetRequest.class, true);
+        testEqualsAndHashCode(DeleteSetRequest.class, true);
     }
 
     @Test
     public void test_MoveSetRequest() {
-        testClassEqualsMethod(MoveSetRequest.class, true);
+        testEqualsAndHashCode(MoveSetRequest.class, true);
     }
 
     @Test
     public void test_DutyCycleDrRequest() {
-        testClassEqualsMethod(DutyCycleDrRequest.class, true);
+        testEqualsAndHashCode(DutyCycleDrRequest.class, true);
     }
 
     @Test
     public void test_DrResponse() {
-        testClassEqualsMethod(DrResponse.class, true);
+        testEqualsAndHashCode(DrResponse.class, true);
     }
 
     @Test
     public void test_DrRestoreRequest() {
-        testClassEqualsMethod(DrRestoreRequest.class, true);
+        testEqualsAndHashCode(DrRestoreRequest.class, true);
     }
 
     @Test
     public void test_BaseResponse() {
-        testClassEqualsMethod(BaseResponse.class, true);
+        testEqualsAndHashCode(BaseResponse.class, true);
     }
 
     @Test
     public void test_ListHierarchyRequest() {
-        testClassEqualsMethod(ListHierarchyRequest.class, true);
+        testEqualsAndHashCode(ListHierarchyRequest.class, true);
     }
 
     @Test
     public void test_HierarchyResponse() {
-        testClassEqualsMethod(HierarchyResponse.class, true);
+        testEqualsAndHashCode(HierarchyResponse.class, true);
     }
 
     @Test
     public void test_CompleteYukonPaos() {
-        testClassEqualsMethod(CompleteYukonPao.class, false);
+        testEqualsAndHashCode(CompleteYukonPao.class, false);
     }
 
     @Test
     public void test_CompleteCapControlArea() {
-        testClassEqualsMethod(CompleteCapControlArea.class, false);
+        testEqualsAndHashCode(CompleteCapControlArea.class, false);
     }
 
     @Test
     public void test_CompleteCapControlFeeder() {
-        testClassEqualsMethod(CompleteCapControlFeeder.class, false);
+        testEqualsAndHashCode(CompleteCapControlFeeder.class, false);
     }
 
     @Test
     public void test_CompleteCapControlSpecialArea() {
-        testClassEqualsMethod(CompleteCapControlSpecialArea.class, false);
+        testEqualsAndHashCode(CompleteCapControlSpecialArea.class, false);
     }
 
     @Test
     public void test_CompleteCapControlSubstation() {
-        testClassEqualsMethod(CompleteCapControlSubstation.class, false);
+        testEqualsAndHashCode(CompleteCapControlSubstation.class, false);
     }
 
     @Test
     public void test_CompleteCapControlSubstationBus() {
-        testClassEqualsMethod(CompleteCapControlSubstationBus.class, false);
+        testEqualsAndHashCode(CompleteCapControlSubstationBus.class, false);
     }
 
     @Test
     public void test_CompleteDevice() {
-        testClassEqualsMethod(CompleteDevice.class, false);
+        testEqualsAndHashCode(CompleteDevice.class, false);
     }
 
     @Test
     public void test_Ccu721() {
-        testClassEqualsMethod(Ccu721.class, false);
+        testEqualsAndHashCode(Ccu721.class, false);
     }
 
     @Test
     public void test_CompleteCapBank() {
-        testClassEqualsMethod(CompleteCapBank.class, false);
+        testEqualsAndHashCode(CompleteCapBank.class, false);
     }
 
     @Test
     public void test_CompleteCbcBase() {
-        testClassEqualsMethod(CompleteCbcBase.class, false);
+        testEqualsAndHashCode(CompleteCbcBase.class, false);
     }
 
     @Test
     public void test_CompleteOneWayCbc() {
-        testClassEqualsMethod(CompleteOneWayCbc.class, false);
+        testEqualsAndHashCode(CompleteOneWayCbc.class, false);
     }
 
     @Test
     @Ignore("test causes NPE because of the way CompleteTwoWayCbc is setup")
     public void test_CompleteTwoWayCbc() {
-        testClassEqualsMethod(CompleteTwoWayCbc.class, false);
+        testEqualsAndHashCode(CompleteTwoWayCbc.class, false);
     }
 
     @Test
     public void test_CompleteZbEndpoint() {
-        testClassEqualsMethod(CompleteZbEndpoint.class, false);
+        testEqualsAndHashCode(CompleteZbEndpoint.class, false);
     }
 
     @Test
     public void test_CompleteZbGateway() {
-        testClassEqualsMethod(CompleteZbGateway.class, false);
+        testEqualsAndHashCode(CompleteZbGateway.class, false);
     }
 
     @Test
     public void test_CompleteDigiGateway() {
-        testClassEqualsMethod(CompleteDigiGateway.class, false);
+        testEqualsAndHashCode(CompleteDigiGateway.class, false);
     }
 
     @Test
     public void test_CompleteRegulator() {
-        testClassEqualsMethod(CompleteRegulator.class, false);
+        testEqualsAndHashCode(CompleteRegulator.class, false);
     }
 
     /**
@@ -297,16 +297,19 @@ public class SimpleEqualsTest {
      * object causes
      * .equals() return false.
      */
-    private void testClassEqualsMethod(Class<?> aClass, boolean immutable) {
+    private void testEqualsAndHashCode(Class<?> aClass, boolean immutable) {
         try {
             ObjectPermutations objs = getPouplatedObjects(aClass, immutable);
             assertEquals(aClass.getSimpleName() + ".equals() failed test. ", objs.getObjectA(), objs.getObjectB());
+            assertEquals(aClass.getSimpleName() + ".hashCode() failed test. ", 
+                objs.getObjectA().hashCode(), objs.getObjectB().hashCode());
 
             for (ModifiedObject obj : objs.getInequalPermuations()) {
-                assertObjectsNotEqual(obj, objs.getObjectA());
-                for (Object obj2 : objs.getInequalPermuations()) {
+                String propertyDesc = obj.getPropertyType().getSimpleName() + " " + obj.getPropertyName();
+                assertObjectsNotEqual(propertyDesc, obj.getObject(), objs.getObjectA());
+                for (ModifiedObject obj2 : objs.getInequalPermuations()) {
                     if (obj != obj2) {
-                        assertObjectsNotEqual(obj, obj2);
+                        assertObjectsNotEqual(propertyDesc, obj.getObject(), obj2.getObject());
                     }
                 }
             }
@@ -315,14 +318,15 @@ public class SimpleEqualsTest {
         }
     }
 
-    private void assertObjectsNotEqual(ModifiedObject modifiedObjA, Object objB) {
-        Object objA = modifiedObjA.getObject();
+    private void assertObjectsNotEqual(String propertyDescription, Object objA, Object objB) {
+        String objType = objA.getClass().getSimpleName();
         if (objA.equals(objB) || objB.equals(objA)) {
-            String propertyName = modifiedObjA.getPropertyName();
-            String propertyType = modifiedObjA.getPropertyType().getSimpleName();
-            String objType = objA.getClass().getSimpleName();
-            fail(objType + ".equals() returned true but objects are not equal! Property: " + propertyType + " "
-                + propertyName + " is different. If this property is an object, it's .equals() might not be correct.");
+            fail(objType + ".equals() returned true but objects are not equal! Property: " + propertyDescription +
+                " is different. If this property is an object, it's .equals() might not be correct.");
+        }
+        if (objA.hashCode() == objB.hashCode()) {
+            fail(objType + ".hashCode() should not match for inequal objects! Property: " + propertyDescription +
+                " is different. If this property is an object, it's .hashCode() might not be correct.");
         }
     }
 
