@@ -33,7 +33,7 @@
     <div class="column-12-12">
         <div class="column one">
             <tags:sectionContainer2 nameKey="dataDownloads" id="data-downloads">
-                <table class="name-value-table with-form-controls id="downloads-table"
+                <table class="name-value-table with-form-controls" id="downloads-table"
                     ${fn:length(downloads) <= 0 ? 'dn' : ''}">
                     <thead></thead>
                     <tfoot></tfoot>
