@@ -49,6 +49,7 @@ public class DevEventLogCreationService {
     private static CommandScheduleEventLogService commandScheduleEventLogService;
     private static DatabaseMigrationEventLogService databaseMigrationEventLogService;
     private static DemandResponseEventLogService demandResponseEventLogService;
+    private static EcobeeEventLogService ecobeeEventLogService;
     private static HardwareEventLogService hardwareEventLogService;
     private static InventoryConfigEventLogService inventoryConfigEventLogService;
     private static MeteringEventLogService meteringEventLogService;
@@ -59,7 +60,6 @@ public class DevEventLogCreationService {
     private static ValidationEventLogService validationEventLogService;
     private static VeeReviewEventLogService veeReviewEventLogService;
     private static ZigbeeEventLogService zigbeeEventLogService;
-    private static EcobeeEventLogService ecobeeEventLogService;
 
     public interface DevEventLogExecutable {
         public void execute(DevEventLog devEventLog);
@@ -657,25 +657,27 @@ public class DevEventLogCreationService {
     
     public void execute(DevEventLog devEventLog) {
         
-        if (_lock.tryLock()) try {
-            int iterations = devEventLog.getIterations();
-            
-            complete = 0;
-            total = devEventLog.getTotal();
+        if (_lock.tryLock()) {
+            try {
+                int iterations = devEventLog.getIterations();
+                
+                complete = 0;
+                total = devEventLog.getTotal();
 
-            Map<LogType, Boolean> eventLogTypes = devEventLog.getEventLogTypes();
-            for (LogType logType :LogType.values()) {
-                if (eventLogTypes.get(logType)) {
-                    for (int i=0;i<iterations;i++) {
-                        logType.execute(devEventLog);
-                        complete += logType.getNumberOfMethods();
-                        log.info(": Inserting EventLog entries for " + logType);
+                Map<LogType, Boolean> eventLogTypes = devEventLog.getEventLogTypes();
+                for (LogType logType :LogType.values()) {
+                    if (eventLogTypes.get(logType)) {
+                        for (int i=0;i<iterations;i++) {
+                            logType.execute(devEventLog);
+                            complete += logType.getNumberOfMethods();
+                            log.info(": Inserting EventLog entries for " + logType);
+                        }
                     }
                 }
-            }
 
-        } finally {
-            _lock.unlock();
+            } finally {
+                _lock.unlock();
+            }
         }
     }
 
@@ -760,5 +762,10 @@ public class DevEventLogCreationService {
     @Autowired
     public void setZigbeeEventLogService(ZigbeeEventLogService zigbeeEventLogService) {
         DevEventLogCreationService.zigbeeEventLogService = zigbeeEventLogService;
+    }
+
+    @Autowired
+    public void setEcobeeEventLogService(EcobeeEventLogService ecobeeEventLogService) {
+        DevEventLogCreationService.ecobeeEventLogService = ecobeeEventLogService;
     }
 }
