@@ -1,4 +1,5 @@
 package com.cannontech.dbeditor.wizard.device;
+
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -7,11 +8,14 @@ import java.util.List;
 
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+import javax.swing.event.CaretListener;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
@@ -40,638 +44,421 @@ import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.device.range.IntegerRange;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * This type was created in VisualAge.
- */
+public class DeviceNameAddressPanel extends DataInputPanel implements CaretListener {
+    private DeviceBase deviceBase = null;
+    private javax.swing.JTextField ivjAddressTextField = null;
+    private javax.swing.JLabel ivjNameLabel = null;
+    private javax.swing.JTextField ivjNameTextField = null;
+    private javax.swing.JLabel ivjPhysicalAddressLabel = null;
+    private javax.swing.JLabel ivjJLabelErrorMessage = null;
+    private javax.swing.JPanel ivjJPanelNameAddy = null;
+    private javax.swing.JPanel ivjJPanel1 = null;
 
-public class DeviceNameAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
-	private DeviceBase deviceBase = null;
-//	private int deviceType = PAOGroups.INVALID;
-	private javax.swing.JTextField ivjAddressTextField = null;
-	private javax.swing.JLabel ivjNameLabel = null;
-	private javax.swing.JTextField ivjNameTextField = null;
-	private javax.swing.JLabel ivjPhysicalAddressLabel = null;
-	private javax.swing.JLabel ivjJLabelErrorMessage = null;
-	private javax.swing.JPanel ivjJPanelNameAddy = null;
-	private javax.swing.JPanel ivjJPanel1 = null;
-    
     private JCheckBox createPointsCheck = null;
-    
-    private DlcAddressRangeService dlcAddressRangeService = 
-        YukonSpringHook.getBean("dlcAddressRangeService", DlcAddressRangeService.class);
 
-/**
- * Constructor
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public DeviceNameAddressPanel() {
-	super();
-	initialize();
-}
+    private DlcAddressRangeService dlcAddressRangeService = YukonSpringHook.getBean("dlcAddressRangeService", DlcAddressRangeService.class);
 
+    public DeviceNameAddressPanel() {
+        super();
+        initialize();
+    }
 
-/**
- * Method to handle events for the CaretListener interface.
- * @param e javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-@Override
-public void caretUpdate(javax.swing.event.CaretEvent e) {
-	// user code begin {1}
-	// user code end
-	if (e.getSource() == getNameTextField()) 
-		connEtoC1(e);
-	if (e.getSource() == getAddressTextField()) 
-		connEtoC2(e);
-	// user code begin {2}
-	// user code end
-}
+    @Override
+    public void caretUpdate(javax.swing.event.CaretEvent e) {
+        try {
+            if (e.getSource() == getNameTextField()) {
+                this.eitherTextField_CaretUpdate(e);
+            }
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
 
     private void checkPaoAddresses(int address) {
 
         String[] devices = DeviceCarrierSettings.isAddressUnique(address, null);
 
         if (devices.length > 0) {
-            
-            String message = "The address '"
-                + address
-                + "' is already used by the following devices,\n"
-                + "are you sure you want to use it again?\n";
-            
-            int res = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
-                                                                            message,
-                                                                            "Address Already Used",
-                                                                            devices);
+
+            String message = "The address '" + address + "' is already used by the following devices,\n" + "are you sure you want to use it again?\n";
+
+            int res = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this, message, "Address Already Used", devices);
             if (res == JOptionPane.NO_OPTION) {
                 throw new CancelInsertException("Device was not inserted");
             }
-
         }
     }
 
+    public void eitherTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
+        fireInputUpdate();
+    }
 
-/**
- * connEtoC1: (NameTextField.caret.caretUpdate(javax.swing.event.CaretEvent) -->
- * DeviceNameAddressPanel.eitherTextField_CaretUpdate(Ljavax.swing.event.CaretEvent;)V)
- * @param arg1 javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC1(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.eitherTextField_CaretUpdate(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+    public String getAddress() {
+        return getAddressTextField().getText();
+    }
 
+    private javax.swing.JTextField getAddressTextField() {
+        if (ivjAddressTextField == null) {
+            try {
+                ivjAddressTextField = new javax.swing.JTextField();
+                ivjAddressTextField.setName("AddressTextField");
+                ivjAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
+                ivjAddressTextField.setColumns(6);
 
-/**
- * connEtoC2:  (AddressTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> DeviceNameAddressPanel.eitherTextField_CaretUpdate(Ljavax.swing.event.CaretEvent;)V)
- * @param arg1 javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC2(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.eitherTextField_CaretUpdate(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-
-
-/**
- * Comment
- */
-public void eitherTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
-	fireInputUpdate();
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (7/27/2001 10:04:55 AM)
- * @return java.lang.String
- */
-public String getAddress()
-{
-    return getAddressTextField().getText();
-}
-
-
-/**
- * Return the AddressTextField property value.
- * @return javax.swing.JTextField
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getAddressTextField() {
-	if (ivjAddressTextField == null) {
-		try {
-			ivjAddressTextField = new javax.swing.JTextField();
-			ivjAddressTextField.setName("AddressTextField");
-			ivjAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
-			ivjAddressTextField.setColumns(6);
-			// user code begin {1}
-
-			ivjAddressTextField.setDocument( new LongRangeDocument(-999999999L, 999999999L) );
-			
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjAddressTextField;
-}
-
-/**
- * Return the JLabelRange property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelErrorMessage() {
-	if (ivjJLabelErrorMessage == null) {
-		try {
-			ivjJLabelErrorMessage = new javax.swing.JLabel();
-			ivjJLabelErrorMessage.setName("JLabelRange");
-			ivjJLabelErrorMessage.setOpaque(false);
-			ivjJLabelErrorMessage.setText("..RANGE TEXT..");
-			ivjJLabelErrorMessage.setVisible(true);
-			ivjJLabelErrorMessage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-			ivjJLabelErrorMessage.setFont(new java.awt.Font("Arial", 1, 10));
-			ivjJLabelErrorMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-			// user code begin {1}
-
-			ivjJLabelErrorMessage.setVisible( false );
-
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJLabelErrorMessage;
-}
-
-/**
- * Return the JPanel1 property value.
- * @return javax.swing.JPanel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getJPanel1() {
-	if (ivjJPanel1 == null) {
-		try {
-			ivjJPanel1 = new javax.swing.JPanel();
-			ivjJPanel1.setName("JPanel1");
-			ivjJPanel1.setPreferredSize(new java.awt.Dimension(342, 27));
-			ivjJPanel1.setLayout(new java.awt.FlowLayout());
-			ivjJPanel1.setMaximumSize(new java.awt.Dimension(342, 27));
-			ivjJPanel1.setMinimumSize(new java.awt.Dimension(342, 27));
-			getJPanel1().add(getJLabelErrorMessage(), getJLabelErrorMessage().getName());
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJPanel1;
-}
-
-/**
- * Return the JPanelNameAddy property value.
- * @return javax.swing.JPanel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getJPanelNameAddy() {
-	if (ivjJPanelNameAddy == null) {
-		try {
-			ivjJPanelNameAddy = new javax.swing.JPanel();
-			ivjJPanelNameAddy.setName("JPanelNameAddy");
-			ivjJPanelNameAddy.setLayout(new GridBagLayout());
-
-			GridBagConstraints constraintsNameLabel = new GridBagConstraints();
-			constraintsNameLabel.gridx = 1; 
-            constraintsNameLabel.gridy = 1;
-			constraintsNameLabel.anchor = GridBagConstraints.WEST;
-			constraintsNameLabel.insets = new Insets(15, 10, 0, 0);
-			getJPanelNameAddy().add(getNameLabel(), constraintsNameLabel);
-
-			GridBagConstraints constraintsPhysicalAddressLabel = new GridBagConstraints();
-			constraintsPhysicalAddressLabel.gridx = 1; 
-            constraintsPhysicalAddressLabel.gridy = 2;
-			constraintsPhysicalAddressLabel.anchor = GridBagConstraints.WEST;
-			constraintsPhysicalAddressLabel.insets = new Insets(10, 10, 0, 0);
-			getJPanelNameAddy().add(getPhysicalAddressLabel(), constraintsPhysicalAddressLabel);
-
-			// Add create points check box
-			GridBagConstraints constraintsCreatePoints = new GridBagConstraints();
-            constraintsCreatePoints.gridx = 1; 
-            constraintsCreatePoints.gridy = 3;
-            constraintsCreatePoints.anchor = GridBagConstraints.WEST;
-            constraintsCreatePoints.insets = new Insets(10, 10, 0, 0);
-            constraintsCreatePoints.weighty = 1.0;
-            this.createPointsCheck = new JCheckBox("Create default points");
-            this.createPointsCheck.setVisible(false);
-			getJPanelNameAddy().add(this.createPointsCheck, constraintsCreatePoints);
-            
-			GridBagConstraints constraintsNameTextField = new GridBagConstraints();
-			constraintsNameTextField.gridx = 2; 
-            constraintsNameTextField.gridy = 1;
-			constraintsNameTextField.fill = GridBagConstraints.HORIZONTAL;
-			constraintsNameTextField.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsNameTextField.weightx = 1.0;
-			constraintsNameTextField.insets = new Insets(15, 0, 0, 20);
-			getJPanelNameAddy().add(getNameTextField(), constraintsNameTextField);
-
-			GridBagConstraints constraintsAddressTextField = new GridBagConstraints();
-			constraintsAddressTextField.gridx = 2; 
-            constraintsAddressTextField.gridy = 2;
-			constraintsAddressTextField.fill = GridBagConstraints.HORIZONTAL;
-			constraintsAddressTextField.anchor = GridBagConstraints.WEST;
-			constraintsAddressTextField.weightx = 1.0;
-			constraintsAddressTextField.insets = new Insets(10, 0, 0, 20);
-			getJPanelNameAddy().add(getAddressTextField(), constraintsAddressTextField);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJPanelNameAddy;
-}
-
-/**
- * This method was created in VisualAge.
- * @return java.awt.Dimension
- */
-@Override
-public Dimension getMinimumSize() {
-	return getPreferredSize();
-}
-
-
-/**
- * Return the NameLabel property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getNameLabel() {
-	if (ivjNameLabel == null) {
-		try {
-			ivjNameLabel = new javax.swing.JLabel();
-			ivjNameLabel.setName("NameLabel");
-			ivjNameLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjNameLabel.setText("Device Name:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjNameLabel;
-}
-
-
-/**
- * Return the NameTextField property value.
- * @return javax.swing.JTextField
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getNameTextField() {
-	if (ivjNameTextField == null) {
-		try {
-			ivjNameTextField = new javax.swing.JTextField();
-			ivjNameTextField.setName("NameTextField");
-			ivjNameTextField.setFont(new java.awt.Font("sansserif", 0, 14));
-			ivjNameTextField.setColumns(12);
-			// user code begin {1}
-			ivjNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH, PaoUtils.ILLEGAL_NAME_CHARS));
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjNameTextField;
-}
-
-
-/**
- * Return the PhysicalAddressLabel property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getPhysicalAddressLabel() {
-	if (ivjPhysicalAddressLabel == null) {
-		try {
-			ivjPhysicalAddressLabel = new javax.swing.JLabel();
-			ivjPhysicalAddressLabel.setName("PhysicalAddressLabel");
-			ivjPhysicalAddressLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjPhysicalAddressLabel.setText("Physical Address:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjPhysicalAddressLabel;
-}
-
-
-/**
- * This method was created in VisualAge.
- * @return java.awt.Dimension
- */
-@Override
-public Dimension getPreferredSize() {
-	return new Dimension( 350, 200);
-}
-
-
-/**
- * This method was created in VisualAge.
- * @return java.lang.Object
- * @param val java.lang.Object
- */
-@Override
-public Object getValue(Object val)
-{
-	//The name is easy, the address is more difficult
-	//since at this point all devices have a physical
-	//address but it is tedious to tell what type
-	//of device it is - CommLine, Carrier, Repeater, MCT Broadcast group, etc
-
-	deviceBase = (DeviceBase)val;
-	
-	String nameString = getNameTextField().getText();
-	deviceBase.setPAOName( nameString );
-
-	//Search for the correct sub-type and set the address
-
-	Integer address = new Integer( getAddressTextField().getText() );
-	
-	if( val instanceof IDLCBase ) {
-		((IDLCBase)deviceBase).getDeviceIDLCRemote().setAddress( address );	
-	} else if( val instanceof CCU721 ) {
-		((CCU721)deviceBase).getDeviceAddress().setSlaveAddress( address );
-	} else if( val instanceof IonBase ) {
-		((IonBase)val).getDeviceAddress().setSlaveAddress( address );
-	} else if( val instanceof DNPBase ) {
-		((DNPBase)val).getDeviceAddress().setSlaveAddress( address );
-	} else if( val instanceof RTCBase ) {
-   		((RTCBase)val).getDeviceRTC().setRTCAddress( address );
-   	} else if( val instanceof RTM ) {
-   		((RTM)val).getDeviceIED().setSlaveAddress(address.toString());
-   		((RTM)val).getDeviceIED().setPassword(CtiUtilities.STRING_NONE);
-   	} else if( val instanceof Series5Base ) {
-   		((Series5Base)val).getSeries5().setSlaveAddress( address );
-   	} else if( val instanceof CarrierBase ) {
-   		CarrierBase carrierBase = (CarrierBase)val;
-		if( carrierBase instanceof Repeater900 ) {
-			//special case, we must add ADDRESS_OFFSET to every address for Repeater900
-			carrierBase.getDeviceCarrierSettings().setAddress( 
-                  new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET) );
-		}else if( val instanceof Repeater921 ) {
-            //special case, we must add ADDRESS_OFFSET to every address for Repeater921
-            carrierBase.getDeviceCarrierSettings().setAddress( 
-                  new Integer(address.intValue() + Repeater921.ADDRESS_OFFSET) );
-        }
-		else {
-			carrierBase.getDeviceCarrierSettings().setAddress( address );
-		}
-    } else  { //didn't find it
-		throw new Error("Unable to determine device type when attempting to set the address");
-	}
-
-	PaoType deviceType = deviceBase.getPaoType();
-	if (deviceType.isMct() || DeviceTypesFuncs.isRepeater(deviceType.getDeviceTypeId()) || deviceType.isTwoWayRfnLcr() || deviceType.isTwoWayPlcLcr()) {
-
-        // Check for unique address
-	    checkPaoAddresses(address.intValue());
-        
-        if (this.createPointsCheck.isSelected()) {
-            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
-            deviceBase.setDeviceID(paoDao.getNextPaoId());
-
-            PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
-            DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
-            SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
-            List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(yukonDevice);
-
-            SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
-            persistant.addOwnerDBPersistent(deviceBase);
-            for (PointBase point : defaultPoints) {
-                persistant.addDBPersistent(point);
+                ivjAddressTextField.setDocument(new LongRangeDocument(-999999999L, 999999999L));
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
             }
-            return persistant;
+        }
+        return ivjAddressTextField;
+    }
+
+    private javax.swing.JLabel getJLabelErrorMessage() {
+        if (ivjJLabelErrorMessage == null) {
+            try {
+                ivjJLabelErrorMessage = new javax.swing.JLabel();
+                ivjJLabelErrorMessage.setName("JLabelRange");
+                ivjJLabelErrorMessage.setOpaque(false);
+                ivjJLabelErrorMessage.setText("..RANGE TEXT..");
+                ivjJLabelErrorMessage.setVisible(true);
+                ivjJLabelErrorMessage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                ivjJLabelErrorMessage.setFont(new java.awt.Font("Arial", 1, 10));
+                ivjJLabelErrorMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+                ivjJLabelErrorMessage.setVisible(false);
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJLabelErrorMessage;
+    }
+
+    private javax.swing.JPanel getJPanel1() {
+        if (ivjJPanel1 == null) {
+            try {
+                ivjJPanel1 = new javax.swing.JPanel();
+                ivjJPanel1.setName("JPanel1");
+                ivjJPanel1.setPreferredSize(new java.awt.Dimension(342, 27));
+                ivjJPanel1.setLayout(new java.awt.FlowLayout());
+                ivjJPanel1.setMaximumSize(new java.awt.Dimension(342, 27));
+                ivjJPanel1.setMinimumSize(new java.awt.Dimension(342, 27));
+                getJPanel1().add(getJLabelErrorMessage(), getJLabelErrorMessage().getName());
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJPanel1;
+    }
+
+    private javax.swing.JPanel getJPanelNameAddy() {
+        if (ivjJPanelNameAddy == null) {
+            try {
+                ivjJPanelNameAddy = new javax.swing.JPanel();
+                ivjJPanelNameAddy.setName("JPanelNameAddy");
+                ivjJPanelNameAddy.setLayout(new GridBagLayout());
+
+                GridBagConstraints constraintsNameLabel = new GridBagConstraints();
+                constraintsNameLabel.gridx = 1;
+                constraintsNameLabel.gridy = 1;
+                constraintsNameLabel.anchor = GridBagConstraints.WEST;
+                constraintsNameLabel.insets = new Insets(15, 10, 0, 0);
+                getJPanelNameAddy().add(getNameLabel(), constraintsNameLabel);
+
+                GridBagConstraints constraintsPhysicalAddressLabel = new GridBagConstraints();
+                constraintsPhysicalAddressLabel.gridx = 1;
+                constraintsPhysicalAddressLabel.gridy = 2;
+                constraintsPhysicalAddressLabel.anchor = GridBagConstraints.WEST;
+                constraintsPhysicalAddressLabel.insets = new Insets(10, 10, 0, 0);
+                getJPanelNameAddy().add(getPhysicalAddressLabel(), constraintsPhysicalAddressLabel);
+
+                // Add create points check box
+                GridBagConstraints constraintsCreatePoints = new GridBagConstraints();
+                constraintsCreatePoints.gridx = 1;
+                constraintsCreatePoints.gridy = 3;
+                constraintsCreatePoints.anchor = GridBagConstraints.WEST;
+                constraintsCreatePoints.insets = new Insets(10, 10, 0, 0);
+                constraintsCreatePoints.weighty = 1.0;
+                this.createPointsCheck = new JCheckBox("Create default points");
+                this.createPointsCheck.setVisible(false);
+                getJPanelNameAddy().add(this.createPointsCheck, constraintsCreatePoints);
+
+                GridBagConstraints constraintsNameTextField = new GridBagConstraints();
+                constraintsNameTextField.gridx = 2;
+                constraintsNameTextField.gridy = 1;
+                constraintsNameTextField.fill = GridBagConstraints.HORIZONTAL;
+                constraintsNameTextField.anchor = java.awt.GridBagConstraints.WEST;
+                constraintsNameTextField.weightx = 1.0;
+                constraintsNameTextField.insets = new Insets(15, 0, 0, 20);
+                getJPanelNameAddy().add(getNameTextField(), constraintsNameTextField);
+
+                GridBagConstraints constraintsAddressTextField = new GridBagConstraints();
+                constraintsAddressTextField.gridx = 2;
+                constraintsAddressTextField.gridy = 2;
+                constraintsAddressTextField.fill = GridBagConstraints.HORIZONTAL;
+                constraintsAddressTextField.anchor = GridBagConstraints.WEST;
+                constraintsAddressTextField.weightx = 1.0;
+                constraintsAddressTextField.insets = new Insets(10, 0, 0, 20);
+                getJPanelNameAddy().add(getAddressTextField(), constraintsAddressTextField);
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJPanelNameAddy;
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
+
+    private javax.swing.JLabel getNameLabel() {
+        if (ivjNameLabel == null) {
+            try {
+                ivjNameLabel = new javax.swing.JLabel();
+                ivjNameLabel.setName("NameLabel");
+                ivjNameLabel.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjNameLabel.setText("Device Name:");
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjNameLabel;
+    }
+
+    private javax.swing.JTextField getNameTextField() {
+        if (ivjNameTextField == null) {
+            try {
+                ivjNameTextField = new javax.swing.JTextField();
+                ivjNameTextField.setName("NameTextField");
+                ivjNameTextField.setFont(new java.awt.Font("sansserif", 0, 14));
+                ivjNameTextField.setColumns(12);
+
+                ivjNameTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_DEVICE_NAME_LENGTH, PaoUtils.ILLEGAL_NAME_CHARS));
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjNameTextField;
+    }
+
+    private javax.swing.JLabel getPhysicalAddressLabel() {
+        if (ivjPhysicalAddressLabel == null) {
+            try {
+                ivjPhysicalAddressLabel = new javax.swing.JLabel();
+                ivjPhysicalAddressLabel.setName("PhysicalAddressLabel");
+                ivjPhysicalAddressLabel.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjPhysicalAddressLabel.setText("Physical Address:");
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjPhysicalAddressLabel;
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(350, 200);
+    }
+
+    @Override
+    public Object getValue(Object val) {
+        // The name is easy, the address is more difficult since at this point all devices have a physical address 
+        // but it is tedious to tell what type of device it is - CommLine, Carrier, Repeater, MCT Broadcast group, etc
+
+        deviceBase = (DeviceBase) val;
+
+        String nameString = getNameTextField().getText();
+        deviceBase.setPAOName(nameString);
+
+        // Search for the correct sub-type and set the address
+
+        Integer address = new Integer(getAddressTextField().getText());
+
+        if (val instanceof IDLCBase) {
+            ((IDLCBase) deviceBase).getDeviceIDLCRemote().setAddress(address);
+        } else if (val instanceof CCU721) {
+            ((CCU721) deviceBase).getDeviceAddress().setSlaveAddress(address);
+        } else if (val instanceof IonBase) {
+            ((IonBase) val).getDeviceAddress().setSlaveAddress(address);
+        } else if (val instanceof DNPBase) {
+            ((DNPBase) val).getDeviceAddress().setSlaveAddress(address);
+        } else if (val instanceof RTCBase) {
+            ((RTCBase) val).getDeviceRTC().setRTCAddress(address);
+        } else if (val instanceof RTM) {
+            ((RTM) val).getDeviceIED().setSlaveAddress(address.toString());
+            ((RTM) val).getDeviceIED().setPassword(CtiUtilities.STRING_NONE);
+        } else if (val instanceof Series5Base) {
+            ((Series5Base) val).getSeries5().setSlaveAddress(address);
+        } else if (val instanceof CarrierBase) {
+            CarrierBase carrierBase = (CarrierBase) val;
+            if (carrierBase instanceof Repeater900) {
+                // special case, we must add ADDRESS_OFFSET to every address for Repeater900
+                carrierBase.getDeviceCarrierSettings().setAddress(new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET));
+            } else if (val instanceof Repeater921) {
+                // special case, we must add ADDRESS_OFFSET to every address for Repeater921
+                carrierBase.getDeviceCarrierSettings().setAddress(new Integer(address.intValue() + Repeater921.ADDRESS_OFFSET));
+            } else {
+                carrierBase.getDeviceCarrierSettings().setAddress(address);
+            }
+        } else { // didn't find it
+            throw new Error("Unable to determine device type when attempting to set the address");
+        }
+
+        PaoType deviceType = deviceBase.getPaoType();
+        if (deviceType.isMct() || DeviceTypesFuncs.isRepeater(deviceType.getDeviceTypeId()) || deviceType.isTwoWayRfnLcr() || deviceType.isTwoWayPlcLcr()) {
+
+            // Check for unique address
+            checkPaoAddresses(address.intValue());
+
+            if (this.createPointsCheck.isSelected()) {
+                PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+                deviceBase.setDeviceID(paoDao.getNextPaoId());
+
+                PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
+                DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
+                SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
+                List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(yukonDevice);
+
+                SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
+                persistant.addOwnerDBPersistent(deviceBase);
+                for (PointBase point : defaultPoints) {
+                    persistant.addDBPersistent(point);
+                }
+                return persistant;
+            }
+        }
+
+        return val;
+    }
+
+    /**
+     * Called whenever the part throws an exception.
+     */
+    private void handleException(Throwable exception) {
+        com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+        com.cannontech.clientutils.CTILogger.error(exception.getMessage(), exception);
+    }
+
+    /**
+     * Initializes connections
+     */
+    private void initConnections() throws java.lang.Exception {
+        getNameTextField().addCaretListener(this);
+        getAddressTextField().addCaretListener(this);
+    }
+
+    /**
+     * Initialize the class.
+     */
+    private void initialize() {
+        try {
+            setName("DeviceNameAddressPanel");
+            setLayout(new java.awt.GridBagLayout());
+            setSize(350, 357);
+
+            GridBagConstraints constraintsJPanelNameAddy = new GridBagConstraints();
+            constraintsJPanelNameAddy.gridx = 1;
+            constraintsJPanelNameAddy.gridy = 1;
+            constraintsJPanelNameAddy.fill = GridBagConstraints.HORIZONTAL;
+            constraintsJPanelNameAddy.anchor = GridBagConstraints.WEST;
+            constraintsJPanelNameAddy.weightx = 1.0;
+            constraintsJPanelNameAddy.insets = new Insets(0, 0, 0, 0);
+            add(getJPanelNameAddy(), constraintsJPanelNameAddy);
+
+            GridBagConstraints constraintsJPanel1 = new GridBagConstraints();
+            constraintsJPanel1.gridx = 1;
+            constraintsJPanel1.gridy = 2;
+            constraintsJPanel1.fill = GridBagConstraints.HORIZONTAL;
+            constraintsJPanel1.anchor = GridBagConstraints.WEST;
+            constraintsJPanel1.weightx = 1.0;
+            constraintsJPanel1.weighty = 1.0;
+            constraintsJPanel1.insets = new Insets(2, 4, 202, 4);
+            add(getJPanel1(), constraintsJPanel1);
+            initConnections();
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
         }
     }
-	
-	return val;
-}
 
+    @Override
+    public boolean isInputValid() {
+        String deviceName = getNameTextField().getText();
+        if (StringUtils.isBlank(deviceName)) {
+            setErrorString("The Name text field must be filled in");
+            return false;
+        }
 
-/**
- * Called whenever the part throws an exception.
- * @param exception java.lang.Throwable
- */
-private void handleException(Throwable exception) {
+        if (StringUtils.isBlank(getAddress())) {
+            setErrorString("The Address text field must be filled in");
+            return false;
+        }
 
-	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-}
+        int address = Integer.parseInt(getAddress());
+        PaoType paoType = deviceBase.getPaoType();
+        IntegerRange range = dlcAddressRangeService.getEnforcedAddressRangeForDevice(paoType);
+        if (!range.isWithinRange(address)) {
+            setErrorString("Invalid address. Device address range: " + range);
+            getJLabelErrorMessage().setText("(" + getErrorString() + ")");
+            getJLabelErrorMessage().setToolTipText("(" + getErrorString() + ")");
+            getJLabelErrorMessage().setVisible(true);
+            return false;
+        }
 
+        if (!isUniquePao(deviceName, deviceBase.getPaoType())) {
+            setErrorString("Name '" + deviceName + "' is already in use.");
+            getJLabelErrorMessage().setText("(" + getErrorString() + ")");
+            getJLabelErrorMessage().setToolTipText("(" + getErrorString() + ")");
+            getJLabelErrorMessage().setVisible(true);
+            return false;
+        }
 
-/**
- * Initializes connections
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
-	// user code end
-	getNameTextField().addCaretListener(this);
-	getAddressTextField().addCaretListener(this);
-}
-
-
-/**
- * Initialize the class.
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initialize() {
-	try {
-		// user code begin {1}
-		// user code end
-		setName("DeviceNameAddressPanel");
-		setLayout(new java.awt.GridBagLayout());
-		setSize(350, 357);
-
-		GridBagConstraints constraintsJPanelNameAddy = new GridBagConstraints();
-		constraintsJPanelNameAddy.gridx = 1; 
-        constraintsJPanelNameAddy.gridy = 1;
-		constraintsJPanelNameAddy.fill = GridBagConstraints.HORIZONTAL;
-		constraintsJPanelNameAddy.anchor = GridBagConstraints.WEST;
-		constraintsJPanelNameAddy.weightx = 1.0;
-		constraintsJPanelNameAddy.insets = new Insets(0, 0, 0, 0);
-		add(getJPanelNameAddy(), constraintsJPanelNameAddy);
-
-		GridBagConstraints constraintsJPanel1 = new GridBagConstraints();
-		constraintsJPanel1.gridx = 1; 
-        constraintsJPanel1.gridy = 2;
-		constraintsJPanel1.fill = GridBagConstraints.HORIZONTAL;
-		constraintsJPanel1.anchor = GridBagConstraints.WEST;
-		constraintsJPanel1.weightx = 1.0;
-		constraintsJPanel1.weighty = 1.0;
-		constraintsJPanel1.insets = new Insets(2, 4, 202, 4);
-		add(getJPanel1(), constraintsJPanel1);
-		initConnections();
-	} catch (java.lang.Throwable ivjExc) {
-		handleException(ivjExc);
-	}
-	// user code begin {2}
-	
-	// user code end
-}
-
-/**
- * This method was created in VisualAge.
- * @return boolean
- */
-@Override
-public boolean isInputValid() 
-{
-	String deviceName = getNameTextField().getText();
-	if( StringUtils.isBlank(deviceName)) {
-		setErrorString("The Name text field must be filled in");
-		return false;
-	}
-
-	if( StringUtils.isBlank(getAddress())) {
-		setErrorString("The Address text field must be filled in");
-		return false;
-	}
-
-	int address = Integer.parseInt( getAddress());
-	PaoType paoType = deviceBase.getPaoType();
-    IntegerRange range = dlcAddressRangeService.getEnforcedAddressRangeForDevice(paoType);
-	if (!range.isWithinRange(address)) {
-		setErrorString("Invalid address. Device address range: " + range);
-		getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
-		getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
-		getJLabelErrorMessage().setVisible( true );
-		return false;
-	}
-
-	if( !isUniquePao(deviceName, deviceBase.getPaoType())) {
-		setErrorString("Name '" + deviceName + "' is already in use.");
-     	getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
-     	getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
-     	getJLabelErrorMessage().setVisible( true );
-		return false;
-	}
-
-	getJLabelErrorMessage().setText( "" );
-   	getJLabelErrorMessage().setToolTipText( "" );
-    getJLabelErrorMessage().setVisible( false );
-	return true;
-}
-
-
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		DeviceNameAddressPanel aDeviceNameAddressPanel;
-		aDeviceNameAddressPanel = new DeviceNameAddressPanel();
-		frame.getContentPane().add("Center", aDeviceNameAddressPanel);
-		frame.setSize(aDeviceNameAddressPanel.getSize());
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
-
-
-/**
- * Insert the method's description here.
- * Creation date: (4/30/2002 10:02:36 AM)
- * @param newDeviceType int
- */
-public void setDeviceType(PaoType deviceType) 
-{
-	deviceBase = DeviceFactory.createDevice(deviceType);
-   if( DeviceTypesFuncs.hasMasterAddress(deviceType.getDeviceTypeId()) )
-      getPhysicalAddressLabel().setText("Master Address:");
-   else if( DeviceTypesFuncs.hasSlaveAddress(deviceType.getDeviceTypeId()) || deviceType == PaoType.CCU721)
-      getPhysicalAddressLabel().setText("Slave Address:");
-   else if( deviceType == PaoType.MCTBROADCAST )
-      getPhysicalAddressLabel().setText("Lead Meter Address:");
-   else if( deviceType == PaoType.SERIES_5_LMI )
-	  getPhysicalAddressLabel().setText("Address:");
-   else if(DeviceTypesFuncs.isTwoWayLcr(deviceType.getDeviceTypeId()))
-		  getPhysicalAddressLabel().setText("Serial Number:");
-   else
-      getPhysicalAddressLabel().setText("Physical Address:");
-   
-   if (deviceType.isMct() || DeviceTypesFuncs.isRepeater(deviceType.getDeviceTypeId())
-            || DeviceTypesFuncs.isCCU(deviceType.getDeviceTypeId()) || DeviceTypesFuncs.isTwoWayLcr(deviceType.getDeviceTypeId())) {
-        this.createPointsCheck.setVisible(true);
-        this.createPointsCheck.setSelected(true);
-    } else {
-        this.createPointsCheck.setVisible(false);
-        this.createPointsCheck.setSelected(false);
+        getJLabelErrorMessage().setText("");
+        getJLabelErrorMessage().setToolTipText("");
+        getJLabelErrorMessage().setVisible(false);
+        return true;
     }
-   
-}
 
+    public void setDeviceType(PaoType deviceType) {
+        deviceBase = DeviceFactory.createDevice(deviceType);
+        if (DeviceTypesFuncs.hasMasterAddress(deviceType.getDeviceTypeId()))
+            getPhysicalAddressLabel().setText("Master Address:");
+        else if (DeviceTypesFuncs.hasSlaveAddress(deviceType.getDeviceTypeId()) || deviceType == PaoType.CCU721)
+            getPhysicalAddressLabel().setText("Slave Address:");
+        else if (deviceType == PaoType.MCTBROADCAST)
+            getPhysicalAddressLabel().setText("Lead Meter Address:");
+        else if (deviceType == PaoType.SERIES_5_LMI)
+            getPhysicalAddressLabel().setText("Address:");
+        else if (DeviceTypesFuncs.isTwoWayLcr(deviceType.getDeviceTypeId()))
+            getPhysicalAddressLabel().setText("Serial Number:");
+        else
+            getPhysicalAddressLabel().setText("Physical Address:");
 
-/**
- * This method was created in VisualAge.
- * @param val java.lang.Object
- */
-@Override
-public void setValue(Object val ) {
-	return;
-}
+        if (deviceType.isMct() || 
+                DeviceTypesFuncs.isRepeater(deviceType.getDeviceTypeId()) || 
+                DeviceTypesFuncs.isCCU(deviceType.getDeviceTypeId()) || 
+                DeviceTypesFuncs.isTwoWayLcr(deviceType.getDeviceTypeId())) {
+            this.createPointsCheck.setVisible(true);
+            this.createPointsCheck.setSelected(true);
+        } else {
+            this.createPointsCheck.setVisible(false);
+            this.createPointsCheck.setSelected(false);
+        }
 
-@Override
-public void setFirstFocus() 
-{
-    // Make sure that when its time to display this panel, the focus starts in the top component
-    javax.swing.SwingUtilities.invokeLater( new Runnable() 
-        { 
-        @Override
-        public void run() 
-            { 
-            getNameTextField().requestFocus(); 
-        } 
-    });    
-}
+    }
 
+    @Override
+    public void setValue(Object val) {
+        return;
+    }
+
+    @Override
+    public void setFirstFocus() {
+        // Make sure that when its time to display this panel, the focus starts in the top component
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                getNameTextField().requestFocus();
+            }
+        });
+    }
 }
