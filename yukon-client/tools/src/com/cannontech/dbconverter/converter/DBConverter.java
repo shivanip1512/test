@@ -1,6 +1,8 @@
 package com.cannontech.dbconverter.converter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -14,8 +16,10 @@ import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.port.PortFactory;
+import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.device.DeviceGroupMember;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
 import com.cannontech.tools.gui.IRunnableDBTool;
 
@@ -1513,14 +1517,14 @@ public boolean processRptRouteFile(int aPassCount)
 		handleRptRouteType( (( com.cannontech.database.data.route.CCURoute )route ), tokenizer);
 		
 		// make a vector for the repeaters
-		java.util.Vector repeaterVector = new java.util.Vector();
+		List<RepeaterRoute> repeaters = new ArrayList<RepeaterRoute>();
 	
-		com.cannontech.database.db.route.RepeaterRoute RptRoute = null;
+		RepeaterRoute RptRoute = null;
 
 		// set RPT stuff
 		for( int count = 0; count < aPassCount; count++ )
 		{
-			RptRoute = new com.cannontech.database.db.route.RepeaterRoute();
+			RptRoute = new RepeaterRoute();
 		
    			RptRoute.setRouteID(routeID);
    			
@@ -1530,13 +1534,12 @@ public boolean processRptRouteFile(int aPassCount)
    			RptRoute.setVariableBits(new Integer(Integer.parseInt(tokenizer.nextElement().toString())) );
    			RptRoute.setRepeaterOrder(new Integer( count + 1 ) );
 
-   			repeaterVector.addElement( RptRoute );
+   			repeaters.add( RptRoute );
 		}
 
 		// stuff the repeaters into the CCU Route
-		if( route instanceof com.cannontech.database.data.route.CCURoute)
-		{
-			((com.cannontech.database.data.route.CCURoute)route).setRepeaterVector(repeaterVector);
+		if( route instanceof CCURoute) {
+			((CCURoute)route).setRepeaters(repeaters);
 		}		
 		multi.getDBPersistentVector().add( route );
 		++addCount;
