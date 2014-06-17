@@ -107,6 +107,13 @@ public class EventLogFactoryBeanTest {
             public SearchResults<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
                 return null;
             }
+            @Override
+            public List<ArgumentColumn> getSelectableColumns() {
+                return null;
+            }
+            @Override
+            public void setSelectableColumns(List<ArgumentColumn> columnNames) {
+            }
         };
         
         eventLogFactoryBean.setEventLogDao(eventLogDaoMock);
@@ -200,6 +207,13 @@ public class EventLogFactoryBeanTest {
             @Override
             public SearchResults<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
                 return null;
+            }
+            @Override
+            public List<ArgumentColumn> getSelectableColumns() {
+                return null;
+            }
+            @Override
+            public void setSelectableColumns(List<ArgumentColumn> columnNames) {
             }
         };
         
