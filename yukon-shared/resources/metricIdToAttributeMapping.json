@@ -55,6 +55,8 @@
                 { "metricId" : 163, "attribute" : "POWER_FACTOR_PHASE_B" },
                 { "metricId" : 164, "attribute" : "POWER_FACTOR_PHASE_C" },
 
+                { "metricId" : 257, "attribute" : "TEMPERATURE_DEVICE" },
+
                 { "metricId" : 1001, "attribute" : "USAGE_RATE_A" },
                 { "metricId" : 1002, "attribute" : "RECEIVED_KWH_RATE_A" },
                 { "metricId" : 1003, "attribute" : "SUM_KWH_RATE_A" },
