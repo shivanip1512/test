@@ -219,7 +219,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public boolean deleteManagementSet(String managementSetName) {
+    public boolean deleteManagementSet(String managementSetName) throws EcobeeSetDoesNotExistException {
         log.debug("Deleting ecobee management set: " + managementSetName);
         
         String url = getUrlBase() + modifySetUrlPart;
@@ -229,7 +229,14 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
         log.info("Deleting set " + managementSetName + " URL: " + url);
         StandardResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.SYSTEM, StandardResponse.class);
-
+        
+        // Set doesn't exist, or we don't have permission
+        if (response.hasCode(NOT_AUTHORIZED)) {
+            log.debug("Ecobee response code was 2 (not authorized). Message: \"" + response.getStatus().getMessage()
+                      + "\".");
+            throw new EcobeeSetDoesNotExistException(managementSetName);
+        }
+        
         return response.getSuccess();
     }
 

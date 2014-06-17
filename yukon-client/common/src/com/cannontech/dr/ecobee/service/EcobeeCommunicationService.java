@@ -68,8 +68,9 @@ public interface EcobeeCommunicationService {
      * Deletes the specified management hierarchy set, assuming it is located directly beneath the root set ("/").
      * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API
      * @return True if the management set was deleted.
+     * @throws EcobeeSetDoesNotExistException
      */
-    boolean deleteManagementSet(String managementSetName);
+    boolean deleteManagementSet(String managementSetName) throws EcobeeSetDoesNotExistException;
 
     /**
      * Moves the specified managementHierarchySet from one location to another.
