@@ -1,7 +1,11 @@
 package com.cannontech.dbeditor.editor.route;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -18,8 +22,8 @@ import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
-import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.data.route.RouteRole;
+import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -157,6 +161,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         initialize();
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if(source == getOkButton()) {
@@ -200,7 +205,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         int maskedFixed = new Integer(getCCUFixedTextField().getText()).intValue();
         Vector variables = new Vector();
         variables.add(new Integer(getCCUVariableTextField().getText()));
-        for (int i = 0; i < route.getRepeaterVector().size(); i++) {
+        for (int i = 0; i < route.getRepeaters().size(); i++) {
             Integer variable = new Integer(repeaterTextFieldArray[i].getText());
             if (variable.intValue() != 7) {
                 variables.add(variable);
@@ -235,7 +240,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         }else if (getCCUVariableTextField().getText().equalsIgnoreCase("")) {
             return false;
         }else {
-            for (int i = 0; i < route.getRepeaterVector().size(); i++) {
+            for (int i = 0; i < route.getRepeaters().size(); i++) {
                 if(repeaterTextFieldArray[i].getText().equalsIgnoreCase("")){
                     return false;
                 }
@@ -259,7 +264,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         getCCUFixedSuggestedTextField().setVisible(true);
         getCCUVariableSuggestedTextField().setText(new Integer(role.getVarbit() ).toString());
         getCCUVariableSuggestedTextField().setVisible(true);
-        int size = route.getRepeaterVector().size();
+        int size = route.getRepeaters().size();
         
         for(int i = 0; i < size; i++) {
             repeaterSuggestedTextFieldArray[i].setVisible(true);
@@ -277,7 +282,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
     private void findSuggestedDuplicates() {
         int fixed = new Integer(getCCUFixedSuggestedTextField().getText()).intValue();
         int variable = new Integer(getCCUVariableSuggestedTextField().getText()).intValue();
-        int[] rptVariables = new int[route.getRepeaterVector().size()-1];
+        int[] rptVariables = new int[route.getRepeaters().size()-1];
         for(int i = 0; i < rptVariables.length; i++) {
             rptVariables[i] = new Integer(repeaterSuggestedTextFieldArray[i].getText()).intValue();
         }
@@ -298,7 +303,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
     private void findDuplicates() {
         int fixed = new Integer(getCCUFixedTextField().getText()).intValue();
         int variable = new Integer(getCCUVariableTextField().getText()).intValue();
-        int[] rptVariables = new int[route.getRepeaterVector().size()-1];
+        int[] rptVariables = new int[route.getRepeaters().size()-1];
         for(int i = 0; i < rptVariables.length; i++) {
             rptVariables[i] = new Integer(repeaterTextFieldArray[i].getText()).intValue();
         }
@@ -321,7 +326,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         getCCUVariableTextField().setText(new Integer(role.getVarbit()).toString());
         getCCUFixedSuggestedTextField().setVisible(false);
         getCCUVariableSuggestedTextField().setVisible(false);
-        int size = route.getRepeaterVector().size();
+        int size = route.getRepeaters().size();
         
         for(int i = 0; i < size; i++) {
             repeaterSuggestedTextFieldArray[i].setVisible(false);
@@ -352,7 +357,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         
         int fixed_ = route.getCarrierRoute().getCcuFixBits().intValue() % 32;
         int var_ = route.getCarrierRoute().getCcuVariableBits().intValue();
-        int[] rptVariables_ = new int[route.getRepeaterVector().size()-1];
+        int[] rptVariables_ = new int[route.getRepeaters().size()-1];
         for(int i = 0; i < rptVariables_.length; i++) {
             rptVariables_[i] = new Integer(repeaterTextFieldArray[i].getText()).intValue();
         }
@@ -375,7 +380,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         if(getDuplicateSuggestedCheckBoxPanel().isVisible()){
             int fixed = new Integer(getCCUFixedSuggestedTextField().getText()).intValue();
             int variable = new Integer(getCCUVariableSuggestedTextField().getText()).intValue();
-            int[] rptVariables = new int[route.getRepeaterVector().size()-1];
+            int[] rptVariables = new int[route.getRepeaters().size()-1];
             for(int i = 0; i < rptVariables.length; i++) {
                 rptVariables[i] = new Integer(repeaterSuggestedTextFieldArray[i].getText()).intValue();
             }
@@ -455,6 +460,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
             setLocationRelativeTo(this.owner);
         
         java.awt.event.WindowAdapter w = new java.awt.event.WindowAdapter() {
+            @Override
             public void windowClosing(java.awt.event.WindowEvent e )
             {
                 dispose();
@@ -475,13 +481,13 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         
         int fixed = route.getCarrierRoute().getCcuFixBits().intValue() % 32;
         int var = route.getCarrierRoute().getCcuVariableBits().intValue();
-        Vector rptVector = route.getRepeaterVector();
+        java.util.List<RepeaterRoute> rptVector = route.getRepeaters();
         getCCUFixedTextField().setText(new Integer(fixed).toString());
         getCCUVariableTextField().setText(new Integer(var).toString());
         
-        int[] rptVariables = new int[route.getRepeaterVector().size()-1];
-        for(int i = 0; i < route.getRepeaterVector().size(); i++) {
-            RepeaterRoute rr = (RepeaterRoute)rptVector.get(i);
+        int[] rptVariables = new int[route.getRepeaters().size()-1];
+        for(int i = 0; i < route.getRepeaters().size(); i++) {
+            RepeaterRoute rr = rptVector.get(i);
             int deviceID = rr.getDeviceID().intValue();
             String rptName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(deviceID);
             repeaterLabelArray[i].setText(rptName);
@@ -1397,6 +1403,7 @@ protected javax.swing.JPanel getComponentPanel() {
             anAdvancedRouteSetupDialog = new AdvancedRouteSetupDialog(null,null);
             anAdvancedRouteSetupDialog.setModal(true);
             anAdvancedRouteSetupDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
                     System.exit(0);
                 };
@@ -1418,11 +1425,13 @@ protected javax.swing.JPanel getComponentPanel() {
         return lockCheckBox;
     }
 
+    @Override
     public void focusGained(FocusEvent e) {
         // do nothing
         
     }
 
+    @Override
     public void focusLost(FocusEvent e) {
         Object source = e.getSource();
         if(source == getCCUFixedTextField() ||

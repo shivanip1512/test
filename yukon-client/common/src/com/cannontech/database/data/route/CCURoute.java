@@ -1,5 +1,8 @@
 package com.cannontech.database.data.route;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.route.CarrierRoute;
@@ -7,7 +10,7 @@ import com.cannontech.database.db.route.RepeaterRoute;
 
 public class CCURoute extends RouteBase {
     private CarrierRoute carrierRoute = null;
-    private java.util.Vector<RepeaterRoute> repeaterVector = null;
+    private List<RepeaterRoute> repeaters = null;
 
     public CCURoute() {
         super(PaoType.ROUTE_CCU);
@@ -18,8 +21,8 @@ public class CCURoute extends RouteBase {
         super.add();
         getCarrierRoute().add();
 
-        for (int i = 0; i < getRepeaterVector().size(); i++) {
-            ((DBPersistent) getRepeaterVector().elementAt(i)).add();
+        for (RepeaterRoute repeater : getRepeaters()) {
+            ((DBPersistent)repeater).add();
         }
     }
 
@@ -44,17 +47,17 @@ public class CCURoute extends RouteBase {
         return carrierRoute;
     }
 
-    public java.util.Vector<RepeaterRoute> getRepeaterVector() {
+    public List<RepeaterRoute> getRepeaters() {
 
         // Make sure to instantiate all the repeaters we'll need
         // otherwise on a delete they will be skipped
         // and probably cause constraint violations
 
-        if (repeaterVector == null) {
-            repeaterVector = new java.util.Vector<RepeaterRoute>();
+        if (repeaters == null) {
+            repeaters = new ArrayList<RepeaterRoute>();
         }
 
-        return repeaterVector;
+        return repeaters;
     }
 
     @Override
@@ -63,22 +66,22 @@ public class CCURoute extends RouteBase {
         getCarrierRoute().retrieve();
 
         // Need to get all of the rows.....
-        repeaterVector = new java.util.Vector<RepeaterRoute>();
+        repeaters = new ArrayList<RepeaterRoute>();
 
         try {
             RepeaterRoute rArray[] = RepeaterRoute.getRepeaterRoutes(getRouteID(), getDbConnection());
             for (int i = 0; i < rArray.length; i++) {
-                repeaterVector.addElement(rArray[i]);
+                repeaters.add(rArray[i]);
             }
 
         } catch (java.sql.SQLException e) {
             // not necessarily an error
         }
 
-        for (int i = 0; i < getRepeaterVector().size(); i++) {
-            ((DBPersistent) getRepeaterVector().elementAt(i)).setDbConnection(getDbConnection());
-            ((DBPersistent) getRepeaterVector().elementAt(i)).retrieve();
-            ((DBPersistent) getRepeaterVector().elementAt(i)).setDbConnection(null);
+        for (RepeaterRoute repeater : getRepeaters()) {
+            ((DBPersistent) repeater).setDbConnection(getDbConnection());
+            ((DBPersistent) repeater).retrieve();
+            ((DBPersistent) repeater).setDbConnection(null);
 
         }
     }
@@ -93,17 +96,13 @@ public class CCURoute extends RouteBase {
 
         getCarrierRoute().setDbConnection(conn);
 
-        java.util.Vector<RepeaterRoute> v = getRepeaterVector();
-
-        if (v != null) {
-            for (int i = 0; i < v.size(); i++) {
-                ((DBPersistent) v.elementAt(i)).setDbConnection(conn);
-            }
+        for (RepeaterRoute repeater : getRepeaters()) {
+            ((DBPersistent) repeater).setDbConnection(conn);
         }
     }
 
-    public void setRepeaterVector(java.util.Vector<RepeaterRoute> newValue) {
-        this.repeaterVector = newValue;
+    public void setRepeaters(List<RepeaterRoute> newValue) {
+        this.repeaters = newValue;
     }
 
     @Override
@@ -111,8 +110,8 @@ public class CCURoute extends RouteBase {
         super.setRouteID(routeID);
         getCarrierRoute().setRouteID(routeID);
 
-        for (int i = 0; i < getRepeaterVector().size(); i++) {
-            getRepeaterVector().elementAt(i).setRouteID(routeID);
+        for (RepeaterRoute repeater : getRepeaters()) {
+            repeater.setRouteID(routeID);
         }
     }
 
@@ -123,8 +122,8 @@ public class CCURoute extends RouteBase {
 
         RepeaterRoute.deleteRepeaterRoutes(getRouteID(), getDbConnection());
 
-        for (int i = 0; i < getRepeaterVector().size(); i++) {
-            ((DBPersistent) getRepeaterVector().elementAt(i)).add();
+        for (RepeaterRoute repeater : getRepeaters()) {
+            ((DBPersistent) repeater).add();
         }
     }
 }

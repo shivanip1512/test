@@ -11,7 +11,6 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
@@ -53,11 +52,11 @@ public class RouteUsageHelper {
             // retrieves the repeater vector for each CCU route
             try {
                 for (int i = 0; i < routes.size(); i++) {
-                    rt = LiteFactory.createDBPersistent((LiteBase) routes.get(i));
+                    rt = LiteFactory.createDBPersistent(routes.get(i));
                     if (rt instanceof CCURoute) {
                         rt = Transaction.createTransaction(Transaction.RETRIEVE, rt).execute();
                         CCURoute ccuRoute = (CCURoute) rt;
-                        if (ccuRoute.getRepeaterVector().size() > 0) {
+                        if (ccuRoute.getRepeaters().size() > 0) {
                             realRoutes.add(ccuRoute);
                         }
                     }
@@ -70,7 +69,7 @@ public class RouteUsageHelper {
         }
     }
 
-    public void removeChanginRoutes(Vector<CCURoute> changingRoutes) {
+    public void removeChanginRoutes(List<CCURoute> changingRoutes) {
         
         if (changingRoutes != null) {
             
@@ -88,7 +87,7 @@ public class RouteUsageHelper {
                 if (variableBit < 7) {
                     
                     matrix[realFixedBit][variableBit] = -1;
-                    Vector<RepeaterRoute> rptVector = route.getRepeaterVector();
+                    List<RepeaterRoute> rptVector = route.getRepeaters();
                     
                     for (int i=0; i < rptVector.size()-1; i++ ) {
                         
@@ -127,7 +126,7 @@ public class RouteUsageHelper {
         Iterator<CCURoute> iter = getAllCarrierRoutes().iterator();
         
         while (iter.hasNext()) {
-            CCURoute route = (CCURoute)iter.next();
+            CCURoute route = iter.next();
             
             int maskedFixedBit = route.getCarrierRoute().getCcuFixBits();
             int variableBit = route.getCarrierRoute().getCcuVariableBits();
@@ -138,7 +137,7 @@ public class RouteUsageHelper {
             if (variableBit < 7) {
                 matrix[realFixedBit][variableBit] = route.getRouteID();
                 
-                Vector<RepeaterRoute> rptVector = route.getRepeaterVector();
+                List<RepeaterRoute> rptVector = route.getRepeaters();
                 
                 for (int i=0; i < rptVector.size() - 1; i++ ) {
                     
@@ -229,7 +228,7 @@ public class RouteUsageHelper {
            startingPointVar = 0;
            // try for a completly open slot
            
-           int size = route.getRepeaterVector().size();
+           int size = route.getRepeaters().size();
            boolean success = false;
            int successFixedBit = -1;
            int runStartPoint = -1;
@@ -302,7 +301,7 @@ public class RouteUsageHelper {
             } else {
                 
                 startingPointVar++;
-                if(startingPointVar + route.getRepeaterVector().size() > 7){
+                if(startingPointVar + route.getRepeaters().size() > 7){
                     startingPointVar = 0;
                     startingPointFixed++;
                 }
@@ -311,7 +310,7 @@ public class RouteUsageHelper {
         }
         
         // find suitable slot
-        int size = route.getRepeaterVector().size();
+        int size = route.getRepeaters().size();
         boolean success = false;
         int successFixedBit = -1;
         int runStartPoint = -1;
@@ -452,7 +451,7 @@ public class RouteUsageHelper {
         
         for (int i = 0; i < ids.size(); i++) {
             
-            LiteYukonPAObject liteYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(((Integer)ids.get(i)));
+            LiteYukonPAObject liteYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO((ids.get(i)));
             DBPersistent heavyRoute = LiteFactory.createDBPersistent(liteYuk);
             java.sql.Connection conn = null;
             try {

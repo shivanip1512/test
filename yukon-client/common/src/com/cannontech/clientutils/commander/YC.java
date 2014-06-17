@@ -1700,14 +1700,4 @@ public class YC extends Observable implements MessageListener
     public LiteYukonPAObject getLiteYukonPao(){
         return liteYukonPao;
     }
-    
-    private boolean isQueueable(LiteYukonPAObject liteYukonPao) {
-        return DeviceTypesFuncs.isMCT(liteYukonPao.getPaoType().getDeviceTypeId())
-                || DeviceTypesFuncs.isRepeater(liteYukonPao.getPaoType().getDeviceTypeId());
-    }
-    
-    private boolean isLocateRouteable(LiteYukonPAObject liteYukonPao) {
-        return DeviceTypesFuncs.isMCT(liteYukonPao.getPaoType().getDeviceTypeId())
-                || DeviceTypesFuncs.isRepeater(liteYukonPao.getPaoType().getDeviceTypeId());
-    }
 }

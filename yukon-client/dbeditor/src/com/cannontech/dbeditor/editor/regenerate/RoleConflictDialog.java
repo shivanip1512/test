@@ -221,7 +221,7 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
     private void initializeRoles() {
         int fixed = role.getFixedBit() % 32;
         int var = role.getVarbit();
-        int size = route.getRepeaterVector().size();
+        int size = route.getRepeaters().size();
         getCCUFixedTextField().setText(new Integer(fixed).toString());
         getCCUVariableTextField().setText(new Integer(var).toString());
         
@@ -229,7 +229,7 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
             JTextField field = repeaterTextFieldArray[i];
             JLabel label = repeaterLabelArray[i];
             if(i < size) {
-                RepeaterRoute rr = (RepeaterRoute)route.getRepeaterVector().get(i);
+                RepeaterRoute rr = (RepeaterRoute)route.getRepeaters().get(i);
                 int rptVarBit = (var + i)+1;
                 if(i + 1 == size) {
                     rptVarBit = 7;
