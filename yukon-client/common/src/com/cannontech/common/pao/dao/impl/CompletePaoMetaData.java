@@ -5,7 +5,6 @@ import java.beans.PropertyDescriptor;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
-import com.google.common.collect.Lists;
 
 /**
  * This class is used to represent the metadata in the {@link YukonPao} or 
@@ -27,79 +26,61 @@ import com.google.common.collect.Lists;
  *      This method is invoked to retrieve the {@link YukonPaoPart} object in order to set
  *      or get its data.
  */
-/*package*/ final class CompletePaoMetaData {
+public final class CompletePaoMetaData {
     /**
-     * The class of the annotated object. 
+     * The class of the annotated object.
      */
-    private Class<?> klass;
-    
+    private final Class<?> klass;
+
     /**
-     * The name of the table backing the class (if any.) 
+     * The name of the table backing the class (if any.)
      */
-    private String dbTableName;
-    
+    private final String dbTableName;
+
     /**
      * The name of the key column which maps back to YukonPaObject's paobjectId column.
      */
-    private String dbIdColumnName;
-    
+    private final String dbIdColumnName;
+
     /**
      * A {@link PaoFieldMetaData} for each of the {@link YukonPaoField} annotated members of the class.
      */
-    private Iterable<PaoFieldMetaData> fields = Lists.newArrayList();
-    
+    private final Iterable<PaoFieldMetaData> fields;
+
     /**
      * Used to grab the getter and setter for a {@link YukonPaoField} or {@link YukonPaoPart}.
      */
-    private PropertyDescriptor propertyDescriptor;
+    private final PropertyDescriptor propertyDescriptor;
 
-    public CompletePaoMetaData() {
+    public CompletePaoMetaData(Class<?> klass, String dbTableName, String dbIdColumnName,
+            Iterable<PaoFieldMetaData> fields, PropertyDescriptor propertyDescriptor) {
+        this.klass = klass;
+        this.dbTableName = dbTableName;
+        this.dbIdColumnName = dbIdColumnName;
+        this.fields = fields;
+        this.propertyDescriptor = propertyDescriptor;
     }
 
-    public CompletePaoMetaData(CompletePaoMetaData toCopy, PropertyDescriptor propertyDescriptor) {
-        klass = toCopy.klass;
-        dbTableName = toCopy.dbTableName;
-        dbIdColumnName = toCopy.dbIdColumnName;
-        fields = toCopy.fields;
-        this.propertyDescriptor = propertyDescriptor;
+    public CompletePaoMetaData withDescriptor(PropertyDescriptor propertyDescriptor) {
+        return new CompletePaoMetaData(klass, dbTableName, dbIdColumnName, fields, propertyDescriptor);
     }
 
     public Class<?> getKlass() {
         return klass;
     }
 
-    public void setKlass(Class<?> klass) {
-        this.klass = klass;
-    }
-
     public String getDbTableName() {
         return dbTableName;
-    }
-
-    public void setDbTableName(String dbTableName) {
-        this.dbTableName = dbTableName;
     }
 
     public String getDbIdColumnName() {
         return dbIdColumnName;
     }
 
-    public void setDbIdColumnName(String dbIdColumnName) {
-        this.dbIdColumnName = dbIdColumnName;
-    }
-
     public Iterable<PaoFieldMetaData> getFields() {
         return fields;
     }
 
-    public void setFields(Iterable<PaoFieldMetaData> fields) {
-        this.fields = fields;
-    }
-    
-    public void setPropertyDescriptor(PropertyDescriptor propertyDescriptor) {
-        this.propertyDescriptor = propertyDescriptor;
-    }
-    
     public PropertyDescriptor getPropertyDescriptor() {
         return propertyDescriptor;
     }

@@ -16,6 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.dao.PaoPersistenceTypeHelper;
 import com.cannontech.common.pao.model.CompleteDevice;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
 import com.cannontech.common.pao.model.CompleteYukonPao;
@@ -28,9 +29,11 @@ import com.cannontech.database.YukonJdbcTemplate;
  * This unit test uses an in-memory H2 database to test PaoPersistenceDaoImpl.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/com/cannontech/common/daoTestContext.xml")
+@ContextConfiguration({"/com/cannontech/common/daoTestContext.xml",
+    "/com/cannontech/common/pao/completePao.xml"})
 public class PaoPersistenceDaoImplTest {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private PaoPersistenceTypeHelper paoPersistenceTypeHelper;
 
     private static int nextPaoId = 2;
     private static final int weatherLocationPaoId_create = nextPaoId++;
@@ -51,7 +54,7 @@ public class PaoPersistenceDaoImplTest {
 
     @Before
     public void setUp() throws Exception {
-        paoPersistenceDao = new PaoPersistenceDaoImpl();
+        paoPersistenceDao = new PaoPersistenceDaoImpl(paoPersistenceTypeHelper);
 
         ReflectionTestUtils.setField(paoPersistenceDao, "jdbcTemplate", jdbcTemplate);
 
@@ -60,8 +63,6 @@ public class PaoPersistenceDaoImplTest {
 
         userPageDao = createMock(UserPageDao.class);
         ReflectionTestUtils.setField(paoPersistenceDao, "userPageDao", userPageDao);
-
-        paoPersistenceDao.init();
     }
 
     @Test

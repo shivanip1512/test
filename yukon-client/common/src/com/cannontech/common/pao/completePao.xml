@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <!--
+        This file lists all complete PAOs so we don't have to scan for them (which is slow with signed jars).
+        It's important that this XML file not include any beans that have any dependencies on any beans in
+        any other XML files.  (This is because we 
+    -->
+
+    <bean class="com.cannontech.common.pao.dao.impl.PaoPersistenceTypeHelperImpl">
+        <constructor-arg name="paoClasses">
+            <set>
+                <value>com.cannontech.common.pao.model.CompleteYukonPao</value>
+                <value>com.cannontech.common.pao.model.CompleteCapBank</value>
+                <value>com.cannontech.common.pao.model.CompleteCbcBase</value>
+                <value>com.cannontech.common.pao.model.CompleteDevice</value>
+                <value>com.cannontech.common.pao.model.CompleteRegulator</value>
+                <value>com.cannontech.common.pao.model.CompleteCapControlSubstationBus</value>
+                <value>com.cannontech.common.pao.model.CompleteDigiGateway</value>
+                <value>com.cannontech.common.pao.model.CompleteCapControlArea</value>
+                <value>com.cannontech.common.pao.model.CompleteTwoWayCbc</value>
+                <value>com.cannontech.common.pao.model.CompleteCapControlSubstation</value>
+                <value>com.cannontech.common.pao.model.CompleteCapControlSpecialArea</value>
+                <value>com.cannontech.common.pao.model.CompleteCapControlFeeder</value>
+                <value>com.cannontech.common.pao.model.CompleteOneWayCbc</value>
+                <value>com.cannontech.common.pao.model.CompleteZbGateway</value>
+                <value>com.cannontech.common.pao.model.Ccu721</value>
+                <value>com.cannontech.common.pao.model.CompleteZbEndpoint</value>
+            </set>
+        </constructor-arg>
+        <constructor-arg name="paoPartClasses">
+            <set>
+                <value>com.cannontech.common.pao.model.CompleteCapBankAdditional</value>
+                <value>com.cannontech.common.pao.model.CompleteDeviceDirectCommSettings</value>
+                <value>com.cannontech.common.pao.model.CompleteDeviceScanRate</value>
+                <value>com.cannontech.common.pao.model.CompleteDeviceAddress</value>
+                <value>com.cannontech.common.pao.model.CompleteDeviceWindow</value>
+            </set>
+        </constructor-arg>
+    </bean>
+</beans>

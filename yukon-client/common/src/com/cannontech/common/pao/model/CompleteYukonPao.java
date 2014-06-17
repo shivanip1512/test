@@ -84,7 +84,7 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + " [ CompleteYukonPao [paoIdentifier=" + paoIdentifier + ", paoName="
+        return getClass().getSimpleName() + " [ CompleteYukonPao [paoIdentifier=" + paoIdentifier + ", paoName="
             + paoName + ", description=" + description + ", statistics=" + statistics + ", disabled=" + disabled + "]";
     }
 

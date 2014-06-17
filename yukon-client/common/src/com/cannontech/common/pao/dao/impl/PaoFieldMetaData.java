@@ -11,7 +11,6 @@ import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.annotation.YukonPaoField;
-import com.cannontech.common.pao.annotation.YukonPaoPart;
 import com.cannontech.database.YukonResultSet;
 import com.google.common.base.Function;
 
@@ -19,7 +18,7 @@ import com.google.common.base.Function;
  * This class is used to store the information about methods annotated with the 
  * {@link YukonPaoField} annotation.
  */
-/*package*/ class PaoFieldMetaData {
+public final class PaoFieldMetaData {
     private static final Logger log = YukonLogManager.getLogger(PaoFieldMetaData.class);
 
     public static Function<PaoFieldMetaData, String> colNameOfField =
@@ -35,7 +34,7 @@ import com.google.common.base.Function;
      * getter method) and is used to retrieve the getter and setter methods for the retrieval 
      * and saving processes for a Complete class object.
      */
-    private PropertyDescriptor propertyDescriptor;
+    private final PropertyDescriptor propertyDescriptor;
     
     /**
      * Used to map a class's annotated property to a specific column name in the database. 
@@ -46,13 +45,12 @@ import com.google.common.base.Function;
      * as in the code, dbColumnName tells the PaoPersistenceDao how to get the 
      * data from the Complete object to its rightful column in the database.
      */
-    private String dbColumnName;
-    
-    /**
-     * Specifies whether or not the annotated field corresponds to a class which is defined
-     * as a {@link YukonPaoPart}.
-     */
-    private boolean isPaoPart;
+    private final String dbColumnName;
+
+    PaoFieldMetaData(PropertyDescriptor propertyDescriptor, String dbColumnName) {
+        this.propertyDescriptor = propertyDescriptor;
+        this.dbColumnName = dbColumnName;
+    }
 
     void updateField(Object newInstance, YukonResultSet rs) throws SQLException {
         Method setter = propertyDescriptor.getWriteMethod();
@@ -74,13 +72,15 @@ import com.google.common.base.Function;
         } else if (parameterType == Long.class || parameterType == Long.TYPE) {
             value = rs.getLong(dbColumnName);
         } else if (parameterType == Boolean.class || parameterType == Boolean.TYPE) {
-            value = rs.getBooleanYN(dbColumnName);
+            value = rs.getBoolean(dbColumnName);
         } else if (Date.class.isAssignableFrom(parameterType)) {
             value = rs.getDate(dbColumnName);
         } else if (Instant.class.isAssignableFrom(parameterType)) {
             value = rs.getInstant(dbColumnName);
         } else if (Enum.class.isAssignableFrom(parameterType)) {
-            value = rs.getEnum(dbColumnName, (Class<? extends Enum>) parameterType);
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            Enum enumValue = rs.getEnum(dbColumnName, (Class<? extends Enum>) parameterType);
+            value = enumValue;
         } else {
             log.error("handling " + parameterType.getName() + " not implemented");
             throw new RuntimeException();
@@ -102,31 +102,14 @@ import com.google.common.base.Function;
 
     @Override
     public String toString() {
-        return "PaoFieldMetaData [propertyDescriptor=" + propertyDescriptor + ", dbColumnName="
-               + dbColumnName + ", isPaoPart=" + isPaoPart + "]";
+        return "PaoFieldMetaData [propertyDescriptor=" + propertyDescriptor + ", dbColumnName=" + dbColumnName + "]";
     }
 
-    public PropertyDescriptor getPropertyDescriptor() {
+    PropertyDescriptor getPropertyDescriptor() {
         return propertyDescriptor;
     }
 
-    public void setPropertyDescriptor(PropertyDescriptor propertyDescriptor) {
-        this.propertyDescriptor = propertyDescriptor;
-    }
-
-    public String getDbColumnName() {
+    String getDbColumnName() {
         return dbColumnName;
-    }
-
-    public void setDbColumnName(String dbColumnName) {
-        this.dbColumnName = dbColumnName;
-    }
-
-    public boolean isPaoPart() {
-        return isPaoPart;
-    }
-
-    public void setPaoPart(boolean isPaoPart) {
-        this.isPaoPart = isPaoPart;
     }
 }

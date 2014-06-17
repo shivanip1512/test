@@ -16,6 +16,13 @@ public interface PaoPersistenceDao {
     <T extends CompleteYukonPao> T retreivePao(YukonPao pao, Class<T> klass);
 
     /**
+     * Build the correct CompleteYukonPao for the given pao.  This method will find the correct subclass
+     * of {@link CompleteYukonPao} for the type of the given PAO and return a instance of that class
+     * populated from the database.
+     */
+    CompleteYukonPao retreivePao(YukonPao pao);
+
+    /**
      * Create a PAO of a specific type. <b>This method should only be called from within the
      * PaoPersistenceService (which handles the DbChangeMessaging and Point creation automatically.)</b> If
      * you're calling this method from anywhere else, you're doing it wrong!
