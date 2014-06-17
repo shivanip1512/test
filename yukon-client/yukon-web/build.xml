@@ -160,14 +160,18 @@
             </fileset>
         </copy>
 
-        <!-- Copy all of the library jars from the yukon lib directory into the WebContent_merged/WEB-INF/lib 
-        directory -->
+        <!--
+        	Copy all jars from the yukon lib directory into the WebContent_merged/WEB-INF/lib.
+        	Skip jars that are part of Tomcat and jars we use for testing.
+    	-->
         <copy todir="${yukon-web}/WebContent_merged/WEB-INF/lib" flatten="true">
            <fileset dir="${yukon.lib}" >
               <include name="**/*.jar" />
+              <exclude name="catalina.jar"/>
+              <exclude name="easymock-3.0.jar"/>
+              <exclude name="h2-1.4.178.jar"/>
               <exclude name="jsp-api.jar"/>
               <exclude name="servlet-api.jar"/>
-              <exclude name="catalina.jar"/>
               <exclude name="tomcat-api.jar"/>
               <exclude name="tomcat-util.jar"/>
            </fileset>
