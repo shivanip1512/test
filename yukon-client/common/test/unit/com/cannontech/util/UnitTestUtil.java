@@ -13,7 +13,7 @@ public class UnitTestUtil {
      * Causes calls to new Instant() to return a value this number of seconds adjusted
      */
     public static void adjustSystemTimeBySeconds(int numberOfSeconds) {
-        DateTimeUtils.setCurrentMillisOffset(accumulatedTimeAdjustments.addAndGet(numberOfSeconds * 1000));
+        DateTimeUtils.setCurrentMillisOffset(accumulatedTimeAdjustments.addAndGet((long) numberOfSeconds * 1000));
     }
 
     /**
