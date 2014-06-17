@@ -61,6 +61,19 @@ public class JwsController {
     }
 
     /**
+     * Something is requesting this jar when webstart starts up. We have no control over how its requested and
+     * because of this we don't have the version number in the request. YUK-13456
+     */
+    @RequestMapping("/activemq-broker-5.9.1.jar")
+    public void getActivemqJar(HttpServletResponse response) throws IOException {
+        try {
+            Files.copy(jarFileBase.resolve("activemq-broker-5.9.1-amq-4906.jar"), response.getOutputStream());
+        } catch (ClientAbortException e) {
+            log.debug("Got Exception while downloading Web Start JAR (this can be ignored): " + e);
+        }
+    }
+    
+    /**
      * This is exposed without login filter. No user available
      */
     @RequestMapping("/{requestedJar:.+\\.jar}")
