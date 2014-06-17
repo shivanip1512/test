@@ -41,6 +41,7 @@ import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -57,6 +58,13 @@ public class MapController {
     @Autowired private PointService pointService;
     @Autowired private StateDao stateDao;
     
+    List<BuiltInAttribute> attributes = ImmutableList.of(
+        BuiltInAttribute.VOLTAGE,
+        BuiltInAttribute.VOLTAGE_PHASE_A,
+        BuiltInAttribute.VOLTAGE_PHASE_B,
+        BuiltInAttribute.VOLTAGE_PHASE_C,
+        BuiltInAttribute.USAGE);
+
     /**
      * Meant for device collections that are not static. Like collections based on 
      * the violations device group of a status point or outage monitor.
@@ -96,23 +104,14 @@ public class MapController {
         model.addAttribute("pao", displayable);
         model.addAttribute("location", location);
         
-        List<Attribute> attributes = new ArrayList<>();
-        if (attributeService.isAttributeSupported(pao, BuiltInAttribute.VOLTAGE)) {
-            attributes.add(BuiltInAttribute.VOLTAGE);
+        List<Attribute> supported = new ArrayList<>();
+
+        for(Attribute attribute : attributes) {
+            if (attributeService.isAttributeSupported(pao, attribute)) {
+                supported.add(attribute);
+            }
         }
-        if (attributeService.isAttributeSupported(pao, BuiltInAttribute.VOLTAGE_PHASE_A)) {
-            attributes.add(BuiltInAttribute.VOLTAGE_PHASE_A);
-        }
-        if (attributeService.isAttributeSupported(pao, BuiltInAttribute.VOLTAGE_PHASE_B)) {
-            attributes.add(BuiltInAttribute.VOLTAGE_PHASE_B);
-        }
-        if (attributeService.isAttributeSupported(pao, BuiltInAttribute.VOLTAGE_PHASE_C)) {
-            attributes.add(BuiltInAttribute.VOLTAGE_PHASE_C);
-        }
-        if (attributeService.isAttributeSupported(pao, BuiltInAttribute.USAGE)) {
-            attributes.add(BuiltInAttribute.USAGE);
-        }
-        model.addAttribute("attributes", attributes);
+        model.addAttribute("attributes", supported);
         
         return "map/info.jsp";
     }
