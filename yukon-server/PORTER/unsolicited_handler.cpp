@@ -394,7 +394,7 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
 
 bool UnsolicitedHandler::distributeRequests(const MillisecondTimer &timer, const unsigned long until)
 {
-    generateKeepalives(_request_queue);
+    generateKeepalives(_port);
 
     if( ! isPortRateLimited() )
     {
@@ -487,30 +487,25 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
 }
 
 
-void UnsolicitedHandler::generateKeepalives(om_list &local_queue)
+void UnsolicitedHandler::generateKeepalives(CtiPortSPtr &port)
 {
     const CtiTime TimeNow;
 
-    if( _last_keepalive < TimeNow )
+    //  check all of our devices to see if we need to issue a keepalive
+    for each( const pair<long, device_record *> &dr_pair in _device_records )
     {
-        _last_keepalive = TimeNow;
+        device_record *dr = dr_pair.second;
 
-        //  check all of our devices to see if we need to issue a keepalive
-        for each( const pair<long, device_record *> &dr_pair in _device_records )
+        if( dr->device->isInhibited() )
         {
-            device_record *dr = dr_pair.second;
+            continue;
+        }
 
-            if( dr->device->isInhibited() )
-            {
-                continue;
-            }
-
-            if( isDnpDevice(*dr->device) &&
-                isDnpKeepaliveNeeded(*dr, TimeNow) )
-            {
-                generateDnpKeepalive(local_queue, *dr, TimeNow);
-                dr->last_keepalive = TimeNow;
-            }
+        if( isDnpDevice(*dr->device) &&
+            isDnpKeepaliveNeeded(*dr, TimeNow) )
+        {
+            generateDnpKeepalive(port, *dr, TimeNow);
+            dr->last_keepalive = TimeNow;
         }
     }
 }
@@ -569,24 +564,24 @@ bool UnsolicitedHandler::isDnpKeepaliveNeeded(const device_record &dr, const Cti
     return (last_communication + keepalive_period) < TimeNow;
 }
 
-void UnsolicitedHandler::generateDnpKeepalive(om_list &local_queue, const device_record &dr, const CtiTime &TimeNow)
+void UnsolicitedHandler::generateDnpKeepalive(CtiPortSPtr &port, const device_record &dr, const CtiTime &TimeNow)
 {
     CtiRequestMsg msg(dr.device->getID(), "ping");
     CtiCommandParser parse(msg.CommandString());
-    list<CtiMessage *> vg_list, ret_list;
-    list<OUTMESS *> om_list;
+    CtiDeviceSingle::CtiMessageList vg_list, ret_list;
+    CtiDeviceSingle::OutMessageList om_list;
 
     dr.device->beginExecuteRequest(&msg, parse, vg_list, ret_list, om_list);
 
     for each(OUTMESS *om in om_list )
     {
+        port->writeQueue(om);
+
         PorterStatisticsManager.newRequest(om->Port, om->DeviceID, om->TargetID, om->MessageFlags);
     }
 
     delete_container(vg_list);
     delete_container(ret_list);
-
-    local_queue.insert(local_queue.end(), om_list.begin(), om_list.end());
 
     om_list.clear();
 }

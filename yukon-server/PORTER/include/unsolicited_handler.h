@@ -118,9 +118,9 @@ private:
     void startPendingRequest(device_record *dr);
 
     bool generateOutbounds(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
-    void generateKeepalives( om_list &local_queue );
+    void generateKeepalives( CtiPortSPtr &port );
     static bool isDnpKeepaliveNeeded( const device_record &dr, const CtiTime &TimeNow );
-    static void generateDnpKeepalive( om_list &local_queue, const device_record &dr, const CtiTime &TimeNow );
+    static void generateDnpKeepalive( CtiPortSPtr &port, const device_record &dr, const CtiTime &TimeNow );
     void readPortQueue( CtiPortSPtr &port, om_list &local_queue );
     virtual bool isPortRateLimited() const;
     void tryGenerate(device_record *dr);
@@ -146,8 +146,6 @@ private:
     typedef std::map< long, device_record * > device_record_map;
 
     device_record_map _device_records;
-
-    CtiTime _last_keepalive;
 
     om_list _request_queue;
 

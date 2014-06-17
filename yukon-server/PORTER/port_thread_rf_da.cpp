@@ -122,6 +122,8 @@ int RfDaPortHandler::sendOutbound( device_record &dr )
 
     Messaging::Rfn::E2eMessenger::sendE2eAp_Dnp(msg, boost::bind(&RfDaPortHandler::receiveConfirm, this, _1));
 
+    dr.last_outbound = CtiTime::now();
+
     return NoError;
 }
 
