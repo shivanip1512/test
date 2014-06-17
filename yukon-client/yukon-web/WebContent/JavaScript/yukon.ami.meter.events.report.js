@@ -1,12 +1,36 @@
+/**
+ * Handles Meter Events Reports. 
+ * 
+ * @module yukon.ami.meterEventsReport
+ * @requires JQUERY
+ * @requires JQUERYUI
+ * @requires jquery.dynatree.js
+ * @requires yukon
+ * @requires yukon.ui.util
+ * @requires yukon.tag.scheduled.file.export.inputs.js
+ */
+
 yukon.namespace('yukon.ami.meterEventsReport');
 
 yukon.ami.meterEventsReport = (function () {
 
     var mod,
+    
+    /** @type {boolean} - This flag is set to true when the event types tree is initialized.  */
         eventTypesTreeInitialized = false,
+        
+    /** @type {Array.<string>} - Array of all the titles of event types that need to be ignored. */
         titlesToIgnore = [],
+        
+    /** @type {Object} - Model Data. */        
         _modelData;
 
+    
+    /** Populates the tree with attributes for all the event Types.
+     * @param {Object} allAttributesMap - all events and attribute Map.
+     * @param {Object} eventNode - Event Type.
+     * @param {string} url - url to be invoked. 
+     */ 
     function _populateTreeNodes(allAttributesMap, eventNode) {
         var nodes = [],
             attributeMap = eventNode.attributeMap;
@@ -20,6 +44,9 @@ yukon.ami.meterEventsReport = (function () {
         return nodes;
     }
 
+    /** Ignores the event type title from the event Types Nodes.
+     *  @param {string} title - node name of events Map.
+     */
     function _ignoreTitle(title) {
         for (var i = 0; i < titlesToIgnore.length; i++) {
             if (title === titlesToIgnore[i]) {
@@ -29,6 +56,7 @@ yukon.ami.meterEventsReport = (function () {
         return false;
     }
 
+    /** Initializes the Event types tree. */ 
     function _initEventTypesTree() {
         if (eventTypesTreeInitialized === true) {
             return;
@@ -75,6 +103,7 @@ yukon.ami.meterEventsReport = (function () {
         eventTypesTreeInitialized = true;
     }
 
+    /** Updates the event types. */
     function _updateEventTypes() {
         var numSelected = 0,
             selectedNodes;
@@ -96,6 +125,7 @@ yukon.ami.meterEventsReport = (function () {
         $('#filterPopupEventTypes').dialog('close');
     }
     
+    /** Schedules a meter event report. */
     function _submitSchedule() {
         var formSerialized = $("#filterForm").serialize();
         formSerialized += "&" + $("#scheduleForm").serialize();
@@ -112,12 +142,16 @@ yukon.ami.meterEventsReport = (function () {
         });
     }
 
+    /** Refreshes the schedule table. 
+     *  @param {string} flashScope - inner html content.  */
     function _reloadScheduledJobsTable(flashScope) {
         $("#scheduledJobsTable").load("scheduledJobsTable", function () {
             $("#scheduledJobsTableFlashScope").hide().html(flashScope).fadeIn(150);
         });
     }
 
+    /** Deletes the schedule with give Id. 
+     *  @param {string} jobId - Schedule Id.  */
     function _deleteJob(jobId) {
         var data = {jobId : jobId};
 
@@ -128,11 +162,14 @@ yukon.ami.meterEventsReport = (function () {
         });
     }
     
+    /**  Opens the schedule dialog with given name.
+     * @param {string} title - Dialog box title.  */
     function _createScheduleReportDialog(title) {
         $("#scheduleDialog").dialog({'title' : title, 'modal' : true, 'height' : 'auto',
             'width' : 'auto'});
     }
     
+    /**  Updates the meter events table. */
     function _updateMeterEventsTable() {
         var formSerialized = $("#filterForm").serialize(),
         formUrl = $("#filterForm").attr('action');

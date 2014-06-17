@@ -1,8 +1,12 @@
 /**
- * Singleton that manages the old ami billing pages
+ * Handles the AMI billing page.
  * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
+ * @module yukon.ami.billing
+ * @requires JQUERY
+ * @requires JQUERYUI
+ * @requires yukon
+ * @requires yukon.ami
+ * @requires yukon.tag.scheduled.file.export.inputs.js
  */
 
 yukon.namespace('yukon.ami.billing');
@@ -12,7 +16,10 @@ yukon.ami.billing = (function() {
     var _STOP_EVENT = function(event) {
             event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue
         },
-
+        
+        /** Validates if the billing group is selected or not.
+         * @returns {boolean} - Returns false if no billing group is selected else returns true.
+         */
         _is_valid_billing_group = function() {
             var formatId = $('#MForm [name=fileFormat] :selected').val();
             var itronTypeId = $('#in_formatType_itronEvent').val();
@@ -31,11 +38,17 @@ yukon.ami.billing = (function() {
             return true;
         },
         
+        /** Returns the maximum limit of previous days.
+         *  @returns {number} previousDays - the maximum limit of previous days.
+         */
         _get_max_previous_days = function() {
         	var previousDays = 65535;
         	return previousDays;
         },
 
+        /** Validates if the demand days previous is a positive integer and within the max limit.
+         *  @returns {boolean} - Returns true if valid else returns false.
+         */
         _is_valid_demand_days = function() {
         	var demandDaysPrevious = $('input[name=demandDays]').val();        	
             // Check if demand days is positive Integer
@@ -52,6 +65,9 @@ yukon.ami.billing = (function() {
             return true;
         },
 
+        /** Validates if the energy days previous is a positive integer and within the max limit.
+         *  @return {boolean} -Returns true if valid else returns false.
+         */
         _is_valid_energy_days = function() {
         	var energyDaysPrevious = $('input[name=energyDays]').val();
             // Check if energy days is positive Integer        	
@@ -68,6 +84,11 @@ yukon.ami.billing = (function() {
             return true;
         },
         
+        /** Handles the submit form event.
+         * @param {Object} event - jquery event object.
+         * @param {string} method - method type.
+         * @param {string} url - url to be invoked. 
+         */
         _do_submit_settings_form = function(event, method, url) {
             _STOP_EVENT(event);
             if (!_is_valid_demand_days()) {
@@ -89,7 +110,11 @@ yukon.ami.billing = (function() {
             });
             return false;
         },
-
+        
+        /** 
+         * Handles creating a schedule form
+         * @param {string} new_html - the inner html for the new schedule pane.
+         */
         _populate_generation_schedule_form = function(new_html) {
             var settingsPane = $('#billing_generation_settings');
             var maybeNewPane = $('#billing_generation_schedule');
@@ -108,11 +133,15 @@ yukon.ami.billing = (function() {
             maybeNewPane.show();
         },
 
-        _do_refresh_schedules_jobs_list = function(send_data, after_function) {
+        /** Refreshes the exported schedule jobs list.
+         * @param {Object} params - Request Parameters.
+         * @param {function} [after_function] - A callback function to fire when the refresh finishes.
+         */
+        _do_refresh_schedules_jobs_list = function(params, after_function) {
             $.ajax({
                 url: _url_list_schedule_jobs,
                 type: 'get',
-                data: send_data
+                data: params
             }).done( function(html) {
                 $('#billing_tab_container').tabs('option','active',2); // THIRD tab
                 $('#billing_schedules_jobs').html(html);
@@ -121,13 +150,21 @@ yukon.ami.billing = (function() {
                 }
             });
         },
-
+        
+        /** Returns the pagination data.
+         * @param {Object} jQueryContainer - JQuery object containing the paging elements.
+         * @returns {Object} - Pagination data.
+         */
         _get_pagination_state = function(jQueryContainer) {
             var countPerPage = jQueryContainer.find('.perPageArea .selectedItem').text();
             var currPage = jQueryContainer.find('.paging-area').data('currentPage');
             return {'page': currPage, 'itemsPerPage': countPerPage};
         },
 
+        /** Deletes a schedule and refreshes the job list.
+         * @param {Object} jQueryBtn - jquery button object.
+         * @param {Object} params - Request parameters.
+         */
         _delete_schedule_job = function(jQueryBtn, params) {
             $.ajax({
                 url: _url_delete_scheduled_job,
@@ -143,7 +180,11 @@ yukon.ami.billing = (function() {
                 }
             });
         },
-
+        
+        /** Populates the edit schedule page.
+         * @param {Object} jQueryBtn - jquery button object.
+         * @param {Object} params - Request parameters.
+         */
         _show_edit_schedule_job = function(jQueryBtn, params) {
             $.ajax({
                 url: _url_scheduled_billing_form,
@@ -156,7 +197,10 @@ yukon.ami.billing = (function() {
         },
 
 
-        // TAB #2
+        /** Create/edit/copy an existing billing format
+         * @param {Object} event - jquery event object.
+         * @param {string} url - create/edit/copy URL. 
+         */
         _get_format_ajax_page = function(event, url) {
             _STOP_EVENT(event);
             var currFormat = $('#availableFormat :selected');
@@ -175,6 +219,11 @@ yukon.ami.billing = (function() {
             return false;
         },
 
+        /** Delete or save a billing format.
+         * @param {Object} event - jquery event object.
+         * @param {string} action - delete action/save action.
+         * @param {string} url - delete url/save url.
+         */
         _do_format_ajax_op = function(event, action, url) {
             _STOP_EVENT(event);
             var the_data = {};
@@ -205,11 +254,16 @@ yukon.ami.billing = (function() {
             return false;
         },
 
-        _do_refresh_billing_setup_list = function(send_data, after_function) {
+
+        /** Refresh the billing setup list.
+         * @param {Object} params - Request parameters.
+         * @param {function} [after_function] - A callback function to fire when the refresh finishes.
+         */
+        _do_refresh_billing_setup_list = function(params, after_function) {
             $.ajax({
                 url: _url_format_setup,
                 type: 'get',
-                data: send_data
+                data: params
             }).done( function(html) {
                 var overviewPane = $('#billing_setup_overview');
                 overviewPane.html(html);
@@ -220,6 +274,9 @@ yukon.ami.billing = (function() {
             });
         },
 
+        /** Populates the setup form with given html.
+         * @param {string} new_html - the inner html for the setup form.
+         */
         _populate_setup_form = function(new_html) {
             var overviewPane = $('#billing_setup_overview');
             var formPane = $('#billing_setup_form');
@@ -288,23 +345,39 @@ yukon.ami.billing = (function() {
             _initialized = true;
         },
 
-        // Used by _jobs.jsp, ASSUMED TO EXIST BY scheduledFileExportJobs.tag
+
+        /** Deletes a scheduled billing job and refreshes the job list.
+         * Used by _jobs.jsp, ASSUMED TO EXIST BY scheduledFileExportJobs.tag
+         * @param {string} jobId  - Id of the schedule which is to be deleted.
+         */
         delete_schedule_job : function(jobId) {
             _delete_schedule_job(null, {'jobId': jobId});
         },
 
+        /** Handles the creation of new billing format.
+         * @param {Object} event - jquery event object.
+         */
         show_create_form: function(event) {
             return _get_format_ajax_page(event, _url_format_create);
         },
 
+        /** Handles the editing an existing billing format.
+         * @param {Object} event - jquery event object.
+         */
         show_edit_form: function(event) {
             return _get_format_ajax_page(event, _url_format_edit);
         },
 
+        /** Handles the copying of an existing billing format.
+         * @param {Object} event - jquery event object.
+         */
         show_copy_form: function(event) {
             return _get_format_ajax_page(event, _url_format_copy);
         },
 
+        /** Handles deleting of an existing billing format.
+         * @param {Object} event - jquery event object.
+         */
         do_delete_format: function(event) {
             var currFormat = $('#availableFormat :selected');
             var currFormatId = currFormat.val();
@@ -315,10 +388,16 @@ yukon.ami.billing = (function() {
             });
         },
 
+        /** Handles saving a billing format.
+         * @param {Object} event - jquery event object.
+         */
         do_save_format: function(event) {
             return _do_format_ajax_op(event, 'save', _url_format_save);
         },
 
+        /** Generates a billing file.
+         * @param {Object} event - jquery event object.
+         */
         do_generate_billing_file: function(event) {
             if (!_is_valid_demand_days()) {
             	_STOP_EVENT(event);
@@ -334,10 +413,16 @@ yukon.ami.billing = (function() {
             }
         },
 
+        /** Shows the scheduled billing exports.
+         * @param {Object} event - jquery event object.
+         */
         show_scheduled_billing_form: function(event) {
             return _do_submit_settings_form(event, 'get', _url_scheduled_billing_form);
         },
 
+        /** Shows toggles between tabs on billing page.
+         * @param {Object} event - jquery event object.
+         */
         on_tab_change : function(event, ui){
             var from = ui.oldPanel.children('div').attr('id');
             if(from !='billing_generation_settings') {
@@ -350,8 +435,8 @@ yukon.ami.billing = (function() {
             mod.reset_generation_tab();
         },
 
-        /**
-         * We're leaving the file path, date/periodic information, and email address as-is.
+        /** Resets the generation tab.
+         * @param {Object} event - jquery event object.
          */
         reset_generation_tab: function(event) {
             if (event != null && event != undefined) {
@@ -393,7 +478,9 @@ yukon.ami.billing = (function() {
         },
 
 
-        /** Setup tab **/
+        /** Resets the Setup tab.
+         * @param {Object} event - jquery event object.
+         */
         reset_setup_tab: function(event) {
             if (event != null && event != undefined) {
                 _STOP_EVENT(event);
@@ -407,6 +494,9 @@ yukon.ami.billing = (function() {
             formPane.children('[name=selectedFields]').html('');
         },
 
+        /** Exports a billing file format.
+         * @param {Object} event - jquery event object.
+         */
         do_schedule_billing_file_export: function(event) {
             _STOP_EVENT(event);
             var form = $('#scheduleForm');
@@ -453,6 +543,9 @@ yukon.ami.billing = (function() {
             return false;
         },
 
+        /** Updates the schedule list.
+         * @param {Object} event - jquery event object.
+         */
         update_schedules_job_list: function(event) {
             _STOP_EVENT(event);
             var href = $(event.currentTarget).attr('href');
@@ -460,7 +553,9 @@ yukon.ami.billing = (function() {
             _do_refresh_schedules_jobs_list(href.substr(at), null);
         },
 
-        // no-op for Remove button: SEE scheduledFileExportJob.tag
+        /** Performs delete / edit actions on the exported schedule list item.
+         * @param {Object} event - jquery event object.
+         */
         do_schedules_job_list_button : function(event) {
             var btn = $(event.currentTarget);
             var href = btn.attr('data-url');
@@ -481,6 +576,9 @@ yukon.ami.billing = (function() {
             return true; // This should never be hit.
         },
 
+        /** Enables/Disables the buttons on billing setup page.
+         * @param {Object} event - jquery event object.
+         */
         unfreeze_billing_setup : function(event){ //used to enable or disable buttons
             var selectedFormat = $('#availableFormat :selected');
             if (selectedFormat.length == 1 ) {
@@ -500,7 +598,9 @@ yukon.ami.billing = (function() {
             }
         },
 
-        // @ #billing_setup_overview
+        /** Shows the billing setup form.
+         * @param {Object} event - jquery event object.
+         */
         show_billing_setup_form : function(event) {
             _STOP_EVENT(event);
             var btn = $(event.currentTarget);
@@ -517,7 +617,9 @@ yukon.ami.billing = (function() {
             return false;
         },
 
-        // @ #billing_setup_overview
+        /** Deletes a billing format
+         * @param {Object} event - jquery event object.
+         */
         delete_billing_format : function(event) {
             _STOP_EVENT(event);
             var formatId = $('#formatForm availableFormat :selected').val();

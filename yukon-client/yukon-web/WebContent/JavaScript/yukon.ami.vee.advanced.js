@@ -1,8 +1,16 @@
+/**
+ * Handles the validation engine advanced processing page.
+ *
+ * @module yukon.ami.veeAdvanced
+ * @requires JQUERY
+ * @requires yukon
+ * @requires yukon.ui
+ * @requires yukon.ami
+ */
 
-yukon.namespace('yukon.ami');
-yukon.namespace('yukon.ami.advanced.processing');
+yukon.namespace('yukon.ami.veeAdvanced');
 
-yukon.ami.advanced.processing = (function () {
+yukon.ami.veeAdvanced = (function () {
     $(function () {
         //accept all
         $(document).on('click','#accept-all', function() {
@@ -21,6 +29,7 @@ yukon.ami.advanced.processing = (function () {
             });
             return false;
         });
+        
         //delete all
         $(document).on('click','#delete-all', function() {
             yukon.ui.busy('#accept-all');
@@ -37,6 +46,7 @@ yukon.ami.advanced.processing = (function () {
             });
             return false;
         });
+        
         //reset one year
         $(document).on('click','#reset-12-months', function(e) {
             yukon.ui.busy('#accept-all');
@@ -52,6 +62,7 @@ yukon.ami.advanced.processing = (function () {
             });
             return false;
         });
+        
         //delete all
         $(document).on('click','#reset-all', function(e) {
             yukon.ui.busy('#accept-all');

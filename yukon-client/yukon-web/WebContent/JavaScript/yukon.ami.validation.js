@@ -1,8 +1,20 @@
+/**
+ * Handles validation engines reviews page. 
+ * 
+ * @module yukon.ami.validation
+ * @requires JQUERY
+ * @requires yukon
+ */
 
-yukon.namespace('yukon.ami');
 yukon.namespace('yukon.ami.validation');
 
 yukon.ami.validation = (function () {
+	
+	    /** Toggles between the action selected Accepted/Deleted.  
+	     * @param {string} action - Action selected accept/delete.
+	     * @param {Object} deleteEl - delete button instance.
+	     * @param {Object} acceptEl - accept button instance. 
+	     */ 
         var _resetElementSelected = function (action, deleteEl, acceptEl) {
             if (action === 'DELETE') {
                 $(deleteEl).removeClass('on');
@@ -13,6 +25,12 @@ yukon.ami.validation = (function () {
             }
             
         },
+        
+        /** Toggles between the action selected Accepted/Deleted.  
+	     * @param {string} action - Action selected accept/delete.
+	     * @param {Object} deleteEl - delete button instance.
+	     * @param {Object} ignoreEl - ignore Expression. 
+	     */
         _toggleElementSelected = function (action, deleteEl, acceptEl, ignoreEl) {
             if (action === 'DELETE') {
                 $(deleteEl).addClass('on');
@@ -23,6 +41,10 @@ yukon.ami.validation = (function () {
                 $(acceptEl).addClass('on');
             }
         },
+        
+        /** Gets the delete or accept buttons instance.  
+	     *  @param {Object} el - Id of the button clicked.
+	     */
         _getActionValues = function (el) {
                 idParts = el.id.split('_'),
                 action = idParts[1],

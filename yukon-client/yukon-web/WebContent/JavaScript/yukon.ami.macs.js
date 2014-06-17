@@ -1,8 +1,16 @@
+/**
+ * Updates the MAC Schedules list. 
+ * 
+ * @module yukon.ami.macs
+ * @requires JQUERY
+ * @requires yukon
+ */
 
-yukon.namespace('yukon.ami');
 yukon.namespace('yukon.ami.macs');
 
 yukon.ami.macs = (function () {
+	
+	/** Refreshes the list of scheduled scripts after every 5 seconds. */
     var _autoUpdatePageContent = function () {
         var tableContainer = $('[data-reloadable]'),
             reloadUrl = tableContainer.attr('data-url');

@@ -1,8 +1,10 @@
 /**
  * Singleton that manages alerts button and popup
  * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
+ * @module yukon.alerts
+ * @requires JQUERY
+ * @requires JQUERYUI
+ * @requires yukon
  */
 
 yukon.namespace('yukon.alerts');
@@ -10,16 +12,24 @@ yukon.namespace('yukon.alerts');
 yukon.alerts = (function () {
     
         var _initialized = false,
+        
+        /** @type {boolean} - flag that is set to true if there is any alert. */
         _countInitialized = false,
+        
+        /** @type {number} - count of the alerts. */
         _oldCount = 0,
+        
         _alert_button = '#yukon-alert-button',
-        _clear_button = '.js-clear-all-yukon-alerts',
+        
+               _clear_button = '.js-clear-all-yukon-alerts',
+        
+        /** @type {string} - URL to view all the alerts. */
         _viewAlertUrl = yukon.url('/common/alert/view'),
+        
+        /** @type {string} - URL to clear all the alerts. */
         _clearAlertUrl = yukon.url('/common/alert/clear'),
         
-        /* --------------- */
-        /* private methods */
-        /* --------------- */
+        /** Handles the click event of alert button. */
         _handleBtnClick = function() {
             if ($('#yukon_alert_popup').is(':visible')) {
                 $('#yukon_alert_popup').dialog('close');
@@ -29,7 +39,10 @@ yukon.alerts = (function () {
                 });
             }
         },
-
+        
+        /** Updates the alert count and animates the alert button accordingly.
+		*   @param {number} count - alert count.
+		*/
         _updateCount = function (count) {
             var button = $('#yukon-alert-button');
             button.children('.b-label').html(count);
@@ -63,9 +76,6 @@ yukon.alerts = (function () {
 
     mod = {
         
-        /* -------------- */
-        /* public methods */
-        /* -------------- */
         init: function() {
             if (_initialized) {
                 return;
@@ -88,11 +98,20 @@ yukon.alerts = (function () {
             _initialized = true;
         },
 
+        /** 
+         * Handles the alert count and animates the alert button accordingly.
+         * @param {Object} data - alert data 
+         *       
+         */
         countUpdated : function (data) {
             var count = data.count;
             _updateCount(count);
         },
 
+        /** 
+         * Clears the alert data.
+         * @param {string} alertId- The id associated with the alert. 
+         */
         clearAlert : function (alertId) {
             var alertIds = [],
                 remainingAlerts;
