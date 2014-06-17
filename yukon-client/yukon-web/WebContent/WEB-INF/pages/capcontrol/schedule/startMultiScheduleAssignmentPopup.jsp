@@ -9,7 +9,7 @@
 <form id="start-multiple-schedules-form">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".schedules">
-            <select name="startSchedule" id="startSchedule">
+            <select name="startSchedule" id="start-schedule">
                 <option value="All"<c:if test="${param.schedule == 'All'}"> selected="selected"</c:if>><cti:msg2 key=".allSchedules"/></option>
                 <c:forEach var="aSchedule" items="${scheduleList}">
                     <c:choose>

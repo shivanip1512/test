@@ -98,7 +98,7 @@
                         <option value="All"><cti:msg2 key=".allSchedules"/></option>
                         <c:forEach var="aSchedule" items="${scheduleList}">
                             <option value="${aSchedule.scheduleName}"<c:if test="${param.schedule == aSchedule.scheduleName}"> selected="selected" </c:if>>
-                                <spring:escapeBody htmlEscape="true">${aSchedule.scheduleName}</spring:escapeBody>
+                                ${fn:escapeXml(aSchedule.scheduleName)}
                             </option>
                         </c:forEach>
                     </select>
@@ -128,8 +128,8 @@
         </form>
     </div>
     
-    <cti:uniqueIdentifier  prefix="addPao" var="addPao"/>
-    <cti:uniqueIdentifier var="addPaoSpanId" prefix="addPaoSpan_"/>
+<%--     <cti:uniqueIdentifier  prefix="addPao" var="addPao"/> --%>
+<%--     <cti:uniqueIdentifier var="addPaoSpanId" prefix="addPaoSpan_"/> --%>
     
     <cti:msg2 var="confirmCommand" key=".confirmCommand"/>
     <cti:msg2 var="sendTimeSyncsCommand" key=".sendTimeSyncsCommand"/>
@@ -137,22 +137,6 @@
     <c:set var="baseUrl" value="/capcontrol/schedule/scheduleAssignments"/>
     <cti:url var="showAllUrl" value="/capcontrol/schedule/scheduleAssignments"/>
 
-    <!-- Display success or failure message if a command was submitted -->
-    <c:if test="${param.success != null}">
-        <c:choose>
-            <c:when test="${param.success}">
-                <script type="text/javascript">
-                    yukon.da.showAlertMessage('${cti:escapeJavaScript(param.resultText)}', 'green');
-                </script>
-            </c:when>
-            <c:otherwise>
-                <script type="text/javascript">
-                yukon.da.showAlertMessage('${cti:escapeJavaScript(param.resultText)}', 'red');
-                </script>
-            </c:otherwise>
-        </c:choose>
-    </c:if>
-    
     <div id="schedule-assignments-table" data-reloadable>
         <%@include file="scheduleassignmentTable.jsp" %>
     </div>

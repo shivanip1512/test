@@ -12,7 +12,7 @@ yukon.da.schedules = (function () {
     
     var _initialized = false,
     
-    mod;
+    mod = {};
 
     mod = {
         
@@ -21,12 +21,11 @@ yukon.da.schedules = (function () {
                 return;
             }
             
-            /** start/stop schedule */
-            $(document).on('click', 'button.runSchedule', function (ev) {
-                var row = $(ev.currentTarget).closest('tr');
-                var scheduleName = row.children('td[name=schedName]').html();
-                var deviceName = row.children('td[name=deviceName]').html();
-                var eventId = row[0].id.split('_')[1];
+            /** Click detection to start schedule. */
+            $(document).on('click', '.run-schedule', function (ev) {
+                var scheduleName = $(ev.target).closest('li').attr('data-schedule-name');
+                var deviceName = $(ev.target).closest('li').attr('data-device-name');
+                var eventId = $(ev.target).closest('li').attr('data-event-id');
                 
                 $.getJSON(yukon.url('/capcontrol/schedule/startSchedule'), {
                     'eventId': eventId, 
@@ -40,38 +39,36 @@ yukon.da.schedules = (function () {
                 });
                 
             });
-            
-            $(document).on('click', 'button.stopSchedule', function (ev) {
-                var row = $(ev.currentTarget).closest('tr');
-                
-                var deviceName = row.children('td[name=deviceName]').html();
-                var deviceId = $(ev.currentTarget).attr('name');
+            /** Click detection to start schedule. */
+            $(document).on('click', '.stop-schedule', function (ev) {
+                var deviceName = $(ev.target).closest('li').attr('data-device-name');
+                var deviceId = $(ev.target).closest('li').attr('data-device-id');
                 
                 $.getJSON(yukon.url('/capcontrol/schedule/stopSchedule'), {
                     'deviceId': deviceId, 
                     'deviceName': deviceName
                 }).done(function (json) {
                     if(!json.success) {
-                        yukon.da.showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', 
+                        yukon.da.showAlertMessageForAction('', 
                                 '', json.resultText, 'red');
                     } else {
-                        yukon.da.showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', 
+                        yukon.da.showAlertMessageForAction('', 
                                 '', json.resultText, 'green');
                     }
                 });
                 
             });
-            
+            /** Click detection to submit remove assignment form. */
             $(document).on('click', '#removeAssignment', function (ev) {
                 $('#removeAssignmentForm').submit();
             });
             
-            /** new assignments dialog*/
+            /** Click detection to submit add assignment form. */
             $('#add-assignments').on('yukon.vv.schedules.add', function (ev) {
                 $('#add-schedule-assignment-form').submit();
             });
 
-            /** stop assignments dialog*/
+            /** Click detection to post stop schedules form. */
             $('#stop-assignments').on('yukon.vv.schedules.stop.all', function (ev) {
                 var reviewTableUrl = yukon.url('/capcontrol/schedule/stopMultiple');
                 $.post(reviewTableUrl, $('#stop-multiple-schedules-form').serialize()).done(function(json) {
@@ -82,7 +79,7 @@ yukon.da.schedules = (function () {
                 });
             });
             
-            /** start assignments dialog*/
+            /** Click detection to submit start assignment form. */
             $('#start-assignments').on('yukon.vv.schedules.start.all', function (ev) {
                 var reviewTableUrl = yukon.url('/capcontrol/schedule/startMultiple');
                 $.post(reviewTableUrl, $('#start-multiple-schedules-form').serialize()).done(function(json) {
@@ -93,7 +90,7 @@ yukon.da.schedules = (function () {
                 });
             });
             
-            /** enable menu click*/
+            /** Click detection for enable OvUv menu click. */
             $(document).on('click', '.js-enable-ovuv', function (ev) {
                 var eventId = $(ev.target).closest('li').attr('value');
                 $.post(yukon.url('/capcontrol/schedule/setOvUv'), {
@@ -103,14 +100,14 @@ yukon.da.schedules = (function () {
                     if (!json.success) {
                         yukon.da.showAlertMessageForAction('OvUv', '', json.resultText, 'red');
                     } else {
-                        enableLi = $('li[value=' + json.id + ']').find('.js-enable-ovuv').closest('li');
+                        var enableLi = $('li[value=' + json.id + ']').find('.js-enable-ovuv').closest('li');
                         enableLi.hide();
-                        disableLi = $('li[value=' + json.id + ']').find('.js-disable-ovuv').closest('li');
+                        var disableLi = $('li[value=' + json.id + ']').find('.js-disable-ovuv').closest('li');
                         disableLi.show();
                     }
                 });
             });
-            /** disable menu click*/
+            /** Click detection for disable OvUv menu click. */
             $(document).on('click', '.js-disable-ovuv', function (ev) {
                 var eventId = $(ev.target).closest('li').attr('value');
                 $.post(yukon.url('/capcontrol/schedule/setOvUv'), {
@@ -120,15 +117,15 @@ yukon.da.schedules = (function () {
                     if (!json.success) {
                         yukon.da.showAlertMessageForAction('OvUv', '', json.resultText, 'red');
                     } else {
-                        enableLi = $('li[value=' + json.id + '] .js-enable-ovuv').closest('li');
+                        var enableLi = $('li[value=' + json.id + '] .js-enable-ovuv').closest('li');
                         enableLi.show();
-                        disableLi = $('li[value=' + json.id + '] .js-disable-ovuv').closest('li');
+                        var disableLi = $('li[value=' + json.id + '] .js-disable-ovuv').closest('li');
                         disableLi.hide();
                     }
                 });
             });
 
-            /** Set filter */
+            /** Set filter on the table. */
             $(document).on('click', '#set-filter', function (ev) {
                 var filterUrl = yukon.url('/capcontrol/schedule/filter');
                 $.post(filterUrl, $('#filter-popup').find('form').serialize()).done(function(result) {
@@ -137,7 +134,7 @@ yukon.da.schedules = (function () {
                 });
             });
             
-            /** clear the filter */
+            /** Clear filter on the table. */
             $(document).on('click', '#clear-filter', function (ev) {
                 var filterUrl = yukon.url('/capcontrol/schedule/filter');
                 $.post(filterUrl).done(function(result) {

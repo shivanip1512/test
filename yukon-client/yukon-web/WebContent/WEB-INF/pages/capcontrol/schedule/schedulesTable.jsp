@@ -1,8 +1,8 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.capcontrol">
 
@@ -11,9 +11,9 @@
             <span class="empty-list"><i:inline key=".schedules.noSchedules"/></span>
         </c:when>
         <c:otherwise>
-            <table class="compact-results-table" id="scheduleTable">
+            <table class="compact-results-table">
                 <thead>
-                    <tr id="header">
+                    <tr>
                         <th><i:inline key=".schedule"/></th>
                         <th><i:inline key=".lastRunTime"/></th>
                         <th><i:inline key=".nextRunTime"/></th>
@@ -21,17 +21,15 @@
                         <th><i:inline key=".schedules.disabled"/></th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
+                <tbody>
                     <c:forEach var="item" items="${scheduleList}">
-                        <tr id="s_${item.scheduleID}">
+                        <tr>
                             <td class="wsnw">
                                 <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                                     <cti:param name="type" value="3"/>
                                     <cti:param name="itemid" value="${item.scheduleID}"/>
                                 </cti:url>
-                                <a href="${editUrl}">
-                                    ${fn:escapeXml(item.scheduleName)}
-                                </a>
+                                <a href="${editUrl}">${fn:escapeXml(item.scheduleName)}</a>
                             </td>
                             <td>
                                 <c:choose>
@@ -71,6 +69,6 @@
         </c:otherwise>
     </c:choose>
     <c:set var="baseUrl" value="schedulesTable" />
-    <tags:pagingResultsControls baseUrl="${baseUrl}" result="${pagedResults}" adjustPageCount="${pagedResults.getHitCount() > 10 ? true : false}"/>
+    <tags:pagingResultsControls baseUrl="${baseUrl}" result="${pagedResults}" adjustPageCount="true"/>
     
 </cti:msgScope>

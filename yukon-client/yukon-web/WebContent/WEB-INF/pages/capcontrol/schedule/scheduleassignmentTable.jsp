@@ -17,7 +17,7 @@
         <table class="compact-results-table has-actions" id="scheduledTable">
             
             <thead>
-                <tr id="header">
+                <tr>
                     <th><i:inline key=".schedule"/></th>
                     <th><i:inline key=".device"/></th>
                     <th><i:inline key=".lastRunTime"/></th>
@@ -26,7 +26,7 @@
                 </tr>
             </thead>
             
-            <tbody id="tableBody">
+            <tbody>
             <c:forEach var="item" items="${itemList}">
             
                 <tr id="s_${item.eventId}_${item.paoId}">
@@ -45,9 +45,13 @@
                         <cm:dropdown triggerClasses="fr">
                             <c:choose>
                                 <c:when test="${hasActionRoles == true}">
-                                    <cm:dropdownOption icon="icon-control-play-blue" key="yukon.web.modules.capcontrol.play.label" href="buttons#drop-down-example"></cm:dropdownOption>
+                                    <cm:dropdownOption classes="run-schedule" data-device-name="${fn:escapeXml(item.deviceName)}" 
+                                        data-schedule-name="${fn:escapeXml(item.scheduleName)}" data-event-id="${item.eventId}" 
+                                        icon="icon-control-play-blue" key="yukon.web.modules.capcontrol.play.label"></cm:dropdownOption>
                                     <c:if test="${(item.commandName != confirmCommand)&&(item.commandName != sendTimeSyncsCommand)}">
-                                        <cm:dropdownOption icon="icon-control-stop-blue" key="yukon.web.modules.capcontrol.stop.label" href="buttons#drop-down-example"></cm:dropdownOption>
+                                        <cm:dropdownOption classes="stop-schedule" data-device-name="${fn:escapeXml(item.deviceName)}" 
+                                            data-device-id="${item.paoId}" data-event-id="${item.eventId}" 
+                                            icon="icon-control-stop-blue" key="yukon.web.modules.capcontrol.stop.label"></cm:dropdownOption>
                                     </c:if>
                                 </c:when>
                                 <c:otherwise>
@@ -93,6 +97,5 @@
 </c:choose>
 
 <c:set var="baseUrl" value="scheduleAssignmentsTable" />
-<tags:pagingResultsControls baseUrl="${baseUrl}" result="${pagedResults}" adjustPageCount="${pagedResults.getHitCount() > 10 ? true : false}"/>
-
+<tags:pagingResultsControls baseUrl="${baseUrl}" result="${pagedResults}" adjustPageCount="true"/>
 </cti:msgScope>
