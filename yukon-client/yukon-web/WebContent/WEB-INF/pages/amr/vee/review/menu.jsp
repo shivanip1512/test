@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage page="validation.advanced" module="amr">
-    <cti:includeScript link="/JavaScript/yukon.ami.advanced.processing.js"/>
+    <cti:includeScript link="/JavaScript/yukon.ami.vee.advanced.js"/>
 
     <div id="tags-accepted" class="user-message success dn">
         <i:inline key=".tagsAccepted"/>
