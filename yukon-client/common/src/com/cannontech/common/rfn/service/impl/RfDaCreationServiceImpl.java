@@ -13,11 +13,14 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfDaCreationService;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class RfDaCreationServiceImpl implements RfDaCreationService {
     
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
+    @Autowired private DbChangeManager dbChangeManager;
 
     private final AtomicInteger newDeviceCreated = new AtomicInteger();
 
@@ -33,6 +36,9 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
         
         rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getPaoIdentifier().getPaoId(), 
                 device.getRfnIdentifier().getCombinedIdentifier(), "N/A", deviceName);
+
+        dbChangeManager.processPaoDbChange(newDevice, DbChangeType.ADD);
+
         return device;
     }
     
