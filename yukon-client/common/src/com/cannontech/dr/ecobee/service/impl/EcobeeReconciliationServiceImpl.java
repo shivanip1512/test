@@ -243,6 +243,28 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
                 }
             }
         }
+        
+        String optOutSetPath = hierarchyInfo.getSetNameToSetPath().get(EcobeeCommunicationService.OPT_OUT_SET);
+        String correctOptOutSetPath = "/" + EcobeeCommunicationService.OPT_OUT_SET;
+        if (optOutSetPath == null) {
+            //Set doesn't exist in ecobee
+            errorsList.add(new EcobeeMissingSetDiscrepancy(correctOptOutSetPath));
+        } else if (!optOutSetPath.equals(correctOptOutSetPath)) {
+            //Set exists, but not under the root where it's supposed to be
+            errorsList.add(new EcobeeMislocatedSetDiscrepancy(optOutSetPath, correctOptOutSetPath));
+        }
+        //Not practical to check the devices in this group - it will change much more frequently than the report is run.
+        
+        String unenrolledSetPath = hierarchyInfo.getSetNameToSetPath().get(EcobeeCommunicationService.UNENROLLED_SET);
+        String correctUnenrolledSetPath = "/" + EcobeeCommunicationService.UNENROLLED_SET;
+        if (unenrolledSetPath == null) {
+            //Set doesn't exist in ecobee
+            errorsList.add(new EcobeeMissingSetDiscrepancy(correctUnenrolledSetPath));
+        } else if (!unenrolledSetPath.equals(correctUnenrolledSetPath)) {
+            //Set exists, but not under the root where it's supposed to be
+            errorsList.add(new EcobeeMislocatedSetDiscrepancy(unenrolledSetPath, correctUnenrolledSetPath));
+        }
+        //Can't check devices in this group, they may be here, or in "Unassigned"
     }
     
     /**
