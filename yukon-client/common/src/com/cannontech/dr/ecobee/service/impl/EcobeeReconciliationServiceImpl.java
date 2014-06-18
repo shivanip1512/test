@@ -18,7 +18,6 @@ import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.dao.EcobeeGroupDeviceMappingDao;
 import com.cannontech.dr.ecobee.dao.EcobeeReconciliationReportDao;
-import com.cannontech.dr.ecobee.dao.impl.EcobeeReconciliationReportDaoImpl;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
@@ -40,7 +39,7 @@ import com.google.common.collect.Multimaps;
 
 public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationService {
     
-    private static final Logger log = YukonLogManager.getLogger(EcobeeReconciliationReportDaoImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(EcobeeReconciliationServiceImpl.class);
     
     @Autowired private EcobeeReconciliationReportDao reconciliationReportDao;
     @Autowired private EcobeeCommunicationService communicationService;
