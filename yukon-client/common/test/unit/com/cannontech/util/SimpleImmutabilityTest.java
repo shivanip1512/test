@@ -24,6 +24,8 @@ import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.dao.impl.CompletePaoMetaData;
+import com.cannontech.common.pao.dao.impl.PaoFieldMetaData;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointValue;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
@@ -105,6 +107,8 @@ public class SimpleImmutabilityTest {
         assertMostLikelyImmutable(WeatherStation.class);
         assertMostLikelyImmutable(HardwareEnrollmentInfo.class);
         assertMostLikelyImmutable(SettlementConfigFuncs.class);
+        assertMostLikelyImmutable(CompletePaoMetaData.class);
+        assertMostLikelyImmutable(PaoFieldMetaData.class);
     }
 
     @Test

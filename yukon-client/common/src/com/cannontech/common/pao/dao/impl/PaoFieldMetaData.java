@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 public final class PaoFieldMetaData {
     private static final Logger log = YukonLogManager.getLogger(PaoFieldMetaData.class);
 
-    public static Function<PaoFieldMetaData, String> colNameOfField =
+    public static final Function<PaoFieldMetaData, String> toDbColumnName =
         new Function<PaoFieldMetaData, String>() {
             @Override
             public String apply(PaoFieldMetaData input) {
