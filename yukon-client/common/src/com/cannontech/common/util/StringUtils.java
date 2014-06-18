@@ -75,7 +75,7 @@ public final class StringUtils {
             Integer newInteger = Integer.parseInt(tok.nextToken());
             integerList.add(newInteger);
         }
-        return integerList;        
+        return integerList;
     }
     
     /**

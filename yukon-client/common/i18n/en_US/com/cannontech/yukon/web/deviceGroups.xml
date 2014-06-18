@@ -112,7 +112,7 @@ Group names may not be blank or contain slashes.
 <entry key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupLabel">Remove All Devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupDescription">Remove All Devices From This Group</entry>
 
-<entry key="yukon.web.deviceGroups.deviceGroupPicker.deviceGroupNameSelectorTag.defaultNoGroupSelectedText">Select Device Group</entry>
+<entry key="yukon.web.deviceGroups.deviceGroupPicker.deviceGroupNameSelectorTag.defaultNoGroupSelectedText">Select a device group.</entry>
 <entry key="yukon.web.deviceGroups.deviceGroupPicker.title">Select Device Group</entry>
 <entry key="yukon.web.deviceGroups.deviceGroupPicker.selectButton">Select Group</entry>
 <entry key="yukon.web.deviceGroups.deviceGroupPicker.cancelButton">Cancel</entry>

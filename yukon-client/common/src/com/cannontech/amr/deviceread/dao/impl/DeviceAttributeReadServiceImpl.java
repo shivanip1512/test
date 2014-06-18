@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -20,7 +21,6 @@ import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
@@ -64,7 +64,7 @@ import com.google.common.collect.Sets;
 
 public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadService {
 
-    private static final LogHelper log = LogHelper.getInstance(YukonLogManager.getLogger(DeviceAttributeReadServiceImpl.class));
+    private static final Logger log = YukonLogManager.getLogger(DeviceAttributeReadServiceImpl.class);
 
     @Autowired private AttributeService attributeService;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
@@ -82,7 +82,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes,
                               LiteYukonUser user) {
 
-        log.debug("isReadable called for %.3s and %s", devices, attributes);
+        log.debug(String.format("isReadable called for %.3s and %s", devices, attributes));
 
         ImmutableMultimap<PaoType, ? extends YukonPao> paoTypes = PaoUtils.mapPaoTypes(devices);
 
@@ -110,7 +110,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                              DeviceRequestType type, 
                              LiteYukonUser user) {
         
-        log.debug("initiateRead of %s called for %.3s and %s", type, devices, attributes);
+        log.debug(String.format("initiateRead of %s called for %.3s and %s", type, devices, attributes));
         
         // this will represent the "plan" for how all of the input devices will be read
         Map<StrategyType, Collection<PaoMultiPointIdentifier>> thePlan = 
@@ -137,7 +137,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             }
             Collection<PaoMultiPointIdentifier> paoPointIdentifiersForType = byPhysicalPaoType.get(paoType);
             if (foundStrategy == null) {
-                log.debug("no strategy found for %s devices: %.7s", paoType, paoPointIdentifiersForType);
+                log.debug(String.format("no strategy found for %s devices: %.7s", paoType, paoPointIdentifiersForType));
                 for (PaoMultiPointIdentifier paoMultiPoints : paoPointIdentifiersForType) {
                     MessageSourceResolvable summary = 
                         YukonMessageSourceResolvable.createDefaultWithoutCode("no strategy for " + paoType);
@@ -146,7 +146,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                     delegateCallback.receivedError(paoMultiPoints.getPao(), strategyError);
                 }
             } else {
-                log.debug("strategy found for %d %s devices", paoPointIdentifiersForType.size(), paoType);
+                log.debug(String.format("strategy found for %d %s devices", paoPointIdentifiersForType.size(), paoType));
                 thePlan.put(foundStrategy, paoPointIdentifiersForType);
             }
         }
@@ -162,7 +162,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             @Override
             public void complete() {
                 int count = completionCounter.decrementAndGet();
-                log.debug("one strategy for read is complete, %d remaining", count);
+                log.debug(String.format("one strategy for read is complete, %d remaining", count));
                 if (count == 0) {
                     delegateCallback.complete();
                 }
@@ -204,7 +204,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                              DeviceRequestType type, 
                              YukonUserContext userContext) {
                         
-        log.debug("initiateRead of %s called for %.3s and %s", type, devices, attributes);
+        log.debug(String.format("initiateRead of %s called for %.3s and %s", type, devices, attributes));
         
         // this will represent the "plan" for how all of the input devices will be read
         Map<StrategyType, Collection<PaoMultiPointIdentifier>> thePlan = 
@@ -235,7 +235,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                 thePlan.put(strategy, devicesForThisStrategy);
                 requestCount += impl.getRequestCount(devicesForThisStrategy);
             }
-            log.debug("%s strategy will be used to read %.3s", strategy, devicesForThisStrategy);
+            log.debug(String.format("%s strategy will be used to read %.3s", strategy, devicesForThisStrategy));
         }
              
         CommandRequestExecution execution = createExecution(type, requestCount, userContext.getYukonUser());
@@ -384,7 +384,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             builder.put(strategy.getType(), strategy);
         }
         strategies = builder.build();
-        log.debug("supported strategies: %s", strategies.keySet());
+        log.debug(String.format("supported strategies: %s", strategies.keySet()));
     }
     
 
