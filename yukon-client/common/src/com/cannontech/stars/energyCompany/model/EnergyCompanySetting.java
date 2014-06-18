@@ -1,6 +1,6 @@
 package com.cannontech.stars.energyCompany.model;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
@@ -18,13 +18,13 @@ public class EnergyCompanySetting {
     private Instant lastChanged;
     
     public EnergyCompanySetting(EnergyCompanySetting other) {
-        this.id = other.getId();
-        this.comments = other.getComments();
-        this.energyCompanyId = other.getEnergyCompanyId();
-        this.lastChanged = other.getLastChanged();
-        this.type = other.getType();
-        this.value = other.getValue();
-        this.enabled = other.isEnabled();
+        id = other.getId();
+        comments = other.getComments();
+        energyCompanyId = other.getEnergyCompanyId();
+        lastChanged = other.getLastChanged();
+        type = other.getType();
+        value = other.getValue();
+        enabled = other.isEnabled();
     }
 
     public EnergyCompanySetting() {
@@ -52,7 +52,7 @@ public class EnergyCompanySetting {
     }
     
     public void setValue(Object obj) {
-        this.value = obj;
+        value = obj;
     }
 
     public String getComments() {
@@ -131,5 +131,75 @@ public class EnergyCompanySetting {
         defaultSetting.setEnabled(!type.isUsesEnabledField());
         defaultSetting.setValue(type.getDefaultValue());
         return defaultSetting;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((comments == null) ? 0 : comments.hashCode());
+        result = prime * result + (enabled ? 1231 : 1237);
+        result = prime * result + ((energyCompanyId == null) ? 0 : energyCompanyId.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((lastChanged == null) ? 0 : lastChanged.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EnergyCompanySetting other = (EnergyCompanySetting) obj;
+        if (comments == null) {
+            if (other.comments != null) {
+                return false;
+            }
+        } else if (!comments.equals(other.comments)) {
+            return false;
+        }
+        if (enabled != other.enabled) {
+            return false;
+        }
+        if (energyCompanyId == null) {
+            if (other.energyCompanyId != null) {
+                return false;
+            }
+        } else if (!energyCompanyId.equals(other.energyCompanyId)) {
+            return false;
+        }
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (lastChanged == null) {
+            if (other.lastChanged != null) {
+                return false;
+            }
+        } else if (!lastChanged.equals(other.lastChanged)) {
+            return false;
+        }
+        if (type != other.type) {
+            return false;
+        }
+        if (value == null) {
+            if (other.value != null) {
+                return false;
+            }
+        } else if (!value.equals(other.value)) {
+            return false;
+        }
+        return true;
     }
 }

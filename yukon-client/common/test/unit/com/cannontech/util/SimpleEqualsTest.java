@@ -52,6 +52,7 @@ import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
+import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
 import com.google.common.collect.ForwardingList;
 import com.google.common.collect.ForwardingMap;
 import com.google.common.collect.ForwardingSet;
@@ -68,6 +69,11 @@ import com.google.common.collect.ForwardingSet;
  */
 public class SimpleEqualsTest {
 
+    @Test
+    public void test_EnergyCompanySetting() {
+        testEqualsAndHashCode(EnergyCompanySetting.class, false);
+    }
+    
     @Test
     public void test_RegisterDeviceRequest() {
         testEqualsAndHashCode(RegisterDeviceRequest.class, true);

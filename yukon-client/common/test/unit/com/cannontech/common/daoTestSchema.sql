@@ -128,3 +128,21 @@ alter table DeviceCBC
 -- alter table DeviceCBC
 --    add constraint SYS_C0013460 foreign key (ROUTEID)
 --       references Route (RouteID);
+
+/*==============================================================*/
+/* Table: EnergyCompanySetting                                  */
+/*==============================================================*/
+create table EnergyCompanySetting (
+   EnergyCompanySettingId numeric            not null,
+   EnergyCompanyId      numeric              not null,
+   Name                 varchar(100)         not null,
+   Value                varchar(1000)        null,
+   Enabled              char(1)              null,
+   Comments             varchar(1000)        null,
+   LastChangedDate      datetime             null,
+   constraint PK_EnergyCompanySetting primary key (EnergyCompanySettingId)
+);
+
+alter table EnergyCompanySetting
+   add constraint AK_ECSetting_ECId_Name unique (EnergyCompanyId, Name);
+

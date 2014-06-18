@@ -1,185 +1,138 @@
 package com.cannontech.stars.energyCompany.dao.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import javax.sql.DataSource;
-
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
-import com.cannontech.common.events.service.EventLogMockServiceFactory;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.mock.MockDataSource;
-import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.temperature.TemperatureUnit;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.impl.MockAsyncDynamicDataSourceImpl;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
-import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("/com/cannontech/common/daoTestContext.xml")
 public class EnergyCompanySettingDaoImplTest {
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    private MockDatabase mockDatabase;
     private EnergyCompanySettingDaoImpl impl;
-    private SimpleTableAccessTemplate<EnergyCompanySetting> insertTemplate;
-    
+    private static int nextValue;
+
     @Before
     public void setUp() throws Exception {
-
-        
-        insertTemplate = new SimpleTableAccessTemplate<EnergyCompanySetting>(mockDatabase, null);
-        
+        jdbcTemplate.update(new SqlStatementBuilder("delete from EnergyCompanySetting"));
         impl = new EnergyCompanySettingDaoImpl();
 
-        DbChangeManager mockDbChangeManager = new DbChangeManager() {
-            @Override public void processPaoDbChange(YukonPao pao, DbChangeType changeType) { }
-            @Override public void processDbChange(DbChangeType type, DbChangeCategory category, int primaryKey) {}
-            @Override public void processDbChange(DBChangeMsg dbChange) { }
-            @Override public void processDbChange(int id, int database, String category, DbChangeType dbChangeType) { }
-            @Override public void processDbChange(int id, int database, String category, String objectType, DbChangeType dbChangeType) { }
-        };
-
-        StarsEventLogService mockStarsEventLogService = EventLogMockServiceFactory.getEventLogMockService(StarsEventLogService.class);
-
-        AsyncDynamicDataSource mockAsyncDynamicDataSource = new MockAsyncDynamicDataSourceImpl() {
-          // Implement whatever is used
-        };
-
-        NextValueHelper mockNextValueHelper = new NextValueHelper() {
-            @Override
-            public int getNextValue(String tableName) {
-                return 0;
-            }
-        };
-
-        mockDatabase = new MockDatabase(new MockDataSource() {});
+        AsyncDynamicDataSource mockAsyncDynamicDataSource = EasyMock.createNiceMock(AsyncDynamicDataSource.class);
+        DbChangeManager mockDbChangeManager = EasyMock.createNiceMock(DbChangeManager.class);
+        StarsEventLogService mockStarsEventLogService = EasyMock.createNiceMock(StarsEventLogService.class);
+        NextValueHelper mockNextValueHelper = EasyMock.createNiceMock(NextValueHelper.class);
+        EasyMock.expect(mockNextValueHelper.getNextValue(EasyMock.anyObject(String.class))).andAnswer(
+            new IAnswer<Integer>() {
+                @Override
+                public Integer answer() throws Throwable {
+                    System.out.println("NV: "+ nextValue);
+                    return nextValue++;
+                }
+            }).anyTimes();
+        EasyMock.replay(mockAsyncDynamicDataSource, mockDbChangeManager, mockStarsEventLogService, mockNextValueHelper);
 
         ReflectionTestUtils.setField(impl, "dbChangeManager", mockDbChangeManager);
         ReflectionTestUtils.setField(impl, "starsEventLogService", mockStarsEventLogService);
         ReflectionTestUtils.setField(impl, "asyncDynamicDataSource", mockAsyncDynamicDataSource);
         ReflectionTestUtils.setField(impl, "nextValueHelper", mockNextValueHelper);
-        ReflectionTestUtils.setField(impl, "yukonJdbcTemplate", mockDatabase);
-        ReflectionTestUtils.setField(impl,  "insertTemplate", insertTemplate);
+        ReflectionTestUtils.setField(impl, "yukonJdbcTemplate", jdbcTemplate);
+        impl.init();
     }
 
-    public class MockDatabase extends YukonJdbcTemplate {
-        public Map<String,Map<Integer,EnergyCompanySetting>> settings = new HashMap<>();
-
-        public void setSettings(Map<String,Map<Integer,EnergyCompanySetting>> settings) {
-            this.settings = settings;
+    @Test
+    public void test_emptyDatabase() {
+        List<EnergyCompanySetting> allSettings = impl.getAllSettings(99);
+        for (EnergyCompanySetting setting : allSettings) {
+            assertEquals(setting.getValue(), setting.getType().getDefaultValue());
         }
-
-        public void addSetting(EnergyCompanySetting setting) {
-            if (!settings.containsKey(setting.getType().name())) {
-                Map<Integer, EnergyCompanySetting> innerMap = new HashMap<>();
-                innerMap.put(setting.getEnergyCompanyId(), setting);
-                settings.put(setting.getType().name(), innerMap);
-            } else {
-                settings.get(setting.getType().name()).put(setting.getEnergyCompanyId(), setting);
-            }
-        }
-
-        public void clearAll() {
-            settings.clear();
-        }
-
-        public MockDatabase(DataSource dataSource) {
-            super(dataSource);
-        }
-
-        @Override
-        public <T> T queryForObject(SqlFragmentSource sql,
-                                    YukonRowMapper<T> rm) throws DataAccessException {
-            String settingType = (String)sql.getArguments()[0];
-            Integer ecId = (Integer)sql.getArguments()[1];
-            EnergyCompanySetting setting;
-            try {
-                setting = settings.get(settingType).get(ecId);
-            } catch (NullPointerException e) {
-                throw new EmptyResultDataAccessException(0);
-            }
-            return (T) setting;
+        allSettings = impl.getAllSettings(100);
+        for (EnergyCompanySetting setting : allSettings) {
+            assertEquals(setting.getValue(), setting.getType().getDefaultValue());
         }
     }
 
-    /**
-     * Test an existing setting has the correct values (value, enabled, and comment)
-     * Test a setting not in db setting has the correct default values
-     * Test the setting returned is a different instance for each call (a copy is returned)
-     */
+    // /**
+    // * Test an existing setting has the correct values (value, enabled, and comment)
+    // * Test a setting not in db setting has the correct default values
+    // * Test the setting returned is a different instance for each call (a copy is returned)
+    // */
     @Test
     public void test_getSetting() {
-        mockDatabase.clearAll();
+        EnergyCompanySetting settingInDb1 = new EnergyCompanySetting();
+        settingInDb1.setComments("i'm in the database");
+        settingInDb1.setEnabled(true);
+        settingInDb1.setEnergyCompanyId(99);
+        settingInDb1.setType(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY);
+        settingInDb1.setValue(false);
+        impl.updateSetting(settingInDb1, null, settingInDb1.getEnergyCompanyId());
 
-        EnergyCompanySetting settingInDb1 = new EnergyCompanySetting() {{
-            setComments("i'm in the database");
-            setEnabled(false);
-            setEnergyCompanyId(99);
-            setId(100);
-            setType(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY);
-            setValue("settingInDb1 value");
-        }};
-        mockDatabase.addSetting(settingInDb1);
+        EnergyCompanySetting settingInDb2 = new EnergyCompanySetting();
+        settingInDb2.setComments("i'm also in the database");
+        settingInDb2.setEnabled(true);
+        settingInDb2.setEnergyCompanyId(100);
+        settingInDb2.setType(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT);
+        settingInDb2.setValue(TemperatureUnit.CELSIUS);
+        impl.updateSetting(settingInDb2, null, settingInDb2.getEnergyCompanyId());
 
-        EnergyCompanySetting settingInDb2 = new EnergyCompanySetting() {{
-            setComments("i'm also in the database");
-            setEnabled(true);
-            setEnergyCompanyId(100);
-            setId(101);
-            setType(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT);
-            setValue("settingInDb2 value");
-        }};
-        mockDatabase.addSetting(settingInDb2);
-
-
-        //** Testing existing settings
-        EnergyCompanySetting settingInDb_1_test = impl.getSetting(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, 99);
+        // ** Testing existing settings
+        EnergyCompanySetting settingInDb_1_test =
+            impl.getSetting(settingInDb1.getType(), settingInDb1.getEnergyCompanyId());
         assertNotSame(settingInDb_1_test, settingInDb1);
-        assertEqualSetting(settingInDb_1_test, settingInDb1);
+        assertEquals(settingInDb_1_test, settingInDb1);
 
-        EnergyCompanySetting settingInDb_1_testFail = impl.getSetting(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, 7); // Wrong ecId
+        EnergyCompanySetting settingInDb_1_testFail =
+            impl.getSetting(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, 7); // Wrong ecId
         assertNotSame(settingInDb_1_testFail, settingInDb1);
-        assertEquals(false, settingInDb1.getEnergyCompanyId().equals(settingInDb_1_testFail.getEnergyCompanyId()));
+        assertNotEquals(settingInDb1.getEnergyCompanyId(), settingInDb_1_testFail.getEnergyCompanyId());
 
-        EnergyCompanySetting settingInDb_2_test = impl.getSetting(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, 100);
+        EnergyCompanySetting settingInDb_2_test =
+            impl.getSetting(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, 100);
         assertNotSame(settingInDb_2_test, settingInDb2);
-        assertEqualSetting(settingInDb_2_test, settingInDb2);
+        assertEquals(settingInDb_2_test, settingInDb2);
 
-        EnergyCompanySetting settingInDb_2_testFail = impl.getSetting(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, 100); // Wrong type
+        EnergyCompanySetting settingInDb_2_testFail =
+            impl.getSetting(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, 100); // Wrong type
         assertNotSame(settingInDb_2_testFail, settingInDb2);
         assertEquals(false, settingInDb2.getType().equals(settingInDb_2_testFail.getType()));
 
-
-        //** Test setting not in db
+        // ** Test setting not in db
         EnergyCompanySetting settingNotInDb_1 = impl.getSetting(EnergyCompanySettingType.ACCOUNT_NUMBER_LENGTH, 102);
-        EnergyCompanySetting settingNotInDb_1_test = EnergyCompanySetting.getDefault(EnergyCompanySettingType.ACCOUNT_NUMBER_LENGTH, 102);
+        EnergyCompanySetting settingNotInDb_1_test =
+            EnergyCompanySetting.getDefault(EnergyCompanySettingType.ACCOUNT_NUMBER_LENGTH, 102);
         assertNotSame(settingNotInDb_1, settingNotInDb_1_test);
-        assertEqualSetting(settingNotInDb_1, settingNotInDb_1_test);
+        assertEquals(settingNotInDb_1, settingNotInDb_1_test);
 
-        EnergyCompanySetting settingNotInDb_2 = impl.getSetting(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, 103);
-        EnergyCompanySetting settingNotInDb_2_test = EnergyCompanySetting.getDefault(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, 103);
+        EnergyCompanySetting settingNotInDb_2 =
+            impl.getSetting(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, 103);
+        EnergyCompanySetting settingNotInDb_2_test =
+            EnergyCompanySetting.getDefault(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND,
+                103);
         assertNotSame(settingNotInDb_2, settingNotInDb_2_test);
-        assertEqualSetting(settingNotInDb_2, settingNotInDb_2_test);
+        assertEquals(settingNotInDb_2, settingNotInDb_2_test);
 
-        //** Test the setting returned is a different instance for each call
+        // ** Test the setting returned is a different instance for each call
         EnergyCompanySetting setting1 = impl.getSetting(EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS, 104);
         EnergyCompanySetting setting2 = impl.getSetting(EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS, 104);
         assertNotSame(setting1, setting2);
@@ -187,40 +140,36 @@ public class EnergyCompanySettingDaoImplTest {
 
     @Test
     public void test_getString() {
-        mockDatabase.clearAll();
-
         // type is stringType()
-        final EnergyCompanySettingType settingType = EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS;
-        
-        EnergyCompanySetting setting_valueEmail = new EnergyCompanySetting() {{
-            setEnergyCompanyId(1);
-            setType(settingType);
-            setValue("admin@email.com");
-        }};
-        EnergyCompanySetting setting_valueInteger = new EnergyCompanySetting() {{
-            setEnergyCompanyId(2);
-            setType(settingType);
-            setValue(10);
-        }};
-        EnergyCompanySetting setting_valueBoolean = new EnergyCompanySetting() {{
-            setEnergyCompanyId(3);
-            setType(settingType);
-            setValue(false);
-        }};
-        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting() {{
-            setEnergyCompanyId(4);
-            setType(settingType);
-            setValue(null);
-        }};
+        EnergyCompanySettingType settingType = EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS;
 
-        mockDatabase.addSetting(setting_valueEmail);
-        mockDatabase.addSetting(setting_valueInteger);
-        mockDatabase.addSetting(setting_valueBoolean);
-        mockDatabase.addSetting(setting_valueNull);
+        EnergyCompanySetting setting_valueEmail = new EnergyCompanySetting();
+        setting_valueEmail.setEnergyCompanyId(1);
+        setting_valueEmail.setType(settingType);
+        setting_valueEmail.setValue("admin@email.com");
+        impl.updateSetting(setting_valueEmail, null, setting_valueEmail.getEnergyCompanyId());
+
+        EnergyCompanySetting setting_valueInteger = new EnergyCompanySetting();
+        setting_valueInteger.setEnergyCompanyId(2);
+        setting_valueInteger.setType(settingType);
+        setting_valueInteger.setValue(10);
+        impl.updateSetting(setting_valueInteger, null, setting_valueInteger.getEnergyCompanyId());
+
+        EnergyCompanySetting setting_valueBoolean = new EnergyCompanySetting();
+        setting_valueBoolean.setEnergyCompanyId(3);
+        setting_valueBoolean.setType(settingType);
+        setting_valueBoolean.setValue(false);
+        impl.updateSetting(setting_valueBoolean, null, setting_valueBoolean.getEnergyCompanyId());
+
+        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting();
+        setting_valueNull.setEnergyCompanyId(4);
+        setting_valueNull.setType(settingType);
+        setting_valueNull.setValue(null);
+        impl.updateSetting(setting_valueNull, null, setting_valueNull.getEnergyCompanyId());
 
         assertEquals("admin@email.com", impl.getString(settingType, setting_valueEmail.getEnergyCompanyId()));
         assertEquals("10", impl.getString(settingType, setting_valueInteger.getEnergyCompanyId()));
-        assertEquals("false", impl.getString(settingType, setting_valueBoolean.getEnergyCompanyId()));
+        assertEquals("FALSE", impl.getString(settingType, setting_valueBoolean.getEnergyCompanyId()));
         // if value is null, an empty string is returned
         assertEquals("", impl.getString(settingType, setting_valueNull.getEnergyCompanyId()));
 
@@ -230,27 +179,22 @@ public class EnergyCompanySettingDaoImplTest {
 
     @Test
     public void test_getBoolean() {
-        mockDatabase.clearAll();
+        EnergyCompanySettingType settingType = EnergyCompanySettingType.ADMIN_ALLOW_DESIGNATION_CODE;
 
-        // type is booleanType()
-        final EnergyCompanySettingType settingType = EnergyCompanySettingType.ADMIN_ALLOW_DESIGNATION_CODE;
+        EnergyCompanySetting setting_valueBoolean = new EnergyCompanySetting();
+        setting_valueBoolean.setEnergyCompanyId(3);
+        setting_valueBoolean.setType(settingType);
+        setting_valueBoolean.setValue(false);
+        impl.updateSetting(setting_valueBoolean, null, setting_valueBoolean.getEnergyCompanyId());
 
-        EnergyCompanySetting setting_valueBoolean = new EnergyCompanySetting() {{
-            setEnergyCompanyId(3);
-            setType(settingType);
-            setValue(false);
-        }};
-        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting() {{
-            setEnergyCompanyId(4);
-            setType(settingType);
-            setValue(null);
-        }};
-
-        mockDatabase.addSetting(setting_valueBoolean);
-        mockDatabase.addSetting(setting_valueNull);
+        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting();
+        setting_valueNull.setEnergyCompanyId(4);
+        setting_valueNull.setType(settingType);
+        setting_valueNull.setValue(null);
+        impl.updateSetting(setting_valueNull, null, setting_valueNull.getEnergyCompanyId());
 
         assertEquals(false, impl.getBoolean(settingType, setting_valueBoolean.getEnergyCompanyId()));
-        
+
         // Null values return false
         assertEquals(false, impl.getBoolean(settingType, setting_valueNull.getEnergyCompanyId()));
 
@@ -260,24 +204,19 @@ public class EnergyCompanySettingDaoImplTest {
 
     @Test
     public void test_getInteger() {
-        mockDatabase.clearAll();
+        EnergyCompanySettingType settingType = EnergyCompanySettingType.ACCOUNT_NUMBER_LENGTH;
 
-        // type is stringType()
-        final EnergyCompanySettingType settingType = EnergyCompanySettingType.ACCOUNT_NUMBER_LENGTH;
-        
-        EnergyCompanySetting setting_valueInteger = new EnergyCompanySetting() {{
-            setEnergyCompanyId(2);
-            setType(settingType);
-            setValue(10);
-        }};
-        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting() {{
-            setEnergyCompanyId(4);
-            setType(settingType);
-            setValue(null);
-        }};
+        EnergyCompanySetting setting_valueInteger = new EnergyCompanySetting();
+        setting_valueInteger.setEnergyCompanyId(2);
+        setting_valueInteger.setType(settingType);
+        setting_valueInteger.setValue(10);
+        impl.updateSetting(setting_valueInteger, null, setting_valueInteger.getEnergyCompanyId());
 
-        mockDatabase.addSetting(setting_valueInteger);
-        mockDatabase.addSetting(setting_valueNull);
+        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting();
+        setting_valueNull.setEnergyCompanyId(4);
+        setting_valueNull.setType(settingType);
+        setting_valueNull.setValue(null);
+        impl.updateSetting(setting_valueNull, null, setting_valueNull.getEnergyCompanyId());
 
         assertEquals(10, impl.getInteger(settingType, setting_valueInteger.getEnergyCompanyId()));
 
@@ -290,52 +229,47 @@ public class EnergyCompanySettingDaoImplTest {
 
     @Test
     public void test_getEnum() {
-        mockDatabase.clearAll();
-
         // type is stringType()
-        final EnergyCompanySettingType settingType = EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION;
+        EnergyCompanySettingType settingType = EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION;
 
-        EnergyCompanySetting setting_valueEnum = new EnergyCompanySetting() {{
-            setEnergyCompanyId(2);
-            setType(settingType);
-            setValue(SerialNumberValidation.ALPHANUMERIC);
-        }};
-        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting() {{
-            setEnergyCompanyId(4);
-            setType(settingType);
-            setValue(null);
-        }};
+        EnergyCompanySetting setting_valueEnum = new EnergyCompanySetting();
+        setting_valueEnum.setEnergyCompanyId(2);
+        setting_valueEnum.setType(settingType);
+        setting_valueEnum.setValue(SerialNumberValidation.ALPHANUMERIC);
+        impl.updateSetting(setting_valueEnum, null, setting_valueEnum.getEnergyCompanyId());
 
-        mockDatabase.addSetting(setting_valueEnum);
-        mockDatabase.addSetting(setting_valueNull);
+        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting();
+        setting_valueNull.setEnergyCompanyId(4);
+        setting_valueNull.setType(settingType);
+        setting_valueNull.setValue(null);
+        impl.updateSetting(setting_valueNull, null, setting_valueNull.getEnergyCompanyId());
 
-        assertEquals(SerialNumberValidation.ALPHANUMERIC, impl.getEnum(settingType, SerialNumberValidation.class, setting_valueEnum.getEnergyCompanyId()));
-        assertEquals(null, impl.getEnum(settingType, SerialNumberValidation.class, setting_valueNull.getEnergyCompanyId()));
+        assertEquals(SerialNumberValidation.ALPHANUMERIC,
+            impl.getEnum(settingType, SerialNumberValidation.class, setting_valueEnum.getEnergyCompanyId()));
+        assertEquals(null,
+            impl.getEnum(settingType, SerialNumberValidation.class, setting_valueNull.getEnergyCompanyId()));
 
         // Testing a default
-        assertEquals(SerialNumberValidation.NUMERIC, impl.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, 9999));
+        assertEquals(SerialNumberValidation.NUMERIC,
+            impl.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, 9999));
     }
-    
+
     @Test
     public void test_checkSetting() {
-        mockDatabase.clearAll();
-
         // type is booleanType()
-        final EnergyCompanySettingType settingType = EnergyCompanySettingType.ADMIN_ALLOW_DESIGNATION_CODE;
+        EnergyCompanySettingType settingType = EnergyCompanySettingType.ADMIN_ALLOW_DESIGNATION_CODE;
 
-        EnergyCompanySetting setting_valueBoolean = new EnergyCompanySetting() {{
-            setEnergyCompanyId(3);
-            setType(settingType);
-            setValue(false);
-        }};
-        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting() {{
-            setEnergyCompanyId(4);
-            setType(settingType);
-            setValue(null);
-        }};
+        EnergyCompanySetting setting_valueBoolean = new EnergyCompanySetting();
+        setting_valueBoolean.setEnergyCompanyId(3);
+        setting_valueBoolean.setType(settingType);
+        setting_valueBoolean.setValue(false);
+        impl.updateSetting(setting_valueBoolean, null, setting_valueBoolean.getEnergyCompanyId());
 
-        mockDatabase.addSetting(setting_valueBoolean);
-        mockDatabase.addSetting(setting_valueNull);
+        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting();
+        setting_valueNull.setEnergyCompanyId(4);
+        setting_valueNull.setType(settingType);
+        setting_valueNull.setValue(null);
+        impl.updateSetting(setting_valueNull, null, setting_valueNull.getEnergyCompanyId());
 
         assertEquals(false, impl.getBoolean(settingType, setting_valueBoolean.getEnergyCompanyId()));
         // null here should return false
@@ -346,74 +280,52 @@ public class EnergyCompanySettingDaoImplTest {
     }
 
     @Test
-    public void test_verifyUpdate() {
-        mockDatabase.clearAll();
-
-    }
-    
-    @Test
     public void test_verifySetting() {
-        mockDatabase.clearAll();
-
         // type is booleanType()
         final EnergyCompanySettingType settingType = EnergyCompanySettingType.ADMIN_ALLOW_DESIGNATION_CODE;
 
-        EnergyCompanySetting setting_valueNotAuthorized = new EnergyCompanySetting() {{
-            setEnergyCompanyId(1);
-            setType(settingType);
-            setValue(false);
-        }};
-        EnergyCompanySetting setting_valueAuthorized = new EnergyCompanySetting() {{
-            setEnergyCompanyId(2);
-            setType(settingType);
-            setValue(true);
-        }};
-        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting() {{
-            setEnergyCompanyId(3);
-            setType(settingType);
-            setValue(null);
-        }};
+        EnergyCompanySetting setting_valueNotAuthorized = new EnergyCompanySetting();
+        setting_valueNotAuthorized.setEnergyCompanyId(1);
+        setting_valueNotAuthorized.setType(settingType);
+        setting_valueNotAuthorized.setValue(false);
+        impl.updateSetting(setting_valueNotAuthorized, null, setting_valueNotAuthorized.getEnergyCompanyId());
 
-        mockDatabase.addSetting(setting_valueNotAuthorized);
-        mockDatabase.addSetting(setting_valueAuthorized);
-        mockDatabase.addSetting(setting_valueNull);
+        EnergyCompanySetting setting_valueAuthorized = new EnergyCompanySetting();
+        setting_valueAuthorized.setEnergyCompanyId(2);
+        setting_valueAuthorized.setType(settingType);
+        setting_valueAuthorized.setValue(true);
+        impl.updateSetting(setting_valueAuthorized, null, setting_valueAuthorized.getEnergyCompanyId());
+
+        EnergyCompanySetting setting_valueNull = new EnergyCompanySetting();
+        setting_valueNull.setEnergyCompanyId(3);
+        setting_valueNull.setType(settingType);
+        setting_valueNull.setValue(null);
+        impl.updateSetting(setting_valueNull, null, setting_valueNull.getEnergyCompanyId());
 
         try {
             impl.verifySetting(settingType, setting_valueNotAuthorized.getEnergyCompanyId());
             fail();
-        } catch(NotAuthorizedException e) {/*expected*/}
+        } catch (NotAuthorizedException e) {/* expected */}
 
         try {
             // null here should return false
             impl.verifySetting(settingType, setting_valueNull.getEnergyCompanyId());
             fail();
-        } catch(NotAuthorizedException e) {/*expected*/}
-        
+        } catch (NotAuthorizedException e) {/* expected */}
+
         try {
             // Testing a default
-            impl.verifySetting(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL, setting_valueAuthorized.getEnergyCompanyId());
-        } catch(NotAuthorizedException e) {
+            impl.verifySetting(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL,
+                setting_valueAuthorized.getEnergyCompanyId());
+        } catch (NotAuthorizedException e) {
             fail();
         }
-        
+
         try {
             // Testing a default
             impl.verifySetting(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL, 9999);
-        } catch(NotAuthorizedException e) {
+        } catch (NotAuthorizedException e) {
             fail();
         }
-    }
-    
-    /**
-     * Helper assert two energyCompanySetting's are equal
-     */
-    private void assertEqualSetting(EnergyCompanySetting s1, EnergyCompanySetting s2) {
-        assertEquals(s1.isEnabled(), s2.isEnabled());
-        assertEquals(s1.getComments(), s2.getComments());
-        assertEquals(s1.getEnergyCompanyId(), s2.getEnergyCompanyId());
-        assertEquals(s1.getId(), s2.getId());
-        assertEquals(s1.getLastChanged(), s2.getLastChanged());
-        assertEquals(s1.getType(), s2.getType());
-        assertEquals(s1.getValue(), s2.getValue());
     }
 }
