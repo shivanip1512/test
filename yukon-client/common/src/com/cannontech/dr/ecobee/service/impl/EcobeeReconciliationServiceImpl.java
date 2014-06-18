@@ -150,7 +150,14 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
                 
                 //ecobee set corresponds to Yukon group, but is in the wrong location in the hierarchy
                 case MISLOCATED_MANAGEMENT_SET:
-                    communicationService.moveManagementSet(error.getCurrentPath(), error.getCorrectPath());
+                    String currentPath = error.getCurrentPath();
+                    
+                    //Get the full path of the correct location, then remove the set name to get the parent path
+                    String correctPath = error.getCorrectPath();
+                    int indexOfLastSlash = correctPath.lastIndexOf("/");
+                    String correctParentPath = correctPath.substring(0, indexOfLastSlash + 1);
+                    
+                    communicationService.moveManagementSet(currentPath, correctParentPath);
                     return EcobeeReconciliationResult.newSuccess(error);
                 
                 //Device in Yukon, not in ecobee
@@ -161,7 +168,10 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
                 
                 //Yukon group has no corresponding ecobee set
                 case MISSING_MANAGEMENT_SET:
-                    communicationService.createManagementSet(error.getCorrectPath());
+                    //This assumes that the correct path starts with / and is one level deep (as all sets corresponding
+                    //to Yukon should be).
+                    String setName = error.getCorrectPath().substring(1);
+                    communicationService.createManagementSet(setName);
                     return EcobeeReconciliationResult.newSuccess(error);
                 
                 //Device in ecobee, not in Yukon

@@ -241,12 +241,12 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public boolean moveManagementSet(String currentPath, String newPath) {
-        log.debug("Moving ecobee management set: " + currentPath + " New path: " + newPath);
+    public boolean moveManagementSet(String currentPath, String newParentPath) {
+        log.debug("Moving ecobee management set: " + currentPath + " New path: " + newParentPath);
         
         String url = getUrlBase() + modifySetUrlPart;
 
-        MoveSetRequest request = new MoveSetRequest(currentPath, newPath);
+        MoveSetRequest request = new MoveSetRequest(currentPath, newParentPath);
         HttpEntity<MoveSetRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
 
         StandardResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.SYSTEM, StandardResponse.class);

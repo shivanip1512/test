@@ -79,7 +79,7 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API
      * @return True if the management set was successfully moved to the new path.
      */
-    boolean moveManagementSet(String currentPath, String newPath);
+    boolean moveManagementSet(String currentPath, String newParentPath);
 
     /**
      * Initiates a duty cycle demand response event in Ecobee.
