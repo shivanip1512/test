@@ -6,7 +6,6 @@ import static org.junit.Assert.*;
 import java.sql.SQLException;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +45,6 @@ public class PaoPersistenceDaoImplTest {
     private PaoPersistenceDaoImpl paoPersistenceDao;
     private PaoDao paoDao;
     private UserPageDao userPageDao;
-
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        System.out.println("*** setUpBeforeClass");
-    }
 
     @Before
     public void setUp() throws Exception {
