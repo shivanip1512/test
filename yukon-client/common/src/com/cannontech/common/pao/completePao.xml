@@ -7,7 +7,8 @@
     <!--
         This file lists all complete PAOs so we don't have to scan for them (which is slow with signed jars).
         It's important that this XML file not include any beans that have any dependencies on any beans in
-        any other XML files.  (This is because we 
+        any other XML files.  (This is because we use this file for a unit test and it needs to be able to stand
+        on its own.)
     -->
 
     <bean class="com.cannontech.common.pao.dao.impl.PaoPersistenceTypeHelperImpl">
