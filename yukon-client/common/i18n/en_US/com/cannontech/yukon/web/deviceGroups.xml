@@ -129,19 +129,19 @@ Group names may not be blank or contain slashes.
 <entry key="yukon.web.modules.tools.deviceGroups.create.composed.saveButton">Save</entry>
 <entry key="yukon.web.modules.tools.deviceGroups.create.composed.instructions.title">Instructions</entry>
 <entry key="yukon.web.modules.tools.deviceGroups.create.composed.instructions"><![CDATA[
-	<ul style="font-size:11px;">
-		<li>A <i><b>Composed Device Group</b></i> contains devices that are choosen from other Device Groups.</li>
+	<ul>
+		<li>A <strong>Composed Device Group</strong> contains devices that are choosen from other Device Groups.</li>
 		<li>To make a Composed Device Group, you must select the Device Groups that it will be based upon.</li>
 		<br>
 		<li>For each Device Group that you select, you may specify that the Composed Device Group will either choose devices that 
-			<i><b>are contained in</b></i> the Device Group, or those that <i><b>are not contained in</b></i> in the Device Group.
+			<strong>are contained in</strong> the Device Group, or those that <strong>are not contained in</strong> in the Device Group.
 		</li>
-		<li>Each of the Device Groups that you select, along with your decision to include or exclude the devices it contains, is called a <i><b>rule</b></i>.</li>
+		<li>Each of the Device Groups that you select, along with your decision to include or exclude the devices it contains, is called a <strong>rule</strong>.</li>
 		<br>
 		<li>The rules are combined to determine which devices that the Composed Device Group will contain. There are two ways to combine rules:</li>
-		<li>&nbsp;&bull; <i><b>At Least One</b></i>: For a device to be included in the Composed Device Group, it must match at least one of the rules.</li>
-		<li>&nbsp;&bull; <i><b>Every One</b></i>: For a device to be included in the Composed Device Group, it must match at every rule.</li>
-		<br>
+		&nbsp;&nbsp; <strong>At Least One</strong>: For a device to be included in the Composed Device Group, it must match at least one of the rules.<br>
+		&nbsp;&nbsp; <strong>Every One</strong>: For a device to be included in the Composed Device Group, it must match at every rule.</li>
+		<br><br>
 		<li>For more control over which devices are included, a Composed Device Group may include other Composed Device Groups.</li>
 	</ul>
 ]]></entry>

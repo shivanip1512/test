@@ -114,8 +114,8 @@
 
 <%-- MAGNIFIER ICON --%>
 <c:if test="${pageScope.showSelectedDevicesIcon}">
-    <cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
-    <cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
+    <cti:msg2 var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle"/>
+    <cti:msg2 var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning"/>
     <span id="viewDevicesIconSpan_${uniqueId}" <c:if test="${empty pageScope.fieldValue}">style="display:none;"</c:if>>
         <a id="viewSelectedDevices_${uniqueId}" href="javascript:void(0);" title="${popupTitle}" class="dib"><i class="icon icon-magnifier"></i></a>
         <div id="show-selected-${uniqueId}" title="${popupTitle}" class="dn"></div>
@@ -138,4 +138,4 @@
                                 dataJson="${dataJson}"
                                 title="${pickerTitleText}"
                                 noSelectionAlertText="${noGroupSelectedAlertText}"
-                                includeControlBar="true" />
+                                includeControlBar="true"/>
