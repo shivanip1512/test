@@ -38,6 +38,7 @@ import com.cannontech.common.pao.model.CompleteTwoWayCbc;
 import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.model.CompleteZbEndpoint;
 import com.cannontech.common.pao.model.CompleteZbGateway;
+import com.cannontech.dr.ecobee.message.AuthenticationRequest;
 import com.cannontech.dr.ecobee.message.BaseResponse;
 import com.cannontech.dr.ecobee.message.CreateSetRequest;
 import com.cannontech.dr.ecobee.message.DeleteSetRequest;
@@ -70,6 +71,11 @@ public class SimpleEqualsTest {
     @Test
     public void test_RegisterDeviceRequest() {
         testEqualsAndHashCode(RegisterDeviceRequest.class, true);
+    }
+
+    @Test
+    public void test_AuthenticationRequest() {
+        testEqualsAndHashCode(AuthenticationRequest.class, true);
     }
 
     @Test

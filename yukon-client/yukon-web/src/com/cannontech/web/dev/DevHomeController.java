@@ -10,7 +10,7 @@ import com.cannontech.web.security.annotation.AuthorizeByCparm;
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class DevHomeController {
 
-    @RequestMapping("/*")
+    @RequestMapping(value = {"/", "/dev"})
     public String root() {
         return "development.jsp";
     }

@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.dr.ecobee.message.AuthenticationRequest;
 import com.cannontech.dr.ecobee.message.CreateSetRequest;
 import com.cannontech.dr.ecobee.message.DeleteSetRequest;
 import com.cannontech.dr.ecobee.message.DeviceDataResponse;
@@ -34,6 +35,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
 
 public class JsonSerializationTest {
+
+    @Test
+    public void test_AuthenticationRequest() throws IOException {
+        AuthenticationRequest request = new AuthenticationRequest("abcd", "1234");
+        AuthenticationRequest testRequest = testSerialization(request);
+
+        Assert.assertEquals(request, testRequest);
+    }
 
     @Test
     public void test_Selection() throws IOException {
@@ -76,8 +85,8 @@ public class JsonSerializationTest {
         Instant endDate = timeFormater.parseDateTime("2012-01-01 20:25").toInstant();
 
         RuntimeReportRequest request =
-            new RuntimeReportRequest(startDate, endDate, ImmutableList.of("123abc321", "321abc123"), 
-                ImmutableList.of("bogusColumn1", "anotherBogusColumn"));
+            new RuntimeReportRequest(startDate, endDate, ImmutableList.of("123abc321", "321abc123"), ImmutableList.of(
+                "bogusColumn1", "anotherBogusColumn"));
         RuntimeReportRequest testRequest = testSerialization(request);
 
         Assert.assertEquals(request, testRequest);
@@ -171,8 +180,8 @@ public class JsonSerializationTest {
             List<SetNode> children = new ArrayList<>();
             List<String> thermostats = new ArrayList<>();
             for (int j = 0; j < numChildren; j++) {
-                children.add(new SetNode("someChildSet", "someOtherPath", new ArrayList<SetNode>(), 
-                    ImmutableList.of("123abc321", "321abc123", "another")));
+                children.add(new SetNode("someChildSet", "someOtherPath", new ArrayList<SetNode>(), ImmutableList.of(
+                    "123abc321", "321abc123", "another")));
                 thermostats.add("aThermostat" + j);
             }
             sets.add(new SetNode("someSet", "somePath", children, thermostats));
