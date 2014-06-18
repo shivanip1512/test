@@ -50,7 +50,9 @@
                         <option value="true" <c:if test="${group.negate}">selected</c:if>>not contained in</option>
                     </select>
                     <span><i:inline key=".ruleSentence.deviceGroup.suffix"/></span>
+                    <cti:msg2 key=".noGroupSelectedAlert" var="noGroupSelectedAlert"/>
                     <tags:deviceGroupNameSelector fieldName="deviceGroupNameField_${group.order}" 
+                                                  noGroupSelectedAlertText="${noGroupSelectedAlert}"
                                                   fieldValue="${group.groupFullName}" 
                                                   dataJson="${chooseGroupTreeJson}"/>
                     <cti:button classes="fr" nameKey="remove" type="submit" name="removeRow${group.order}" renderMode="buttonImage" icon="icon-cross"/>

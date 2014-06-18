@@ -13,6 +13,7 @@
 <%@ attribute name="fieldValue" %>
 <%@ attribute name="linkGroupName" description="Will make the group name a link that when clicked brings you to the group editor for group" %>
 <%@ attribute name="noGroupSelectedText" %>
+<%@ attribute name="noGroupSelectedAlertText" %>
 <%@ attribute name="showSelectedDevicesIcon" %>
 <%@ attribute name="submitCallback" description="optional additional function to call when group is picked" %>
 
@@ -20,6 +21,10 @@
 
 <c:if test="${empty pageScope.noGroupSelectedText}">
     <cti:msg2 var="noGroupSelectedText" key="yukon.web.deviceGroups.deviceGroupPicker.deviceGroupNameSelectorTag.defaultNoGroupSelectedText"/>
+</c:if>
+
+<c:if test="${empty pageScope.noGroupSelectedAlertText}">
+    <cti:msg2 var="noGroupSelectedAlertText" key="yukon.web.deviceGroups.deviceGroupPicker.deviceGroupNameSelectorTag.defaultNoGroupSelectedAlertText"/>
 </c:if>
 
 <c:if test="${empty pageScope.linkGroupName}">
@@ -132,5 +137,5 @@
                                 id="selectGroupTree_${uniqueId}"
                                 dataJson="${dataJson}"
                                 title="${pickerTitleText}"
-                                noSelectionAlertText="${noGroupSelectedText}"
+                                noSelectionAlertText="${noGroupSelectedAlertText}"
                                 includeControlBar="true" />
