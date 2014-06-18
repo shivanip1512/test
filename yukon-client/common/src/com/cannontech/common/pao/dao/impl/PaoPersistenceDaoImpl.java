@@ -85,7 +85,7 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
                     SqlStatementBuilder sql = new SqlStatementBuilder();
                     sql.append("select");
                     Iterable<String> fieldNames =
-                        Iterables.transform(paoMetaData.getFields(), PaoFieldMetaData.toDbColumnName);
+                        Iterables.transform(paoMetaData.getFields(), PaoFieldMetaData.TO_DB_COLUMN_NAME);
                     sql.append(StringUtils.join(fieldNames.iterator(), ", "));
                     sql.append("from").append(paoMetaData.getDbTableName());
                     sql.append("where").append(paoMetaData.getDbIdColumnName()).eq(newInstance.getPaObjectId());
