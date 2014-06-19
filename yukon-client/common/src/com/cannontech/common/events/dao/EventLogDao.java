@@ -16,10 +16,6 @@ public interface EventLogDao {
     public void insert(EventLog eventLog);
 
     public List<ArgumentColumn> getArgumentColumns();
-    
-    public List<ArgumentColumn> getSelectableColumns();
-    
-    
 
     /**
      * @param eventCategory
@@ -65,13 +61,6 @@ public interface EventLogDao {
                                                          String filterString);
     
     public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper();
-    
-    /**
-     * This method will have the list of columns that have to be selected for a particular EventType
-     * 
-     * @param columnNames       List of selectable columns
-     */
-    public void setSelectableColumns(List<ArgumentColumn> columnNames);
 
     /**
      * 

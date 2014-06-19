@@ -206,7 +206,6 @@ public class EventLogViewerController {
         } 
 
         UiFilter<EventLog> eventLogSqlFilters = getEventLogUIFilters(eventLogTypeBackingBean);
-        eventLogDao.setSelectableColumns(getSelectableColumnsList(eventLogTypeBackingBean));
 
         // Get default search results
         SearchResults<EventLog> searchResult = 
@@ -217,7 +216,7 @@ public class EventLogViewerController {
                                                                  eventLogTypeBackingBean.getItemsPerPage(),
                                                                  eventLogSqlFilters,
                                                                  userContext);
-        
+
         buildEventLogResults(userContext, eventLogTypeBackingBean, searchResult, model);
         
         String csvLink = ServletUtil.tweakHTMLRequestURI(request, "export", "CSV");
@@ -285,23 +284,24 @@ public class EventLogViewerController {
      *
      */
     private UiFilter<EventLog> getEventLogUIFilters(EventLogTypeBackingBean eventLogTypeBackingBean) {
+
         // Build up filter list
         List<UiFilter<EventLog>> filters = Lists.newArrayList();
         for (EventLogFilter eventLogFilter : eventLogTypeBackingBean.getEventLogFilters()) {
             FilterValue filterValue = eventLogFilter.getFilterValue();
+            
             // Create and add event log filter
             UiFilter<EventLog> filter = 
                 eventLogFilterFactory.getFilter(filterValue, eventLogFilter.getArgumentColumn());
             if (filter != null) {
                 filters.add(filter);
-                
             }
         }
         UiFilter<EventLog> eventLogSqlFilters = UiFilterList.wrap(filters);
         return eventLogSqlFilters;
     }
-    
-     /**
+
+    /**
      * This method loads up the model the search results, column headers, and also 
      * data grid that is used to display the results.
      *
@@ -327,7 +327,7 @@ public class EventLogViewerController {
             columnNames.add(columnHeader);
             
             // get column indexes
-            int index = eventLogDao.getSelectableColumns().indexOf(argumentColumn);
+            int index = eventLogDao.getArgumentColumns().indexOf(argumentColumn);
             columnArgumentIndexes.add(index);
         }
         model.addAttribute("columnNames", columnNames);
@@ -590,13 +590,5 @@ public class EventLogViewerController {
             return argumentColumn;
         }
         
-    }
-    
-    private List<ArgumentColumn> getSelectableColumnsList(EventLogTypeBackingBean eventLogTypeBackingBean) {
-        List<ArgumentColumn> selectableColumns = new ArrayList<ArgumentColumn>();
-        for (EventLogFilter eventLogFilter : eventLogTypeBackingBean.getEventLogFilters()) {
-            selectableColumns.add(eventLogFilter.getArgumentColumn());
-        }
-        return selectableColumns;
     }
 }

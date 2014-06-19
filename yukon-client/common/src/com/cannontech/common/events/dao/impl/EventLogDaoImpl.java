@@ -2,7 +2,6 @@ package com.cannontech.common.events.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -45,7 +44,6 @@ public class EventLogDaoImpl implements EventLogDao {
 
     private final int countOfTotalArguments;
     private List<ArgumentColumn> argumentColumns;
-    private List<ArgumentColumn> selectableColumns;
     private int countOfNonVariableColumns = 3; // 3 <-- id + type + datetime
     private int[] totalArgumentTypes;
     {
@@ -87,18 +85,12 @@ public class EventLogDaoImpl implements EventLogDao {
 
         @Override
         public SqlFragmentSource getBaseQuery() {
-            SqlStatementBuilder baseQuery = new SqlStatementBuilder();
-
-            if (!selectableColumns.isEmpty()) {
-                baseQuery.append("SELECT  EventLogId, EventType, EventTime, ");
-                baseQuery.append(StringUtils.join(selectableColumns, ","));
-            } else {
-                baseQuery.append("SELECT *");
-            }            
-            baseQuery.append("FROM EventLog");
-            return baseQuery;
+            SqlStatementBuilder retVal = new SqlStatementBuilder();
+            retVal.append("SELECT * ");
+            retVal.append("FROM EventLog");
+            return retVal;
         }
-       
+
         @Override
         public boolean needsWhere() {
             return true;
@@ -112,33 +104,22 @@ public class EventLogDaoImpl implements EventLogDao {
         @Override
         public EventLog mapRow(YukonResultSet yrs) throws java.sql.SQLException {
             ResultSet rs = yrs.getResultSet();
-            int columnSize;
-            List<ArgumentColumn> selectColumns= new ArrayList<ArgumentColumn>();
             EventLog eventLog = new EventLog();
             eventLog.setEventLogId(rs.getInt(1));
             eventLog.setEventType(rs.getString(2));
             eventLog.setDateTime(rs.getTimestamp(3));
             
-            if(selectableColumns!=null){
-                columnSize = selectableColumns.size();
-                selectColumns = selectableColumns; 
-            } else {
-                columnSize = argumentColumns.size();
-                selectColumns = argumentColumns;
-            }
-            
-            Object[] arguments = new Object[columnSize];
-            for (int i = 0; i < columnSize; ++i) {
-            	Object arg;
-            	int columnIndex = i + countOfNonVariableColumns + 1;	//columns are 1-based
-            	if (selectColumns.get(i).getSqlType() == Types.VARCHAR) {
-            		String rawString = rs.getString(columnIndex);
-            		arg = SqlUtils.convertDbValueToString(rawString);
-            	} else {
-            		arg = JdbcUtils.getResultSetValue(rs, columnIndex);
-            	}
-            	
-            	arguments[i] = arg;
+            Object[] arguments = new Object[argumentColumns.size()];
+            for (int i = 0; i < argumentColumns.size(); ++i) {
+                Object arg;
+                int columnIndex = i + countOfNonVariableColumns + 1;    //columns are 1-based
+                if (argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
+                    String rawString = rs.getString(columnIndex);
+                    arg = SqlUtils.convertDbValueToString(rawString);
+                } else {
+                    arg = JdbcUtils.getResultSetValue(rs, columnIndex);
+                }
+                arguments[i] = arg;
             }
             
             eventLog.setArguments(arguments);
@@ -166,7 +147,7 @@ public class EventLogDaoImpl implements EventLogDao {
             
             Object value = eventLog.getArguments()[inputIndex];
             if (value != null && argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
-            	value = SqlUtils.convertStringToDbValue(value.toString());
+                value = SqlUtils.convertStringToDbValue(value.toString());
             }
             totalArguments[outputIndex] = value;
         } 
@@ -501,15 +482,4 @@ public class EventLogDaoImpl implements EventLogDao {
     public List<com.cannontech.common.events.model.ArgumentColumn> getArgumentColumns() {
         return argumentColumns;
     }
-
-    @Override
-    public void setSelectableColumns(List<ArgumentColumn> columnNames) {
-        selectableColumns = columnNames;
-    }
-    
-    @Override
-    public List<ArgumentColumn> getSelectableColumns() {
-        return selectableColumns;
-    }
-    
 }
