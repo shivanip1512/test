@@ -52,9 +52,9 @@ protected:
 
     virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);
 
-    virtual void addDeviceProperties   (const CtiDeviceSingle &device) {}
+    virtual void addDeviceProperties   (const CtiDeviceSingle &device);
     virtual void updateDeviceProperties(const CtiDeviceSingle &device) {}
-    virtual void deleteDeviceProperties(const CtiDeviceSingle &device) {}
+    virtual void deleteDeviceProperties(const CtiDeviceSingle &device);
 
     virtual void updatePortProperties() {}  //  no properties
 

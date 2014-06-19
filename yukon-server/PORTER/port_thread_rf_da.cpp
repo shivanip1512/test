@@ -241,6 +241,20 @@ void RfDaPortHandler::loadDeviceProperties(const std::vector<const CtiDeviceSing
 }
 
 
+void RfDaPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
+{
+    //  just grab the ID - we're only supposed to have one device assigned
+    _device_id = device.getID();
+}
+
+
+void RfDaPortHandler::deleteDeviceProperties(const CtiDeviceSingle &device)
+{
+    //  no more devices
+    _device_id.reset();
+}
+
+
 }
 }
 
