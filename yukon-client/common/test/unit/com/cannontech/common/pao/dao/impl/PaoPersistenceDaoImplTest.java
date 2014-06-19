@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -30,6 +31,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/com/cannontech/common/daoTestContext.xml",
     "/com/cannontech/common/pao/completePao.xml"})
+@DirtiesContext
 public class PaoPersistenceDaoImplTest {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoPersistenceTypeHelper paoPersistenceTypeHelper;
