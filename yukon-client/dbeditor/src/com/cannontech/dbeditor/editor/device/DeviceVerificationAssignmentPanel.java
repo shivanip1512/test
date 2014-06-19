@@ -367,18 +367,15 @@ public class DeviceVerificationAssignmentPanel extends DataInputPanel {
         getAvailableList().setListData(allAvailable);
 
         repaint();
-        return;
     }
 
-    /**
-     * Comment
-     */
     public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
         int[] selectedRows = getDeviceVerificationTable().getSelectedRows();
         Vector<LiteYukonPAObject> allAvailable = new Vector<LiteYukonPAObject>(getAvailableList().getModel().getSize() + selectedRows.length);
 
-        for (int i = 0; i < getAvailableList().getModel().getSize(); i++)
+        for (int i = 0; i < getAvailableList().getModel().getSize(); i++) {
             allAvailable.add(getAvailableList().getModel().getElementAt(i));
+        }
 
         for (int u = selectedRows.length - 1; u >= 0; u--) {
             LiteYukonPAObject thePAO = getTableModel().getDeviceLitePAOAt(selectedRows[u]);
@@ -389,7 +386,6 @@ public class DeviceVerificationAssignmentPanel extends DataInputPanel {
 
         getAvailableList().setListData(allAvailable);
         repaint();
-        return;
     }
 
     public Vector<LiteYukonPAObject> populateAvailableList() {
@@ -440,10 +436,11 @@ public class DeviceVerificationAssignmentPanel extends DataInputPanel {
             disabled = veryDevice.getDisable().equalsIgnoreCase("Y");
 
             boolean resend;
-            if (veryDevice.getResendOnFail().equalsIgnoreCase("Y"))
+            if (veryDevice.getResendOnFail().equalsIgnoreCase("Y")) {
                 resend = true;
-            else
+            } else {
                 resend = false;
+            }
 
             // add the new row
             getTableModel().addRowValue(thePAO, resend);
