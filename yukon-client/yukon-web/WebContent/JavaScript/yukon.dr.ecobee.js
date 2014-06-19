@@ -203,7 +203,6 @@ yukon.dr.ecobee = (function () {
                     });
                 })
                 .fail(function(jqXHR, textStatus, errorThrown) {
-                    debug.log('fixAllIssues: fail: textStatus: ' + textStatus + ' errorThrown:' + errorThrown);
                 });
             });
         },
