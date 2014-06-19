@@ -1,11 +1,14 @@
 package com.cannontech.yukon.api.loadManagement;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -27,8 +30,8 @@ import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.energyCompany.model.EnergyCompany.Builder;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.loadManagement.adapters.CustomerAccountDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.EnergyCompanyDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.LmHardwareBaseDaoAdapter;
@@ -131,15 +134,16 @@ public class OverrideRequestEndpointTest {
         validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_NOT_SCHEDULED, 
                  null, 1, null, AUTH_USER, "OverrideAlreadyActive", false);
         
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);//2012-01-01T10:00:00Z
         // test schedule opt out on device with no schedules
         // ========================================================================================
         validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_NOT_SCHEDULED, 
-                 "2012-01-01T10:00:00Z", 1, null, AUTH_USER, null, true);
+                 fmt.format((new DateTime()).plusDays(1).toDate()), 1, null, AUTH_USER, null, true);
         
         // test schedule opt out on device with schedule
         // ======================================================================================== 
         validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_SCHEDULED, 
-                 "2012-01-01T10:00:00Z", 1, null, AUTH_USER, "OverrideAlreadyScheduled", false);
+                 fmt.format((new DateTime()).plusDays(1).toDate()), 1, null, AUTH_USER, "OverrideAlreadyScheduled", false);
         
         // test counting opting out on account with no opt outs remaining 
         // ======================================================================================== 
