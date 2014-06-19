@@ -18,7 +18,7 @@
     margin-bottom: -4px;
     width: 80px; 
 }
-#downloads-table tbody tr {
+#downloads-table tbody tr, #issues-list tbody tr {
     transition: opacity .7s ease-in-out;
 }
 </style>
@@ -33,8 +33,7 @@
     <div class="column-12-12">
         <div class="column one">
             <tags:sectionContainer2 nameKey="dataDownloads" id="data-downloads">
-                <table class="name-value-table with-form-controls" id="downloads-table"
-                    ${fn:length(downloads) <= 0 ? 'dn' : ''}">
+                <table class="name-value-table with-form-controls ${fn:length(downloads) <= 0 ? 'dn' : ''}" id="downloads-table">
                     <thead></thead>
                     <tfoot></tfoot>
                     <tbody>
@@ -65,7 +64,7 @@
                     <c:when test="${fn:length(report.errors) > 0}">
                 <div class="scroll-large">
                     <table class="compact-results-table with-form-controls separated no-stripes"
-                        data-report-id="${report.reportId}">
+                        id="issues-list">
                         <thead></thead>
                         <tfoot></tfoot>
                         <tbody>
@@ -78,14 +77,14 @@
                                         <c:if test="${issue.errorType.fixable}">
                                             <cti:msg2 var="explanation" key="${issue.errorType.detailKey}"
                                                 arguments="${issue.arguments}"/>
-                                            <cti:button popup="#ecobee-fix" renderMode="buttonImage" classes="fr M0"
+                                            <cti:button popup="#ecobee-fixable" renderMode="buttonImage" classes="fr M0 fixable-issue"
                                                 icon="icon-wrench" data-error-id="${issue.errorId}"
                                                 data-explanation="${fn:escapeXml(explanation)}" busy="true"/>
                                         </c:if>
                                         <c:if test="${not issue.errorType.fixable}">
                                             <cti:msg2 var="explanation" key="${issue.errorType.detailKey}"
                                                 arguments="${issue.arguments}"/>
-                                            <cti:button popup="#ecobee-unfixable" renderMode="buttonImage" classes="fr M0"
+                                            <cti:button popup="#ecobee-unfixable" renderMode="buttonImage" classes="fr M0 unfixable-issue"
                                                 icon="icon-error" data-error-id="${issue.errorId}"
                                                 data-explanation="${fn:escapeXml(explanation)}"/>
                                         </c:if>
@@ -99,7 +98,7 @@
                     <cti:button nameKey="issues.fixAll" icon="icon-wrench" id="fix-all-btn"/>
                 </div>
                 <div dialog
-                    id="ecobee-fix"
+                    id="ecobee-fixable"
                     data-form
                     data-width="400"
                     data-event="yukon.dr.ecobee.fix" 

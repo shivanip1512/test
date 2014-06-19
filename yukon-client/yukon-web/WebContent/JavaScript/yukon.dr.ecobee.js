@@ -141,51 +141,64 @@ yukon.dr.ecobee = (function () {
             }
             
             $(document).on('click', '#fix-all-btn', function (ev) {
-                var reportId = $('#sync-issues').data('reportId');
+                var ecobeeReportId = $('#sync-issues').data('reportId');
                 
-                // disable all buttons
-                $('#sync-issues table tr').each(function (index,elem) {
-                    if ('#ecobee-unfixable' !== $(elem).find('button').attr('popup')) {
-                        yukon.ui.busy($(elem).find('button'));
-                        $(elem).find('button').prop('disabled', true);
-                    }
+                // busy all fixable buttons
+                $('#sync-issues table tr').find('.fixable-issue').each(function (index, elem) {
+                    yukon.ui.busy(elem);
                 });
 
-                $.ajax({
-                    url: yukon.url('dr/ecobee/fix-all'),
-                    type: 'get',
-                    data: {reportId: reportId}
-                })
+                $.get(yukon.url('dr/ecobee/fix-all'), {reportId: ecobeeReportId})
                 .done(function (data, textStatus, jqXHR) {
                     var errorIds = [],
+                        fixFailures = [],
                         i;
-                    // make note of issues successfully fixed by server
                     for (i = 0; i < data.length; i += 1) {
-                        if (true === data[i].success || 'true' === data[i].success) {
-                            errorIds.push(data[i].originalErrorId);
+                        if (true === data[i].success) {
+                            errorIds.push(data[i]);
+                        } else {
+                            fixFailures.push(data[i]);
                         }
                     }
-                    
+
                     // check the error id of each issue in table against the ids
                     // of the successfullly fixed issues reported by the server
-                    $('#sync-issues table tr').each(function (index,elem) {
+                    $('#sync-issues table tr').each(function (index, row) {
                         var errorId,
                             // TODO: I know, not the most efficient algorithm
-                            isInList = function (val) {
+                            isInList = function (list, val, foundIndex) {
                                 var ind,
                                     found = false;
-                                for (ind = 0; ind < errorIds.length; ind += 1) {
-                                    if (val === errorIds[ind]) {
+                                foundIndex.ind = -1;
+                                for (ind = 0; ind < list.length; ind += 1) {
+                                    if (val === list[ind].originalErrorId) {
                                         found = true;
-                                        errorIds.slice(ind, ind + 1);
+                                        foundIndex.ind = ind;
                                         break;
                                     }
                                 }
                                 return found;
-                            };
-                        errorId = $(elem).find('button').data('errorId');
-                        if (isInList(errorId)) {
-                            $(elem).remove();
+                            },
+                            foundAtIndex = {ind: -1},
+                            fixFailure = '',
+                            issueHtml,
+                            issueTd,
+                            FADE = 1000;
+                        errorId = + $(row).find('button').data('errorId');
+                        if (isInList(errorIds, errorId, foundAtIndex)) {
+                            yukon.ui.busy($(row).find('button'));
+                            $(row).css('opacity', 0);
+                            setTimeout (function () {
+                                $(row).remove();
+                            }, FADE);
+                        } else if (isInList(fixFailures, errorId, foundAtIndex)) {
+                            if (-1 !== foundAtIndex.ind) {
+                                fixFailure = fixFailures[foundAtIndex.ind].fixErrorString;
+                                issueTd = $(row).find('td')[0];
+                                issueHtml = $(issueTd).html();
+                                $(issueTd).html(issueHtml + '<div class="error">' + fixFailure + '</div>');
+                            }
+                            yukon.ui.unbusy($(row).find('button'));
                         }
                     });
                 })
@@ -262,9 +275,7 @@ yukon.dr.ecobee = (function () {
             row.find('.js-percent-done').html(status.percentDone);
         },
         /**
-         * Initialize contents in popups for fixing ecobee issues before displaying them.
-         * This callback is fired when a data-load-event attribute is specified in popup but
-         * no data-url specified.
+         * This callback is fired right before the popup is shown.
          * @callback
          * @param {module:yukon.dr.ecobee#event:yukon.dr.ecobee.fix.init} ev - A yukon.dr.ecobee.fix.init event.
          * @param {Object} originalTarget - in this case, the button that was clicked that has data attributes on it.
@@ -275,7 +286,7 @@ yukon.dr.ecobee = (function () {
                 errorId = $(originalTarget).closest('button').data('errorId'),
                 issueExplanation = $(originalTarget).closest('button').data('explanation');
             switch (popupId) {
-            case 'ecobee-fix':
+            case 'ecobee-fixable':
                 $('#ecobee-report-id').val(reportId);
                 $('#ecobee-error-id').val(errorId);
                 $('#ecobee-issue-explanation').html(issueExplanation);

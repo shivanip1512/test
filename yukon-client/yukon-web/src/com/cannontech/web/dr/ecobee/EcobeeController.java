@@ -314,7 +314,7 @@ public class EcobeeController {
     }
     
     @RequestMapping(value="/ecobee/fixIssue", method=RequestMethod.POST)
-    public String fixIssue(ModelMap model,
+    public String fixIssue(
             YukonUserContext userContext,
             Integer reportId,
             Integer errorId,
@@ -347,12 +347,12 @@ public class EcobeeController {
 
     @RequestMapping(value="/ecobee/fix-all", method=RequestMethod.GET)
     public @ResponseBody List<Map<String, Object>> fixAllIssues(
-            HttpServletResponse response,
             YukonUserContext userContext,
             Integer reportId,
             FlashScope flash) throws IllegalArgumentException {
         
         List<Map<String, Object>> fixResponse = new ArrayList<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
             List<EcobeeReconciliationResult> results = ecobeeReconciliation.fixAllDiscrepancies(reportId);
             for (EcobeeReconciliationResult result: results) {
@@ -363,9 +363,7 @@ public class EcobeeController {
                 json.put("originalErrorId", originalErrorId);
                 json.put("success", success);
                 if (!success) {
-                    String fixErrorKey = result.getErrorType().getFormatKey();
-                    MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                    String fixErrorString = accessor.getMessage(fixErrorKey);
+                    String fixErrorString = accessor.getMessage(result.getErrorType());
                     json.put("fixErrorString", fixErrorString);
                 }
                 fixResponse.add(json);
@@ -373,7 +371,6 @@ public class EcobeeController {
         } catch (IllegalArgumentException e) {
             flash.setError(new YukonMessageSourceResolvable(fixIssueKey + "fixFailed"));
         }
-        response.setStatus(200); // TODO: use enum or whatever instead of hardcoded 200
         return fixResponse;
     }
 
