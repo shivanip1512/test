@@ -51,7 +51,9 @@ public class Thermostat {
 
     public void setType(HardwareType hardwareType) {
         this.type = hardwareType;
-        this.schedulableThermostatType = SchedulableThermostatType.getByHardwareType(hardwareType);
+        if (hardwareType.isSupportsSchedules()) {
+            this.schedulableThermostatType = SchedulableThermostatType.getByHardwareType(hardwareType);
+        }
     }
 
     public InventoryCategory getCategory() {
