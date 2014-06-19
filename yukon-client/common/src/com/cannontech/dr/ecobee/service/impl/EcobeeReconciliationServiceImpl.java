@@ -153,9 +153,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
                     String currentPath = error.getCurrentPath();
                     
                     //Get the full path of the correct location, then remove the set name to get the parent path
-                    String correctPath = error.getCorrectPath();
-                    int indexOfLastSlash = correctPath.lastIndexOf("/");
-                    String correctParentPath = correctPath.substring(0, indexOfLastSlash + 1);
+                    String correctParentPath = getParentPath(error.getCorrectPath());
                     
                     communicationService.moveManagementSet(currentPath, correctParentPath);
                     return EcobeeReconciliationResult.newSuccess(error);
@@ -187,6 +185,14 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
         } catch (EcobeeCommunicationException e) {
             return EcobeeReconciliationResult.newFailure(error, COMMUNICATION);
         }
+    }
+    
+    /**
+     * Takes a full set path (including the set name) and parses out its parent set's name.
+     */
+    private String getParentPath(String fullSetPath) {
+        int indexOfLastSlash = fullSetPath.lastIndexOf("/");
+        return fullSetPath.substring(0, indexOfLastSlash + 1);
     }
     
     /**

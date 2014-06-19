@@ -13,7 +13,11 @@ public final class CreateSetRequest {
 
     @JsonCreator
     public CreateSetRequest(@JsonProperty("setName") String setName) {
-        this.setName = setName;
+        if (setName.indexOf("/") == 0) {
+            this.setName = setName.substring(1);
+        } else {
+            this.setName = setName;
+        }
     }
 
     public String getOperation() {
