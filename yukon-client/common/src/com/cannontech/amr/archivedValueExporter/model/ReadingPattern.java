@@ -9,7 +9,7 @@ public enum ReadingPattern implements DisplayableEnum{
     FOUR_TWO("####.##"),
     CUSTOM("CUSTOM");
     
-    private String pattern;
+    private final String pattern;
     
     private ReadingPattern(String pattern) {
         this.pattern = pattern;

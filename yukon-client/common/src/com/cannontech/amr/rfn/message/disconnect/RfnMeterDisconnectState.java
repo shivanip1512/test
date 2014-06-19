@@ -21,8 +21,8 @@ public enum RfnMeterDisconnectState {
     ;
     
     
-    private int rawState;
-    private RfnMeterDisconnectStatusType type; 
+    private final int rawState;
+    private final RfnMeterDisconnectStatusType type; 
     
     private RfnMeterDisconnectState(int rawState, RfnMeterDisconnectStatusType type) {
         this.rawState = rawState;

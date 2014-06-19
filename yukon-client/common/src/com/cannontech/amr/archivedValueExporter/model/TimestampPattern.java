@@ -10,7 +10,7 @@ public enum TimestampPattern implements DisplayableEnum {
     HOUR_MINUTE_SECOND_24("HH:mm:ss"),
     CUSTOM("CUSTOM");
     
-    private String pattern;
+    private final String pattern;
     
     private TimestampPattern(String pattern) {
         this.pattern = pattern;

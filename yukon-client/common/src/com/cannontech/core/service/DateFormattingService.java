@@ -46,7 +46,7 @@ public interface DateFormattingService {
         MONTH_DAY_HM(MidnightMode.NORMAL),
         ;
         
-        private MidnightMode midnightMode = null;
+        private final MidnightMode midnightMode;
 
         private final static String keyPrefix = "yukon.common.dateFormatting.";
 

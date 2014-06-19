@@ -60,10 +60,10 @@ public enum MeterDisplayFieldEnum {
         }
     });
     
-    private String label;
-    private String id;
-    private MeterSearchField searchField;
-    private MeterDisplayFieldAccessor meterDisplayFieldAccessor;
+    private final String label;
+    private final String id;
+    private final MeterSearchField searchField;
+    private final MeterDisplayFieldAccessor meterDisplayFieldAccessor;
     
     MeterDisplayFieldEnum(String label, String id, MeterSearchField searchField,
             MeterDisplayFieldAccessor meterDisplayFieldAccessor) {
@@ -86,6 +86,6 @@ public enum MeterDisplayFieldEnum {
     }
     
     public String getField(YukonMeter meter) {
-        return this.meterDisplayFieldAccessor.getField(meter);
+        return meterDisplayFieldAccessor.getField(meter);
     }
 }

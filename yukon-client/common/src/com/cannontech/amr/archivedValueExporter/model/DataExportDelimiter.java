@@ -14,7 +14,7 @@ public enum DataExportDelimiter implements DisplayableEnum {
     NONE(""),
     CUSTOM(null);
     
-    private String value;
+    private final String value;
     private static final ImmutableSet<DataExportDelimiter> nonCustom = ImmutableSet.of(COMMA, SEMI_COLON, COLON, SPACE, NONE);
     private static final ImmutableMap<String, DataExportDelimiter> valueMap;
     static {
@@ -39,7 +39,9 @@ public enum DataExportDelimiter implements DisplayableEnum {
     public static DataExportDelimiter getForValue(String value) {
         
         DataExportDelimiter type = valueMap.get(value);
-        if (type == null) return DataExportDelimiter.CUSTOM;
+        if (type == null) {
+            return DataExportDelimiter.CUSTOM;
+        }
         
         return type;
     }

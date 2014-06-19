@@ -15,10 +15,10 @@ public enum DetectedPhase {
     ABC(Phase.A, Phase.B,Phase.C),
     UNKNOWN();
     
-    private Set<Phase> phaseSet;
+    private final Set<Phase> phaseSet;
     
     private DetectedPhase(Phase... phases){
-        this.phaseSet = ImmutableSet.copyOf(phases);
+        phaseSet = ImmutableSet.copyOf(phases);
     }
     
     public Set<Phase> getPhaseSet() {

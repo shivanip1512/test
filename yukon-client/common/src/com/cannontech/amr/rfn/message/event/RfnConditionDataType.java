@@ -20,7 +20,7 @@ public enum RfnConditionDataType {
     PORT_LOCKED_MINUTES(Long.class)
     ;
     
-    private Class<?> objectType;
+    private final Class<?> objectType;
     
     private RfnConditionDataType(Class<?> objectType) {
         this.objectType = objectType;

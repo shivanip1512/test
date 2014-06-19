@@ -40,7 +40,7 @@ public enum DeviceSearchCategory {
         }
     });
     
-    private CategoryContentChecker contentChecker;
+    private final CategoryContentChecker contentChecker;
     
     private DeviceSearchCategory(final CategoryContentChecker contentChecker) {
         this.contentChecker = contentChecker;

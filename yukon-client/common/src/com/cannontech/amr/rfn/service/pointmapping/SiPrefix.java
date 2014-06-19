@@ -37,13 +37,13 @@ public enum SiPrefix {
         ImmutableSet.Builder<String> builder = ImmutableSet.builder();
         builder.add(name());
         builder.addAll(Arrays.asList(otherSpellings));
-        this.spellings = builder.build();
+        spellings = builder.build();
         this.exponent = exponent;
-        this.factor = Math.pow(10, exponent);
+        factor = Math.pow(10, exponent);
     }
-    private Set<String> spellings;
-    private int exponent;
-    private double factor;
+    private final Set<String> spellings;
+    private final int exponent;
+    private final double factor;
     private final static Map<String, SiPrefix> allSpellings;
     
     static {

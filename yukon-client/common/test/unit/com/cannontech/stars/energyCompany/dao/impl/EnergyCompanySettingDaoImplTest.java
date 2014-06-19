@@ -47,7 +47,6 @@ public class EnergyCompanySettingDaoImplTest {
             new IAnswer<Integer>() {
                 @Override
                 public Integer answer() throws Throwable {
-                    System.out.println("NV: "+ nextValue);
                     return nextValue++;
                 }
             }).anyTimes();

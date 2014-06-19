@@ -7,12 +7,14 @@ public enum MeterSearchField {
 
     METERNUMBER("Meter Number"), 
     PAONAME("Device Name") {
+        @Override
         public String getSearchQueryField() {
             return "ypo.paoname";
         }
 
     },
     TYPE("Device Type") {
+        @Override
         public String getSearchQueryField() {
             return "ypo.type";
         }
@@ -21,12 +23,13 @@ public enum MeterSearchField {
     ADDRESS("Address"), 
     ROUTE(
             "Route") {
+        @Override
         public String getSearchQueryField() {
             return "rypo.paoname";
         }
     };
 
-    private String meterSearchString = null;
+    private final String meterSearchString;
 
     // Constructor
     private MeterSearchField(String meterSearchString) {

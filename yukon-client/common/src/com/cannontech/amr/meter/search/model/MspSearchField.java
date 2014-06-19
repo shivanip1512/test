@@ -9,8 +9,8 @@ public enum MspSearchField {
 	CUSTOMER_ID("Customer ID", "GetMeterByCustId"),
 	;
 	
-	private String name;
-	private String requiredMspMethodName;
+	private final String name;
+	private final String requiredMspMethodName;
 	
 	MspSearchField(String name, String requiredMspMethodName) {
 		this.name = name;
