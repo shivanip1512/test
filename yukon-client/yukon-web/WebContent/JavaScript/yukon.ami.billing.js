@@ -379,12 +379,10 @@ yukon.ami.billing = (function() {
          * @param {Object} event - jquery event object.
          */
         do_delete_format: function(event) {
-            var currFormat = $('#availableFormat :selected');
-            var currFormatId = currFormat.val();
-            the_data = {'availableFormat': currFormatId};
-            $.post(_url_format_delete, the_data).done(function(result) {
+            var currFormat = $('#availableFormat :selected'),
+                currFormatId = currFormat.val();
+            $.post(_url_format_delete, {'availableFormat': currFormatId}).done(function(result) {
                 $('#billing_setup_overview').html(result);
-                reset_setup_tab();
             });
         },
 
