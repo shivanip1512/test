@@ -132,7 +132,7 @@ const MetricInfo metricInfos[] = {
         { 163,  TouRates,  "PF Phase B"                            },
         { 164,  TouRates,  "PF Phase C"                            },
 
-        { 256,  None,      "Time in Seconds"                       },
+        { 256,  TouRates,  "Time in Seconds"                       },
         { 257,  None,      "Temperature in Centigrade"             }};
 
 struct MetricItem
