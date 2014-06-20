@@ -349,7 +349,7 @@ public class EcobeeController {
     public @ResponseBody List<Map<String, Object>> fixAllIssues(
             YukonUserContext userContext,
             Integer reportId,
-            FlashScope flash) throws IllegalArgumentException {
+            FlashScope flash) {
         
         List<Map<String, Object>> fixResponse = new ArrayList<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
