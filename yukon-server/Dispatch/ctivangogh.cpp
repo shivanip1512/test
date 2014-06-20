@@ -5891,7 +5891,9 @@ unsigned CtiVanGogh::writeRawPointHistory(boost::ptr_deque<CtiTableRawPointHisto
 
     //  form up the SQL for both the single-row and multi-row cases
     const std::string rowSql   = CtiTableRawPointHistory::getInsertSql();
-    const std::string chunkSql = boost::join(std::vector<std::string>(ChunkSize, rowSql), ";");
+    
+    //  format is "BEGIN INSERT INTO.... ;INSERT INTO.... ;END;"
+    const std::string chunkSql = "BEGIN " + boost::join(std::vector<std::string>(ChunkSize, rowSql), ";") + ";END;";
 
     unsigned rowsWritten = 0;
     bool multiRowInsert = true;
