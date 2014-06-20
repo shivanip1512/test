@@ -248,6 +248,18 @@
         </tags>
     </pao>
 
+    <pao id="RFN_CHANNEL_CONFIGURATION" abstract="true">
+        <configuration>
+            <category type="rfnChannelConfiguration" />
+        </configuration>
+    </pao>
+
+    <pao id="RFN_TEMPERATURE_ALARM_CONFIGURATION" abstract="true">
+        <configuration>
+            <category type="rfnTempAlarm" />
+        </configuration>
+    </pao>
+
     <pao id="LCD_CONFIGURATION" abstract="true"
         inherits="SUPPORTS_DEVICE_CONFIGURATION">
         <configuration>
@@ -6106,7 +6118,7 @@
     <!-- ################################### RFN_COMMON ################################### -->
     <pao id="RFN_COMMON" abstract="true"
         inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, RFN_PTCALC__ALL, SUPPORTS_COMMANDER_REQUESTS_TAG,
-        SUPPORTS_DEVICE_CONFIGURATION">
+        SUPPORTS_DEVICE_CONFIGURATION, RFN_CHANNEL_CONFIGURATION, RFN_TEMPERATURE_ALARM_CONFIGURATION">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>
@@ -6961,10 +6973,6 @@
             <tag name="NETWORK_MANAGER_ATTRIBUTE_READS" />
             <tag name="USES_METER_NUMBER_FOR_MSP" />
         </tags>
-        <configuration>
-            <category type="rfnTempAlarm" />
-            <category type="rfnChannelConfiguration" />
-        </configuration>
     </pao>
 
     <pao id="RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE" abstract="true">
@@ -8555,8 +8563,8 @@
         </attributes>
     </pao>
 
-    <pao id="RFN_COMMON_SENTINEL" abstract="true"
-        inherits="RFN_EVENTS, SUPPORTS_OUTAGE_TAG, OUTAGE_STATUS_BASE">
+    <pao id="RFN_COMMON_SENTINEL" abstract="true" inherits="RFN_EVENTS, SUPPORTS_OUTAGE_TAG, OUTAGE_STATUS_BASE,
+        SUPPORTS_DEVICE_CONFIGURATION, RFN_CHANNEL_CONFIGURATION, RFN_TEMPERATURE_ALARM_CONFIGURATION">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>
