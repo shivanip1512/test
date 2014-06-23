@@ -157,24 +157,27 @@ yukon.ui = (function () {
 
         busy: function (item) {
             var btn = $(item),
+                spinner = btn.children('.icon.busy'),
                 label,
                 busyText,
                 originalText;
-    
-            if (btn.is('[data-busy]')) {
-                btn.prop('disabled', true);
-                btn.addClass('busy');
-                // if this button has an icon hide it
-                    btn.children('.icon').hide();
-                    btn.children('.icon.busy').show();
-    
-                    label = btn.children('.b-label');
-                    busyText = btn.attr('data-busy');
-                if (label.length > 0 && busyText.length > 0) {
-                    originalText = label.html(); 
-                    label.html(busyText);
-                    btn.data('data-original-text', originalText);
-                }
+
+            btn.prop('disabled', true);
+            btn.addClass('busy');
+            // if this button has an icon hide it
+            btn.children('.icon').hide();
+            if (!spinner.length) {
+                btn.prepend('<i class="icon busy"></i>');
+                spinner = btn.children('.icon.busy');
+            }
+            spinner.show(); 
+
+            label = btn.children('.b-label');
+            busyText = btn.attr('data-busy');
+            if (label.length > 0 && busyText.length > 0) {
+                originalText = label.html(); 
+                label.html(busyText);
+                btn.data('data-original-text', originalText);
             }
             
             return btn;
@@ -185,18 +188,16 @@ yukon.ui = (function () {
                 label,
                 originalText;
     
-            if (btn.is('[data-busy]')) {
-                btn.prop('disabled', false);
-                btn.removeClass('busy');
+            btn.prop('disabled', false);
+            btn.removeClass('busy');
                 // if this button has an icon show it
-                    btn.children('.icon').show();
-                    btn.children('.icon.busy').hide();
-                
-                    label = btn.children('.b-label');
-                    originalText = btn.data('data-original-text');
-                if (typeof originalText !== 'undefined' && label.length > 0 && originalText.length > 0) {
-                    label.html(originalText);
-                }
+                btn.children('.icon').show();
+                btn.children('.icon.busy').hide();
+            
+                label = btn.children('.b-label');
+                originalText = btn.data('data-original-text');
+            if (typeof originalText !== 'undefined' && label.length > 0 && originalText.length > 0) {
+                label.html(originalText);
             }
             
             return btn;
