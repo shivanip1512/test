@@ -312,7 +312,7 @@ public class DeviceCopyWizardPanel extends WizardPanel {
     @Override
     protected boolean isLastInputPanel(DataInputPanel currentPanel) {
         if (getDeviceType() != null) {
-            if ((currentPanel == getDeviceCopyNameAddressPanel()) && ( getDeviceType() == PaoType.MCT470)
+            if ((currentPanel == getDeviceCopyNameAddressPanel()) && ( getDeviceType() == PaoType.MCT470
                                                                          || DeviceTypesFuncs.isMCT430(getDeviceType().getDeviceTypeId())
                                                                          || DeviceTypesFuncs.isMCT410(getDeviceType().getDeviceTypeId())
                                                                          || DeviceTypesFuncs.isMCT3xx(getDeviceType().getDeviceTypeId())
@@ -328,9 +328,9 @@ public class DeviceCopyWizardPanel extends WizardPanel {
                                                                          || getDeviceType() == PaoType.REPEATER_800
                                                                          || getDeviceType() == PaoType.REPEATER_850
                                                                          || getDeviceType() == PaoType.REPEATER_801
-                                                                         || getDeviceType() == PaoType.REPEATER_921) {
+                                                                         || getDeviceType() == PaoType.REPEATER_921)) {
                 return false;
-            } else if ((currentPanel == getRoutePanel()) && (getDeviceType() == PaoType.MCT470)
+            } else if ((currentPanel == getRoutePanel()) && (getDeviceType() == PaoType.MCT470
                                                                         || DeviceTypesFuncs.isMCT430(getDeviceType().getDeviceTypeId())
                                                                         || DeviceTypesFuncs.isMCT410(getDeviceType().getDeviceTypeId())
                                                                         || DeviceTypesFuncs.isMCT3xx(getDeviceType().getDeviceTypeId())
@@ -339,7 +339,7 @@ public class DeviceCopyWizardPanel extends WizardPanel {
                                                                         || getDeviceType() == PaoType.MCT248
                                                                         || getDeviceType() == PaoType.MCT240
                                                                         || getDeviceType() == PaoType.MCT213
-                                                                        || getDeviceType() == PaoType.MCT210) {
+                                                                        || getDeviceType() == PaoType.MCT210)) {
                 return false;
             } else if ((currentPanel == getDeviceCopyNameAddressPanel()) 
                     && !((getDeviceType() == PaoType.LM_GROUP_EMETCON) || (getDeviceType() == PaoType.LM_GROUP_VERSACOM)) ) {
