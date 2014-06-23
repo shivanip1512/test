@@ -108,18 +108,23 @@ span.dynatree-icon {
     background-color: white;
     border-color: #555;
 }
-.dynatree-node.dynatree-selected .dynatree-title {
+.dynatree-node.dynatree-selected .dynatree-title,
+.dynatree-node.dynatree-selected .dynatree-title:focus {
     font-style: normal;
-    background-color: #eee;
+    background-color: #eee !important;
     border: 1px solid #bbb;
     color: @font-color;
 }
-.dynatree-node.dynatree-selected .dynatree-title:focus {
-    background-color: #eee !important;
-    border-color: #555;
+
+.dynatree-node.dynatree-active:not(.dynatree-selected) .dynatree-title {
+    background-color: #fff !important;
+    border-color: #fff;
 }
 .dynatree-node.found .dynatree-title {
     border-color: @primary-color;
+}
+span.dynatree-folder a {
+    font-weight: normal;
 }
 
 .inline-tree .tree-canvas {
@@ -172,7 +177,7 @@ span.dynatree-icon {
     }
     
     .ui-widget-header {
-        padding: 5px 10px;
+        padding: 10px;
         border: none;
         border-radius: 2px 2px 0 0;
         text-shadow: 1px 1px 0 white;

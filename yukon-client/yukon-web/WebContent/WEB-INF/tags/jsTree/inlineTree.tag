@@ -16,7 +16,12 @@
 
 <cti:includeScript link="JQUERY_COOKIE"/>
 <cti:includeScript link="JQUERY_SCROLLTO"/>
-<cti:includeScript link="JQUERY_TREE"/>
+<cti:checkRolesAndProperties value="DEVELOPMENT_MODE">
+    <cti:includeScript link="JQUERY_TREE"/>
+</cti:checkRolesAndProperties>
+<cti:checkRolesAndProperties value="!DEVELOPMENT_MODE">
+    <cti:includeScript link="JQUERY_TREE_MIN"/>
+</cti:checkRolesAndProperties>
 <cti:includeScript link="JQUERY_TREE_HELPERS"/>
 
 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
@@ -74,10 +79,6 @@
 
         var args = {
             children: data,
-            classNames: {
-                active: "", // don't add class names to avoid needing to do rediculous css overriding
-                focused: "" // don't add class names to avoid needing to do rediculous css overriding
-            },
             minExpandLevel: 2,    //prevent the top level elements (visually - dynatree has 1 hidden root by default) from expanding/collapsing
             onPostInit: function(isReloading, isError) {
                 //show the initially selected item

@@ -8,6 +8,7 @@ package com.cannontech.web;
  */
 public enum JsLibrary {
     
+    
     DEBUGGER("/resources/js/lib/debugger.js"), //http://benalman.com/projects/javascript-debug-console-log/
     
     JQUERY("/JavaScript/lib/jQuery/jquery-1.11.1.js"), //http://www.jquery.com
@@ -27,7 +28,8 @@ public enum JsLibrary {
     JQUERY_SPECTRUM("/JavaScript/lib/jQuery/plugins/spectrum/spectrum.js"), //http://bgrins.github.io/spectrum/
     JQUERY_TRAVERSABLE("/JavaScript/lib/jQuery/plugins/traversable/jquery.traversable.js"), //https://github.com/adelegard/jquery-traverse
     JQUERY_TIPSY("/JavaScript/lib/jQuery/plugins/tipsy/javascripts/jquery.tipsy.js"), //https://github.com/jaz303/tipsy
-    JQUERY_TREE("/resources/js/lib/dynatree/jquery.dynatree.min.js"), //http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
+    JQUERY_TREE("/resources/js/lib/dynatree/jquery.dynatree.js"), //http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
+    JQUERY_TREE_MIN("/resources/js/lib/dynatree/jquery.dynatree.min.js"), 
     JQUERY_TREE_HELPERS("/JavaScript/yukon.dynatree.js"), //in-house
     JQUERY_CHOSEN("/resources/js/lib/chosen/chosen.jquery.min.js"), //https://github.com/harvesthq/chosen/releases
     
