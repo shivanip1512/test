@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import org.joda.time.Instant;
 
 import com.cannontech.common.util.Completable;
+import com.cannontech.common.util.Range;
 
 public class EcobeeReadResult implements Completable {
     
@@ -17,11 +18,15 @@ public class EcobeeReadResult implements Completable {
     private int completedReads;
     private boolean isComplete;
     private boolean successful;
+    private Instant startDateRange;
+    private Instant endDateRange;
     
-    public EcobeeReadResult(int totalReads, File file) {
+    public EcobeeReadResult(int totalReads, File file, Range<Instant> dateRange) {
         this.totalReads = totalReads;
         this.file = file;
         startDate = Instant.now();
+        startDateRange = dateRange.getMin();
+        endDateRange = dateRange.getMax();
     }
     
     public String getKey() {
@@ -84,6 +89,22 @@ public class EcobeeReadResult implements Completable {
         this.successful = successful;
     }
     
+    public Instant getStartDateRange() {
+        return startDateRange;
+    }
+
+    public void setStartDateRange(Instant startDateRange) {
+        this.startDateRange = startDateRange;
+    }
+
+    public Instant getEndDateRange() {
+        return endDateRange;
+    }
+
+    public void setEndDateRange(Instant endDateRange) {
+        this.endDateRange = endDateRange;
+    }
+
     private void setCompletion() {
         if (!isComplete && completedReads == totalReads) {
             endDate = Instant.now();

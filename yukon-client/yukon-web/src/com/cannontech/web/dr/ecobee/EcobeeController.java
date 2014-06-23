@@ -219,6 +219,9 @@ public class EcobeeController {
         model.addAttribute("key", resultKey);
         EcobeeReadResult result = readResultsCache.getResult(resultKey);
         
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE_HM, YukonUserContext.system);
+        log.info("startDateRange: " + result.getStartDateRange().toString(formatter) + " endDateRange: " +
+            result.getEndDateRange().toString(formatter));
         model.addAttribute("download", result);
         model.addAttribute("hideRow", true);
         
@@ -233,7 +236,11 @@ public class EcobeeController {
         if (!result.isComplete()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         } else {
-            WebFileUtils.writeToCSV(response, result.getFile(), "ecobee_data_" + Instant.now().getMillis() + ".csv");
+            DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE_HM, YukonUserContext.system);
+            String startDateRange = result.getStartDateRange().toString(formatter);
+            String endDateRange = result.getEndDateRange().toString(formatter);
+            log.info("startDateRange: " + startDateRange + " endDateRange: " + endDateRange);
+            WebFileUtils.writeToCSV(response, result.getFile(), "ecobee_data_" + startDateRange + "_" + endDateRange + ".csv");
         }
     }
     

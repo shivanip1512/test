@@ -23,6 +23,7 @@
 <entry key="yukon.common.dateFormatting.SHORT_MONTH_YEAR">MMM yyyy</entry>
 <entry key="yukon.common.dateFormatting.MONTH_YEAR">MMMM yyyy</entry>
 <entry key="yukon.common.dateFormatting.MONTH_DAY_HM">MMM dd HH:mm a</entry>
+<entry key="yukon.common.dateFormatting.DATE_HM">YYYYMMddHHmm</entry>
 
 <!-- 
      Please see http://keith-wood.name/datetimeEntryRef.html for the following formats

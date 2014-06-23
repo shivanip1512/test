@@ -40,7 +40,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
         final File file = File.createTempFile("ecobee_data_" + Instant.now().getMillis(), ".csv");
         file.deleteOnExit();
         
-        final EcobeeReadResult result = new EcobeeReadResult(serialNumbers.size(), file);
+        final EcobeeReadResult result = new EcobeeReadResult(serialNumbers.size(), file, dateRange);
         String resultKey = readResultsCache.addResult(result);
         result.setKey(resultKey);
         
