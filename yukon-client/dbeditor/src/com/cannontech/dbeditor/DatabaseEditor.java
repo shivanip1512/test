@@ -385,7 +385,8 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
             }
 
             if (getConnToDispatch().isValid()) {
-                f.setTitle("Yukon Database Editor [Connected to Dispatch@" + getConnToDispatch().toString() + "]");
+                DispatchClientConnection conn = (DispatchClientConnection) getConnToDispatch();
+                f.setTitle("Yukon Database Editor [Connected to Dispatch@" + conn.getConnectionUri().getRawAuthority() + "]");
                 f.repaint();
             } else {
                 f.setTitle("Yukon Database Editor [Not Connected to Dispatch]");

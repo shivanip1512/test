@@ -474,26 +474,19 @@ public static void main(java.lang.String[] args) {
  */
 public void update(java.util.Observable observ, Object obj) 
 {
-	//Should be an instance of com.cannontech.message.dispatch.ClientConnection
-	//notifying us of a change in the connections state
-	com.cannontech.message.dispatch.DispatchClientConnection conn = (com.cannontech.message.dispatch.DispatchClientConnection) obj;
+    //Should be an instance of com.cannontech.message.dispatch.ClientConnection
+    //notifying us of a change in the connections state
+    com.cannontech.message.dispatch.DispatchClientConnection conn = (com.cannontech.message.dispatch.DispatchClientConnection) obj;
 
-	boolean validConn = conn.isValid();
-		
-	if (this != null)
-	{
-		String title = "Data Generator";
-		
-		if (validConn)
-		{
-			title += "   [Connected to Dispatch@" + conn.toString() + "]";
-		}
-		else
-		{
-			title += "   [Not Connected to VanGogh]";
-		}
-		this.setTitle(title);
-	}	
+    if (this != null) {
+        String title = "Data Generator";
+        if (conn.isValid()) {
+            title += " [Connected to Dispatch@" + conn.getConnectionUri().getRawAuthority() + "]";
+        } else {
+            title += " [Not Connected to Dispatch]";
+        }
+        this.setTitle(title);
+    }
 }
 /**
  * 
