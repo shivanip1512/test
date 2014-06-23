@@ -206,8 +206,7 @@ function saveButton () {
         }
     }
     else {
-        var saveUrl = yukon.url('dynamicBilling/save.json');
-        $.post(saveUrl, $('#billingFormatForm').serialize()).done(function(result) {
+        $.post(yukon.url('dynamicBilling/save.json'), $('#billingFormatForm').serialize()).done(function(result) {
             $('#billing_setup_overview').html(result);
             yukon.ami.billing.reset_setup_tab();
         });
