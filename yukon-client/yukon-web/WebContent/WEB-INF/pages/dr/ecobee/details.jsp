@@ -77,14 +77,14 @@
                                         <c:if test="${issue.errorType.fixable}">
                                             <cti:msg2 var="explanation" key="${issue.errorType.detailKey}"
                                                 arguments="${issue.arguments}"/>
-                                            <cti:button popup="#ecobee-fixable" renderMode="buttonImage" classes="fr M0 fixable-issue"
+                                            <cti:button popup="#ecobee-fixable" renderMode="buttonImage" classes="fr M0 js-fixable-issue"
                                                 icon="icon-wrench" data-error-id="${issue.errorId}"
-                                                data-explanation="${fn:escapeXml(explanation)}" busy="true"/>
+                                                data-explanation="${fn:escapeXml(explanation)}"/>
                                         </c:if>
                                         <c:if test="${not issue.errorType.fixable}">
                                             <cti:msg2 var="explanation" key="${issue.errorType.detailKey}"
                                                 arguments="${issue.arguments}"/>
-                                            <cti:button popup="#ecobee-unfixable" renderMode="buttonImage" classes="fr M0 unfixable-issue"
+                                            <cti:button popup="#ecobee-unfixable" renderMode="buttonImage" classes="fr M0"
                                                 icon="icon-error" data-error-id="${issue.errorId}"
                                                 data-explanation="${fn:escapeXml(explanation)}"/>
                                         </c:if>
@@ -101,7 +101,6 @@
                     id="ecobee-fixable"
                     data-form
                     data-width="400"
-                    data-event="yukon.dr.ecobee.fix" 
                     data-title="<cti:msg2 key=".issues.fix.title"/>" 
                     data-load-event="yukon.dr.ecobee.fix.init"
                     class="dn">

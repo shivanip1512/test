@@ -144,7 +144,7 @@ yukon.dr.ecobee = (function () {
                 var ecobeeReportId = $('#sync-issues').data('reportId');
                 
                 // busy all fixable buttons
-                $('#sync-issues table tr').find('.fixable-issue').each(function (index, elem) {
+                $('#sync-issues table tr').find('.js-fixable-issue').each(function (index, elem) {
                     yukon.ui.busy(elem);
                 });
 
