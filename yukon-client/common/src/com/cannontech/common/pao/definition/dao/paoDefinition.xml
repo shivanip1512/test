@@ -1646,13 +1646,13 @@
 
     <!-- MCT 420 BASE -->
     <pao id="MCT_420_BASE" abstract="true"
-        inherits="MCT_410_BASE, REVERSE_POWER_EVENT, LCD_CONFIGURATION" />
+        inherits="MCT_410_BASE, REVERSE_POWER_EVENT" />
 
     <!-- MCT 420s -->
     <pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT">
         <displayName>MCT-420fL</displayName>
     </pao>
-    <pao id="MCT420FD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_CONFIG">
+    <pao id="MCT420FD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_CONFIG ,LCD_CONFIGURATION">
         <displayName>MCT-420fD</displayName>
     </pao>
     <pao id="MCT420CL" inherits="MCT_420_BASE, CENTRON_DISPLAY_CONFIGURATION"> <!-- This doesn't support a disconnect collar either -->
