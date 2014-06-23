@@ -66,6 +66,14 @@ public class LoginPasswordValidator extends SimpleValidator<LoginBackingBean> {
             passwordError(errors, passwordPolicyError.getFormatKey(), errorArgs.toArray());
             return;
         }
+        else if(PasswordPolicyError.INVALID_PASSWORD_LENGTH == passwordPolicyError){
+            List<Object> errorArgs = Lists.newArrayList();
+            PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteUserGroup);
+            errorArgs.add(passwordPolicy.getMinPasswordLength());
+            
+            passwordError(errors, passwordPolicyError.getFormatKey(), errorArgs.toArray());
+            return;
+        }
         if (passwordPolicyError != null) {
             passwordError(errors, passwordPolicyError.getFormatKey());
             return;
