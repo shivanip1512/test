@@ -30,7 +30,7 @@ public enum DeviceSearchCategory {
     LMGROUP(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            return lPao.getPaoType().isLmGroup();
+            return lPao.getPaoType().isLoadManagement();
         }
     }),
     CAP(new CategoryContentChecker() {
@@ -40,7 +40,7 @@ public enum DeviceSearchCategory {
         }
     });
     
-    private final CategoryContentChecker contentChecker;
+    private CategoryContentChecker contentChecker;
     
     private DeviceSearchCategory(final CategoryContentChecker contentChecker) {
         this.contentChecker = contentChecker;

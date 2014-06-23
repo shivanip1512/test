@@ -17,7 +17,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.MacroRoute;
@@ -406,19 +405,19 @@ public class CommunicationRouteEditorPanel extends DataInputPanel implements Ite
 
             if (routePaoType == PaoType.ROUTE_CCU) {
                 for (LiteYukonPAObject liteDevice : devices) {
-                    if (DeviceTypesFuncs.isCCU(liteDevice.getPaoType().getDeviceTypeId())) {
+                    if (liteDevice.getPaoType().isCcu()) {
                         getSignalTransmitterComboBox().addItem(liteDevice);
                     }
                 } // repeaters are not actually signal transmitters, so they should not be in the ComboBox || DeviceTypesFuncs.isRepeater(type)
             } else if (routePaoType == PaoType.ROUTE_TCU) {
                 for (LiteYukonPAObject liteDevice : devices) {
-                    if (DeviceTypesFuncs.isTCU(liteDevice.getPaoType().getDeviceTypeId())) {
+                    if (liteDevice.getPaoType().isTcu()) {
                         getSignalTransmitterComboBox().addItem(liteDevice);
                     }
                 }
             } else if (routePaoType == PaoType.ROUTE_LCU) {
                 for (LiteYukonPAObject liteDevice : devices) {
-                    if (DeviceTypesFuncs.isLCU(liteDevice.getPaoType().getDeviceTypeId())) {
+                    if (liteDevice.getPaoType().isLcu()) {
                         getSignalTransmitterComboBox().addItem(liteDevice);
                     }
                 }
@@ -455,7 +454,7 @@ public class CommunicationRouteEditorPanel extends DataInputPanel implements Ite
             } else if (routePaoType == PaoType.ROUTE_VERSACOM) {
                 for (LiteYukonPAObject liteDevice : devices) {
                     int type = liteDevice.getPaoType().getDeviceTypeId();
-                    if (DeviceTypesFuncs.isCCU(type) || DeviceTypesFuncs.isTCU(type) || DeviceTypesFuncs.isLCU(type)) {
+                    if (liteDevice.getPaoType().isCcu() || liteDevice.getPaoType().isTcu() || liteDevice.getPaoType().isLcu()) {
                         getSignalTransmitterComboBox().addItem(liteDevice);
                     }
                 }

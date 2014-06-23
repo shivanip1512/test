@@ -11,16 +11,13 @@ import javax.swing.JLabel;
 import com.cannontech.common.gui.util.AddRemovePanel;
 import com.cannontech.common.gui.util.AddRemovePanelListener;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.yukon.IDatabaseCache;
@@ -312,7 +309,7 @@ public class PAOExclusionEditorPanel extends DataInputPanel implements AddRemove
     @Override
     public void setValue(Object val) {
         YukonPAObject pao = (YukonPAObject) val;
-        int deviceType = pao.getPaoType().getDeviceTypeId();
+        PaoType deviceType = pao.getPaoType();
         Vector<PAOExclusion> currExcluded = pao.getPAOExclusionVector();
         Vector<LiteYukonPAObject> assignedPAOs = new Vector<LiteYukonPAObject>();
         Vector<LiteYukonPAObject> availablePAOs = new Vector<LiteYukonPAObject>();
@@ -334,27 +331,26 @@ public class PAOExclusionEditorPanel extends DataInputPanel implements AddRemove
             for (LiteYukonPAObject litePAO : paos) {
 
                 // be sure we have a pao that is similar to ourself by category AND that it is not our self!
-                if (DeviceTypesFuncs.isTransmitter(litePAO.getPaoType().getDeviceTypeId()) && 
-                        litePAO.getYukonID() != pao.getPAObjectID().intValue() && 
-                        litePAO.getPaoType().getPaoClass() != PaoClass.GROUP) {
+                if (litePAO.getPaoType().isTransmitter() && 
+                        litePAO.getYukonID() != pao.getPAObjectID().intValue()) {
                     if (!assignedPAOs.contains(litePAO) && litePAO.getLiteID() != LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID()) {
 
-                        if (DeviceTypesFuncs.isCCU(deviceType) && DeviceTypesFuncs.isCCU(litePAO.getPaoType().getDeviceTypeId())) {
+                        if (deviceType.isCcu() && litePAO.getPaoType().isCcu()) {
                             availablePAOs.addElement(litePAO);
-                        } else if (DeviceTypesFuncs.isLCU(deviceType) && (DeviceTypesFuncs.isLCU(litePAO.getPaoType().getDeviceTypeId()))) {
+                        } else if (deviceType.isLcu() && litePAO.getPaoType().isLcu()) {
                             availablePAOs.addElement(litePAO);
-                        } else if ((deviceType == DeviceTypes.RTC || deviceType == DeviceTypes.SERIES_5_LMI) && 
+                        } else if ((deviceType == PaoType.RTC || deviceType == PaoType.SERIES_5_LMI) && 
                                 (litePAO.getPaoType() == PaoType.RTC || litePAO.getPaoType() == PaoType.SERIES_5_LMI)) {
                             availablePAOs.addElement(litePAO);
-                        } else if ((deviceType == DeviceTypes.TAPTERMINAL || 
-                                deviceType == DeviceTypes.SNPP_TERMINAL || 
-                                DeviceTypesFuncs.isTCU(deviceType) || 
-                                deviceType == DeviceTypes.WCTP_TERMINAL) 
+                        } else if ((deviceType == PaoType.TAPTERMINAL || 
+                                deviceType == PaoType.SNPP_TERMINAL || 
+                                deviceType.isTcu() || 
+                                deviceType == PaoType.WCTP_TERMINAL) 
                                 && 
                                 (litePAO.getPaoType() == PaoType.TAPTERMINAL || 
                                 litePAO.getPaoType() == PaoType.SNPP_TERMINAL || 
-                                DeviceTypesFuncs.isTCU(litePAO.getPaoType()
-                                                                                                                                                                                                                                                                                                                                         .getDeviceTypeId()) || litePAO.getPaoType() == PaoType.WCTP_TERMINAL)) {
+                                litePAO.getPaoType().isTcu() || 
+                                litePAO.getPaoType() == PaoType.WCTP_TERMINAL)) {
                             availablePAOs.addElement(litePAO);
                         }
                         // else either the pao device type shouldn't be allowed to do exl. logic or the current litePAO

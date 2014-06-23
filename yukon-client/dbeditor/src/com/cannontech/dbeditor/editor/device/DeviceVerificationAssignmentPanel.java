@@ -18,9 +18,9 @@ import javax.swing.table.TableColumn;
 
 import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -398,7 +398,7 @@ public class DeviceVerificationAssignmentPanel extends DataInputPanel {
 
             try {
                 for (LiteYukonPAObject dev : devices) {
-                    if (DeviceTypesFuncs.isVerifiable(dev.getPaoType().getDeviceTypeId())) {
+                    if (dev.getPaoType() == PaoType.RTC) {
                         availableDevices.addElement(dev);
                     }
                 }

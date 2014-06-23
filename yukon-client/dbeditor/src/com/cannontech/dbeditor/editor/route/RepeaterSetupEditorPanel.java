@@ -18,7 +18,6 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.RepeaterAddRemovePanel;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteRole;
@@ -488,7 +487,7 @@ public class RepeaterSetupEditorPanel extends DataInputPanel implements AddRemov
             int repeaterRouteDeviceID;
             for (RepeaterRoute repeaterRoute : repeaterRoutes) {
                 for (LiteYukonPAObject liteDevice : devices) {
-                    if (DeviceTypesFuncs.isRepeater(liteDevice.getPaoType().getDeviceTypeId())) {
+                    if (liteDevice.getPaoType().isRepeater()) {
                         repeaterRouteDeviceID = repeaterRoute.getDeviceID().intValue();
                         if (repeaterRouteDeviceID == liteDevice.getYukonID()) {
                             assignedRepeaters.add(liteDevice);
@@ -500,7 +499,7 @@ public class RepeaterSetupEditorPanel extends DataInputPanel implements AddRemov
             boolean alreadyAssigned = false;
             for (LiteYukonPAObject liteDevice : devices) {
                 alreadyAssigned = false;
-                if (DeviceTypesFuncs.isRepeater(liteDevice.getPaoType().getDeviceTypeId())) {
+                if (liteDevice.getPaoType().isRepeater()) {
                     for (LiteYukonPAObject assignedRepeater : assignedRepeaters) {
                         if (assignedRepeater.getYukonID() == liteDevice.getYukonID())
                             alreadyAssigned = true;

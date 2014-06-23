@@ -9,7 +9,6 @@ import com.cannontech.common.gui.util.AddRemovePanel;
 import com.cannontech.common.gui.util.AddRemovePanelListener;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.customer.CICustomerBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.customer.DeviceCustomerList;
 import com.cannontech.yukon.IDatabaseCache;
@@ -239,7 +238,7 @@ public class CustomerMeterListEditorPanel extends DataInputPanel implements AddR
 
             for (LiteYukonPAObject liteDevice : devices) {
 
-                if (DeviceTypesFuncs.isMeter(liteDevice.getPaoType().getDeviceTypeId())) {
+                if (liteDevice.getPaoType().isIed()) {
                     availableMeters.add(liteDevice);
 
                     for (int j = 0; j < customer.getDeviceVector().size(); j++) {

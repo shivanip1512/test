@@ -59,8 +59,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
@@ -326,9 +324,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         if (allMCTs == null) {
             allMCTs = new ArrayList<>();
 
-            for (int i = 0; i < getAllDevices().size(); i++) {
-                if (DeviceTypesFuncs.isMCT(getAllDevices().get(i).getPaoType().getDeviceTypeId())) {
-                    allMCTs.add(getAllDevices().get(i));
+            for (LiteYukonPAObject device : getAllDevices()) {
+                if (device.getPaoType().isMct()) {
+                    allMCTs.add(device);
                 }
             }
         }
@@ -539,9 +537,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         if (allLMGroups == null) {
             allLMGroups = new ArrayList<>();
 
-            for (int i = 0; i < getAllLoadManagement().size(); i++) {
-                if (DeviceTypesFuncs.isLmGroup(getAllLoadManagement().get(i).getPaoType().getDeviceTypeId())) {
-                    allLMGroups.add(getAllLoadManagement().get(i));
+            for (LiteYukonPAObject liteYukonPAObject : getAllLoadManagement()) {
+                if (liteYukonPAObject.getPaoType().isLoadGroup()) {
+                    allLMGroups.add(liteYukonPAObject);
                 }
             }
         }
@@ -553,10 +551,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         if (allLoadManagement == null) {
             allLoadManagement = new ArrayList<>();
 
-            for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoClass().getPaoClassId() == DeviceClasses.LOADMANAGEMENT
-                    || getAllYukonPAObjects().get(i).getPaoType().getPaoClass().getPaoClassId() == DeviceClasses.GROUP) {
-                    allLoadManagement.add(getAllYukonPAObjects().get(i));
+            for (LiteYukonPAObject liteYukonPAObject : getAllLoadManagement()) {
+                if (liteYukonPAObject.getPaoType().isLoadManagement()) {
+                    allLoadManagement.add(liteYukonPAObject);
                 }
             }
         }
@@ -1001,7 +998,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
             // if any device changes,
             // reload all the DeviceMeterGroup data (may be inefficient!!)
-            if (dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_DEVICE)) {
+            if (dbCategory.equalsIgnoreCase(PaoCategory.DEVICE.getDbString())) {
                 allDevices = null;
                 allMCTs = null;
                 allUnusedCCDevices = null;
@@ -1012,11 +1009,10 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 // retLBase = handleDeviceMeterGroupChange( dbType, id);
 
                 // Verify that this a device that even cares about DeviceMeterGroups
-                int type = PaoType.getPaoTypeId(objectType);
-                if (DeviceTypesFuncs.usesDeviceMeterGroup(type)) {
+                if (DeviceTypesFuncs.usesDeviceMeterGroup(PaoType.getForDbString(objectType))) {
                     handleDeviceMeterGroupChange(dbChangeType, id);
                 }
-            } else if (dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_LOADMANAGEMENT)) {
+            } else if (dbCategory.equalsIgnoreCase(PaoCategory.LOADMANAGEMENT.getDbString())) {
                 allLoadManagement = null;
                 allLMPrograms = null;
                 allLMControlAreas = null;
@@ -1024,13 +1020,13 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 allLMScenarios = null;
                 allLMScenarioProgs = null;
                 allLMPAOExclusions = null;
-            } else if (dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL)) {
+            } else if (dbCategory.equalsIgnoreCase(PaoCategory.CAPCONTROL.getDbString())) {
                 allCapControlFeeders = null;
                 allCapControlSubBuses = null;
                 allCapControlSubStations = null;
-            } else if (dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_PORT)) {
+            } else if (dbCategory.equalsIgnoreCase(PaoCategory.PORT.getDbString())) {
                 allPorts = null;
-            } else if (dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_ROUTE)) {
+            } else if (dbCategory.equalsIgnoreCase(PaoCategory.ROUTE.getDbString())) {
                 allRoutes = null;
             }
         } else if (database == DBChangeMsg.CHANGE_STATE_GROUP_DB) {

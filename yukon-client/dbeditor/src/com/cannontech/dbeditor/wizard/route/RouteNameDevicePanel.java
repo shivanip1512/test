@@ -17,7 +17,6 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
@@ -39,8 +38,7 @@ public class RouteNameDevicePanel extends DataInputPanel implements ItemListener
         if (getSignalTransmitterComboBox().getSelectedItem() == null) {
             return false;
         } else {
-            return DeviceTypesFuncs.allowRebroadcast(((LiteYukonPAObject) getSignalTransmitterComboBox().getSelectedItem()).getPaoType()
-                                                                                                                           .getDeviceTypeId());
+            return ((LiteYukonPAObject) getSignalTransmitterComboBox().getSelectedItem()).getPaoType().isCcu();
         }
     }
 
@@ -115,7 +113,7 @@ public class RouteNameDevicePanel extends DataInputPanel implements ItemListener
                     for (LiteYukonPAObject litePAO : allDevices) {
 
                         if (litePAO.getPaoType().getPaoClass() == PaoClass.TRANSMITTER && 
-                                !DeviceTypesFuncs.isRepeater(litePAO.getPaoType().getDeviceTypeId()) && 
+                                !litePAO.getPaoType().isRepeater() && 
                                 litePAO.getPaoType() != PaoType.DIGIGATEWAY) {
                             getSignalTransmitterComboBox().addItem(litePAO);
                         }
@@ -154,11 +152,11 @@ public class RouteNameDevicePanel extends DataInputPanel implements ItemListener
 
         PaoType paoType = ((LiteYukonPAObject) getSignalTransmitterComboBox().getSelectedItem()).getPaoType();
 
-        if (DeviceTypesFuncs.isCCU(paoType.getDeviceTypeId()) || DeviceTypesFuncs.isRepeater(paoType.getDeviceTypeId())) {
+        if (paoType.isCcu() || paoType.isRepeater()) {
             val = RouteFactory.createRoute(PaoType.ROUTE_CCU);
-        } else if (DeviceTypesFuncs.isTCU(paoType.getDeviceTypeId())) {
+        } else if (paoType.isTcu()) {
             val = RouteFactory.createRoute(PaoType.ROUTE_TCU);
-        } else if (DeviceTypesFuncs.isLCU(paoType.getDeviceTypeId())) {
+        } else if (paoType.isLcu()) {
             val = RouteFactory.createRoute(PaoType.ROUTE_LCU);
         } else if (paoType == PaoType.TAPTERMINAL) {
             val = RouteFactory.createRoute(PaoType.ROUTE_TAP_PAGING);
@@ -280,7 +278,7 @@ public class RouteNameDevicePanel extends DataInputPanel implements ItemListener
         synchronized (cache) {
             List<LiteYukonPAObject> devices = cache.getAllDevices();
             for (LiteYukonPAObject liteYukonPAObject : devices) {
-                if (DeviceTypesFuncs.isRepeater(liteYukonPAObject.getPaoType().getDeviceTypeId())) {
+                if (liteYukonPAObject.getPaoType().isRepeater()) {
                     noRepeaters = false;
                     break;
                 }

@@ -14,7 +14,6 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMGroupMCT;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -105,13 +104,11 @@ public class LMGroupMCTEditorPanel extends DataInputPanel implements ActionListe
 
                 IDatabaseCache cache = DefaultDatabaseCache.getInstance();
                 synchronized (cache) {
-                    List<LiteYukonPAObject> mcts = cache.getAllDevices();
+                    List<LiteYukonPAObject> mcts = cache.getAllMCTs();
                     Collections.sort(mcts, LiteComparators.liteStringComparator);
 
-                    for (LiteYukonPAObject dev : mcts) {
-                        if (DeviceTypesFuncs.isMCT(dev.getPaoType().getDeviceTypeId())) {
-                            ivjJComboBoxMCTAddress.addItem(dev);
-                        }
+                    for (LiteYukonPAObject mct: mcts) {
+                        ivjJComboBoxMCTAddress.addItem(mct);
                     }
                 }
             } catch (java.lang.Throwable ivjExc) {

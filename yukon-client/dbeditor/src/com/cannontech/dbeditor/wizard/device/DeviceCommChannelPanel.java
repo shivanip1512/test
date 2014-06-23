@@ -28,7 +28,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Series5Base;
@@ -38,7 +37,6 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.route.CCURoute;
@@ -58,7 +56,7 @@ public class DeviceCommChannelPanel extends DataInputPanel implements ActionList
     // address attribute for checking against duplicates for ccu's and rtu's
     private int address = 0;
     public static final String TABLE_NAME = "DeviceIDLCRemote";
-    private int deviceType = 0;
+    private PaoType deviceType;
 
     public DeviceCommChannelPanel() {
         super();
@@ -135,7 +133,8 @@ public class DeviceCommChannelPanel extends DataInputPanel implements ActionList
         }
 
         int portID = port.getLiteID();
-        if ((!PaoType.isDialupPort(port.getPaoType().getDeviceTypeId())) && (DeviceTypesFuncs.isCCU(deviceType) || DeviceTypesFuncs.isRTU(deviceType))) {
+        if ((!PaoType.isDialupPort(port.getPaoType().getDeviceTypeId())) && 
+                (deviceType.isCcu() || deviceType.isRtu() || deviceType.isIon())) {
 
             String[] devices = DeviceIDLCRemote.isAddressUnique(address, null, portID);
 
@@ -174,7 +173,6 @@ public class DeviceCommChannelPanel extends DataInputPanel implements ActionList
         }
 
         PaoType paoType = ((DeviceBase) val).getPaoType();
-        int devType = paoType.getDeviceTypeId();
 
         if (val instanceof TapTerminalBase) {
             ((TapTerminalBase) val).getDeviceDirectCommSettings().setPortID(portID);
@@ -205,8 +203,7 @@ public class DeviceCommChannelPanel extends DataInputPanel implements ActionList
         }
 
         // transmitter is a special case
-
-        if (DeviceTypesFuncs.isTransmitter(devType)) {
+        if (paoType.isTransmitter()) {
 
             PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
             ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
@@ -215,27 +212,27 @@ public class DeviceCommChannelPanel extends DataInputPanel implements ActionList
 
             PaoType routeType;
 
-            if (DeviceTypesFuncs.isCCU(devType) || DeviceTypesFuncs.isRepeater(devType))
+            if (paoType.isCcu() || paoType.isRepeater())
                 routeType = PaoType.ROUTE_CCU;
-            else if (DeviceTypesFuncs.isLCU(devType))
+            else if (paoType.isLcu())
                 routeType = PaoType.ROUTE_LCU;
-            else if (DeviceTypesFuncs.isTCU(devType))
+            else if (paoType.isLcu())
                 routeType = PaoType.ROUTE_TCU;
-            else if (devType == PAOGroups.TAPTERMINAL)
+            else if (paoType == PaoType.TAPTERMINAL)
                 routeType = PaoType.ROUTE_TAP_PAGING;
-            else if (devType == PAOGroups.TNPP_TERMINAL)
+            else if (paoType == PaoType.TNPP_TERMINAL)
                 routeType = PaoType.ROUTE_TNPP_TERMINAL;
-            else if (devType == PAOGroups.WCTP_TERMINAL)
+            else if (paoType == PaoType.WCTP_TERMINAL)
                 routeType = PaoType.ROUTE_WCTP_TERMINAL;
-            else if (devType == PAOGroups.SNPP_TERMINAL)
+            else if (paoType == PaoType.SNPP_TERMINAL)
                 routeType = PaoType.ROUTE_SNPP_TERMINAL;
-            else if (devType == PAOGroups.SERIES_5_LMI) {
+            else if (paoType == PaoType.SERIES_5_LMI) {
                 Integer devID = ((DeviceBase) val).getDevice().getDeviceID();
                 ((Series5Base) val).setVerification(new DeviceVerification(devID, devID, "N", "N"));
                 routeType = PaoType.ROUTE_SERIES_5_LMI;
-            } else if (devType == PAOGroups.RTC) {
+            } else if (paoType == PaoType.RTC) {
                 routeType = PaoType.ROUTE_RTC;
-            } else if (devType == PAOGroups.RDS_TERMINAL) {
+            } else if (paoType == PaoType.RDS_TERMINAL) {
                 routeType = PaoType.ROUTE_RDS_TERMINAL;
             } else {
                 return val;
@@ -264,7 +261,7 @@ public class DeviceCommChannelPanel extends DataInputPanel implements ActionList
             checkAddress();
 
             return newVal;
-        } else if (DeviceTypesFuncs.isMeter(devType)) {
+        } else if (paoType.isIed()) {
             PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
             ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 
@@ -407,7 +404,7 @@ public class DeviceCommChannelPanel extends DataInputPanel implements ActionList
     }
 
     public void setDeviceType(PaoType deviceTypevar) {
-        deviceType = deviceTypevar.getDeviceTypeId();
+        deviceType = deviceTypevar;
     }
 
     @Override

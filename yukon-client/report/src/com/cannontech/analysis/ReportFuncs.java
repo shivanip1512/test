@@ -101,7 +101,6 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -306,7 +305,7 @@ public class ReportFuncs
 
             if( allPaos != null) {
                 for (LiteYukonPAObject lPao : allPaos) {
-                    if(DeviceTypesFuncs.isReceiver(lPao.getPaoType().getDeviceTypeId()) )
+                    if (lPao.getPaoType().isRtu() || lPao.getPaoType() == PaoType.SERIES_5_LMI)
                         receivers.add(lPao);
                 }
             }

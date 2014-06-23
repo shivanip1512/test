@@ -199,7 +199,7 @@ public class DeviceWizardPanel extends WizardPanel {
                 getDeviceBaseNamePanel().setDeviceType(devType);
                 getDeviceBaseNamePanel().setFirstFocus();
                 return getDeviceBaseNamePanel();
-            } else if ((DeviceTypesFuncs.isMeter(devType.getDeviceTypeId()) && !DeviceTypesFuncs.isIon(devType.getDeviceTypeId())) || devType == PaoType.DAVISWEATHER) {
+            } else if ((devType.isIed() && !devType.isIon()) || devType == PaoType.DAVISWEATHER) {
                 getDeviceIEDNamePanel().setDeviceType(devType);
                 getDeviceIEDNamePanel().setFirstFocus();
                 return getDeviceIEDNamePanel();
@@ -214,7 +214,7 @@ public class DeviceWizardPanel extends WizardPanel {
             }
         } else if (currentInputPanel == getDeviceBaseNamePanel()) {
             PaoType devType = getDeviceTypePanel().getDeviceType();
-            if (DeviceTypesFuncs.isMeter(devType.getDeviceTypeId())) {
+            if (devType.isIed()) {
                 getDeviceMeterNumberPanel().setFirstFocus();
                 return getDeviceMeterNumberPanel();
             } else {
@@ -224,7 +224,7 @@ public class DeviceWizardPanel extends WizardPanel {
         } else if ((currentInputPanel == getDeviceNameAddressPanel()) || (currentInputPanel == getDeviceIEDNamePanel())) {
             PaoType devType = getDeviceTypePanel().getDeviceType();
 
-            if (DeviceTypesFuncs.isMeter(devType.getDeviceTypeId()) || devType.isMct()) {
+            if (devType.isIed() || devType.isMct()) {
                 getDeviceMeterNumberPanel().setValue(null);
                 if (DeviceTypesFuncs.isMCT2XXORMCT310XX(devType.getDeviceTypeId())) {
                     // Append "10" to the address for the desired default meter number.
@@ -265,14 +265,14 @@ public class DeviceWizardPanel extends WizardPanel {
         } else if (currentInputPanel == getDeviceScanRatePanel()) {
             PaoType devType = getDeviceTypePanel().getDeviceType();
 
-            if (DeviceTypesFuncs.isCarrier(devType.getDeviceTypeId())) {
+            if (devType.isPlc() || devType.isRepeater()) {
                 getDeviceRoutePanel().setValue(null);
                 getDeviceRoutePanel().setFirstFocus();
                 return getDeviceRoutePanel();
             } else if (devType == PaoType.SIXNET) {
                 getDeviceSixnetWizardPanel().setFirstFocus();
                 return getDeviceSixnetWizardPanel();
-            } else if (devType.isRtu() || DeviceTypesFuncs.isCCU(devType.getDeviceTypeId())) {
+            } else if (devType.isRtu() || devType.isIon() || devType.isCcu()) {
                 getDeviceCommChannelPanel().setValue(null);
                 getDeviceCommChannelPanel().setAddress(new Integer(getDeviceNameAddressPanel().getAddress()).intValue());
                 getDeviceCommChannelPanel().setDeviceType(getDeviceTypePanel().getDeviceType());

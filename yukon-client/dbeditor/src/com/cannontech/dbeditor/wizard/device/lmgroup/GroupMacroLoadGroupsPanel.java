@@ -18,7 +18,6 @@ import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -68,7 +67,7 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
 
                     availableDevices = new Vector<LiteYukonPAObject>();
                     for (LiteYukonPAObject liteYukonPAObject : allDevices) {
-                        if (DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getPaoType().getDeviceTypeId()) && liteYukonPAObject.getPaoType() != PaoType.MACRO_GROUP) {
+                        if (liteYukonPAObject.getPaoType().isLoadGroup() && liteYukonPAObject.getPaoType() != PaoType.MACRO_GROUP) {
                             availableDevices.add(liteYukonPAObject);
                         }
                     }
@@ -308,7 +307,7 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
 
             availableGroups = new Vector<LiteYukonPAObject>();
             for (LiteYukonPAObject liteYukonPAObject : allDevices) {
-                if (DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getPaoType().getDeviceTypeId()) && liteYukonPAObject.getLiteID() != ((MacroGroup) val).getPAObjectID().intValue()) {
+                if (liteYukonPAObject.getPaoType().isLoadGroup() && liteYukonPAObject.getLiteID() != ((MacroGroup) val).getPAObjectID().intValue()) {
                     availableGroups.addElement(liteYukonPAObject);
                 }
             }

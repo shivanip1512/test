@@ -66,7 +66,7 @@ public class DeviceMeterGroupModel extends DBTreeModel {
                 return false;
             }
         }
-        return DeviceTypesFuncs.usesDeviceMeterGroup(paoType.getDeviceTypeId());
+        return DeviceTypesFuncs.usesDeviceMeterGroup(paoType);
     }
 
     @Override

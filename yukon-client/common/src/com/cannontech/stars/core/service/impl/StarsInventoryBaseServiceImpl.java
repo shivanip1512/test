@@ -20,7 +20,6 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -144,7 +143,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 	    		YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
 	    		String deviceTypeName = entry.getEntryText();
 	    		int yukonDeviceTypeId = PaoType.getPaoTypeId(deviceTypeName);
-	    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
+	    		if (!PaoType.getForId(yukonDeviceTypeId).isTwoWayLcr()) {
 	    			throw new Lcr3102YukonDeviceCreationException("Selected yukon device must be a Two Way LCR.");
 	    		}
 	    		
@@ -274,7 +273,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 		YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
         	    		String deviceTypeName = entry.getEntryText();
         	    		int yukonDeviceTypeId = PaoType.getPaoTypeId(deviceTypeName);
-        	    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
+        	    		if (!PaoType.getForId(yukonDeviceTypeId).isTwoWayLcr()) {
         	    			throw new StarsDeviceSerialNumberAlreadyExistsException("Selected yukon device must be a Two Way LCR.");
         	    		} 
         	    		

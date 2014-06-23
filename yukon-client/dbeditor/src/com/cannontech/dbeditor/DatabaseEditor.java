@@ -91,7 +91,6 @@ import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IPCMeter;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
 import com.cannontech.database.data.device.lm.LMGroup;
@@ -573,7 +572,7 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
             checkConfigs = true;
             paoId = ((DeviceBase) selectedObject).getPAObjectID();
         } else if (selectedObject instanceof DeviceMeterGroupBase) {
-            DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+            DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
             int deviceId = ((DeviceMeterGroupBase) selectedObject).getDeviceMeterGroup().getDeviceID();
             SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
 
@@ -601,7 +600,7 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
 
         }
 
-        if (DeviceTypesFuncs.isTransmitter(currentType) && !(selectedObject instanceof PointBase)) {
+        if (!(selectedObject instanceof PointBase) && PaoType.getForId(currentType).isTransmitter()) {
             String temp = "is a transmitter \n" + "and COULD be associated with a route." + '\n' + "Continuing may result in a route/device type mismatch." + '\n' + "Continue to change type?" + "\n" + "\n";
             confirm = JOptionPane.showConfirmDialog(getParentFrame(),
                                                     "The device '" + type + " " + temp,

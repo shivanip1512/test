@@ -12,7 +12,6 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMGroupPoint;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -180,9 +179,9 @@ public class LMGroupPointEditorPanel extends DataInputPanel implements
             for (LiteYukonPAObject liteDevice : devices) {
 
                 // only do RTUs, MCTs and CAPBANKCONTROLLERS for now!
-                if (DeviceTypesFuncs.isRTU(liteDevice.getPaoType().getDeviceTypeId()) || 
+                if (liteDevice.getPaoType().isRtu() || liteDevice.getPaoType().isIon() ||
                         liteDevice.getPaoType().isCbc() || 
-                        DeviceTypesFuncs.isMCT(liteDevice.getPaoType().getDeviceTypeId())) {
+                        liteDevice.getPaoType().isMct()) {
                     List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(liteDevice.getYukonID());
 
                     // pointList gets inserted into the hashtable

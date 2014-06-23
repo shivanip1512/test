@@ -1196,9 +1196,9 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
         getJPanelScanWindow().setVisible(value);
     }
 
-    private void initComboBoxValues(int type) {
+    private void initComboBoxValues(PaoType type) {
 
-        if (DeviceTypesFuncs.isCCU(type)) {
+        if (type.isCcu()) {
             getPeriodicHealthIntervalComboBox().removeAllItems();
 
             getPeriodicHealthIntervalComboBox().addItem("5 minute");
@@ -1213,7 +1213,7 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
 
             // default value
             getPeriodicHealthIntervalComboBox().setSelectedItem("5 minute");
-        } else if (DeviceTypesFuncs.isMCT(type) || DeviceTypesFuncs.isRepeater(type)) {
+        } else if (type.isMct() || type.isRepeater()) {
             getPeriodicHealthIntervalComboBox().removeAllItems();
 
             getPeriodicHealthIntervalComboBox().addItem("1 minute");
@@ -1236,7 +1236,7 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
 
     public void setDeviceType(PaoType paoType) {
         // set some devices domain of possible values to a more limited approach
-        initComboBoxValues(paoType.getDeviceTypeId());
+        initComboBoxValues(paoType);
 
         setAccumulatorObjectsVisible(false);
         setIntegrityObjectsVisible(false);
@@ -1246,19 +1246,29 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
         getPeriodicHealthGroupComboBox().setEnabled(false);
         getJComboBoxAltHealthChk().setEnabled(false);
 
-        if (DeviceTypesFuncs.isCCU(paoType.getDeviceTypeId()) || DeviceTypesFuncs.isTCU(paoType.getDeviceTypeId()) || DeviceTypesFuncs.isRepeater(paoType.getDeviceTypeId()) || (paoType == PaoType.TAPTERMINAL) || (paoType == PaoType.WCTP_TERMINAL)) {
+        if (paoType.isCcu() || 
+                paoType.isTcu() || 
+                paoType.isRepeater() || 
+                (paoType == PaoType.TAPTERMINAL) || 
+                (paoType == PaoType.WCTP_TERMINAL)) {
             getPeriodicHealthCheckBox().setText("Periodic Health Check");
 
-            if (DeviceTypesFuncs.isRepeater(paoType.getDeviceTypeId()))
+            if (paoType.isRepeater()) {
                 getPeriodicHealthIntervalComboBox().setSelectedItem("1 hour");
-        } else if (paoType == PaoType.DAVISWEATHER || DeviceTypesFuncs.isMeter(paoType.getDeviceTypeId())) {
+            }
+        } else if (paoType == PaoType.DAVISWEATHER || paoType.isIed()) {
             getPeriodicHealthCheckBox().setText("General Data Collection");
             getPeriodicHealthIntervalComboBox().setSelectedItem("1 hour");
         }
 
-        if (DeviceTypesFuncs.isRTU(paoType.getDeviceTypeId()) || paoType.isMct() || DeviceTypesFuncs.isLCU(paoType.getDeviceTypeId()) || paoType.isCbc() || (paoType == PaoType.SERIES_5_LMI) || DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())) {
+        if (paoType.isRtu() || paoType.isIon() || 
+                paoType.isMct() || 
+                paoType.isLcu() || 
+                paoType.isCbc() || 
+                paoType == PaoType.SERIES_5_LMI || 
+                paoType.isTwoWayLcr()) {
 
-            if (DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())) {
+            if (paoType.isTwoWayLcr()) {
                 getIntegrityRateCheckBox().setText("Demand & Status Rate");
             } else if (DeviceTypesFuncs.isMCT3xx(paoType.getDeviceTypeId()) || DeviceTypesFuncs.isMCT4XX(paoType.getDeviceTypeId())) {
                 if (DeviceTypesFuncs.isMCT410(paoType.getDeviceTypeId()))
@@ -1305,11 +1315,24 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
 
             setIntegrityObjectsVisible(!(paoType == PaoType.RTUILEX || paoType == PaoType.LCU415 || paoType == PaoType.RTM));
 
-            setHealthObjectsVisible(!(paoType == PaoType.DCT_501 || DeviceTypesFuncs.isMCT3xx(paoType.getDeviceTypeId()) || DeviceTypesFuncs.isMCT4XX(paoType.getDeviceTypeId()) || paoType == PaoType.SERIES_5_LMI || paoType == PaoType.RTU_MODBUS || DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())));
+            setHealthObjectsVisible(!(paoType == PaoType.DCT_501 || 
+                    DeviceTypesFuncs.isMCT3xx(paoType.getDeviceTypeId()) || 
+                    DeviceTypesFuncs.isMCT4XX(paoType.getDeviceTypeId()) || 
+                    paoType == PaoType.SERIES_5_LMI || 
+                    paoType == PaoType.RTU_MODBUS || 
+                    paoType.isTwoWayLcr()));
 
-            setAccumulatorObjectsVisible(!(paoType == PaoType.DCT_501 || paoType == PaoType.DNP_CBC_6510 || paoType == PaoType.RTU_DNP || paoType == PaoType.RTU_DART || paoType == PaoType.LCU_T3026 || paoType == PaoType.SERIES_5_LMI || paoType == PaoType.RTM || paoType == PaoType.RTU_MODBUS || DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())));
+            setAccumulatorObjectsVisible(!(paoType == PaoType.DCT_501 || 
+                    paoType == PaoType.DNP_CBC_6510 || 
+                    paoType == PaoType.RTU_DNP || 
+                    paoType == PaoType.RTU_DART || 
+                    paoType == PaoType.LCU_T3026 || 
+                    paoType == PaoType.SERIES_5_LMI || 
+                    paoType == PaoType.RTM || 
+                    paoType == PaoType.RTU_MODBUS || 
+                    paoType.isTwoWayLcr()));
 
-            setScanWindowObjectsVisible(!(DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())));
+            setScanWindowObjectsVisible(!(paoType.isTwoWayLcr()));
 
             getAccumulatorRateCheckBox().setSelected(false);
             getAccumulatorRateComboBox().setEnabled(false);

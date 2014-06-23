@@ -6,7 +6,6 @@ import java.util.Vector;
 import com.cannontech.common.gui.util.AddRemovePanelListener;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCT_Broadcast;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.MCTBroadcastMapping;
@@ -228,7 +227,7 @@ public class MCTBroadcastListEditorPanel extends DataInputPanel implements AddRe
 
             for (LiteYukonPAObject liteDevice : devices) {
 
-                if (DeviceTypesFuncs.isMCT(liteDevice.getPaoType().getDeviceTypeId())) {
+                if (liteDevice.getPaoType().isMct()) {
                     availableMCTs.add(liteDevice);
 
                     for (MCTBroadcastMapping mappedMCT : broadcaster.getMCTVector()) {

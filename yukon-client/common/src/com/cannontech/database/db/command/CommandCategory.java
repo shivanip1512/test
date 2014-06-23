@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 
 public class CommandCategory
 {
@@ -204,7 +206,12 @@ public class CommandCategory
 		{
 			CAT_STATUSINPUT_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.hasStatusInput(paoType.getDeviceTypeId())) {
+			    if (paoType == PaoType.MCT248 ||
+			            paoType == PaoType.MCT250 ||
+			            paoType == PaoType.MCT318 ||
+			            paoType == PaoType.MCT318L ||
+			            paoType == PaoType.MCT360 ||
+			            paoType == PaoType.MCT370) {
 					CAT_STATUSINPUT_BASE_DEVTYPES.add(paoType);
 				}
 			}
@@ -220,8 +227,20 @@ public class CommandCategory
 		{
 			CAT_PING_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isLoopable(paoType.getDeviceTypeId()) )
+			    if (paoType.isCcu() ||
+			            paoType.isMct() ||
+			            paoType.isRepeater() ||
+			            paoType == PaoType.TCU5000 ||
+			            paoType == PaoType.TCU5500 ||
+			            paoType == PaoType.LCU415 ||
+			            paoType == PaoType.LCU_ER ||
+			            paoType == PaoType.LCU_T3026 ||
+			            paoType == PaoType.LCULG ||
+		                paoType == PaoType.DAVISWEATHER || 
+		                paoType == PaoType.RTUILEX || 
+		                paoType == PaoType.RTUWELCO ) {
 					CAT_PING_BASE_DEVTYPES.add(paoType);
+			    }
 			}
 		}
 		return CAT_PING_BASE_DEVTYPES;
@@ -236,8 +255,9 @@ public class CommandCategory
 		{
 			CAT_TCU_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isTCU(paoType.getDeviceTypeId()) )
+				if (paoType.isTcu()) {
 					CAT_TCU_BASE_DEVTYPES.add(paoType);
+				}
 			}
 		}
 		return CAT_TCU_BASE_DEVTYPES;	}
@@ -250,9 +270,8 @@ public class CommandCategory
 		if( CAT_REPEATER_BASE_DEVTYPES == null)
 		{
 			CAT_REPEATER_BASE_DEVTYPES = new ArrayList<PaoType>();
-			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isRepeater(paoType.getDeviceTypeId()) )
-					CAT_REPEATER_BASE_DEVTYPES.add(paoType);
+			for (PaoType paoType : PaoType.getRepeaterTypes()) {
+				CAT_REPEATER_BASE_DEVTYPES.add(paoType);
 			}
 		}
 		return CAT_REPEATER_BASE_DEVTYPES;	}
@@ -265,9 +284,10 @@ public class CommandCategory
 		if( CAT_RTU_BASE_DEVTYPES == null)
 		{
 			CAT_RTU_BASE_DEVTYPES = new ArrayList<PaoType>();
-			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isRTU(paoType.getDeviceTypeId()) )
-					CAT_RTU_BASE_DEVTYPES.add(paoType);
+			SetView<PaoType> rtuAndIons = Sets.union(PaoType.getRtuTypes(), PaoType.getIonTypes());
+			
+			for (PaoType paoType : rtuAndIons) {
+				CAT_RTU_BASE_DEVTYPES.add(paoType);
 			}
 		}
 		return CAT_RTU_BASE_DEVTYPES;
@@ -281,9 +301,8 @@ public class CommandCategory
 		if( CAT_MCT_BASE_DEVTYPES == null)
 		{
 			CAT_MCT_BASE_DEVTYPES = new ArrayList<PaoType>();
-			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isMCT(paoType.getDeviceTypeId()) )
-					CAT_MCT_BASE_DEVTYPES.add(paoType);
+			for (PaoType paoType : PaoType.getMctTypes()) {
+				CAT_MCT_BASE_DEVTYPES.add(paoType);
 			}
 		}
 		return CAT_MCT_BASE_DEVTYPES;
@@ -316,8 +335,9 @@ public class CommandCategory
 		{
 			CAT_LOAD_GROUP_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isLmGroup(paoType.getDeviceTypeId()) )
+				if (paoType.isLoadGroup()) {
 					CAT_LOAD_GROUP_BASE_DEVTYPES.add(paoType);
+				}
 			}
 		}
 		return CAT_LOAD_GROUP_BASE_DEVTYPES;
@@ -332,8 +352,9 @@ public class CommandCategory
 		{
 			CAT_LCU_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isLCU(paoType.getDeviceTypeId()) )
+				if (paoType.isLcu()) {
 					CAT_LCU_BASE_DEVTYPES.add(paoType);
+				}
 			}
 		}
 		return CAT_LCU_BASE_DEVTYPES;
@@ -348,8 +369,10 @@ public class CommandCategory
 		{
 			CAT_IED_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isIED(paoType.getDeviceTypeId()) )
+				if( paoType == PaoType.MCT360 ||
+				        paoType == PaoType.MCT370) {
 					CAT_IED_BASE_DEVTYPES.add(paoType);
+				}
 			}
 		}
 		return CAT_IED_BASE_DEVTYPES;
@@ -361,8 +384,11 @@ public class CommandCategory
 		{
 			CAT_ALPHA_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isAlpha(paoType.getDeviceTypeId()) )
+				if (PaoType.ALPHA_A1 == paoType ||
+				        PaoType.ALPHA_A3 == paoType ||
+				        PaoType.ALPHA_PPLUS == paoType) {
 					CAT_ALPHA_BASE_DEVTYPES.add(paoType);
+				}
 			}
 		}
 		return CAT_ALPHA_BASE_DEVTYPES;
@@ -415,9 +441,8 @@ public class CommandCategory
 		if( CAT_CCU_BASE_DEVTYPES == null)
 		{
 			CAT_CCU_BASE_DEVTYPES = new ArrayList<PaoType>();
-			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isCCU(paoType.getDeviceTypeId()) )
-					CAT_CCU_BASE_DEVTYPES.add(paoType);
+			for (PaoType paoType : PaoType.getCcuTypes()) {
+				CAT_CCU_BASE_DEVTYPES.add(paoType);
 			}
 		}
 		return CAT_CCU_BASE_DEVTYPES;
@@ -455,8 +480,9 @@ public class CommandCategory
 			
 			CAT_TWO_WAY_LCR_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId()) )
+				if (paoType.isTwoWayLcr()) {
 					CAT_TWO_WAY_LCR_DEVTYPES.add(paoType);
+				}
 			}
 		}
 		return CAT_TWO_WAY_LCR_DEVTYPES;
@@ -467,9 +493,8 @@ public class CommandCategory
 		if( CAT_ION_BASE_DEVTYPES == null)
 		{
 			CAT_ION_BASE_DEVTYPES = new ArrayList<PaoType>();
-			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isIon(paoType.getDeviceTypeId()) )
-					CAT_ION_BASE_DEVTYPES.add(paoType);
+			for (PaoType paoType : PaoType.getIonTypes()) {
+				CAT_ION_BASE_DEVTYPES.add(paoType);
 			}
 		}
 		return CAT_ION_BASE_DEVTYPES;

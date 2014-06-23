@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -27,7 +26,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -931,32 +929,19 @@ public class CommandDeviceBean implements DBChangeListener {
     }
 
     public static boolean isCarrierSortBy(LiteYukonPAObject lPao) {
-        if (DeviceTypesFuncs.isMCT(lPao.getPaoType().getDeviceTypeId()) && 
-                lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE)
-            return true;
-        return false;
+        return lPao.getPaoType().isMct();
     }
 
     public static boolean isIEDSortBy(LiteYukonPAObject lPao) {
-        if (DeviceTypesFuncs.isMeter(lPao.getPaoType().getDeviceTypeId()) || 
-                lPao.getPaoType() == PaoType.DAVISWEATHER && 
-                lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE)
-            return true;
-        return false;
+        return lPao.getPaoType().isIed() || lPao.getPaoType() == PaoType.DAVISWEATHER;
     }
 
     public static boolean isRTUSortBy(LiteYukonPAObject lPao) {
-        if ((DeviceTypesFuncs.isRTU(lPao.getPaoType().getDeviceTypeId()) || 
-                lPao.getPaoType() == PaoType.DAVISWEATHER) && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE && 
-                !DeviceTypesFuncs.isIon(lPao.getPaoType().getDeviceTypeId()))
-            return true;
-        return false;
+        return lPao.getPaoType().isRtu() || lPao.getPaoType() == PaoType.DAVISWEATHER;
     }
 
     public static boolean isTransmitterSortBy(LiteYukonPAObject lPao) {
-        if (DeviceTypesFuncs.isTransmitter(lPao.getPaoType().getDeviceTypeId()) && 
-                DeviceClasses.isMeterClass(lPao.getPaoType().getPaoClass().getPaoClassId()) 
-                && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE)
+        if (lPao.getPaoType().isTransmitter())
             return true;
         return false;
     }

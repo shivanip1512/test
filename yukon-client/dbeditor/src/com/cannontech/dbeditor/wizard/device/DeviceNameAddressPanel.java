@@ -28,7 +28,6 @@ import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IonBase;
 import com.cannontech.database.data.device.RTCBase;
@@ -66,7 +65,8 @@ public class DeviceNameAddressPanel extends DataInputPanel implements CaretListe
     @Override
     public void caretUpdate(javax.swing.event.CaretEvent e) {
         try {
-            if (e.getSource() == getNameTextField()) {
+            if (e.getSource() == getNameTextField() ||
+                    e.getSource() == getAddressTextField()) {
                 this.eitherTextField_CaretUpdate(e);
             }
         } catch (java.lang.Throwable ivjExc) {
@@ -305,7 +305,7 @@ public class DeviceNameAddressPanel extends DataInputPanel implements CaretListe
         }
 
         PaoType deviceType = deviceBase.getPaoType();
-        if (deviceType.isMct() || DeviceTypesFuncs.isRepeater(deviceType.getDeviceTypeId()) || deviceType.isTwoWayRfnLcr() || deviceType.isTwoWayPlcLcr()) {
+        if (deviceType.isMct() || deviceType.isRepeater() || deviceType.isTwoWayRfnLcr() || deviceType.isTwoWayPlcLcr()) {
 
             // Check for unique address
             checkPaoAddresses(address.intValue());
@@ -420,23 +420,26 @@ public class DeviceNameAddressPanel extends DataInputPanel implements CaretListe
 
     public void setDeviceType(PaoType deviceType) {
         deviceBase = DeviceFactory.createDevice(deviceType);
-        if (DeviceTypesFuncs.hasMasterAddress(deviceType.getDeviceTypeId()))
+        if (deviceType == PaoType.RTU_DART)
             getPhysicalAddressLabel().setText("Master Address:");
-        else if (DeviceTypesFuncs.hasSlaveAddress(deviceType.getDeviceTypeId()) || deviceType == PaoType.CCU721)
+        else if (deviceType.isIon() ||
+                deviceType == PaoType.RTU_MODBUS ||
+                deviceType == PaoType.RTU_DNP  ||
+                deviceType == PaoType.CCU721)
             getPhysicalAddressLabel().setText("Slave Address:");
         else if (deviceType == PaoType.MCTBROADCAST)
             getPhysicalAddressLabel().setText("Lead Meter Address:");
         else if (deviceType == PaoType.SERIES_5_LMI)
             getPhysicalAddressLabel().setText("Address:");
-        else if (DeviceTypesFuncs.isTwoWayLcr(deviceType.getDeviceTypeId()))
+        else if (deviceType.isTwoWayLcr())
             getPhysicalAddressLabel().setText("Serial Number:");
         else
             getPhysicalAddressLabel().setText("Physical Address:");
 
         if (deviceType.isMct() || 
-                DeviceTypesFuncs.isRepeater(deviceType.getDeviceTypeId()) || 
-                DeviceTypesFuncs.isCCU(deviceType.getDeviceTypeId()) || 
-                DeviceTypesFuncs.isTwoWayLcr(deviceType.getDeviceTypeId())) {
+                deviceType.isRepeater()  || 
+                deviceType.isCcu() || 
+                deviceType.isTwoWayLcr()) {
             this.createPointsCheck.setVisible(true);
             this.createPointsCheck.setSelected(true);
         } else {

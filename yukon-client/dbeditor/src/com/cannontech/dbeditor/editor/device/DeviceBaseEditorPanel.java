@@ -56,14 +56,12 @@ import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.GridAdvisorBase;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.KV;
 import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.data.device.TapTerminalBase;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.RemoteBase;
@@ -74,6 +72,7 @@ import com.cannontech.database.data.device.SNPPTerminal;
 import com.cannontech.database.data.device.Schlumberger;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.Sixnet;
+import com.cannontech.database.data.device.TapTerminalBase;
 import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.device.WCTPTerminal;
 import com.cannontech.database.data.device.lm.LMGroupEmetcon;
@@ -81,7 +80,6 @@ import com.cannontech.database.data.device.lm.LMGroupRipple;
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
@@ -147,7 +145,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     private JLabel tcpPortLabel = null;
     private JTextField tcpPortTextField = null;
 
-    int deviceType;
+    private PaoType deviceType;
 
     private JLabel internalRetriesLabel = null;
     private JLabel internalRetriesValueLabel = null;
@@ -1855,11 +1853,9 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 remoteBase.setIpAddress(ipAddress);
             } else {
                 // The DBPersistent doesn't track this info, write to PaoProperty for it.
-                PaoIdentifier identifier =
-                    new PaoIdentifier(deviceBase.getPAObjectID(), PaoType.getForId(deviceType));
+                PaoIdentifier identifier = new PaoIdentifier(deviceBase.getPAObjectID(), deviceType);
 
-                propertyDao
-                    .add(new PaoProperty(identifier, PaoPropertyName.TcpIpAddress, ipAddress));
+                propertyDao.add(new PaoProperty(identifier, PaoPropertyName.TcpIpAddress, ipAddress));
                 propertyDao.add(new PaoProperty(identifier, PaoPropertyName.TcpPort, portNum));
             }
         }
@@ -2288,7 +2284,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 }
 
                 // Check address is not already used, user can override and continue
-                if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType)) {
+                if (deviceType.isMct() || deviceType.isRepeater()) {
                     if (!checkMCTAddresses(address, deviceBase.getPAObjectID())) {
                         return false;
                     }
@@ -2298,7 +2294,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 // dedicated channel
                 LiteYukonPAObject port = ((LiteYukonPAObject) getPortComboBox().getSelectedItem());
                 if (port != null && (!PaoType.isDialupPort(port.getPaoType().getDeviceTypeId())) &&
-                    (DeviceTypesFuncs.isCCU(deviceType) || DeviceTypesFuncs.isRTU(deviceType))) {
+                    (deviceType.isCcu() || deviceType.isRtu() || deviceType.isIon())) {
                     if (!checkForDuplicateAddresses(address,
                                                     deviceBase.getPAObjectID(),
                                                     port.getLiteID())) {
@@ -2549,7 +2545,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
     }
 
-    private void setRemoteBaseValue(RemoteBase rBase, int intType) {
+    private void setRemoteBaseValue(RemoteBase rBase, PaoType paoType) {
         getRouteLabel().setVisible(false);
         getRouteComboBox().setVisible(false);
         getJLabelCCUAmpUseType().setVisible(false);
@@ -2683,8 +2679,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 getPasswordTextField().setText(password);
             }
 
-            if (rBase instanceof Schlumberger || intType == PAOGroups.ALPHA_PPLUS
-                || intType == PAOGroups.TRANSDATA_MARKV || rBase instanceof KV) {
+            if (rBase instanceof Schlumberger || paoType == PaoType.ALPHA_PPLUS
+                || paoType == PaoType.TRANSDATA_MARKV || rBase instanceof KV) {
                 getSlaveAddressLabel().setVisible(true);
                 getSlaveAddressComboBox().setVisible(true);
 
@@ -2924,15 +2920,15 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     {
         deviceBase = (DeviceBase) val;
 
-        deviceType = deviceBase.getPaoType().getDeviceTypeId();
+        deviceType = deviceBase.getPaoType();
         PaoType paoType = deviceBase.getPaoType();
 
-        String typeStr = paoType.getPaoTypeName();
-        // Override defalut type string for TapTerminal
+        String typeDisplayString = paoType.getPaoTypeName();
+        // Override default type string for TapTerminal
         if (paoType == PaoType.TAPTERMINAL) {
-            typeStr = PAOGroups.STRING_TAP_TERMINAL[2];
+            typeDisplayString = "PAGING TAP TERMINAL";
         }
-        getTypeTextField().setText(typeStr);
+        getTypeTextField().setText(typeDisplayString);
         getNameTextField().setText(deviceBase.getPAOName());
 
         SwingUtil.setCheckBoxState(getDisableFlagCheckBox(), deviceBase.getPAODisableFlag());

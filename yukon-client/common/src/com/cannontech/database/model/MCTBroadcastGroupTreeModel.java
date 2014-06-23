@@ -1,135 +1,104 @@
 package com.cannontech.database.model;
-/**
- * This type was created in VisualAge.
- */
+
 import java.util.List;
+import java.util.Vector;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.device.MCT_Broadcast;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
- 
-public class MCTBroadcastGroupTreeModel extends DBTreeModel 
-{
-/**
- * MeterTreeModel constructor comment.
- * @param root javax.swing.tree.TreeNode
- */
-public MCTBroadcastGroupTreeModel() {
-	super( new DBTreeNode("MCT Broadcast") );
-}
 
+public class MCTBroadcastGroupTreeModel extends DBTreeModel {
 
-/**
- * Insert the method's description here.
- * Creation date: (4/17/2002 1:58:45 PM)
- * @param lite com.cannontech.database.data.lite.LiteBase
- */
-@Override
-public boolean insertTreeObject( LiteBase lb ) 
-{
-	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
-		return false;
-
-	update();
-
-	return false;
-}
-
-
-/**
- * Insert the method's description here.
- * Creation date: (4/22/2002 2:05:03 PM)
- * @return com.cannontech.database.data.lite.LiteBase[]
- */
-@Override
-public boolean isLiteTypeSupported( int liteType )
-{
-	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_PAOBJECT );
-}
-
-@Override
-public boolean isTreePrimaryForObject(LiteBase lb) {
-    if (lb instanceof LiteYukonPAObject) {
-        PaoType paoType = ((LiteYukonPAObject) lb).getPaoIdentifier().getPaoType();
-        return paoType == PaoType.MCTBROADCAST;
+    public MCTBroadcastGroupTreeModel() {
+        super(new DBTreeNode("MCT Broadcast"));
     }
-    return false;
-}
 
-/**
- * This method was created in VisualAge. (and changed by the minion.)
- */
-@Override
-public void update() {
+    @Override
+    public boolean insertTreeObject(LiteBase lb) {
+        if (lb == null || !isLiteTypeSupported(lb.getLiteType())) {
+            return false;
+        }
+        
+        update();
+        return false;
+    }
 
-	IDatabaseCache cache =
-					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+    @Override
+    public boolean isLiteTypeSupported(int liteType) {
+        return (liteType == LiteTypes.YUKON_PAOBJECT);
+    }
 
-	synchronized(cache)
-	{
-		//This is a crappy and inefficient way to do this if there are many devices...
-		List<LiteYukonPAObject> devicesList = cache.getAllDevices();
-		java.util.Vector broadcastersList = new java.util.Vector();
-		java.util.Vector mctList = new java.util.Vector();
-		//This hopefully helps with the speed issue somewhat
-		com.cannontech.common.util.NativeIntVector mctIDIntList = new com.cannontech.common.util.NativeIntVector(30);
+    @Override
+    public boolean isTreePrimaryForObject(LiteBase lb) {
+        if (lb instanceof LiteYukonPAObject) {
+            PaoType paoType = ((LiteYukonPAObject) lb).getPaoIdentifier().getPaoType();
+            return paoType == PaoType.MCTBROADCAST;
+        }
+        return false;
+    }
 
-		DBTreeNode rootNode = (DBTreeNode) getRoot();
-		rootNode.removeAllChildren();
+    @Override
+    public void update() {
 
-		int mctBroadcastID;
-		com.cannontech.database.data.device.MCT_Broadcast necessaryEvil = new com.cannontech.database.data.device.MCT_Broadcast();
-		
-		//wow, this just keeps getting fouler...Just wait, it gets even worse...keep going
-		
-		for (LiteYukonPAObject liteYukonPAObject : devicesList) {
-			if(liteYukonPAObject.getPaoType() == PaoType.MCTBROADCAST)
-				broadcastersList.add(liteYukonPAObject);
-			else if(DeviceTypesFuncs.isMCT(liteYukonPAObject.getPaoType().getDeviceTypeId()))
-				mctList.add(liteYukonPAObject);
-		}
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
-		/*This is a bit slow because the database must be hit to find out what MCTs are owned
-		by each broadcast group.  There is no way to get this info using Lite objects, so
-		a new chubby must be created in order to call its internal MCT ownership methods*/
-		
-		for( int i = 0; i < broadcastersList.size(); i++ )
-		{
-			DBTreeNode broadcastGroupNode = new DBTreeNode( broadcastersList.get(i));	
-			mctBroadcastID =  ((com.cannontech.database.data.lite.LiteYukonPAObject)broadcastersList.get(i)).getYukonID();
+        synchronized (cache) {
+            // This is a crappy and inefficient way to do this if there are many devices...
+            List<LiteYukonPAObject> devicesList = cache.getAllDevices();
+            Vector<LiteYukonPAObject> broadcastersList = new Vector<LiteYukonPAObject>();
+            Vector<LiteYukonPAObject> mctList = new Vector<LiteYukonPAObject>();
+            // This hopefully helps with the speed issue somewhat
+            NativeIntVector mctIDIntList = new NativeIntVector(30);
 
-			mctIDIntList = necessaryEvil.getAllMCTsIDList(new Integer(mctBroadcastID));
-			
-			for( int j = 0; j < mctList.size(); j++ )
-			{
-				if(mctIDIntList.contains(((com.cannontech.database.data.lite.LiteYukonPAObject)mctList.elementAt(j)).getYukonID()))
-					{
-						broadcastGroupNode.add( new DBTreeNode( (mctList.elementAt(j) )));
-					}
-			}
-			rootNode.add( broadcastGroupNode );		
-		}
-	}
-	reload();
-}
+            DBTreeNode rootNode = (DBTreeNode) getRoot();
+            rootNode.removeAllChildren();
 
+            int mctBroadcastID;
+            MCT_Broadcast necessaryEvil = new MCT_Broadcast();
 
-/**
- * Insert the method's description here.
- * Creation date: (4/17/2002 1:58:45 PM)
- * @param lite com.cannontech.database.data.lite.LiteBase
- */
-@Override
-public boolean updateTreeObject(LiteBase lb) 
-{
-	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
-		return false;
+            // wow, this just keeps getting fouler...Just wait, it gets even worse...keep going
+            for (LiteYukonPAObject liteYukonPAObject : devicesList) {
+                if (liteYukonPAObject.getPaoType() == PaoType.MCTBROADCAST) {
+                    broadcastersList.add(liteYukonPAObject);
+                } else if (liteYukonPAObject.getPaoType().isMct()) {
+                    mctList.add(liteYukonPAObject);
+                }
+            }
 
-	update();
+            /*
+             * This is a bit slow because the database must be hit to find out
+             * what MCTs are owned by each broadcast group. There is no way to
+             * get this info using Lite objects, so a new chubby must be created
+             * in order to call its internal MCT ownership methods
+             */
+            for (LiteYukonPAObject broadcaster : broadcastersList) {
+                DBTreeNode broadcastGroupNode = new DBTreeNode(broadcaster);
+                mctBroadcastID = broadcaster.getYukonID();
 
-	return false;
-}
+                mctIDIntList = necessaryEvil.getAllMCTsIDList(new Integer(mctBroadcastID));
 
+                for (int j = 0; j < mctList.size(); j++) {
+                    if (mctIDIntList.contains(mctList.elementAt(j).getYukonID())) {
+                        broadcastGroupNode.add(new DBTreeNode((mctList.elementAt(j))));
+                    }
+                }
+                rootNode.add(broadcastGroupNode);
+            }
+        }
+        reload();
+    }
+
+    @Override
+    public boolean updateTreeObject(LiteBase lb) {
+        if (lb == null || !isLiteTypeSupported(lb.getLiteType()))
+            return false;
+
+        update();
+        return false;
+    }
 }

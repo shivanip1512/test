@@ -174,7 +174,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	{
 		//All Groups except Macro groups //
 		return
-			DeviceTypesFuncs.isLmGroup(litePaobject_.getPaoType().getDeviceTypeId())
+			litePaobject_.getPaoType().isLoadGroup()
 			&& litePaobject_.getPaoType().getDeviceTypeId() != DeviceTypesFuncs.MACRO_GROUP;
 	}
 

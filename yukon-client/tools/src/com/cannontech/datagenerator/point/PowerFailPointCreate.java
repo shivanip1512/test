@@ -7,8 +7,8 @@ package com.cannontech.datagenerator.point;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -30,9 +30,11 @@ public class PowerFailPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isDeviceValid( LiteYukonPAObject litePaobject_ ) {
+	@Override
+    public boolean isDeviceValid( LiteYukonPAObject litePaobject_ ) {
 		// All MCT's are valid (with the exception of LMT2 and DCT501 //
-		return DeviceTypesFuncs.isMCTOnly(litePaobject_.getPaoType().getDeviceTypeId());
+	    return litePaobject_.getPaoType().isMct() && 
+	            !(litePaobject_.getPaoType() == PaoType.LMT_2 || litePaobject_.getPaoType() == PaoType.DCT_501);
 	}
 
 	/**
@@ -42,7 +44,8 @@ public class PowerFailPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isPointCreated( LitePoint lp ) {
+	@Override
+    public boolean isPointCreated( LitePoint lp ) {
 		return ((lp.getPointOffset() == 20) && 
 				(lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT));
 	}
@@ -52,7 +55,8 @@ public class PowerFailPointCreate extends PointCreate
 	 * Creation date: (5/29/2001 9:13:14 AM)
 	 * @return boolean
 	 */
-	public boolean create() {
+	@Override
+    public boolean create() {
 		CTILogger.info("Starting Power Fail Point creation process...");
 	
 		Vector<LiteYukonPAObject> powerFailDevices = getDeviceVector();

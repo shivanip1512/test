@@ -12,7 +12,6 @@ import com.cannontech.common.gui.util.AddRemovePanel;
 import com.cannontech.common.gui.util.AddRemovePanelListener;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -155,8 +154,7 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
 
             for (LiteYukonPAObject group : groups) {
                 PaoType paoType = group.getPaoType();
-                if (DeviceTypesFuncs.isLmGroup(paoType.getDeviceTypeId()) && (hideLMGroupPoints ? paoType != PaoType.LM_GROUP_POINT
-                        : true)) {
+                if (paoType.isLoadGroup() && (hideLMGroupPoints ? paoType != PaoType.LM_GROUP_POINT : true)) {
 
                     boolean isSepProgram = programType == PaoType.LM_SEP_PROGRAM;
                     boolean isEcobeeProgram = programType == PaoType.LM_ECOBEE_PROGRAM;

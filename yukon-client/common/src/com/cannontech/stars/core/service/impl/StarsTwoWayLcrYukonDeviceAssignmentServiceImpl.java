@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
@@ -17,8 +17,8 @@ import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentServ
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
-import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceAssignmentException;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
+import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceAssignmentException;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.xml.serialize.StarsInv;
@@ -31,7 +31,8 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 	private DBPersistentDao dbPersistentDao;
 	private PaoDao paoDao;
 	
-	public void assignTwoWayLcrDevice(StarsInv starsInv, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Lcr3102YukonDeviceCreationException {
+	@Override
+    public void assignTwoWayLcrDevice(StarsInv starsInv, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Lcr3102YukonDeviceCreationException {
 		
 		try {
 			
@@ -70,7 +71,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 			boolean allowCreateIfAlreadyHasAssignedDevice)
 			throws Lcr3102YukonDeviceCreationException {
 
-		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
+		if (!PaoType.getForId(yukonDeviceTypeId).isTwoWayLcr()) {
 			throw new Lcr3102YukonDeviceCreationException("Yukon device must be a Two Way LCR type.");
 		}
 		
@@ -150,7 +151,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 		try {
 			com.cannontech.stars.database.db.hardware.InventoryBase inventoryBase = new com.cannontech.stars.database.db.hardware.InventoryBase();
 	        inventoryBase.setInventoryID(liteInv.getInventoryID());
-	        inventoryBase = (com.cannontech.stars.database.db.hardware.InventoryBase)Transaction.createTransaction(Transaction.RETRIEVE, inventoryBase).execute();
+	        inventoryBase = Transaction.createTransaction(Transaction.RETRIEVE, inventoryBase).execute();
 	        inventoryBase.setDeviceID(deviceId);
 	        dbPersistentDao.performDBChange(inventoryBase, Transaction.UPDATE);
 		} catch (Exception e) {

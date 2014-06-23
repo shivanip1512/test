@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -31,12 +32,10 @@ import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -330,14 +329,14 @@ public class StarsDatabaseCache implements DBChangeListener {
     		for (int i = 0; i < companies.size(); i++) {
     			LiteStarsEnergyCompany energyCompany = companies.get(i);
     			
-    			if (litePao.getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_ROUTE) {
+    			if (litePao.getPaoType().getPaoCategory() == PaoCategory.ROUTE) {
     			    EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);            
     			    boolean singleEc = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, energyCompany.getEnergyCompanyId());
     			    if (!singleEc) {
     			        handleRouteChange(msg, energyCompany);
     			    }
     			}
-    			else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getPaoType().getDeviceTypeId() )) {
+    			else if (litePao.getPaoType().isDirectProgram()) {
     				if (energyCompany.getPrograms() != null) {
 	    				for (LiteLMProgramWebPublishing liteProg : energyCompany.getPrograms()) {
 	    					if (liteProg.getDeviceID() == msg.getId()) {
@@ -347,7 +346,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    				}
     				}
     			}
-    			else if (DeviceTypesFuncs.isLmGroup( litePao.getPaoType().getDeviceTypeId() )) {
+    			else if (litePao.getPaoType().isLoadGroup()) {
     				StarsEnrollmentPrograms categories = energyCompany.getStarsEnrollmentPrograms();
     				
     				if (energyCompany.getPrograms() != null) {

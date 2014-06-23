@@ -17,7 +17,6 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteBase;
@@ -367,7 +366,7 @@ public class RepeaterSelectPanel extends DataInputPanel implements AddRemovePane
             List<LiteYukonPAObject> allDevices = cache.getAllDevices();
             allRepeaters = new Vector<LiteYukonPAObject>();
             for (LiteYukonPAObject liteYukonPAObject : allDevices) {
-                if (DeviceTypesFuncs.isRepeater(liteYukonPAObject.getPaoType().getDeviceTypeId())) {
+                if (liteYukonPAObject.getPaoType().isRepeater()) {
                     allRepeaters.add(liteYukonPAObject);
                 }
             }

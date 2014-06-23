@@ -13,7 +13,6 @@ import com.cannontech.common.gui.util.AddRemovePanelListener;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.lite.LiteLMPAOExclusion;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -229,7 +228,7 @@ public class LMProgramDirectMemberControlPanel extends DataInputPanel implements
             for (LiteYukonPAObject liteYukonPAObject : availableSubs) {
                 Integer theID = new Integer(liteYukonPAObject.getLiteID());
                 // makes sure it is a direct program and it is not already a master
-                if (DeviceTypesFuncs.isLMProgramDirect(liteYukonPAObject.getPaoType().getDeviceTypeId()) && !(isMasterProgram(theID.intValue(), currentlyExcluded)))
+                if (liteYukonPAObject.getPaoType().isDirectProgram() && !(isMasterProgram(theID.intValue(), currentlyExcluded)))
                     lmSubordinates.addElement(liteYukonPAObject);
             }
 

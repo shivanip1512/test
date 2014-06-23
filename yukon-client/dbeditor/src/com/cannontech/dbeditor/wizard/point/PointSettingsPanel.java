@@ -271,7 +271,7 @@ public class PointSettingsPanel extends DataInputPanel implements CaretListener 
             java.util.Collections.sort(devices, LiteComparators.liteStringComparator);
 
             for (LiteYukonPAObject device : devices) {
-                if (PaoType.isLoadManagement(device)) {
+                if (device.getPaoType().isLoadManagement()) {
                     getDeviceComboBox().addItem(device);
 
                     if (initialPAOId != null && initialPAOId.intValue() == device.getYukonID()) {

@@ -44,7 +44,6 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.command.DeviceTypeCommand;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -432,7 +431,7 @@ public class YC extends Observable implements MessageListener
         for (int i = 0; i < commandVec.size(); i++)
         {    
             String command = getExecuteCmdsVector().get(i);            
-            if ( DeviceTypesFuncs.isCarrier(liteYukonPao.getPaoType().getDeviceTypeId())) {
+            if (liteYukonPao.getPaoType().isPlc() || liteYukonPao.getPaoType().isRepeater()) {
                 if( command.indexOf("noqueue") < 0) {
                     getExecuteCmdsVector().setElementAt( command + getQueueCommandString(), i);    //replace the old command with this one
                 }
@@ -1624,12 +1623,10 @@ public class YC extends Observable implements MessageListener
                         
             if( liteYukonPAObject.getPaoType().isCbc() ) {
                 pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Bank Status Point
-            } else if (DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getPaoType().getDeviceTypeId()) ) {
+            } else if (liteYukonPAObject.getPaoType().isLoadGroup()) {
                 pointID = getLogPointID(PointTypes.STATUS_POINT, 0); //the Control Status (Pseudo) Point
-            } else if (DeviceTypesFuncs.isMCT(liteYukonPAObject.getPaoType().getDeviceTypeId()) )
-            {
-                if( commandStr.indexOf(" connect") > -1 || commandStr.indexOf(" disconnect") > -1)
-                 {
+            } else if (liteYukonPAObject.getPaoType().isMct()) {
+                if( commandStr.indexOf(" connect") > -1 || commandStr.indexOf(" disconnect") > -1) {
                     pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Disconnect Status Point
                 }
             }

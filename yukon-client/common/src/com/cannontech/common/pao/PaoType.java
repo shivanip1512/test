@@ -253,13 +253,18 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> mctTypes;
     private final static ImmutableSet<PaoType> iedTypes;
     private final static ImmutableSet<PaoType> rtuTypes;
+    private final static ImmutableSet<PaoType> ionTypes;
     private final static ImmutableSet<PaoType> portTypes;
     private final static ImmutableSet<PaoType> lmProgramTypes;
     private final static ImmutableSet<PaoType> directProgramTypes;
     private final static ImmutableSet<PaoType> twoWayLcrTypes;
     private final static ImmutableSet<PaoType> rfLcrTypes;
     private final static ImmutableSet<PaoType> capControlTypes;
-
+    private final static ImmutableSet<PaoType> ccuTypes;
+    private final static ImmutableSet<PaoType> tcuTypes;
+    private final static ImmutableSet<PaoType> lcuTypes;
+    private final static ImmutableSet<PaoType> repeaterTypes;
+    
     public final static int INVALID = -1;
 
     static {
@@ -304,7 +309,30 @@ public enum PaoType implements DatabaseRepresentationSource {
                 CBC_EXPRESSCOM,
                 CBC_FP_2800,
                 DNP_CBC_6510);
-        
+
+        ccuTypes = ImmutableSet.of(
+            CCU710A,
+            CCU711,
+            CCU721);
+
+        tcuTypes = ImmutableSet.of(
+            TCU5000,
+            TCU5500);
+
+        lcuTypes = ImmutableSet.of(
+            LCU415,
+            LCU_ER,
+            LCU_T3026,
+            LCULG);
+
+        repeaterTypes = ImmutableSet.of(
+            REPEATER,
+            REPEATER_800,
+            REPEATER_801,
+            REPEATER_850,
+            REPEATER_902,
+            REPEATER_921);
+
         meterTypes = ImmutableSet.of(
                 ALPHA_A1,
                 ALPHA_A3,
@@ -452,7 +480,12 @@ public enum PaoType implements DatabaseRepresentationSource {
             RTUILEX,
             RTUWELCO,
             RTM);
-        
+
+        ionTypes = ImmutableSet.of(
+            ION_7330,
+            ION_7700,
+            ION_8300);
+
         portTypes = ImmutableSet.of(
             LOCAL_DIRECT,
             LOCAL_SHARED,
@@ -526,6 +559,22 @@ public enum PaoType implements DatabaseRepresentationSource {
         return cbcTypes.contains(this);
     }
     
+    public boolean isCcu() {
+        return ccuTypes.contains(this);
+    }
+
+    public boolean isTcu() {
+        return tcuTypes.contains(this);
+    }
+
+    public boolean isLcu() {
+        return lcuTypes.contains(this);
+    }
+
+    public boolean isRepeater() {
+        return repeaterTypes.contains(this);
+    }
+    
     public boolean isEcobee() {
         return this == PaoType.ECOBEE_SMART_SI;
     }
@@ -545,7 +594,11 @@ public enum PaoType implements DatabaseRepresentationSource {
     public boolean isRtu() {
         return rtuTypes.contains(this);
     }
-    
+
+    public boolean isIon() {
+        return ionTypes.contains(this);
+    }
+
     public boolean isRfn() {
         return this.paoClass == PaoClass.RFMESH;
     }
@@ -562,6 +615,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     public boolean isTwoWayPlcLcr() {
         return twoWayLcrTypes.contains(this) 
                 && paoClass == PaoClass.CARRIER;
+    }
+
+    public boolean isTwoWayLcr() {
+        return twoWayLcrTypes.contains(this);
     }
     
     public boolean isTransmitter() {
@@ -607,13 +664,9 @@ public enum PaoType implements DatabaseRepresentationSource {
         return isTcpPortEligible(paoType);
     }
     
-    public boolean isLmGroup() {
-        return (PaoClass.LOADMANAGEMENT == paoClass || PaoClass.GROUP == paoClass);
-    }
     
-    public static boolean isLoadManagement(LiteYukonPAObject lite) {
-        return (lite.getPaoType().getPaoClass() == PaoClass.GROUP ||
-                lite.getPaoType().getPaoClass() == PaoClass.LOADMANAGEMENT);
+    public boolean isLoadManagement() {
+        return PaoClass.GROUP == paoClass || PaoClass.LOADMANAGEMENT == paoClass;
     }
 
     public boolean isWaterMeter() {
@@ -659,7 +712,15 @@ public enum PaoType implements DatabaseRepresentationSource {
     public static ImmutableSet<PaoType> getCbcTypes() {
         return cbcTypes;
     }
-    
+
+    public static ImmutableSet<PaoType> getCcuTypes() {
+        return ccuTypes;
+    }
+
+    public static ImmutableSet<PaoType> getRepeaterTypes() {
+        return repeaterTypes;
+    }
+
     public static ImmutableSet<PaoType> getMeterTypes() {
         return meterTypes;
     }
@@ -675,7 +736,11 @@ public enum PaoType implements DatabaseRepresentationSource {
     public static ImmutableSet<PaoType> getRtuTypes() {
         return rtuTypes;
     }
-    
+
+    public static ImmutableSet<PaoType> getIonTypes() {
+        return ionTypes;
+    }
+
     public static ImmutableSet<PaoType> getRfLcrTypes() {
         return rfLcrTypes;
     }

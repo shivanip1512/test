@@ -52,7 +52,6 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
@@ -732,7 +731,7 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
 
                     for (int j = 0; j < programsInAControlArea.size(); j++) {
                         if (progID.compareTo(programsInAControlArea.elementAt(j)) == 0) {
-                            if (DeviceTypesFuncs.isLMProgramDirect(program.getPaoType().getDeviceTypeId())) {
+                            if (program.getPaoType().isDirectProgram()) {
                                 availablePrograms.addElement(program);
                                 programsInAControlArea.removeElementAt(j);
                             }

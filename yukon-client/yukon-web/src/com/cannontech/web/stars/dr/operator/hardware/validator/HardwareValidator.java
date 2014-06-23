@@ -11,7 +11,6 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -89,7 +88,7 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
                         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(hardware.getDeviceId());
                         PaoType paoType = pao.getPaoIdentifier().getPaoType();
                         
-                        if(!DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())) {
+                        if(!paoType.isTwoWayLcr()) {
                             /* The device with this id is no longer a two way lcr. */
                             errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.invalidDeviceType", new Object[] {pao.getLiteID(), pao.getPaoName()}, null);
                         }
