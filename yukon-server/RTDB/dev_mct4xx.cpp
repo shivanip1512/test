@@ -2404,69 +2404,60 @@ int Mct4xxDevice::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiComma
 
 int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    int nRet = NORMAL;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
-    if (deviceConfig)
+    if( ! deviceConfig )
     {
-        if( ! readsOnly )
-        {
-            boost::optional<long>
-                timezoneOffset = deviceConfig->findValue<long>(MCTStrings::TimeZoneOffset);
+        return NoConfigData;
+    }
 
-            if (!getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
-            }
-            else if( ! timezoneOffset )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
-            }
-            else
-            {
-                *timezoneOffset *= 4; //The timezone offset in the mct is in 15 minute increments.
-                if(parse.isKeyValid("force")
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
-                {
-                    if( !parse.isKeyValid("verify") )
-                    {
-                        //  the bstruct IO is set above by getOperation()
-                        OutMessage->Buffer.BSt.Message[0] = *timezoneOffset;
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                        nRet = NORMAL;
-                    }
-                    else
-                    {
-                        nRet = ConfigNotCurrent;
-                    }
-                }
-                else
-                {
-                    nRet = ConfigCurrent;
-                }
-            }
+    if( ! readsOnly )
+    {
+        boost::optional<long> timezoneOffset =
+                deviceConfig->findValue<long>(MCTStrings::TimeZoneOffset);
+
+        if (!getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+            return NoConfigData;
         }
 
-        //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL)
+        if( ! timezoneOffset )
         {
-            if (getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
-            {
-                OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-                insertConfigReadOutMessage("getconfig install timezone", *OutMessage, outList);
-            }
+            return NoConfigData;
         }
+
+        const unsigned char timezoneByte = *timezoneOffset *= 4; //The timezone offset in the mct is in 15 minute increments.
+
+        if( ! parse.isKeyValid("force")
+            && CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) == timezoneByte)
+        {
+            return ConfigCurrent;
+        }
+
+        if( parse.isKeyValid("verify") )
+        {
+            return ConfigNotCurrent;
+        }
+
+        //  the bstruct IO is set above by getOperation()
+        OutMessage->Buffer.BSt.Message[0] = timezoneByte;
+        outList.push_back( new OUTMESS(*OutMessage) );
     }
-    else
+
+    if (getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
     {
-        nRet = NoConfigData;
+        OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Read;
+
+        insertConfigReadOutMessage("getconfig install timezone", *OutMessage, outList);
     }
-    return nRet;
+
+    return NoError;
 }
 
 int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)

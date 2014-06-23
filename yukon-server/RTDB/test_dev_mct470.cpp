@@ -1326,40 +1326,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
-        BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
-        BOOST_REQUIRE_EQUAL( outList.size(), 2 );
-
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
-
-        {
-            const OUTMESS *om = *om_itr++;
-
-            BOOST_REQUIRE(om);
-
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 40 );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
-
-            const unsigned char expected_message[] = { 0xe8 };
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                om->Buffer.BSt.Message,
-                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
-                expected_message,
-                expected_message + sizeof(expected_message) );
-        }
-        {
-            const OUTMESS *om = *om_itr++;
-
-            BOOST_REQUIRE(om);
-
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 40 );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
-        }
-        /*
         BOOST_CHECK( outList.empty() );
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
@@ -1370,7 +1336,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         BOOST_CHECK_EQUAL( retMsg->ResultString(), "Config timezone is current." );
         BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
-        */
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_timezone_mct430_no_dynamicPaoInfo)
     {
