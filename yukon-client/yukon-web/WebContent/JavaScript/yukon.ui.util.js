@@ -50,7 +50,7 @@ yukon.ui.util = (function () {
             }
             
             //if selection is at the bottom and can't move down anymore
-            if (index.last() == selectElement.options.length - 1 && direction == 1) { 
+            if (index[index.length-1] == selectElement.options.length - 1 && direction == 1) { 
                 return false;
             }
             
