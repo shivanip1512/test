@@ -88,7 +88,7 @@ yukon.da = (function () {
 
                 if( moveBankOpener.is('.warning') ){
                     moveBankOpener.click( function(event) {
-                        _getMovedBankMenu(bankId, event);
+                        mod.getMovedBankMenu(bankId, event);
                     });
                 } else {
                     moveBankOpener.click( function(event) {
@@ -99,7 +99,7 @@ yukon.da = (function () {
                     });
                 }
                 bankCommandOpener.click( function(event){
-                    mod.getCommandMenu(bankId, event);
+                    mod.getMenuFromURL(yukon.url('/capcontrol/menu/commandMenu?id=' + bankId), event);
                 });
 
                 bankInfoOpener.click( function(event) {
@@ -111,7 +111,7 @@ yukon.da = (function () {
                 });
 
                 stateMenuOpener.click( function(event){
-                    mod.getMenuFromURL(yukon.url('/capcontrol/menu/capBankState?id=' + bankId), event);
+                    mod.getMenuFromURL(yukon.url('/capcontrol/menu/capBankState?id=' + bankId), event, {showNote: true});
                 });
 
             });
@@ -228,10 +228,6 @@ yukon.da = (function () {
             });
         },
 
-        getCommandMenu : function(id, event) {
-            mod.getMenuFromURL(yukon.url('/capcontrol/menu/commandMenu?id=' + id), event);
-        },
-
         checkPageExpire : function() {
             var paoIds = [];
 
@@ -256,10 +252,12 @@ yukon.da = (function () {
         },
 
         getMenuFromURL : function (url, event, params) {
-
             $.ajax(url).done( function(data) {
                 $('#menuPopup').html(data);
                 mod.showMenuPopup(params);
+                if(params && params.showNote === true) {
+                    $('.js-show-popup-note').show();
+                }
             });
         },
 
