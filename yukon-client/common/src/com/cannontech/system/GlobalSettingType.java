@@ -1,9 +1,6 @@
 package com.cannontech.system;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.userType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
 import java.math.RoundingMode;
 import java.util.Set;
@@ -110,7 +107,6 @@ public enum GlobalSettingType implements DisplayableEnum {
     ECOBEE_USERNAME(GlobalSettingSubCategory.DR, stringType(), ""),
     ECOBEE_PASSWORD(GlobalSettingSubCategory.DR, stringType(), ""),
     ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://api.ecobee.com/1/"),
-    ECOBEE_QUERY_LIMIT(GlobalSettingSubCategory.DR, integerType(), 85000),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
