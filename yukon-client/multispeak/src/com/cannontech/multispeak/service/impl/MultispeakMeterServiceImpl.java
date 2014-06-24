@@ -370,7 +370,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         getEventsMap().put(new Long(id), event);
         String commandStr = "getvalue kwh";
-        if( DeviceTypesFuncs.isMCT4XX(meter.getPaoIdentifier().getPaoType().getDeviceTypeId()) )
+        if( DeviceTypesFuncs.isMCT4XX(meter.getPaoIdentifier().getPaoType()) )
             commandStr = "getvalue peak";    // getvalue peak returns the peak kW and the total kWh
         
         final String meterNumber = meter.getMeterNumber();
