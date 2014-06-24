@@ -551,7 +551,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         if (allLoadManagement == null) {
             allLoadManagement = new ArrayList<>();
 
-            for (LiteYukonPAObject liteYukonPAObject : getAllLoadManagement()) {
+            for (LiteYukonPAObject liteYukonPAObject : getAllYukonPAObjects()) {
                 if (liteYukonPAObject.getPaoType().isLoadManagement()) {
                     allLoadManagement.add(liteYukonPAObject);
                 }
