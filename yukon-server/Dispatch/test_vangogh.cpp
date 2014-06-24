@@ -131,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE(test_isDuplicatePointData, pointdata_test_helper)
 }
 
 
-BOOST_AUTO_TEST_CASE( test_isPointDataNewInformation )
+BOOST_AUTO_TEST_CASE( test_hasPointDataChanged )
 {
     //  without TAG_POINT_DATA_TIMESTAMP_VALID
     {
@@ -145,22 +145,22 @@ BOOST_AUTO_TEST_CASE( test_isPointDataNewInformation )
         dpd.setPoint(msg.getTime(), msg.getMillis(), msg.getValue(), msg.getQuality(), msg.getTags());
 
         //  equal - not new
-        BOOST_CHECK_EQUAL( false, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( false, CtiVanGogh::hasPointDataChanged(msg, dpd) );
 
         //  value changed
         msg.setValue(1.0);
-        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::hasPointDataChanged(msg, dpd) );
         msg.setValue(0.0);
 
         //  quality changed
         msg.setQuality(OverflowQuality);
-        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::hasPointDataChanged(msg, dpd) );
 
         //  DPD set to NonUpdatedQuality
         dpd.setPoint(msg.getTime(), msg.getMillis(), msg.getValue(), NonUpdatedQuality, msg.getTags());
-        BOOST_CHECK_EQUAL( false, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( false, CtiVanGogh::hasPointDataChanged(msg, dpd) );
         msg.setQuality(NonUpdatedQuality);
-        BOOST_CHECK_EQUAL( false, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( false, CtiVanGogh::hasPointDataChanged(msg, dpd) );
     }
 
     //  with TAG_POINT_DATA_TIMESTAMP_VALID
@@ -176,29 +176,29 @@ BOOST_AUTO_TEST_CASE( test_isPointDataNewInformation )
         dpd.setPoint(msg.getTime(), msg.getMillis(), msg.getValue(), msg.getQuality(), msg.getTags());
 
         //  equal - not new
-        BOOST_CHECK_EQUAL( false, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( false, CtiVanGogh::hasPointDataChanged(msg, dpd) );
 
         msg.setTime(msg.getTime().seconds() + 1);
         //  newer time, but no value change
-        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( false, CtiVanGogh::hasPointDataChanged(msg, dpd) );
         msg.setValue(1.0);
         //  newer time with value change
-        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::hasPointDataChanged(msg, dpd) );
         msg.setValue(0.0);
         msg.setTime(msg.getTime().seconds() - 1);
 
         msg.setMillis(msg.getMillis() - 1);
         //  different millis, no value change
-        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( false, CtiVanGogh::hasPointDataChanged(msg, dpd) );
         msg.setValue(1.0);
         //  different millis with value change
-        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::hasPointDataChanged(msg, dpd) );
         msg.setValue(0.0);
         msg.setMillis(msg.getMillis() + 1);
 
         //  DPD set to Uninitialized
         dpd.setPoint(msg.getTime(), msg.getMillis(), msg.getValue(), UnintializedQuality, msg.getTags());
-        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::hasPointDataChanged(msg, dpd) );
     }
 }
 

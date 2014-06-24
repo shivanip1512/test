@@ -1773,7 +1773,7 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
 
             if(pDyn && !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE))
             {
-                const bool isNew = isPointDataNewInformation(aPD, *pDyn);
+                const bool hasChanged = hasPointDataChanged(aPD, *pDyn);
                 const bool isDuplicate = isDuplicatePointData(aPD, *pDyn);
                 const bool previouslyArchived = pDyn->wasArchived();
 
@@ -1814,7 +1814,7 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                 }
                 else if(pDyn->isArchivePending() ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnUpdate) ||
-                        (TempPoint->getArchiveType() == ArchiveTypeOnChange && isNew) ||
+                        (TempPoint->getArchiveType() == ArchiveTypeOnChange && hasChanged) ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnTimerOrUpdated))
                 {
                     submitRowToArchiver(
@@ -2462,17 +2462,17 @@ BOOL CtiVanGogh::isPointDataForConnection(const CtiServer::ptr_type &Conn, const
     return bStatus;
 }
 
-bool CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatch &Dyn)
+bool CtiVanGogh::hasPointDataChanged(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatch &Dyn)
 {
     //  This is for points on devices like RTUs that send or are scanned for periodic updates.
-    //    The value might not change, but the point data is new if the timestamp is new.
     if( Msg.getTags() & TAG_POINT_DATA_TIMESTAMP_VALID )
     {
         //  If the time is newer
         if( (Msg.getTime() > Dyn.getTimeStamp()) ||
             (Msg.getTime() == Dyn.getTimeStamp() && Msg.getMillis() != Dyn.getTimeStampMillis()) )
         {
-            return true;
+            //  and the value has changed
+            return Dyn.getValue() != Msg.getValue();
         }
 
         //  Or if we've never received a point before
@@ -5891,7 +5891,7 @@ unsigned CtiVanGogh::writeRawPointHistory(boost::ptr_deque<CtiTableRawPointHisto
 
     //  form up the SQL for both the single-row and multi-row cases
     const std::string rowSql   = CtiTableRawPointHistory::getInsertSql();
-    
+
     //  format is "BEGIN INSERT INTO.... ;INSERT INTO.... ;END;"
     const std::string chunkSql = "BEGIN " + boost::join(std::vector<std::string>(ChunkSize, rowSql), ";") + ";END;";
 

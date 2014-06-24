@@ -218,7 +218,7 @@ public:
     BOOL  isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn,
                                          const LONG                          pID);
     BOOL  isPointDataForConnection(const CtiServer::ptr_type &Conn, const CtiPointDataMsg &Msg);
-    static bool isPointDataNewInformation(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatch &Dyn);
+    static bool hasPointDataChanged(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatch &Dyn);
     static bool isDuplicatePointData(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatch &Dyn);
     BOOL  isSignalForConnection(const CtiServer::ptr_type &Conn, const CtiSignalMsg &Msg);
     BOOL  isTagForConnection(const CtiServer::ptr_type   &Conn, const CtiTagMsg &Msg);
