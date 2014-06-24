@@ -4470,6 +4470,9 @@
                 <basicLookup point="Event Activity" />
             </attribute>
         </attributes>
+        <tags>
+            <tag name="DB_EDITOR_INCOMPATIBLE" />
+        </tags>
     </pao>
     
     <!-- RF LCRs -->
