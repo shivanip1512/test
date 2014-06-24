@@ -261,7 +261,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         // IE puts the new rows in the TFOOT element, which breaks moveItemUp,
         // which expects all tr's to be in tbody
         if ('TFOOT' === parentNode.nodeName) {
-            tbody = this.table;
+            tbody = $(this.table).find('tbody')[0];
             tbody.appendChild(tempRow);
             tbody.replaceChild(newRow, tempRow);
             tbody.appendChild(newUndoRow);
@@ -425,6 +425,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
             }
         }
     };
+
     _initialize.call(this, tableId, nextRowId, addItemParameters);
 };
 
