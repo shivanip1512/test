@@ -2,6 +2,7 @@ package com.cannontech.datagenerator.point;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
@@ -21,9 +22,10 @@ public class OutageLogPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isDeviceValid(LiteYukonPAObject litePaobject_ )  {
-		int type = litePaobject_.getPaoType().getDeviceTypeId();
-	    return DeviceTypesFuncs.isMCT4XX(type);
+	@Override
+    public boolean isDeviceValid(LiteYukonPAObject litePaobject_ )  {
+		PaoType paoType = litePaobject_.getPaoType();
+	    return DeviceTypesFuncs.isMCT4XX(paoType);
 	}
 
 	/**
@@ -32,7 +34,8 @@ public class OutageLogPointCreate extends PointCreate
 	 * @param type int
 	 * @return boolean
 	 */
-	public boolean isPointCreated(LitePoint lp) {
+	@Override
+    public boolean isPointCreated(LitePoint lp) {
 		return (( lp.getPointOffset() == 100) && 
 				(lp.getPointType() == PointTypes.ANALOG_POINT));
 	}
@@ -41,7 +44,8 @@ public class OutageLogPointCreate extends PointCreate
 	 *  of Analog points to be inserted as OutageLog points.
 	 * @return boolean
 	 */
-	public boolean create() {
+	@Override
+    public boolean create() {
 		
 		CTILogger.info("Starting OutageLog Point creation process...");
 	

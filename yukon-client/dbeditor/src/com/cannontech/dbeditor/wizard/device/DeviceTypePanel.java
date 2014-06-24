@@ -229,7 +229,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
     public Object getValue(Object val) {
         // Determine the correct type of device and return it
 
-        int type = ((PaoDefinition) getDeviceTypeList().getSelectedValue()).getType().getDeviceTypeId();
+        PaoType type = ((PaoDefinition) getDeviceTypeList().getSelectedValue()).getType();
         DeviceBase returnDevice = DeviceFactory.createDevice(type);
 
         return returnDevice;
@@ -260,7 +260,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
     private void initialize() {
 
         // Initialize the device type map
-        PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
+        PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
         this.deviceDisplayGroupMap = paoDefinitionService.getCreatablePaoDisplayGroupMap();
 
         try {

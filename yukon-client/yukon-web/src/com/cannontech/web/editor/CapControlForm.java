@@ -844,7 +844,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
                     setDbPersistent(dbPers);
                 }
         		if (getDbPersistent() instanceof ICapBankController) {
-        			setDbPersistent( (YukonPAObject) DeviceTypesFuncs.changeCBCType(PaoType.getPaoTypeString( getCBControllerEditor().getDeviceType() ) , (ICapBankController)getDbPersistent()));
+        			setDbPersistent( (YukonPAObject) DeviceTypesFuncs.changeCBCType(PaoType.getForId(getCBControllerEditor().getDeviceType()) , (ICapBankController)getDbPersistent()));
     			}
             }
 			

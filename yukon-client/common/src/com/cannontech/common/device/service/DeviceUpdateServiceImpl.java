@@ -143,7 +143,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                     changeRoute(device, routeId);
 
                     // putconfig command
-                    if (DeviceTypesFuncs.isMCT410(device.getPaoIdentifier().getPaoType().getDeviceTypeId())) {
+                    if (DeviceTypesFuncs.isMCT410(device.getPaoIdentifier().getPaoType())) {
 
                         CommandRequestDevice configCmd = new CommandRequestDevice();
                         configCmd.setDevice(new SimpleDevice(device.getPaoIdentifier()));
@@ -239,7 +239,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         }
 
         // create a brand new DeviceBase of the new type
-        DeviceBase newDevice = DeviceFactory.createDevice(newDefinition.getType().getDeviceTypeId());
+        DeviceBase newDevice = DeviceFactory.createDevice(newDefinition.getType());
 
         // set all the device specific stuff here
         newDevice.setDevice(oldDevice.getDevice());
@@ -325,8 +325,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             ((MCTBase)newDevice).setConfigMapping(((MCTBase)oldDevice).getConfigMapping());
 
             if ( newDevice instanceof MCT400SeriesBase && oldDevice instanceof MCT400SeriesBase &&
-                    (DeviceTypesFuncs.isMCT410(newDevice.getPaoType().getDeviceTypeId()) && 
-                     DeviceTypesFuncs.isMCT410(oldDevice.getPaoType().getDeviceTypeId()))) {
+                    (DeviceTypesFuncs.isMCT410(newDevice.getPaoType()) && 
+                     DeviceTypesFuncs.isMCT410(oldDevice.getPaoType()))) {
                 ((MCT400SeriesBase) newDevice).setDeviceMCT400Series(((MCT400SeriesBase)oldDevice).getDeviceMCT400Series());
             }
         }

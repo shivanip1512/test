@@ -1037,10 +1037,10 @@ public void setValue(Object val)
 	getLoadProfileCollectionPanel().setVisible( val instanceof MCTBase );
 		
 	//are we a voltage channel?
-	getJComboBoxlVoltInterval().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType.getDeviceTypeId()));
-	getJComboBoxlVoltRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType.getDeviceTypeId()));
-	getJLabelVoltDmdRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType.getDeviceTypeId()));
-	getJLabelVoltIntervalDmdRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType.getDeviceTypeId()));
+	getJComboBoxlVoltInterval().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType));
+	getJComboBoxlVoltRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType));
+	getJLabelVoltDmdRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType));
+	getJLabelVoltIntervalDmdRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType));
 
 	//The default object is either a MCT or a IEDmeter
 	if( val instanceof MCTBase )
@@ -1069,11 +1069,11 @@ public void setValue(Object val)
 			getLastIntervalDemandRateLabel().setVisible(false);
 		}
 		
-		if(DeviceTypesFuncs.isMCT4XX(deviceType.getDeviceTypeId())) {
+		if(DeviceTypesFuncs.isMCT4XX(deviceType)) {
 			getChannel2CheckBox().setEnabled(true);
 			getChannel3CheckBox().setEnabled(true);
 			
-			if(deviceType == PaoType.MCT470 || DeviceTypesFuncs.isMCT430(deviceType.getDeviceTypeId())){
+			if(deviceType == PaoType.MCT470 || DeviceTypesFuncs.isMCT430(deviceType)){
 				
 				getJLabelVoltDmdRate().setEnabled(false);
 				getJLabelVoltDmdRate().setVisible(false);
@@ -1120,20 +1120,20 @@ public void setValue(Object val)
         SwingUtil.setIntervalComboBoxSelectedItem(getLoadProfileDemandRateComboBox(), dlp
             .getLoadProfileDemandRate().intValue());
 
-		if( DeviceTypesFuncs.isLoadProfile1Channel(deviceType.getDeviceTypeId()))
+		if( DeviceTypesFuncs.isLoadProfile1Channel(deviceType))
 		{
 			SwingUtil.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
 			getChannel2CheckBox().setVisible(false);
 			getChannel3CheckBox().setVisible(false);
 			getChannel4CheckBox().setVisible(false);
 		}
-	  else if( DeviceTypesFuncs.isLoadProfile3Channel(deviceType.getDeviceTypeId()))
+	  else if( DeviceTypesFuncs.isLoadProfile3Channel(deviceType))
 	  {
 		 SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
 		 SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
 		 SwingUtil.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
 		 getChannel4CheckBox().setVisible(false);
-	  } else if( deviceType == PaoType.MCT470 || DeviceTypesFuncs.isMCT430(deviceType.getDeviceTypeId())) {
+	  } else if( deviceType == PaoType.MCT470 || DeviceTypesFuncs.isMCT430(deviceType)) {
 	      SimpleDevice device = new SimpleDevice(mctBase.getPAObjectID(), deviceType);
           SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
           SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
@@ -1161,13 +1161,13 @@ public void setValue(Object val)
               getLastIntervalDemandRateComboBox().setEnabled(false);
               getLoadProfileDemandRateComboBox().setEnabled(false);
           }
-	  } else if( DeviceTypesFuncs.isLoadProfile4Channel(deviceType.getDeviceTypeId())) {
+	  } else if( DeviceTypesFuncs.isLoadProfile4Channel(deviceType)) {
 			SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
 			SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
 			SwingUtil.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
 			SwingUtil.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
 			
-			if( DeviceTypesFuncs.isLoadProfileVoltage(deviceType.getDeviceTypeId()))
+			if( DeviceTypesFuncs.isLoadProfileVoltage(deviceType))
 			{
 				getChannel4CheckBox().setText("Channel #4 (Volts)");
 			}

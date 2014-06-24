@@ -132,7 +132,7 @@ public abstract class AddRemovePointsControllerBase {
     	
     	Set<PaoType> deviceTypeSet = Sets.newLinkedHashSet();
         for (SimpleDevice device : deviceCollection.getDeviceList()) {
-        	deviceTypeSet.add(PaoType.getForId(device.getType()));
+        	deviceTypeSet.add(device.getDeviceType());
         }
         return deviceTypeSet;
     }

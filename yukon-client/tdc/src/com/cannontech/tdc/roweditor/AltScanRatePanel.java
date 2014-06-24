@@ -184,7 +184,7 @@ public class AltScanRatePanel extends ManualEntryJPanel implements RowEditorDial
     public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent) {
         LiteYukonPAObject paobject = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(getEditorData().getDeviceID());
 
-        if (paobject != null && DeviceTypesFuncs.hasDeviceScanRate(paobject.getPaoType().getDeviceTypeId())) {
+        if (paobject != null && DeviceTypesFuncs.hasDeviceScanRate(paobject.getPaoType())) {
             long duration = 0;
 
             if (getJComboBoxTime().getSelectedIndex() > 0) {

@@ -475,7 +475,7 @@ public class PaoDefinitionDaoImplTest {
 		                                                0,
 		                                                3);
         
-        PaoType deviceType = PaoType.getForId(device.getType());
+        PaoType deviceType = device.getDeviceType();
         PointIdentifier pointIdentifier = new PointIdentifier(PointType.PulseAccumulator, 2);
         PointTemplate actualPulse1PointTemplate = dao.getPointTemplateByTypeAndOffset(deviceType, pointIdentifier);
         

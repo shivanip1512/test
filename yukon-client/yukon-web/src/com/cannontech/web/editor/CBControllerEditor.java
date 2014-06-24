@@ -124,8 +124,7 @@ public class CBControllerEditor implements ICBControllerModel {
     @Override
     public boolean isTwoWay() {
         if (getPaoCBC() != null) {
-            int type = getPaoCBC().getPaoType().getDeviceTypeId();
-        	return CapControlUtils.isTwoWay(type);
+        	return CapControlUtils.isTwoWay(getPaoCBC().getPaoType());
         }
         return false;
     }
@@ -281,8 +280,8 @@ public class CBControllerEditor implements ICBControllerModel {
             
             DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
             
-            List devicesWithSameAddress = deviceDao.getDevicesByDeviceAddress(currentDeviceAddress.getMasterAddress(), currentDeviceAddress.getSlaveAddress());
-            List devicesByPort = deviceDao.getDevicesByPort(commPortId.intValue());         
+            List<Integer> devicesWithSameAddress = deviceDao.getDevicesByDeviceAddress(currentDeviceAddress.getMasterAddress(), currentDeviceAddress.getSlaveAddress());
+            List<Integer> devicesByPort = deviceDao.getDevicesByPort(commPortId.intValue());         
             //remove the current device from the list 
             devicesByPort.remove(getPaoCBC().getPAObjectID());
             devicesWithSameAddress.remove(getPaoCBC().getPAObjectID());
@@ -294,13 +293,13 @@ public class CBControllerEditor implements ICBControllerModel {
             //check to see if the master slave combination is the same
             if (devicesWithSameAddress.size() > 0) {
                 for (int i = 0; i < devicesWithSameAddress.size(); i++) {
-                    Integer paoId = (Integer) devicesWithSameAddress.get(i);
+                    Integer paoId = devicesWithSameAddress.get(i);
                     if (devicesByPort.contains(paoId)) {
                         LiteYukonPAObject litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(paoId.intValue());
                         throw new MultipleDevicesOnPortException(litePAO.getPaoName());
                     }
                 }
-                LiteYukonPAObject litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(((Integer) devicesWithSameAddress.get(0)).intValue());
+                LiteYukonPAObject litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(devicesWithSameAddress.get(0).intValue());
                 throw new SameMasterSlaveCombinationException(litePAO.getPaoName());
             }
         }
@@ -499,8 +498,7 @@ public class CBControllerEditor implements ICBControllerModel {
 	@Override
     public boolean isDevice702X() {
 		if (getPaoCBC() != null) {
-			int deviceType = getPaoCBC().getPaoType().getDeviceTypeId();
-			return DeviceTypesFuncs.isCapBankController702X(deviceType);
+			return DeviceTypesFuncs.isCapBankController702X(getPaoCBC().getPaoType());
 		}
 		return false;		
 	}

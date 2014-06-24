@@ -317,9 +317,9 @@ public class CommandCategory
 		{
 			CAT_LP_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isLoadProfile1Channel(paoType.getDeviceTypeId()) ||
-					DeviceTypesFuncs.isLoadProfile3Channel(paoType.getDeviceTypeId()) ||
-					DeviceTypesFuncs.isLoadProfile4Channel(paoType.getDeviceTypeId()))
+				if( DeviceTypesFuncs.isLoadProfile1Channel(paoType) ||
+					DeviceTypesFuncs.isLoadProfile3Channel(paoType) ||
+					DeviceTypesFuncs.isLoadProfile4Channel(paoType))
 					CAT_LP_BASE_DEVTYPES.add(paoType);
 			}
 		}
@@ -414,7 +414,7 @@ public class CommandCategory
         {
             CAT_CBC_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-                if( DeviceTypesFuncs.isCBCOneWay(paoType.getDeviceTypeId()) )
+                if( DeviceTypesFuncs.isCBCOneWay(paoType) )
                     CAT_CBC_BASE_DEVTYPES.add(paoType);
             }
             CAT_CBC_BASE_DEVTYPES.add(PaoType.CAPBANK);
@@ -428,7 +428,7 @@ public class CommandCategory
         {
             CAT_CBC_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-                if( DeviceTypesFuncs.isCBCTwoWay(paoType.getDeviceTypeId()) )
+                if( DeviceTypesFuncs.isCBCTwoWay(paoType) )
                     CAT_CBC_BASE_DEVTYPES.add(paoType);
             }
             CAT_CBC_BASE_DEVTYPES.add(PaoType.CAPBANK);
@@ -454,7 +454,7 @@ public class CommandCategory
 		{
 			CAT_DISCONNECT_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isDisconnectMCT(paoType.getDeviceTypeId()) )
+				if( DeviceTypesFuncs.isDisconnectMCT(paoType) )
 					CAT_DISCONNECT_BASE_DEVTYPES.add(paoType);
 			}
 		}
@@ -467,7 +467,7 @@ public class CommandCategory
 		{
 			CAT_MCT_4XX_SERIES_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isMCT4XX(paoType.getDeviceTypeId()) )
+				if( DeviceTypesFuncs.isMCT4XX(paoType) )
 					CAT_MCT_4XX_SERIES_DEVTYPES.add(paoType);
 			}
 		}

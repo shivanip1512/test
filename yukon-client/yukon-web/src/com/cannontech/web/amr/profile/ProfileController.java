@@ -48,7 +48,7 @@ public class ProfileController extends MultiActionController {
         boolean profileCollection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.PROFILE_COLLECTION, user);
         mav.addObject("profileCollection", profileCollection);
 
-        boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getType());
+        boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getDeviceType());
         mav.addObject("peakReportSupported", peakReportSupported);
         
         return mav;

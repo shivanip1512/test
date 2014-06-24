@@ -682,7 +682,7 @@ public void update(Instant start, Instant stop) {
 /** Send a command message to dispatch to scan paobjects (or all meters if paobjects is null)
  * at the alternate scan rate for duration of 0 secs (once).
  **/
-public void getDataNow(java.util.List paobjects)
+public void getDataNow(List<LiteYukonPAObject> paobjects)
 {
 	Multi multi = new Multi();
 
@@ -694,8 +694,8 @@ public void getDataNow(java.util.List paobjects)
 	
 	for (int i = 0; i < paobjects.size(); i++)
 	{
-		LiteYukonPAObject paobject = (LiteYukonPAObject)paobjects.get(i);
-		if(DeviceTypesFuncs.hasDeviceScanRate(paobject.getPaoType().getDeviceTypeId()))
+		LiteYukonPAObject paobject = paobjects.get(i);
+		if(DeviceTypesFuncs.hasDeviceScanRate(paobject.getPaoType()))
 		{
 			CTILogger.info("Alternate Scan Rate Command Message for DEVICE ID: " + paobject.getLiteID() + " Name: " + paobject.getPaoName());
 			Command messageCommand = new Command();
@@ -810,7 +810,7 @@ public void getDataNow(java.util.List paobjects)
 		try
 		{
 			Transaction t = Transaction.createTransaction( Transaction.UPDATE, item);
-			item = (GraphDefinition)t.execute();
+			item = t.execute();
 			
 			//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
 			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DbChangeType.UPDATE);

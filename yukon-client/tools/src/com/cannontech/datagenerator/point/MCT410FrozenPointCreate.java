@@ -44,7 +44,8 @@ public class MCT410FrozenPointCreate extends PointCreate
 	/**
 	 * @see com.cannontech.datagenerator.point.PointCreate#create()
 	 */
-	public boolean create()
+	@Override
+    public boolean create()
 	{
 		//Points are going to be added to every MCT410.
 		CTILogger.info("Starting MCT410 Frozen Point creation process...");
@@ -139,10 +140,11 @@ public class MCT410FrozenPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isDeviceValid( LiteYukonPAObject litePaobject_ )
+	@Override
+    public boolean isDeviceValid( LiteYukonPAObject litePaobject_ )
 	{
 		//All MCT410s 
-		return DeviceTypesFuncs.isMCT410(litePaobject_.getPaoType().getDeviceTypeId());
+		return DeviceTypesFuncs.isMCT410(litePaobject_.getPaoType());
 	}
 
 	/**
@@ -152,7 +154,8 @@ public class MCT410FrozenPointCreate extends PointCreate
 	 * @param pointType_ int
 	 * @return boolean
 	 */
-	public boolean isPointCreated( LitePoint lp)
+	@Override
+    public boolean isPointCreated( LitePoint lp)
 	{
 		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_PEAK_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).frozenPeakKw = false;

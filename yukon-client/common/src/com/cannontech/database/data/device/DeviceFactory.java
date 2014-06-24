@@ -38,6 +38,10 @@ import com.cannontech.database.data.port.TerminalServerSharedPortBase;
 
 public final class DeviceFactory {
 
+    /**
+     * @deprecated use {@link #createDevice(PaoType)}
+     */
+    @Deprecated
     public final static DeviceBase createDevice(int paoTypeId) {
         return createDevice(PaoType.getForId(paoTypeId));
     }

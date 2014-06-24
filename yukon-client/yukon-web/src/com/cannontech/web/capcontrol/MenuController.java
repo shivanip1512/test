@@ -173,7 +173,7 @@ public class MenuController {
         
         boolean isClosed = CapBankDevice.isInAnyCloseState(capBank);
         boolean isTwoWay = CapControlUtils.isTwoWay(cbcPaoObject);
-        boolean is702xDevice = CapControlUtils.is702xDevice(cbcPaoObject.getPaoType().getDeviceTypeId());
+        boolean is702xDevice = CapControlUtils.is702xDevice(cbcPaoObject.getPaoType());
         boolean is701xDevice = CapControlUtils.is701xDevice(cbcPaoObject);
         boolean allowFlip = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
         boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);

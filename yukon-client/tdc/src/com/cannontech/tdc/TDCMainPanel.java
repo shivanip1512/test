@@ -171,6 +171,7 @@ public TDCMainPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -616,7 +617,8 @@ private void fire_SelectClientBookMark(final String bookMark)
 	new Thread( new Runnable()
 	{
 
-		public void run()
+		@Override
+        public void run()
 		{
 			for( int o = 0; o < waitSecs ; o++)
 			{	
@@ -641,6 +643,7 @@ private void fire_SelectClientBookMark(final String bookMark)
  * Creation date: (10/3/00 2:57:02 PM)
  * @param source Object
  */
+@Override
 public void fireBookMarkSelected( Object source )
 {
 	//set our display column data for the display we are looking at
@@ -1678,6 +1681,7 @@ public void getHistoryDisplayData( Date date )
 				//javax.swing.JRadioButtonMenuItem jRadioButton = new javax.swing.JRadioButtonMenuItem();
                 JLabel pgeLabel = new JLabel()
                 {
+                    @Override
                     public String toString()
                     {
                         return getText();
@@ -1995,6 +1999,7 @@ private void initConnections() throws java.lang.Exception {
 
 	getJLabelDisplayTitle().addMouseListener(new MouseAdapter()
     {
+        @Override
         public void mouseReleased(MouseEvent e)
         {
             //if( e.isPopupTrigger() )
@@ -2291,6 +2296,7 @@ public boolean isClientDisplay()
  * @param e java.awt.event.ItemEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
 	// user code begin {1}
 	// user code end
@@ -2669,7 +2675,8 @@ private JMenuItem createAckAlarmJMenuItem( String text, Color bg, Object alarmVa
 
 	it.addActionListener( new ActionListener()
 	{
-		public void actionPerformed( ActionEvent ae )
+		@Override
+        public void actionPerformed( ActionEvent ae )
 		{
 			jMenuItemPopUpAckAlarm_ActionPerformed( ae );
 		}
@@ -2729,8 +2736,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 
 		getJMenuItemAltScanRate().setEnabled( 
 			!Display.isCoreType(getCurrentDisplay().getType())
-			&& DeviceTypesFuncs.hasDeviceScanRate(
-				PaoType.getPaoTypeId(pv.getDeviceType()) ) );		
+			&& DeviceTypesFuncs.hasDeviceScanRate(PaoType.getForDbString(pv.getDeviceType()) ) );		
 
 
 		// check to see if the point can be controlled AND its control is NOT disabled
@@ -2847,7 +2853,8 @@ private void addTagMenuItems( int selRow )
 		// tag editor
 		mi.addActionListener( new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			@Override
+            public void actionPerformed(ActionEvent e)
 			{
 				jMenutItemTag_Modify( e );
 			}
@@ -2865,6 +2872,7 @@ private void addTagMenuItems( int selRow )
  * 
  * @deprecated use new tagging system
  */
+@Deprecated
 public void jRadioButtonMenuItemAllowPt_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
@@ -3095,6 +3103,7 @@ public void jMenuItemCreateTag_ActionPerformed(java.awt.event.ActionEvent source
  * 
  * @deprecated use new tagging system
  */
+@Deprecated
 public void jRadioButtonMenuItemInhibitPt_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
@@ -3215,7 +3224,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aTDCMainPanel);
 		frame.setSize(aTDCMainPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -3233,6 +3243,7 @@ public static void main(java.lang.String[] args) {
  * @param e java.awt.event.MouseEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void mouseClicked(java.awt.event.MouseEvent e) {
 	// user code begin {1}
 	// user code end
@@ -3246,6 +3257,7 @@ public void mouseClicked(java.awt.event.MouseEvent e) {
  * @param e java.awt.event.MouseEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void mouseEntered(java.awt.event.MouseEvent e) {
 	// user code begin {1}
 	// user code end
@@ -3257,6 +3269,7 @@ public void mouseEntered(java.awt.event.MouseEvent e) {
  * @param e java.awt.event.MouseEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void mouseExited(java.awt.event.MouseEvent e) {
 	// user code begin {1}
 	// user code end
@@ -3268,6 +3281,7 @@ public void mouseExited(java.awt.event.MouseEvent e) {
  * @param e java.awt.event.MouseEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void mousePressed(java.awt.event.MouseEvent e) {
 	// user code begin {1}
 	// user code end
@@ -3283,6 +3297,7 @@ public void mousePressed(java.awt.event.MouseEvent e) {
  * @param e java.awt.event.MouseEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void mouseReleased(java.awt.event.MouseEvent e) {
 	// user code begin {1}
 	// user code end
@@ -3294,6 +3309,7 @@ public void mouseReleased(java.awt.event.MouseEvent e) {
  * @param e javax.swing.event.PopupMenuEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e) {
 	// user code begin {1}
 	// user code end
@@ -3305,6 +3321,7 @@ public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e) {
  * @param e javax.swing.event.PopupMenuEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) {
 	// user code begin {1}
 	// user code end
@@ -3316,6 +3333,7 @@ public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) {
  * @param e javax.swing.event.PopupMenuEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) {
 	// user code begin {1}
 	// user code end
@@ -3651,7 +3669,8 @@ private void setDisplayTitle(String title, Date date )
 		
 	final String titleString = new String( title );	
 	javax.swing.SwingUtilities.invokeLater( new Runnable()
-		{	public void run()
+		{	@Override
+        public void run()
 			{
 				getJLabelDisplayTitle().setText( titleString );
 			}
@@ -3754,13 +3773,14 @@ public void setTableFont( java.awt.Font newFont )
  */
 private void setTableHeaderListener() 
 {
-	javax.swing.table.JTableHeader hdr = ((javax.swing.table.JTableHeader)getDisplayTable().getTableHeader());
+	javax.swing.table.JTableHeader hdr = (getDisplayTable().getTableHeader());
 	hdr.setToolTipText("Dbl Click on a column header to sort");
 
 	// The actual listener is defined here
 	hdr.addMouseListener( new java.awt.event.MouseAdapter() 
 	{
-		public void mouseClicked(java.awt.event.MouseEvent e)
+		@Override
+        public void mouseClicked(java.awt.event.MouseEvent e)
 		{
 			if( e.getClickCount() == 2 )
 			{

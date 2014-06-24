@@ -311,7 +311,7 @@ public final class CapControlUtils {
         return retVal.isNaN() ? 0.0 : retVal.doubleValue();
     }
 
-    public static boolean isTwoWay(int type) {
+    public static boolean isTwoWay(PaoType type) {
     	return DeviceTypesFuncs.isCBCTwoWay(type);
     }   
     
@@ -332,7 +332,7 @@ public final class CapControlUtils {
         return false;
     }
 
-    public static boolean is702xDevice(int type) {
+    public static boolean is702xDevice(PaoType type) {
         return DeviceTypesFuncs.is702xDevice(type);
     }
     

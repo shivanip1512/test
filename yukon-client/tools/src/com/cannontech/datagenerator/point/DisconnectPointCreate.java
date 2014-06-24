@@ -7,6 +7,7 @@ package com.cannontech.datagenerator.point;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -29,14 +30,15 @@ public class DisconnectPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isDeviceValid(LiteYukonPAObject litePaobject_ ) {
-		int type = litePaobject_.getPaoType().getDeviceTypeId();
-	    if( DeviceTypesFuncs.isMCT4XX(type)) {
+	@Override
+    public boolean isDeviceValid(LiteYukonPAObject litePaobject_ ) {
+		PaoType paoType = litePaobject_.getPaoType();
+	    if( DeviceTypesFuncs.isMCT4XX(paoType)) {
 	        MCT400SeriesBase mct = (MCT400SeriesBase)YukonSpringHook.getBean(DBPersistentDao.class).retrieveDBPersistent(litePaobject_);
 	        if( mct.getDeviceMCT400Series().getDisconnectAddress().intValue() > -1)
 	            return true;
 	    }
-		return ( DeviceTypesFuncs.isDisconnectMCT(type) );
+		return ( DeviceTypesFuncs.isDisconnectMCT(paoType) );
 	}
 
 	/**
@@ -46,7 +48,8 @@ public class DisconnectPointCreate extends PointCreate
 	 * @param type int
 	 * @return boolean
 	 */
-	public boolean isPointCreated(LitePoint lp) {
+	@Override
+    public boolean isPointCreated(LitePoint lp) {
 		return (( lp.getPointOffset() == 1) && 
 				(lp.getPointType() == PointTypes.STATUS_POINT));
 	}
@@ -57,7 +60,8 @@ public class DisconnectPointCreate extends PointCreate
 	 * Creation date: (5/29/2001 9:13:14 AM)
 	 * @return boolean
 	 */
-	public boolean create() {
+	@Override
+    public boolean create() {
 		CTILogger.info("Starting Disconnect Point creation process...");
 	
 		Vector<LiteYukonPAObject> disconnectDevices = getDeviceVector();

@@ -143,7 +143,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
        
         // create device
         int newDeviceId = paoDao.getNextPaoId();
-        RfnBase newDevice = (RfnBase) DeviceFactory.createDevice(type.getDeviceTypeId());
+        RfnBase newDevice = (RfnBase) DeviceFactory.createDevice(type);
         newDevice.setDeviceID(newDeviceId);       
         
         if (StringUtils.isBlank(name) || !(PaoUtils.isValidPaoName(name))) {

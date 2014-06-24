@@ -26,6 +26,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
@@ -46,8 +47,8 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
     private DeviceBase currentDevice = null;
 
-    private PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
-    private DeviceUpdateService deviceUpdateService = (DeviceUpdateService) YukonSpringHook.getBean("deviceUpdateService");
+    private PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
+    private DeviceUpdateService deviceUpdateService = YukonSpringHook.getBean(DeviceUpdateService.class);
     private PointService pointService = (PointService) YukonSpringHook.getBean("devicePointService");
 
     private JList deviceJList = null;
@@ -119,8 +120,8 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
                         String text = generateDeviceChangeText(paoDefinition);
                         if (((PaoDefinition) getJListDevices().getSelectedValue()).equals(paoDefinition)) {
 
-                            int currentDeviceType = currentDevice.getPaoType().getDeviceTypeId();
-                            int newType = paoDefinition.getType().getDeviceTypeId();
+                            PaoType currentDeviceType = currentDevice.getPaoType();
+                            PaoType newType = paoDefinition.getType();
                             
                             if (DeviceTypesFuncs.isDisconnectMCT(currentDeviceType) && (DeviceTypesFuncs.isMCT410(newType)) ) {
                                 isDisconnect = true;
@@ -217,7 +218,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         // Get a list of all of the device definitions that the device can
         // change to and sort the list by device type
         List<PaoDefinition> deviceList = new ArrayList<PaoDefinition>();
-        DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+        DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
         SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
         deviceList.addAll(paoDefinitionService.getChangeablePaos(yukonDevice));
         Collections.sort(deviceList);

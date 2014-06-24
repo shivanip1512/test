@@ -23,8 +23,7 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
      * All Meters that have a device scan rate. The meters in this function are
      * take from DeviceEditorPanel.java (//3 - DeviceScanRateEditorPanel)...probably should be updated once in a while.
      */
-    public final static boolean hasDeviceScanRate(int intType) {
-        PaoType paoType = PaoType.getForId(intType);
+    public final static boolean hasDeviceScanRate(PaoType paoType) {
         if (paoType.isCcu() || 
                 paoType.isTcu() || 
                 paoType.isLcu() || 
@@ -33,17 +32,17 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
                 paoType.isRepeater() || 
                 paoType.isRtu() ||
                 paoType.isIon() ||
-                intType == DNP_CBC_6510)
+                paoType == PaoType.DNP_CBC_6510)
             return true;
         else
             return false;
     }
 
-    public final static boolean isCapBankController702X(int deviceType) {
-        return (deviceType == CBC_7020 || 
-                deviceType == CBC_7022 || 
-                deviceType == CBC_7023 || 
-                deviceType == CBC_7024);
+    public final static boolean isCapBankController702X(PaoType deviceType) {
+        return (deviceType == PaoType.CBC_7020 || 
+                deviceType == PaoType.CBC_7022 || 
+                deviceType == PaoType.CBC_7023 || 
+                deviceType == PaoType.CBC_7024);
     }
 
     /**
@@ -60,8 +59,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
                 cbcType == CBC_DNP;
     }
 
-    public final static boolean isLoadProfile1Channel(int deviceType) {
-        switch (deviceType) {
+    public final static boolean isLoadProfile1Channel(PaoType paoType) {
+        switch (paoType) {
         case MCT240:
         case MCT248:
         case MCT250:
@@ -75,8 +74,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
         }
     }
 
-    public final static boolean isLoadProfile4Channel(int deviceType) {
-        switch (deviceType) {
+    public final static boolean isLoadProfile4Channel(PaoType paoType) {
+        switch (paoType) {
         case MCT318L:
         case DCT_501:
         case MCT410IL:
@@ -102,8 +101,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
         }
     }
 
-    public final static boolean isLoadProfile3Channel(int deviceType) {
-        switch (deviceType) {
+    public final static boolean isLoadProfile3Channel(PaoType paoType) {
+        switch (paoType) {
         case MCT310CT:
         case MCT310IM:
             return true;
@@ -113,8 +112,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
         }
     }
 
-    public final static boolean isLoadProfileVoltage(int deviceType) {
-        switch (deviceType) {
+    public final static boolean isLoadProfileVoltage(PaoType paoType) {
+        switch (paoType) {
         case MCT410IL:
         case MCT410CL:
         case MCT410FL:
@@ -133,8 +132,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
         }
     }
 
-    public final static boolean isMCT3xx(int deviceType) {
-        switch (deviceType) {
+    public final static boolean isMCT3xx(PaoType paoType) {
+        switch (paoType) {
         case MCT310:
         case MCT318:
         case MCT360:
@@ -153,8 +152,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
 
     }
 
-    public static boolean isMCT2XXORMCT310XX(int type) {
-        switch (type) {
+    public static boolean isMCT2XXORMCT310XX(PaoType paoType) {
+        switch (paoType) {
         case MCT210:
         case MCT213:
         case MCT240:
@@ -173,8 +172,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
 
     }
 
-    public static boolean isMCT4XX(int type) {
-        switch (type) {
+    public static boolean isMCT4XX(PaoType paoType) {
+        switch (paoType) {
         case MCT410IL:
         case MCT410CL:
         case MCT410FL:
@@ -198,8 +197,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
 
     }
 
-    public static boolean isMCT430(int type) {
-        switch (type) {
+    public static boolean isMCT430(PaoType paoType) {
+        switch (paoType) {
         case MCT430A:
         case MCT430S4:
         case MCT430SL:
@@ -210,8 +209,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
         }
     }
 
-    public static boolean isMCT410(int type) {
-        switch (type) {
+    public static boolean isMCT410(PaoType paoType) {
+        switch (paoType) {
         case MCT410IL:
         case MCT410CL:
         case MCT410FL:
@@ -223,8 +222,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
 
     }
 
-    public static boolean isMCT420(int type) {
-        switch (type) {
+    public static boolean isMCT420(PaoType paoType) {
+        switch (paoType) {
         case MCT420FL:
         case MCT420FD:
         case MCT420CL:
@@ -235,8 +234,8 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
         }
     }
 
-    public static boolean isDisconnectMCT(int type) {
-        switch (type) {
+    public static boolean isDisconnectMCT(PaoType paoType) {
+        switch (paoType) {
         case MCT213:
         case MCT310ID:
         case MCT310IDL:
@@ -257,9 +256,9 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
 
     @Deprecated
     /** use ChangeDeviceTypeService */
-    public static ICapBankController changeCBCType(String newType, ICapBankController val) {
+    public static ICapBankController changeCBCType(PaoType newType, ICapBankController val) {
         
-        String type = newType;
+        PaoType type = newType;
 
         DBPersistent oldDevice = null;
 
@@ -278,7 +277,7 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
         }
 
         // create a brand new DeviceBase object
-        val = (ICapBankController)DeviceFactory.createDevice(PaoType.getPaoTypeId(type));
+        val = (ICapBankController)DeviceFactory.createDevice(type);
 
         // set all the device specific stuff here
         ((DeviceBase) val).setDevice(((DeviceBase) oldDevice).getDevice());
@@ -347,16 +346,16 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
      * Returns true for all Disconnect MCTs and All MCTs(400series) with disconnect collar defined.
      */
     public static boolean isDisconnectMCTOrHasCollar(SimpleDevice yukonDevice) {
-        if (isDisconnectMCT(yukonDevice.getType())) {
+        if (isDisconnectMCT(yukonDevice.getDeviceType())) {
             return true;
         }
-        if (isMCT410(yukonDevice.getType()) || yukonDevice.getType() == MCT420FL) {
+        if (isMCT410(yukonDevice.getDeviceType()) || yukonDevice.getDeviceType() == PaoType.MCT420FL) {
             return DeviceMCT400Series.hasExistingDisconnectAddress(yukonDevice.getDeviceId());
         }
         return false;
     }
 
-    public static boolean isCBCTwoWay(int deviceType) {
+    public static boolean isCBCTwoWay(PaoType deviceType) {
         switch (deviceType) {
         case DNP_CBC_6510:
         case CBC_7020:
@@ -373,7 +372,7 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
         }
     }
 
-    public static boolean isCBCOneWay(int deviceType) {
+    public static boolean isCBCOneWay(PaoType deviceType) {
         switch (deviceType) {
         case CBC_7010:
         case CBC_7011:
@@ -387,7 +386,7 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
         }
     }
 
-    public static boolean is702xDevice(int deviceType) {
+    public static boolean is702xDevice(PaoType deviceType) {
         switch (deviceType) {
         case CBC_7020:
         case CBC_7022:

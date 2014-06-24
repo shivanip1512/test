@@ -107,6 +107,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         List<LitePoint> points = pointDao.getLitePoints(pointIds);
         Map<Integer, LitePoint> pointMap =
             Maps.uniqueIndex(points, new Function<LitePoint, Integer>() {
+                @Override
                 public Integer apply(LitePoint p) {
                     return p.getPointID();
                 }
@@ -115,6 +116,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         Iterable<Integer> deviceIds =
             ImmutableSet.copyOf(Iterables.transform(displayData,
                                                     new Function<DisplayData, Integer>() {
+                                                        @Override
                                                         public Integer apply(DisplayData data) {
                                                             return data.getDeviceId();
                                                         }
@@ -122,6 +124,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         List<SimpleDevice> devices = deviceDao.getYukonDeviceObjectByIds(deviceIds);
         Map<Integer, SimpleDevice> deviceMap =
             Maps.uniqueIndex(devices, new Function<SimpleDevice, Integer>() {
+                @Override
                 public Integer apply(SimpleDevice device) {
                     return device.getDeviceId();
                 }
@@ -148,7 +151,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
             cog.setManualEntry(display.hasColumn(ColumnType.POINT_VALUE)
                                && isValidTypeForManualEntry
                                && pointValue.getPointQuality() != PointQuality.Constant);
-            cog.setAltScan(DeviceTypesFuncs.hasDeviceScanRate(data.getDevice().getType()));
+            cog.setAltScan(DeviceTypesFuncs.hasDeviceScanRate(data.getDevice().getDeviceType()));
             if(pointValue.getPointType() == PointType.Analog || pointValue.getPointType() == PointType.Status){
                 cog.setManualControl(TagUtils.isControllablePoint(tags) && TagUtils.isControlEnabled(tags));
             }

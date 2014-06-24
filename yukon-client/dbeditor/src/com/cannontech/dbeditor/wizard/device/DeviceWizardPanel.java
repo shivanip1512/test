@@ -226,12 +226,12 @@ public class DeviceWizardPanel extends WizardPanel {
 
             if (devType.isIed() || devType.isMct()) {
                 getDeviceMeterNumberPanel().setValue(null);
-                if (DeviceTypesFuncs.isMCT2XXORMCT310XX(devType.getDeviceTypeId())) {
+                if (DeviceTypesFuncs.isMCT2XXORMCT310XX(devType)) {
                     // Append "10" to the address for the desired default meter number.
                     getDeviceMeterNumberPanel().setDefaultMeterNumber("10" + getDeviceNameAddressPanel().getAddress());
                 }
 
-                if (DeviceTypesFuncs.isMCT4XX(devType.getDeviceTypeId())) {
+                if (DeviceTypesFuncs.isMCT4XX(devType)) {
                     getDeviceMeterNumberPanel().setDefaultMeterNumber(""); // Default the meterNumber to nothing
                 }
                 getDeviceMeterNumberPanel().setFirstFocus();

@@ -31,6 +31,10 @@ public final class SimpleDevice implements YukonDevice {
         return paoIdentifier.getPaoType();
     }
 
+    /**
+     * @deprecated use {@link #getDeviceType()}
+     */
+    @Deprecated
     public int getType() {
         return paoIdentifier.getPaoType().getDeviceTypeId();
     }

@@ -1270,8 +1270,8 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
 
             if (paoType.isTwoWayLcr()) {
                 getIntegrityRateCheckBox().setText("Demand & Status Rate");
-            } else if (DeviceTypesFuncs.isMCT3xx(paoType.getDeviceTypeId()) || DeviceTypesFuncs.isMCT4XX(paoType.getDeviceTypeId())) {
-                if (DeviceTypesFuncs.isMCT410(paoType.getDeviceTypeId()))
+            } else if (DeviceTypesFuncs.isMCT3xx(paoType) || DeviceTypesFuncs.isMCT4XX(paoType)) {
+                if (DeviceTypesFuncs.isMCT410(paoType))
                     getIntegrityRateCheckBox().setText("Demand & Voltage Rate");
                 else
                     getIntegrityRateCheckBox().setText("Demand & Status Rate");
@@ -1316,8 +1316,8 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
             setIntegrityObjectsVisible(!(paoType == PaoType.RTUILEX || paoType == PaoType.LCU415 || paoType == PaoType.RTM));
 
             setHealthObjectsVisible(!(paoType == PaoType.DCT_501 || 
-                    DeviceTypesFuncs.isMCT3xx(paoType.getDeviceTypeId()) || 
-                    DeviceTypesFuncs.isMCT4XX(paoType.getDeviceTypeId()) || 
+                    DeviceTypesFuncs.isMCT3xx(paoType) || 
+                    DeviceTypesFuncs.isMCT4XX(paoType) || 
                     paoType == PaoType.SERIES_5_LMI || 
                     paoType == PaoType.RTU_MODBUS || 
                     paoType.isTwoWayLcr()));

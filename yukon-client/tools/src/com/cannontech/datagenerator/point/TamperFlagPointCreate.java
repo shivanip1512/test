@@ -7,6 +7,7 @@ package com.cannontech.datagenerator.point;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
@@ -27,9 +28,10 @@ public class TamperFlagPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isDeviceValid(LiteYukonPAObject litePaobject_ ) {
-		int type = litePaobject_.getPaoType().getDeviceTypeId();
-		return DeviceTypesFuncs.isMCT410(type);
+	@Override
+    public boolean isDeviceValid(LiteYukonPAObject litePaobject_ ) {
+		PaoType paoType = litePaobject_.getPaoType();
+		return DeviceTypesFuncs.isMCT410(paoType);
 	}
 
 	/**
@@ -38,7 +40,8 @@ public class TamperFlagPointCreate extends PointCreate
 	 * @param type int
 	 * @return boolean
 	 */
-	public boolean isPointCreated(LitePoint lp) {
+	@Override
+    public boolean isPointCreated(LitePoint lp) {
 		return (( lp.getPointOffset() == TAMPER_FLAG_POINT_OFFSET) && 
 				(lp.getPointType() == PointTypes.STATUS_POINT));
 	}
@@ -48,7 +51,8 @@ public class TamperFlagPointCreate extends PointCreate
 	 *  of Status points to be inserted as TamperFlag points.
 	 * @return boolean
 	 */
-	public boolean create() {
+	@Override
+    public boolean create() {
 		CTILogger.info("Starting TamperFlag Point creation process...");
 	
 		Vector<LiteYukonPAObject> tamperFlagDevices = getDeviceVector();
