@@ -19,7 +19,7 @@ public class EcobeeErrorHandler implements ResponseErrorHandler {
     @Override
     public void handleError(ClientHttpResponse response) throws IOException {
         //log the status for troubleshooting
-        log.error(response.getStatusCode() + " - " + response.getStatusText());
+        log.info(response.getStatusCode() + " - " + response.getStatusText());
     }
 
     @Override
