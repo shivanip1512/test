@@ -60,65 +60,6 @@ struct pointdata_test_helper
 };
 
 
-BOOST_FIXTURE_TEST_CASE(test_isPointDataNewInformation, pointdata_test_helper)
-{
-    unsigned i = 0;
-
-    std::string expected =
-        "000011111111111111111111" "000011111111111111111111" "000011111111111111111111" "000011111111111111111111" "000000111111111111111111" "000000111111111111111111"
-        "111111000011111111111111" "111111000011111111111111" "111111000011111111111111" "111111000011111111111111" "111111000000111111111111" "111111000000111111111111"
-        "000011000011000011111111" "000011000011000011111111" "000011000011000011111111" "000011000011000011111111" "000000000000000000111111" "000000000000000000111111"
-        "000011000011111111000011" "000011000011111111000011" "000011000011111111000011" "000011000011111111000011" "000000000000111111000000" "000000000000111111000000"
-
-        "010111010111010111010111" "101011101011101011101011" "110111110111110111110111" "111011111011111011111011" "110101110101110101110101" "111010111010111010111010"
-        "010111010111010111010111" "101011101011101011101011" "110111110111110111110111" "111011111011111011111011" "110101110101110101110101" "111010111010111010111010"
-        "010111010111010111010111" "101011101011101011101011" "110111110111110111110111" "111011111011111011111011" "110101110101110101110101" "111010111010111010111010"
-        "010111010111010111010111" "101011101011101011101011" "110111110111110111110111" "111011111011111011111011" "110101110101110101110101" "111010111010111010111010";
-
-    std::bitset<1152> results;
-
-    unsigned tags_cases[] = {
-        0,
-        TAG_POINT_DATA_TIMESTAMP_VALID };
-
-    CtiPointDataMsg pdm(17);
-    CtiDynamicPointDispatch dpd(17);
-
-    //  2 cases
-    for each( unsigned tags in tags_cases )
-    {
-        //  24 cases
-        for each( const pointdata_test_case &ptc in pointdata_test_cases )
-        {
-            pdm.setTime(ptc.timestamp);
-            pdm.setMillis(ptc.millis);
-            pdm.setQuality(ptc.quality);
-            pdm.setValue(ptc.value);
-            pdm.setTags(tags);
-
-            //  24 cases
-            for each( const pointdata_test_case &ptc2 in pointdata_test_cases )
-            {
-                //  This will be run 2 * 24 * 24 = 1152 times
-
-                dpd.getDispatch().setTimeStamp(ptc2.timestamp);
-                dpd.getDispatch().setTimeStampMillis(ptc2.millis);
-                dpd.getDispatch().setQuality(ptc2.quality);
-                dpd.getDispatch().setValue(ptc2.value);
-
-                results[i++] = CtiVanGogh::isPointDataNewInformation(pdm, dpd);
-            }
-        }
-    }
-
-    std::string results_string = results.to_string();
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        expected.begin(), expected.end(),
-        results_string.begin(), results_string.end());
-}
-
-
 BOOST_FIXTURE_TEST_CASE(test_isDuplicatePointData, pointdata_test_helper)
 {
     std::string expected =
@@ -187,6 +128,78 @@ BOOST_FIXTURE_TEST_CASE(test_isDuplicatePointData, pointdata_test_helper)
     BOOST_CHECK_EQUAL_COLLECTIONS(
         expected.begin(), expected.end(),
         results_string.begin(), results_string.end());
+}
+
+
+BOOST_AUTO_TEST_CASE( test_isPointDataNewInformation )
+{
+    //  without TAG_POINT_DATA_TIMESTAMP_VALID
+    {
+        CtiPointDataMsg msg;
+        CtiDynamicPointDispatch dpd(1729);
+
+        msg.setValue(0.0);
+        msg.setTimeWithMillis(CtiTime(1403560784), 123);
+        msg.setQuality(NormalQuality);
+
+        dpd.setPoint(msg.getTime(), msg.getMillis(), msg.getValue(), msg.getQuality(), msg.getTags());
+
+        //  equal - not new
+        BOOST_CHECK_EQUAL( false, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+
+        //  value changed
+        msg.setValue(1.0);
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        msg.setValue(0.0);
+
+        //  quality changed
+        msg.setQuality(OverflowQuality);
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+
+        //  DPD set to NonUpdatedQuality
+        dpd.setPoint(msg.getTime(), msg.getMillis(), msg.getValue(), NonUpdatedQuality, msg.getTags());
+        BOOST_CHECK_EQUAL( false, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        msg.setQuality(NonUpdatedQuality);
+        BOOST_CHECK_EQUAL( false, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+    }
+
+    //  with TAG_POINT_DATA_TIMESTAMP_VALID
+    {
+        CtiPointDataMsg msg;
+        CtiDynamicPointDispatch dpd(1729);
+
+        msg.setValue(0.0);
+        msg.setTimeWithMillis(CtiTime(1403560784), 123);
+        msg.setQuality(NormalQuality);
+        msg.setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
+
+        dpd.setPoint(msg.getTime(), msg.getMillis(), msg.getValue(), msg.getQuality(), msg.getTags());
+
+        //  equal - not new
+        BOOST_CHECK_EQUAL( false, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+
+        msg.setTime(msg.getTime().seconds() + 1);
+        //  newer time, but no value change
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        msg.setValue(1.0);
+        //  newer time with value change
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        msg.setValue(0.0);
+        msg.setTime(msg.getTime().seconds() - 1);
+
+        msg.setMillis(msg.getMillis() - 1);
+        //  different millis, no value change
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        msg.setValue(1.0);
+        //  different millis with value change
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+        msg.setValue(0.0);
+        msg.setMillis(msg.getMillis() + 1);
+
+        //  DPD set to Uninitialized
+        dpd.setPoint(msg.getTime(), msg.getMillis(), msg.getValue(), UnintializedQuality, msg.getTags());
+        BOOST_CHECK_EQUAL( true, CtiVanGogh::isPointDataNewInformation(msg, dpd) );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
