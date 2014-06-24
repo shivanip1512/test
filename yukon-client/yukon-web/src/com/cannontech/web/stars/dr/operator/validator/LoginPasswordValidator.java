@@ -74,6 +74,14 @@ public class LoginPasswordValidator extends SimpleValidator<LoginBackingBean> {
             passwordError(errors, passwordPolicyError.getFormatKey(), errorArgs.toArray());
             return;
         }
+        else if(passwordPolicyError == PasswordPolicyError.PASSWORD_USED_TOO_RECENTLY) {
+            List<Object> errorArgs = Lists.newArrayList();
+            PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteUserGroup);
+            errorArgs.add(passwordPolicy.getPasswordHistory());
+            
+            passwordError(errors, passwordPolicyError.getFormatKey(), errorArgs.toArray());
+            return;
+        }
         if (passwordPolicyError != null) {
             passwordError(errors, passwordPolicyError.getFormatKey());
             return;
