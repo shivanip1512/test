@@ -35,7 +35,7 @@ yukon.dr.ecobee = (function () {
         });
         
         $(containingDivSelector + ' .f-time-label').text(_timeFormatter.formatTime(value, 0));
-    },
+    };
     
     mod = null;
 
@@ -44,12 +44,13 @@ yukon.dr.ecobee = (function () {
          * Initialize ecobee module: time slider and initialize value for time label.
          */
         init: function () {
-            _setupSlider('#ecobee-download-schedule', '#ecobee-download-time');
+
+            var _originalErrorCheckTime = $('#ecobee-error-check-time').val(),
+                _originalCollectionTime = $('#ecobee-data-collection-time').val();
+
             _setupSlider('#ecobee-data-collection-schedule', '#ecobee-data-collection-time');
             _setupSlider('#ecobee-error-check-schedule', '#ecobee-error-check-time');
 
-            $('#ecobee-download-schedule .f-time-label').html(_timeFormatter.formatTime($('#ecobee-download-time').val(), 0));
-            
             $(document).on('yukon.dr.ecobee.download.settings.load', function (ev) {
                 // initialize the date/time pickers
                 yukon.ui.initDateTimePickers().ancestorInit('#ecobee-download-popup');
@@ -204,6 +205,15 @@ yukon.dr.ecobee = (function () {
                 })
                 .fail(function(jqXHR, textStatus, errorThrown) {
                 });
+            });
+            
+            $(document).on('yukon.dr.ecobee.config.load', function () {
+                // each time the configure button popup is loaded, reset the field values of the times
+                // and reinit the sliders so they accurately reflect the current settings in the database
+                $('#ecobee-error-check-time').val(_originalErrorCheckTime);
+                $('#ecobee-data-collection-time').val(_originalCollectionTime);
+                _setupSlider('#ecobee-data-collection-schedule', '#ecobee-data-collection-time');
+                _setupSlider('#ecobee-error-check-schedule', '#ecobee-error-check-time');
             });
         },
         /**

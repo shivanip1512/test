@@ -29,7 +29,13 @@
         <div class="action-area">
             <a href="<cti:url value="/dr/ecobee"/>"><i:inline key=".details"/></a>
             <cti:button nameKey="configure" popup="#ecobee-config" icon="icon-cog-edit"/>
-            <div dialog data-form id="ecobee-config" data-width="500" data-title="<cti:msg2 key=".ecobee.configure.title"/>" class="dn">
+            <div dialog
+                data-form
+                id="ecobee-config"
+                data-width="500"
+                data-title="<cti:msg2 key=".ecobee.configure.title"/>"
+                data-load-event="yukon.dr.ecobee.config.load"
+                class="dn">
                 <form:form action="ecobee/settings" method="POST" commandName="ecobeeSettings">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">

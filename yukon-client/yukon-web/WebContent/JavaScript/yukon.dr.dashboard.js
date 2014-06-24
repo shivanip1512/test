@@ -55,20 +55,26 @@ yukon.dr.dashboard = (function() {
                     ['#broadcast-config .f-email-time-slider', 24 * 60 - 15, 0, $('#rf-performance-email-time').val(), 15, '#broadcast-config .f-email-time-label', '#rf-performance-email-time']
                 ],
                 _io,
-                _initOpt;
+                _initOpt,
+                _initSliders = function () {
+                    for (_io = 0; _io < sliderInitOptions.length; _io += 1) {
+                        _initOpt = sliderInitOptions[_io];
+                        _sliderInit({
+                            sliderSelector: _initOpt[0],
+                            max: _initOpt[1],
+                            min: _initOpt[2],
+                            value: _initOpt[3],
+                            step: _initOpt[4],
+                            htmlSelector: _initOpt[5],
+                            timeSelector: _initOpt[6]
+                        });
+                    }
+                },
+                _originalRfCommandTime = $('#rf-performance-command-time').val(),
+                _originalRfEmailTime = $('#rf-performance-email-time').val();
 
-            for (_io = 0; _io < sliderInitOptions.length; _io += 1) {
-                _initOpt = sliderInitOptions[_io];
-                _sliderInit({
-                    sliderSelector: _initOpt[0],
-                    max: _initOpt[1],
-                    min: _initOpt[2],
-                    value: _initOpt[3],
-                    step: _initOpt[4],
-                    htmlSelector: _initOpt[5],
-                    timeSelector: _initOpt[6]
-                });
-            }
+            _initSliders();
+
             /** Setup the time label */
             $('#broadcast-config .f-time-label').html(timeFormatter.formatTime($('#rf-performance-command-time').val(), 0));
             $('#broadcast-config .f-email-time-label').html(timeFormatter.formatTime($('#rf-performance-email-time').val(), 0));
@@ -99,6 +105,13 @@ yukon.dr.dashboard = (function() {
                 $('.f-email-schedule').hide();
             }
 
+            $(document).on('yukon.dr.rf.config.load', function (ev, originalTarget) {
+                // each time the configure button popup is loaded, reset the field values of the times
+                // and reinit the sliders so they accurately reflect the current settings in the database
+                $('#rf-performance-command-time').val(_originalRfCommandTime);
+                $('#rf-performance-email-time').val(_originalRfEmailTime);
+                _initSliders();
+            });
         }
     };
     

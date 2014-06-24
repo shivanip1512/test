@@ -100,7 +100,13 @@
                         <a href="<cti:url value="/dr/rf/details"/>"><i:inline key=".details"/></a>
                         <cti:button nameKey="configure" icon="icon-cog-edit" popup="#broadcast-config"/>
                     </div>
-                    <div dialog id="broadcast-config" data-form data-width="500" data-title="<cti:msg2 key=".rfPerformance.configure.title"/>" class="dn">
+                    <div dialog
+                        id="broadcast-config"
+                        data-form
+                        data-width="500"
+                        data-title="<cti:msg2 key=".rfPerformance.configure.title"/>"
+                        data-load-event="yukon.dr.rf.config.load"
+                        class="dn">
                         <form:form action="rf/performance" method="POST" commandName="settings">
                             <cti:csrfToken/>
                             <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
