@@ -1,0 +1,6 @@
+1.	The clock of the machine running the fdr side must be set earlier than the clock 
+	of the fde machine or fdr will report recieving points with invalid timestamps.
+	
+2.	Windows built in firewall stops communication between both sides.
+
+3.	In jdk 1.4.2 menu items are overdrawn by the scrollpane(Heavyweight vs Lightweight problem). Use jdk 1.4.1.
