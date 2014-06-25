@@ -12,6 +12,7 @@ import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHe
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class RfnOutstationPortAlarmEventArchiveRequestProcessor extends RfnEventConditionDataProcessorHelper
@@ -25,12 +26,11 @@ public class RfnOutstationPortAlarmEventArchiveRequestProcessor extends RfnEvent
                  + " port type: " + getEventDataWithType(event, RfnConditionDataType.PORT_TYPE)
                  + " locked for " + getEventDataWithType(event, RfnConditionDataType.PORT_LOCKED_MINUTES) + "minutes");
         
-        Long lockedMinutes = (Long) getEventDataWithType(event, RfnConditionDataType.PORT_LOCKED_MINUTES);
         rfnMeterEventService.processAttributePointData(device, 
                                                        pointDatas, 
                                                        BuiltInAttribute.OUTSTATION_DNP3_SERCOMM_LOCKED, 
                                                        event.getTimeStamp(), 
-                                                       lockedMinutes);
+                                                       EventStatus.ACTIVE.getRawState());
     }
     
     @Override

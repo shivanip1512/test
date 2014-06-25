@@ -12,6 +12,7 @@ import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHe
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class RfnDNP3AddressChangedEventArchiveRequestProcessor extends RfnEventConditionDataProcessorHelper
@@ -25,12 +26,11 @@ public class RfnDNP3AddressChangedEventArchiveRequestProcessor extends RfnEventC
                 + " from: " + getEventDataWithType(event, RfnConditionDataType.OLD_DNP3_ADDRESS)
                 + " to: " + getEventDataWithType(event, RfnConditionDataType.NEW_DNP3_ADDRESS));
         
-        Integer newAddress = (Integer) getEventDataWithType(event, RfnConditionDataType.NEW_DNP3_ADDRESS);
         rfnMeterEventService.processAttributePointData(device, 
                                                        pointDatas, 
                                                        BuiltInAttribute.DNP3_ADDRESS_CHANGED, 
                                                        event.getTimeStamp(), 
-                                                       newAddress);
+                                                       EventStatus.ACTIVE.getRawState());
     }
     
     @Override
