@@ -264,7 +264,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_serial)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign serial 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
@@ -346,7 +346,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_geo)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign geo 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
@@ -392,7 +392,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_substation)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign sub 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
@@ -484,7 +484,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_zip)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign zip 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
@@ -535,7 +535,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_uda)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign uda 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
@@ -581,7 +581,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_program)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign program 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
@@ -632,7 +632,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_splinter)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign splinter 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
@@ -673,6 +673,18 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_splinter)
     {
         CtiCommandParser    parse( "putconfig xcom assign splinter 4000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+    }
+}
+
+
+// Example command given from YUK-12764
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_manual_config_zero_address)
+{
+    CtiProtocolExpresscom   xcom;
+
+    {
+        CtiCommandParser    parse( "putconfig xcom assign p 3,0,0 load 1,2,3 update serial 404850" );
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 }
 
@@ -765,7 +777,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_geo)
 
     {
         CtiCommandParser    parse( "putconfig xcom target geo 1 assign geo 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
     }
 
     {
@@ -816,7 +828,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_substation)
 
     {
         CtiCommandParser    parse( "putconfig xcom target sub 1 assign sub 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
     }
 
     {
@@ -920,7 +932,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_zip)
 
     {
         CtiCommandParser    parse( "putconfig xcom target zip 1 assign zip 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
     }
 
     {
@@ -971,7 +983,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_uda)
 
     {
         CtiCommandParser    parse( "putconfig xcom target uda 1 assign uda 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
     }
 
     {
@@ -1022,7 +1034,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_program)
 
     {
         CtiCommandParser    parse( "putconfig xcom target program 1 assign program 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
     }
 
     {
@@ -1078,7 +1090,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_splinter)
 
     {
         CtiCommandParser    parse( "putconfig xcom target splinter 1 assign splinter 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , BADPARAM);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
     }
 
     {
