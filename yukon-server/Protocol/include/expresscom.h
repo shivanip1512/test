@@ -265,7 +265,8 @@ private:
     INT configurePreferredChannels(CtiCommandParser &parse);
     INT priority(BYTE priority);
 
-    bool validateAddress(const unsigned int address, const AddressRanges minimum, const AddressRanges maximum, const bool zeroValid = false);
+    static bool validateAddress(const unsigned int address, const AddressRanges minimum, const AddressRanges maximum);
+    static bool validateAddressWithZero(const unsigned int address, const AddressRanges minimum, const AddressRanges maximum);
     bool validateParseAddressing(const CtiCommandParser &parse);
     static int tierOf(std::string btp_alert_level);
 

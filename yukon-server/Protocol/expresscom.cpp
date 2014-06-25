@@ -79,10 +79,16 @@ CtiProtocolExpresscom& CtiProtocolExpresscom::operator=(const CtiProtocolExpress
 
 bool CtiProtocolExpresscom::validateAddress(const unsigned int address,
                                             const AddressRanges minimum,
-                                            const AddressRanges maximum,
-                                            const bool zeroValid)
+                                            const AddressRanges maximum)
 {
-    return (minimum <= address && address <= maximum) || (zeroValid && address == 0);
+    return (minimum <= address && address <= maximum);
+}
+
+bool CtiProtocolExpresscom::validateAddressWithZero(const unsigned int address,
+                                                    const AddressRanges minimum,
+                                                    const AddressRanges maximum)
+{
+    return (address == 0) || validateAddress(address, minimum, maximum);
 }
 
 INT CtiProtocolExpresscom::addAddressing( UINT    serial,
@@ -2726,12 +2732,17 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
         we want to allow a 0 for any of the address parameters (except spid).
         We still want to disallow 0 addressing for control commands.
     */
-    const bool allowZeroAddress = (parse.isKeyValid("xcgenericaddress") || parse.isKeyValid("xcaddress"));
+    bool (*addressValidator)(const unsigned int  address,
+                             const AddressRanges minimum,
+                             const AddressRanges maximum)
+        = (parse.isKeyValid("xcgenericaddress") || parse.isKeyValid("xcaddress"))
+            ? validateAddressWithZero
+            : validateAddress;
 
     if(parse.isKeyValid(serial_))
     {
         address = parse.getiValue(serial_, 0);
-        valid &= validateAddress(address, SerialMin, SerialMax, allowZeroAddress);
+        valid &= addressValidator(address, SerialMin, SerialMax);
 
         // The call to strtoul() that parsed the original command line entered serial number returns
         // UINT_MAX if it encounters an error.  Unfortunately UINT_MAX is a valid serial number, so we
@@ -2767,13 +2778,13 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     if(parse.isKeyValid(xc_serial_))
     {
         address = parse.getiValue(xc_serial_, 0);
-        valid &= validateAddress(address, SerialMin, SerialMax, allowZeroAddress);
+        valid &= addressValidator(address, SerialMin, SerialMax);
     }
 
     if(parse.isKeyValid(xca_serial_target_))
     {
         address = parse.getiValue(xca_serial_target_, 0);
-        valid &= validateAddress(address, SerialMin, SerialMax, allowZeroAddress);
+        valid &= addressValidator(address, SerialMin, SerialMax);
     }
 
     static const string xc_spid_("xc_spid");
@@ -2805,19 +2816,19 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     if(parse.isKeyValid(xc_geo_))
     {
         address = parse.getiValue(xc_geo_, 0);
-        valid &= validateAddress(address, GeoMin, GeoMax, allowZeroAddress);
+        valid &= addressValidator(address, GeoMin, GeoMax);
     }
 
     if(parse.isKeyValid(xca_geo_))
     {
         address = parse.getiValue(xca_geo_, 0);
-        valid &= validateAddress(address, GeoMin, GeoMax, allowZeroAddress);
+        valid &= addressValidator(address, GeoMin, GeoMax);
     }
 
     if(parse.isKeyValid(xca_geo_target_))
     {
         address = parse.getiValue(xca_geo_target_, 0);
-        valid &= validateAddress(address, GeoMin, GeoMax, allowZeroAddress);
+        valid &= addressValidator(address, GeoMin, GeoMax);
     }
 
     static const string xc_sub_("xc_sub");
@@ -2827,19 +2838,19 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     if(parse.isKeyValid(xc_sub_))
     {
         address = parse.getiValue(xc_sub_, 0);
-        valid &= validateAddress(address, SubstationMin, SubstationMax, allowZeroAddress);
+        valid &= addressValidator(address, SubstationMin, SubstationMax);
     }
 
     if(parse.isKeyValid(xca_sub_))
     {
         address = parse.getiValue(xca_sub_, 0);
-        valid &= validateAddress(address, SubstationMin, SubstationMax, allowZeroAddress);
+        valid &= addressValidator(address, SubstationMin, SubstationMax);
     }
 
     if(parse.isKeyValid(xca_sub_target_))
     {
         address = parse.getiValue(xca_sub_target_, 0);
-        valid &= validateAddress(address, SubstationMin, SubstationMax, allowZeroAddress);
+        valid &= addressValidator(address, SubstationMin, SubstationMax);
     }
 
     static const string xc_feeder_("xc_feeder");
@@ -2849,19 +2860,19 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     if(parse.isKeyValid(xc_feeder_))
     {
         address = parse.getiValue(xc_feeder_, 0);
-        valid &= validateAddress(address, FeederMin, FeederMax, allowZeroAddress);
+        valid &= addressValidator(address, FeederMin, FeederMax);
     }
 
     if(parse.isKeyValid(xca_feeder_))
     {
         address = parse.getiValue(xca_feeder_, 0);
-        valid &= validateAddress(address, FeederMin, FeederMax, allowZeroAddress);
+        valid &= addressValidator(address, FeederMin, FeederMax);
     }
 
     if(parse.isKeyValid(xca_feeder_target_))
     {
         address = parse.getiValue(xca_feeder_target_, 0);
-        valid &= validateAddress(address, FeederMin, FeederMax, allowZeroAddress);
+        valid &= addressValidator(address, FeederMin, FeederMax);
     }
 
     static const string xc_zip_("xc_zip");
@@ -2871,19 +2882,19 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     if(parse.isKeyValid(xc_zip_))
     {
         address = parse.getiValue(xc_zip_, 0);
-        valid &= validateAddress(address, ZipMin, ZipMax, allowZeroAddress);
+        valid &= addressValidator(address, ZipMin, ZipMax);
     }
 
     if(parse.isKeyValid(xca_zip_))
     {
         address = parse.getiValue(xca_zip_, 0);
-        valid &= validateAddress(address, ZipMin, ZipMax, allowZeroAddress);
+        valid &= addressValidator(address, ZipMin, ZipMax);
     }
 
     if(parse.isKeyValid(xca_zip_target_))
     {
         address = parse.getiValue(xca_zip_target_, 0);
-        valid &= validateAddress(address, ZipMin, ZipMax, allowZeroAddress);
+        valid &= addressValidator(address, ZipMin, ZipMax);
     }
 
     static const string xc_uda_("xc_uda");
@@ -2893,19 +2904,19 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     if(parse.isKeyValid(xc_uda_))
     {
         address = parse.getiValue(xc_uda_, 0);
-        valid &= validateAddress(address, UserMin, UserMax, allowZeroAddress);
+        valid &= addressValidator(address, UserMin, UserMax);
     }
 
     if(parse.isKeyValid(xca_uda_))
     {
         address = parse.getiValue(xca_uda_, 0);
-        valid &= validateAddress(address, UserMin, UserMax, allowZeroAddress);
+        valid &= addressValidator(address, UserMin, UserMax);
     }
 
     if(parse.isKeyValid(xca_uda_target_))
     {
         address = parse.getiValue(xca_uda_target_, 0);
-        valid &= validateAddress(address, UserMin, UserMax, allowZeroAddress);
+        valid &= addressValidator(address, UserMin, UserMax);
     }
 
     static const string xc_program_("xc_program");
@@ -2915,7 +2926,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     if(parse.isKeyValid(xc_program_))
     {
         address = parse.getiValue(xc_program_, 0);
-        valid &= validateAddress(address, ProgramMin, ProgramMax, allowZeroAddress);
+        valid &= addressValidator(address, ProgramMin, ProgramMax);
     }
 
     if(parse.isKeyValid("xcgenericaddress"))    // We have a single value in the parse numeric field
@@ -2923,7 +2934,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
         if(parse.isKeyValid(xca_program_))
         {
             address = parse.getiValue(xca_program_, 0);
-            valid &= validateAddress(address, ProgramMin, ProgramMax, allowZeroAddress);
+            valid &= addressValidator(address, ProgramMin, ProgramMax);
         }
     }
     else if(parse.isKeyValid("xcaddress"))      // We have a (potentially comma seperated) string value.
@@ -2940,7 +2951,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
             if( !current_program->empty() )
             {
                 address = atoi(current_program->c_str());
-                valid &= validateAddress(address, ProgramMin, ProgramMax, allowZeroAddress);
+                valid &= addressValidator(address, ProgramMin, ProgramMax);
             }
         }
     }
@@ -2948,7 +2959,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     if(parse.isKeyValid(xca_program_target_))
     {
         address = parse.getiValue(xca_program_target_, 0);
-        valid &= validateAddress(address, ProgramMin, ProgramMax, allowZeroAddress);
+        valid &= addressValidator(address, ProgramMin, ProgramMax);
     }
 
     static const string xc_splinter_("xc_splinter");
@@ -2958,7 +2969,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     if(parse.isKeyValid(xc_splinter_))
     {
         address = parse.getiValue(xc_splinter_, 0);
-        valid &= validateAddress(address, SplinterMin, SplinterMax, allowZeroAddress);
+        valid &= addressValidator(address, SplinterMin, SplinterMax);
     }
 
     if(parse.isKeyValid("xcgenericaddress"))    // We have a single value in the parse numeric field
@@ -2966,7 +2977,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
         if(parse.isKeyValid(xca_splinter_))
         {
             address = parse.getiValue(xca_splinter_, 0);
-            valid &= validateAddress(address, SplinterMin, SplinterMax, allowZeroAddress);
+            valid &= addressValidator(address, SplinterMin, SplinterMax);
         }
     }
     else if(parse.isKeyValid("xcaddress"))      // We have a (potentially comma seperated) string value.
@@ -2983,7 +2994,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
             if( !current_splinter->empty() )
             {
                 address = atoi(current_splinter->c_str());
-                valid &= validateAddress(address, SplinterMin, SplinterMax, allowZeroAddress);
+                valid &= addressValidator(address, SplinterMin, SplinterMax);
             }
         }
     }
@@ -2991,7 +3002,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     if(parse.isKeyValid(xca_splinter_target_))
     {
         address = parse.getiValue(xca_splinter_target_, 0);
-        valid &= validateAddress(address, SplinterMin, SplinterMax, allowZeroAddress);
+        valid &= addressValidator(address, SplinterMin, SplinterMax);
     }
 
     return valid;
