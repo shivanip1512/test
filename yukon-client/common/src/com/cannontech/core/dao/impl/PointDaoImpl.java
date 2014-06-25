@@ -745,7 +745,9 @@ public class PointDaoImpl implements PointDao {
         for (Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : definitionMap.entrySet()) {
             AttributeDefinition attributeDefinition = entry.getValue().get(attribute);
             
-            if (attributeDefinition == null) continue;
+            if (attributeDefinition == null) {
+                continue;
+            }
             
             PointIdentifier pointIdentifier = attributeDefinition.getPointTemplate().getPointIdentifier();
             typesByPointIdentifier.put(pointIdentifier, entry.getKey());
@@ -861,6 +863,7 @@ public class PointDaoImpl implements PointDao {
         int pointOffset = rs.getInt("PointOffset");
         int stateGroupId = rs.getInt("StateGroupId");
         String formula = rs.getString("Formula");
+        int decimalDigits = rs.getInt("DecimalDigits");  //  0 if null
         int uomId = rs.getInt("uomId");
 
         if (rs.wasNull()) { // if uomid is null, set it to an INVALID int
@@ -887,6 +890,10 @@ public class PointDaoImpl implements PointDao {
         } else if (pointType == PointType.PulseAccumulator || pointType == PointType.DemandAccumulator) {
             lp.setMultiplier(rs.getNullableDouble("accumulatorMultiplier"));
             lp.setDataOffset(rs.getNullableDouble("accumulatorOffset"));
+        }
+        
+        if (decimalDigits != 0) {
+            lp.setDecimalDigits(decimalDigits);
         }
 
         return lp;
