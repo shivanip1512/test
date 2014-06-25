@@ -12,6 +12,7 @@ public class LitePoint extends LiteBase {
     private int pointOffset;
     private int stateGroupID;
     private int uofmID = -1;
+    private int decimalDigits;
     private Double multiplier;
     private Double dataOffset;
 
@@ -156,6 +157,14 @@ public class LitePoint extends LiteBase {
 
     public void setUofmID(int i) {
         uofmID = i;
+    }
+
+    public int getDecimalDigits() {
+        return decimalDigits;
+    }
+
+    public void setDecimalDigits(int decimalDigits) {
+        this.decimalDigits = decimalDigits;
     }
 
     public long getTags() {

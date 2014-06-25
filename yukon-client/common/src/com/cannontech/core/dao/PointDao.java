@@ -27,6 +27,7 @@ public interface PointDao {
     String litePointSql = 
         "SELECT " +
                 "P.POINTID, POINTNAME, POINTTYPE, P.PAOBJECTID, POINTOFFSET, STATEGROUPID, " +
+                "PU.DecimalDigits, " +
                 "UM.FORMULA, UM.UOMID, " +
                 "PA.MULTIPLIER AnalogMultiplier, PA.DATAOFFSET AnalogOffset, " +
                 "PAC.MULTIPLIER AccumulatorMultiplier, PAC.DATAOFFSET AccumulatorOffset " +
@@ -40,6 +41,7 @@ public interface PointDao {
         "SELECT " +
                 "YPO.PAOBJECTID, YPO.TYPE, " +
                 "P.POINTID, POINTNAME, POINTTYPE, POINTOFFSET, STATEGROUPID, " +
+                "PU.DecimalDigits, " +
                 "UM.FORMULA, UM.UOMID, " +
                 "PA.MULTIPLIER AnalogMultiplier, PA.DATAOFFSET AnalogOffset, " +
                 "PAC.MULTIPLIER AccumulatorMultiplier, PAC.DATAOFFSET AccumulatorOffset " +

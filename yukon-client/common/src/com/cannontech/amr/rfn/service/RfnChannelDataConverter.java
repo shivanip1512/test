@@ -76,14 +76,20 @@ public class RfnChannelDataConverter {
         RfnDevice rfnDevice = reading.getRfnDevice();
         
         for (ChannelData channelData : allChannelData) {
-            LogHelper.debug(log, "Processing %s for %s", channelData, rfnDevice);
+            if (log.isDebugEnabled()) {
+                log.debug("Processing " + channelData + " for " + rfnDevice);
+            }
             ChannelDataStatus status = channelData.getStatus();
             if (status == null) {
-                LogHelper.debug(log, "Received null status for channelData, skipping");
+                if (log.isDebugEnabled()) {
+                    log.debug("Received null status for channelData, skipping");
+                }
                 continue;
             }
             if (!status.isOk()) {
-                LogHelper.debug(log, "Received status of %s for channelData, skipping", status);
+                if (log.isDebugEnabled()) {
+                    log.debug("Received status of " + status + " for channelData, skipping");
+                }
                 continue;
             }
             
@@ -92,14 +98,18 @@ public class RfnChannelDataConverter {
                 log.debug("No PointValueHandler for this channelData");
                 continue;
             }
-            LogHelper.debug(log, "Got PointValueHandler %s", pointValueHandler);
+            if (log.isDebugEnabled()) {
+                log.debug("Got PointValueHandler " + pointValueHandler);
+            }
             
             PaoPointIdentifier ppi = pointValueHandler.getPaoPointIdentifier();
             LitePoint point;
             try {
                 point = pointDao.getLitePoint(ppi);
             } catch (NotFoundException e) {
-                LogHelper.debug(log, "Unable to find point for channelData: %s", channelData);
+                if (log.isDebugEnabled()) {
+                    log.debug("Unable to find point for channelData: " + channelData);
+                }
                 continue;
             }
             
@@ -116,6 +126,10 @@ public class RfnChannelDataConverter {
             if (dataOffset != null) {
                 value += point.getDataOffset();
             }
+            int meterDigits = point.getDecimalDigits();
+            if (meterDigits > 0) {
+                value %= Math.pow(10, meterDigits);
+            }
             pointData.setValue(value);
             if (channelData instanceof DatedChannelData) {
                 DatedChannelData dated = (DatedChannelData)channelData;
@@ -126,7 +140,9 @@ public class RfnChannelDataConverter {
             pointData.setType(ppi.getPointIdentifier().getPointType().getPointTypeId());
             pointData.setTagsPointMustArchive(true); // temporary solution
             
-            LogHelper.debug(log, "PointData converted: %s", pointData);
+            if (log.isDebugEnabled()) {
+                log.debug("PointData converted: " + pointData);
+            }
             
             toArchive.add(pointData);
             
