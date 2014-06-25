@@ -16,6 +16,10 @@
 #include "dnp_object_time.h"
 #include "dnp_object_internalindications.h"
 
+#include "std_helper.h"
+
+#include <boost/assign/list_of.hpp>
+
 using std::endl;
 using std::string;
 
@@ -452,7 +456,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                         const BinaryOutputControl *boc = reinterpret_cast<const BinaryOutputControl *>(od.object);
 
                         //  if the select went successfully, transition to operate
-                        if( _command == Command_SetDigitalOut_SBO_Select && boc->getStatus() == BinaryOutputControl::Status_RequestAccepted )
+                        if( _command == Command_SetDigitalOut_SBO_Select && boc->getStatus() == BinaryOutputControl::Status_Success )
                         {
                             if( !_command_parameters.empty() )
                             {
@@ -958,23 +962,34 @@ bool DNPInterface::isTransactionComplete( void ) const
 }
 
 
+const std::map<int, const char *> ControlResultStrings = boost::assign::map_list_of
+        (BinaryOutputControl::Status_Success,           "Request accepted, initiated, or queued.")
+        (BinaryOutputControl::Status_Timeout,           "Request not accepted because the operate message was received after the arm timer timed out. The arm timer was started when the select operation for the same point was received.")
+        (BinaryOutputControl::Status_NoSelect,          "Request not accepted because no previous matching select request exists. (An operate message was sent to activate an output that was not previously armed with a matching select message.)")
+        (BinaryOutputControl::Status_FormatError,       "Request not accepted because there were formatting errors in the control request.")
+        (BinaryOutputControl::Status_NotSupported,      "Request not accepted because a control operation is not supported for this point.")
+        (BinaryOutputControl::Status_AlreadyActive,     "Request not accepted, because the control queue is full or the point is already active.")
+        (BinaryOutputControl::Status_HardwareError,     "Request not accepted because of control hardware problems.")
+        (BinaryOutputControl::Status_Local,             "Request not accepted because Local/Remote switch is in Local position.")
+        (BinaryOutputControl::Status_TooManyObjs,       "Request not accepted because too many objects appeared in the same request.")
+        (BinaryOutputControl::Status_NotAuthorized,     "Request not accepted because of insufficient authorization.")
+        (BinaryOutputControl::Status_AutomationInhibit, "Request not accepted because it was inhibited by a local automation process.")
+        (BinaryOutputControl::Status_ProcessingLimited, "Request not accepted because the device cannot process any more activities than are presently in progress.")
+        (BinaryOutputControl::Status_OutOfRange,        "Request not accepted because the value is outside the acceptable range permitted for this point.")
+        (BinaryOutputControl::Status_NonParticipating,  "Outstation shall not issue or perform the control operation.")
+        (BinaryOutputControl::Status_Undefined,         "Request not accepted because of some other undefined reason.")
+        ;
+
 const char *DNPInterface::getControlResultString( int result_status ) const
 {
-    const char *retVal;
+    const boost::optional<const char *> controlResultString = mapFind(ControlResultStrings, result_status);
 
-    switch( result_status )
+    if( ! controlResultString )
     {
-        case BinaryOutputControl::Status_RequestAccepted:        retVal = ControlResultStr_RequestAccepted;        break;
-        case BinaryOutputControl::Status_ArmTimeout:             retVal = ControlResultStr_ArmTimeout;             break;
-        case BinaryOutputControl::Status_NoSelect:               retVal = ControlResultStr_NoSelect;               break;
-        case BinaryOutputControl::Status_FormattingError:        retVal = ControlResultStr_FormattingError;        break;
-        case BinaryOutputControl::Status_PointNotControllable:   retVal = ControlResultStr_PointNotControllable;   break;
-        case BinaryOutputControl::Status_QueueFullPointActive:   retVal = ControlResultStr_QueueFullPointActive;   break;
-        case BinaryOutputControl::Status_HardwareError:          retVal = ControlResultStr_HardwareError;          break;
-        default:                                                 retVal = ControlResultStr_InvalidStatus;          break;
+        return "Unknown error code (Reserved for future use.)";
     }
 
-    return retVal;
+    return *controlResultString;
 }
 
 
@@ -1218,15 +1233,6 @@ void DNPSlaveInterface::setOptions( int options, int seqNumber )
     Inherited::setOptions(options);
     getApplicationLayer().setSequenceNumber(seqNumber);
 }
-
-const char * const DNPInterface::ControlResultStr_RequestAccepted      = "Request accepted";
-const char * const DNPInterface::ControlResultStr_ArmTimeout           = "Operate received after select timeout";
-const char * const DNPInterface::ControlResultStr_NoSelect             = "Operate without select";
-const char * const DNPInterface::ControlResultStr_FormattingError      = "Format error(s) in control";
-const char * const DNPInterface::ControlResultStr_PointNotControllable = "Control not supported on this point";
-const char * const DNPInterface::ControlResultStr_QueueFullPointActive = "Queue full, or point already active";
-const char * const DNPInterface::ControlResultStr_HardwareError        = "Control hardware problems";
-const char * const DNPInterface::ControlResultStr_InvalidStatus        = "Unknown/undefined error";
 
 }
 }

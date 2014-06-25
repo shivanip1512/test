@@ -2301,4 +2301,231 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
+{
+    Cti::Protocol::DNPInterface dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(502, 1000);
+    dnp.setName("Test DNP device");
+
+    Cti::Protocol::DNPInterface::output_point op;
+
+    op.dout.control    = Cti::Protocol::DNP::BinaryOutputControl::PulseOn;
+    op.dout.trip_close = Cti::Protocol::DNP::BinaryOutputControl::Close;
+    op.dout.on_time = 0;
+    op.dout.off_time = 0;
+    op.dout.queue = false;
+    op.dout.clear = false;
+    op.dout.count = 1;
+
+    op.control_offset = 1;
+    op.type = Cti::Protocol::DNPInterface::DigitalOutputPointType;
+    op.expiration = ~0;
+
+    dnp.setCommand(Cti::Protocol::DNPInterface::Command_SetDigitalOut_Direct, op);
+
+    CtiXfer xfer;
+
+    {
+        BOOST_CHECK_EQUAL(NoError, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        byte_buffer request;
+        request <<
+            0x05, 0x64, 0x18, 0xC4, 0xF6, 0x01, 0xE8, 0x03, 0x36, 0x79,
+            0xC0, 0xC1, 0x05, 0x0C, 0x01, 0x17, 0x01, 0x00, 0x41, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0xA9,
+            0x00, 0x00, 0x00, 0xFF, 0xFF;
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+        const std::vector<int> expected(request.begin(), request.end());
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            output.begin(),
+            output.end(),
+            expected.begin(),
+            expected.end());
+    }
+    {
+        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(NoError, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+    {
+        {
+            byte_buffer response;
+            response <<
+                0x05, 0x64, 0x1A, 0x44, 0xE8, 0x03, 0xF6, 0x01, 0x20, 0xBB;
+
+            response.copy_to(xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(NoError, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(25, xfer.getInCountExpected());
+    }
+    {
+        {
+            byte_buffer response;
+            response <<
+                0xDE, 0xC3, 0x81, 0x00, 0x00, 0x0C, 0x01, 0x17, 0x01, 0x00, 0x41, 0x01, 0x00, 0x00, 0x00, 0x00, 0x09, 0xD9,
+                0x00, 0x00, 0x00, 0x00, 0x0A, 0xCA, 0x6C;
+
+            response.copy_to(xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+        Cti::Protocol::Interface::stringlist_t string_list;
+
+        dnp.getInboundStrings(string_list);
+
+        BOOST_CHECK_EQUAL(2, string_list.size());
+
+        BOOST_CHECK_EQUAL(*string_list[0],
+            "Request not accepted because it was inhibited by a local automation process.");
+        BOOST_CHECK_EQUAL(*string_list[1],
+            "");  //  no internal indications
+
+        delete_container(string_list);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
+{
+    Cti::Protocol::DNPInterface dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(502, 1000);
+    dnp.setName("Test DNP device");
+
+    Cti::Protocol::DNPInterface::output_point op;
+
+    op.dout.control    = Cti::Protocol::DNP::BinaryOutputControl::PulseOn;
+    op.dout.trip_close = Cti::Protocol::DNP::BinaryOutputControl::Close;
+    op.dout.on_time = 0;
+    op.dout.off_time = 0;
+    op.dout.queue = false;
+    op.dout.clear = false;
+    op.dout.count = 1;
+
+    op.control_offset = 1;
+    op.type = Cti::Protocol::DNPInterface::DigitalOutputPointType;
+    op.expiration = ~0;
+
+    dnp.setCommand(Cti::Protocol::DNPInterface::Command_SetDigitalOut_Direct, op);
+
+    CtiXfer xfer;
+
+    {
+        BOOST_CHECK_EQUAL(NoError, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        byte_buffer request;
+        request <<
+            0x05, 0x64, 0x18, 0xC4, 0xF6, 0x01, 0xE8, 0x03, 0x36, 0x79,
+            0xC0, 0xC1, 0x05, 0x0C, 0x01, 0x17, 0x01, 0x00, 0x41, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0xA9,
+            0x00, 0x00, 0x00, 0xFF, 0xFF;
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+        const std::vector<int> expected(request.begin(), request.end());
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            output.begin(),
+            output.end(),
+            expected.begin(),
+            expected.end());
+    }
+    {
+        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(NoError, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+    {
+        {
+            byte_buffer response;
+            response <<
+                0x05, 0x64, 0x1A, 0x44, 0xE8, 0x03, 0xF6, 0x01, 0x20, 0xBB;
+
+            response.copy_to(xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(NoError, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(25, xfer.getInCountExpected());
+    }
+    {
+        {
+            byte_buffer response;
+            response <<
+                0xDE, 0xC3, 0x81, 0x00, 0x00, 0x0C, 0x01, 0x17, 0x01, 0x00, 0x41, 0x01, 0x00, 0x00, 0x00, 0x00, 0x09, 0xD9,
+                0x00, 0x00, 0x00, 0x00, 0x04, 0x87, 0x26;
+
+            response.copy_to(xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+
+        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+        Cti::Protocol::Interface::stringlist_t string_list;
+
+        dnp.getInboundStrings(string_list);
+
+        BOOST_CHECK_EQUAL(2, string_list.size());
+
+        BOOST_CHECK_EQUAL(*string_list[0],
+            "Request not accepted because a control operation is not supported for this point.");
+        BOOST_CHECK_EQUAL(*string_list[1],
+            "");  //  no internal indications
+
+        delete_container(string_list);
+    }
+}
 BOOST_AUTO_TEST_SUITE_END()

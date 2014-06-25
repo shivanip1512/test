@@ -71,15 +71,6 @@ private:
 
 protected:
 
-    static const char * const ControlResultStr_RequestAccepted;
-    static const char * const ControlResultStr_ArmTimeout;
-    static const char * const ControlResultStr_NoSelect;
-    static const char * const ControlResultStr_FormattingError;
-    static const char * const ControlResultStr_PointNotControllable;
-    static const char * const ControlResultStr_QueueFullPointActive;
-    static const char * const ControlResultStr_HardwareError;
-    static const char * const ControlResultStr_InvalidStatus;
-
     DNP::ApplicationLayer& getApplicationLayer();
     Command getCommand();
     void addStringResults(std::string *s);

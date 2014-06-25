@@ -127,14 +127,26 @@ public:
 
     enum Status
     {
-        Status_RequestAccepted      = 0,
-        Status_ArmTimeout           = 1,
-        Status_NoSelect             = 2,
-        Status_FormattingError      = 3,
-        Status_PointNotControllable = 4,
-        Status_QueueFullPointActive = 5,
-        Status_HardwareError        = 6,
-        Status_InvalidStatus
+        Status_Success           = 0,
+        Status_Timeout           = 1,
+        Status_NoSelect          = 2,
+        Status_FormatError       = 3,
+        Status_NotSupported      = 4,
+        Status_AlreadyActive     = 5,
+        Status_HardwareError     = 6,
+        Status_Local             = 7,
+        Status_TooManyObjs       = 8,
+        Status_NotAuthorized     = 9,
+        Status_AutomationInhibit = 10,
+        Status_ProcessingLimited = 11,
+        Status_OutOfRange        = 12,
+
+        Status_ReservedMin       = 13,
+        Status_ReservedMax       = 125,
+
+        Status_NonParticipating  = 126,
+
+        Status_Undefined         = 127,
     };
 
     void setControlBlock(unsigned long onTime, unsigned long offTime, unsigned char count, ControlCode code, bool queue, bool clear, TripClose tripclose);
