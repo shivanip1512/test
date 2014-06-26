@@ -21,7 +21,8 @@ public final class RecordingInterval implements DeviceConfigurationInputEnumerat
     public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
         List<InputOption> recordingIntervals = new ArrayList<>();
 
-        for (int intervalMinutes = 15; intervalMinutes <= 120; intervalMinutes += 15) {
+        //  15m, 30m, 1h, 2h, 4h
+        for (int intervalMinutes = 15; intervalMinutes <= 240; intervalMinutes *= 2) {
             recordingIntervals.add( new InputOption( Integer.toString(intervalMinutes), 
                 durationService.formatDuration(intervalMinutes, TimeUnit.MINUTES, DurationFormat.DHMS_REDUCED, userContext)));
         }

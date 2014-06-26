@@ -297,11 +297,11 @@ public class DeviceConfigurationHelper {
         @Override
         public void validate(String path, String displayName, List<ChannelInput> values, Errors errors) {
             int interval = 0;
-            int billing = 0;
+            int midnight = 0;
             for (ChannelInput value : values) {
                 switch (value.getRead()) {
-                case BILLING :
-                    billing++;
+                case MIDNIGHT :
+                    midnight++;
                     break;
                 case INTERVAL:
                     interval++;
@@ -314,8 +314,8 @@ public class DeviceConfigurationHelper {
             if (interval > 15) {
                 errors.rejectValue(path, channelErrorBaseKey + ".reportingExceeded");
             }
-            if (billing + interval > 80) {
-                errors.rejectValue(path, channelErrorBaseKey + ".billingExceeded");
+            if (midnight + interval > 80) {
+                errors.rejectValue(path, channelErrorBaseKey + ".midnightExceeded");
             }
         }
 

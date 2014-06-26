@@ -53,7 +53,7 @@
     <entry key="yukon.web.modules.tools.configs.enum.centronDisplayItem.totalKwh">Total kWh</entry>
     <entry key="yukon.web.modules.tools.configs.enum.centronDisplayItem.netKwh">Net kWh</entry>
     <entry key="yukon.web.modules.tools.configs.enum.centronDisplayItem.deliveredKwh">Delivered kWh</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.centronDisplayItem.reverseKwh">Reverse kWh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.centronDisplayItem.receivedKwh">Received kWh</entry>
     <entry key="yukon.web.modules.tools.configs.enum.centronDisplayItem.lastIntervalKw">Last Interval kW</entry>
     <entry key="yukon.web.modules.tools.configs.enum.centronDisplayItem.peakKw">Peak kW</entry>
     <entry key="yukon.web.modules.tools.configs.enum.centronDisplayItem.peakKwDate">Peak kW Date</entry>
@@ -113,8 +113,8 @@
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled">Disconnect Display Disabled</entry>
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled.description">When true, disable the meter's disconnect display.</entry>
     
-    <entry key="yukon.web.modules.tools.configs.category.centronDisplayItems.title">Centron Display Items</entry>
-    <entry key="yukon.web.modules.tools.configs.category.centronDisplayItems.definition">Items displayed on the front panel LCD of Centron MCT and RFN devices.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.centronDisplayItems.title">Centron C2SX Display Items</entry>
+    <entry key="yukon.web.modules.tools.configs.category.centronDisplayItems.definition">Items displayed on the front panel LCD of Centron C2SX MCT and RFN devices (420 device types).</entry>
     <entry key="yukon.web.modules.tools.configs.category.centronDisplayItems.displayItem1">Display Item 1</entry>
     <entry key="yukon.web.modules.tools.configs.category.centronDisplayItems.displayItem2">Display Item 2</entry>
     <entry key="yukon.web.modules.tools.configs.category.centronDisplayItems.displayItem3">Display Item 3</entry>
@@ -299,16 +299,16 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.title">RFN Channel Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.definition">Settings for channel recording and reporting</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels">Channel Configuration</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels.helpText">Enabling Interval will report both Interval and Billing data; Enabling Billing will report only Billing data.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels.helpText">Enabling Interval will report both Interval and Midnight readings; Enabling Midnight will report only Daily Midnight readings.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes">Recording Interval</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes.description">Interval to record data internally in the meter to be returned with Interval reporting.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalHours">Reporting Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalHours.description">Interval at which to report Interval data recorded in the meter.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalMinutes">Reporting Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalMinutes.description">Interval at which to report Interval data recorded in the meter.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.reportingExceeded">Maximum of 15 Reporting channels</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.billingExceeded">Maximum of 80 Enabled channels</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.midnightExceeded">Maximum of 80 Enabled channels</entry>
 
     <entry key="yukon.web.modules.tools.configs.enum.read.INTERVAL">Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.read.BILLING">Billing</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.read.MIDNIGHT">Midnight</entry>
     <entry key="yukon.web.modules.tools.configs.enum.read.DISABLED">Disabled</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.addressing.title">MCT-430/470 Addressing</entry>

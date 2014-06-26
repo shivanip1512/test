@@ -16,7 +16,9 @@ import com.google.common.collect.ImmutableList;
 @Component
 public final class ReportingInterval implements DeviceConfigurationInputEnumeration {
 
-    private static final List<Integer> intervals = ImmutableList.of(1, 2, 3, 4, 6, 12, 24);
+    private static final List<Integer> minuteIntervals = 
+            //  15m, 30m, 1h, 2h, 4h, 6h, 12h, 1d, 2d
+            ImmutableList.of(15, 30, 60, 2*60, 4*60, 6*60, 12*60, 24*60, 2*24*60);
 
     @Autowired private DurationFormattingService durationService;
 
@@ -24,9 +26,9 @@ public final class ReportingInterval implements DeviceConfigurationInputEnumerat
     public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
         List<InputOption> recordingIntervals = new ArrayList<>();
 
-        for (int intervalHours : intervals) {
-            recordingIntervals.add( new InputOption( Integer.toString(intervalHours),
-                durationService.formatDuration(intervalHours, TimeUnit.HOURS, DurationFormat.DHMS_REDUCED, userContext)));
+        for (int interval : minuteIntervals) {
+            recordingIntervals.add( new InputOption( Integer.toString(interval),
+                durationService.formatDuration(interval, TimeUnit.MINUTES, DurationFormat.DHMS_REDUCED, userContext)));
         }
 
         return recordingIntervals;

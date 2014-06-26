@@ -30,7 +30,7 @@ public final class CentronDisplayItemEnumeration implements DeviceConfigurationI
         TOTAL_KWH("6"),
         NET_KWH("7"),
         DELIVERED_KWH("8"),
-        REVERSE_KWH("9"),
+        RECEIVED_KWH("9"),
         LAST_INTERVAL_KW("10"),
         PEAK_KW("11"),
         PEAK_KW_DATE("12"),
@@ -67,7 +67,7 @@ public final class CentronDisplayItemEnumeration implements DeviceConfigurationI
 
         @Override
         public String getFormatKey() {
-            return baseKey + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.name()) ;
+            return baseKey + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, name()) ;
         }
     }
 

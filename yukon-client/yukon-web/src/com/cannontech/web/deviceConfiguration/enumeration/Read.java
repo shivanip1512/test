@@ -21,7 +21,7 @@ public final class Read implements DeviceConfigurationInputEnumeration {
 
     public enum ReadType implements DisplayableEnum {
         INTERVAL,
-        BILLING,
+        MIDNIGHT,
         DISABLED;
 
         @Override
