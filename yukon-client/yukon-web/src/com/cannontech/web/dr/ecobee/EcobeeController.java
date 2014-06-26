@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +102,14 @@ public class EcobeeController {
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
+    private static final Comparator<EcobeeReadResult> readResultStartDateComparator = new Comparator<EcobeeReadResult>() {
+        @Override
+        public int compare(EcobeeReadResult result1, EcobeeReadResult result2) {
+            int value = result2.getStartDate().compareTo(result1.getStartDate());
+            return value;
+        }
+    };
+    
     @PostConstruct
     public void init() {
         String defaultCron = "0 0 0 * * ?";// every day at 12am
@@ -292,9 +302,10 @@ public class EcobeeController {
     @RequestMapping(value="/ecobee", method=RequestMethod.GET)
     public String details(ModelMap model, YukonUserContext userContext) {
 
-        List<String> pendingKeys = readResultsCache.getPendingKeys();
-        List<String> completedKeys = readResultsCache.getCompletedKeys();
-        Map<String, EcobeeReadResult> downloads = new HashMap<>();
+        List<String> pendingKeys = readResultsCache.getSortedPendingKeys(readResultStartDateComparator);
+        List<String> completedKeys = readResultsCache.getSortedCompletedKeys(readResultStartDateComparator);
+        //Use LinkedHashMap to maintain sorted ordering
+        Map<String, EcobeeReadResult> downloads = new LinkedHashMap<>();
         int pendingIndex;
         for (pendingIndex = 0; pendingIndex < 5 && pendingIndex < pendingKeys.size(); pendingIndex++) {
             String key = pendingKeys.get(pendingIndex);
@@ -343,13 +354,6 @@ public class EcobeeController {
             flash.setError(new YukonMessageSourceResolvable(fixIssueKey + "fixFailed"));
         }
         return "redirect:/dr/ecobee";
-    }
-
-    // TODO: remove this prior to committing - this is only for test purposes
-    @RequestMapping(value="/ecobee/runReport")
-    public String runReport() {
-        ecobeeReconciliation.runReconciliationReport();
-        return "";
     }
 
     @RequestMapping(value="/ecobee/fix-all", method=RequestMethod.GET)
@@ -406,7 +410,6 @@ public class EcobeeController {
         dataBinder.registerCustomEditor(LocalTime.class, localDateEditor);
     }
 
-    
     private ScheduledRepeatingJob getJob(YukonJobDefinition<? extends YukonTask> jobDefinition) {
         List<ScheduledRepeatingJob> activeJobs = jobManager.getNotDeletedRepeatingJobsByDefinition(jobDefinition);
         return Iterables.getOnlyElement(activeJobs);

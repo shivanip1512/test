@@ -2,6 +2,7 @@ package com.cannontech.common.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 public class RecentResultsCache<T extends Completable> {
 
@@ -26,6 +29,7 @@ public class RecentResultsCache<T extends Completable> {
     
     
     private ObjectMapper<Wrapper<T>, T> mapper = new ObjectMapper<Wrapper<T>, T>() {
+        @Override
         public T map(RecentResultsCache.Wrapper<T> from) throws ObjectMappingException {
             return from.object;
         };
@@ -71,6 +75,20 @@ public class RecentResultsCache<T extends Completable> {
         
         processLists();
         return new ArrayList<String>(completedMap.keySet());
+    }
+    
+    /**
+     * Sorts the cached completed values with the specified Comparator, then returns the keys in that order.
+     */
+    synchronized public List<String> getSortedCompletedKeys(Comparator<T> comparator) {
+        return getSortedKeys(true, comparator);
+    }
+    
+    /**
+     * Sorts the cached pending values with the specified Comparator, then returns the keys in that order.
+     */
+    synchronized public List<String> getSortedPendingKeys(Comparator<T> comparator) {
+        return getSortedKeys(false, comparator);
     }
 
     synchronized public List<String> getPendingKeys() {
@@ -135,7 +153,56 @@ public class RecentResultsCache<T extends Completable> {
             expiredKeys.add(key);
         }
     }
-
+    
+    /**
+     * Gets the completed or pending map.
+     */
+    private Map<String, Wrapper<T>> getMap(boolean completed) {
+        if (completed) {
+            return completedMap;
+        } 
+        return pendingMap;
+    }
+    
+    /**
+     * Gets the completed or pending results map, with keys and values inverted, and raw values (stripped of their
+     * wrapper).
+     */
+    private Map<T, String> getInvertedUnwrapped(boolean completed) {
+        BiMap<String, T> unwrapped = HashBiMap.create();
+        for (Map.Entry<String, Wrapper<T>> entry : getMap(completed).entrySet()) {
+            unwrapped.put(entry.getKey(), entry.getValue().object);
+        }
+        return unwrapped.inverse();
+    }
+    
+    /**
+     * Gets the completed or pending result values, ordered by the specified Comparator.
+     */
+    private List<T> getSortedValues(boolean completed, Comparator<T> comparator) {
+        List<T> unsortedList = completed ? getCompleted() : getPending();
+        List<T> sortedList = new ArrayList<>(unsortedList);
+        Collections.sort(sortedList, comparator);
+        return sortedList;
+    }
+    
+    /**
+     * Sorts the cached complete or pending values with the specified Comparator, then returns the keys in that order.
+     */
+    private List<String> getSortedKeys(boolean completed, Comparator<T> comparator) {
+        processLists();
+        
+        Map<T, String> invertedUnwrappedMap = getInvertedUnwrapped(completed);
+        List<T> sortedValues = getSortedValues(completed, comparator);
+        
+        List<String> sortedKeys = new ArrayList<>();
+        for (T value : sortedValues) {
+            String key = invertedUnwrappedMap.get(value);
+            sortedKeys.add(key);
+        }
+        return sortedKeys;
+    }
+    
     private boolean shouldCompletedBeRemoved(Wrapper<T> next) {
         
         long expirationTime = next.addTime + TimeUnit.MILLISECONDS.convert(minimumHoldMinutes, TimeUnit.MINUTES);
