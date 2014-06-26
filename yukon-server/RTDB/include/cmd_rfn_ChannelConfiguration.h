@@ -138,15 +138,10 @@ class IM_EX_DEVDB RfnChannelIntervalRecordingCommand : public RfnChannelConfigur
         CommandCode_Response = 0x7b
     };
 
-    unsigned _intervalRecordingSecondsReceived;
-    unsigned _intervalReportingSecondsReceived;
-
     unsigned char getCommandCode() const;
     unsigned char getResponseCommandCode() const;
 
-    void decodeTlvs( const TlvList& tlvs, RfnCommandResult &result, unsigned char tlv_expected );
-    void decodeChannelIntervalRecording( const Bytes &response, RfnCommandResult &result );
-    void decodeActiveConfiguration( const Bytes &response, RfnCommandResult &result );
+    virtual void decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result ) = 0;
 
 protected:
     enum
@@ -166,19 +161,9 @@ protected:
     RfnChannelIntervalRecordingCommand()
     {};
 
-    virtual unsigned char getExpectedTlvType() const = 0;
-
 public:
-    void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
-
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response );
-
-    virtual ~RfnChannelIntervalRecordingCommand()
-    {};
-
-    unsigned getIntervalRecordingSecondsReceived() const;
-    unsigned getIntervalReportingSecondsReceived() const;
 };
 
 namespace RfnChannelIntervalRecording {
@@ -194,12 +179,20 @@ class IM_EX_DEVDB SetConfigurationCommand : public RfnChannelIntervalRecordingCo
 
     unsigned char getOperation() const;
 
-    virtual unsigned char getExpectedTlvType() const;
+    virtual void decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result );
+
+    void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
+
+    const unsigned _intervalRecordingSeconds,
+                   _intervalReportingSeconds;
 
 public:
     SetConfigurationCommand( const MetricIds& metrics,
                              unsigned intervalRecordingSeconds,
                              unsigned intervalReportingSeconds );
+
+    unsigned getIntervalRecordingSeconds() const;
+    unsigned getIntervalReportingSeconds() const;
 };
 
 /**
@@ -210,7 +203,18 @@ class IM_EX_DEVDB GetConfigurationCommand : public RfnChannelIntervalRecordingCo
 {
     unsigned char getOperation() const;
 
-    virtual unsigned char getExpectedTlvType() const;
+    virtual void decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result );
+
+    void decodeChannelIntervalRecording( const Bytes &response, RfnCommandResult &result );
+
+    unsigned _intervalRecordingSecondsReceived;
+    unsigned _intervalReportingSecondsReceived;
+
+    void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
+
+public:
+    unsigned getIntervalRecordingSecondsReceived() const;
+    unsigned getIntervalReportingSecondsReceived() const;
 };
 
 /**
@@ -220,7 +224,18 @@ class IM_EX_DEVDB GetActiveConfigurationCommand : public RfnChannelIntervalRecor
 {
     unsigned char getOperation() const;
 
-    virtual unsigned char getExpectedTlvType() const;
+    virtual void decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result );
+
+    void decodeActiveConfiguration( const Bytes &response, RfnCommandResult &result );
+
+    unsigned _intervalRecordingSecondsReceived;
+    unsigned _intervalReportingSecondsReceived;
+
+    void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
+
+public:
+    unsigned getIntervalRecordingSecondsReceived() const;
+    unsigned getIntervalReportingSecondsReceived() const;
 };
 
 }

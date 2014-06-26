@@ -35,9 +35,7 @@ class RfnSetOvUvNewAlarmReportIntervalCommand;
 class RfnSetOvUvSetOverVoltageThresholdCommand;
 class RfnSetOvUvSetUnderVoltageThresholdCommand;
 class RfnRemoteDisconnectConfigurationCommand;
-class RfnGetChannelSelectionCommand;
-class RfnGetChannelSelectionFullDescriptionCommand;
-class RfnSetChannelSelectionCommand;
+class RfnChannelSelectionCommand;
 namespace RfnChannelIntervalRecording {
 class GetConfigurationCommand;
 class GetActiveConfigurationCommand;
@@ -93,9 +91,7 @@ public:
         virtual void handleCommandResult(const RfnSetOvUvSetOverVoltageThresholdCommand &)            {}
         virtual void handleCommandResult(const RfnSetOvUvSetUnderVoltageThresholdCommand &)           {}
         virtual void handleCommandResult(const RfnRemoteDisconnectConfigurationCommand &)             {}
-        virtual void handleCommandResult(const RfnGetChannelSelectionCommand &)                       {}
-        virtual void handleCommandResult(const RfnGetChannelSelectionFullDescriptionCommand &)        {}
-        virtual void handleCommandResult(const RfnSetChannelSelectionCommand &)                       {}
+        virtual void handleCommandResult(const RfnChannelSelectionCommand &)                          {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::SetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetActiveConfigurationCommand &)  {}

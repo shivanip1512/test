@@ -71,11 +71,9 @@ protected:
     int executePutConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     int executeGetConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    void handleCommandResult( const Commands::RfnSetTemperatureAlarmConfigurationCommand    & cmd );
-    void handleCommandResult( const Commands::RfnGetTemperatureAlarmConfigurationCommand    & cmd );
-    void handleCommandResult( const Commands::RfnGetChannelSelectionCommand                 & cmd );
-    void handleCommandResult( const Commands::RfnGetChannelSelectionFullDescriptionCommand  & cmd );
-    void handleCommandResult( const Commands::RfnSetChannelSelectionCommand                 & cmd );
+    void handleCommandResult( const Commands::RfnSetTemperatureAlarmConfigurationCommand  & cmd );
+    void handleCommandResult( const Commands::RfnGetTemperatureAlarmConfigurationCommand  & cmd );
+    void handleCommandResult( const Commands::RfnChannelSelectionCommand  & cmd );
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetConfigurationCommand       & cmd );
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand & cmd );
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::SetConfigurationCommand       & cmd );

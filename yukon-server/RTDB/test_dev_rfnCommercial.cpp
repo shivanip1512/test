@@ -88,6 +88,72 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_immediate_demand_freeze )
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_getconfig_install_freezeday )
+{
+    test_RfnCommercialDevice    dev;
+
+    CtiCommandParser    parse("getconfig install freezeday");
+
+    BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
+
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    {
+        Commands::RfnCommandSPtr    command = rfnRequests.front();
+
+        // execute message and check request bytes
+
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x55 )( 0x01 );
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_freezeday )
+{
+    test_RfnCommercialDevice    dev;
+
+    CtiCommandParser    parse("putconfig install freezeday 24");
+
+    BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
+
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    {
+        Commands::RfnCommandSPtr    command = rfnRequests.front();
+
+        // execute message and check request bytes
+
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x55 )( 0x01 );
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
+}
+
 /*
 BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configuration )
 {
@@ -229,9 +295,9 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                     ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
                       RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
                     ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
-                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "BILLING" )
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" )
                     ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )
-                    ( RfnStrings::ChannelConfiguration::ReportingIntervalHours,   "456" )))
+                    ( RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" )))
             ;
 
     const std::vector<int> requestMsgsExp = list_of

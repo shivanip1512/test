@@ -664,11 +664,6 @@ unsigned char RfnGetChannelSelectionFullDescriptionCommand::getExpectedTlvType()
 // Class RfnChannelIntervalRecordingCommand
 //----------------------------------------------------------------------------
 
-void RfnChannelIntervalRecordingCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
-{
-    rh.handleCommandResult( *this );
-}
-
 unsigned char RfnChannelIntervalRecordingCommand::getCommandCode() const
 {
     return CommandCode_Request;
@@ -686,90 +681,14 @@ RfnCommandResult RfnChannelIntervalRecordingCommand::decodeCommand( const CtiTim
 
     decodeHeader( response, result );
 
-    decodeTlvs( getTlvsFromBytes( Bytes( response.begin() + 3, response.end()) ), result, getExpectedTlvType() );
+    TlvList tlvs = getTlvsFromBytes( Bytes( response.begin() + 3, response.end()) );
 
-    return result;
-}
-
-void RfnChannelIntervalRecordingCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResult &result, const unsigned char tlvTypeExpected )
-{
     validate( Condition( tlvs.size() == 1, ErrorInvalidData )
             << "Unexpected TLV count (" << tlvs.size() << "), expected (1)" );
 
-    const TypeLengthValue & tlv = tlvs[0];
+    decodeTlv( tlvs[0], result );
 
-     validate( Condition( tlv.type == tlvTypeExpected, ErrorInvalidData )
-             << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)tlvTypeExpected << ")" );
-
-    switch( tlv.type )
-    {
-        case TlvType_ChannelIntervalRecording_Configuration:
-        {
-            result.description += "Channel Interval Recording Configuration:\n";
-            decodeChannelIntervalRecording( tlv.value, result );
-            break;
-        }
-        case TlvType_ChannelIntervalRecording_ActiveChannels:
-        {
-            result.description += "Channel Interval Recording Full Description:\n";
-            decodeChannelDescriptors( tlv.value, result );
-            break;
-        }
-        case TlvType_ChannelIntervalRecording_ActiveConfiguration:
-        {
-            result.description += "Channel Interval Recording Active Configuration:\n";
-            decodeActiveConfiguration( tlv.value, result );
-            break;
-        }
-    }
-}
-
-void RfnChannelIntervalRecordingCommand::decodeChannelIntervalRecording( const Bytes &response, RfnCommandResult &result )
-{
-    validate( Condition( response.size() >= 9, ErrorInvalidData )
-            << "Number of bytes for interval recording received " << response.size() << ", expected >= 9" );
-
-    unsigned offset = 0;
-
-    _intervalRecordingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
-    offset += 4;
-
-    _intervalReportingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
-    offset += 4;
-
-    result.description += "Interval Recording: " + CtiNumStr(_intervalRecordingSecondsReceived) + " seconds\n" +
-                          "Interval Reporting: " + CtiNumStr(_intervalReportingSecondsReceived) + " seconds\n";
-
-    decodeMetricsIds( Bytes(response.begin() + 8 , response.end()), result );
-}
-
-void RfnChannelIntervalRecordingCommand::decodeActiveConfiguration( const Bytes &response, RfnCommandResult &result )
-{
-    validate( Condition( response.size() >= 9, ErrorInvalidData )
-            << "Number of bytes for interval recording received " << response.size() << ", expected >= 9" );
-
-    unsigned offset = 0;
-
-    _intervalRecordingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
-    offset += 4;
-
-    _intervalReportingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
-    offset += 4;
-
-    result.description += "Interval Recording: " + CtiNumStr(_intervalRecordingSecondsReceived) + " seconds\n" +
-                          "Interval Reporting: " + CtiNumStr(_intervalReportingSecondsReceived) + " seconds\n";
-
-    decodeChannelDescriptors( Bytes(response.begin() + 8, response.end()), result );
-}
-
-unsigned RfnChannelIntervalRecordingCommand::getIntervalRecordingSecondsReceived() const
-{
-    return _intervalRecordingSecondsReceived;
-}
-
-unsigned RfnChannelIntervalRecordingCommand::getIntervalReportingSecondsReceived() const
-{
-    return _intervalReportingSecondsReceived;
+    return result;
 }
 
 namespace RfnChannelIntervalRecording {
@@ -781,9 +700,11 @@ namespace RfnChannelIntervalRecording {
 SetConfigurationCommand::SetConfigurationCommand( const MetricIds& metrics,
                                                   unsigned intervalRecordingSeconds,
                                                   unsigned intervalReportingSeconds )
+    :   _intervalRecordingSeconds(intervalRecordingSeconds),
+        _intervalReportingSeconds(intervalReportingSeconds)
 {
-    insertValue_bEndian<4> ( _setIntervalRecordingTlvPayload, intervalRecordingSeconds );
-    insertValue_bEndian<4> ( _setIntervalRecordingTlvPayload, intervalReportingSeconds );
+    insertValue_bEndian<4> ( _setIntervalRecordingTlvPayload, _intervalRecordingSeconds );
+    insertValue_bEndian<4> ( _setIntervalRecordingTlvPayload, _intervalReportingSeconds );
 
     const unsigned maxMetrics = 15;
 
@@ -812,9 +733,28 @@ unsigned char SetConfigurationCommand::getOperation() const
     return Operation_SetChannelIntervalRecordingConfiguration;
 }
 
-unsigned char SetConfigurationCommand::getExpectedTlvType() const
+void SetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result )
 {
-    return TlvType_ChannelIntervalRecording_ActiveChannels;
+    validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_ActiveChannels, ErrorInvalidData )
+             << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_ActiveChannels << ")" );
+
+    result.description += "Channel Interval Recording Full Description:\n";
+    decodeChannelDescriptors( tlv.value, result );
+}
+
+void SetConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
+{
+    rh.handleCommandResult( *this );
+}
+
+unsigned SetConfigurationCommand::getIntervalRecordingSeconds() const
+{
+    return _intervalRecordingSeconds;
+}
+
+unsigned SetConfigurationCommand::getIntervalReportingSeconds() const
+{
+    return _intervalReportingSeconds;
 }
 
 //----------------------------------------------------------------------------
@@ -826,9 +766,47 @@ unsigned char GetConfigurationCommand::getOperation() const
     return Operation_GetChannelIntervalRecordingConfiguration;
 }
 
-unsigned char GetConfigurationCommand::getExpectedTlvType() const
+void GetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result )
 {
-    return TlvType_ChannelIntervalRecording_Configuration;
+    validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_Configuration, ErrorInvalidData )
+             << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_Configuration << ")" );
+
+    result.description += "Channel Interval Recording Configuration:\n";
+    decodeChannelIntervalRecording( tlv.value, result );
+}
+
+void GetConfigurationCommand::decodeChannelIntervalRecording( const Bytes &response, RfnCommandResult &result )
+{
+    validate( Condition( response.size() >= 9, ErrorInvalidData )
+            << "Number of bytes for interval recording received " << response.size() << ", expected >= 9" );
+
+    unsigned offset = 0;
+
+    _intervalRecordingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
+    offset += 4;
+
+    _intervalReportingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
+    offset += 4;
+
+    result.description += "Interval Recording: " + CtiNumStr(_intervalRecordingSecondsReceived) + " seconds\n" +
+                          "Interval Reporting: " + CtiNumStr(_intervalReportingSecondsReceived) + " seconds\n";
+
+    decodeMetricsIds( Bytes(response.begin() + 8 , response.end()), result );
+}
+
+void GetConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
+{
+    rh.handleCommandResult( *this );
+}
+
+unsigned GetConfigurationCommand::getIntervalRecordingSecondsReceived() const
+{
+    return _intervalRecordingSecondsReceived;
+}
+
+unsigned GetConfigurationCommand::getIntervalReportingSecondsReceived() const
+{
+    return _intervalReportingSecondsReceived;
 }
 
 //----------------------------------------------------------------------------
@@ -840,9 +818,47 @@ unsigned char GetActiveConfigurationCommand::getOperation() const
     return Operation_GetChannelIntervalRecordingActiveConfiguration;
 }
 
-unsigned char GetActiveConfigurationCommand::getExpectedTlvType() const
+void GetActiveConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result )
 {
-    return TlvType_ChannelIntervalRecording_ActiveConfiguration;
+    validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_ActiveConfiguration, ErrorInvalidData )
+             << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_ActiveConfiguration << ")" );
+
+    result.description += "Channel Interval Recording Active Configuration:\n";
+    decodeActiveConfiguration( tlv.value, result );
+}
+
+void GetActiveConfigurationCommand::decodeActiveConfiguration( const Bytes &response, RfnCommandResult &result )
+{
+    validate( Condition( response.size() >= 9, ErrorInvalidData )
+            << "Number of bytes for interval recording received " << response.size() << ", expected >= 9" );
+
+    unsigned offset = 0;
+
+    _intervalRecordingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
+    offset += 4;
+
+    _intervalReportingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
+    offset += 4;
+
+    result.description += "Interval Recording: " + CtiNumStr(_intervalRecordingSecondsReceived) + " seconds\n" +
+                          "Interval Reporting: " + CtiNumStr(_intervalReportingSecondsReceived) + " seconds\n";
+
+    decodeChannelDescriptors( Bytes(response.begin() + 8, response.end()), result );
+}
+
+void GetActiveConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
+{
+    rh.handleCommandResult( *this );
+}
+
+unsigned GetActiveConfigurationCommand::getIntervalRecordingSecondsReceived() const
+{
+    return _intervalRecordingSecondsReceived;
+}
+
+unsigned GetActiveConfigurationCommand::getIntervalReportingSecondsReceived() const
+{
+    return _intervalReportingSecondsReceived;
 }
 
 } // RfnChannelIntervalRecording
