@@ -92,7 +92,7 @@
     <entry key="yukon.web.modules.tools.configs.enum.focusAlDisplayItem.firmwareVersion">Firmware Version</entry>
     
     <entry key="yukon.web.modules.tools.configs.enum.disconnectMode.onDemand">On-Demand</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.disconnectMode.demandThreshold">Demand Threshold</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.disconnectMode.demandThreshold">Load Limiting</entry>
     <entry key="yukon.web.modules.tools.configs.enum.disconnectMode.cycling">Cycling</entry>
     
     <entry key="yukon.web.modules.tools.configs.enum.reconnectType.arm">Arm</entry>
@@ -440,13 +440,13 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectDemandThreshold">Disconnect Demand Threshold</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectDemandThreshold.description">Demand threshold at which a disconnect will be triggered.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectLoadLimitConnectDelay">Disconnect Load Limit Connect Delay</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectLoadLimitConnectDelay.description">The number of minutes to delay before arming the disconnect for a reconnect.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.maxDisconnects">Max Disconnects</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.maxDisconnects.description">The maximum number of disconnect cycles. After this limit, the meter will stay disconnected and require a reconnect command before load limiting mode is reactivated. This limit is intended to prevent abuse and limit cycling damage to home appliances.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectLoadLimitConnectDelay.description">The number of minutes to delay before arming the reconnect button or automatically reconnecting the meter.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.maxDisconnects">Max Load Limiting Disconnects</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.maxDisconnects.description">The maximum number of disconnect cycles. After this limit, the meter will stay disconnected and require a reconnect command before load limiting mode can be reactivated. This limit is intended to prevent abuse and limit cycling damage to home appliances. A value of 0 disables this feature.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectMinutes">Disconnect Minutes</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectMinutes.description">When a disconnect command is issued to a meter configured for cycling disconnects, this is the number of minutes in the cycle that service will be disconnected.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectMinutes.description">When a disconnect command is issued to a meter configured for cycling disconnects, this is the number of minutes in the cycle that service will be disconnected. Valid range from 5 to 1440 minutes.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.connectMinutes">Connect Minutes</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.connectMinutes.description">When a disconnect command is issued to a meter configured for cycling disconnects, this is the number of minutes in the cycle that service will be connected.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.connectMinutes.description">When a disconnect command is issued to a meter configured for cycling disconnects, this is the number of minutes in the cycle that service will be connected. Valid range from 5 to 1440 minutes.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.title">RFN OV/UV Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.definition">Configuration parameters for the OV/UV metrology features for RFN devices.</entry>

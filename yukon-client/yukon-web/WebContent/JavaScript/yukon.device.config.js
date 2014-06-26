@@ -97,17 +97,17 @@ yukon.deviceConfig = (function () {
             valueHideMap : [
                 {
                     value : 'ON_DEMAND',
-                    hide : ['demandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects', 'disconnectMinutes', 'connectMinutes'],
+                    hide : ['disconnectDemandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects', 'disconnectMinutes', 'connectMinutes'],
                     show : ['reconnectParam']
                 },
                 {
                     value : 'DEMAND_THRESHOLD',
                     hide : ['disconnectMinutes', 'connectMinutes'],
-                    show : ['reconnectParam', 'demandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects']
+                    show : ['reconnectParam', 'disconnectDemandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects']
                 },
                 {
                     value : 'CYCLING',
-                    hide : ['reconnectParam', 'demandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects'],
+                    hide : ['reconnectParam', 'disconnectDemandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects'],
                     show : ['disconnectMinutes', 'connectMinutes']
                 }
             ]
