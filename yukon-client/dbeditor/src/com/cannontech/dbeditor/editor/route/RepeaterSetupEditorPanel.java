@@ -189,6 +189,13 @@ public class RepeaterSetupEditorPanel extends DataInputPanel implements AddRemov
         route.setRepeaters(repeaterRoutes);
         if (dbRegenerate) {
             if (!advancedSettingsDone) {
+                if (frame!=null) {
+                    if (frame.getLockCheckBox().isSelected()) {
+                        route.getCarrierRoute().setUserLocked("Y");
+                    } else {
+                        route.getCarrierRoute().setUserLocked("N");
+                    }
+                }
                 String userLocked = route.getCarrierRoute().getUserLocked();
                 if (userLocked.equalsIgnoreCase("N")) {
 
