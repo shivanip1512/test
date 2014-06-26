@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_immediate_demand_freeze )
                                        exp.begin() , exp.end() );
     }
 }
-
+/*
 BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_getconfig_install_freezeday )
 {
     test_RfnCommercialDevice    dev;
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_freezeday )
                                        exp.begin() , exp.end() );
     }
 }
-
+*/
 /*
 BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configuration )
 {
