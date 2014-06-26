@@ -14,6 +14,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.web.updater.UpdateValue;
 import com.cannontech.web.updater.point.PointDataRegistrationService;
 
@@ -54,9 +55,12 @@ public class PointStatusTag extends YukonTagSupport {
 
         } else {
             LitePoint p = pointDao.getLitePoint(pointId);
-            LiteState s = stateDao.findLiteState(p.getStateGroupID(), rawState);
-            color = Colors.getColorString(s.getFgColor()).toLowerCase();
-
+            if (p.getStateGroupID() == StateGroupUtils.SYSTEM_STATEGROUPID) {
+                color = "rgb(255,255,255)";
+            } else {
+                LiteState s = stateDao.findLiteState(p.getStateGroupID(), rawState);
+                color = Colors.getColorString(s.getFgColor()).toLowerCase();
+            }
         }
 
         boxBuilder.append("style=\"background-color: " + color + "\"");
