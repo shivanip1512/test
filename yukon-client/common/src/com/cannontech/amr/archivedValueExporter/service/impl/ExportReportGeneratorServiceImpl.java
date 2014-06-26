@@ -16,6 +16,8 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
@@ -599,11 +601,15 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         }
 
         DateTimeZone timeZone = getReportTZ(tzFormat, userContext);
-        DateTime dateTime = new DateTime(pointValueQualityHolder.getPointDataTimeStamp()).withZone(timeZone);
-        if (tzFormat == TimeZoneFormat.LOCAL_NO_DST && !timeZone.isStandardOffset(dateTime.getMillis())) {
-            long stdOffset = timeZone.getStandardOffset(dateTime.getMillis());
-            DateTimeZone timeZoneWithoutDST = DateTimeZone.forOffsetMillis((int) stdOffset);
-            dateTime = dateTime.withZone(timeZoneWithoutDST);
+        DateTime dateTime =new DateTime(pointValueQualityHolder.getPointDataTimeStamp()).withZone(timeZone);
+        if (tzFormat == TimeZoneFormat.LOCAL_NO_DST) {
+            DateTimeFormatter dateTimeFormat= ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+            dateTime = dateTimeFormat.parseDateTime(dateTime.toString());
+            if (!timeZone.isStandardOffset(dateTime.getMillis())) {
+                long stdOffset = timeZone.getStandardOffset(dateTime.getMillis());
+                DateTimeZone timeZoneWithoutDST = DateTimeZone.forOffsetMillis((int) stdOffset);
+                dateTime = dateTime.withZone(timeZoneWithoutDST);
+            }
         }
         return field.formatTimestamp(dateTime);
     }
