@@ -80,40 +80,49 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
 
     @Override
     public void updateSetting(GlobalSetting setting, LiteYukonUser user) {
-        boolean changed = false;
-        boolean changedValue = false;
-        boolean changedComments = false;
+        boolean isChanged = false;
+        boolean isChangedValue = false;
+        boolean isChangedComments = false;
+        boolean isOnlyCommentsChange = false;
 
         GlobalSetting currentSetting = globalSettingDao.getSetting(setting.getType());
         Object currentValue = currentSetting.getValue();
         String currentComments = currentSetting.getComments();
-
+        
         Object value = setting.getValue();
         if (value == null) {
             if (currentValue != null) {
-                changed = true;
-                changedValue = true;
+                isChanged = true;
+                isChangedValue = true;
             }
         } else {
             if (!value.equals(currentValue)) {
-                changed = true;
-                changedValue = true;
+                isChanged = true;
+                isChangedValue = true;
             }
         }
         if (setting.getComments() == null || StringUtils.isBlank(setting.getComments())) {
             if (currentComments != null) {
-                changed = true;
-                changedComments = true;
+                if(!isChanged) {
+                    isOnlyCommentsChange = true;
+                }
+                isChanged = true;
+                isChangedComments = true;
             }
         } else {
             if (!setting.getComments().equalsIgnoreCase(currentComments)) {
-                changed = true;
-                changedComments = true;
+                if(!isChanged) {
+                    isOnlyCommentsChange = true;
+                }
+                isChanged = true;
+                isChangedComments = true;
             }
         }
 
-        if (changed) {
-            setting.setLastChanged(Instant.now());
+        if (isChanged) {
+            if(!isOnlyCommentsChange) {
+                setting.setLastChanged(Instant.now());
+            }
 
             if (StringUtils.isBlank(setting.getComments())) {
                 setting.setComments(null);
@@ -130,14 +139,14 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
                                                 DbChangeCategory.GLOBAL_SETTING,
                                                 setting.getId());
             }
-            if (changedValue) {
+            if (isChangedValue) {
                 log.debug(setting.getType() + " changed from (" + currentValue + ") to (" + value + ")");
                 if (user == null) {
                     user = UserUtils.getYukonUser();
                 }
                 systemEventLogService.globalSettingChanged(user, setting.getType(), value == null ? "" : value.toString());
             }
-            if (changedComments) {
+            if (isChangedComments) {
                 log.debug("Comments for " + setting.getType() + " updated");
             }
         }
