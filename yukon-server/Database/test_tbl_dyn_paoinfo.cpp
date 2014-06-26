@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
     const test_cases_indexed[] =
     {
        { CtiTableDynamicPaoInfoIndexed::Key_Invalid,             "" },
-       { CtiTableDynamicPaoInfoIndexed::Key_RFN_BillingMetrics,  "rfn billing metrics" },
+       { CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, "rfn midnight metrics" },
        { CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, "rfn interval metrics" },
     };
 

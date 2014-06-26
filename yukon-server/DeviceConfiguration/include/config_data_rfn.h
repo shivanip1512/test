@@ -144,7 +144,7 @@ struct IM_EX_CONFIG RfnStrings
     struct IM_EX_CONFIG ChannelConfiguration
     {
         static const std::string RecordingIntervalMinutes;
-        static const std::string ReportingIntervalHours;
+        static const std::string ReportingIntervalMinutes;
 
         static const std::string EnabledChannels_Prefix;
 

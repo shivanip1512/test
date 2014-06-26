@@ -349,7 +349,7 @@ typedef CtiTableDynamicPaoInfoIndexed DpiIndexed;
 typedef boost::bimap<CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed, std::string> PaoInfoKeyNamesIndexed;
 
 const PaoInfoKeyNamesIndexed KeyNamesIndexed = boost::assign::list_of<PaoInfoKeyNamesIndexed::relation>
-        (DpiIndexed::Key_RFN_BillingMetrics,  "rfn billing metrics")
+        (DpiIndexed::Key_RFN_MidnightMetrics, "rfn midnight metrics")
         (DpiIndexed::Key_RFN_IntervalMetrics, "rfn interval metrics")
         ;
 

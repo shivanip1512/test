@@ -318,5 +318,5 @@ const string RfnStrings::ChannelConfiguration::EnabledChannels_Prefix = "enabled
 const string RfnStrings::ChannelConfiguration::EnabledChannels::Attribute = "attribute";
 const string RfnStrings::ChannelConfiguration::EnabledChannels::Read    = "read";
 const string RfnStrings::ChannelConfiguration::RecordingIntervalMinutes = "recordingIntervalMinutes";
-const string RfnStrings::ChannelConfiguration::ReportingIntervalHours   = "reportingIntervalHours";
+const string RfnStrings::ChannelConfiguration::ReportingIntervalMinutes = "reportingIntervalMinutes";
 

@@ -425,7 +425,7 @@ public:
     {
         Key_Invalid =  -1,
 
-        Key_RFN_BillingMetrics,
+        Key_RFN_MidnightMetrics,
         Key_RFN_IntervalMetrics,
     };
 
