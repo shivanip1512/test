@@ -219,7 +219,7 @@ public class EcobeeController {
         model.addAttribute("key", resultKey);
         EcobeeReadResult result = readResultsCache.getResult(resultKey);
         
-        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE_HM, YukonUserContext.system);
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
         log.info("startDateRange: " + result.getStartDateRange().toString(formatter) + " endDateRange: " +
             result.getEndDateRange().toString(formatter));
         model.addAttribute("download", result);
@@ -236,7 +236,7 @@ public class EcobeeController {
         if (!result.isComplete()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         } else {
-            DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE_HM, YukonUserContext.system);
+            DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
             String startDateRange = result.getStartDateRange().toString(formatter);
             String endDateRange = result.getEndDateRange().toString(formatter);
             log.info("startDateRange: " + startDateRange + " endDateRange: " + endDateRange);
