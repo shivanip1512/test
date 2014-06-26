@@ -17,6 +17,17 @@ ALTER TABLE YukonServices
 MODIFY ServiceType NOT NULL;
 /* End YUK-13478 */
 
+/* Start YUK-13356 */
+UPDATE YukonRoleProperty 
+SET DefaultValue = '/dashboard' 
+WHERE RolePropertyId = -10800;
+
+UPDATE YukonGroupRole 
+SET Value = '/dashboard' 
+WHERE RolePropertyId = -10800 
+  AND Value = '/operator/Operations.jsp';
+/* End YUK-13356 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

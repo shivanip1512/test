@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/26/2014 3:09:10 PM                         */
+/* Created on:     6/26/2014 4:54:08 PM                         */
 /*==============================================================*/
 
 
@@ -8434,7 +8434,7 @@ INSERT INTO YukonGroupRole VALUES(-1082,-2,-206,-20601,' ');
 INSERT INTO YukonGroupRole VALUES(-1083,-2,-206,-20602,' ');
 
 /* Web Client Customers Web Client role */
-insert into YukonGroupRole values (-1090,-2, -108, -10800, '/operator/Operations.jsp');
+insert into YukonGroupRole values (-1090,-2, -108, -10800, '/dashboard');
 insert into YukonGroupRole values (-1091,-2, -108, -10802, ' ');
 insert into YukonGroupRole values (-1092,-2, -108, -10803, ' ');
 insert into YukonGroupRole values (-1093,-2, -108, -10804, ' ');
@@ -9145,7 +9145,7 @@ INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','t
 INSERT INTO YukonRoleProperty VALUES(-10700,-107,'default','false','The default esub editor property');
 
 /* Web Client Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-10800,-108,'home_url','/operator/Operations.jsp','The url to take the user immediately after logging into the Yukon web application');
+INSERT INTO YukonRoleProperty VALUES(-10800,-108,'home_url','/dashboard','The url to take the user immediately after logging into the Yukon web application');
 INSERT INTO YukonRoleProperty VALUES(-10802,-108,'style_sheet','yukon/CannonStyle.css','The web client cascading style sheet.');
 INSERT INTO YukonRoleProperty VALUES(-10803,-108,'nav_bullet_selected','yukon/Bullet.gif','The bullet used when an item in the nav is selected.');
 INSERT INTO YukonRoleProperty VALUES(-10804,-108,'nav_bullet_expand','yukon/BulletExpand.gif','The bullet used when an item in the nav can be expanded to show submenu.');
