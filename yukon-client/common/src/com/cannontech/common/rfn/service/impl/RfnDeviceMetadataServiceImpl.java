@@ -90,11 +90,9 @@ public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
     
     @PostConstruct
     public void initialize() {
-        qrTemplate = new RequestReplyTemplate<RfnMetadataResponse>();
-        qrTemplate.setConfigurationName("RFN_METADATA_");
-        qrTemplate.setConfigurationSource(configurationSource);
-        qrTemplate.setConnectionFactory(connectionFactory);
-        qrTemplate.setRequestQueueName("yukon.qr.obj.common.rfn.MetadataRequest", false);
+        qrTemplate = new RequestReplyTemplate<RfnMetadataResponse>(
+                "RFN_METADATA", configurationSource, connectionFactory,
+                "yukon.qr.obj.common.rfn.MetadataRequest", false);
     }
     
 }

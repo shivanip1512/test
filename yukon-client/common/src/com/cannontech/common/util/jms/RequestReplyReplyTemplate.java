@@ -2,6 +2,7 @@ package com.cannontech.common.util.jms;
 
 import java.io.Serializable;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -13,8 +14,16 @@ import javax.jms.TemporaryQueue;
 import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
+import com.cannontech.common.config.ConfigurationSource;
+
 public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Serializable>
     extends RequestReplyTemplateBase<JmsReplyReplyHandler<R1, R2>> {
+    
+    public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
+            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
+        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain);
+    }
+
     @Override
     protected <Q extends Serializable> void doJmsWork(Session session, final Q requestPayload, JmsReplyReplyHandler<R1, R2> callback) throws JMSException {
         final Duration reply1Timeout = configurationSource.getDuration(configurationName + "_REPLY1_TIMEOUT", Duration.standardMinutes(1));
@@ -29,9 +38,11 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         ObjectMessage requestMessage = session.createObjectMessage(requestPayload);
         
         requestMessage.setJMSReplyTo(replyQueue);
+        log.trace("Sending requestMessage to producer " + requestMessage.toString());
         producer.send(requestMessage);
         
         handleRepliesAndOrTimeouts(callback, reply1Timeout, reply2Timeout, replyConsumer);
+        log.trace("Request replied or timed out " + requestMessage.toString());
         
         replyConsumer.close();
         replyQueue.delete();

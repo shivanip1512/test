@@ -10,29 +10,56 @@ import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
+import org.apache.log4j.Logger;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.ExceptionHelper;
 
 public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
+    protected static final Logger log = YukonLogManager.getLogger(RequestReplyTemplateBase.class);
     protected ConfigurationSource configurationSource;
     protected ConnectionFactory connectionFactory;
-    protected ExecutorService readRequestThreadPool =
-            new ThreadPoolExecutor(1, 6, 5, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>(),
-                                   new ThreadPoolExecutor.AbortPolicy());
+    protected ExecutorService readRequestThreadPool;
     protected String configurationName;
     protected String requestQueueName;
     protected boolean pubSubDomain = false;   // Queue (not a Topic)
 
+    public RequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource, 
+            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
+        this.configurationName = configurationName;
+        this.configurationSource = configurationSource;
+        this.connectionFactory = connectionFactory;
+        this.requestQueueName = requestQueueName;
+        this.pubSubDomain = isPubSubDomain;
+        
+        int queueSize = configurationSource.getInteger("REQUEST_REPLY_WORKER_QUEUE_SIZE", 50);
+        
+        // Use the same queue size for core and max;
+        // - ThreadPoolExecutor does not create new threads unless its thread pool is full. 
+        // - LinkedBlockingQueue has Integer.MAX_VALUE size by default - although this can be specified in the constructor.
+        readRequestThreadPool = new ThreadPoolExecutor(queueSize, queueSize, 
+                                                       5, TimeUnit.MINUTES,
+                                                       new LinkedBlockingQueue<Runnable>(),
+                                                       new ThreadPoolExecutor.AbortPolicy());
+        ((ThreadPoolExecutor)readRequestThreadPool).allowCoreThreadTimeOut(true);
+    }
+    
     public <Q extends Serializable> void send(final Q requestPayload, final T callback) {
+
+        log.trace("ThreadPool size core:" + ((ThreadPoolExecutor)readRequestThreadPool).getCorePoolSize() +
+                           "  max:" + ((ThreadPoolExecutor)readRequestThreadPool).getMaximumPoolSize() +
+                           "  pool:" + ((ThreadPoolExecutor)readRequestThreadPool).getPoolSize());
+        
         readRequestThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
 
+                    log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
                     jmsTemplate.execute(new SessionCallback<Object>() {
 
                         @Override
@@ -46,6 +73,7 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
                         }
 
                     }, true);
+                    log.trace("RequestReplyTemplateBase execute End " + requestPayload.toString());
                 } catch (Exception e) {
                     callback.handleException(e);
                 } finally {
@@ -57,25 +85,4 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
 
     protected abstract <Q extends Serializable> void doJmsWork(Session session,
             Q requestPayload, T callback) throws JMSException;
-
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
-    }
-
-    public void setReadRequestThreadPool(ExecutorService readRequestThreadPool) {
-        this.readRequestThreadPool = readRequestThreadPool;
-    }
-
-    public void setConfigurationName(String configurationName) {
-        this.configurationName = configurationName;
-    }
-
-    public void setRequestQueueName(String requestQueueName, boolean pubSubDomain) {
-        this.requestQueueName = requestQueueName;
-        this.pubSubDomain = pubSubDomain;
-    }
 }

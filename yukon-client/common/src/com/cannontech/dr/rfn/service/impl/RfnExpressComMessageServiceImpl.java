@@ -170,17 +170,13 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     
     @PostConstruct
     public void initialize() {
-        unicastWithDataTemplate = new RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply>();
-        unicastWithDataTemplate.setConfigurationName("RFN_XCOMM_REQUEST");
-        unicastWithDataTemplate.setConfigurationSource(configurationSource);
-        unicastWithDataTemplate.setConnectionFactory(connectionFactory);
-        unicastWithDataTemplate.setRequestQueueName("yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
+        unicastWithDataTemplate = new RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply>(
+                "RFN_XCOMM_REQUEST", configurationSource, connectionFactory, 
+                "yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
         
-        unicastTemplate = new RequestReplyTemplate<RfnExpressComUnicastReply>();
-        unicastTemplate.setConfigurationName("RFN_XCOMM_REQUEST");
-        unicastTemplate.setConfigurationSource(configurationSource);
-        unicastTemplate.setConnectionFactory(connectionFactory);
-        unicastTemplate.setRequestQueueName("yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
+        unicastTemplate = new RequestReplyTemplate<RfnExpressComUnicastReply>(
+                "RFN_XCOMM_REQUEST", configurationSource, connectionFactory, 
+                "yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
     }
     
     /**

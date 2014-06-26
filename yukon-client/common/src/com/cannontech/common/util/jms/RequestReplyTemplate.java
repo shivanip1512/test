@@ -2,6 +2,7 @@ package com.cannontech.common.util.jms;
 
 import java.io.Serializable;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -13,7 +14,15 @@ import javax.jms.TemporaryQueue;
 import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
+import com.cannontech.common.config.ConfigurationSource;
+
 public class RequestReplyTemplate<R extends Serializable> extends RequestReplyTemplateBase<JmsReplyHandler<R>> {
+    
+    public RequestReplyTemplate(String configurationName, ConfigurationSource configurationSource,
+            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
+        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain);
+    }
+
     @Override
     protected <Q extends Serializable> void doJmsWork(Session session,
         final Q requestPayload, JmsReplyHandler<R> callback) throws JMSException {

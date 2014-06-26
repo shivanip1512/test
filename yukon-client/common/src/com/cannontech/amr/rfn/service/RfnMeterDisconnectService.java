@@ -148,11 +148,9 @@ public class RfnMeterDisconnectService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply>();
-        rrrTemplate.setConfigurationName("RFN_METER_DISCONNECT");
-        rrrTemplate.setConfigurationSource(configurationSource);
-        rrrTemplate.setConnectionFactory(connectionFactory);
-        rrrTemplate.setRequestQueueName("yukon.qr.obj.amr.rfn.MeterDisconnectRequest", false);
+        rrrTemplate = new RequestReplyReplyTemplate<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply>(
+                "RFN_METER_DISCONNECT", configurationSource, connectionFactory,
+                "yukon.qr.obj.amr.rfn.MeterDisconnectRequest", false);
     }
     
 }

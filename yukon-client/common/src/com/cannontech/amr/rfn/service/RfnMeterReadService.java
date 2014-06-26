@@ -122,11 +122,9 @@ public class RfnMeterReadService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply>();
-        rrrTemplate.setConfigurationName("RFN_METER_READ");
-        rrrTemplate.setConfigurationSource(configurationSource);
-        rrrTemplate.setConnectionFactory(connectionFactory);
-        rrrTemplate.setRequestQueueName("yukon.qr.obj.amr.rfn.MeterReadRequest", false);
+        rrrTemplate = new RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply>(
+                "RFN_METER_READ", configurationSource, connectionFactory,
+                "yukon.qr.obj.amr.rfn.MeterReadRequest", false);
     }
     
 }
