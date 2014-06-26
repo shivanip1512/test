@@ -2791,6 +2791,10 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     static const string xca_spid_("xca_spid");
     static const string xca_spid_target_("xca_spid_target");
 
+    /*
+        Using validateAddress() rather than the function pointer intentionally
+            as we never want to allow a spid to be set to 0.
+    */
     if(parse.isKeyValid(xc_spid_))
     {
         address = parse.getiValue(xc_spid_, 0);
