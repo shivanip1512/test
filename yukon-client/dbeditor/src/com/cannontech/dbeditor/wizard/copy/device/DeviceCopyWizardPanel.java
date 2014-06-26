@@ -21,7 +21,6 @@ import com.cannontech.common.wizard.WizardPanelListener;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.device.lm.LMGroup;
@@ -196,17 +195,7 @@ public class DeviceCopyWizardPanel extends WizardPanel {
     			return getGoldPanel();
     		}
     		
-    	} else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
-                && (getDeviceType() == PaoType.MCT470
-                        || DeviceTypesFuncs.isMCT430(getDeviceType())
-                        || DeviceTypesFuncs.isMCT410(getDeviceType())
-                        || DeviceTypesFuncs.isMCT3xx(getDeviceType())
-                        || DeviceTypesFuncs.isMCT410(getDeviceType())
-                        || getDeviceType() == PaoType.MCT250
-                        || getDeviceType() == PaoType.MCT248
-                        || getDeviceType() == PaoType.MCT240
-                        || getDeviceType() == PaoType.MCT213
-                        || getDeviceType() == PaoType.MCT210)) {
+    	} else if (currentInputPanel == getDeviceCopyNameAddressPanel() && getDeviceType().isMct()) {
     	    
             getRoutePanel().setValue(null);
             getRoutePanel().setRoute(((MCTBase)getCopyObject()).getDeviceRoutes().getRouteID());
@@ -236,16 +225,7 @@ public class DeviceCopyWizardPanel extends WizardPanel {
     		getRoutePanel().setFirstFocus();
     		return getRoutePanel();
     		
-    	} else if( currentInputPanel == getRoutePanel() && (getDeviceType() == PaoType.MCT470
-                                                        || DeviceTypesFuncs.isMCT430(getDeviceType())
-                                                        || DeviceTypesFuncs.isMCT410(getDeviceType())
-                                                        || DeviceTypesFuncs.isMCT3xx(getDeviceType())
-                                                        || DeviceTypesFuncs.isMCT410(getDeviceType())
-                                                        || getDeviceType() == PaoType.MCT250
-                                                        || getDeviceType() == PaoType.MCT248
-                                                        || getDeviceType() == PaoType.MCT240
-                                                        || getDeviceType() == PaoType.MCT213
-                                                        || getDeviceType() == PaoType.MCT210)) {
+    	} else if (currentInputPanel == getRoutePanel() && getDeviceType().isMct()) {
             
             getDeviceMeterGroupPanel().setValue(getCopyObject());
             getDeviceMeterGroupPanel().setFirstFocus();
@@ -312,34 +292,11 @@ public class DeviceCopyWizardPanel extends WizardPanel {
     @Override
     protected boolean isLastInputPanel(DataInputPanel currentPanel) {
         if (getDeviceType() != null) {
-            if ((currentPanel == getDeviceCopyNameAddressPanel()) && ( getDeviceType() == PaoType.MCT470
-                                                                         || DeviceTypesFuncs.isMCT430(getDeviceType())
-                                                                         || DeviceTypesFuncs.isMCT410(getDeviceType())
-                                                                         || DeviceTypesFuncs.isMCT3xx(getDeviceType())
-                                                                         || DeviceTypesFuncs.isMCT410(getDeviceType())
+            if ((currentPanel == getDeviceCopyNameAddressPanel()) && (getDeviceType().isMct()
                                                                          || getDeviceType().isRfn()
-                                                                         || getDeviceType() == PaoType.MCT250
-                                                                         || getDeviceType() == PaoType.MCT248
-                                                                         || getDeviceType() == PaoType.MCT240
-                                                                         || getDeviceType() == PaoType.MCT213
-                                                                         || getDeviceType() == PaoType.MCT210
-                                                                         || getDeviceType() == PaoType.REPEATER
-                                                                         || getDeviceType() == PaoType.REPEATER_902
-                                                                         || getDeviceType() == PaoType.REPEATER_800
-                                                                         || getDeviceType() == PaoType.REPEATER_850
-                                                                         || getDeviceType() == PaoType.REPEATER_801
-                                                                         || getDeviceType() == PaoType.REPEATER_921)) {
+                                                                         || getDeviceType().isRepeater())) {
                 return false;
-            } else if ((currentPanel == getRoutePanel()) && (getDeviceType() == PaoType.MCT470
-                                                                        || DeviceTypesFuncs.isMCT430(getDeviceType())
-                                                                        || DeviceTypesFuncs.isMCT410(getDeviceType())
-                                                                        || DeviceTypesFuncs.isMCT3xx(getDeviceType())
-                                                                        || DeviceTypesFuncs.isMCT410(getDeviceType())
-                                                                        || getDeviceType() == PaoType.MCT250
-                                                                        || getDeviceType() == PaoType.MCT248
-                                                                        || getDeviceType() == PaoType.MCT240
-                                                                        || getDeviceType() == PaoType.MCT213
-                                                                        || getDeviceType() == PaoType.MCT210)) {
+            } else if (currentPanel == getRoutePanel() && getDeviceType().isMct()) {
                 return false;
             } else if ((currentPanel == getDeviceCopyNameAddressPanel()) 
                     && !((getDeviceType() == PaoType.LM_GROUP_EMETCON) || (getDeviceType() == PaoType.LM_GROUP_VERSACOM)) ) {
