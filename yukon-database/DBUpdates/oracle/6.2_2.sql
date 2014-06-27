@@ -9,8 +9,8 @@ ADD ServiceType VARCHAR2(60);
 UPDATE YukonServices
 SET ServiceType = 
     CASE
-       WHEN ServiceId <= 5 THEN 'CLASS_NAME_TYPE'
-       WHEN ServiceId > 5 THEN 'CONTEXT_FILE_TYPE'
+       WHEN ServiceId <= 6 THEN 'CLASS_NAME_TYPE'
+       WHEN ServiceId > 6 THEN 'CONTEXT_FILE_TYPE'
     END;
 
 ALTER TABLE YukonServices
