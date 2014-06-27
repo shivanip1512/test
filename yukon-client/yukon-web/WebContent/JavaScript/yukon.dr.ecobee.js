@@ -35,8 +35,7 @@ yukon.dr.ecobee = (function () {
         });
         
         $(containingDivSelector + ' .f-time-label').text(_timeFormatter.formatTime(value, 0));
-    };
-    
+    },
     mod = null;
 
     mod = {
@@ -71,7 +70,7 @@ yukon.dr.ecobee = (function () {
                         data = $(data);
                         
                         $('#ecobee-download-popup').dialog('close');
-                        if (table.find('tbody tr').length == 0) {
+                        if (table.find('tbody tr').length === 0) {
                             table.show();
                             $('#data-downloads .empty-list').hide();
                         }
