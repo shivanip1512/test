@@ -19,9 +19,10 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
 import com.cannontech.common.pao.dao.PaoPersistenceTypeHelper;
 import com.cannontech.common.pao.model.CompleteYukonPao;
-import com.google.common.collect.ImmutableList;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -58,6 +59,17 @@ public class PaoPersistenceTypeHelperImpl implements PaoPersistenceTypeHelper {
 
         // Build the maps required for later use in the DAO methods.
         buildPaoTypeMaps(metaDataByClass);
+       
+		for (CompletePaoMetaData mapping : metaDataByClass.values()) {
+			Iterable<PaoFieldMetaData> iter = mapping.getFields();
+			Iterables.removeIf(iter, new Predicate<PaoFieldMetaData>() {
+				@Override
+				public boolean apply(PaoFieldMetaData input) {
+					return input.isPaoPart();
+				}
+			});
+
+		}
     }
 
     /**
@@ -104,7 +116,7 @@ public class PaoPersistenceTypeHelperImpl implements PaoPersistenceTypeHelper {
             idColumnName = partAnnotation.idColumnName();
         }
 
-        ImmutableList.Builder<PaoFieldMetaData> fieldsBuilder = ImmutableList.builder();
+        List <PaoFieldMetaData> fieldsBuilder = Lists.newArrayList();
         List<String> propertiesInserted = Lists.newArrayList();
         Method[] methods = klass.getDeclaredMethods();
         for (Method method : methods) {
@@ -128,7 +140,7 @@ public class PaoPersistenceTypeHelperImpl implements PaoPersistenceTypeHelper {
         }
 
         CompletePaoMetaData paoMetaData =
-            new CompletePaoMetaData(klass, tableName, idColumnName, fieldsBuilder.build(), null);
+            new CompletePaoMetaData(klass, tableName, idColumnName, fieldsBuilder, null);
         return paoMetaData;
     }
 
@@ -170,6 +182,7 @@ public class PaoPersistenceTypeHelperImpl implements PaoPersistenceTypeHelper {
                             CompletePaoMetaData partMapping = metaDataByClass.get(returnType);
                             if (partMapping != null) {
                                 classTableMappings.add(partMapping.withDescriptor(propertyDescriptor));
+                                field.setPaoPart(true);
                             }
                         }
 
