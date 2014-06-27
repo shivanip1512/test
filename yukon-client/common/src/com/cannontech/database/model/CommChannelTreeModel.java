@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import javax.swing.tree.TreePath;
 
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
@@ -35,6 +36,7 @@ public class CommChannelTreeModel extends DBTreeModel {
         super(new DBTreeNode("Comm Channels"));
     }
 
+    @Override
     public boolean isLiteTypeSupported(int liteType) {
         return (liteType == LiteTypes.YUKON_PAOBJECT);
     }
@@ -52,9 +54,7 @@ public class CommChannelTreeModel extends DBTreeModel {
             return false;
         }
 
-        boolean isDeviceValid =
-            isDeviceValid(paoType.getPaoCategory().getPaoCategoryId(), paoType.getPaoClass().getPaoClassId(),
-                paoType.getDeviceTypeId());
+        boolean isDeviceValid = isDeviceValid(paoType);
         boolean isCoreDevice = DeviceClasses.isCoreDeviceClass(paoType.getPaoClass().getPaoClassId());
         boolean isCommChannPort = paoType.isPort();
         if (isCommChannPort) {
@@ -63,6 +63,7 @@ public class CommChannelTreeModel extends DBTreeModel {
         return (isDeviceValid && !isCoreDevice);
     }
 
+    @Override
     public void update() {
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
@@ -81,16 +82,15 @@ public class CommChannelTreeModel extends DBTreeModel {
             for (int i = 0; i < ports.size(); i++) {
                 DBTreeNode portNode = new DBTreeNode(ports.get(i));
                 rootNode.add(portNode);
-                portID = ((LiteYukonPAObject) ports.get(i)).getYukonID();
+                portID = ports.get(i).getYukonID();
 
                 boolean devicesFound = false;
 
                 for (int j = 0; j < devices.size(); j++) {
-                    LiteYukonPAObject liteYuk = (LiteYukonPAObject) devices.get(j);
+                    LiteYukonPAObject liteYuk = devices.get(j);
 
-                    if (isDeviceValid(liteYuk.getPaoType().getPaoCategory().getPaoCategoryId(), liteYuk.getPaoType()
-                        .getPaoClass().getPaoClassId(), liteYuk.getPaoType().getDeviceTypeId())) {
-                        devicePortID = ((LiteYukonPAObject) devices.get(j)).getPortID();
+                    if (isDeviceValid(liteYuk.getPaoType())) {
+                        devicePortID = devices.get(j).getPortID();
                         if (devicePortID == portID) {
                             devicesFound = true;
                             portNode.add(new DBTreeNode(devices.get(j)));
@@ -107,6 +107,7 @@ public class CommChannelTreeModel extends DBTreeModel {
         reload();
     }
 
+    @Override
     public boolean insertTreeObject(LiteBase lb) {
         if (lb == null || !isLiteTypeSupported(lb.getLiteType()))
             return false;
@@ -148,11 +149,11 @@ public class CommChannelTreeModel extends DBTreeModel {
         return false;
     }
 
-    public boolean isDeviceValid(int category_, int deviceClass, int type_) {
-        return (deviceClass == DeviceClasses.LOADMANAGEMENT || deviceClass == DeviceClasses.IED
-            || deviceClass == DeviceClasses.METER || deviceClass == DeviceClasses.RTU
-            || deviceClass == DeviceClasses.TRANSMITTER || deviceClass == DeviceClasses.VIRTUAL
-            || deviceClass == DeviceClasses.GRID || deviceClass == DeviceClasses.SYSTEM);
+    public boolean isDeviceValid(PaoType paoType) {
+        return (paoType.getPaoClass() == PaoClass.LOADMANAGEMENT || paoType.getPaoClass() == PaoClass.IED
+            || paoType.getPaoClass() == PaoClass.METER || paoType.getPaoClass() == PaoClass.RTU
+            || paoType.getPaoClass() == PaoClass.TRANSMITTER || paoType.getPaoClass() == PaoClass.VIRTUAL
+            || paoType.getPaoClass() == PaoClass.GRID || paoType.getPaoClass() == PaoClass.SYSTEM);
     }
 
     /**
@@ -209,6 +210,7 @@ public class CommChannelTreeModel extends DBTreeModel {
         return destList.size() > 0;
     }
 
+    @Override
     public synchronized void treePathWillExpand(TreePath path) {
         // Watch out, this reloads the children every TIME!!!
         DBTreeNode node = (DBTreeNode) path.getLastPathComponent();

@@ -70,8 +70,9 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 			Integer demandRateSeconds,
 			boolean allowCreateIfAlreadyHasAssignedDevice)
 			throws Lcr3102YukonDeviceCreationException {
-
-		if (!PaoType.getForId(yukonDeviceTypeId).isTwoWayLcr()) {
+	    
+	    PaoType paoType = PaoType.getForId(yukonDeviceTypeId);
+		if (!paoType.isTwoWayLcr()) {
 			throw new Lcr3102YukonDeviceCreationException("Yukon device must be a Two Way LCR type.");
 		}
 		
@@ -94,7 +95,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
         		
         		SimpleDevice yukonDevice = null;
         		try {
-        			yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(yukonDeviceTypeId, deviceName, Integer.parseInt(serial), routeId, true);
+        			yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(paoType, deviceName, Integer.parseInt(serial), routeId, true);
         			
         			// set demand rate on new device
     	    		LiteYukonPAObject paoDevice = paoDao.getLiteYukonPAO(yukonDevice.getDeviceId());

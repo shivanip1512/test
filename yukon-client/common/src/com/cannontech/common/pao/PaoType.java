@@ -644,27 +644,16 @@ public enum PaoType implements DatabaseRepresentationSource {
         return portTypes.contains(this);
     }
 
-    public static boolean isDialupPort(int type) {
-        return type == DIALOUT_POOL.getDeviceTypeId() || type == LOCAL_DIALUP.getDeviceTypeId()
-            || type == LOCAL_DIALBACK.getDeviceTypeId() || type == TSERVER_DIALUP.getDeviceTypeId();
+    public boolean isDialupPort() {
+        return DIALOUT_POOL == this || LOCAL_DIALUP == this
+            || LOCAL_DIALBACK == this || TSERVER_DIALUP == this;
     }
 
-    public static boolean isDialupPort(String type) {
-        int intType = getPaoTypeId(type);
-        return isDialupPort(intType);
+    public boolean isTcpPortEligible() {
+        return CBC_7020 == this || CBC_7022 == this || CBC_7023 == this || CBC_7024 == this || CBC_8020 == this
+            || CBC_8024 == this || CBC_DNP == this || RTU_DNP == this || FAULT_CI == this || NEUTRAL_MONITOR == this;
     }
 
-    public static boolean isTcpPortEligible(PaoType type) {
-        return type == CBC_7020 || type == CBC_7022 || type == CBC_7023 || type == CBC_7024 || type == CBC_8020
-            || type == CBC_8024 || type == CBC_DNP || type == RTU_DNP || type == FAULT_CI || type == NEUTRAL_MONITOR;
-    }
-
-    public static boolean isTcpPortEligible(int type) {
-        PaoType paoType = getForId(type);
-        return isTcpPortEligible(paoType);
-    }
-    
-    
     public boolean isLoadManagement() {
         return PaoClass.GROUP == paoClass || PaoClass.LOADMANAGEMENT == paoClass;
     }

@@ -17,7 +17,7 @@ import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceMCT400Series;
 import com.cannontech.spring.YukonSpringHook;
 
-public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.DeviceTypes {
+public final class DeviceTypesFuncs {
 
     /**
      * All Meters that have a device scan rate. The meters in this function are
@@ -49,14 +49,15 @@ public final class DeviceTypesFuncs implements com.cannontech.database.data.pao.
      * Returns all the CBC that require a port for communications.
      */
     public final static boolean cbcHasPort(int cbcType) {
-        return cbcType == DNP_CBC_6510 || 
-                cbcType == CBC_7020 || 
-                cbcType == CBC_7022 || 
-                cbcType == CBC_7023 || 
-                cbcType == CBC_7024 || 
-                cbcType == CBC_8020 || 
-                cbcType == CBC_8024 || 
-                cbcType == CBC_DNP;
+        PaoType paoType = PaoType.getForId(cbcType);
+        return paoType == PaoType.DNP_CBC_6510 || 
+                paoType == PaoType.CBC_7020 || 
+                paoType == PaoType.CBC_7022 || 
+                paoType == PaoType.CBC_7023 || 
+                paoType == PaoType.CBC_7024 || 
+                paoType == PaoType.CBC_8020 || 
+                paoType == PaoType.CBC_8024 || 
+                paoType == PaoType.CBC_DNP;
     }
 
     public final static boolean isLoadProfile1Channel(PaoType paoType) {

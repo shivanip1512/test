@@ -453,7 +453,6 @@ public class CommunicationRouteEditorPanel extends DataInputPanel implements Ite
                 }
             } else if (routePaoType == PaoType.ROUTE_VERSACOM) {
                 for (LiteYukonPAObject liteDevice : devices) {
-                    int type = liteDevice.getPaoType().getDeviceTypeId();
                     if (liteDevice.getPaoType().isCcu() || liteDevice.getPaoType().isTcu() || liteDevice.getPaoType().isLcu()) {
                         getSignalTransmitterComboBox().addItem(liteDevice);
                     }

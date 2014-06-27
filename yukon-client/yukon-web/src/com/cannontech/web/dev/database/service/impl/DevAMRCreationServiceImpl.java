@@ -281,7 +281,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
             routeId = getDefaultRouteId();
         }
 
-        YukonDevice yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(type.getDeviceTypeId(), name, address, routeId, createPoints);
+        YukonDevice yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(type, name, address, routeId, createPoints);
         deviceDao.changeMeterNumber(yukonDevice, Integer.toString(address));
         devAMR.incrementSuccessCount();
         log.debug("Plc Meter with name " + name + " created.");

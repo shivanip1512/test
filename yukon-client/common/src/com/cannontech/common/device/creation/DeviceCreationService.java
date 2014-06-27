@@ -44,7 +44,7 @@ public interface DeviceCreationService {
      * @return 
      * @throws DeviceCreationException
      */
-    public SimpleDevice createCarrierDeviceByDeviceType(int deviceType, String name, int address, int routeId, boolean createPoints) throws DeviceCreationException;
+    public SimpleDevice createCarrierDeviceByDeviceType(PaoType deviceType, String name, int address, int routeId, boolean createPoints) throws DeviceCreationException;
     
     /**
      * Creates the RFN device by device type.

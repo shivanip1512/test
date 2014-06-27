@@ -38,6 +38,7 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
         return requiredColumns;
     }
     
+    @Override
     public Set<BulkFieldColumnHeader> getOptionalColumns() {
        return optionalColumns;
     }
@@ -60,7 +61,7 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
                 throw new DeviceCreationException("Could not create device by type: Invalid route name.");
             }
     
-            device = deviceCreationService.createCarrierDeviceByDeviceType(paoType.getDeviceTypeId(), name, address, routeId, true);
+            device = deviceCreationService.createCarrierDeviceByDeviceType(paoType, name, address, routeId, true);
             
         } catch (NumberFormatException e) {
             throw new DeviceCreationException("Could not create device by type: Non-numeric address value.", e);

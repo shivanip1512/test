@@ -8,20 +8,22 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 public class JPanelDevicePoint extends JPanel implements ActionListener {
     public static String PROPERTY_PAO_UPDATE = "UpdatePAOProperty";
     public static String PROPERTY_POINT_UPDATE = "UpdatePointProperty";
 
-    private int[] pointTypeFilter = null;
-    // represents [Category][Class][Type]
-    private int[][][] paoFilter = null;
+    private List<PointType> pointTypeFilter = null;
+    private List<PaoType> paoTypeFilters = Lists.newArrayList();
     private JComboBox<LiteYukonPAObject> ivjJComboBoxDevice = null;
     private JLabel ivjJLabelDevice = null;
     private JComboBox<LitePoint> ivjJComboBoxPoint = null;
@@ -219,38 +221,19 @@ public class JPanelDevicePoint extends JPanel implements ActionListener {
 
     private boolean isPAOValid(LiteYukonPAObject pao) {
         // if not set, we want all the PAO's
-        if (paoFilter == null)
+        if (paoTypeFilters.isEmpty())
             return true;
         else {
             // Watch out now!!
-            for (int i = 0; i < paoFilter.length; i++)
-                if (paoFilter[i][0][0] == pao.getPaoType().getPaoCategory().getPaoCategoryId())
-                    if (paoFilter[i][0][1] == pao.getPaoType().getPaoClass().getPaoClassId())
-                        if (paoFilter[i][0][2] == pao.getPaoType().getDeviceTypeId())
-                            return true;
-        }
-
-        return false;
-    }
-
-    private boolean isPointValid(LitePoint point) {
-        if (getJComboBoxPoint().isVisible()) {
-            // if not set, we want all the points
-            if (pointTypeFilter == null)
-                return true;
-            else {
-                for (int i = 0; i < pointTypeFilter.length; i++)
-                    if (pointTypeFilter[i] == point.getPointType())
-                        return true;
+            for (PaoType filterType : paoTypeFilters) {
+                if (filterType == pao.getPaoType()) {
+                    return true;
+                }
             }
         }
-
         return false;
     }
 
-    /**
-     * Comment
-     */
     public void jComboBoxDevice_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
         if (getJComboBoxDevice().getSelectedItem() != null) {
             getJComboBoxPoint().removeAllItems();
@@ -293,17 +276,13 @@ public class JPanelDevicePoint extends JPanel implements ActionListener {
      * 9(Type) { {2,4,6} }, { {2,0,4} }, { {8,5,9} }, { {3,8,2} } //
      * 3(Category), 8(PAOClass), 2(Type) };
      */
-    public void setPAOFilter(int[][][] paoFilter_) {
+    public void setPAOFilter(List<PaoType> paoTypeFilters) {
         // ensure our array has the correct field lengths
-        if (paoFilter_ != null && paoFilter_.length >= 1 && paoFilter_[0].length == 1 && paoFilter_[0][0].length == 3) {
-            paoFilter = paoFilter_;
-        } else
-            paoFilter = null;
-
+        this.paoTypeFilters = paoTypeFilters;
         initDeviceComboBox();
     }
 
-    public void setPointTypeFilter(int[] pointTypes) {
+    public void setPointTypeFilter(List<PointType> pointTypes) {
         pointTypeFilter = pointTypes;
         initDeviceComboBox();
     }

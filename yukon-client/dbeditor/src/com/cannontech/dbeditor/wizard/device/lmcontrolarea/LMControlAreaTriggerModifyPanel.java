@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -27,10 +28,12 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements ActionListener, PropertyChangeListener, CaretListener {
     private JComboBox<LiteState> ivjJComboBoxNormalState = null;
@@ -42,7 +45,6 @@ public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements A
     private JLabel ivjJLabelMinRestOffset = null;
     private JTextField ivjJTextFieldMinRestOffset = null;
     // a mutable lite point used for comparisons
-    private static final LitePoint DUMMY_LITE_POINT = new LitePoint(Integer.MIN_VALUE, "**DUMMY**", 0, 0, 0, 0);
     private JPanelDevicePoint ivjJPanelDevicePointPeak = null;
     private JCheckBox ivjJCheckBoxPeakTracking = null;
     private JPanel ivjJPanelPeakTracking = null;
@@ -667,14 +669,14 @@ public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements A
             getJLabelNormalStateAndThreshold().setText(IlmDefines.TYPE_THRESHOLD + ":");
 
             // initDeviceComboBox( LMControlAreaTrigger.TYPE_THRESHOLD );
-            int[] ptType = { com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
-                    com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT,
-                    com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT,
-                    com.cannontech.database.data.point.PointTypes.CALCULATED_POINT };
+            List<PointType> pointTypes = Lists.newArrayList(PointType.Analog,
+                                                            PointType.DemandAccumulator,
+                                                            PointType.PulseAccumulator,
+                                                            PointType.CalcAnalog);
 
-            getJPanelTriggerID().setPointTypeFilter(ptType);
+            getJPanelTriggerID().setPointTypeFilter(pointTypes);
             if (isThreshPoint) {
-                getJPanelThresholdID().setPointTypeFilter(ptType);
+                getJPanelThresholdID().setPointTypeFilter(pointTypes);
             }
         } else {
             getJLabelNormalStateAndThreshold().setText("Normal State:");
@@ -682,10 +684,10 @@ public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements A
             setTrackingEnabled(false);
 
             // initDeviceComboBox( LMControlAreaTrigger.TYPE_STATUS );
-            int[] ptType = { com.cannontech.database.data.point.PointTypes.STATUS_POINT };
+            List<PointType> pointTypes = Lists.newArrayList(PointType.Status);
 
             getJButtonProjection().setEnabled(false);
-            getJPanelTriggerID().setPointTypeFilter(ptType);
+            getJPanelTriggerID().setPointTypeFilter(pointTypes);
         }
 
         updateStates();

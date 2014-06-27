@@ -89,7 +89,7 @@ public abstract class RemoteBase extends TwoWayDevice {
 
         int portId = getDeviceDirectCommSettings().getPortID();
 
-        if (PaoType.isTcpPortEligible(getPaoType()) && DeviceTypesFuncs.isTcpPort(portId)) {
+        if (getPaoType().isTcpPortEligible() && DeviceTypesFuncs.isTcpPort(portId)) {
             int deviceId = getPAObjectID();
             PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
             try {
@@ -156,7 +156,7 @@ public abstract class RemoteBase extends TwoWayDevice {
 
     public void addTcpProperties() {
 
-        if (PaoType.isTcpPortEligible(getPaoType())) {
+        if (getPaoType().isTcpPortEligible()) {
 
             PaoPropertyDao propertyDao = YukonSpringHook.getBean(PaoPropertyDao.class);
             int deviceId = getPAObjectID();

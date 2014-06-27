@@ -36,6 +36,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.ServletRequestEnumUtils;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -69,11 +70,11 @@ public class ChangeDeviceTypeController {
         }
 
         // Only add device types that are valid for the collection 
-        Map<String, Integer> deviceTypes = Maps.newTreeMap();
+        Map<String, PaoType> deviceTypes = Maps.newTreeMap();
         for (PaoType paoType : paoTypes) {
             Set<PaoDefinition> changeablePaos = paoDefinitionService.getChangeablePaos(paoType);
             for (PaoDefinition paoDefinition : changeablePaos) {
-                deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType().getDeviceTypeId());
+                deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
             }
         }
         model.addAttribute("deviceTypes", deviceTypes);
@@ -105,11 +106,11 @@ public class ChangeDeviceTypeController {
         recentResultsCache.addResult(resultsId, callbackResult);
         
         // PROCESS
-        final int selectedDeviceType = ServletRequestUtils.getRequiredIntParameter(request, "deviceTypes"); 
+        final PaoType selectedDeviceType = ServletRequestEnumUtils.getRequiredEnumParameter(request, PaoType.class, "deviceTypes"); 
         SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
-                changeDeviceTypeService.changeDeviceType(device, PaoType.getForId(selectedDeviceType));
+                changeDeviceTypeService.changeDeviceType(device, selectedDeviceType);
             }
         };
         

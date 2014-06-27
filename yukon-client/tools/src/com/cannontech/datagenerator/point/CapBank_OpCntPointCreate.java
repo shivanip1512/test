@@ -16,8 +16,8 @@ import java.util.Vector;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -38,10 +38,11 @@ public class CapBank_OpCntPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isDeviceValid( LiteYukonPAObject litePaobject_ ) {
+	@Override
+    public boolean isDeviceValid( LiteYukonPAObject litePaobject_ ) {
 		// All Switched Cap Banks are valid
         CapbankDao dao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
-		if(DeviceTypesFuncs.CAPBANK == litePaobject_.getPaoType().getDeviceTypeId())
+		if(PaoType.CAPBANK == litePaobject_.getPaoType())
 			return dao.isSwitchedBank(new Integer(litePaobject_.getLiteID()));
 			
 		return false;
@@ -50,7 +51,8 @@ public class CapBank_OpCntPointCreate extends PointCreate
 	/**
 	 * Returns true if the Point already exists for the Device
 	 */
-	public boolean isPointCreated( LitePoint lp ) {
+	@Override
+    public boolean isPointCreated( LitePoint lp ) {
 		return ((lp.getPointOffset() == 1) && 
 				(lp.getPointType() == PointTypes.ANALOG_POINT));
 	}
@@ -59,7 +61,8 @@ public class CapBank_OpCntPointCreate extends PointCreate
 	 * Parses through the deviceList and creates a multiDBPersistent
 	 *  of Analog points to be inserted as Operations Count points for Cap Banks.
 	 */
-	public boolean create()  {
+	@Override
+    public boolean create()  {
 		CTILogger.info("Starting Operations Count Point creation process...");
 	
 		Vector<LiteYukonPAObject> opCountDevices = getDeviceVector();

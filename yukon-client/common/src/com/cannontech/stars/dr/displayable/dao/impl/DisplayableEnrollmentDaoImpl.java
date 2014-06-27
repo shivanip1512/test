@@ -14,7 +14,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
@@ -142,12 +141,12 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                  * If a load program has both RFN and PLC ExpressCom load groups, then both RFN and
                  * non-RFN devices will be visible in the list. */
                 List<LoadGroup> loadGroups = loadGroupDao.getByStarsProgramId(program.getProgramId());
-                if (program.getPaoType().getDeviceTypeId() == DeviceTypes.LM_DIRECT_PROGRAM) {
+                if (program.getPaoType() == PaoType.LM_DIRECT_PROGRAM) {
                     boolean isValid = false;
                     for (LoadGroup group : loadGroups) {
-                        if ((group.getPaoIdentifier().getPaoType().getDeviceTypeId() == DeviceTypes.LM_GROUP_RFN_EXPRESSCOMM
+                        if ((group.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_RFN_EXPRESSCOMM
                                 && type.isRf()) 
-                         || (group.getPaoIdentifier().getPaoType().getDeviceTypeId() != DeviceTypes.LM_GROUP_RFN_EXPRESSCOMM
+                         || (group.getPaoIdentifier().getPaoType() != PaoType.LM_GROUP_RFN_EXPRESSCOMM
                                 && !type.isRf())) {
                             isValid = true;
                             break;

@@ -41,12 +41,12 @@ public class TDCDeviceTreeModel extends AbstractDeviceTreeModel {
 
             rootNode.removeAllChildren();
 
-            int currType = Integer.MIN_VALUE;
+            PaoType currType = null;
             DummyTreeNode devTypeNode = null;
             for (int i = 0; i < paos.size(); i++) {
                 LiteYukonPAObject litPao = paos.get(i);
 
-                if (currType != litPao.getPaoType().getDeviceTypeId()) {
+                if (currType != litPao.getPaoType()) {
                     devTypeNode = new DummyTreeNode(litPao.getPaoType().getDbString());
                     typeList.add(devTypeNode);
                 }
@@ -55,7 +55,7 @@ public class TDCDeviceTreeModel extends AbstractDeviceTreeModel {
                 devTypeNode.add(deviceNode);
                 deviceNode.setWillHaveChildren(true);
 
-                currType = litPao.getPaoType().getDeviceTypeId();
+                currType = litPao.getPaoType();
 
             } // for loop
         } // synch

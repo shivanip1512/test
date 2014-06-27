@@ -32,6 +32,7 @@ import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -299,9 +300,9 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     private void updatePortSettings(ActionEvent arg1) {
         fireInputUpdate();
         PaoType paoType = ((LiteYukonPAObject) getPortComboBox().getSelectedItem()).getPaoType();
-        getDialupSettingsPanel().setVisible(PaoType.isDialupPort(paoType.getDeviceTypeId()));
+        getDialupSettingsPanel().setVisible(paoType.isDialupPort());
 
-        boolean tcpport = (paoType == PaoType.TCPPORT) && (PaoType.isTcpPortEligible(deviceType));
+        boolean tcpport = (paoType == PaoType.TCPPORT) && (deviceType.isTcpPortEligible());
 
         getTcpIpAddressTextField().setVisible(tcpport);
         getTcpIpAddressLabel().setVisible(tcpport);
@@ -1828,7 +1829,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         deviceBase = (DeviceBase) val;
 
         deviceBase.setPAOName(getNameTextField().getText());
-        int devType = deviceBase.getPaoType().getDeviceTypeId();
+        PaoType paoType = deviceBase.getPaoType();
 
         if (getDisableFlagCheckBox().isSelected()) {
             deviceBase.setDisableFlag(new Character('Y'));
@@ -1836,13 +1837,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             deviceBase.setDisableFlag(new Character('N'));
         }
 
-        PaoPropertyDao propertyDao =
-            YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
+        PaoPropertyDao propertyDao = YukonSpringHook.getBean(PaoPropertyDao.class);
         propertyDao.removeAll(deviceBase.getPAObjectID());
 
         LiteYukonPAObject port = (LiteYukonPAObject) getPortComboBox().getSelectedItem();
         if (port != null && PaoType.TCPPORT == port.getPaoType()
-            && PaoType.isTcpPortEligible(deviceType)) {
+            && deviceType.isTcpPortEligible()) {
             String portNum = getTcpPortTextField().getText();
             String ipAddress = getTcpIpAddressTextField().getText();
 
@@ -1861,9 +1861,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         }
 
         // This is a little bit ugly
-        // The address could be coming from three distinct
-        // types of devices - yet all devices have an address
-        // eeck.
+        // The address could be coming from three distinct types of devices - yet all devices have an address eeck.
         if (getPhysicalAddressTextField().isVisible()) {
             try {
                 Integer address = new Integer(
@@ -1871,22 +1869,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
                 if (val instanceof CarrierBase) {
                     CarrierBase carrierBase = (CarrierBase) val;
-                    if (devType == DeviceTypes.REPEATER) { // val instanceof
-                                                           // Repeater900
-                        carrierBase
-                            .getDeviceCarrierSettings()
-                            .setAddress(new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET));
-                    } else if (devType == DeviceTypes.REPEATER_921) {// val
-                                                                     // instanceof
-                                                                     // Repeater921
-                        carrierBase.getDeviceCarrierSettings()
-                            .setAddress(
-                                        new Integer(
-                                                    address.intValue()
-                                                            + Repeater921.ADDRESS_OFFSET));
+                    if (paoType == PaoType.REPEATER) { // val instanceof Repeater900
+                        carrierBase.getDeviceCarrierSettings().setAddress(new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET));
+                    } else if (paoType == PaoType.REPEATER_921) {// val instanceof Repeater921
+                        carrierBase.getDeviceCarrierSettings().setAddress(new Integer(address.intValue() + Repeater921.ADDRESS_OFFSET));
                     } else {
-                        carrierBase.getDeviceCarrierSettings()
-                            .setAddress(address);
+                        carrierBase.getDeviceCarrierSettings().setAddress(address);
                     }
                 } else if (val instanceof IDLCBase) {
                     IDLCBase idlcBase = (IDLCBase) val;
@@ -1903,16 +1891,11 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
             litePort = (LiteYukonPAObject) getPortComboBox().getSelectedItem();
             // get new port from combo box and set it.
-            gridAdvisorBase.getDeviceDirectCommSettings()
-                .setPortID(litePort.getLiteID());
+            gridAdvisorBase.getDeviceDirectCommSettings().setPortID(litePort.getLiteID());
             try {
-                gridAdvisorBase.getDeviceAddress()
-                    .setMasterAddress(
-                                      new Integer(
-                                                  getPhysicalAddressTextField().getText()));
+                gridAdvisorBase.getDeviceAddress().setMasterAddress(new Integer(getPhysicalAddressTextField().getText()));
             } catch (NumberFormatException e) {
-                gridAdvisorBase.getDeviceAddress()
-                    .setMasterAddress(new Integer(0));
+                gridAdvisorBase.getDeviceAddress().setMasterAddress(new Integer(0));
             }
         }
 
@@ -1928,29 +1911,23 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
             Object postCommWaitSpinVal = getPostCommWaitSpinner().getValue();
             if (postCommWaitSpinVal instanceof Long) {
-                postCommWait = new Integer(
-                                           ((Long) postCommWaitSpinVal).intValue());
+                postCommWait = new Integer(((Long) postCommWaitSpinVal).intValue());
             } else if (postCommWaitSpinVal instanceof Integer) {
-                postCommWait = new Integer(
-                                           ((Integer) postCommWaitSpinVal).intValue());
+                postCommWait = new Integer(((Integer) postCommWaitSpinVal).intValue());
             }
 
             if (val instanceof IDLCBase) {
                 IDLCBase idlcBase = (IDLCBase) val;
                 idlcBase.getDeviceIDLCRemote().setPostCommWait(postCommWait);
-                idlcBase.getDeviceIDLCRemote()
-                    .setCcuAmpUseType(
-                                      getJComboBoxAmpUseType().getSelectedItem()
-                                          .toString());
+                idlcBase.getDeviceIDLCRemote().setCcuAmpUseType(getJComboBoxAmpUseType().getSelectedItem().toString());
             }
 
-            if (PaoType.isDialupPort(port.getPaoType().getDeviceTypeId())) {
+            if (port.getPaoType().isDialupPort()) {
                 DeviceDialupSettings dDialup = remoteBase.getDeviceDialupSettings();
 
                 getAdvancedPanel().getValue(dDialup);
 
-                dDialup.setPhoneNumber(getPhoneNumberTextField().getText()
-                    .trim());
+                dDialup.setPhoneNumber(getPhoneNumberTextField().getText().trim());
                 if (val instanceof TapTerminalBase) {
                     dDialup.setLineSettings("7E1");
                 } else {
@@ -1964,30 +1941,19 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                                           // )
                 DNPBase dnpBase = (DNPBase) val;
                 try {
-                    dnpBase.getDeviceAddress()
-                        .setMasterAddress(
-                                          new Integer(
-                                                      getPhysicalAddressTextField().getText()));
+                    dnpBase.getDeviceAddress().setMasterAddress(new Integer(getPhysicalAddressTextField().getText()));
                 } catch (NumberFormatException e) {
                     dnpBase.getDeviceAddress().setMasterAddress(new Integer(0));
                 }
 
                 try {
-                    dnpBase.getDeviceAddress()
-                        .setSlaveAddress(
-                                         new Integer(
-                                                     getSlaveAddressComboBox().getSelectedItem()
-                                                         .toString()));
+                    dnpBase.getDeviceAddress().setSlaveAddress(new Integer(getSlaveAddressComboBox().getSelectedItem().toString()));
                 } catch (NumberFormatException e) {
                     dnpBase.getDeviceAddress().setSlaveAddress(new Integer(0));
                 }
 
                 try {
-                    dnpBase.getDeviceAddress()
-                        .setPostCommWait(
-                                         new Integer(
-                                                     getPostCommWaitSpinner().getValue()
-                                                         .toString()));
+                    dnpBase.getDeviceAddress().setPostCommWait(new Integer(getPostCommWaitSpinner().getValue().toString()));
                 } catch (NumberFormatException e) {
                     dnpBase.getDeviceAddress().setPostCommWait(new Integer(0));
                 }
@@ -1996,20 +1962,13 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 Series5Base series5Base = (Series5Base) val;
 
                 try {
-                    series5Base.getSeries5()
-                        .setSlaveAddress(
-                                         new Integer(
-                                                     getPhysicalAddressTextField().getText()));
+                    series5Base.getSeries5().setSlaveAddress(new Integer(getPhysicalAddressTextField().getText()));
                 } catch (NumberFormatException e) {
                     series5Base.getSeries5().setSlaveAddress(new Integer(0));
                 }
 
                 try {
-                    series5Base.getSeries5()
-                        .setPostCommWait(
-                                         new Integer(
-                                                     getPostCommWaitSpinner().getValue()
-                                                         .toString()));
+                    series5Base.getSeries5().setPostCommWait(new Integer(getPostCommWaitSpinner().getValue().toString()));
                 } catch (NumberFormatException e) {
                     series5Base.getSeries5().setPostCommWait(new Integer(0));
                 }
@@ -2022,17 +1981,13 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             } else if (val instanceof RTCBase) {
                 RTCBase rtcBase = (RTCBase) val;
                 try {
-                    rtcBase.getDeviceRTC()
-                        .setRTCAddress(
-                                       new Integer(
-                                                   getPhysicalAddressTextField().getText()));
+                    rtcBase.getDeviceRTC().setRTCAddress(new Integer(getPhysicalAddressTextField().getText()));
                 } catch (NumberFormatException e) {
                     rtcBase.getDeviceRTC().setRTCAddress(new Integer(0));
                 }
 
                 try {
-                    rtcBase.setLBTMode(getSlaveAddressComboBox().getSelectedItem()
-                        .toString());
+                    rtcBase.setLBTMode(getSlaveAddressComboBox().getSelectedItem().toString());
                 } catch (NumberFormatException e) {
                     rtcBase.getDeviceRTC().setLBTMode(new Integer(0));
                 }
@@ -2045,27 +2000,21 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
             } else if (val instanceof RTM) {
                 RTM rtm = (RTM) val;
-                rtm.getDeviceIED()
-                    .setSlaveAddress(getPhysicalAddressTextField().getText());
+                rtm.getDeviceIED().setSlaveAddress(getPhysicalAddressTextField().getText());
             } else if (val instanceof IEDBase) {
                 IEDBase iedBase = (IEDBase) val;
                 String password = getPasswordTextField().getText();
                 if (password.length() > 0) {
                     if (val instanceof WCTPTerminal) {
-                        ((WCTPTerminal) val).getDeviceTapPagingSettings()
-                            .setPOSTPath(password);
+                        ((WCTPTerminal) val).getDeviceTapPagingSettings().setPOSTPath(password);
                     } else {
                         iedBase.getDeviceIED().setPassword(password);
                     }
                 } else {
                     if (val instanceof TapTerminalBase) {
-                        ((TapTerminalBase) val).getDeviceTapPagingSettings()
-                            .setPOSTPath(
-                                         com.cannontech.common.util.CtiUtilities.STRING_NONE);
+                        ((TapTerminalBase) val).getDeviceTapPagingSettings().setPOSTPath(CtiUtilities.STRING_NONE);
                     } else {
-                        iedBase.getDeviceIED()
-                            .setPassword(
-                                         com.cannontech.common.util.CtiUtilities.STRING_NONE);
+                        iedBase.getDeviceIED().setPassword(CtiUtilities.STRING_NONE);
                     }
                 }
 
@@ -2073,14 +2022,11 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                     TapTerminalBase tapTerminalBase = (TapTerminalBase) val;
                     if (getSenderTextField().isVisible()
                         && getSenderTextField().getText().length() > 0) {
-                        tapTerminalBase.getDeviceTapPagingSettings()
-                            .setSender(getSenderTextField().getText());
+                        tapTerminalBase.getDeviceTapPagingSettings().setSender(getSenderTextField().getText());
                     }
                     if (getSecurityCodeTextField().isVisible()
                         && getSecurityCodeTextField().getText().length() > 0) {
-                        tapTerminalBase.getDeviceTapPagingSettings()
-                            .setSecurityCode(
-                                             getSecurityCodeTextField().getText());
+                        tapTerminalBase.getDeviceTapPagingSettings().setSecurityCode(getSecurityCodeTextField().getText());
                     }
                 }
 
@@ -2095,11 +2041,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                     } else {
                         /**** END SUPER HACK ****/
                         slaveAddress =
-                            new String(
-                                       getSlaveAddressComboBox().getSelectedItem() != null ? getSlaveAddressComboBox()
-                                           .getSelectedItem()
-                                           .toString()
-                                               : "");
+                            new String(getSlaveAddressComboBox().getSelectedItem() != null ? 
+                                    getSlaveAddressComboBox().getSelectedItem().toString() : "");
                     }
 
                     iedBase.getDeviceIED().setSlaveAddress(slaveAddress);
@@ -2107,20 +2050,13 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             } else if (val instanceof CCU721) {
                 CCU721 ccu721 = (CCU721) val;
                 try {
-                    ccu721.getDeviceAddress()
-                        .setMasterAddress(
-                                          new Integer(
-                                                      getPhysicalAddressTextField().getText()));
+                    ccu721.getDeviceAddress().setMasterAddress(new Integer(getPhysicalAddressTextField().getText()));
                 } catch (NumberFormatException e) {
                     ccu721.getDeviceAddress().setMasterAddress(new Integer(0));
                 }
 
                 try {
-                    ccu721.getDeviceAddress()
-                        .setSlaveAddress(
-                                         new Integer(
-                                                     getSlaveAddressComboBox().getSelectedItem()
-                                                         .toString()));
+                    ccu721.getDeviceAddress().setSlaveAddress(new Integer(getSlaveAddressComboBox().getSelectedItem().toString()));
                 } catch (NumberFormatException e) {
                     ccu721.getDeviceAddress().setSlaveAddress(new Integer(0));
                 }
@@ -2129,24 +2065,15 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         } else {
             if (val instanceof CarrierBase) {
                 CarrierBase carrierBase = (CarrierBase) val;
-                int routeId =
-                    (((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID());
+                int routeId = (((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID());
                 carrierBase.getDeviceRoutes().setRouteID(routeId);
             } else if (val instanceof RfnBase) {
                 RfnBase rfnBase = (RfnBase) val;
-                rfnBase.getRfnAddress()
-                    .setSerialNumber(StringUtils.trimToNull(getSerialNumberTextField().getText())); // Don't
-                                                                                                    // respect
-                                                                                                    // leading
-                                                                                                    // or
-                                                                                                    // trailing
-                                                                                                    // spaces
+                rfnBase.getRfnAddress().setSerialNumber(StringUtils.trimToNull(getSerialNumberTextField().getText())); // Don't respect leading or trailing spaces
                 String manufacturer = StringUtils.trimToNull(getManufacturerTextField().getText());
-                rfnBase.getRfnAddress().setManufacturer(manufacturer == null ? null
-                        : getManufacturerTextField().getText());
+                rfnBase.getRfnAddress().setManufacturer(manufacturer == null ? null : getManufacturerTextField().getText());
                 String model = StringUtils.trimToNull(getModelTextField().getText());
-                rfnBase.getRfnAddress().setModel(model == null ? null : getModelTextField()
-                    .getText());
+                rfnBase.getRfnAddress().setModel(model == null ? null : getModelTextField().getText());
             }
         }
 
@@ -2265,8 +2192,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
         if (getPhysicalAddressTextField().isVisible()
             && (getPhysicalAddressTextField().getText() == null
-            || getPhysicalAddressTextField().getText().length() < 1))
-        {
+            || getPhysicalAddressTextField().getText().length() < 1)) {
             setErrorString("The Address text field must be filled in");
             return false;
         }
@@ -2275,8 +2201,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             PaoType paoType = deviceBase.getPaoType();
             try {
                 int address = Integer.parseInt(getPhysicalAddressTextField().getText());
-                IntegerRange range =
-                    dlcAddressRangeService.getEnforcedAddressRangeForDevice(paoType);
+                IntegerRange range = dlcAddressRangeService.getEnforcedAddressRangeForDevice(paoType);
                 // Verify Address is within range
                 if (!range.isWithinRange(address)) {
                     setErrorString("Invalid address. Device address range: " + range);
@@ -2290,14 +2215,11 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                     }
                 }
 
-                // verify that there are no duplicate physical address for CCUs or RTUs on a
-                // dedicated channel
+                // verify that there are no duplicate physical address for CCUs or RTUs on a dedicated channel
                 LiteYukonPAObject port = ((LiteYukonPAObject) getPortComboBox().getSelectedItem());
-                if (port != null && (!PaoType.isDialupPort(port.getPaoType().getDeviceTypeId())) &&
+                if (port != null && (!port.getPaoType().isDialupPort()) &&
                     (deviceType.isCcu() || deviceType.isRtu() || deviceType.isIon())) {
-                    if (!checkForDuplicateAddresses(address,
-                                                    deviceBase.getPAObjectID(),
-                                                    port.getLiteID())) {
+                    if (!checkForDuplicateAddresses(address, deviceBase.getPAObjectID(), port.getLiteID())) {
                         return false;
                     }
                 }
@@ -2321,12 +2243,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
              * Invalid:
              * 1. One or two of the three fields are blank.
              */
-            boolean allBlank =
-                StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer)
-                        && StringUtils.isBlank(model);
-            boolean allFilledIn =
-                StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer)
-                        && StringUtils.isNotBlank(model);
+            boolean allBlank = StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer) && StringUtils.isBlank(model);
+            boolean allFilledIn = StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer) && StringUtils.isNotBlank(model);
             if (!allBlank && !allFilledIn) {
                 setErrorString("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
                 return false;
@@ -2413,15 +2331,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             MCTBase mctBase = (MCTBase) base;
 
             getJPanelMCTSettings().setVisible(true);
-            if (DatabaseEditorUtil.isTagSupported(mctBase,
-                                                  ImmutableSet.of(PaoTag.DEVICE_CONFIGURATION))) {
+            if (DatabaseEditorUtil.isTagSupported(mctBase, ImmutableSet.of(PaoTag.DEVICE_CONFIGURATION))) {
                 int id = mctBase.getPAObjectID();
                 PaoType type = mctBase.getPaoType();
                 SimpleDevice device = new SimpleDevice(id, type);
-                DeviceConfigurationDao deviceConfigurationDao =
-                    YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
-                LightDeviceConfiguration config =
-                    deviceConfigurationDao.findConfigurationForDevice(device);
+                DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean(DeviceConfigurationDao.class);
+                LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
                 if (config != null) {
                     getAssignedMctConfigLabel().setText(config.getName());
                 } else {
@@ -2536,8 +2451,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         getPhysicalAddressLabel().setVisible(true);
         getPhysicalAddressLabel().setText("Serial Number:");
         getPhysicalAddressTextField().setVisible(true);
-        getPhysicalAddressTextField().setText(gBase.getDeviceAddress().getMasterAddress()
-            .toString());
+        getPhysicalAddressTextField().setText(gBase.getDeviceAddress().getMasterAddress().toString());
         getPasswordLabel().setVisible(false);
         getPasswordTextField().setVisible(false);
         getSlaveAddressLabel().setVisible(false);
@@ -2578,7 +2492,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 if (ports.get(i).getYukonID() == portID) {
                     getPortComboBox().setSelectedItem(litePort);
 
-                    if (PaoType.isDialupPort(litePort.getPaoType().getDeviceTypeId())) {
+                    if (litePort.getPaoType().isDialupPort()) {
                         getDialupSettingsPanel().setVisible(true);
                     }
                 }
@@ -2599,14 +2513,10 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
                 // add the extra options for CCU-711's only!
                 if (rBase.getPaoType() == PaoType.CCU711) {
-                    getJComboBoxAmpUseType()
-                        .addItem(com.cannontech.database.db.device.DeviceIDLCRemote.AMPUSE_ALTERNATING);
-                    getJComboBoxAmpUseType()
-                        .addItem(com.cannontech.database.db.device.DeviceIDLCRemote.AMPUSE_DEF_1_FAIL_2);
-                    getJComboBoxAmpUseType()
-                        .addItem(com.cannontech.database.db.device.DeviceIDLCRemote.AMPUSE_DEF_2_FAIL_1);
-                    getJComboBoxAmpUseType()
-                        .addItem(com.cannontech.database.db.device.DeviceIDLCRemote.AMPUSE_ALT_FAILOVER);
+                    getJComboBoxAmpUseType().addItem(DeviceIDLCRemote.AMPUSE_ALTERNATING);
+                    getJComboBoxAmpUseType().addItem(DeviceIDLCRemote.AMPUSE_DEF_1_FAIL_2);
+                    getJComboBoxAmpUseType().addItem(DeviceIDLCRemote.AMPUSE_DEF_2_FAIL_1);
+                    getJComboBoxAmpUseType().addItem(DeviceIDLCRemote.AMPUSE_ALT_FAILOVER);
                 }
 
             }
@@ -2643,10 +2553,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 getSecurityCodeLabel().setVisible(true);
                 getSecurityCodeTextField().setVisible(true);
 
-                getSenderTextField().setText(((TapTerminalBase) rBase)
-                    .getDeviceTapPagingSettings().getSender());
-                getSecurityCodeTextField().setText(((TapTerminalBase) rBase)
-                    .getDeviceTapPagingSettings().getSecurityCode());
+                getSenderTextField().setText(((TapTerminalBase) rBase).getDeviceTapPagingSettings().getSender());
+                getSecurityCodeTextField().setText(((TapTerminalBase) rBase).getDeviceTapPagingSettings().getSecurityCode());
             } else if (rBase instanceof SNPPTerminal) {
                 getSenderLabel().setText("Login: ");
                 getSenderLabel().setVisible(true);
@@ -2657,10 +2565,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 getPasswordLabel().setVisible(false);
                 getPasswordTextField().setVisible(false);
 
-                getSenderTextField().setText(((TapTerminalBase) rBase)
-                    .getDeviceTapPagingSettings().getSender());
-                getSecurityCodeTextField().setText(((TapTerminalBase) rBase)
-                    .getDeviceTapPagingSettings().getSecurityCode());
+                getSenderTextField().setText(((TapTerminalBase) rBase).getDeviceTapPagingSettings().getSender());
+                getSecurityCodeTextField().setText(((TapTerminalBase) rBase).getDeviceTapPagingSettings().getSecurityCode());
             }
 
             String password;
@@ -2691,10 +2597,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 // getPhysicalAddressLabel().setText("RTM Address:");
                 getPhysicalAddressLabel().setText("Physical Address:");
                 getPhysicalAddressTextField().setVisible(true);
-                ivjPhysicalAddressTextField
-                    .setDocument(new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 15));
-                getPhysicalAddressTextField().setText(((IEDBase) rBase).getDeviceIED()
-                    .getSlaveAddress());
+                ivjPhysicalAddressTextField.setDocument(new LongRangeDocument(0, 15));
+                getPhysicalAddressTextField().setText(((IEDBase) rBase).getDeviceIED().getSlaveAddress());
 
                 getSlaveAddressLabel().setVisible(false);
                 getSlaveAddressComboBox().setVisible(false);
@@ -2710,9 +2614,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 getSlaveAddressComboBox().setEditable(true);
                 getSlaveAddressComboBox().removeAllItems();
 
-                com.cannontech.common.gui.util.JTextFieldComboEditor e =
-                    new com.cannontech.common.gui.util.JTextFieldComboEditor();
-                e.setDocument(new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 16000));
+                JTextFieldComboEditor e = new JTextFieldComboEditor();
+                e.setDocument(new LongRangeDocument(0, 16000));
                 e.addCaretListener(eventHandler);
                 getSlaveAddressComboBox().setEditor(e);
 
@@ -2735,8 +2638,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             getPhysicalAddressLabel().setText("Master Address:");
             getPhysicalAddressTextField().setDocument(new LongRangeDocument(0, 65535));
             getPhysicalAddressTextField().setVisible(true);
-            getPhysicalAddressTextField().setText(((DNPBase) rBase).getDeviceAddress()
-                .getMasterAddress().toString());
+            getPhysicalAddressTextField().setText(((DNPBase) rBase).getDeviceAddress().getMasterAddress().toString());
 
             getSlaveAddressLabel().setVisible(true);
             getSlaveAddressComboBox().setVisible(true);
@@ -2744,17 +2646,14 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             // create a new editor for our combobox so we can set the document
             getSlaveAddressComboBox().setEditable(true);
             getSlaveAddressComboBox().removeAllItems();
-            com.cannontech.common.gui.util.JTextFieldComboEditor editor =
-                new com.cannontech.common.gui.util.JTextFieldComboEditor();
+            JTextFieldComboEditor editor = new JTextFieldComboEditor();
             editor.setDocument(new LongRangeDocument(0, 65535));
             editor.addCaretListener(eventHandler); // be sure to fireInputUpdate() messages!
 
             getSlaveAddressComboBox().setEditor(editor);
-            getSlaveAddressComboBox().addItem(((DNPBase) rBase).getDeviceAddress()
-                .getSlaveAddress());
+            getSlaveAddressComboBox().addItem(((DNPBase) rBase).getDeviceAddress().getSlaveAddress());
 
-            getPostCommWaitSpinner().setValue(((DNPBase) rBase).getDeviceAddress()
-                .getPostCommWait());
+            getPostCommWaitSpinner().setValue(((DNPBase) rBase).getDeviceAddress().getPostCommWait());
 
             getPasswordLabel().setVisible(false);
             getPasswordTextField().setVisible(false);
@@ -2764,10 +2663,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             getPhysicalAddressLabel().setVisible(true);
             getPhysicalAddressLabel().setText("Address:");
             getPhysicalAddressTextField().setVisible(true);
-            getPhysicalAddressTextField()
-                .setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(1, 127));
-            getPhysicalAddressTextField().setText(((Series5Base) rBase).getSeries5()
-                .getSlaveAddress().toString());
+            getPhysicalAddressTextField().setDocument(new DoubleRangeDocument(1, 127));
+            getPhysicalAddressTextField().setText(((Series5Base) rBase).getSeries5().getSlaveAddress().toString());
 
             getSlaveAddressLabel().setVisible(false);
             getSlaveAddressComboBox().setVisible(false);
@@ -2790,10 +2687,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             getPhysicalAddressLabel().setVisible(true);
             getPhysicalAddressLabel().setText("Physical Address:");
             getPhysicalAddressTextField().setVisible(true);
-            getPhysicalAddressTextField()
-                .setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0, 15));
-            getPhysicalAddressTextField().setText(((RTCBase) rBase).getDeviceRTC().getRTCAddress()
-                .toString());
+            getPhysicalAddressTextField().setDocument(new DoubleRangeDocument(0, 15));
+            getPhysicalAddressTextField().setText(((RTCBase) rBase).getDeviceRTC().getRTCAddress().toString());
 
             getSlaveAddressLabel().setText("Listen Before Talk: ");
             getSlaveAddressLabel().setVisible(true);
@@ -2806,13 +2701,10 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             getSlaveAddressComboBox().addItem(RTCBase.LBT2);
             getSlaveAddressComboBox().addItem(RTCBase.LBT1);
             getSlaveAddressComboBox().addItem(RTCBase.LBT0);
-            getSlaveAddressComboBox().setSelectedItem(RTCBase.getLBTModeString(((RTCBase) rBase)
-                .getDeviceRTC().getLBTMode()));
+            getSlaveAddressComboBox().setSelectedItem(RTCBase.getLBTModeString(((RTCBase) rBase).getDeviceRTC().getLBTMode()));
 
             getPostCommWaitSpinner().setVisible(false);
             getPostCommWaitLabel().setVisible(false);
-            // getPostCommWaitSpinner().setValue( ((RTCBase)rBase).getDeviceRTC().getPostCommWait()
-            // );
             getWaitLabel().setVisible(false);
             getPasswordLabel().setVisible(false);
             getPasswordTextField().setVisible(false);
@@ -2829,8 +2721,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             getPhysicalAddressLabel().setVisible(false);
             getPhysicalAddressLabel().setText("Master Address:");
             getPhysicalAddressTextField().setVisible(false);
-            getPhysicalAddressTextField().setText(((CCU721) rBase).getDeviceAddress()
-                .getMasterAddress().toString());
+            getPhysicalAddressTextField().setText(((CCU721) rBase).getDeviceAddress().getMasterAddress().toString());
 
             getSlaveAddressLabel().setVisible(true);
             getSlaveAddressComboBox().setVisible(true);
@@ -2841,8 +2732,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             JTextFieldComboEditor editor = new JTextFieldComboEditor();
             editor.addCaretListener(eventHandler); // be sure to fireInputUpdate() messages!
             getSlaveAddressComboBox().setEditor(editor);
-            getSlaveAddressComboBox()
-                .addItem(((CCU721) rBase).getDeviceAddress().getSlaveAddress());
+            getSlaveAddressComboBox().addItem(((CCU721) rBase).getDeviceAddress().getSlaveAddress());
 
             getPostCommWaitSpinner().setVisible(false);
             getPostCommWaitLabel().setVisible(false);
@@ -2862,16 +2752,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             int id = rBase.getPAObjectID();
             PaoType type = rBase.getPaoType();
             SimpleDevice device = new SimpleDevice(id, type);
-            DeviceConfigurationDao deviceConfigurationDao =
-                YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
-            LightDeviceConfiguration config =
-                deviceConfigurationDao.findConfigurationForDevice(device);
+            DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean(DeviceConfigurationDao.class);
+            LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
             if (config != null) {
-                DeviceConfiguration configuration =
-                    deviceConfigurationDao.getDeviceConfiguration(config.getConfigurationId());
+                DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(config.getConfigurationId());
 
-                DNPConfiguration dnpConfig =
-                    deviceConfigurationDao.getDnpConfiguration(configuration);
+                DNPConfiguration dnpConfig = deviceConfigurationDao.getDnpConfiguration(configuration);
                 getAssignedDnpConfigLabel().setText(dnpConfig.getName());
 
                 int internalRetries = dnpConfig.getInternalRetries();
@@ -2911,10 +2797,6 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
     }
 
-    /**
-     * This method was created in VisualAge.
-     * @param val Object
-     */
     @Override
     public void setValue(Object val)
     {
@@ -2935,8 +2817,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         SwingUtil.setCheckBoxState(getControlInhibitCheckBox(), deviceBase.getDevice().getControlInhibit());
 
         // This is a bit ugly
-        // The address could come from one of three different types of
-        // devices even though they all have one
+        // The address could come from one of three different types of devices even though they all have one
         // Note also getValue(DBPersistent)
         if (val instanceof CarrierBase) {
             setCarrierBaseValue((CarrierBase) val);
@@ -2987,7 +2868,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         PaoPropertyDao propertyDao =
             YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
         if (port != null) {
-            if (PaoType.TCPPORT == port.getPaoType() && PaoType.isTcpPortEligible(deviceType))
+            if (PaoType.TCPPORT == port.getPaoType() && deviceType.isTcpPortEligible())
             {
                 int id = deviceBase.getPAObjectID();
                 String value = null;

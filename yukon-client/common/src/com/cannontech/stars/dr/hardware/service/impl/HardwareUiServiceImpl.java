@@ -286,12 +286,11 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         YukonListEntry entry = listDao.getYukonListEntry(deviceTypeEntry.getEntryID());
         String deviceTypeName = entry.getEntryText();
         PaoType paoType = PaoType.getForDbString(deviceTypeName);
-        int yukonDeviceTypeId = paoType.getDeviceTypeId();
         
         SimpleDevice yukonDevice = null;
         try {
             int serialNumber = Integer.parseInt(lmHardwareBase.getManufacturerSerialNumber());
-            yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(yukonDeviceTypeId, deviceName, serialNumber , lmHardwareBase.getRouteId(), true);
+            yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(paoType, deviceName, serialNumber , lmHardwareBase.getRouteId(), true);
         } catch (DeviceCreationException e) {
             throw new Lcr3102YukonDeviceCreationException(e);
         } catch (NumberFormatException nfe){

@@ -133,7 +133,7 @@ public class DeviceCommChannelPanel extends DataInputPanel implements ActionList
         }
 
         int portID = port.getLiteID();
-        if ((!PaoType.isDialupPort(port.getPaoType().getDeviceTypeId())) && 
+        if ((!port.getPaoType().isDialupPort()) && 
                 (deviceType.isCcu() || deviceType.isRtu() || deviceType.isIon())) {
 
             String[] devices = DeviceIDLCRemote.isAddressUnique(address, null, portID);
@@ -349,7 +349,7 @@ public class DeviceCommChannelPanel extends DataInputPanel implements ActionList
         if (getPortComboBox().getSelectedItem() == null) {
             return false;
         } else {
-            return PaoType.isDialupPort(((LiteYukonPAObject) getPortComboBox().getSelectedItem()).getPaoType().getDeviceTypeId());
+            return ((LiteYukonPAObject) getPortComboBox().getSelectedItem()).getPaoType().isDialupPort();
         }
     }
 

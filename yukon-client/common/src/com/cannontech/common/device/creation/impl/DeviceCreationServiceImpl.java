@@ -104,11 +104,10 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     
     @Override
     @Transactional
-    public SimpleDevice createCarrierDeviceByDeviceType(int deviceType, String name, int address, int routeId, boolean createPoints) throws DeviceCreationException {
+    public SimpleDevice createCarrierDeviceByDeviceType(PaoType paoType, String name, int address, int routeId, boolean createPoints) throws DeviceCreationException {
 
         // test
-        PaoType type = PaoType.getForId(deviceType);
-        if (!dlcAddressRangeService.isEnforcedAddress(type, address)) {
+        if (!dlcAddressRangeService.isEnforcedAddress(paoType, address)) {
             throw new DeviceCreationException("Invalid address: " + address + ".");
         }
         else if (StringUtils.isBlank(name)) {
@@ -121,13 +120,13 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
         // create
         int newDeviceId = paoDao.getNextPaoId();
-        CarrierBase newDevice = (CarrierBase) DeviceFactory.createDevice(deviceType);
+        CarrierBase newDevice = (CarrierBase) DeviceFactory.createDevice(paoType);
         newDevice.setDeviceID(newDeviceId);
         newDevice.setPAOName(name);
         newDevice.setAddress(address);
         newDevice.getDeviceRoutes().setRouteID(routeId);
 
-        SimpleDevice yukonDevice = createNewDeviceByType(newDevice, createPoints, type);
+        SimpleDevice yukonDevice = createNewDeviceByType(newDevice, createPoints, paoType);
         return yukonDevice;
 
     }

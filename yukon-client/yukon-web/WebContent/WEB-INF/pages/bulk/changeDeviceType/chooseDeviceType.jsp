@@ -6,7 +6,8 @@
 
     <tags:bulkActionContainer key="yukon.common.device.bulk.changeDeviceTypeChoose" deviceCollection="${deviceCollection}">
     
-        <form id="changeTypeForm" method="post" action="/bulk/changeDeviceType/changeDeviceType">
+        <cti:url var="changeTypeUrl" value="/bulk/changeDeviceType/changeDeviceType"/>
+        <form id="changeTypeForm" method="post" action="${changeTypeUrl}">
             <cti:csrfToken/>
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />

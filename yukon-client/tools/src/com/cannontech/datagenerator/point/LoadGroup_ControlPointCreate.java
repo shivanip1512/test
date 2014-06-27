@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -175,7 +175,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 		//All Groups except Macro groups //
 		return
 			litePaobject_.getPaoType().isLoadGroup()
-			&& litePaobject_.getPaoType().getDeviceTypeId() != DeviceTypesFuncs.MACRO_GROUP;
+			&& litePaobject_.getPaoType() != PaoType.MACRO_GROUP;
 	}
 
 	/**
