@@ -157,6 +157,26 @@ yukon.deviceConfig = (function () {
             }
         },
 
+        _openCategoryPopup = function (btn, url) {
+            $('#category-popup').load(url, function () {
+                var title = $('#popup-title').val(),
+                    buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon.deviceConfigs.category.save' });
+
+                $('#category-popup').dialog({ width: 900, height: 600, title: title, buttons: buttons });
+                _initFields();
+                yukon.ui.unbusy(btn);
+            });
+        },
+
+        _initFields = function () {
+            _handleVisibleElemsAndButtons();
+            _hideSlotDisabledEntries();
+            _showSandwichedSlotDisabledEntries();
+            _registerScheduleButtons();
+            _determineDisplayItemAddButtonVisibility();
+            _hideThingsInMap();
+        },
+
         mod = {
 
             /** Initialize the module. Depends on DOM elements so call after page load. */
@@ -179,17 +199,7 @@ yukon.deviceConfig = (function () {
                         url = yukon.url('/deviceConfiguration/category/editInPlace?categoryId='
                             + categoryId + '&configId=' + configId);
 
-                    $('#category-popup').load(url, function () {
-                        yukon.ui.unbusy(btn);
-                        _hideSlotDisabledEntries();
-                        _showSandwichedSlotDisabledEntries();
-                        _handleVisibleElemsAndButtons();
-                        _registerScheduleButtons();
-                        _hideThingsInMap();
-                        var title = $('#popup-title').val(),
-                            buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon.deviceConfigs.category.save' });
-                        $('#category-popup').dialog({ width: 900, height: 600, title: title, buttons: buttons });
-                    });
+                    _openCategoryPopup(btn, url);
                 });
 
                 /** Save button click on cateogry edit or create popup. Post form and handle results */
@@ -204,9 +214,7 @@ yukon.deviceConfig = (function () {
                         },
                         error: function (xhr, status, error, $form) {
                             $('#category-popup').html(xhr.responseText);
-                            _hideThingsInMap();
-                            _hideSlotDisabledEntries();
-                            _showSandwichedSlotDisabledEntries();
+                            _initFields();
                         }
                     });
                 });
@@ -219,22 +227,10 @@ yukon.deviceConfig = (function () {
                         url = yukon.url('/deviceConfiguration/category/createInPlace?categoryType='
                             + type + '&configId=' + configId);
 
-                    $('#category-popup').load(url, function () {
-                        yukon.ui.unbusy(btn);
-                        _handleVisibleElemsAndButtons();
-                        _hideSlotDisabledEntries();
-                        _registerScheduleButtons();
-                        _hideThingsInMap();
-                        var title = $('#popup-title').val(),
-                            buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon.deviceConfigs.category.save' });
-                        $('#category-popup').dialog({ width: 900, height: 600, title: title, buttons: buttons });
-                    });
+                    _openCategoryPopup(btn, url);
                 });
 
-                _hideThingsInMap();
-                _hideSlotDisabledEntries();
-                _determineDisplayItemAddButtonVisibility();
-                _showSandwichedSlotDisabledEntries();
+                _initFields();
 
                 for (num = 1; num < 5; num += 1) {
                     _determineScheduleAddButtonVisibility(num);
@@ -270,8 +266,6 @@ yukon.deviceConfig = (function () {
                         }
                     }
                 });
-
-                _registerScheduleButtons();
 
                 // Find the first type and select his categories
                 pipe = $(".pipe").get(0);
