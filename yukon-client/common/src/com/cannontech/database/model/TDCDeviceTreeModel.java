@@ -12,74 +12,61 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
-/**
- * Insert the type's description here.
- * Creation date: (4/18/00 11:39:02 AM)
- * @author: 
- * @Version: <version>
- */
 public class TDCDeviceTreeModel extends AbstractDeviceTreeModel {
 
-	
-    /**
-     * NoEmptyDeviceTreeModel constructor comment.
-     * @param root javax.swing.tree.TreeNode
-     */
     public TDCDeviceTreeModel() {
-    	super(true, new DBTreeNode("Object Types"));
-    }
-    /**
-     * Insert the method's description here.
-     * Creation date: (4/22/2002 4:11:23 PM)
-     * @param deviceType int
-     */
-    public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
-    	return true;
+        super(true, new DBTreeNode("Object Types"));
     }
 
-    protected synchronized java.util.List<LiteYukonPAObject> getCacheList(IDatabaseCache cache) {
+    @Override
+    public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
+        return true;
+    }
+
+    @Override
+    protected synchronized List<LiteYukonPAObject> getCacheList(IDatabaseCache cache) {
         return cache.getAllYukonPAObjects();
     }
 
     // Override me if you want a sub class to do something different.
+    @Override
     protected synchronized void runUpdate() {
-    	DBTreeNode rootNode = (DBTreeNode)getRoot();
-    	Vector<DummyTreeNode> typeList = new Vector<DummyTreeNode>(32);
+        DBTreeNode rootNode = (DBTreeNode) getRoot();
+        Vector<DummyTreeNode> typeList = new Vector<DummyTreeNode>(32);
 
-    	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-    	synchronized (cache) {
-    		List<LiteYukonPAObject> paos = getCacheList(cache);
-    		Collections.sort(paos, LiteComparators.litePaoTypeComparator);
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        synchronized (cache) {
+            List<LiteYukonPAObject> paos = getCacheList(cache);
+            Collections.sort(paos, LiteComparators.litePaoTypeComparator);
 
-    		rootNode.removeAllChildren();
-    		
-    		int currType = Integer.MIN_VALUE;
-    		DummyTreeNode devTypeNode = null;
-    		for(int i=0; i<paos.size(); i++) {
-    			LiteYukonPAObject litPao = paos.get(i);
+            rootNode.removeAllChildren();
 
-        		if(currType != litPao.getPaoType().getDeviceTypeId()) {
-        			devTypeNode = new DummyTreeNode(litPao.getPaoType().getDbString());
-        			typeList.add(devTypeNode);
-        		}
+            int currType = Integer.MIN_VALUE;
+            DummyTreeNode devTypeNode = null;
+            for (int i = 0; i < paos.size(); i++) {
+                LiteYukonPAObject litPao = paos.get(i);
 
-        		DBTreeNode deviceNode = getNewNode(litPao);
-        		devTypeNode.add(deviceNode);
-        		deviceNode.setWillHaveChildren(true);
+                if (currType != litPao.getPaoType().getDeviceTypeId()) {
+                    devTypeNode = new DummyTreeNode(litPao.getPaoType().getDbString());
+                    typeList.add(devTypeNode);
+                }
 
-        		currType = litPao.getPaoType().getDeviceTypeId();
+                DBTreeNode deviceNode = getNewNode(litPao);
+                devTypeNode.add(deviceNode);
+                deviceNode.setWillHaveChildren(true);
 
-    		} //for loop		
-    	} //synch
+                currType = litPao.getPaoType().getDeviceTypeId();
 
-    	//this list will be a fixed size with a controlled max value
-    	Collections.sort(typeList, DummyTreeNode.comparator);
+            } // for loop
+        } // synch
 
-    	for( int i = 0; i < typeList.size(); i++ ) {
-    		rootNode.add(typeList.get(i));
-    	}
+        // this list will be a fixed size with a controlled max value
+        Collections.sort(typeList, DummyTreeNode.comparator);
 
-    	reload();
+        for (int i = 0; i < typeList.size(); i++) {
+            rootNode.add(typeList.get(i));
+        }
+
+        reload();
     }
-
 }
