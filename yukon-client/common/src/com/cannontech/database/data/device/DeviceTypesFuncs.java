@@ -45,26 +45,6 @@ public final class DeviceTypesFuncs {
                 deviceType == PaoType.CBC_7024);
     }
 
-    /**
-     * Returns all the CBC that require a port for communications.
-     */
-    public final static boolean cbcHasPort(int cbcType) {
-        PaoType paoType;
-        try {
-            paoType = PaoType.getForId(cbcType);
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-        return paoType == PaoType.DNP_CBC_6510 || 
-                paoType == PaoType.CBC_7020 || 
-                paoType == PaoType.CBC_7022 || 
-                paoType == PaoType.CBC_7023 || 
-                paoType == PaoType.CBC_7024 || 
-                paoType == PaoType.CBC_8020 || 
-                paoType == PaoType.CBC_8024 || 
-                paoType == PaoType.CBC_DNP;
-    }
-
     public final static boolean isLoadProfile1Channel(PaoType paoType) {
         switch (paoType) {
         case MCT240:

@@ -2,7 +2,7 @@ package com.cannontech.web.wizard;
 
 
 import com.cannontech.cbc.service.CapControlCreationModel;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 
@@ -51,7 +51,8 @@ public class CBCWizardModel implements CapControlCreationModel{
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#getSelectedType()
      */
-	public int getSelectedType() {
+	@Override
+    public int getSelectedType() {
 		return getSecondaryType() == null || getSecondaryType().intValue() == PAOGroups.INVALID
 					? getWizPaoType() : getSecondaryType().intValue();
 	}
@@ -59,84 +60,111 @@ public class CBCWizardModel implements CapControlCreationModel{
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#isPortNeeded()
      */
-	public boolean isPortNeeded() {
-		return DeviceTypesFuncs.cbcHasPort( getSecondaryType().intValue() );
+	@Override
+    public boolean isPortNeeded() {
+	    int cbcType = getSecondaryType().intValue();
+	    PaoType paoType;
+        try {
+            paoType = PaoType.getForId(cbcType);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+        //All the CBCs that require a port for communications
+        return paoType == PaoType.DNP_CBC_6510 || 
+                paoType == PaoType.CBC_7020 || 
+                paoType == PaoType.CBC_7022 || 
+                paoType == PaoType.CBC_7023 || 
+                paoType == PaoType.CBC_7024 || 
+                paoType == PaoType.CBC_8020 || 
+                paoType == PaoType.CBC_8024 || 
+                paoType == PaoType.CBC_DNP;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#getWizPaoType()
      */
-	public int getWizPaoType() {
+	@Override
+    public int getWizPaoType() {
 		return wizPaoType;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#setWizPaoType(int)
      */
-	public void setWizPaoType(int i) {
+	@Override
+    public void setWizPaoType(int i) {
 		wizPaoType = i;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#getDisabled()
      */
-	public Boolean getDisabled() {
+	@Override
+    public Boolean getDisabled() {
 		return disabled;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#getName()
      */
-	public String getName() {
+	@Override
+    public String getName() {
 		return name;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#setDisabled(java.lang.Boolean)
      */
-	public void setDisabled(Boolean boolean1) {
+	@Override
+    public void setDisabled(Boolean boolean1) {
 		disabled = boolean1;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#setName(java.lang.String)
      */
-	public void setName(String string) {
+	@Override
+    public void setName(String string) {
 		name = string;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#getSecondaryType()
      */
-	public Integer getSecondaryType() {
+	@Override
+    public Integer getSecondaryType() {
 		return secondaryType;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#setSecondaryType(java.lang.Integer)
      */
-	public void setSecondaryType(Integer integer) {
+	@Override
+    public void setSecondaryType(Integer integer) {
 		secondaryType = integer;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#getPortID()
      */
-	public Integer getPortID() {
+	@Override
+    public Integer getPortID() {
 		return portID;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#setPortID(java.lang.Integer)
      */
-	public void setPortID(Integer integer) {
+	@Override
+    public void setPortID(Integer integer) {
 		portID = integer;
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#getNestedWizard()
      */
-	public CBCWizardModel getNestedWizard() {
+	@Override
+    public CBCWizardModel getNestedWizard() {
 		
 		if( nestedWizard == null )
 			nestedWizard = new CBCWizardModel();
@@ -147,7 +175,8 @@ public class CBCWizardModel implements CapControlCreationModel{
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#isCreateNested()
      */
-	public boolean isCreateNested() {
+	@Override
+    public boolean isCreateNested() {
 		return createNested;
 	}
 	
@@ -167,13 +196,15 @@ public class CBCWizardModel implements CapControlCreationModel{
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#setCreateNested(boolean)
      */
-	public void setCreateNested( boolean val ) {
+	@Override
+    public void setCreateNested( boolean val ) {
 		createNested = val;
 	}
 
     /* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#updateDataModel()
      */
+    @Override
     public void updateDataModel() {
         
     }
