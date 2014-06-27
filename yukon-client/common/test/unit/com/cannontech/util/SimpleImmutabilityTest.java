@@ -130,7 +130,6 @@ import com.cannontech.common.pao.PaoInfo;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.dao.impl.CompletePaoMetaData;
-import com.cannontech.common.pao.dao.impl.PaoFieldMetaData;
 import com.cannontech.common.pao.definition.model.PaoData.OptionalField;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointValue;
@@ -375,7 +374,6 @@ public class SimpleImmutabilityTest {
             PagingParameters.class,
             PaoCategory.class,
             PaoClass.class,
-            PaoFieldMetaData.class,
             PaoIdentifier.class,
             PaoInfo.class,
             PaoMultiPointIdentifier.class,
