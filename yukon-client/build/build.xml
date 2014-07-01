@@ -115,8 +115,6 @@
         <ant dir="${loadcontrol}" target="${dotarget}" />
         <ant dir="${dbeditor}" target="${dotarget}" />
         <ant dir="${commander}" target="${dotarget}" />
-        <ant dir="${commands}" target="${dotarget}" />
-        <ant dir="${logger}" target="${dotarget}" />
         <ant dir="${resource}" target="${dotarget}" />
 
         <ant dir="${esub-editor}" target="${dotarget}" />
@@ -127,7 +125,6 @@
         <ant dir="${tools}" target="${dotarget}" />
 
         <ant dir="${multispeak}" target="${dotarget}" />
-        <ant dir="${foreign}" target="${dotarget}" />
         <ant dir="${report}" target="${dotarget}" />
         <ant dir="${notification}" target="${dotarget}" />
         <ant dir="${services}" target="${dotarget}" />

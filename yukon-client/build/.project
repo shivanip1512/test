@@ -17,14 +17,11 @@
 		<project>esub</project>
 		<project>esub-editor</project>
 		<project>export</project>
-		<project>foreign</project>
 		<project>loadcontrol</project>
-		<project>logger</project>
 		<project>macs</project>
 		<project>monitor</project>
 		<project>multispeak</project>
 		<project>notification</project>
-		<project>palm</project>
 		<project>report</project>
 		<project>resource</project>
 		<project>sensus-jms</project>
@@ -36,7 +33,6 @@
 		<project>tools</project>
 		<project>trending</project>
 		<project>web-common</project>
-		<project>webgraph</project>
 		<project>yukon-web</project>
 		<project>yukonappserver</project>
 	</projects>
