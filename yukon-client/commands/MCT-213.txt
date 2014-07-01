@@ -1,6 +1,0 @@
-@include /custom/MCT-213.txt
-@include MCT-BASE.txt
- = 
-Read Disconnect Status = getstatus disconnect
-Disconnect Meter = control disconnect
-Connect Meter = control connect

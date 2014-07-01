@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: com.cannontech.palm.client.ClientFrame
-Class-Path: ./ 
- common.jar 
- yukonappserver.jar 
- SqlServer.jar 
- ojdbc6.jar 
- ../log/ 
- ../export/ 

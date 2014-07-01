@@ -1,4 +1,0 @@
-@include /custom/LCU-BASE.txt
-Ping = ping
-1 Comm Loopback = loop
-5 Comm Loopbacks = loop 5

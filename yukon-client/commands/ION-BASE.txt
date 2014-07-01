@@ -1,4 +1,0 @@
-@include /custom/ION-BASE.txt
-Scan Status Points = scan general
-Scan Power Meter and Status = scan integrity
-Retrieve Event Log(s) = getstatus eventlog

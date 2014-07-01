@@ -1,2 +1,0 @@
-@include /custom/WCTP Terminal.txt
-

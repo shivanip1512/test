@@ -1,4 +1,0 @@
-@include /custom/IEDGEKV-BASE.txt
-Read IED Volts = getvalue ied demand
-Set Current Period (GEKV) = putconfig emetcon ied class 0 0
-Set Previous Period (GEKV) = putconfig emetcon ied class 0 1

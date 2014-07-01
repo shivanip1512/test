@@ -1,2 +1,0 @@
-@include /custom/CI Customer.txt
-No commands Yet = commandString

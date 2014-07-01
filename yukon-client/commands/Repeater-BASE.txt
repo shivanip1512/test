@@ -1,6 +1,0 @@
-@include /custom/Repeater-BASE.txt
-Read Roles = getconfig role 1
-Read Options = getconfig model
-Download All Roles = putconfig emetcon install
-Locate Device = loop locate
-

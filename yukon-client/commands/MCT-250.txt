@@ -1,3 +1,0 @@
-@include /custom/MCT-250.txt
-@include MCT-BASE.txt
-Read Status Points = getstatus external

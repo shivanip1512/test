@@ -1,5 +1,0 @@
-@include /custom/CBC-base.txt
-OPEN  Cap Bank= control open
-CLOSE Cap Bank= control close
-Disable OVUV = putstatus ovuv disable
-Enable  OVUV = putstatus ovuv enable

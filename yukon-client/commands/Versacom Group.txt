@@ -1,8 +1,0 @@
-@include /custom/Versacom Group.txt
-@include LoadGroup-BASE.txt
-Cycle 50%/30min= control cycle 50 period 30 count 4
-Terminate Cycle= control cycle terminate
-Set to Out-of-Service = putconfig serice out
-Set to In-of-Service = putconfig serice in
-Reset All Counters = putstatus reset_counters r1 r2 r3 cl
-Set All Lights ON = putconfig led y y y

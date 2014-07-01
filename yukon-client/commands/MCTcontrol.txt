@@ -1,3 +1,0 @@
-@include /custom/MCTControl.txt
-Momentarly Activate Relay A = control open
-Momentarly Activate Relay B = control close

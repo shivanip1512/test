@@ -1,4 +1,0 @@
-@include /custom/IEDLG-BASE.txt
-Read IED Volts = getvalue ied demand
-Set Current Period (L&G) = putconfig emetcon ied class 0 0
-Set Previous Period (L&G) = putconfig emetcon ied class 0 1

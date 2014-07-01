@@ -1,3 +1,0 @@
-@include /custom/LoadGroup-BASE.txt
-Shed group = control shed 5m
-Restore group = control restore

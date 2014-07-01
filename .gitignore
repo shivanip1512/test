@@ -37,16 +37,10 @@ yukon-client/esub/build
 yukon-client/export/.cvsignore
 yukon-client/export/bin
 yukon-client/export/build
-yukon-client/foreign/.cvsignore
-yukon-client/foreign/bin
-yukon-client/foreign/build
 yukon-client/lib
 yukon-client/loadcontrol/.cvsignore
 yukon-client/loadcontrol/bin
 yukon-client/loadcontrol/build
-yukon-client/logger/.cvsignore
-yukon-client/logger/bin
-yukon-client/logger/build
 yukon-client/macs/.cvsignore
 yukon-client/macs/bin
 yukon-client/macs/build
@@ -55,9 +49,6 @@ yukon-client/monitor/build
 yukon-client/multispeak/build
 yukon-client/notification/bin
 yukon-client/notification/build
-yukon-client/palm/.cvsignore
-yukon-client/palm/bin
-yukon-client/palm/build
 yukon-client/report/bin
 yukon-client/report/build
 yukon-client/resource/master.cfg
@@ -78,9 +69,6 @@ yukon-client/trending/.cvsignore
 yukon-client/trending/bin
 yukon-client/trending/build
 yukon-client/web-common/build
-yukon-client/webgraph/.cvsignore
-yukon-client/webgraph/bin
-yukon-client/webgraph/build
 yukon-client/yukon-web/.tomcatplugin
 yukon-client/yukon-web/WebContent/WEB-INF/classes
 yukon-client/yukon-web/WebContent/capcontrol/_notes

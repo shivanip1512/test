@@ -1,3 +1,0 @@
-@include /custom/Alpha Power Plus.txt
-@include Alpha-BASE.txt
-

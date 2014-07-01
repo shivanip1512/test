@@ -1,9 +1,0 @@
-@include /custom/IED-BASE.txt
-Read IED Last Interval Demands = getvalue ied demand
-Read IED KWH / KW = getvalue ied kwh
-Read IED Date/Time = getconfig ied time
-Read IED TOU Rate [A,B,C or D] = getconfig ied time
-Read IED Reset Count = getconfig ied time
-Read IED scan Info = getconfig ied scan
- = 
-Reset IED Demand = putvalue ied reset
