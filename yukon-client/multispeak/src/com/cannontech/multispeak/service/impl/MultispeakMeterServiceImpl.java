@@ -957,7 +957,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     @Override
-    public ErrorObject[] initiateUsageMonitoringStatus(MultispeakVendor mspVendor, String[] meterNos) {
+    public ErrorObject[] initiateUsageMonitoring(MultispeakVendor mspVendor, String[] meterNos) {
 
         return addToGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "initiateUsageMonitoring", mspVendor);
     }
@@ -969,13 +969,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     @Override
-    public ErrorObject[] cancelUsageMonitoringStatus(MultispeakVendor mspVendor, String[] meterNos) {
+    public ErrorObject[] cancelUsageMonitoring(MultispeakVendor mspVendor, String[] meterNos) {
 
         return removeFromGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "cancelUsageMonitoring", mspVendor);
     }
 
     @Override
-    public ErrorObject[] addMeterObject(final MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException {
+    public ErrorObject[] meterAdd(final MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException {
         final List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         for (final Meter mspMeter : addMeters) {
@@ -1097,7 +1097,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     @Override
-    public ErrorObject[] removeMeterObject(MultispeakVendor mspVendor, Meter[] removeMeters) {
+    public ErrorObject[] meterRemove(MultispeakVendor mspVendor, Meter[] removeMeters) {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
 
         for (int i = 0; i < removeMeters.length; i++) {
@@ -1141,7 +1141,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     @Override
-    public ErrorObject[] updateServiceLocation(final MultispeakVendor mspVendor, ServiceLocation[] serviceLocations) {
+    public ErrorObject[] serviceLocationChanged(final MultispeakVendor mspVendor, ServiceLocation[] serviceLocations) {
         final Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
 
@@ -1231,7 +1231,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     @Override
-    public ErrorObject[] changeMeterObject(final MultispeakVendor mspVendor, Meter[] changedMeters)
+    public ErrorObject[] meterChanged(final MultispeakVendor mspVendor, Meter[] changedMeters)
             throws RemoteException {
         final List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 

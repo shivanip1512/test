@@ -345,7 +345,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] initiateUsageMonitoring(String[] meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeakMeterService.initiateUsageMonitoringStatus(vendor, meterNos);
+        ErrorObject[] errorObject = multispeakMeterService.initiateUsageMonitoring(vendor, meterNos);
         return errorObject;
     }
     
@@ -353,7 +353,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] cancelUsageMonitoring(String[] meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeakMeterService.cancelUsageMonitoringStatus(vendor, meterNos);
+        ErrorObject[] errorObject = multispeakMeterService.cancelUsageMonitoring(vendor, meterNos);
         return errorObject;
     }
     
@@ -406,7 +406,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeakMeterService.updateServiceLocation(vendor, changedServiceLocations);
+        ErrorObject[] errorObject = multispeakMeterService.serviceLocationChanged(vendor, changedServiceLocations);
         return errorObject;
     }
     
@@ -414,7 +414,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeakMeterService.changeMeterObject(vendor, changedMeters);
+        ErrorObject[] errorObject = multispeakMeterService.meterChanged(vendor, changedMeters);
         return errorObject;
     }
     
@@ -422,7 +422,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] meterRemoveNotification(Meter[] removedMeters) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeakMeterService.removeMeterObject(vendor, removedMeters);
+        ErrorObject[] errorObject = multispeakMeterService.meterRemove(vendor, removedMeters);
         return errorObject;
     }
     
@@ -430,7 +430,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] meterAddNotification(Meter[] addedMeters) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeakMeterService.addMeterObject(vendor, addedMeters);
+        ErrorObject[] errorObject = multispeakMeterService.meterAdd(vendor, addedMeters);
         return errorObject;
     }
 

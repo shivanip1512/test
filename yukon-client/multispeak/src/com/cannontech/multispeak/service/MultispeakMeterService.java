@@ -1,9 +1,3 @@
- /*
- * Created on Jul 11, 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.cannontech.multispeak.service;
 
 import java.rmi.RemoteException;
@@ -36,10 +30,6 @@ public interface MultispeakMeterService {
      * Returns the LoadActionCode (or connected status) for meter
      * Performs a read of DISCONNECT_STATUS attribute. 
      * Waits for response, times out after mspVendor.maxRequestTimeout 
-     * @param mspVendor
-     * @param meter
-     * @param transactionID
-     * @return
      * @throws RemoteException
      */
     public LoadActionCode CDMeterState(MultispeakVendor mspVendor, 
@@ -48,9 +38,6 @@ public interface MultispeakMeterService {
     /**
      * This is a workaround method for SEDC.  This method is used to perform an actual meter interrogation and then return
      * the collected reading if message received within 2 minutes.
-     * @param mspVendor
-     * @param meterNumber
-     * @return
      * @throws RemoteException
      */
     public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, 
@@ -59,7 +46,6 @@ public interface MultispeakMeterService {
 
 	/**
 	 * Send a ping command to pil connection for each meter in meterNumbers.
-	 * @param meterNumbers
 	 * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
 	 */
 	public ErrorObject[] odEvent(MultispeakVendor vendor, 
@@ -69,7 +55,6 @@ public interface MultispeakMeterService {
     /**
      * Initiate reads for all meterNumber and fire ReadingChangedNotification on callback.
      * Callback fires for each completed read, may have multiple per meterNumber.
-     * @param meterNumbers
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
     public ErrorObject[] meterReadEvent(MultispeakVendor vendor, 
@@ -79,10 +64,6 @@ public interface MultispeakMeterService {
     /**
      * Initiate reads for meterNumber and fire FormattedBlockChangeNotification on callback.
      * Callback fires for all completed reads, will have only one for meterNumber. 
-     * @param vendor
-     * @param meterNumber
-     * @param blockProcessingService
-     * @param transactionId
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
     public ErrorObject[] blockMeterReadEvent(MultispeakVendor vendor,
@@ -91,8 +72,7 @@ public interface MultispeakMeterService {
                                              String transactionId, String responseUrl);
     
     /**
-     * Send a ping command to pil connection for each meter in meterNumbers.
-     * @param meterNumbers
+     * Send a disconnect/connect request to Porter (PLC) or submit to queue (RFN) for each meter in meterNumbers.
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
     public ErrorObject[] cdEvent(MultispeakVendor vendor, 
@@ -101,35 +81,23 @@ public interface MultispeakMeterService {
 
     /**
      * Add MeterNos to SystemGroupEnum.DISCONNECTSTATUS Device Group. 
-     * @param mspVendor
-     * @param meterNos
-     * @return
      */
     public ErrorObject[] initiateDisconnectedStatus(MultispeakVendor mspVendor, String[] meterNos);
 
     /**
      * Add MeterNos to SystemGroupEnum.USAGEMONITORING Device Group.
-     * @param mspVendor
-     * @param meterNos
-     * @return
      */
-    public ErrorObject[] initiateUsageMonitoringStatus(MultispeakVendor mspVendor, String[] meterNos);
+    public ErrorObject[] initiateUsageMonitoring(MultispeakVendor mspVendor, String[] meterNos);
 
     /**
      * Remove MeterNos from SystemGroupEnum.DISCONNECTSTATUS Device Group. 
-     * @param mspVendor
-     * @param meterNos
-     * @return
      */
     public ErrorObject[] cancelDisconnectedStatus(MultispeakVendor mspVendor, String[] meterNos);
 
     /**
      * Remove MeterNos from SystemGroupEnum.USAGEMONITORING Device Group.
-     * @param mspVendor
-     * @param meterNos
-     * @return
      */
-    public ErrorObject[] cancelUsageMonitoringStatus(MultispeakVendor mspVendor, String[] meterNos);
+    public ErrorObject[] cancelUsageMonitoring(MultispeakVendor mspVendor, String[] meterNos);
     
     /**
      * Add addMeters to Yukon database.
@@ -138,57 +106,38 @@ public interface MultispeakMeterService {
      *  Else, an ErrorObject will be returned.
      * If the meter does not already exist in Yukon (looked up by MeterNumber, then Address, then DeviceName),
      *  then a new Meter object will be added to Yukon.
-     * @param mspVendor
-     * @param addMeters
-     * @return
      * @throws RemoteException
      */
-    public ErrorObject[] addMeterObject(final MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException;
+    public ErrorObject[] meterAdd(final MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException;
 
     /**
      * Removes (disables) a list of meters in Yukon.
-     * @param mspVendor
-     * @param removeMeters
-     * @return
      */
-    public ErrorObject[] removeMeterObject(MultispeakVendor mspVendor, Meter[] removeMeters);
+    public ErrorObject[] meterRemove(MultispeakVendor mspVendor, Meter[] removeMeters);
 
     /**
      * Updates the "meter" object, based on the PaoName Alias lookup value. 
-     * @param mspVendor
-     * @param serviceLocations
-     * @return
      */
-    public ErrorObject[] updateServiceLocation(final MultispeakVendor mspVendor, ServiceLocation[] serviceLocations);
+    public ErrorObject[] serviceLocationChanged(final MultispeakVendor mspVendor, ServiceLocation[] serviceLocations);
 
     /**
      * Changes the meter information.  Meter is looked up by the Physical Address (TransponderId). 
-     * @param mspVendor
-     * @param changedMeters
-     * @return
      * @throws RemoteException
      */
-    public ErrorObject[] changeMeterObject(final MultispeakVendor mspVendor, Meter[] changedMeters) throws RemoteException;
+    public ErrorObject[] meterChanged(final MultispeakVendor mspVendor, Meter[] changedMeters) throws RemoteException;
 
     /**
      * Adds meters to a group.  If the group doesn't exist, a new group will be created
-     * @param meterGroup
-     * @return
      */
     public ErrorObject[] addMetersToGroup(MeterGroup meterGroup, MultispeakVendor mspVendor);
     
     /**
      * Removes meterNumbers from groupName.
-     * @param groupName
-     * @return
      */
     public ErrorObject[] removeMetersFromGroup(String groupName, String[] meterNumbers, MultispeakVendor mspVendor);
     
     /**
      * Removed meters from groupName AND deletes groupName from the system.
-     * @param groupName
-     * @param mspVendor
-     * @return
      */
     public ErrorObject deleteGroup(String groupName, MultispeakVendor mspVendor);
     
