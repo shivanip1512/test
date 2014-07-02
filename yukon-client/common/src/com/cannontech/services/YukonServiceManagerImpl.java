@@ -1,21 +1,24 @@
 package com.cannontech.services;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
 import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.jdbc.core.RowCallbackHandler;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.spring.YukonBaseXmlApplicationContext;
 import com.google.common.collect.Lists;
 
@@ -26,6 +29,11 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
     private CountDownLatch shutdownLatch = new CountDownLatch(1);
     private List<ConfigurableApplicationContext> contexts = Lists.newArrayList();
     
+    private enum ServiceType {
+        CLASS_NAME_TYPE,
+        CONTEXT_FILE_TYPE;
+    }
+
     @Override
     @PostConstruct
     public void loadCustomServices() {
@@ -34,13 +42,13 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
         sql.append("FROM YukonServices");
         sql.append("WHERE ServiceID > 0 and AppName = ").appendArgument(BootstrapUtils.getApplicationName());
         
-        yukonJdbcOperations.query(sql, new RowCallbackHandler() {
+        yukonJdbcOperations.query(sql, new YukonRowCallbackHandler() {
             @Override
-            public void processRow(ResultSet rset) throws SQLException {
-                String displayName = rset.getString(2);
-                String path = rset.getString(3);
-                String serviceType = rset.getString(4);
-                if (startService(displayName, path, serviceType)) {
+            public void processRow(YukonResultSet rset) throws SQLException {
+            	String displayName = rset.getString("ServiceName");
+            	String path = rset.getString("ServiceClass");
+            	ServiceType serviceType = rset.getEnum("ServiceType", ServiceType.class);
+            	if (startService(displayName, path, serviceType)) {
                     log.info("successful start of the " + displayName + " service" );
                 } else {
                     log.error("Unable to load the " + displayName + " service: " + path);
@@ -50,7 +58,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
             
     }
 
-    private boolean startService(String displayName, String serviceName, String serviceType) throws SQLException {
+    private boolean startService(String displayName, String serviceName, ServiceType serviceType) throws SQLException {
         serviceName = serviceName.trim();
 
         Exception e1, e2;
@@ -78,11 +86,12 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
             log.trace("unable to load as class: " + serviceName, e);
         }
         
-		if (ServiceType.CONTEXT_FILE_TYPE == ServiceType.valueOfServiceType(serviceType)) {
-			log.warn("...as context", e1);
-		} else if (ServiceType.CLASS_NAME_TYPE == ServiceType.valueOfServiceType(serviceType)) {
-			log.warn("...as class", e2);
+		if (ServiceType.CONTEXT_FILE_TYPE == serviceType) {
+			log.warn("Service was unable to load as context", e1);
+		} else if (ServiceType.CLASS_NAME_TYPE == serviceType) {
+			log.warn("Service was unable to load as class", e2);
 		}
+
 		return false;
     }
     
