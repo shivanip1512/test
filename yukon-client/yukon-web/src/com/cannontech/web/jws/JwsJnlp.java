@@ -126,7 +126,7 @@ public enum JwsJnlp {
                 "org.springframework.web-3.1.3.RELEASE.jar",
                 "org.springframework.web.portlet-3.1.3.RELEASE.jar",
                 "org.springframework.web.servlet-3.1.3.RELEASE.jar",
-                "quartz-all-1.6.0.jar",
+                "quartz-2.2.1.jar",
                 "saaj.jar",
                 "servlet-api.jar",
                 "slf4j-api-1.7.5.jar",
