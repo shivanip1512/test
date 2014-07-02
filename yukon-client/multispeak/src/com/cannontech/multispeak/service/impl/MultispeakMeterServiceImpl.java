@@ -45,6 +45,7 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.config.MasterConfigHelper;
@@ -141,59 +142,58 @@ import com.google.common.collect.MapMaker;
 import com.google.common.collect.SetMultimap;
 
 /**
- * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author stacey To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class MultispeakMeterServiceImpl implements MultispeakMeterService, MessageListener {
-	
+
     private static final Logger log = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
-    
+
     private BasicServerConnection porterConnection;
-    @Autowired private MultispeakFuncs multispeakFuncs;
-    @Autowired private MspMeterDao mspMeterDao;
-    @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private ChangeDeviceTypeService changeDeviceTypeService;
+    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private DeviceCreationService deviceCreationService;
+    @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private MeterDao meterDao;
-    @Autowired private TransactionTemplate transactionTemplate;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private DeviceCreationService deviceCreationService;
+    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceUpdateService deviceUpdateService;
+    @Autowired private MeterDao meterDao;
+    @Autowired private MeterReadProcessingService meterReadProcessingService;
+    @Autowired private MeterSearchDao meterSearchDao;
+    @Autowired private MspMeterDao mspMeterDao;
+    @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private SubstationDao substationDao;
     @Autowired private SubstationToRouteMappingDao substationToRouteMappingDao;
-    @Autowired private DeviceDao deviceDao;
-    @Autowired private MeterSearchDao meterSearchDao;
-    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
-    @Autowired private AttributeService attributeService;
-    @Autowired private PointDao pointDao;
-    @Autowired private MeterReadProcessingService meterReadProcessingService;
-    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
-    @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
-    @Autowired private ConfigurationSource configurationSource;
-    @Autowired private DeviceGroupService deviceGroupService;
-    
-	/** Singleton incrementor for messageIDs to send to porter connection */
-	private static long messageID = 1;
+    @Autowired private TransactionTemplate transactionTemplate;
 
-	/** A map of Long(userMessageID) to MultispeakEvent values */
-	private static Map<Long,MultispeakEvent> eventsMap = Collections.synchronizedMap(new HashMap<Long,MultispeakEvent>());
+    /** Singleton incrementor for messageIDs to send to porter connection */
+    private static long messageID = 1;
+
+    /** A map of Long(userMessageID) to MultispeakEvent values */
+    private static Map<Long, MultispeakEvent> eventsMap = Collections.synchronizedMap(new HashMap<Long, MultispeakEvent>());
 
     private ImmutableSet<OutageEventType> supportedEventTypes;
     private ImmutableSetMultimap<OutageEventType, Integer> outageConfig;
-	
-	private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
 
-	// Strings to represent MultiSpeak method calls, generally used for logging.
+    private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
+
+    // Strings to represent MultiSpeak method calls, generally used for logging.
     private static final String METER_REMOVE_STRING = "MeterRemoveNotification";
     private static final String METER_CHANGED_STRING = "MeterChangedNotification";
     private static final String METER_ADD_STRING = "MeterAddNotification";
     private static final String SERV_LOC_CHANGED_STRING = "ServiceLocationChangedNotification";
-    
+
     /**
-     * Get the static instance of Multispeak (this) object.
-     * Adds a message listener to the pil connection instance. 
+     * Get the static instance of Multispeak (this) object. Adds a message
+     * listener to the pil connection instance.
      */
     @PostConstruct
     public void initialize() throws Exception {
@@ -228,69 +228,66 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         outageConfig = ImmutableSetMultimap.copyOf(outageConfigTemp);
         log.info("outage event configuation: " + outageConfig);
     }
-    
-    /**
-	 * generate a unique mesageid, don't let it be negative
-	 * @return
-	 */
-	private synchronized long generateMessageID() {
-		if(++messageID == Long.MAX_VALUE) {
-			messageID = 1;
-		}
-		return messageID;
-	}
 
-	@Override
-	public void messageReceived(MessageEvent e)
-	{
-		Message in = e.getMessage();		
-		if(in instanceof Return)
-		{
-			final Return returnMsg = (Return) in;
-			final MultispeakEvent event = getEventsMap().get(new Long (returnMsg.getUserMessageID()) );
-			
-			if(event != null) {
-			    
-				final Logger eLogger = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class); 
-    			Runnable eventRunner = new Runnable() {
-    			
-    			    @Override
-    			    public void run() {
-                        
+    /**
+     * generate a unique mesageid, don't let it be negative
+     */
+    private synchronized long generateMessageID() {
+        if (++messageID == Long.MAX_VALUE) {
+            messageID = 1;
+        }
+        return messageID;
+    }
+
+    @Override
+    public void messageReceived(MessageEvent e) {
+        Message in = e.getMessage();
+        if (in instanceof Return) {
+            final Return returnMsg = (Return) in;
+            final MultispeakEvent event = getEventsMap().get(new Long(returnMsg.getUserMessageID()));
+
+            if (event != null) {
+
+                final Logger eLogger = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
+                Runnable eventRunner = new Runnable() {
+
+                    @Override
+                    public void run() {
+
                         eLogger.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
-                                        " DevID:" + returnMsg.getDeviceID() + 
-                                        " Command:" + returnMsg.getCommandString() +
-                                        " Result:" + returnMsg.getResultString() + 
-                                        " Status:" + returnMsg.getStatus() +
-                                        " More:" + returnMsg.getExpectMore()+"]");
-        
-                        if(returnMsg.getExpectMore() == 0) {
-                            
-        					eLogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
-        
+                                     " DevID:" + returnMsg.getDeviceID() + 
+                                     " Command:" + returnMsg.getCommandString() +
+                                     " Result:" + returnMsg.getResultString() + 
+                                     " Status:" + returnMsg.getStatus() +
+                                     " More:" + returnMsg.getExpectMore()+"]");
+
+                        if (returnMsg.getExpectMore() == 0) {
+
+                            eLogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+
                             boolean doneProcessing = event.messageReceived(returnMsg);
-                            if (doneProcessing)
+                            if (doneProcessing) {
                                 getEventsMap().remove(new Long(event.getPilMessageID()));
-        				}
-    			    }
-			    };
-			    
-			    eventRunner.run();
-			}
-		}
-	}
-    
+                            }
+                        }
+                    }
+                };
+
+                eventRunner.run();
+            }
+        }
+    }
+
     @Override
     public LoadActionCode CDMeterState(final MultispeakVendor mspVendor, final YukonMeter meter) throws RemoteException {
-        
+
         log.info("Received " + meter.getMeterNumber() + " for CDMeterState from " + mspVendor.getCompanyName());
-        if ( ! porterConnection.isValid() ) {
+        if (!porterConnection.isValid()) {
             throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
-        
+
         List<YukonMeter> allPaosToRead = Collections.singletonList(meter);
         final EnumSet<BuiltInAttribute> attributes = EnumSet.of(BuiltInAttribute.DISCONNECT_STATUS);
-                
 
         LACWaitableDeviceAttributeReadCallback waitableCallback = new LACWaitableDeviceAttributeReadCallback(mspVendor.getRequestMessageTimeout()) {
 
@@ -303,7 +300,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
             @Override
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
-                // the following is expensive but unavoidable until PointData is changed
+                // the following is expensive but unavoidable until PointData is
+                // changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
                 Set<BuiltInAttribute> thisAttribute = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
                 if (thisAttribute.contains(BuiltInAttribute.DISCONNECT_STATUS)) {
@@ -312,7 +310,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     return;
                 }
             }
-            
+
             @Override
             public void receivedLastValue(PaoIdentifier pao) {
                 log.debug("deviceAttributeReadCallback.receivedLastValue for cdEvent");
@@ -328,15 +326,15 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedException(DeviceAttributeReadError error) {
                 log.warn("received exception in meterReadEvent callback: " + error);
             }
-            
+
         };
         deviceAttributeReadService.initiateRead(allPaosToRead, attributes, waitableCallback, DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
         try {
             waitableCallback.waitForCompletion();
-        } catch (InterruptedException e) { /* Ignore */ }
+        } catch (InterruptedException e) { /* Ignore */}
         return waitableCallback.getLoadActionCode();
     }
-    
+
     /**
      * Wrapper class for holding attribute read response value.
      */
@@ -346,46 +344,49 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         public LACWaitableDeviceAttributeReadCallback(long timeoutInMillis) {
             super(timeoutInMillis);
         }
+
         public void setLoadActionCode(LoadActionCode loadActionCode) {
             this.loadActionCode = loadActionCode;
         }
+
         public LoadActionCode getLoadActionCode() {
             return loadActionCode;
         }
     };
-    
+
     /**
-     * This method still does not support attributes.
-     * The issue is that SEDC does not support the ability to receive ReadingChangedNotification messages.
-     * Therefore, just for them, we initiate a real time read, wait, and return.
-     * This DOES need to be changed in future versions. 
+     * This method still does not support attributes. 
+     * The issue is that SEDC does not support the ability to receive ReadingChangedNotification messages. 
+     * Therefore, just for them, we initiate a real time read, wait, and return. 
+     * This DOES need to be changed in future versions.
      */
     @Override
-    public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, 
-            YukonMeter meter,
-            String transactionID, String responseUrl)
-    {
-    	long id = generateMessageID();      
+    public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, YukonMeter meter, String transactionID,
+            String responseUrl) {
+        long id = generateMessageID();
         MeterReadEvent event = new MeterReadEvent(mspVendor, id, meter, transactionID, responseUrl);
-        
+
         getEventsMap().put(new Long(id), event);
-        String commandStr = "getvalue kwh";
-        if( DeviceTypesFuncs.isMCT4XX(meter.getPaoIdentifier().getPaoType()) )
-            commandStr = "getvalue peak";    // getvalue peak returns the peak kW and the total kWh
         
+        String commandStr = "getvalue kwh";
+        if (DeviceTypesFuncs.isMCT4XX(meter.getPaoIdentifier().getPaoType())) {
+            commandStr = "getvalue peak"; // getvalue peak returns the peak kW and the total kWh
+        }
+
         final String meterNumber = meter.getMeterNumber();
         log.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
         writePilRequest(meter, commandStr, id, 13);
         mspObjectDao.logMSPActivity("getLatestReadingByMeterNo",
-						"(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
-						mspVendor.getCompanyName());
+                                    "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
+                                    mspVendor.getCompanyName());
 
         synchronized (event) {
             boolean timeout = !waitOnEvent(event, mspVendor.getRequestMessageTimeout());
-            if( timeout ) {
-                mspObjectDao.logMSPActivity("getLatestReadingByMeterNo", "MeterNumber (" + meterNumber + ") - Reading Timed out after " + 
-                               (mspVendor.getRequestMessageTimeout()/1000) + 
-                               " seconds.  No reading collected.", mspVendor.getCompanyName());
+            if (timeout) {
+                mspObjectDao.logMSPActivity("getLatestReadingByMeterNo",
+                                            "MeterNumber (" + meterNumber + ") - Reading Timed out after " + 
+                                            (mspVendor.getRequestMessageTimeout() / 1000) + " seconds.  No reading collected.",
+                                            mspVendor.getCompanyName());
             }
         }
 
@@ -403,85 +404,82 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     @Override
-	public synchronized ErrorObject[] odEvent(MultispeakVendor vendor, 
-	        String[] meterNumbers,
-	        String transactionID, String responseUrl) throws RemoteException
-	{
-        if( vendor.getUrl() == null || vendor.getUrl().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+    public synchronized ErrorObject[] odEvent(MultispeakVendor vendor, String[] meterNumbers, String transactionID,
+            String responseUrl) throws RemoteException {
+        
+        if (vendor.getUrl() == null || vendor.getUrl().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
             throw new RemoteException("OMS vendor unknown.  Please contact Yukon administrator to set the Multispeak Vendor Role Property value in Yukon.");
-        }        
-        if (! porterConnection.isValid()) {
+        }
+        if (!porterConnection.isValid()) {
             throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
 
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-		log.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from " + vendor.getCompanyName());
-		
+        log.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from " + vendor.getCompanyName());
+
         for (String meterNumber : meterNumbers) {
-            
-			try {
-				YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber);
+
+            try {
+                YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber);
 
                 // Validate meter can receive porter command requests and command string exists, then perform action
-				// This is limiting us to PLC support only for this request.
-				boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
-				if (!canInitiatePorterRequest) {
-				    ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
+                // This is limiting us to PLC support only for this request.
+                boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
+                if (!canInitiatePorterRequest) {
+                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
                                                                   "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter.",
                                                                   "Meter",
-                                                                  "ODEvent", vendor.getCompanyName());
-                    errorObjects.add(err);   
+                                                                  "ODEvent",
+                                                                  vendor.getCompanyName());
+                    errorObjects.add(err);
                 } else { // do archaic way
-    				long id = generateMessageID();		
-    				ODEvent event = new ODEvent(vendor, id, transactionID, responseUrl);
-    				getEventsMap().put(new Long(id), event);
-    				writePilRequest(meter, "ping", id, 13);
+                    long id = generateMessageID();
+                    ODEvent event = new ODEvent(vendor, id, transactionID, responseUrl);
+                    getEventsMap().put(new Long(id), event);
+                    writePilRequest(meter, "ping", id, 13);
                 }
 
-			} catch (NotFoundException e) {
-			    ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "ODEvent", vendor.getCompanyName());
-			    errorObjects.add(err);              
-			}
-		}
-    		
-		return mspObjectDao.toErrorObject(errorObjects);
-	}
+            } catch (NotFoundException e) {
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "ODEvent", vendor.getCompanyName());
+                errorObjects.add(err);
+            }
+        }
 
-	
+        return mspObjectDao.toErrorObject(errorObjects);
+    }
+
     @Override
-    public synchronized ErrorObject[] meterReadEvent(final MultispeakVendor vendor, 
-            String[] meterNumbers,
+    public synchronized ErrorObject[] meterReadEvent(final MultispeakVendor vendor, String[] meterNumbers,
             final String transactionID, final String responseUrl) {
+        
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-        
+
         log.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + vendor.getCompanyName());
-        
+
         final CB_ServerSoap_PortType port = MultispeakPortFactory.getCB_ServerPort(vendor, responseUrl);
         if (port == null) {
             log.error("Port not found for CB_MR (" + vendor.getCompanyName() + ")");
-            return new ErrorObject[0];	//return without any processing, since we have no one to send to when we're done anyways.
+            return new ErrorObject[0]; // return without any processing, since we have no one to send to when we're done anyways.
         }
-        
+
         List<YukonMeter> allPaosToRead = Lists.newArrayListWithCapacity(meterNumbers.length);
         for (String meterNumber : meterNumbers) {
-        	
+
             try {
-                YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber); //TODO probably need a better load method
+                YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber); // TODO probably need a better load method
                 allPaosToRead.add(meter);
- 	        } catch (NotFoundException e) {
+            } catch (NotFoundException e) {
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", vendor.getCompanyName());
-            	errorObjects.add(err);            
+                errorObjects.add(err);
             }
         }
-        
-        final ImmutableMap<PaoIdentifier, YukonMeter> meterLookup =
-            PaoUtils.indexYukonPaos(allPaosToRead);
-        
+
+        final ImmutableMap<PaoIdentifier, YukonMeter> meterLookup = PaoUtils.indexYukonPaos(allPaosToRead);
+
         final EnumSet<BuiltInAttribute> attributes = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
-        
-        final ConcurrentMap<PaoIdentifier, MeterReadUpdater> updaterMap = 
-            new MapMaker().concurrencyLevel(2).initialCapacity(meterNumbers.length).makeMap();
-        
+
+        final ConcurrentMap<PaoIdentifier, MeterReadUpdater> updaterMap = new MapMaker().concurrencyLevel(2).initialCapacity(meterNumbers.length).makeMap();
+
         DeviceAttributeReadCallback callback = new DeviceAttributeReadCallback() {
 
             @Override
@@ -495,10 +493,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
                 Set<BuiltInAttribute> thisAttribute = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
-                
+
                 if (log.isDebugEnabled()) {
-                    log.debug("deviceAttributeReadCallback.receivedValue for meterReadEvent: " + paoPointIdentifier.toString() + 
-                              " - " + value.getPointDataTimeStamp() + " - " + value.getValue());
+                    log.debug("deviceAttributeReadCallback.receivedValue for meterReadEvent: " + paoPointIdentifier.toString() + " - " + value.getPointDataTimeStamp() + " - " + value.getValue());
                 }
 
                 if (thisAttribute.isEmpty()) {
@@ -507,13 +504,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 }
                 for (BuiltInAttribute attribute : thisAttribute) {
                     log.debug("data received for some attribute: " + thisAttribute.toString());
-                    
+
                     // Get a new updater object for the current value
-                    MeterReadUpdater meterReadUpdater = meterReadProcessingService.buildMeterReadUpdater(attribute, value);
+                    MeterReadUpdater meterReadUpdater = meterReadProcessingService.buildMeterReadUpdater(attribute,
+                                                                                                         value);
                     // if the map is empty, place the updater into it
                     MeterReadUpdater oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
                     while (oldValue != null) {
-                        // looks like the map was not empty, combine the existing updater with the
+                     // looks like the map was not empty, combine the existing updater with the
                         // new one and then place it back in the map, but we must be careful
                         // that someone hasn't changed the map out from under us (thus the while loop)
                         MeterReadUpdaterChain chain = new MeterReadUpdaterChain(oldValue, meterReadUpdater);
@@ -523,27 +521,27 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     }
                 }
             }
-            
+
             /**
              * The unfortunate part is that this method is going to fire off a readingChangeNotification for each 
-             *  set of attributes that happened to be able to be collected using the same command 
-             *  (as derived by MeterReadCommandGenerationService.getMinimalCommandSet(...))
+             * set of attributes that happened to be able to be collected using the same command 
+             * (as derived by MeterReadCommandGenerationService.getMinimalCommandSet(...))
              */
             @Override
             public void receivedLastValue(PaoIdentifier pao) {
                 YukonMeter meter = meterLookup.get(pao);
                 MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
-                
+
                 // because we were so careful about putting updater or updater chains into the
                 // map, we know we can safely remove it and generate a MeterRead from it
                 // whenever we want; but this happens to be a perfect time
                 MeterReadUpdater updater = updaterMap.remove(pao);
                 if (updater != null) {
                     updater.update(meterRead);
-                    
-                    MeterRead[] meterReads = new MeterRead[] {meterRead};
+
+                    MeterRead[] meterReads = new MeterRead[] { meterRead };
                     try {
-                        log.info("Sending ReadingChangedNotification ("+ responseUrl + "): Meter Number " + meterRead.getObjectID());
+                        log.info("Sending ReadingChangedNotification (" + responseUrl + "): Meter Number " + meterRead.getObjectID());
                         ErrorObject[] errObjects = port.readingChangedNotification(meterReads, transactionID);
                         if (!ArrayUtils.isEmpty(errObjects)) {
                             multispeakFuncs.logErrorObjects(responseUrl, "ReadingChangedNotification", errObjects);
@@ -568,24 +566,24 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
         };
         deviceAttributeReadService.initiateRead(allPaosToRead, attributes, callback, DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
-        
+
         return mspObjectDao.toErrorObject(errorObjects);
     }
-    
+
     @Override
-    public synchronized ErrorObject[] blockMeterReadEvent(final MultispeakVendor vendor, 
-            String meterNumber, final FormattedBlockProcessingService<Block> blockProcessingService,
-            final String transactionId, final String responseUrl) {
+    public synchronized ErrorObject[] blockMeterReadEvent(final MultispeakVendor vendor, String meterNumber,
+            final FormattedBlockProcessingService<Block> blockProcessingService, final String transactionId,
+            final String responseUrl) {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-        
-        log.info("Received " + meterNumber+ " for BlockMeterReading from " + vendor.getCompanyName());
-        
+
+        log.info("Received " + meterNumber + " for BlockMeterReading from " + vendor.getCompanyName());
+
         final CB_ServerSoap_PortType port = MultispeakPortFactory.getCB_ServerPort(vendor, responseUrl);
         if (port == null) {
             log.error("Port not found for CB_Server (" + vendor.getCompanyName() + ")");
-            return new ErrorObject[0];	//return without any processing, since we have no one to send to when we're done anyways. 
+            return new ErrorObject[0]; // return without any processing, since we have no one to send to when we're done anyways.
         }
-        
+
         final YukonMeter paoToRead;
         try {
             paoToRead = mspMeterDao.getMeterForMeterNumber(meterNumber);
@@ -594,18 +592,17 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             errorObjects.add(err);
             return mspObjectDao.toErrorObject(errorObjects);
         }
-        
+
         final EnumSet<BuiltInAttribute> attributes = blockProcessingService.getAttributeSet();
 
-        //retain only those that ARE readable.
-        //profile attributes are not readable right now, which means that the LoadBlock specifically, will not get many new values.
-        //this is a change from before where we built up a command to retrieve at least the last 6 profile reads. Oh well...
-        //a solution could be implemented a new command for collected the "latest" profile reads available. 
+        // retain only those that ARE readable.
+        // profile attributes are not readable right now, which means that the LoadBlock specifically, will not get many new values.
+        // this is a change from before where we built up a command to retrieve at least the last 6 profile reads. Oh well...
+        // a solution could be implemented a new command for collected the "latest" profile reads available.
         attributes.retainAll(attributeService.getReadableAttributes());
-        
-        final ConcurrentMap<PaoIdentifier, FormattedBlockUpdater<Block>> updaterMap = 
-            new MapMaker().concurrencyLevel(2).initialCapacity(1).makeMap();
-        
+
+        final ConcurrentMap<PaoIdentifier, FormattedBlockUpdater<Block>> updaterMap = new MapMaker().concurrencyLevel(2).initialCapacity(1).makeMap();
+
         DeviceAttributeReadCallback callback = new DeviceAttributeReadCallback() {
 
             /**
@@ -620,8 +617,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void complete() {
 
                 Block block = blockProcessingService.createBlock(paoToRead);
-                
-                // because we were so careful about putting updater or updater chains into the
+
+             // because we were so careful about putting updater or updater chains into the
                 // map, we know we can safely remove it and generate a MeterRead from it
                 // whenever we want; but this happens to be a perfect time
                 FormattedBlockUpdater<Block> updater = updaterMap.remove(paoToRead.getPaoIdentifier());
@@ -632,7 +629,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 }
 
                 FormattedBlock formattedBlock = blockProcessingService.createMspFormattedBlock(block);
-                
+
                 try {
                     ErrorObject[] errObjects = port.formattedBlockNotification(formattedBlock, transactionId, "errorString?");
                     if (!ArrayUtils.isEmpty(errObjects)) {
@@ -648,17 +645,19 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
                 Set<BuiltInAttribute> thisAttribute = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
-                if (thisAttribute.isEmpty()) return;
-                
+                if (thisAttribute.isEmpty()) {
+                    return;
+                }
+
                 // Get a new updater object for the current value
                 for (BuiltInAttribute attribute : thisAttribute) {
                     FormattedBlockUpdater<Block> formattedBlockUpdater = blockProcessingService.buildFormattedBlockUpdater(attribute, value);
-    
+
                     // if the map is empty, place the updater into it
                     FormattedBlockUpdater<Block> oldValue = updaterMap.putIfAbsent(pao, formattedBlockUpdater);
-    
+
                     while (oldValue != null) {
-                        // looks like the map was not empty, combine the existing updater with the
+                     // looks like the map was not empty, combine the existing updater with the
                         // new one and then place it back in the map, but we must be careful
                         // that someone hasn't changed the map out from under us (thus the while loop)
                         FormattedBlockUpdaterChain<Block> chain = new FormattedBlockUpdaterChain<Block>(oldValue, formattedBlockUpdater);
@@ -668,7 +667,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     }
                 }
             }
-            
+
             @Override
             public void receivedLastValue(PaoIdentifier pao) {
                 log.debug("deviceAttributeReadCallback.receivedLastValue for formattedBlockEvent");
@@ -686,201 +685,212 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
         };
         deviceAttributeReadService.initiateRead(Collections.singleton(paoToRead), attributes, callback, DeviceRequestType.MULTISPEAK_FORMATTED_BLOCK_READ_EVENT, UserUtils.getYukonUser());
-        
         return mspObjectDao.toErrorObject(errorObjects);
     }
-    
+
     /**
-     * This method is still in the works and being tested. SLN 20120307
-     * It will eventually replace cdEvent.
+     * This method is still in the works and being tested. SLN 20120307 It will
+     * eventually replace cdEvent.
      * @param vendor
      * @param cdEvents
      * @param transactionId
      * @return
      * @throws RemoteException
      */
-    public synchronized ErrorObject[] cdEvent_DO_NOT_USE_YET(final MultispeakVendor vendor, 
-            ConnectDisconnectEvent [] cdEvents,
-            final String transactionId, final String responseUrl) throws RemoteException
-    {
-        
-        if ( ! porterConnection.isValid() )
+    public synchronized ErrorObject[] cdEvent_DO_NOT_USE_YET(final MultispeakVendor vendor,
+            ConnectDisconnectEvent[] cdEvents, final String transactionId, final String responseUrl)
+            throws RemoteException {
+
+        if (!porterConnection.isValid())
             throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
 
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         log.info("Received " + cdEvents.length + " Meter(s) for Connect/Disconnect from " + vendor.getCompanyName());
         List<CommandRequestDevice> plcCommandRequests = Lists.newArrayList();
-        
+
         for (ConnectDisconnectEvent cdEvent : cdEvents) {
             final String meterNumber = getMeterNumberFromCDEvent(cdEvent);
-            
+
             try {
                 YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber);
                 MspLoadActionCode mspLoadActionCode = MspLoadActionCode.getForLoadActionCode(cdEvent.getLoadActionCode());
 
                 // validate is CD supported meter
                 if (!mspMeterDao.isCDSupportedMeter(meterNumber)) {
-                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
+                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
                                                                   "MeterNumber (" + meterNumber + ") - Invalid Yukon Connect/Disconnect Meter.",
                                                                   "Meter",
-                                                                  "CDEvent", vendor.getCompanyName());
+                                                                  "CDEvent",
+                                                                  vendor.getCompanyName());
                     errorObjects.add(err);
                     continue;
                 }
 
                 // check for rf disconnect meter type and perform action
-                boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
+                boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(),
+                                                                          PaoTag.DISCONNECT_RFN);
                 if (isRfnDisconnect) {
-                    RfnMeter rfnMeter = (RfnMeter)meter;
-                    doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), vendor, transactionId, responseUrl);
+                    RfnMeter rfnMeter = (RfnMeter) meter;
+                    doRfnConnectDisconnect(rfnMeter,
+                                           mspLoadActionCode.getRfnState().getType(),
+                                           vendor,
+                                           transactionId,
+                                           responseUrl);
                     continue;
                 }
-                
-                // Assume plc if we made it this far, validate meter can receive porter command requests and command string exists, then perform action
-                boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
+
+                // Assume plc if we made it this far, validate meter can receive
+                // porter command requests and command string exists, then
+                // perform action
+                boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier()
+                                                                                        .getPaoType(),
+                                                                                   PaoTag.PORTER_COMMAND_REQUESTS);
                 if (!canInitiatePorterRequest || StringUtils.isBlank(mspLoadActionCode.getPlcCommandString())) {
-                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                                                                  "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter or no control command exists. " + 
-                                                                          "LoadActionCode="+ cdEvent.getLoadActionCode(),
+                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
+                                                                  "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter or no control command exists. " + "LoadActionCode=" + cdEvent.getLoadActionCode(),
                                                                   "Meter",
-                                                                  "CDEvent", vendor.getCompanyName());
+                                                                  "CDEvent",
+                                                                  vendor.getCompanyName());
                     errorObjects.add(err);
-                } else {    // build up a list of plc command requests (to be sent later)
+                } else { // build up a list of plc command requests (to be sent
+                         // later)
                     CommandRequestDevice request = new CommandRequestDevice();
                     request.setDevice(new SimpleDevice(meter));
                     request.setCommandCallback(new CommandCallbackBase(mspLoadActionCode.getPlcCommandString()));
                     plcCommandRequests.add(request);
                     mspObjectDao.logMSPActivity("initiateConnectDisconnect",
-                                              "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + mspLoadActionCode.getPlcCommandString() + 
-                                              ((cdEvent.getReasonCode() != null) ? " sent for ReasonCode: " + cdEvent.getReasonCode().getValue() : ""),
-                                              vendor.getCompanyName());
+                                                "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + mspLoadActionCode.getPlcCommandString() + ((cdEvent.getReasonCode() != null) ? " sent for ReasonCode: " + cdEvent.getReasonCode()
+                                                                                                                                                                                                                                                           .getValue()
+                                                        : ""),
+                                                vendor.getCompanyName());
                 }
-            } 
-            catch (NotFoundException e) {
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "CDEvent", vendor.getCompanyName());
+            } catch (NotFoundException e) {
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
+                                                                      "MeterNumber",
+                                                                      "Meter",
+                                                                      "CDEvent",
+                                                                      vendor.getCompanyName());
                 errorObjects.add(err);
             }
-            
+
         }
-        
+
         // perform plc action on list of commandRequests
         doPlcConnectDisconnect(plcCommandRequests, vendor, transactionId, responseUrl);
 
         return mspObjectDao.toErrorObject(errorObjects);
     }
-    
+
     /**
-     * Performs the PLC meter disconnect. 
-     * Returns immediately, does not wait for a response.
-     * Callback will initiate a cdEventNotification on receivedLastResultString (should possibly change with YUK-10746).
-     * NOTE: The callback will always send a cdEventNotification.UNKNOWN status until YUK-10746 is completed. 
+     * Performs the PLC meter disconnect. Returns immediately, does not wait for
+     * a response. Callback will initiate a cdEventNotification on
+     * receivedLastResultString (should possibly change with YUK-10746). NOTE:
+     * The callback will always send a cdEventNotification.UNKNOWN status until
+     * YUK-10746 is completed.
      * @param meter
      * @param action
      * @param vendor
      * @param transactionId
      */
-    private void doPlcConnectDisconnect(List<CommandRequestDevice> plcCommandRequests, final MultispeakVendor vendor, 
+    private void doPlcConnectDisconnect(List<CommandRequestDevice> plcCommandRequests, final MultispeakVendor vendor,
             final String transactionId, final String responseUrl) {
         YukonUserContext yukonUserContext = new SystemUserContext();
-        
+
         CommandCompletionCallbackAdapter<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
-            
+
             @Override
             public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                 log.warn("receivedIntermediateError for cdEvent " + error.getDescription());
             }
-            
+
             @Override
             public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
                 log.debug("receivedIntermediateResultString for cdEvent " + value);
             }
-            
+
             @Override
             public void receivedValue(CommandRequestDevice command, PointValueHolder value) {
                 log.debug("receivedValue for cdEvent" + value);
             }
-            
+
             @Override
             public void receivedLastResultString(CommandRequestDevice command, String value) {
-                log.debug("receivedLastResultString for cdEvent "  + value);
-                // THIS IS NOT CORRECT!!!! Figure out a better way to handle in the future.
+                log.debug("receivedLastResultString for cdEvent " + value);
+                // THIS IS NOT CORRECT!!!! Figure out a better way to handle in
+                // the future.
                 SimpleMeter yukonMeter = meterDao.getSimpleMeterForId(command.getDevice().getDeviceId());
                 sendCDEventNotification(yukonMeter, LoadActionCode.Unknown, vendor, transactionId, responseUrl);
             }
-            
+
             @Override
             public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                 log.warn("receivedLastError for cdEvent " + error.getDescription());
             }
-            
+
             @Override
             public void complete() {
                 log.debug("complete for cdEvent");
             }
-            
+
             @Override
             public void processingExceptionOccured(String reason) {
-                log.warn("processingExceptionOccured for cdEvent " + reason);   
+                log.warn("processingExceptionOccured for cdEvent " + reason);
             }
         };
-        
+
         commandRequestDeviceExecutor.execute(plcCommandRequests, callback, DeviceRequestType.GROUP_CONNECT_DISCONNECT, yukonUserContext.getYukonUser());
     }
-    
+
     /**
      * Performs the RFN meter disconnect. 
-     * Returns immediately, does not wait for a response.
+     * Returns immediately, does not wait for a response. 
      * Callback will initiate a cdEventNotification on success or error.
-     * @param meter
-     * @param action
-     * @param vendor
-     * @param transactionId
      */
-    private void doRfnConnectDisconnect(final RfnMeter meter, RfnMeterDisconnectStatusType action, final MultispeakVendor vendor,
-            final String transactionId, final String responseUrl) {
+    private void doRfnConnectDisconnect(final RfnMeter meter, RfnMeterDisconnectStatusType action,
+            final MultispeakVendor vendor, final String transactionId, final String responseUrl) {
 
         RfnMeterDisconnectCallback rfnCallback = new RfnMeterDisconnectCallback() {
-            
+
             @Override
             public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
                 log.debug("rfn receivedSuccess for cdEvent " + state);
                 MspLoadActionCode mspLoadActionCode = MspLoadActionCode.getForRfnState(RfnDisconnectStatusState.getForNmState(state));
                 sendCDEventNotification(meter, mspLoadActionCode.getLoadActionCode(), vendor, transactionId, responseUrl);
             }
-            
+
             @Override
             public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state) {
                 log.warn("rfn receivedError for cdEvent " + message);
                 sendCDEventNotification(meter, LoadActionCode.Unknown, vendor, transactionId, responseUrl);
             }
-            
+
             @Override
             public void processingExceptionOccured(MessageSourceResolvable message) {
                 log.warn("rfn processingExceptionOccured for cdEvent " + message);
             }
-            
+
             @Override
             public void complete() {
                 log.debug("rfn complete for cdEvent");
             }
         };
-        
+
         rfnMeterDisconnectService.send(meter, action, rfnCallback);
     }
-    
+
     /**
-     * Returns meterNumber from ConnectDisconnectEvent object.
-     * Tries to load from CDEvent's meterNo, then meterId (SEDC specific), then objectId.
+     * Returns meterNumber from ConnectDisconnectEvent object. Tries to load
+     * from CDEvent's meterNo, then meterId (SEDC specific), then objectId.
      * @param cdEvent
      * @return
      */
     private String getMeterNumberFromCDEvent(ConnectDisconnectEvent cdEvent) {
         String meterNumber = cdEvent.getMeterNo();
-        
-        //Try to load MeterNumber from another element
-        if( StringUtils.isBlank(meterNumber)) {
-            meterNumber = cdEvent.getMeterID(); //SEDC
-            if( StringUtils.isBlank(meterNumber)) { // this is only necessary for old integrations; moving forward, objectId will be a unique identifier of the cdevent. 
+
+        // Try to load MeterNumber from another element
+        if (StringUtils.isBlank(meterNumber)) {
+            meterNumber = cdEvent.getMeterID(); // SEDC
+            if (StringUtils.isBlank(meterNumber)) { // this is only necessary for old integrations; moving forward, objectId will be a unique identifier of the cdevent.
                 meterNumber = cdEvent.getObjectID();
             }
         }
@@ -889,18 +899,18 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
         return meterNumber;
     }
-    
+
     /**
-     * Initates a CB_CD.CDStateChangedNotifaction message to vendor.  
+     * Initates a CB_CD.CDStateChangedNotifaction message to vendor.
      * @param yukonMeter - meter
      * @param loadActionCode - loadActionCode
      * @param vendor - msp vendor that made the inital request
      * @param transactionId - the token provided from the initial request
      */
-    private void sendCDEventNotification(SimpleMeter yukonMeter, LoadActionCode loadActionCode, MultispeakVendor vendor, 
-            String transactionId, String responseUrl) {
+    private void sendCDEventNotification(SimpleMeter yukonMeter, LoadActionCode loadActionCode,
+            MultispeakVendor vendor, String transactionId, String responseUrl) {
 
-        log.info("Sending CDStateChangedNotification ("+ responseUrl + "): Meter Number " + yukonMeter.getMeterNumber() + " Code:" + loadActionCode);
+        log.info("Sending CDStateChangedNotification (" + responseUrl + "): Meter Number " + yukonMeter.getMeterNumber() + " Code:" + loadActionCode);
 
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(vendor, responseUrl);
@@ -908,115 +918,118 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 port.CDStateChangedNotification(yukonMeter.getMeterNumber(), loadActionCode, transactionId, "errorString?");
             } else {
                 log.error("Port not found for CB_Server (" + vendor.getCompanyName() + ")");
-            }  
+            }
         } catch (RemoteException e) {
             log.error("TargetService: " + responseUrl + " - initiateConnectDisconnect (" + vendor.getCompanyName() + ")");
-            log.error("RemoteExceptionDetail: "+e.getMessage());
-        }   
+            log.error("RemoteExceptionDetail: " + e.getMessage());
+        }
     }
-    
+
     @Override
-    public synchronized ErrorObject[] cdEvent(final MultispeakVendor vendor, 
-            final ConnectDisconnectEvent [] cdEvents,
-            final String transactionId, final String responseUrl) throws RemoteException
-    {
-        if (! porterConnection.isValid()) {
+    public synchronized ErrorObject[] cdEvent(final MultispeakVendor vendor, final ConnectDisconnectEvent[] cdEvents,
+            final String transactionId, final String responseUrl) throws RemoteException {
+        if (!porterConnection.isValid()) {
             throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
 
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-        
+
         log.info("Received " + cdEvents.length + " Meter(s) for Connect/Disconnect from " + vendor.getCompanyName());
-        
+
         for (ConnectDisconnectEvent cdEvent : cdEvents) {
             final String meterNumber = getMeterNumberFromCDEvent(cdEvent);
 
             try {
                 YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber);
                 MspLoadActionCode mspLoadActionCode = MspLoadActionCode.getForLoadActionCode(cdEvent.getLoadActionCode());
- 	        	
+
                 // validate is CD supported meter
-        		if (!mspMeterDao.isCDSupportedMeter(meterNumber)) {
-                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
+                if (!mspMeterDao.isCDSupportedMeter(meterNumber)) {
+                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
                                                                   "MeterNumber (" + meterNumber + ") - Invalid Yukon Connect/Disconnect Meter.",
                                                                   "Meter",
-                                                                  "CDEvent", vendor.getCompanyName());
+                                                                  "CDEvent",
+                                                                  vendor.getCompanyName());
                     errorObjects.add(err);
                     continue;
-        		}
-        		    
-                // check for rf disconnect meter type and perform action
-    		    boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
-                if (isRfnDisconnect) {
-                    RfnMeter rfnMeter = (RfnMeter)meter;
-                    doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), vendor, transactionId, responseUrl);
-                    continue;                    
-                } 
+                }
 
-                // Assume plc if we made it this far, validate meter can receive porter command requests and command string exists, then perform action
+                // check for rf disconnect meter type and perform action
+                boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(),
+                                                                          PaoTag.DISCONNECT_RFN);
+                if (isRfnDisconnect) {
+                    RfnMeter rfnMeter = (RfnMeter) meter;
+                    doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), vendor, transactionId, responseUrl);
+                    continue;
+                }
+
+                // Assume plc if we made it this far, validate meter can receive
+                // porter command requests and command string exists, then
+                // perform action
                 boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
                 if (!canInitiatePorterRequest || StringUtils.isBlank(mspLoadActionCode.getPlcCommandString())) {
-                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
+                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
                                                                   "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter or no control command exists. " + 
-                                                                          "LoadActionCode="+ cdEvent.getLoadActionCode(),
-                                                                  "Meter",
-                                                                  "CDEvent", vendor.getCompanyName());
+                                                                          "LoadActionCode=" + cdEvent.getLoadActionCode(),
+                                                                  "Meter", "CDEvent", vendor.getCompanyName());
                     errorObjects.add(err);
                 } else { // do archaic way
-                    long id = generateMessageID();      
+                    long id = generateMessageID();
                     CDEvent event = new CDEvent(vendor, id, transactionId, responseUrl);
                     getEventsMap().put(new Long(id), event);
- 	                writePilRequest(meter, mspLoadActionCode.getPlcCommandString(), id, 13);
- 	                mspObjectDao.logMSPActivity("initiateConnectDisconnect",
- 	        						"(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + 
- 	        						        mspLoadActionCode.getPlcCommandString() + 
- 	        						((cdEvent.getReasonCode() != null) ? " sent for ReasonCode: " + cdEvent.getReasonCode().getValue() : ""),
- 	        						vendor.getCompanyName());
- 	            }
+                    writePilRequest(meter, mspLoadActionCode.getPlcCommandString(), id, 13);
+                    mspObjectDao.logMSPActivity("initiateConnectDisconnect",
+                                                "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + 
+                                                        mspLoadActionCode.getPlcCommandString() + 
+                                                ((cdEvent.getReasonCode() != null) ? " sent for ReasonCode: " + cdEvent.getReasonCode().getValue() : ""),
+                                                vendor.getCompanyName());
+                }
 
             } catch (NotFoundException e) {
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "CDEvent", vendor.getCompanyName());
                 errorObjects.add(err);
             }
         }
-            
+
         return mspObjectDao.toErrorObject(errorObjects);
     }
-    
-    /*
-     * Writes a request to pil for the meter and commandStr using the id for mspVendor.
-     * log a message for the method name.
+
+    /**
+     * Writes a request to pil for the meter and commandStr using the id for
+     * mspVendor. log a message for the method name.
      */
     private void writePilRequest(YukonMeter meter, String commandStr, long id, int priority) {
-        
+
         Request pilRequest = setupPilRequest(meter, commandStr, id, priority);
         doWritePilRequest(pilRequest);
     }
-    
+
     private Request setupPilRequest(YukonMeter meter, String commandStr, long id, int priority) {
-        
+
         Request pilRequest = null;
         commandStr += " update";
         commandStr += " noqueue";
         pilRequest = new Request(meter.getPaoIdentifier().getPaoId(), commandStr, id);
         pilRequest.setPriority(priority);
-        
+
         return pilRequest;
     }
-    
+
     private void doWritePilRequest(Request pilRequest) {
         porterConnection.write(pilRequest);
     }
-    
+
     /**
-     * Returns true if event processes without timing out, false if event times out.
+     * Returns true if event processes without timing out, false if event times
+     * out.
      * @param event
      * @return
      */
     private boolean waitOnEvent(MultispeakEvent event, long timeout) {
-        
+
         long millisTimeOut = 0; //
-        while (!event.isPopulated() && millisTimeOut < timeout)  //quit after timeout
+        while (!event.isPopulated() && millisTimeOut < timeout) // quit after
+                                                                // timeout
         {
             try {
                 Thread.sleep(10);
@@ -1025,25 +1038,26 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 log.error(e);
             }
         }
-        if( millisTimeOut >= timeout) {// this broke the loop, more than likely, have to kill it sometime
+        if (millisTimeOut >= timeout) {// this broke the loop, more than likely,
+                                       // have to kill it sometime
             return false;
         }
         return true;
     }
 
-	private static Map<Long,MultispeakEvent> getEventsMap() {
-		return eventsMap;
-	}
+    private static Map<Long, MultispeakEvent> getEventsMap() {
+        return eventsMap;
+    }
 
     @Override
     public ErrorObject[] initiateDisconnectedStatus(MultispeakVendor mspVendor, String[] meterNos) {
-        
+
         return addToGroup(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "initiateDisconnectedStatus", mspVendor);
     }
 
     @Override
     public ErrorObject[] initiateUsageMonitoringStatus(MultispeakVendor mspVendor, String[] meterNos) {
-        
+
         return addToGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "initiateUsageMonitoring", mspVendor);
     }
 
@@ -1058,110 +1072,107 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         return removeFromGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "cancelUsageMonitoring", mspVendor);
     }
-    
+
     @Override
-    public ErrorObject[] addMeterObject(final MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException{
+    public ErrorObject[] addMeterObject(final MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException {
         final List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
-        
+
         for (final Meter mspMeter : addMeters) {
             try {
-                transactionTemplate.execute(new TransactionCallbackWithoutResult(){
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                     @Override
-                    protected void doInTransactionWithoutResult(TransactionStatus status){
-                       
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+
                         ErrorObject errorObject = isValidMeter(mspMeter, mspVendor, METER_ADD_STRING);
-                        if( errorObject == null) {
-                            //Load the CIS serviceLocation.
-                            ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(mspMeter.getMeterNo(), mspVendor);
+                        if (errorObject == null) {
+                            // Load the CIS serviceLocation.
+                            ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(mspMeter.getMeterNo(),
+                                                                                                    mspVendor);
 
                             try {
                                 YukonMeter meterToAdd = getMeterByMspMeter(mspMeter, mspVendor);
                                 // have existing meter to "update"
                                 errorObject = addExistingMeter(mspMeter, mspServiceLocation, meterToAdd, mspVendor);
-                            } catch (NotFoundException e) { //and NEW meter
+                            } catch (NotFoundException e) { // and NEW meter
                                 List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspServiceLocation, mspVendor);
                                 errorObjects.addAll(addMeterErrors);
                             }
-                        } 
-                        if (errorObject != null) { 
+                        }
+                        if (errorObject != null) {
                             errorObjects.add(errorObject);
                         }
                     };
                 });
-            }catch (RuntimeException ex) {
+            } catch (RuntimeException ex) {
                 // Transactional code threw application exception -> rollback
-                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
-                                                                 "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
-                                                                 "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
+                                                              "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
+                                                              "Meter",
+                                                              METER_ADD_STRING,
+                                                              mspVendor.getCompanyName());
                 errorObjects.add(err);
                 log.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
-                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
-                                                                 "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
-                                                                 "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
+                                                              "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
+                                                              "Meter",
+                                                              METER_ADD_STRING,
+                                                              mspVendor.getCompanyName());
                 errorObjects.add(err);
                 log.error(ex);
             }
-        }//end for
+        }// end for
 
         return mspObjectDao.toErrorObject(errorObjects);
     }
-    
+
     /**
      * Helper method to return the Yukon Meter object for mspMeter object.
      * Returns Meter when mspMeter is found in Yukon by the mspMeterLookup (roleProperty value field)
-     * @param mspMeter
-     * @param paoAlias
-     * @return
-     * @throws NotFoundException
      */
     private YukonMeter getMeterByMspMeter(Meter mspMeter, MultispeakVendor mspVendor) throws NotFoundException {
-        
-    	YukonMeter meter = null;
-    	MultispeakMeterLookupFieldEnum multispeakMeterLookupFieldEnum= multispeakFuncs.getMeterLookupField();
 
-    	if( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.METER_NUMBER) {
+        YukonMeter meter = null;
+        MultispeakMeterLookupFieldEnum multispeakMeterLookupFieldEnum = multispeakFuncs.getMeterLookupField();
+
+        if (multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.METER_NUMBER) {
             meter = getMeterByMeterNumber(mspMeter);
-        } else if( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.ADDRESS ){ 
-    			meter = getMeterByAddress(mspMeter);
-    	} else if ( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.DEVICE_NAME ) {
-    	    meter = getMeterByPaoName(mspMeter, mspVendor);
-        } else if ( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST) {
-	       try { //Lookup by MeterNo
-	           meter = getMeterByMeterNumber(mspMeter);
-           } catch (NotFoundException e) { //Doesn't exist by MeterNumber
-               try { //Lookup by Address
-                   meter = getMeterByAddress(mspMeter);
-               } catch (NotFoundException e2){ //Doesn't exist by Address
-                   meter = getMeterByPaoName(mspMeter, mspVendor);
-                   //Not Found Exception thrown in the end if never found
-               }
-           }
-        } else if ( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.AUTO_DEVICE_NAME_FIRST) {
-            try { //Lookup by Device Name
+        } else if (multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.ADDRESS) {
+            meter = getMeterByAddress(mspMeter);
+        } else if (multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.DEVICE_NAME) {
+            meter = getMeterByPaoName(mspMeter, mspVendor);
+        } else if (multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST) {
+            try { // Lookup by MeterNo
+                meter = getMeterByMeterNumber(mspMeter);
+            } catch (NotFoundException e) { // Doesn't exist by MeterNumber
+                try { // Lookup by Address
+                    meter = getMeterByAddress(mspMeter);
+                } catch (NotFoundException e2) { // Doesn't exist by Address
+                    meter = getMeterByPaoName(mspMeter, mspVendor);
+                    // Not Found Exception thrown in the end if never found
+                }
+            }
+        } else if (multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.AUTO_DEVICE_NAME_FIRST) {
+            try { // Lookup by Device Name
                 meter = getMeterByPaoName(mspMeter, mspVendor);
-            } catch (NotFoundException e) { //Doesn't exist by Device name
-                try { //Lookup by Meter Number
+            } catch (NotFoundException e) { // Doesn't exist by Device name
+                try { // Lookup by Meter Number
                     meter = getMeterByMeterNumber(mspMeter);
                 } catch (NotFoundException e2) {
-                    //Lookup by Address
+                    // Lookup by Address
                     meter = getMeterByAddress(mspMeter);
-                //Not Found Exception thrown in the end if never found
+                    // Not Found Exception thrown in the end if never found
                 }
             }
         }
- 
-    	return meter;
+
+        return meter;
     }
 
     /**
-     * Helper method to return a Meter object for PaoName
-     * PaoName is looked up based on PaoNameAlias
-     * @param mspMeter
-     * @param paoAlias
-     * @param mspVendor
-     * @return
+     * Helper method to return a Meter object for PaoName PaoName is looked up
+     * based on PaoNameAlias
      */
     private YukonMeter getMeterByPaoName(Meter mspMeter, MultispeakVendor mspVendor) {
         String paoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
@@ -1170,8 +1181,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
     /**
      * Helper method to return a Meter object for Address
-     * @param mspMeter
-     * @return
      */
     private com.cannontech.amr.meter.model.PlcMeter getMeterByAddress(Meter mspMeter) {
         String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
@@ -1180,77 +1189,80 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
     /**
      * Helper method to return a Meter object for Meter Number
-     * @param mspMeter
-     * @return
      */
     private YukonMeter getMeterByMeterNumber(Meter mspMeter) {
         String mspMeterNo = mspMeter.getMeterNo().trim();
         return meterDao.getForMeterNumber(mspMeterNo);
     }
-    
+
     @Override
     public ErrorObject[] removeMeterObject(MultispeakVendor mspVendor, Meter[] removeMeters) {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-        
-        for  (int i = 0; i < removeMeters.length; i++){
+
+        for (int i = 0; i < removeMeters.length; i++) {
             Meter mspMeter = removeMeters[i];
             String meterNo = mspMeter.getMeterNo().trim();
-            //Lookup meter in Yukon by msp meter number
+            // Lookup meter in Yukon by msp meter number
             YukonMeter meter;
             try {
-            	meter = meterDao.getForMeterNumber(meterNo);
-            	//Meter exists if no exception was thrown
-                if( !meter.isDisabled()) {//enabled
+                meter = meterDao.getForMeterNumber(meterNo);
+                // Meter exists if no exception was thrown
+                if (!meter.isDisabled()) {// enabled
                     // Added meter to Inventory
                     addToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
                     deviceDao.disableDevice(meter);
-                    
-                    // TODO - if RFN meter, should we clear out RFNIdentifer values?
+
+                    // TODO - if RFN meter, should we clear out RFNIdentifer
+                    // values?
                     mspObjectDao.logMSPActivity(METER_REMOVE_STRING,
-                                           "MeterNumber(" + meterNo + ") - Meter Disabled.",
-                                           mspVendor.getCompanyName());
-                }
-                else {
+                                                "MeterNumber(" + meterNo + ") - Meter Disabled.",
+                                                mspVendor.getCompanyName());
+                } else {
                     ErrorObject err = mspObjectDao.getErrorObject(meterNo,
-                                                                     "Warning: MeterNumber(" + meterNo + ") - Meter is already disabled. No updates were made.",
-                                                                     "Meter", METER_REMOVE_STRING, mspVendor.getCompanyName());
+                                                                  "Warning: MeterNumber(" + meterNo + ") - Meter is already disabled. No updates were made.",
+                                                                  "Meter",
+                                                                  METER_REMOVE_STRING,
+                                                                  mspVendor.getCompanyName());
                     errorObjects.add(err);
                 }
-            } 
-            catch (NotFoundException e) {
- 	               
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNo, "MeterNumber", "Meter",
-                										METER_REMOVE_STRING, mspVendor.getCompanyName());
-				errorObjects.add(err);
-            } 
+            } catch (NotFoundException e) {
+
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNo,
+                                                                      "MeterNumber",
+                                                                      "Meter",
+                                                                      METER_REMOVE_STRING,
+                                                                      mspVendor.getCompanyName());
+                errorObjects.add(err);
+            }
         }
-        
+
         return mspObjectDao.toErrorObject(errorObjects);
     }
-    
+
     @Override
     public ErrorObject[] updateServiceLocation(final MultispeakVendor mspVendor, ServiceLocation[] serviceLocations) {
         final Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
-        
+
         for (final ServiceLocation mspServiceLocation : serviceLocations) {
             try {
-                transactionTemplate.execute(new TransactionCallbackWithoutResult(){
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                     @Override
-                    protected void doInTransactionWithoutResult(TransactionStatus status){
-                        
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+
                         if (paoAlias == MspPaoNameAliasEnum.SERVICE_LOCATION) {
 
                             String serviceLocationStr = mspServiceLocation.getObjectID();
                             List<YukonMeter> meters = searchForMetersByPaoName(serviceLocationStr);
 
                             if (meters.isEmpty()) {
-                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(serviceLocationStr, "ServiceLocation", "ServiceLocation", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
+                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(serviceLocationStr, "ServiceLocation", "ServiceLocation",
+                                                                                      SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
                                 errorObjects.add(err);
                             } else {
-                                for (YukonMeter meter: meters) {
-                                    if ( !meter.isDisabled()) {
-                                        //Update billing cycle information
+                                for (YukonMeter meter : meters) {
+                                    if (!meter.isDisabled()) {
+                                        // Update billing cycle information
                                         String billingCycle = mspServiceLocation.getBillingCycle();
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
 
@@ -1261,52 +1273,55 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                             }
                         } else {
                             // Must get meters from MSP CB call to process.
-                            List<Meter> mspMeters = mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
-                            
-                            if( !mspMeters.isEmpty()) {
-    
+                            List<Meter> mspMeters = mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation,
+                                                                                               mspVendor);
+
+                            if (!mspMeters.isEmpty()) {
+
                                 for (Meter mspMeter : mspMeters) {
                                     String meterNumber = mspMeter.getMeterNo();
                                     try {
                                         YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
                                         changeMeter(mspMeter, mspServiceLocation, meter, mspVendor, SERV_LOC_CHANGED_STRING);
-                                        
-                                        //Update billing cycle information
+
+                                        // Update billing cycle information
                                         String billingCycle = mspServiceLocation.getBillingCycle();
-                                        updateBillingCyle(billingCycle, meterNumber, meter, SERV_LOC_CHANGED_STRING, mspVendor);
-                                    } catch ( NotFoundException e) {
+                                        updateBillingCyle(billingCycle,
+                                                          meterNumber,
+                                                          meter,
+                                                          SERV_LOC_CHANGED_STRING,
+                                                          mspVendor);
+                                    } catch (NotFoundException e) {
                                         ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
-                                        errorObjects.add(err);            
+                                        errorObjects.add(err);
                                     }
                                 }
-                                   
+
                             } else {
                                 ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(),
-                                        paoAlias.getDisplayName() + "ServiceLocation(" + mspServiceLocation.getObjectID()+ ") - No meters returned from vendor for location.",
-                                        "ServiceLocation",
-                                        SERV_LOC_CHANGED_STRING,
-                                        mspVendor.getCompanyName());
+                                                                              paoAlias.getDisplayName() + "ServiceLocation(" + mspServiceLocation.getObjectID() + ") - No meters returned from vendor for location.",
+                                                                              "ServiceLocation", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
                                 errorObjects.add(err);
                             }
-                        } 
+                        }
                     };
                 });
-            }catch (RuntimeException ex) {
+            } catch (RuntimeException ex) {
                 // Transactional code threw application exception -> rollback
-                ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(), 
-                                                                 "X Exception: (ServLoc:" + mspServiceLocation.getObjectID() + ")-" + ex.getMessage(), 
-                                                                 "ServiceLocation",
-                                                                 SERV_LOC_CHANGED_STRING,
-                                                                 mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(),
+                                                              "X Exception: (ServLoc:" + mspServiceLocation.getObjectID() + ")-" + ex.getMessage(),
+                                                              "ServiceLocation",
+                                                              SERV_LOC_CHANGED_STRING,
+                                                              mspVendor.getCompanyName());
                 errorObjects.add(err);
                 log.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
-                ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(), 
-                                                                 "X Error: (ServLoc:" + mspServiceLocation.getObjectID() + ")-" + ex.getMessage(), 
-                                                                 "ServiceLocation",
-                                                                 SERV_LOC_CHANGED_STRING,
-                                                                 mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(),
+                                                              "X Error: (ServLoc:" + mspServiceLocation.getObjectID() + ")-" + ex.getMessage(),
+                                                              "ServiceLocation",
+                                                              SERV_LOC_CHANGED_STRING,
+                                                              mspVendor.getCompanyName());
                 errorObjects.add(err);
                 log.error(ex);
             }
@@ -1315,224 +1330,240 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     @Override
-    public ErrorObject[] changeMeterObject(final MultispeakVendor mspVendor, Meter[] changedMeters) throws RemoteException{
+    public ErrorObject[] changeMeterObject(final MultispeakVendor mspVendor, Meter[] changedMeters)
+            throws RemoteException {
         final List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         for (final Meter mspMeter : changedMeters) {
             try {
-                transactionTemplate.execute(new TransactionCallbackWithoutResult(){
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                     @Override
-                    protected void doInTransactionWithoutResult(TransactionStatus status){
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
                         String mspAddress;
-                        
+
                         ErrorObject invalidMeterError = isValidMeter(mspMeter, mspVendor, METER_CHANGED_STRING);
-                        if( invalidMeterError == null) {
+                        if (invalidMeterError == null) {
                             mspAddress = mspMeter.getNameplate().getTransponderID().trim();
                             try {
                                 com.cannontech.amr.meter.model.PlcMeter meter = meterDao.getForPhysicalAddress(mspAddress);
-                                
-                                // using null for mspServiceLocation. See comments in getMeterSubstationName(...) 
+
+                                // using null for mspServiceLocation. See
+                                // comments in getMeterSubstationName(...)
                                 changeMeter(mspMeter, null, meter, mspVendor, METER_CHANGED_STRING);
-                            } 
-                            catch (NotFoundException e) {
-                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo(), "Address: " + mspAddress, "Meter",
-                                                                                      METER_CHANGED_STRING, mspVendor.getCompanyName());
-                                errorObjects.add(err);              
+                            } catch (NotFoundException e) {
+                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo(), "Address: " + mspAddress,
+                                                                                      "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
+                                errorObjects.add(err);
                             }
                         } else {
                             errorObjects.add(invalidMeterError);
                         }
                     };
                 });
-            }catch (RuntimeException ex) {
+            } catch (RuntimeException ex) {
                 // Transactional code threw application exception -> rollback
-                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
-                                                                 "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
-                                                                 "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
+                                                              "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
+                                                              "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
                 log.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
-                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
-                                                                 "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
-                                                                 "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
+                                                              "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
+                                                              "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
                 log.error(ex);
             }
-        }//end for
+        }// end for
 
         return mspObjectDao.toErrorObject(errorObjects);
     }
-    
+
     @Override
     public ErrorObject[] addMetersToGroup(MeterGroup meterGroup, MultispeakVendor mspVendor) {
 
-    	List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();    	    	
-    	
-    	//Convert MeterNumbers to YukonDevices
-    	List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
-		if (meterGroup.getMeterList() != null) {
-	    	for (String meterNumber : meterGroup.getMeterList()) {
-	    		try {
-    				SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
-    				yukonDevices.add(yukonDevice);
-    			}catch (EmptyResultDataAccessException e) {
-	    			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup", mspVendor.getCompanyName());
-    				errorObjects.add(errorObject);
-    			}
-	    	}
-	    }
-    	
-    	String groupName = meterGroup.getGroupName();
-    	StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, true);
-    	deviceGroupMemberEditorDao.addDevices(storedGroup, yukonDevices);
-        mspObjectDao.logMSPActivity("addMetersToGroup", "Added " + yukonDevices.size() + " Meters to group: "+ storedGroup.getFullName() + ".",
-                       mspVendor.getCompanyName());
+        List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+
+        // Convert MeterNumbers to YukonDevices
+        List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
+        if (meterGroup.getMeterList() != null) {
+            for (String meterNumber : meterGroup.getMeterList()) {
+                try {
+                    SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
+                    yukonDevices.add(yukonDevice);
+                } catch (EmptyResultDataAccessException e) {
+                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup", mspVendor.getCompanyName());
+                    errorObjects.add(errorObject);
+                }
+            }
+        }
+
+        String groupName = meterGroup.getGroupName();
+        StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, true);
+        deviceGroupMemberEditorDao.addDevices(storedGroup, yukonDevices);
+        mspObjectDao.logMSPActivity("addMetersToGroup",
+                                    "Added " + yukonDevices.size() + " Meters to group: " + storedGroup.getFullName() + ".",
+                                    mspVendor.getCompanyName());
         return mspObjectDao.toErrorObject(errorObjects);
     }
-    
+
     @Override
     public ErrorObject[] removeMetersFromGroup(String groupName, String[] meterNumbers, MultispeakVendor mspVendor) {
-    	List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();    	    	
-    	List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
-    	
-    	try {
-    		StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
-    		if(meterNumbers != null) {
-    	    	for (String meterNumber : meterNumbers) {
-    	    		try {
-    	    			SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
-    	    			yukonDevices.add(yukonDevice);
-    	    		}catch (EmptyResultDataAccessException e) {
-    	    			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName());
-    	    			errorObjects.add(errorObject);
-    	    		}
-    	    	}
-        	}
-        	
-        	deviceGroupMemberEditorDao.removeDevices(storedGroup, yukonDevices);
-            mspObjectDao.logMSPActivity("removeMetersFromGroup", "Removed " + yukonDevices.size() + " Meters from group: "+ storedGroup.getFullName() + ".",
-                           mspVendor.getCompanyName());
-    	} catch (NotFoundException e) {
-			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "GroupName", "MeterGroup", "removeMetersFromGroup", mspVendor.getCompanyName());
-			errorObjects.add(errorObject);
-   		}
+        List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
+
+        try {
+            StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
+            if (meterNumbers != null) {
+                for (String meterNumber : meterNumbers) {
+                    try {
+                        SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
+                        yukonDevices.add(yukonDevice);
+                    } catch (EmptyResultDataAccessException e) {
+                        ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName());
+                        errorObjects.add(errorObject);
+                    }
+                }
+            }
+
+            deviceGroupMemberEditorDao.removeDevices(storedGroup, yukonDevices);
+            mspObjectDao.logMSPActivity("removeMetersFromGroup",
+                                        "Removed " + yukonDevices.size() + " Meters from group: " + storedGroup.getFullName() + ".",
+                                        mspVendor.getCompanyName());
+        } catch (NotFoundException e) {
+            ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "GroupName", "MeterGroup", "removeMetersFromGroup", mspVendor.getCompanyName());
+            errorObjects.add(errorObject);
+        }
         return mspObjectDao.toErrorObject(errorObjects);
     }
 
     @Override
     public ErrorObject deleteGroup(String groupName, MultispeakVendor mspVendor) {
-    	try {
-    		StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
-    		deviceGroupEditorDao.removeGroup(storedGroup);
-    	} catch (NotFoundException e) {
-			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "meterGroupId", "MeterGroup", "deleteGroup", mspVendor.getCompanyName());
-			return errorObject;
-    	}
+        try {
+            StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
+            deviceGroupEditorDao.removeGroup(storedGroup);
+        } catch (NotFoundException e) {
+            ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "meterGroupId", "MeterGroup", "deleteGroup", mspVendor.getCompanyName());
+            return errorObject;
+        }
         return null;
     }
-    
+
     /**
-     * Creates a new meter, sets it's name, meter number.
-     * If RFN, sets model, manufacturer, serial number.
-     * Else (PLC), sets address and guesses a route to set.
-     * @param mspMeter
-     * @param mspVendor
-     * @param templatePaoName
-     * @param substationName
+     * Creates a new meter, sets it's name, meter number. If RFN, sets model,
+     * manufacturer, serial number. Else (PLC), sets address and guesses a route
+     * to set.
      */
-    private void createMeter(Meter mspMeter, ServiceLocation mspServiceLocation, MultispeakVendor mspVendor, String templatePaoName, String substationName) {
-        
+    private void createMeter(Meter mspMeter, ServiceLocation mspServiceLocation, MultispeakVendor mspVendor,
+            String templatePaoName, String substationName) {
+
         // METER_NUMBER
         String meterNumber = mspMeter.getMeterNo().trim();
-        
+
         // NAME
         String paoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
-        // it is possible that a device with this name already exists, specifically if only looking up by METER_NUMBER.
+        // it is possible that a device with this name already exists,
+        // specifically if only looking up by METER_NUMBER.
         // So lets make sure to get one that works for us.
         paoName = getNewPaoName(paoName);
-        
+
         // ADDRESS
         String address = mspMeter.getNameplate().getTransponderID().trim();
-        
-        // CREATE DEVICE - new device is automatically added to template's device groups
+
+        // CREATE DEVICE - new device is automatically added to template's
+        // device groups
         SimpleDevice newDevice = deviceCreationService.createDeviceByTemplate(templatePaoName, paoName, true);
-        mspObjectDao.logMSPActivity(METER_ADD_STRING, "DeviceName(" + paoName+ ") - Meter created. Address (" + address + ").", mspVendor.getCompanyName());
-        
+        mspObjectDao.logMSPActivity(METER_ADD_STRING,
+                                    "DeviceName(" + paoName + ") - Meter created. Address (" + address + ").",
+                                    mspVendor.getCompanyName());
+
         // UPDATE DEVICE METERNUMBER, ADDRESS
         deviceUpdateService.changeAddress(newDevice, Integer.valueOf(address));
         deviceUpdateService.changeMeterNumber(newDevice, meterNumber);
-        mspObjectDao.logMSPActivity(METER_ADD_STRING, "DeviceName(" + paoName+ ") - Set Meter number (" + meterNumber + ").", mspVendor.getCompanyName());
-        
+        mspObjectDao.logMSPActivity(METER_ADD_STRING,
+                                    "DeviceName(" + paoName + ") - Set Meter number (" + meterNumber + ").",
+                                    mspVendor.getCompanyName());
+
         // UPDATE BILLING GROUP
         String cycleGroupName = mspServiceLocation.getBillingCycle();
         updateBillingCyle(cycleGroupName, meterNumber, newDevice, METER_ADD_STRING, mspVendor);
         updateAltGroup(mspServiceLocation, meterNumber, newDevice, METER_ADD_STRING, mspVendor);
-        
+
         // UPDATE SubstationName GROUP and ROUTES
-        //update routing info regardless of substation "change" (like update method does)...because this is a _create new_ method.
+        // update routing info regardless of substation "change" (like update
+        // method does)...because this is a _create new_ method.
         updateSubstationGroupAndRoute(newDevice, meterNumber, mspVendor, substationName, METER_ADD_STRING, true);
     }
-    
-    private void updateMeterRouteForSubstation(YukonDevice meterDevice, MultispeakVendor mspVendor, String substationName, String meterNumber) {
-    	
+
+    private void updateMeterRouteForSubstation(YukonDevice meterDevice, MultispeakVendor mspVendor,
+            String substationName, String meterNumber) {
+
         // not valid for RFN meter types
         if (meterDevice.getPaoIdentifier().getPaoType().isRfn()) {
-            mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - RFN Meter type; No route locate perfomed.", mspVendor.getCompanyName());
+            mspObjectDao.logMSPActivity(METER_ADD_STRING,
+                                        "MeterNumber(" + meterNumber + ") - RFN Meter type; No route locate perfomed.",
+                                        mspVendor.getCompanyName());
             return;
         }
 
-    	try {
-    		
-	    	// get routes
-	        Substation substation = substationDao.getByName(substationName);
-	        List<Route> routes = substationToRouteMappingDao.getRoutesBySubstationId(substation.getId());
-	        
-	        // set route
-	        if (routes.size() > 0) {
+        try {
 
-	            List<String> routeNames = new ArrayList<String>(routes.size());
-	            List<Integer> routeIds = new ArrayList<Integer>(routes.size());
+            // get routes
+            Substation substation = substationDao.getByName(substationName);
+            List<Route> routes = substationToRouteMappingDao.getRoutesBySubstationId(substation.getId());
+
+            // set route
+            if (routes.size() > 0) {
+
+                List<String> routeNames = new ArrayList<String>(routes.size());
+                List<Integer> routeIds = new ArrayList<Integer>(routes.size());
                 for (Route route : routes) {
                     routeNames.add(route.getName());
                     routeIds.add(route.getId());
                 }
 
-	            // initally set route to first sub mapping
-	            deviceUpdateService.changeRoute(meterDevice, routeIds.get(0));
-	            mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - Route initially set to " + routeNames.get(0) + ", will run route discovery.", mspVendor.getCompanyName());
-	        
-	            // run route discovery
-	            LiteYukonUser liteYukonUser = UserUtils.getYukonUser(); 
-	            deviceUpdateService.routeDiscovery(meterDevice, routeIds, liteYukonUser);
-	            
-	            mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - Route discovery started on: " + StringUtils.join(routeNames, ",") + ".", mspVendor.getCompanyName());
-	        
-	        // no routes for sub
-	        } else {
-	        	mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - No Routes for substation (" + substationName + "), using route from template device.", mspVendor.getCompanyName());
-	        }
-        
-	     // bad sub name
-	    } catch(NotFoundException e) {
-	        mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - " + e.getMessage() + ", Bad substation name.", mspVendor.getCompanyName());
-	    }
-    	
+                // initally set route to first sub mapping
+                deviceUpdateService.changeRoute(meterDevice, routeIds.get(0));
+                mspObjectDao.logMSPActivity(METER_ADD_STRING,
+                                            "MeterNumber(" + meterNumber + ") - Route initially set to " + routeNames.get(0) + ", will run route discovery.",
+                                            mspVendor.getCompanyName());
+
+                // run route discovery
+                LiteYukonUser liteYukonUser = UserUtils.getYukonUser();
+                deviceUpdateService.routeDiscovery(meterDevice, routeIds, liteYukonUser);
+
+                mspObjectDao.logMSPActivity(METER_ADD_STRING,
+                                            "MeterNumber(" + meterNumber + ") - Route discovery started on: " + StringUtils.join(routeNames,
+                                                                                                                                 ",") + ".",
+                                            mspVendor.getCompanyName());
+
+                // no routes for sub
+            } else {
+                mspObjectDao.logMSPActivity(METER_ADD_STRING,
+                                            "MeterNumber(" + meterNumber + ") - No Routes for substation (" + substationName + "), using route from template device.",
+                                            mspVendor.getCompanyName());
+            }
+
+            // bad sub name
+        } catch (NotFoundException e) {
+            mspObjectDao.logMSPActivity(METER_ADD_STRING,
+                                        "MeterNumber(" + meterNumber + ") - " + e.getMessage() + ", Bad substation name.",
+                                        mspVendor.getCompanyName());
+        }
+
     }
-    
+
     /**
-     * Helper method to load extension value from extensionItems for extensionName
-     * @param extensionItems
-     * @param extensionName
-     * @param defaultValue
-     * @return
+     * Helper method to load extension value from extensionItems for
+     * extensionName
      */
     private String getExtensionValue(ExtensionsItem[] extensionItems, String extensionName, String defaultValue) {
         log.debug("Attempting to load extension value for key:" + extensionName);
-        if( extensionItems != null) {
+        if (extensionItems != null) {
             for (ExtensionsItem eItem : extensionItems) {
                 String extName = eItem.getExtName();
-                if ( extName.equalsIgnoreCase(extensionName)) {
+                if (extName.equalsIgnoreCase(extensionName)) {
                     return eItem.getExtValue();
                 }
             }
@@ -1540,56 +1571,55 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         log.warn("Extension " + extensionName + " key was not found. Returning default value: " + defaultValue);
         return defaultValue;
     }
-    
+
     /**
-     * Returns a Yukon PaoName (template) to model new meters after.
-     * If no value is provided in the mspMeter object, then the defaultTemplateName is returned. 
-     * @param mspMeter
-     * @param defaultTemplateName
-     * @return
+     * Returns a Yukon PaoName (template) to model new meters after. If no value
+     * is provided in the mspMeter object, then the defaultTemplateName is
+     * returned.
      */
     private String getMeterTemplate(Meter mspMeter, String defaultTemplateName) {
-       
-        if( mspMeter.getAMRDeviceType() != null) {
+
+        if (mspMeter.getAMRDeviceType() != null) {
             return mspMeter.getAMRDeviceType();
         }
-       
+
         ExtensionsItem[] extensionItems = mspMeter.getExtensionsList();
         return getExtensionValue(extensionItems, EXTENSION_DEVICE_TEMPLATE_STRING, defaultTemplateName);
     }
 
     /**
      * Returns the value of the paoName alias extension field from Meter object.
-     * If no value is provided in the Meter object, then null is returned.
-     * NOTE:  meterno - this extension will return mspMeter.meterNo directly. 
-     * @param mspMeter
-     * @return
+     * If no value is provided in the Meter object, then null is returned. NOTE:
+     * meterno - this extension will return mspMeter.meterNo directly.
      */
     private String getExtensionValue(Meter mspMeter) {
-        
+
         boolean usesExtension = multispeakFuncs.usesPaoNameAliasExtension();
-        
+
         if (usesExtension) {
             String extensionName = multispeakFuncs.getPaoNameAliasExtension();
-            if (extensionName.equalsIgnoreCase("meterno")) {    // specific field
+            if (extensionName.equalsIgnoreCase("meterno")) { // specific field
                 return mspMeter.getMeterNo();
-            } else {    // use extensions
-                
+            } else { // use extensions
+
                 ExtensionsItem[] extensionItems = mspMeter.getExtensionsList();
                 return getExtensionValue(extensionItems, extensionName, null);
             }
-        } 
+        }
         return null;
     }
 
-    // UPDATE BILLING CYCLE DEVICE GROUP
+    /**
+     * Updates the billingCycle device group.
+     * The exact parent group to update is configured in MultiSpeak global settings.
+     */
     @Override
     public boolean updateBillingCyle(String newBilling, String meterNumber, YukonDevice yukonDevice,
             String logActionStr, MultispeakVendor mspVendor) {
 
         if (!StringUtils.isBlank(newBilling)) {
 
-            //Remove from all billing membership groups
+            // Remove from all billing membership groups
             DeviceGroup billingCycledeviceGroup = multispeakFuncs.getBillingCycleDeviceGroup();
             StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(billingCycledeviceGroup);
             return updatePrefixGroup(newBilling, meterNumber, yukonDevice, logActionStr, mspVendor, deviceGroupParent);
@@ -1598,33 +1628,41 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         return false;
     }
 
-    // UPDATE ALtGroup DEVICE GROUP
+    /**
+    * Updates an alternate device grouping.
+    * The exact parent group to update is configured by MSP_ALTGROUP_EXTENSION.
+    * This functionality was added specifically for DEMCO.
+    */
     @Override
-    public boolean updateAltGroup(ServiceLocation mspServiceLocation, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor) {
+    public boolean updateAltGroup(ServiceLocation mspServiceLocation, String meterNumber, YukonDevice yukonDevice,
+            String logActionStr, MultispeakVendor mspVendor) {
         boolean updateAltGroup = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.MSP_ENABLE_ALTGROUP_EXTENSION);
         if (updateAltGroup) {
             ExtensionsItem[] extensionItems = mspServiceLocation.getExtensionsList();
             String extensionName = configurationSource.getString(MasterConfigStringKeysEnum.MSP_ALTGROUP_EXTENSION, "altGroup");
             String altGroup = getExtensionValue(extensionItems, extensionName, null);
             if (!StringUtils.isBlank(altGroup)) {
-    
-                //Remove from all alt group membership groups
+
+                // Remove from all alt group membership groups
                 DeviceGroup altGroupDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ALTERNATE);
                 StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(altGroupDeviceGroup);
                 return updatePrefixGroup(altGroup, meterNumber, yukonDevice, logActionStr, mspVendor, deviceGroupParent);
             }
-        }        
+        }
         return false;
     }
-    
-    // UPDATE SUBSTATION DEVICE GROUP
+
+    /**
+     * Updates the CIS Substation device group.
+     * This group (should be) completely managed by MultiSpeak processing.
+     */
     @Override
     public boolean updateSubstationGroup(String substationName, String meterNumber, YukonDevice yukonDevice,
             String logActionStr, MultispeakVendor mspVendor) {
 
         if (!StringUtils.isBlank(substationName)) {
-            
-            //Remove from all substation membership groups
+
+            // Remove from all substation membership groups
             DeviceGroup substationNameDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.CIS_SUBSTATION);
             StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(substationNameDeviceGroup);
             return updatePrefixGroup(substationName, meterNumber, yukonDevice, logActionStr, mspVendor, deviceGroupParent);
@@ -1633,33 +1671,25 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     /**
-     * Removes meter from all immediate descendants of deviceGroupParent.
-     * Adds meter to a subgroup of deviceGroupParent called groupName.
-     * If groupName does not exist, a new group will be created.
-     * @param groupName
-     * @param meterNumber
-     * @param yukonDevice
-     * @param logActionStr
-     * @param mspVendor
-     * @param deviceGroupParent
+     * Removes meter from all immediate descendants of deviceGroupParent. Adds
+     * meter to a subgroup of deviceGroupParent called groupName. If groupName
+     * does not exist, a new group will be created.
      * @return true if added to new prefix group.
      */
-    private boolean updatePrefixGroup(String groupName, String meterNumber,
-                             YukonDevice yukonDevice, String logActionStr,
-                             MultispeakVendor mspVendor,
-                             StoredDeviceGroup deviceGroupParent) {
+    private boolean updatePrefixGroup(String groupName, String meterNumber, YukonDevice yukonDevice,
+            String logActionStr, MultispeakVendor mspVendor, StoredDeviceGroup deviceGroupParent) {
         boolean alreadyInGroup = false;
-        
+
         Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(deviceGroupParent, yukonDevice);
         for (StoredDeviceGroup deviceGroup : deviceGroups) {
-            if( deviceGroup.getName().equalsIgnoreCase(groupName) ) {
+            if (deviceGroup.getName().equalsIgnoreCase(groupName)) {
                 log.debug("MeterNumber(" + meterNumber + ") - Already in group:  " + groupName);
                 alreadyInGroup = true;
             } else {
                 deviceGroupMemberEditorDao.removeDevices(deviceGroup, yukonDevice);
                 mspObjectDao.logMSPActivity(logActionStr,
-                               "MeterNumber(" + meterNumber + ") - Removed from Group: " + deviceGroup.getFullName() + ".",
-                               mspVendor.getCompanyName());
+                                            "MeterNumber(" + meterNumber + ") - Removed from Group: " + deviceGroup.getFullName() + ".",
+                                            mspVendor.getCompanyName());
             }
         }
 
@@ -1667,79 +1697,68 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             StoredDeviceGroup deviceGroup = deviceGroupEditorDao.getGroupByName(deviceGroupParent, groupName, true);
             deviceGroupMemberEditorDao.addDevices(deviceGroup, yukonDevice);
             mspObjectDao.logMSPActivity(logActionStr,
-                           "MeterNumber(" + meterNumber+ ") - Added to Group: " + deviceGroup.getFullName() + ".",
-                           mspVendor.getCompanyName());
+                                        "MeterNumber(" + meterNumber + ") - Added to Group: " + deviceGroup.getFullName() + ".",
+                                        mspVendor.getCompanyName());
         }
         return !alreadyInGroup;
     }
 
     /**
      * Helper method to remove meter from systemGroup
-     * @param meter
-     * @param systemGroup
-     * @param logActionStr
-     * @param mspVendor
      */
-    private void removeFromGroup(YukonMeter meter, SystemGroupEnum systemGroup, 
-            String logActionStr, MultispeakVendor mspVendor){
+    private void removeFromGroup(YukonMeter meter, SystemGroupEnum systemGroup, String logActionStr,
+            MultispeakVendor mspVendor) {
 
         DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
-        deviceGroupMemberEditorDao.removeDevices((StoredDeviceGroup)deviceGroup, Collections.singletonList(meter));
+        deviceGroupMemberEditorDao.removeDevices((StoredDeviceGroup) deviceGroup, Collections.singletonList(meter));
         String basePath = deviceGroupService.getFullPath(systemGroup);
         mspObjectDao.logMSPActivity(logActionStr,
-                       "MeterNumber(" + meter.getMeterNumber() + ") - Removed from " + basePath,  mspVendor.getCompanyName());
+                                    "MeterNumber(" + meter.getMeterNumber() + ") - Removed from " + basePath,
+                                    mspVendor.getCompanyName());
     }
 
     /**
      * Helper method to add meter to systemGroup
-     * @param meter
-     * @param systemGroup
-     * @param logActionStr
-     * @param mspVendor
      */
-    private void addToGroup(YukonMeter meter, SystemGroupEnum systemGroup, 
-            String logActionStr, MultispeakVendor mspVendor){
+    private void addToGroup(YukonMeter meter, SystemGroupEnum systemGroup, String logActionStr,
+            MultispeakVendor mspVendor) {
 
         DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
-        deviceGroupMemberEditorDao.addDevices((StoredDeviceGroup)deviceGroup, Collections.singletonList(meter));
+        deviceGroupMemberEditorDao.addDevices((StoredDeviceGroup) deviceGroup, Collections.singletonList(meter));
         String basePath = deviceGroupService.getFullPath(systemGroup);
         mspObjectDao.logMSPActivity(logActionStr,
-                       "MeterNumber(" + meter.getMeterNumber() + ") - Added to " + basePath,  mspVendor.getCompanyName());
+                                    "MeterNumber(" + meter.getMeterNumber() + ") - Added to " + basePath,
+                                    mspVendor.getCompanyName());
     }
-   
+
     /**
      * Helper method to add meterNos to systemGroup
-     * @param meterNos
-     * @param systemGroup
-     * @param logActionStr
-     * @param mspVendor
-     * @return
      */
-    private ErrorObject[] addToGroup(String[] meterNos, SystemGroupEnum systemGroup, String logActionStr, MultispeakVendor mspVendor) {
+    private ErrorObject[] addToGroup(String[] meterNos, SystemGroupEnum systemGroup, String logActionStr,
+            MultispeakVendor mspVendor) {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
 
         for (String meterNumber : meterNos) {
             try {
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
                 addToGroup(meter, systemGroup, logActionStr, mspVendor);
-            } 
-            catch (NotFoundException e) {
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addToGroup", mspVendor.getCompanyName());
-                errorObjects.add(err);              
+            } catch (NotFoundException e) {
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
+                                                                      "MeterNumber",
+                                                                      "Meter",
+                                                                      "addToGroup",
+                                                                      mspVendor.getCompanyName());
+                errorObjects.add(err);
             }
         }
         return mspObjectDao.toErrorObject(errorObjects);
     }
 
     /**
-     * Helper method to remove meterNos from systemGroup 
-     * @param meterNos
-     * @param systemGroup
-     * @param logActionStr
-     * @param mspVendor
-     * @return
+     * Helper method to remove meterNos from systemGroup
      */
-    private ErrorObject[] removeFromGroup(String[] meterNos, SystemGroupEnum systemGroup, String logActionStr, MultispeakVendor mspVendor) {
+    private ErrorObject[] removeFromGroup(String[] meterNos, SystemGroupEnum systemGroup, String logActionStr,
+            MultispeakVendor mspVendor) {
 
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
 
@@ -1747,121 +1766,112 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             try {
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
                 removeFromGroup(meter, systemGroup, logActionStr, mspVendor);
-            } 
-            catch (NotFoundException e) {
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeFromGroup", mspVendor.getCompanyName());
+            } catch (NotFoundException e) {
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
+                                                                      "MeterNumber",
+                                                                      "Meter",
+                                                                      "removeFromGroup",
+                                                                      mspVendor.getCompanyName());
                 errorObjects.add(err);
             }
         }
 
         return mspObjectDao.toErrorObject(errorObjects);
     }
-    
+
     /**
-     * Helper method to return the PaoName alias value for the MultiSpeak mspMeter object.
-     * defaultValue is returned when the paoNameAlias is not found for the MultiSpeakVendor enums. 
-     * @param mspMeter
-     * @param paoNameAlias
-     * @param defaultValue
-     * @return
+     * Returns the PaoName alias value for the MultiSpeak mspMeter object. 
      * @throws InsufficientMultiSpeakDataException - when paoName not found (null)
      */
-    private String getPaoNameFromMspMeter(Meter mspMeter, MultispeakVendor mspVendor ) {
+    private String getPaoNameFromMspMeter(Meter mspMeter, MultispeakVendor mspVendor) {
 
         String paoName = null;
         final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
         if (paoAlias == MspPaoNameAliasEnum.ACCOUNT_NUMBER) {
-            if( mspMeter.getUtilityInfo() != null &&
-                    StringUtils.isNotBlank(mspMeter.getUtilityInfo().getAccountNumber())) {
+            if (mspMeter.getUtilityInfo() != null && StringUtils.isNotBlank(mspMeter.getUtilityInfo().getAccountNumber())) {
                 paoName = mspMeter.getUtilityInfo().getAccountNumber();
             }
         } else if (paoAlias == MspPaoNameAliasEnum.SERVICE_LOCATION) {
-			if( mspMeter.getUtilityInfo() != null &&
-					StringUtils.isNotBlank(mspMeter.getUtilityInfo().getServLoc())) {
-			    paoName = mspMeter.getUtilityInfo().getServLoc();
-			}
+            if (mspMeter.getUtilityInfo() != null && StringUtils.isNotBlank(mspMeter.getUtilityInfo().getServLoc())) {
+                paoName = mspMeter.getUtilityInfo().getServLoc();
+            }
         } else if (paoAlias == MspPaoNameAliasEnum.CUSTOMER_ID) {
-			if( mspMeter.getUtilityInfo() != null &&
-					StringUtils.isNotBlank(mspMeter.getUtilityInfo().getCustID())) {
-			    paoName = mspMeter.getUtilityInfo().getCustID();
-			}
-		} else if (paoAlias == MspPaoNameAliasEnum.EA_LOCATION) {
-			if( mspMeter.getUtilityInfo() != null &&
-			        mspMeter.getUtilityInfo().getEaLoc() != null &&
-					StringUtils.isNotBlank(mspMeter.getUtilityInfo().getEaLoc().getName())) {
-			    paoName = mspMeter.getUtilityInfo().getEaLoc().getName();
-			}
-		} else if (paoAlias == MspPaoNameAliasEnum.GRID_LOCATION) {
-		    if(StringUtils.isNotBlank(mspMeter.getFacilityID()) ) {
-		        paoName = mspMeter.getFacilityID();
-		    }
+            if (mspMeter.getUtilityInfo() != null && StringUtils.isNotBlank(mspMeter.getUtilityInfo().getCustID())) {
+                paoName = mspMeter.getUtilityInfo().getCustID();
+            }
+        } else if (paoAlias == MspPaoNameAliasEnum.EA_LOCATION) {
+            if (mspMeter.getUtilityInfo() != null && mspMeter.getUtilityInfo().getEaLoc() != null && 
+                    StringUtils.isNotBlank(mspMeter.getUtilityInfo().getEaLoc().getName())) {
+                paoName = mspMeter.getUtilityInfo().getEaLoc().getName();
+            }
+        } else if (paoAlias == MspPaoNameAliasEnum.GRID_LOCATION) {
+            if (StringUtils.isNotBlank(mspMeter.getFacilityID())) {
+                paoName = mspMeter.getFacilityID();
+            }
         } else if (paoAlias == MspPaoNameAliasEnum.METER_NUMBER) {
-            if(StringUtils.isNotBlank(mspMeter.getMeterNo()) ) {
+            if (StringUtils.isNotBlank(mspMeter.getMeterNo())) {
                 paoName = mspMeter.getMeterNo();
             }
         } else if (paoAlias == MspPaoNameAliasEnum.POLE_NUMBER) {
             if (StringUtils.isNotBlank(mspMeter.getMeterNo())) {
                 ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(mspMeter.getMeterNo(), mspVendor);
-                if( mspServiceLocation.getNetwork() != null && 
-                        StringUtils.isNotBlank(mspServiceLocation.getNetwork().getPoleNo())){
+                if (mspServiceLocation.getNetwork() != null && 
+                        StringUtils.isNotBlank(mspServiceLocation.getNetwork().getPoleNo())) {
                     paoName = mspServiceLocation.getNetwork().getPoleNo();
                 }
             }
-        } 
-        
+        }
+
         if (paoName == null) {
             throw new InsufficientMultiSpeakDataException("Message does not contain sufficient data for Yukon Device Name.");
-		}
+        }
 
         String extensionValue = getExtensionValue(mspMeter);
         return multispeakFuncs.buildAliasWithQuantifier(paoName, extensionValue, mspVendor);
 
-	}
-	
+    }
+
     /**
-     * Helper method to add a new meter to Yukon.
-     * An errorObject will be returned when the templateName is not a valid YukonPaobject Name.
-     * An errorObject will be returned when the substation name is not a valid Substation To Route Mapping.
-     * @param mspMeter
-     * @param mspVendor
-     * @return
+     * Adds a new meter to Yukon. An errorObject will be
+     * returned when the templateName is not a valid YukonPaobject Name. An
+     * errorObject will be returned when the substation name is not a valid
+     * Substation To Route Mapping.
      */
-	private List<ErrorObject> addNewMeter(Meter mspMeter, ServiceLocation mspServiceLocation, MultispeakVendor mspVendor){
-	    
-	    List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
-	    
-	    //Find a valid Template!
+    private List<ErrorObject> addNewMeter(Meter mspMeter, ServiceLocation mspServiceLocation, MultispeakVendor mspVendor) {
+
+        List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+
+        // Find a valid Template!
         String templateName = getMeterTemplate(mspMeter, mspVendor.getTemplateNameDefault());
         String meterNo = mspMeter.getMeterNo().trim();
-        
-        //Find template object in Yukon
+
+        // Find template object in Yukon
         ErrorObject err = isValidTemplate(templateName, meterNo, mspVendor);
-        if( err != null) {
+        if (err != null) {
             errorObjects.add(err);
-        } else { //Valid template found
-            //Find a valid substation
-        	String substationName = getMeterSubstationName(mspMeter, mspServiceLocation, mspVendor);
-        	err = isValidSubstation(substationName, mspMeter.getMeterNo().trim(), mspVendor);
-    		if (err == null) {
-    			createMeter(mspMeter, mspServiceLocation, mspVendor, templateName, substationName);
+        } else { // Valid template found
+            // Find a valid substation
+            String substationName = getMeterSubstationName(mspMeter, mspServiceLocation, mspVendor);
+            err = isValidSubstation(substationName, mspMeter.getMeterNo().trim(), mspVendor);
+            if (err == null) {
+                createMeter(mspMeter, mspServiceLocation, mspVendor, templateName, substationName);
             } else {
-            	errorObjects.add(err);
+                errorObjects.add(err);
             }
         }
         return errorObjects;
-	}
-	
-	/**
-	 * Update the AltGroup (requires cparm) and meter Route (requires cparm).
-	 * If MSP_ENABLE_SUBSTATIONNAME_EXTENSION cparm is set, then attempt to return from ServiceLocation extensions.
-	 *   If ServiceLocation extensions return nothing, then return nothing. 
-	 * If MSP_ENABLE_SUBSTATIONNAME_EXTENSION cparm is NOT set, return nothing.
-	 * @param mspServiceLocation
-	 * @return String substationName
-	 */
-	private void updateAltGroupAndRouting_DemcoSpecial(ServiceLocation mspServiceLocation,  
-	        YukonMeter meter, MultispeakVendor mspVendor) {
-		
+    }
+
+    /**
+     * Update the AltGroup (requires cparm) and meter Route (requires cparm). If
+     * MSP_ENABLE_SUBSTATIONNAME_EXTENSION cparm is set, then attempt to return
+     * from ServiceLocation extensions. If ServiceLocation extensions return
+     * nothing, then return nothing. If MSP_ENABLE_SUBSTATIONNAME_EXTENSION
+     * cparm is NOT set, return nothing.
+     */
+    private void updateAltGroupAndRouting_DemcoSpecial(ServiceLocation mspServiceLocation, YukonMeter meter,
+            MultispeakVendor mspVendor) {
+
         updateAltGroup(mspServiceLocation, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
 
         boolean useExtension = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.MSP_ENABLE_SUBSTATIONNAME_EXTENSION);
@@ -1870,7 +1880,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             String extensionName = configurationSource.getString(MasterConfigStringKeysEnum.MSP_SUBSTATIONNAME_EXTENSION, "readPath");
             log.debug("Attempting to load extension value for substation name from multispeak _serviceLocation_.");
             String extensionValue = getExtensionValue(mspServiceLocation.getExtensionsList(), extensionName, null);
-            
+
             // if we were able to load an extension value, return it
             if (StringUtils.isNotBlank(extensionValue)) {
                 log.debug("Extension value for substation name found, returning value: " + extensionValue);
@@ -1878,9 +1888,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 updateSubstationGroupAndRoute(meter, meter.getMeterNumber(), mspVendor, substationName, SERV_LOC_CHANGED_STRING, false);
             }
         }
-	}
-	
-	/**
+    }
+
+    /**
      * Return the substation name of a Meter.
      * If meter is null, return empty string.
      * 
@@ -1897,56 +1907,54 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @return String substationName
      */
     private String getMeterSubstationName(Meter mspMeter, ServiceLocation mspServiceLocation, MultispeakVendor mspVendor) {
-        
+
         if (mspMeter == null) {
             return null;
         }
-            
+
         boolean useExtension = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.MSP_ENABLE_SUBSTATIONNAME_EXTENSION);
-        if (useExtension) { //custom for DEMCO/SEDC integration
+        if (useExtension) { // custom for DEMCO/SEDC integration
             String extensionName = configurationSource.getString(MasterConfigStringKeysEnum.MSP_SUBSTATIONNAME_EXTENSION, "readPath");
-            String extensionValue;            
-            
+            String extensionValue;
+
             log.debug("Attempting to load extension value for substation name from multispeak _meter_.");
             extensionValue = getExtensionValue(mspMeter.getExtensionsList(), extensionName, null);
             if (StringUtils.isNotBlank(extensionValue)) {
                 return extensionValue;
             }
-            
+
             log.debug("Not found in meter. Attempting to load extension value for substation name from multispeak _serviceLocation_.");
             if (mspServiceLocation == null) {
                 log.debug("Calling CB to load ServiceLocation for Meter.");
                 mspServiceLocation = mspObjectDao.getMspServiceLocation(mspMeter.getMeterNo(), mspVendor);
             }
-            
+
             if (mspServiceLocation != null) {
                 extensionValue = getExtensionValue(mspServiceLocation.getExtensionsList(), extensionName, null);
                 if (StringUtils.isNotBlank(extensionValue)) {
-                    return extensionValue;                        
+                    return extensionValue;
                 }
             }
-            
+
             log.debug("Extension value for substation name NOT found for meter or service location, returning empty substationName.");
             return "";
-            
-        } else {    //Normal loading
-            if(mspMeter.getUtilityInfo() == null || StringUtils.isBlank(mspMeter.getUtilityInfo().getSubstationName())){
+
+        } else { // Normal loading
+            if (mspMeter.getUtilityInfo() == null || StringUtils.isBlank(mspMeter.getUtilityInfo().getSubstationName())) {
                 return null;
             } else {
                 return mspMeter.getUtilityInfo().getSubstationName();
             }
         }
     }
-    
-	/**
-	 * Helper method to search devices by PaoName for filterValue.
-	 * Performs (starts with) search on PaoName.
-	 * If MSP_EXACT_SEARCH_PAONAME is set, then an exact lookup of paoName for fitlerValue is performed. 
-	 * @param filterValue
-	 * @return
-	 */
+
+    /**
+     * Helper method to search devices by PaoName for filterValue. Performs
+     * (starts with) search on PaoName. If MSP_EXACT_SEARCH_PAONAME is set, then
+     * an exact lookup of paoName for fitlerValue is performed.
+     */
     private List<YukonMeter> searchForMetersByPaoName(String filterValue) {
-        
+
         boolean exactSearch = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.MSP_EXACT_SEARCH_PAONAME);
         List<YukonMeter> meters = Lists.newArrayList();
         if (exactSearch) {
@@ -1965,269 +1973,251 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
         return meters;
     }
-    
-	/**
-     * Returns ErrorObject when substation name is invalid or 
-     * the substation does not return any valid SubstationToRouteMappings.
-     * Returns null when a substation name has routes mapped to it.
-     * @param templateName
-     * @param meterNumber
-     * @param mspVendor
-     * @return
+
+    /**
+     * Returns ErrorObject when substation name is invalid or the substation
+     * does not return any valid SubstationToRouteMappings. Returns null when a
+     * substation name has routes mapped to it.
      */
     private ErrorObject isValidSubstation(String substationName, String meterNumber, MultispeakVendor mspVendor) {
-        
+
         String errorReason = null;
         try {
             Substation substation = substationDao.getByName(substationName);
             List<Integer> routeIds = substationToRouteMappingDao.getRouteIdsBySubstationId(substation.getId());
-            
-            if(routeIds.size() < 1){
+
+            if (routeIds.size() < 1) {
                 errorReason = "No RouteMappings found in Yukon";
             }
-            
+
         } catch (NotFoundException e) {
             errorReason = e.getMessage();
         }
-        
+
         if (errorReason != null) {
-            ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                                                          "Error: MeterNumber(" + meterNumber + ") - SubstationName(" + 
-                                                          substationName + ") - " + errorReason + ".  Meter was NOT added or updated",
-                                                          "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
-             return err;
+            ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
+                                                          "Error: MeterNumber(" + meterNumber + ") - SubstationName(" + substationName + ") - " + errorReason + ".  Meter was NOT added or updated",
+                                                          "Meter",
+                                                          METER_ADD_STRING,
+                                                          mspVendor.getCompanyName());
+            return err;
         }
-        
+
         return null;
     }
-	
+
     /**
-     * Returns ErrorObject when templateName is not valid.
-     * Returns null when a meter is found in Yukon for templateName.
-     * @param templateName
-     * @param meterNumber
-     * @param mspVendor
-     * @return
+     * Returns ErrorObject when templateName is not valid. Returns null when a meter is found in Yukon for templateName.
      */
-    private ErrorObject isValidTemplate(String templateName, String meterNumber, MultispeakVendor mspVendor ) {
+    private ErrorObject isValidTemplate(String templateName, String meterNumber, MultispeakVendor mspVendor) {
         try {
-            //Verify that a meter exists with templateName PaoName
+            // Verify that a meter exists with templateName PaoName
             YukonMeter templateMeter = meterDao.getForPaoName(templateName);
             if (templateMeter.getPaoIdentifier().getPaoType().isRfn()) {
-                ErrorObject err = mspObjectDao.getErrorObject(templateMeter.getMeterNumber(), 
-                                                              "Error: MeterNumber(" + templateMeter.getMeterNumber() + 
-                                                              ") - RFN Meter Type is not supported. Meter was NOT added or updated",
-                                                              "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getErrorObject(templateMeter.getMeterNumber(),
+                                                              "Error: MeterNumber(" + templateMeter.getMeterNumber() + ") - RFN Meter Type is not supported. Meter was NOT added or updated",
+                                                              "Meter",
+                                                              METER_ADD_STRING,
+                                                              mspVendor.getCompanyName());
                 return err;
             }
 
         } catch (NotFoundException e) {
-            ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
+            ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
                                                           "Error: MeterNumber(" + meterNumber + ")- AMRMeterType(" + templateName + ") NOT found in Yukon.",
-                                                          "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
+                                                          "Meter",
+                                                          METER_ADD_STRING,
+                                                          mspVendor.getCompanyName());
             return err;
         }
         return null;
     }
-    
+
     /**
-     * Returns ErrorObject when meter is enabled.
-     * Returns null when meter is disabled.
-     * @param meter
-     * @param mspVendor
-     * @return
+     * Returns ErrorObject when meter is enabled. Returns null when meter is disabled.
      */
     private ErrorObject isMeterDisabled(YukonMeter meter, MultispeakVendor mspVendor) {
-        if( !meter.isDisabled()) {
-            //Meter is currently enabled in Yukon
-            ErrorObject err = mspObjectDao.getErrorObject(meter.getMeterNumber(), 
-                                                             "Error: MeterNumber(" + meter.getMeterNumber()+ ") - Meter is already active." + 
-                                                             "DeviceName: " + meter.getName() + "; Address: " + ". No updates were made.",
-                                                             "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
+        if (!meter.isDisabled()) {
+            // Meter is currently enabled in Yukon
+            ErrorObject err = mspObjectDao.getErrorObject(meter.getMeterNumber(),
+                                                          "Error: MeterNumber(" + meter.getMeterNumber() + ") - Meter is already active." + "DeviceName: " + meter.getName() + "; Address: " + ". No updates were made.",
+                                                          "Meter",
+                                                          METER_ADD_STRING,
+                                                          mspVendor.getCompanyName());
             return err;
         }
         return null;
     }
-    
+
     /**
-     * Returns ErrorObject when mspMeter is not valid.
-     * Returns null when mspMeter is valid.
-     * Validates    1) Meter.MeterNo field is not blank.
-     *              2) Meter.Nameplate is not null AND Meter.Nameplate.TransponderId is not blank 
-     * @param mspMeter
-     * @param mspVendor
-     * @return
+     * Returns ErrorObject when mspMeter is not valid. Returns null when mspMeter is valid. 
+     * Validates 
+     *  1) Meter.MeterNo field is not blank. 
+     *  2) Meter.Nameplate is not null AND Meter.Nameplate.TransponderId is not blank
      */
     private ErrorObject isValidMeter(Meter mspMeter, MultispeakVendor mspVendor, String method) {
 
-        //Check for valid MeterNo 
-        if ( StringUtils.isBlank(mspMeter.getMeterNo()) ) {
+        // Check for valid MeterNo
+        if (StringUtils.isBlank(mspMeter.getMeterNo())) {
 
-            ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
-                                                             "Error: MeterNo is invalid (empty or null).  No updates were made.",
-                                                             "Meter", method, mspVendor.getCompanyName());
+            ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
+                                                          "Error: MeterNo is invalid (empty or null).  No updates were made.",
+                                                          "Meter", method, mspVendor.getCompanyName());
             return err;
         }
 
-        //Check for valid TransponderID (PLC meters)
-        if ( mspMeter.getNameplate() == null ||
-                StringUtils.isBlank(mspMeter.getNameplate().getTransponderID()) ||
-                !StringUtils.isNumeric(mspMeter.getNameplate().getTransponderID().trim()) ) {
+        // Check for valid TransponderID (PLC meters)
+        if (mspMeter.getNameplate() == null || 
+                StringUtils.isBlank(mspMeter.getNameplate().getTransponderID()) || 
+                !StringUtils.isNumeric(mspMeter.getNameplate().getTransponderID().trim())) {
 
-            //It's not valid for PLC, check if it may be valid for RFN 
-            //Check for valid serial Number
+            // It's not valid for PLC, check if it may be valid for RFN
+            // Check for valid serial Number
             if (StringUtils.isBlank(mspMeter.getSerialNumber())) {
-                return mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
-                                                              "Error: MeterNumber(" + mspMeter.getMeterNo() + ") - SerialNumber nor TransponderId are valid.  No updates were made.",
-                                                              "Meter", method, mspVendor.getCompanyName());
+                return mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
+                                                   "Error: MeterNumber(" + mspMeter.getMeterNo() + ") - SerialNumber nor TransponderId are valid.  No updates were made.",
+                                                   "Meter", method, mspVendor.getCompanyName());
             }
         }
-        
+
         return null;
     }
-    
+
     /**
-     * Enables and "adds" meter (treated as an update since meter already exists) with mspMeter data. 
-     * (Use this method when you have a meter that already exists with Same MeterNumber and Address as mspMeter
-     * and is disabled).
-     * Remove meter from Inventory Group.
-     * Update it's billingCycle
-     * Updates PaoName and enables meter.
-     * Returns an ErrorObject if meter is "active" (not disabled).  
-     * Returns an ErrorObject if meter's address is not the same as mspMeter's address and the device in Yukon 
-     *  for the mspMeter's address is not disabled
+     * Enables and "adds" meter (treated as an update since meter already
+     * exists) with mspMeter data. (Use this method when you have a meter that
+     * already exists with Same MeterNumber and Address as mspMeter and is
+     * disabled). Remove meter from Inventory Group. Update it's billingCycle
+     * Updates PaoName and enables meter. Returns an ErrorObject if meter is
+     * "active" (not disabled). Returns an ErrorObject if meter's address is not
+     * the same as mspMeter's address and the device in Yukon for the mspMeter's
+     * address is not disabled
      */
-    private ErrorObject addExistingMeter(Meter mspMeter, ServiceLocation mspServiceLocation, 
-            YukonMeter meter,
+    private ErrorObject addExistingMeter(Meter mspMeter, ServiceLocation mspServiceLocation, YukonMeter meter,
             MultispeakVendor mspVendor) {
-        
-    	//Verify the meter to "update" is disabled.
+
+        // Verify the meter to "update" is disabled.
         ErrorObject err = isMeterDisabled(meter, mspVendor);
         if (err != null) {
             return err;
         }
-        
+
         String logString = "";
         if (meter.getPaoIdentifier().getPaoType().isRfn()) {
-            err = mspObjectDao.getErrorObject(meter.getMeterNumber(), 
-                                                          "Error: MeterNumber(" + meter.getMeterNumber() + 
-                                                          ") - RFN Meter Type is not supported. Meter was NOT added or updated",
-                                                          "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
+            err = mspObjectDao.getErrorObject(meter.getMeterNumber(),
+                                              "Error: MeterNumber(" + meter.getMeterNumber() + ") - RFN Meter Type is not supported. Meter was NOT added or updated",
+                                              "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
             return err;
-        } else {  //assume PLC
-            //update plc meter
-            //Verify the meter to "update" does not have the same address as another enabled meter.
+        } else { // assume PLC
+            // update plc meter
+            // Verify the meter to "update" does not have the same address as another enabled meter.
             String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
             com.cannontech.amr.meter.model.PlcMeter plcMeter = meterDao.getPlcMeterForId(meter.getDeviceId());
             String currentAddress = plcMeter.getAddress();
-            if( !currentAddress.equalsIgnoreCase(mspAddress)) { //Same MeterNumber, Different Address
+            if (!currentAddress.equalsIgnoreCase(mspAddress)) { // Same MeterNumber, Different Address
 
-                try { //Lookup meter by mspAddress
+                try { // Lookup meter by mspAddress
                     com.cannontech.amr.meter.model.PlcMeter meterByAddress = meterDao.getForPhysicalAddress(mspAddress);
                     err = isMeterDisabled(meterByAddress, mspVendor);
-                    if (err != null) { //Address is already active
+                    if (err != null) { // Address is already active
                         return err;
                     }
                 } catch (NotFoundException e) {
-                    //Ignore Exception...this is what we want, for the address to NOT already exist in Yukon
+                    // Ignore Exception...this is what we want, for the address to NOT already exist in Yukon
                 }
-                
-                //Update Address
+
+                // Update Address
                 deviceUpdateService.changeAddress(meter, Integer.valueOf(mspAddress));
                 logString += "(Addr-" + currentAddress + " to " + mspAddress + ");";
             }
-        }        
+        }
 
         // Verify substation name
         String substationName = getMeterSubstationName(mspMeter, mspServiceLocation, mspVendor);
         if (StringUtils.isBlank(substationName)) {
-        	mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meter.getMeterNumber() + ") - substation name not provided, route locate will not happen.", mspVendor.getCompanyName());
+            mspObjectDao.logMSPActivity(METER_ADD_STRING,
+                                        "MeterNumber(" + meter.getMeterNumber() + ") - substation name not provided, route locate will not happen.",
+                                        mspVendor.getCompanyName());
         } else {
-        	err = isValidSubstation(substationName, meter.getMeterNumber(), mspVendor);
-        	if (err != null) {
-        		mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meter.getMeterNumber() + ") - substation name is invalid.", mspVendor.getCompanyName());
-        		return err;
-        	}
+            err = isValidSubstation(substationName, meter.getMeterNumber(), mspVendor);
+            if (err != null) {
+                mspObjectDao.logMSPActivity(METER_ADD_STRING,
+                                            "MeterNumber(" + meter.getMeterNumber() + ") - substation name is invalid.",
+                                            mspVendor.getCompanyName());
+                return err;
+            }
         }
 
         final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
 
-        //Enable Meter and update applicable fields.
+        // Enable Meter and update applicable fields.
         removeFromGroup(meter, SystemGroupEnum.INVENTORY, METER_ADD_STRING, mspVendor);
-    
-        //update the billing group from CIS billingCyle
+
+        // update the billing group from CIS billingCyle
         String billingCycle = mspServiceLocation.getBillingCycle();
         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, METER_ADD_STRING, mspVendor);
         updateAltGroup(mspServiceLocation, meter.getMeterNumber(), meter, METER_ADD_STRING, mspVendor);
-        
-        //Update PaoName
+
+        // Update PaoName
         String currentPaoName = meter.getName();
         String newPaoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
-        
+
         if (currentPaoName.equalsIgnoreCase(newPaoName)) {
             logString = "PAOName(" + paoAlias.getDisplayName() + ")No Change;";
         } else {
             newPaoName = getNewPaoName(newPaoName);
-            deviceDao.changeName(meter,  newPaoName);
+            deviceDao.changeName(meter, newPaoName);
             logString = "PAOName(" + paoAlias.getDisplayName() + ")(" + currentPaoName + " to " + newPaoName + ");";
         }
-        
-        //Update MeterNumber
+
+        // Update MeterNumber
         String currentMeterNumber = meter.getMeterNumber();
         String newMeterNumber = mspMeter.getMeterNo();
-        
+
         if (!currentMeterNumber.equalsIgnoreCase(newMeterNumber)) {
             deviceUpdateService.changeMeterNumber(meter, newMeterNumber);
             logString += "(MeterNo-" + currentMeterNumber + " to " + newMeterNumber + ");";
         }
 
-        //Enable the meter
+        // Enable the meter
         deviceDao.enableDevice(meter);
 
         mspObjectDao.logMSPActivity(METER_ADD_STRING,
-                       "MeterNo(" + newMeterNumber+ ");Enabled;" + logString,
-                       mspVendor.getCompanyName());
+                                    "MeterNo(" + newMeterNumber + ");Enabled;" + logString,
+                                    mspVendor.getCompanyName());
 
         changeDeviceType(mspMeter, meter, mspVendor, METER_ADD_STRING);
-        
+
         updateSubstationGroupAndRoute(meter, newMeterNumber, mspVendor, substationName, METER_ADD_STRING, true);
         return null;
     }
 
     /**
-     * Update the (CIS) Substation Group. If changed, update route (perform route locate).
+     * Update the (CIS) Substation Group. If changed, update route (perform route locate). 
      * If substationName is blank, do nothing.
-     * @param meter
-     * @param mspVendor
-     * @param substationName
-     * @param forceRouteUpdate - when true, route locate will occur; else, it will only occur if changed. 
+     * @param forceRouteUpdate - when true, route locate will occur; else, it will only occur if changed.
      */
-    private void updateSubstationGroupAndRoute(YukonDevice meter, String meterNumber, 
-            MultispeakVendor mspVendor, String substationName, String logActionStr, boolean forceRouteUpdate) {
+    private void updateSubstationGroupAndRoute(YukonDevice meter, String meterNumber, MultispeakVendor mspVendor,
+            String substationName, String logActionStr, boolean forceRouteUpdate) {
         if (!StringUtils.isBlank(substationName)) {
-            //update the substation group
+            // update the substation group
             boolean addedToGroup = updateSubstationGroup(substationName, meterNumber, meter, logActionStr, mspVendor);
             if (forceRouteUpdate || addedToGroup) {
-                //If the substation changed, we should attempt to update the route info too.
-                //Update route (_after_ meter is enabled).
+                // If the substation changed, we should attempt to update the route info too.
+                // Update route (_after_ meter is enabled).
                 updateMeterRouteForSubstation(meter, mspVendor, substationName, meterNumber);
             }
         }
     }
 
-    /** Helper method to update meter based on the mspMeter.
-     * PaoName and MeterNumber will be updated if changed.
-     * Substation group information will be updated.
-     * @param mspMeter
-     * @param meter
-     * @param mspVendor
-     * @param paoAlias
+    /**
+     * Helper method to update meter based on the mspMeter. PaoName and
+     * MeterNumber will be updated if changed. Substation group information will
+     * be updated.
      */
-    private void changeMeter(Meter mspMeter, ServiceLocation mspServiceLocation, 
-            YukonMeter meter, 
-            MultispeakVendor mspVendor,
-            String logActionStr) {
-        
+    private void changeMeter(Meter mspMeter, ServiceLocation mspServiceLocation, YukonMeter meter,
+            MultispeakVendor mspVendor, String logActionStr) {
+
         final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
 
         // update paoname
@@ -2235,64 +2225,59 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         String meterNumberLog = "";
         String currentPaoName = meter.getName();
         String newPaoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
-        
+
         if (currentPaoName.equalsIgnoreCase(newPaoName)) {
-            paoNameLog = "MeterNumber (" + meter.getMeterNumber() + ") PAOName(" + paoAlias.getDisplayName()+ ") No change in PaoName.";
+            paoNameLog = "MeterNumber (" + meter.getMeterNumber() + ") PAOName(" + paoAlias.getDisplayName() + ") No change in PaoName.";
         } else {
             newPaoName = getNewPaoName(newPaoName);
-            deviceDao.changeName(meter,  newPaoName);
-            paoNameLog = "MeterNumber (" + meter.getMeterNumber() + ") PAOName(" + paoAlias.getDisplayName()+ ") PaoName Changed(OLD:" + currentPaoName + " NEW:" + newPaoName + ").";
+            deviceDao.changeName(meter, newPaoName);
+            paoNameLog = "MeterNumber (" + meter.getMeterNumber() + ") PAOName(" + paoAlias.getDisplayName() + ") PaoName Changed(OLD:" + currentPaoName + " NEW:" + newPaoName + ").";
         }
-        mspObjectDao.logMSPActivity(logActionStr,
-                                    paoNameLog.toString(),
-                                    mspVendor.getCompanyName());
+        mspObjectDao.logMSPActivity(logActionStr, paoNameLog.toString(), mspVendor.getCompanyName());
 
         // update meter number
         String currentMeterNumber = meter.getMeterNumber();
         String newMeterNumber = mspMeter.getMeterNo();
-        
+
         if (currentMeterNumber.equalsIgnoreCase(newMeterNumber)) {
             meterNumberLog = "MeterNumber (" + meter.getMeterNumber() + ") No change in MeterNumber.";
         } else {
             deviceUpdateService.changeMeterNumber(meter, newMeterNumber);
             meterNumberLog = "MeterNumber (" + meter.getMeterNumber() + ") MeterNumber Changed(OLD:" + currentMeterNumber + " NEW:" + newMeterNumber + ").";
         }
-        mspObjectDao.logMSPActivity(logActionStr,
-                                    meterNumberLog.toString(),
-                                    mspVendor.getCompanyName());
+        mspObjectDao.logMSPActivity(logActionStr, meterNumberLog.toString(), mspVendor.getCompanyName());
 
-        //update the substation group
+        // update the substation group
         String substationName = getMeterSubstationName(mspMeter, mspServiceLocation, mspVendor);
         updateSubstationGroupAndRoute(meter, newMeterNumber, mspVendor, substationName, logActionStr, false);
     }
-    
+
     /**
-     * Helper method to check if the deviceType of meter is different than the deviceType of the template meter.
-     * If different types of meters, then the deviceType will be changed for meter.
-     * @param mspMeter
-     * @param meter
-     * @param mspVendor
-     * @param method
+     * Helper method to check if the deviceType of meter is different than the
+     * deviceType of the template meter. If different types of meters, then the
+     * deviceType will be changed for meter.
      */
     private void changeDeviceType(Meter mspMeter, SimpleMeter meter, MultispeakVendor mspVendor, String method) {
-        
+
         String templateName = getMeterTemplate(mspMeter, mspVendor.getTemplateNameDefault());
         SimpleDevice templateMeter;
         try {
             templateMeter = deviceDao.getYukonDeviceObjectByName(templateName);
         } catch (NotFoundException e) {
-            //No template found to compare to
+            // No template found to compare to
             log.warn(e.getMessage() + " No TemplateName found in Yukon for ChangeDeviceType method, Device Type not checked.");
             return;
         }
 
         PaoType existingType = meter.getPaoIdentifier().getPaoType();
-        if( templateMeter.getPaoIdentifier().getPaoType() != existingType) {   //different types of meters...change type
+        if (templateMeter.getPaoIdentifier().getPaoType() != existingType) { // different types of meters...change type
             try {
-                PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(templateMeter.getPaoIdentifier().getPaoType());
+                PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(templateMeter.getPaoIdentifier()
+                                                                                             .getPaoType());
                 deviceUpdateService.changeDeviceType(meter, paoDefinition);
-                mspObjectDao.logMSPActivity(method, 
-                                            "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + existingType + " to:" + templateMeter.getPaoIdentifier().getPaoType() + ").", 
+                mspObjectDao.logMSPActivity(method,
+                                            "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + 
+                                            existingType + " to:" + templateMeter.getPaoIdentifier().getPaoType() + ").",
                                             mspVendor.getCompanyName());
             } catch (DataRetrievalFailureException e) {
                 log.warn(e);
@@ -2301,11 +2286,10 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
         }
     }
+
     /**
-     * Returns an "unused" paoName for newPaoName.
-     * If a meter already exists with newPaoName, then a numeric incremented value will be appended to the newPaoName.
-     * @param newPaoName
-     * @return 
+     * Returns an "unused" paoName for newPaoName. If a meter already exists
+     * with newPaoName, then a numeric incremented value will be appended to the newPaoName.
      */
     private String getNewPaoName(String newPaoName) {
 
@@ -2317,18 +2301,18 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 if (retryCount > 0) {
                     tempPaoName = newPaoName + " (" + retryCount + ")";
                 }
-                //Try to find if a meter already exists with this paoName
+                // Try to find if a meter already exists with this paoName
                 meterDao.getForPaoName(tempPaoName);
                 retryCount++;
             } catch (NotFoundException e) {
-                //this is good!
+                // this is good!
                 found = true;
             }
         } while (!found);
 
         return tempPaoName;
     }
-    
+
     @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
