@@ -168,6 +168,20 @@ public final class MspMeterDaoImpl implements MspMeterDao
         }
     }
     
+    @Override
+    public YukonMeter getForSerialNumberOrAddress(String serialNumberOrAddress) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(meterRowMapper.getSql());
+            sql.append("WHERE dcs.Address").eq(serialNumberOrAddress);
+            sql.append("OR SerialNumber").eq(serialNumberOrAddress);
+            YukonMeter meter = yukonJdbcTemplate.queryForObject(sql, meterRowMapper);
+            return meter;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Unknown physical address or rfn sensorSerialNumber " + serialNumberOrAddress);
+        }
+    }
+    
     /**
      * Creates a new (MSP) Meter object.
      * The information commented out is being used for in-line documentation of available MultiSpeak fields. 

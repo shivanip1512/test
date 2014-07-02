@@ -65,6 +65,13 @@ public class PaoUtils {
         }
     };
 
+    private final static Function<DisplayablePao, String> paoToNameFunction = new Function<DisplayablePao, String>() {
+        @Override
+        public String apply(DisplayablePao from) {
+            return from.getName();
+        }
+    };
+
     public static YukonDevice asYukonDevice(YukonPao pao) {
         if (pao instanceof YukonDevice) {
             YukonDevice device = (YukonDevice) pao;
@@ -122,6 +129,11 @@ public class PaoUtils {
         return Iterables.transform(paos, yukonPaoToPaoIdentifierFunction);
     }
 
+    public static ImmutableList<String> asPaoNames(Iterable<? extends DisplayablePao> paos) {
+        Iterable<String> transformedList = Iterables.transform(paos, paoToNameFunction);
+        return ImmutableList.copyOf(transformedList);
+    }
+    
     public static <T extends YukonPao> ImmutableMap<PaoIdentifier, T> indexYukonPaos(Iterable<T> paos) {
         return Maps.uniqueIndex(paos, yukonPaoToPaoIdentifierFunction);
     }

@@ -29,4 +29,15 @@ public interface MspMeterDao
      *  This is most likely a temporary period of time during change outs/replacement.   
      */
     public YukonMeter getMeterForMeterNumber(String meterNumber);
+    
+    /**
+     * Returns a YukonMeter for serialNumber or address.
+     * NOTE: This method assumes uniqueness across RFN sensorSerialNumbers and PLC address values.
+     * Queries for match against either RFN sensorSerialNumber OR PLC address.
+     * For RFN sensorSerialNumber, one should technically include model and manufacturer when looking up,
+     *  however, the business logic of the calling methods must instead take care of checking if the model/manufacturer
+     *  of the returned YukonMeter matches the expected values.
+     *  Use this method with caution! 
+     */
+    public YukonMeter getForSerialNumberOrAddress(String serialNumberOrAddress);
 }

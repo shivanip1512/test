@@ -1,37 +1,31 @@
 package com.cannontech.common.model;
 
-import com.cannontech.common.model.Route;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 
-public class Route implements DisplayablePao{
-    private int id;
+public class Route implements DisplayablePao {
+    private PaoIdentifier paoIdentifier;
     private String name;
     private int order;
-    private PaoType paoType;
     
     public Route() { }
     
     public Route(final int id, final String name, final int order, PaoType paoType) {
-        this.id = id;
+        paoIdentifier = new PaoIdentifier(id,  paoType);
         this.name = name;
         this.order = order;
-        this.paoType = paoType;
-    }
-    
-    public void setId(final int id) {
-        this.id = id;
     }
     
     public int getId() {
-        return id;
+        return paoIdentifier.getPaoId();
     }
 
     public void setName(final String name) {
         this.name = name;
     }
     
+    @Override
     public String getName() {
         return name;
     }
@@ -53,7 +47,7 @@ public class Route implements DisplayablePao{
     public boolean equals(Object o) {
         if (o == null || !(o instanceof Route)) return false;
         Route obj = (Route) o;
-        return ((this.id == obj.id) &&
+        return ((this.paoIdentifier == obj.paoIdentifier) &&
                 (this.name.equals(obj.name)) &&
                 (this.order == obj.order));
     }
@@ -61,7 +55,7 @@ public class Route implements DisplayablePao{
     @Override
     public int hashCode() {
         int result = 17;
-        result = result * 37 + id;
+        result = result * 37 + paoIdentifier.getPaoId();
         result = result * 37 + name.length();
         result = result * 37 + order;
         return result;
@@ -69,15 +63,10 @@ public class Route implements DisplayablePao{
 
     @Override
     public PaoIdentifier getPaoIdentifier() {
-        return new PaoIdentifier(id, paoType);
-    }
-
-    public void setPaoType(PaoType paoType) {
-        this.paoType = paoType;
+        return paoIdentifier;
     }
 
     public PaoType getPaoType() {
-        return paoType;
+        return paoIdentifier.getPaoType();
     }
-    
 }

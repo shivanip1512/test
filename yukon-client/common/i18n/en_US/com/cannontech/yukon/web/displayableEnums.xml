@@ -179,19 +179,19 @@
     <entry key="yukon.common.setting.ALERT_TIMEOUT_HOURS.description">The number of hours that an alert should be held (zero = forever, decimal numbers are okay)</entry>
     <entry key="yukon.common.setting.DEVICE_DISPLAY_TEMPLATE">Device Display Template</entry>
     <entry key="yukon.common.setting.DEVICE_DISPLAY_TEMPLATE.description">Defines the format for displaying devices. Available placeholders: DEVICE_NAME, METER_NUMBER</entry>
-    <entry key="yukon.common.setting.MSP_EXCLUDE_DISABLED_METERS">MSP Exclude Disabled Meters</entry>
+    <entry key="yukon.common.setting.MSP_EXCLUDE_DISABLED_METERS">Exclude Disabled Meters</entry>
     <entry key="yukon.common.setting.MSP_EXCLUDE_DISABLED_METERS.description">When true, excludes disabled meters from initiated read, ping, and control requests and from supported meters requests.</entry>
-    <entry key="yukon.common.setting.MSP_METER_LOOKUP_FIELD">MSP Meter Lookup Field</entry>
+    <entry key="yukon.common.setting.MSP_METER_LOOKUP_FIELD">Meter Lookup Field</entry>
     <entry key="yukon.common.setting.MSP_METER_LOOKUP_FIELD.description">Defines the field used to lookup a meter by in Yukon. Valid values: AUTO_METER_NUMBER_FIRST, AUTO_DEVICE_NAME_FIRST, METER_NUMBER, DEVICE_NAME, or ADDRESS.</entry>
-    <entry key="yukon.common.setting.MSP_LM_MAPPING_SETUP">MSP LM Mapping Setup</entry>
+    <entry key="yukon.common.setting.MSP_LM_MAPPING_SETUP">LM Mapping Setup</entry>
     <entry key="yukon.common.setting.MSP_LM_MAPPING_SETUP.description">Controls access to setup the MultiSpeak LM interface mappings.</entry>
-    <entry key="yukon.common.setting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP">MSP Billing Cycle Parent Device Group</entry>
+    <entry key="yukon.common.setting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP">Billing Cycle Parent Device Group</entry>
     <entry key="yukon.common.setting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP.description">Defines the Device Group parent group name for the MultiSpeak billingCycle element. Valid values are '/Meters/Billing/', '/Meters/Collection', '/Meters/Alternate'</entry>
-    <entry key="yukon.common.setting.MSP_PRIMARY_CB_VENDORID">MSP Primary CB Vendor ID</entry>
-    <entry key="yukon.common.setting.MSP_PRIMARY_CB_VENDORID.description">Defines the primary CIS vendor for CB interfaces.</entry>
-    <entry key="yukon.common.setting.MSP_PAONAME_ALIAS">MSP PAO Name Alias</entry>
+    <entry key="yukon.common.setting.MSP_PRIMARY_CB_VENDORID">Primary CIS Vendor</entry>
+    <entry key="yukon.common.setting.MSP_PRIMARY_CB_VENDORID.description">Defines the primary CIS vendor Id for CB_Server interfaces.</entry>
+    <entry key="yukon.common.setting.MSP_PAONAME_ALIAS">PAO Name Alias</entry>
     <entry key="yukon.common.setting.MSP_PAONAME_ALIAS.description">Defines a Yukon Pao (Device) Name field alias. Valid values(0-5): [0=Device Name, 1=Account Number, 2=Service Location, 3=Customer, 4=EA Location, 5=Grid Location, 6=Service Location [Position]]</entry>
-    <entry key="yukon.common.setting.MSP_PAONAME_EXTENSION">MSP PAO Name Extension</entry>
+    <entry key="yukon.common.setting.MSP_PAONAME_EXTENSION">PAO Name Extension</entry>
     <entry key="yukon.common.setting.MSP_PAONAME_EXTENSION.description">The extension name of the field appended to PaoName Alias. Leave this value blank to ignore the use of extensions.</entry>
     <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE">Default Rounding Mode</entry>
     <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE.description">Rounding Mode used when formatting value data in billing formats. Available placeholders: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP</entry>
