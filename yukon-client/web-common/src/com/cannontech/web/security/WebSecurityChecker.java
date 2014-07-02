@@ -26,10 +26,10 @@ public class WebSecurityChecker {
     @Autowired private EnergyCompanyDao ecDao;
     
     public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey, boolean expecting) {
-        final LiteYukonUser user = getYukonUser();
+    	
         boolean result = configurationSource.getBoolean(configKey);
         if (result != expecting) {
-            throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
+            throw new NotAuthorizedException("User is not authorized to access this page.");
         } 
     }
     
@@ -62,11 +62,11 @@ public class WebSecurityChecker {
     }
     
     public void checkGlobalSetting(GlobalSettingType setting) {
-        final LiteYukonUser user = getYukonUser();
-        
+    	
         if (!globalSettingDao.getBoolean(setting)) {
-            throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
+            throw new NotAuthorizedException("User is not authorized to access this page.");
         }
+        
     }
 
     public void checkFalseRoleProperty(YukonRoleProperty... rolePropertyIds) {
