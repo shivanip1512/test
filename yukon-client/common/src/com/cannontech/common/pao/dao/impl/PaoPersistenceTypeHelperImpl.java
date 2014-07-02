@@ -65,7 +65,8 @@ public class PaoPersistenceTypeHelperImpl implements PaoPersistenceTypeHelper {
 			Iterables.removeIf(iter, new Predicate<PaoFieldMetaData>() {
 				@Override
 				public boolean apply(PaoFieldMetaData input) {
-					return input.isPaoPart();
+		            Class<?> propertyType = input.getPropertyDescriptor().getPropertyType();
+		            return propertyType.getAnnotation(YukonPaoPart.class) != null;
 				}
 			});
 
@@ -116,7 +117,7 @@ public class PaoPersistenceTypeHelperImpl implements PaoPersistenceTypeHelper {
             idColumnName = partAnnotation.idColumnName();
         }
 
-        List <PaoFieldMetaData> fieldsBuilder = Lists.newArrayList();
+        List <PaoFieldMetaData> fields = Lists.newArrayList();
         List<String> propertiesInserted = Lists.newArrayList();
         Method[] methods = klass.getDeclaredMethods();
         for (Method method : methods) {
@@ -134,13 +135,13 @@ public class PaoPersistenceTypeHelperImpl implements PaoPersistenceTypeHelper {
                     dbColumnName = fieldAnnotation.columnName();
                 }
                 PaoFieldMetaData paoFieldMetaData = new PaoFieldMetaData(propertyDescriptor, dbColumnName);
-                fieldsBuilder.add(paoFieldMetaData);
+                fields.add(paoFieldMetaData);
                 propertiesInserted.add(propertyDescriptor.getName());
             }
         }
 
         CompletePaoMetaData paoMetaData =
-            new CompletePaoMetaData(klass, tableName, idColumnName, fieldsBuilder, null);
+            new CompletePaoMetaData(klass, tableName, idColumnName, fields, null);
         return paoMetaData;
     }
 
@@ -182,7 +183,6 @@ public class PaoPersistenceTypeHelperImpl implements PaoPersistenceTypeHelper {
                             CompletePaoMetaData partMapping = metaDataByClass.get(returnType);
                             if (partMapping != null) {
                                 classTableMappings.add(partMapping.withDescriptor(propertyDescriptor));
-                                field.setPaoPart(true);
                             }
                         }
 

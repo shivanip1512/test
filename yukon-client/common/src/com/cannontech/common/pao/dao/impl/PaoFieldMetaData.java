@@ -20,7 +20,6 @@ import com.google.common.base.Function;
  */
 public final class PaoFieldMetaData {
     private static final Logger log = YukonLogManager.getLogger(PaoFieldMetaData.class);
-    private boolean isPaoPart;
 
     public static final Function<PaoFieldMetaData, String> TO_DB_COLUMN_NAME =
         new Function<PaoFieldMetaData, String>() {
@@ -114,11 +113,4 @@ public final class PaoFieldMetaData {
         return dbColumnName;
     }
     
-	public boolean isPaoPart() {
-		return isPaoPart;
-	}
-
-	public void setPaoPart(boolean isPaoPart) {
-		this.isPaoPart = isPaoPart;
-	}
 }
