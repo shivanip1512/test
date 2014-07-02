@@ -1100,39 +1100,25 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     public ErrorObject[] meterRemove(MultispeakVendor mspVendor, Meter[] removeMeters) {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
 
-        for (int i = 0; i < removeMeters.length; i++) {
-            Meter mspMeter = removeMeters[i];
-            String meterNo = mspMeter.getMeterNo().trim();
+        for (Meter mspMeter : removeMeters) {
             // Lookup meter in Yukon by msp meter number
             YukonMeter meter;
             try {
-                meter = meterDao.getForMeterNumber(meterNo);
-                // Meter exists if no exception was thrown
-                if (!meter.isDisabled()) {// enabled
-                    // Added meter to Inventory
-                    addToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
-                    deviceDao.disableDevice(meter);
+                meter = getMeterByMeterNumber(mspMeter);
 
-                    // TODO - if RFN meter, should we clear out RFNIdentifer
-                    // values?
-                    mspObjectDao.logMSPActivity(METER_REMOVE_STRING,
-                                                "MeterNumber(" + meterNo + ") - Meter Disabled.",
-                                                mspVendor.getCompanyName());
-                } else {
-                    ErrorObject err = mspObjectDao.getErrorObject(meterNo,
-                                                                  "Warning: MeterNumber(" + meterNo + ") - Meter is already disabled. No updates were made.",
-                                                                  "Meter",
-                                                                  METER_REMOVE_STRING,
-                                                                  mspVendor.getCompanyName());
-                    errorObjects.add(err);
+                // Added meter to Inventory
+                addToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
+                if (!meter.isDisabled()) {// enabled
+                    deviceDao.disableDevice(meter);
                 }
+
+                mspObjectDao.logMSPActivity(METER_REMOVE_STRING,
+                                            "MeterNumber(" + meter.getMeterNumber() + ") - Meter Disabled.",
+                                            mspVendor.getCompanyName());
             } catch (NotFoundException e) {
 
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNo,
-                                                                      "MeterNumber",
-                                                                      "Meter",
-                                                                      METER_REMOVE_STRING,
-                                                                      mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo().trim(), "MeterNumber", "Meter", 
+                                                                      METER_REMOVE_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
             }
         }
