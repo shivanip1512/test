@@ -48,7 +48,7 @@ public class AdaListController {
     public String delete(ModelMap model, FlashScope flashScope, int analysisId) {
         archiveDataAnalysisDao.deleteAnalysis(analysisId);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.analysis.list.deleted"));
-        return "redirect:/bulk/archiveDataAnalysis/list/view";
+        return "redirect:view";
     }
     
     /**

@@ -1,4 +1,8 @@
 /* see the dataUpdateEnabler.tag to see where this is referenced */
+var isWindowUnloading = false;
+$(window).bind('beforeunload',function(){
+            isWindowUnloading = true; 
+        });
 yukon.namespace('yukon.dataUpdater');
 yukon.dataUpdater = (function () {
     var _updaterTimeout = null,
@@ -233,7 +237,12 @@ yukon.dataUpdater = (function () {
                 if (xhr.status === 409) {
                     warnStaleData();
                 }
-                failureCallback();
+                if(xhr.getAllResponseHeaders() || !isWindowUnloading){
+                    failureCallback();   
+                }else{
+                    failureCount=0;
+                }
+                isWindowUnloading = false;
             });
             reqData.requestTokens = [];
         };

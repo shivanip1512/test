@@ -95,12 +95,11 @@
                                     </c:choose>
                                 </c:when>
                             </c:choose>
-                            <cti:button id="deleteButton_${analysis.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysis.analysisId}"/>
+                            <cti:url var="deleteURL" value="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysis.analysisId}"/>
+                            <cti:button id="deleteButton_${analysis.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="${deleteURL}" />
                             <d:confirm on="#deleteButton_${analysis.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
                         </div>
                     </td>
-                    <cti:dataUpdaterCallback function="yukon.dataAnalysis.changeStatus"
-                                value="ARCHIVE_DATA_ANALYSIS/${analysis.analysisId}/STATUS"/>
                     
                 </tr>
             </c:if>
