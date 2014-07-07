@@ -66,12 +66,12 @@ public interface MR_ServerSoap_PortType extends java.rmi.Remote {
      * registrationID. The calling parameter registrationInfo is a complex
      * type that includes the following information: registrationID - the
      * previously requested registrationID obtained from the publisher by
-     * calling RequestRegistrationID, responseURL – the URL to which information
+     * calling RequestRegistrationID, responseURL - the URL to which information
      * should subsequently be published on this subscription, msFunction
-     * – the abbreviated string name of the MultiSpeak method making the
+     * - the abbreviated string name of the MultiSpeak method making the
      * subscription request (for instance, if an application that exposes
      * the Meter Reading function has made the request, then the msFunction
-     * variable should include “MR�?), methodsList – An array of strings that
+     * variable should include "MR"?), methodsList - An array of strings that
      * contain the string names of the MultiSpeak methods to which the subscriber
      * would like to subscribe.  Subsequent calls to RegisterForService on
      * an existing subscription replace prior subscription details in their
@@ -742,20 +742,20 @@ public interface MR_ServerSoap_PortType extends java.rmi.Remote {
      * this template, the data should be returned in that format; if not
      * the publisher should still return the data, but in its perferred formattedBlockTemplate
      * format. Error handling may be of six types for this method: 1)The
-     * publisher cannot read any of the reading types requested – Expected
+     * publisher cannot read any of the reading types requested - Expected
      * response: The publisher should return an errorObject in the synchronous
      * response to the Initiate message (a synchronous error response). 2)
-     * The publisher can read only some of the values being requested – Expected
+     * The publisher can read only some of the values being requested - Expected
      * Response: The publisher should send what it can, without flagging
      * an error condition. 3) The meter for which data is being requested
-     * does not exist in the publisher’s system – Expected Response: A synchronous
+     * does not exist in the publisher's system - Expected Response: A synchronous
      * error (see definition in point 1 above) should be returned. 4) The
      * publisher is too busy to respond or too much information is being
      * requested - Expected Response: A synchronous error (see definition
      * in point 1 above) should be returned. 5) The request is delayed beyond
-     * the specified expiration time – Expected Response: The publisher closes
+     * the specified expiration time - Expected Response: The publisher closes
      * the request and does not make an error response. 6) The publisher
-     * tried and failed to successfully make the readings – Expected Response:
+     * tried and failed to successfully make the readings - Expected Response:
      * The publisher should send an asynchronous return message (either a
      * ReadingChangedNotification or FormattedBlockNotification) with the
      * errorString attribute of the meterRead set.

@@ -46,7 +46,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 	{
 		super();
 
-		// don´t forget to assign listeners to the icons
+		// don't forget to assign listeners to the icons
 		for (int i = 0; i < ALL_ICONS.length; i++)
 			ALL_ICONS[i].addSysTrayMenuListener(this);
 

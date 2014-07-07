@@ -54,7 +54,7 @@ public class Example extends JFrame implements ActionListener, SysTrayMenuListen
 
         setBounds( xPos, yPos, INIT_WIDTH, INIT_HEIGHT );
 
-        // don´t forget to assign listeners to the icons
+        // don't forget to assign listeners to the icons
         icons[ 0 ].addSysTrayMenuListener( this );
         icons[ 1 ].addSysTrayMenuListener( this );
 

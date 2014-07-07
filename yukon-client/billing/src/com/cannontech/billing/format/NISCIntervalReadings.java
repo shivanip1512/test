@@ -18,32 +18,32 @@ import com.cannontech.common.dynamicBilling.model.BillableField;
  * <pre>
  * 
  * Offset   Length  Type    Description     Value
- * 1        1       C       Record Type     ‘H’ Header ‘M’ Meter ‘L’ End of Record
- * 2        1       C       Comma           ‘,’
+ * 1        1       C       Record Type     'H' Header 'M' Meter 'L' End of Record
+ * 2        1       C       Comma           ','
  * 3        15      C       Meter Number    15 char     pad right (spaces)
- * 18       1       C       Comma           ‘,’
+ * 18       1       C       Comma           ','
  * 19       15      C       Transponder id  15 char     pad right (spaces)
- * 34       1       C       Comma           ‘,’
+ * 34       1       C       Comma           ','
  * 35       15      C       Port Number     #########   pad right (spaces)
- * 50       1       C       Comma           ‘,’
+ * 50       1       C       Comma           ','
  * 51       2       N       Meter Register  ##          pad left (spaces) (A=1, B=2, C=3, D=4)  Total??? use 1 if not know?
- * 53       1       C       Comma           ‘,’
+ * 53       1       C       Comma           ','
  * 54       8       C       Read date       MMDDYYYY
- * 62       1       C       Comma           ‘,’
+ * 62       1       C       Comma           ','
  * 63       5       C       Read time       HH:MM
- * 68       1       C       Comma           ‘,’
+ * 68       1       C       Comma           ','
  * 69       9       N       KWH Reading     #########
- * 78       1       C       Comma           ‘,’
+ * 78       1       C       Comma           ','
  * 79       10      N       KW Reading      ######.000
- * 89       1       C       Comma           ‘,’
+ * 89       1       C       Comma           ','
  * 90       8       C       KW Peak date    MMDDYYYY
- * 98       1       C       Comma           ‘,’
+ * 98       1       C       Comma           ','
  * 99       5       C       KW Peak time    HH:MM
- * 104      1       C       Comma           ‘,’
+ * 104      1       C       Comma           ','
  * 105      10      N       KVAR Reading    #######.00
- * 115      1       C       Comma           ‘,’
+ * 115      1       C       Comma           ','
  * 116      5       C       AMR Read Code   5 char
- * 121      1       C       Comma           ‘,’
+ * 121      1       C       Comma           ','
  * 122      10      N       Blink Count     ##########
  * 131         Total Length    
  * </pre>

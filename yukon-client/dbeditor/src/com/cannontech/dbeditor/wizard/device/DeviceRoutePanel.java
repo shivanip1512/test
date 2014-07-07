@@ -201,7 +201,7 @@ public class DeviceRoutePanel extends DataInputPanel {
             if (value instanceof Repeater850) {
                 Object[] o = {
                         "The RPT-850 is designed for use as a last hop repeater to\n" + 
-                                "improve communication reliability with up to ten end points (MCT’s).\n" + 
+                                "improve communication reliability with up to ten end points (MCT's).\n" + 
                                 "Functional limitations are in place to ensure it is only implemented\n" + 
                                 "as the last repeater in any route.  To avoid nonessential communications,\n" + 
                                 "the operator is encouraged to limit the number of end point devices\n" + 
