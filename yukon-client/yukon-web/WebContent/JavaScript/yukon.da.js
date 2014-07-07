@@ -93,13 +93,13 @@ yukon.da = (function () {
                 } else {
                     moveBankOpener.click( function(event) {
                         mod.showDialog(moveBankTitle,
-                        		    yukon.url('/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)), 
+                                    yukon.url('/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)), 
                                     {'height': 650, 'width': 650, 'modal': true}, 
                                     '#contentPopup'); 
                     });
                 }
                 bankCommandOpener.click( function(event){
-                    mod.getMenuFromURL(yukon.url('/capcontrol/menu/commandMenu?id=' + bankId), event);
+                    mod.getCommandMenu(bankId, event);
                 });
 
                 bankInfoOpener.click( function(event) {
@@ -227,7 +227,11 @@ yukon.da = (function () {
                 }
             });
         },
-
+        
+        getCommandMenu : function(id, event) {
+            mod.getMenuFromURL(yukon.url('/capcontrol/menu/commandMenu?id=' + id), event);
+        },
+        
         checkPageExpire : function() {
             var paoIds = [];
 
@@ -256,7 +260,7 @@ yukon.da = (function () {
                 $('#menuPopup').html(data);
                 mod.showMenuPopup(params);
                 if(params && params.showNote === true) {
-                    $('.js-show-popup-note').show();
+                    $('.js-no-field-message').show();
                 }
             });
         },
