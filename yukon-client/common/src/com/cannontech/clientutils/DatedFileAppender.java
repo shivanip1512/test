@@ -504,7 +504,7 @@ public class DatedFileAppender extends FileAppender {
 
     private void setStartDate(){
         Date currentDate = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
         startDate = formatter.format(currentDate);
     }
 

@@ -51,7 +51,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
                 
                 try (FileWriter output = new FileWriter(file)) {
                     
-                    DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+                    DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
                     String headerFormat = "%s,%s,%s,%s,%s,%s,%s,%s\n";
                     String dataFormat = "%s,%s,%s,%s,%s,%s,%d,%s\n";
                     output.write(String.format(headerFormat, "Serial Number", 
