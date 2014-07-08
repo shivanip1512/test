@@ -875,7 +875,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	 * process the number of records specified in the constructor arg.  This class must
 	 * be used in a transaction because it has a db hit inside the mapRow method.
 	 */
-	private class OptOutEventDtoExtractor implements ResultSetExtractor {
+	private class OptOutEventDtoExtractor implements ResultSetExtractor<List<OptOutEventDto>> {
 
 		private int maxNumberOfRecords = Integer.MAX_VALUE;
 		
