@@ -143,7 +143,7 @@ public class ExportField implements Displayable {
     public MessageSourceResolvable getMessage() {
         MessageSourceResolvable  messageSourceResolvable = null;
         if (field.getType() != null) {
-            if (field.getType() == FieldType.ATTRIBUTE) {
+            if (field.getType() == FieldType.ATTRIBUTE && field.getAttribute()!=null && field.getAttribute().getAttribute() !=null) {
                 messageSourceResolvable = field.getAttribute().getAttribute().getMessage();
             } else {
                 messageSourceResolvable = field.getType().getMessage();
@@ -249,54 +249,75 @@ public class ExportField implements Displayable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ExportField other = (ExportField) obj;
-        if (attributeField != other.attributeField)
+        if (attributeField != other.attributeField) {
             return false;
+        }
         if (field == null) {
-            if (other.field != null)
+            if (other.field != null) {
                 return false;
-        } else if (!field.equals(other.field))
+            }
+        } else if (!field.equals(other.field)) {
             return false;
-        if (fieldId != other.fieldId)
+        }
+        if (fieldId != other.fieldId) {
             return false;
-        if (formatId != other.formatId)
+        }
+        if (formatId != other.formatId) {
             return false;
+        }
         if (maxLength == null) {
-            if (other.maxLength != null)
+            if (other.maxLength != null) {
                 return false;
-        } else if (!maxLength.equals(other.maxLength))
+            }
+        } else if (!maxLength.equals(other.maxLength)) {
             return false;
-        if (missingAttribute != other.missingAttribute)
+        }
+        if (missingAttribute != other.missingAttribute) {
             return false;
+        }
         if (missingAttributeValue == null) {
-            if (other.missingAttributeValue != null)
+            if (other.missingAttributeValue != null) {
                 return false;
-        } else if (!missingAttributeValue.equals(other.missingAttributeValue))
+            }
+        } else if (!missingAttributeValue.equals(other.missingAttributeValue)) {
             return false;
+        }
         if (padChar == null) {
-            if (other.padChar != null)
+            if (other.padChar != null) {
                 return false;
-        } else if (!padChar.equals(other.padChar))
+            }
+        } else if (!padChar.equals(other.padChar)) {
             return false;
-        if (padSide != other.padSide)
+        }
+        if (padSide != other.padSide) {
             return false;
+        }
         if (pattern == null) {
-            if (other.pattern != null)
+            if (other.pattern != null) {
                 return false;
-        } else if (!pattern.equals(other.pattern))
+            }
+        } else if (!pattern.equals(other.pattern)) {
             return false;
-        if (readingPattern != other.readingPattern)
+        }
+        if (readingPattern != other.readingPattern) {
             return false;
-        if (roundingMode != other.roundingMode)
+        }
+        if (roundingMode != other.roundingMode) {
             return false;
-        if (timestampPattern != other.timestampPattern)
+        }
+        if (timestampPattern != other.timestampPattern) {
             return false;
+        }
         return true;
     }
 

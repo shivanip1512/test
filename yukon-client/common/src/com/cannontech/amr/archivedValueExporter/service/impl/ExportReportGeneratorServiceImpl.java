@@ -155,7 +155,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         }
 
         List<String> reportResults = new ArrayList<>();
-        if (StringUtils.isNotEmpty(format.getHeader())) reportResults.add(format.getHeader());
+        if (StringUtils.isNotEmpty(format.getHeader())) {
+            reportResults.add(format.getHeader());
+        }
         
         TimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
         DateTimeZone reportTZ = getReportTZ(tzFormat, userContext);
@@ -220,7 +222,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         }
         
         // Add Footer
-        if (StringUtils.isNotEmpty(format.getFooter())) reportResults.add(format.getFooter());
+        if (StringUtils.isNotEmpty(format.getFooter())) {
+            reportResults.add(format.getFooter());
+        }
 
         return reportResults;
     }
@@ -553,7 +557,10 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      */
     private String getAttributeName(Attribute attribute, YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String attributeName = messageSourceAccessor.getMessage(attribute.getMessage());
+        String attributeName = null;
+        if (null != attribute) {
+            attributeName = messageSourceAccessor.getMessage(attribute.getMessage());
+        }
 
         return attributeName;
     }

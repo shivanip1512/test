@@ -43,6 +43,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.CONNECTION_STATUS">Connection Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONTROL_POINT">Control Point</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT">Current (Neutral)</entry> 
+    <entry key="yukon.common.attribute.builtInAttribute.CURRENT">Current</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_PHASE_A">Current (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_PHASE_B">Current (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_PHASE_C">Current (Phase C)</entry>
