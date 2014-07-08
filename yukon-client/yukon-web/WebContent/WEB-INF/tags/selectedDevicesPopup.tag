@@ -41,7 +41,7 @@
 
 <c:choose>
     <c:when test="${type == 'link'}">
-        <cti:icon icon="${icon}" popup="#${id}" classes="cp fn" title="${targetTitle}" style="margin-bottom: -3px;"/>
+        <cti:icon icon="${icon}" popup="#${id}" classes="cp fn pull-icon-down" title="${targetTitle}"/>
     </c:when>
     <c:otherwise>
         <cti:button renderMode="buttonImage" icon="${icon}" title="${targetTitle}" popup="#${id}"/>

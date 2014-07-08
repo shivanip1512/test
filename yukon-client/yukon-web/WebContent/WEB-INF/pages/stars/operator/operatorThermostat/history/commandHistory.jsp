@@ -65,22 +65,14 @@ $(function(){
                     <tr>
                         <!-- Thermostat -->
                         <c:if test="${multipleThermostatsSelected}">
-                            <td>
-                                ${fn:escapeXml(historyItem.thermostatName)}
-                            </td>
+                            <td>${fn:escapeXml(historyItem.thermostatName)}</td>
                         </c:if>
                         <!-- Type -->
-                        <td>
-                            <i:inline key="${historyItem.eventType}"/>
-                        </td>
+                        <td><i:inline key="${historyItem.eventType}"/></td>
                         <!-- User -->
-                        <td> 
-                            ${fn:escapeXml(historyItem.userName)}
-                        </td>
+                        <td>${fn:escapeXml(historyItem.userName)}</td>
                         <!-- Date -->
-                        <td>
-                            <cti:formatDate value="${historyItem.eventTime}" type="DATEHM" />
-                        </td>
+                        <td><cti:formatDate value="${historyItem.eventTime}" type="DATEHM"/></td>
                         <!-- Details -->
                         <td>
                             <c:if test="${historyItem.eventType == 'MANUAL'}">
@@ -134,6 +126,7 @@ $(function(){
                 </c:forEach>
             </tbody>
         </table>
+        <c:if test="${empty showViewMore}"><tags:pagingResultsControls result="${searchResult}" adjustPageCount="true"/></c:if>
         <c:if test="${showViewMore && moreResults}">
             <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
                 <cti:param name="accountId" value="${accountId}" />

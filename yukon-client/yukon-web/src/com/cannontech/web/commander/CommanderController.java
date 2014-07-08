@@ -28,16 +28,23 @@ import com.cannontech.amr.device.search.model.FilterBy;
 import com.cannontech.amr.device.search.model.OrderByField;
 import com.cannontech.amr.device.search.model.SearchField;
 import com.cannontech.amr.device.search.service.DeviceSearchService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.command.CommandCategory;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yc.bean.YCBean;
 
@@ -45,36 +52,52 @@ import com.cannontech.yc.bean.YCBean;
 @RequestMapping(value = "/*")
 @CheckRoleProperty(YukonRoleProperty.ENABLE_WEB_COMMANDER)
 public class CommanderController {
+    
     @Autowired private DeviceSearchService deviceSearchService;
     @Autowired private CommandDao commandDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     @RequestMapping("select")
     public String select(
             @RequestParam(value = "category", defaultValue = "MCT") DeviceSearchCategory category,
-            @RequestParam(value = "orderBy", defaultValue = "NAME") DeviceSearchField orderByField,
-            @RequestParam(value = "descending", defaultValue = "false") Boolean orderByDescending,
-            @RequestParam(defaultValue = "1") Integer page, Integer itemsPerPage,
-            ModelMap model, HttpServletRequest request) {
+            @DefaultItemsPerPage(25) PagingParameters paging,
+            @DefaultSort(dir=Direction.desc, sort="NAME") SortingParameters sorting,
+            ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         List<SearchField> fields = deviceSearchService.getFieldsForCategory(category);
         
-        OrderByField orderBy = new OrderByField(orderByField, orderByDescending);
+        DeviceSearchField deviceSearchField = DeviceSearchField.valueOf(sorting.getSort());
+        OrderByField orderBy = new OrderByField(deviceSearchField, sorting.getDirection() == Direction.desc);
         
         FilterBy categoryfilter = deviceSearchService.getFiltersForCategory(category);
         List<FilterBy> editableFilters = getQueryFilters(request, fields);
         
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
 
         List<FilterBy> searchFilters = new ArrayList<FilterBy>();
         searchFilters.add(categoryfilter);
         searchFilters.addAll(editableFilters);
-        SearchResults<DeviceSearchResultEntry> deviceSearchResults = deviceSearchService.search(fields, searchFilters, orderBy, ((page - 1) * itemsPerPage), itemsPerPage);
+        SearchResults<DeviceSearchResultEntry> deviceSearchResults = deviceSearchService.search(fields, searchFilters, 
+                orderBy, paging.getStartIndex(), paging.getItemsPerPage());
         
         model.addAttribute("filters", editableFilters);
         model.addAttribute("fields", fields);
         model.addAttribute("category", category);
-        model.addAttribute("orderBy", orderByField);
         model.addAttribute("deviceSearchResults", deviceSearchResults);
         model.addAttribute("menuSelection", getMenuSelection(category));
+        
+        // add columns
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        Direction dir = sorting.getDirection();
+        List<SortableColumn> columns = new ArrayList<>();
+        for (SearchField searchField : fields) {
+            if (searchField.isVisible()) {
+                DeviceSearchField field = (DeviceSearchField) searchField;
+                boolean active = field == deviceSearchField;
+                String text = accessor.getMessage(field);
+                SortableColumn col = new SortableColumn(dir, active, text, field.name());
+                columns.add(col);
+            }
+        }
+        model.addAttribute("columns", columns);
         
         return "select.jsp";
     }

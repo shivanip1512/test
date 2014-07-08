@@ -214,14 +214,14 @@
 <h3 class="subtle">Toggle Buttons</h3>
 
 <p class="description">
-    Button groups can be made to act like toggle or radio buttons by add the <span class="label label-info">.js-toggle</span>
+    Button groups can be made to act like toggle or radio buttons by add the <span class="label label-info">.toggle-btns</span>
     class the container element.  Yukon's js library will automatically make one of the buttons look punched in when clicked
-    by simply added the <span class="label label-info">.on</span> class to the right button.
+    by simply added the <span class="label label-info">.on</span> class to the button.
 </p>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <div class="clearfix stacked button-group js-toggle">
+        <div class="toggle-btns clearfix stacked">
             <cti:button renderMode="buttonImage" icon="icon-text-align-left"/>
             <cti:button renderMode="buttonImage" icon="icon-text-align-center" classes="on"/>
             <cti:button renderMode="buttonImage" icon="icon-text-align-justify"/>
@@ -231,7 +231,7 @@
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;clearfix stacked button-group js-toggle&quot;&gt;
+&lt;div class=&quot;toggle-btns clearfix stacked&quot;&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-left&quot;/&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-center&quot; classes=&quot;on&quot;/&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-justify&quot;/&gt;
@@ -239,21 +239,18 @@
 &lt;/div&gt;
 </pre>
 <p class="description">
-    Toggle buttons can show a little more visual state using the <span class="label label-info">.toggle-on-off</span> class
+    Toggle buttons can show a little more visual state using the <span class="label label-info">.toggle-btns</span> class
     on the container element and adding the <span class="label label-info">.yes</span> or 
     <span class="label label-info">.no</span> classes to the buttons.  Yukon's js library handles this automatically as well.
-    The <span class="label label-info">.toggle-on-off</span> also handles the button toggling so 
-    <span class="label label-info">.js-toggle</span> is not needed when using 
-    <span class="label label-info">.toggle-on-off</span>.
 </p>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <div class="clearfix stacked button-group toggle-on-off">
+        <div class="clearfix stacked toggle-btns">
             <cti:button nameKey="on" classes="yes on"/>
             <cti:button nameKey="off" classes="no"/>
         </div>
-        <div class="clearfix stacked button-group toggle-on-off">
+        <div class="clearfix stacked toggle-btns">
             <cti:button label="Activated" classes="yes on"/>
             <cti:button label="Deactivated"/>
             <cti:button label="Disabled" classes="no"/>
@@ -261,11 +258,11 @@
     </div>
 </div>
 <pre class="code prettyprint">
-&lt;div class=&quot;clearfix stacked button-group toggle-on-off&quot;&gt;
+&lt;div class=&quot;clearfix stacked toggle-btns&quot;&gt;
     &lt;cti:button nameKey=&quot;on&quot; classes=&quot;yes on&quot;/&gt;
     &lt;cti:button nameKey=&quot;off&quot; classes=&quot;no&quot;/&gt;
 &lt;/div&gt;
-&lt;div class=&quot;clearfix stacked button-group toggle-on-off&quot;&gt;
+&lt;div class=&quot;clearfix stacked toggle-btns&quot;&gt;
     &lt;cti:button label=&quot;Activate&quot; classes=&quot;yes on&quot;/&gt;
     &lt;cti:button label=&quot;Deactivate&quot;/&gt;
     &lt;cti:button label=&quot;Disabled&quot; classes=&quot;no&quot;/&gt;

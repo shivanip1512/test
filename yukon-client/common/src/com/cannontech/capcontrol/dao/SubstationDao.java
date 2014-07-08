@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.Substation;
-import com.cannontech.common.search.result.SearchResults;
 
 public interface SubstationDao {
     
@@ -42,7 +41,7 @@ public interface SubstationDao {
      */
     public List<Integer> getAllUnassignedSubstationIds();
     
-    public SearchResults<LiteCapControlObject> getOrphans(int startIndex, int itemsPerPage);
+    public List<LiteCapControlObject> getOrphans();
     
     public List<Integer> getAllSpecialAreaUnassignedSubstationIds (Integer areaId);
 

@@ -79,9 +79,9 @@ yukon.dr.dashboard = (function() {
             $('#broadcast-config .f-time-label').html(timeFormatter.formatTime($('#rf-performance-command-time').val(), 0));
             $('#broadcast-config .f-email-time-label').html(timeFormatter.formatTime($('#rf-performance-email-time').val(), 0));
 
-            $(document).on('click', '#broadcast-config .toggle-on-off .button', function() {
+            $(document).on('click', '#broadcast-config .toggle-btns .button', function() {
                 
-                if ($('#broadcast-config .toggle-on-off .yes').hasClass('on')) {
+                if ($('#broadcast-config .toggle-btns .yes').hasClass('on')) {
                     $('#rf-performance-email').val('true');
                     $('.f-notif-group').show('fade');
                     $('.f-email-schedule').show('fade');
@@ -94,18 +94,18 @@ yukon.dr.dashboard = (function() {
             });
 
             if ($('#rf-performance-email').val() === 'true') {
-                $('#broadcast-config .toggle-on-off .yes').addClass('on');
-                $('#broadcast-config .toggle-on-off .no').removeClass('on');
+                $('#broadcast-config .toggle-btns .yes').addClass('on');
+                $('#broadcast-config .toggle-btns .no').removeClass('on');
                 $('.f-notif-group').show();
                 $('.f-email-schedule').show();
             } else {
-                $('#broadcast-config .toggle-on-off .no').addClass('on');
-                $('#broadcast-config .toggle-on-off .yes').removeClass('on');
+                $('#broadcast-config .toggle-btns .no').addClass('on');
+                $('#broadcast-config .toggle-btns .yes').removeClass('on');
                 $('.f-notif-group').hide();
                 $('.f-email-schedule').hide();
             }
 
-            $(document).on('yukon.dr.rf.config.load', function (ev, originalTarget) {
+            $(document).on('yukon.dr.rf.config.load', function (ev) {
                 // each time the configure button popup is loaded, reset the field values of the times
                 // and reinit the sliders so they accurately reflect the current settings in the database
                 $('#rf-performance-command-time').val(_originalRfCommandTime);

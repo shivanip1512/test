@@ -84,8 +84,11 @@
                          <tags:nameValueGap gapHeight="${take10}"/>
                          
                          <tags:nameValue id="attributeDeviceGroups" name="${groupLabel}">
-                             <tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" fieldValue="${deviceGroupName}" 
-                                                      dataJson="${groupDataJson}" linkGroupName="true" showSelectedDevicesIcon="false"/>
+                             <tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" 
+                                                           fieldValue="${deviceGroupName}" 
+                                                           dataJson="${groupDataJson}" 
+                                                           linkGroupName="true" 
+                                                           showSelectedDevicesIcon="false"/>
                          </tags:nameValue>
                          
                          <tags:nameValueGap gapHeight="${take12}"/>
@@ -167,8 +170,11 @@
                          <tags:nameValueGap gapHeight="${take10}"/>
                          
                          <tags:nameValue id="commandDeviceGroups" name="${groupLabel}">
-                            <tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" fieldValue="${deviceGroupName}" 
-                                                      dataJson="${groupDataJson}" linkGroupName="true" showSelectedDevicesIcon="false"/>
+                            <tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" 
+                                                          fieldValue="${deviceGroupName}" 
+                                                          dataJson="${groupDataJson}" 
+                                                          linkGroupName="true" 
+                                                          showSelectedDevicesIcon="false"/>
                          </tags:nameValue>
                          
                          <tags:nameValueGap gapHeight="${take12}"/>

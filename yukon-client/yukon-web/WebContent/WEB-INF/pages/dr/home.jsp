@@ -29,20 +29,11 @@
                     <div class="scroll-large">
                         <table class="compact-results-table row-highlighting has-actions dashed">
                             <thead>
-                            <tr>
-                                <th>
-                                    <tags:sortLink nameKey="nameHeader" baseUrl="${baseUrl}" fieldName="NAME"
-                                        sortParam="favSort" descendingParam="favDescending"/>
-                                </th>
-                                <th>
-                                    <tags:sortLink nameKey="typeHeader" baseUrl="${baseUrl}" fieldName="TYPE"
-                                        sortParam="favSort" descendingParam="favDescending"/>
-                                </th>
-                                <th>
-                                    <tags:sortLink nameKey="stateHeader" baseUrl="${baseUrl}" fieldName="STATE"
-                                        sortParam="favSort" descendingParam="favDescending"/>
-                                </th>
-                            </tr>
+                                <tr>
+                                    <th><i:inline key=".name"/></th>
+                                    <th><i:inline key=".type"/></th>
+                                    <th><i:inline key=".state"/></th>
+                                </tr>
                             </thead>
                             <tfoot></tfoot>
                             <cti:msg2 var="undoText" key="yukon.common.undo"/>
@@ -100,7 +91,7 @@
                         <a href="<cti:url value="/dr/rf/details"/>"><i:inline key=".details"/></a>
                         <cti:button nameKey="configure" icon="icon-cog-edit" popup="#broadcast-config"/>
                     </div>
-                    <div dialog
+                    <div data-dialog
                         id="broadcast-config"
                         data-form
                         data-width="500"
@@ -123,7 +114,7 @@
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".rfPerformance.configure.emailResults">
                                     <tags:hidden path="email" id="rf-performance-email"/>
-                                    <div class="button-group toggle-on-off">
+                                    <div class="toggle-btns">
                                         <cti:button nameKey="on" classes="on yes M0"/>
                                         <cti:button nameKey="off" classes="no M0"/>
                                     </div>
@@ -186,18 +177,9 @@
                         <table class="compact-results-table row-highlighting has-actions dashed">
                             <thead>
                             <tr>
-                                <th>
-                                    <tags:sortLink nameKey="nameHeader" baseUrl="${baseUrl}" fieldName="NAME"
-                                        sortParam="rvSort" descendingParam="rvDescending"/>
-                                </th>
-                                <th>
-                                    <tags:sortLink nameKey="typeHeader" baseUrl="${baseUrl}" fieldName="TYPE"
-                                        sortParam="rvSort" descendingParam="rvDescending"/>
-                                </th>
-                                <th>
-                                    <tags:sortLink nameKey="stateHeader" baseUrl="${baseUrl}" fieldName="STATE"
-                                        sortParam="rvSort" descendingParam="rvDescending"/>
-                                </th>
+                                <th><i:inline key=".name"/></th>
+                                <th><i:inline key=".type"/></th>
+                                <th><i:inline key=".state"/></th>
                                 <th class="action-column"></th>
                             </tr>
                             </thead>

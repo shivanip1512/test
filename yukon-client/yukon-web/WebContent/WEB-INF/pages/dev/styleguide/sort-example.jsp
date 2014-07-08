@@ -6,14 +6,14 @@
 <table class="compact-results-table">
     <thead>
         <tr>
-            <c:forEach var="column" items="${pops.columns}">
+            <c:forEach var="column" items="${columns}">
                 <tags:sort column="${column}"/>
             </c:forEach>
         </tr>
     </thead>
     <tfoot></tfoot>
     <tbody>
-        <c:forEach var="pop" items="${pops.data}">
+        <c:forEach var="pop" items="${pops.resultList}">
             <tr>
                 <td>${pop.city}</td>
                 <td>${pop.population}</td>
@@ -21,3 +21,4 @@
         </c:forEach>
     </tbody>
 </table>
+<tags:pagingResultsControls result="${pops}" classes="stacked" adjustPageCount="true"/>

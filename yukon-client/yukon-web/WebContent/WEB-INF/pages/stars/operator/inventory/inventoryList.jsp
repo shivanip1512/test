@@ -8,9 +8,9 @@
 
 
 <cti:standardPage module="operator" page="inventory.list">
-	
+    
     <%-- SEACRH WIDGET --%>
-    <tags:boxContainer2 nameKey="inventorySearch">
+    <tags:sectionContainer2 nameKey="inventorySearch">
         <form:form commandName="inventorySearch" action="search" method="get" >
             <div class="fl" style="width:33%;">
                 <tags:nameValueContainer2>
@@ -47,118 +47,130 @@
             </div>
             <div class="action-area clear"><cti:button type="submit" nameKey="search"/></div>
         </form:form>
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
     
     <%-- RESULTS --%>
     <c:if test="${!hasWarnings}">
 
-        <tags:pagedBox2 baseUrl="search" nameKey="inventorySearchContainer" searchResult="${results}">
+        <cti:url var="url" value="search">
+            <cti:param name="serialNumber" value="${inventorySearch.serialNumber}"/>
+            <cti:param name="meterNumber" value="${inventorySearch.meterNumber}"/>
+            <cti:param name="accountNumber" value="${inventorySearch.accountNumber}"/>
+            <cti:param name="phoneNumber" value="${inventorySearch.phoneNumber}"/>
+            <cti:param name="lastName" value="${inventorySearch.lastName}"/>
+            <cti:param name="workOrderNumber" value="${inventorySearch.workOrderNumber}"/>
+            <cti:param name="altTrackingNumber" value="${inventorySearch.altTrackingNumber}"/>
+        </cti:url>
+        <tags:sectionContainer2 nameKey="inventorySearchContainer">
             <c:if test="${results.hitCount > 0}">
-                <table class="compact-results-table row-highlighting">
-                    <thead>
-	                    <tr>
-	                        <th><i:inline key=".serialOrMeterNumber"/></th>
-	                        <th><i:inline key=".hardwareType"/></th>
-	                        <th><i:inline key=".label"/></th>
-	                        <c:if test="${showAccountNumber}">
-	                            <th><i:inline key=".accountNumber"/></th>
-	                        </c:if>
-	                        <c:if test="${showPhoneNumber}">
-	                            <th><i:inline key=".phoneNumber"/></th>
-	                        </c:if>
-	                        <c:if test="${fn:escapeXml(showLastName)}">
-	                            <th><i:inline key=".lastName"/></th>
-	                        </c:if>
-	                        <c:if test="${showWorkOrder}">
-	                            <th><i:inline key=".workOrderNumber"/></th>
-	                        </c:if>
-	                        <c:if test="${showAltTrackingNumber}">
-	                            <th><i:inline key=".altTrackingNumber"/></th>
-	                        </c:if>
-	                        <c:if test="${showEc}">
-	                            <th><i:inline key=".energyCompany"/></th>
-	                        </c:if>
-	                    </tr>
-                    </thead>
-                    <tfoot></tfoot>
-                    <tbody>
-	                    <c:forEach var="result" items="${results.resultList}">
-	                        <tr>
-	                            <td>
-                                    <cti:url var="inventoryUrl" value="/stars/operator/inventory/view">
-                                        <cti:param name="inventoryId" value="${result.identifier.inventoryId}"/>
-	                                </cti:url>
-	                                <c:if test="${result.accountId > 0}">
-	                                    <cti:url var="inventoryUrl" value="/stars/operator/hardware/view">
-	                                        <cti:param name="inventoryId" value="${result.identifier.inventoryId}"/>
-	                                        <cti:param name="accountId" value="${result.accountId}"/>
-	                                    </cti:url>
-	                                </c:if>
-	                                <a href="${inventoryUrl}">${result.serialNumber}</a>
-	                            </td>
-	
-	                            <td>
-	                                <c:choose>
-	                                    <c:when test="${result.identifier.hardwareType.meter && !starsMeters}">
-	                                        <cti:msg2 key="${result.paoType}"/>
-	                                    </c:when>
-	                                    <c:otherwise>
-	                                        <cti:msg2 key="${result.identifier.hardwareType}"/>
-	                                    </c:otherwise>
-	                                </c:choose>
-	                            </td>
-	
-                                <td>
-                                    ${fn:escapeXml(result.label)}
-                                    <c:if test="${result.identifier.hardwareType.meter && !starsMeters}">
-                                        &nbsp;<cti:deviceName deviceId="${result.deviceId}"/>
+                <div data-url="${url}" data-static>
+                    <table class="compact-results-table row-highlighting">
+                        <thead>
+                            <tr>
+                                <th><i:inline key=".serialOrMeterNumber"/></th>
+                                <th><i:inline key=".hardwareType"/></th>
+                                <th><i:inline key=".label"/></th>
+                                <c:if test="${showAccountNumber}">
+                                    <th><i:inline key=".accountNumber"/></th>
+                                </c:if>
+                                <c:if test="${showPhoneNumber}">
+                                    <th><i:inline key=".phoneNumber"/></th>
+                                </c:if>
+                                <c:if test="${fn:escapeXml(showLastName)}">
+                                    <th><i:inline key=".lastName"/></th>
+                                </c:if>
+                                <c:if test="${showWorkOrder}">
+                                    <th><i:inline key=".workOrderNumber"/></th>
+                                </c:if>
+                                <c:if test="${showAltTrackingNumber}">
+                                    <th><i:inline key=".altTrackingNumber"/></th>
+                                </c:if>
+                                <c:if test="${showEc}">
+                                    <th><i:inline key=".energyCompany"/></th>
+                                </c:if>
+                            </tr>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach var="result" items="${results.resultList}">
+                                <tr>
+                                    <td>
+                                        <cti:url var="inventoryUrl" value="/stars/operator/inventory/view">
+                                            <cti:param name="inventoryId" value="${result.identifier.inventoryId}"/>
+                                        </cti:url>
+                                        <c:if test="${result.accountId > 0}">
+                                            <cti:url var="inventoryUrl" value="/stars/operator/hardware/view">
+                                                <cti:param name="inventoryId" value="${result.identifier.inventoryId}"/>
+                                                <cti:param name="accountId" value="${result.accountId}"/>
+                                            </cti:url>
+                                        </c:if>
+                                        <a href="${inventoryUrl}">${result.serialNumber}</a>
+                                    </td>
+        
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${result.identifier.hardwareType.meter && !starsMeters}">
+                                                <cti:msg2 key="${result.paoType}"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <cti:msg2 key="${result.identifier.hardwareType}"/>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+        
+                                    <td>
+                                        ${fn:escapeXml(result.label)}
+                                        <c:if test="${result.identifier.hardwareType.meter && !starsMeters}">
+                                            &nbsp;<cti:deviceName deviceId="${result.deviceId}"/>
+                                        </c:if>
+                                    </td>
+        
+                                    <c:if test="${showAccountNumber}">
+                                        <c:choose>
+                                            <c:when test="${result.accountId > 0}">
+                                                <td>
+                                                    <cti:url var="accountUrl" value="/stars/operator/account/view">
+                                                        <cti:param name="accountId" value="${result.accountId}"/>
+                                                    </cti:url>
+                                                    <a href="${accountUrl}">${fn:escapeXml(result.accountNumber)}</a>
+                                                </td>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i:inline key="yukon.web.defaults.none"/>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:if>
-	                            </td>
-	
-	                            <c:if test="${showAccountNumber}">
-	                                <c:choose>
-	                                    <c:when test="${result.accountId > 0}">
-	                                        <td>
-                                                <cti:url var="accountUrl" value="/stars/operator/account/view">
-	                                                <cti:param name="accountId" value="${result.accountId}"/>
-	                                            </cti:url>
-	                                            <a href="${accountUrl}">${fn:escapeXml(result.accountNumber)}</a>
-	                                        </td>
-	                                    </c:when>
-	                                    <c:otherwise>
-	                                        <i:inline key="yukon.web.defaults.none"/>
-	                                    </c:otherwise>
-	                                </c:choose>
-	                            </c:if>
-	
-	                            <c:if test="${showPhoneNumber}">
-	                                <td><cti:formatPhoneNumber value="${result.phoneNumber}"/></td>
-	                            </c:if>
-	
-	                            <c:if test="${fn:escapeXml(showLastName)}">
-	                                <td>${fn:escapeXml(result.lastName)}</td>
-	                            </c:if>
-	
-	                            <c:if test="${showWorkOrder}">
-	                                <td>${fn:escapeXml(result.workOrderNumber)}</td>
-	                            </c:if>
-	
-	                            <c:if test="${showAltTrackingNumber}">
-	                                <td>${fn:escapeXml(result.altTrackingNumber)}</td>
-	                            </c:if>
-	
-	                            <c:if test="${showEc}">
-	                                <td>${fn:escapeXml(result.energyCompanyName)}</td>
-	                            </c:if>
-	                        </tr>
-	                    </c:forEach>
-                    </tbody>
-                </table>
+        
+                                    <c:if test="${showPhoneNumber}">
+                                        <td><cti:formatPhoneNumber value="${result.phoneNumber}"/></td>
+                                    </c:if>
+        
+                                    <c:if test="${fn:escapeXml(showLastName)}">
+                                        <td>${fn:escapeXml(result.lastName)}</td>
+                                    </c:if>
+        
+                                    <c:if test="${showWorkOrder}">
+                                        <td>${fn:escapeXml(result.workOrderNumber)}</td>
+                                    </c:if>
+        
+                                    <c:if test="${showAltTrackingNumber}">
+                                        <td>${fn:escapeXml(result.altTrackingNumber)}</td>
+                                    </c:if>
+        
+                                    <c:if test="${showEc}">
+                                        <td>${fn:escapeXml(result.energyCompanyName)}</td>
+                                    </c:if>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                    <tags:pagingResultsControls result="${results}" hundreds="true" adjustPageCount="true"/>
+                </div>
             </c:if>
             <c:if test="${results.hitCount == 0}">
                 <span class="empty-list"><i:inline key=".notFound"/></span>
             </c:if>
-        </tags:pagedBox2>
+        </tags:sectionContainer2>
 
     </c:if>
 

@@ -37,7 +37,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.util.UrlPathHelper;
@@ -1085,13 +1084,14 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      * @param p the PrintWriter on which the stack trace will be printed
      */
     public static String printNiceHtmlStackTrace(Throwable t) {
+        
         StringWriter sw = new StringWriter();
         PrintWriter p = new PrintWriter (sw);
         String[] keyWords = {"com.cannontech", "org.apache.myfaces.lifecycle"};
         synchronized (p) {
             p.write("<pre>");
-            while ( t != null ) {
-                Throwable cause = ExceptionUtils.getCause(t);
+            while (t != null) {
+                Throwable cause = t.getCause();
                 if (cause == null) {
                     String escapedCause = StringEscapeUtils.escapeHtml4(t.toString());
                     p.println(escapedCause);

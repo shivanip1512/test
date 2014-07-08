@@ -78,7 +78,7 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
         return createDeviceCollection(idList, ids);
     }
     
-    private DeviceCollection createDeviceCollection(final List<Integer> deviceIds, String optionalIdsString) {
+    public DeviceCollection createDeviceCollection(final List<Integer> deviceIds, String optionalIdsString) {
         final String ids = optionalIdsString != null ? optionalIdsString : StringUtils.join(deviceIds, ",");
         
         return new ListBasedDeviceCollection() {
@@ -122,4 +122,5 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
             }
         };
     }
+
 }

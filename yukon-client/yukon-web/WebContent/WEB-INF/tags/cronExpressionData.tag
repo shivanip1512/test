@@ -8,8 +8,6 @@
 <%@ attribute name="state" required="true" rtexprvalue="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" description="Used to configure the controls to a certain state. Pass a new CronExpressionTagState to configure to default state."%>
 <%@ attribute name="allowTypeChange" rtexprvalue="true" type="java.lang.Boolean" description="Allow changing between Repeating and One-Time job options."%>
 
-<cti:includeScript link="/JavaScript/yukon.cron.js"/>
-
 <c:set var="allowChange" value="true"/>
 <c:if test="${!empty pageScope.allowTypeChange}">
     <c:set var="allowChange" value="${pageScope.allowTypeChange}"/>
@@ -18,7 +16,7 @@
 <div class="clearfix">
 <%-- FREQUENCY --%>
 <div style="padding-bottom: 6px;">
-    <select id="${id}_cronExpFreq" name="${id}_CRONEXP_FREQ" onchange="cronExpFreqChange('${id}', this);">
+    <select id="${id}_cronExpFreq" name="${id}_CRONEXP_FREQ" onchange="yukon.ui.util.cronExpFreqChange('${id}', this);">
         <c:choose>
             <c:when test="${!allowChange}">
                 <c:choose>
@@ -77,27 +75,27 @@
 <%-- TIME --%>
 <div id="${id}_cronExpTimeDiv">
 <select name="${id}_CRONEXP_HOUR">
-	<c:forEach var="hour" begin="1" end="12" step="1">
-		<option value="${hour}" <c:if test="${state.hour == hour}">selected</c:if>>${hour}</option>
-	</c:forEach>
+    <c:forEach var="hour" begin="1" end="12" step="1">
+        <option value="${hour}" <c:if test="${state.hour == hour}">selected</c:if>>${hour}</option>
+    </c:forEach>
 </select> :
 
 <select name="${id}_CRONEXP_MINUTE">
-	<c:forEach var="minute" begin="0" end="59" step="5">
-		<option value="${minute}" <c:if test="${state.minute == minute}">selected</c:if>>
-			<c:if test="${minute < 10}">
-				<c:set var="minute" value="0${minute}"/>
-			</c:if>
-			${minute}
-		</option>
-	</c:forEach>
+    <c:forEach var="minute" begin="0" end="59" step="5">
+        <option value="${minute}" <c:if test="${state.minute == minute}">selected</c:if>>
+            <c:if test="${minute < 10}">
+                <c:set var="minute" value="0${minute}"/>
+            </c:if>
+            ${minute}
+        </option>
+    </c:forEach>
 </select>
 
 <select name="${id}_CRONEXP_AMPM">
-	<option value="AM" <c:if test="${state.cronExpressionAmPm == 'AM'}">selected</c:if>>
+    <option value="AM" <c:if test="${state.cronExpressionAmPm == 'AM'}">selected</c:if>>
         <i:inline key="yukon.web.components.cronPicker.am"/>
     </option>
-	<option value="PM" <c:if test="${state.cronExpressionAmPm == 'PM'}">selected</c:if>>
+    <option value="PM" <c:if test="${state.cronExpressionAmPm == 'PM'}">selected</c:if>>
         <i:inline key="yukon.web.components.cronPicker.pm"/>
     </option>
 </select>
@@ -105,97 +103,98 @@
 
 <%-- DAILY --%>
 <div id="${id}_cronExpDailyDiv" style="padding-top:6px;">
-
-	<input type="radio" name="${id}_CRONEXP_DAILY_OPTION" value="EVERYDAY" 
-        <c:if test="${state.cronExpressionDailyOption == 'EVERYDAY'}">checked</c:if>>
-    <i:inline key="yukon.web.components.cronPicker.everyDay"/>
-	<br>
-	<input type="radio" name="${id}_CRONEXP_DAILY_OPTION" value="WEEKDAYS" 
-        <c:if test="${state.cronExpressionDailyOption == 'WEEKDAYS'}">checked</c:if>>
-    <i:inline key="yukon.web.components.cronPicker.everyWeekday"/>
-	
+    <label class="db">
+        <c:set var="checked" value="${state.cronExpressionDailyOption == 'EVERYDAY' ? 'checked' : ''}"/>
+        <input type="radio" name="${id}_CRONEXP_DAILY_OPTION" value="EVERYDAY" ${checked}>
+        <i:inline key="yukon.web.components.cronPicker.everyDay"/>
+    </label>
+    <label class="db">
+        <c:set var="checked" value="${state.cronExpressionDailyOption == 'WEEKDAYS' ? 'checked' : ''}"/>
+        <input type="radio" name="${id}_CRONEXP_DAILY_OPTION" value="WEEKDAYS" ${checked}> 
+        <i:inline key="yukon.web.components.cronPicker.everyWeekday"/>
+    </label>
 </div>
 
 <%-- WEEKLY --%>
 <div id="${id}_cronExpWeeklyDiv" style="padding-top:6px;display:none;">
 
-	<c:forEach var="cronDay" items="${state.allCronDays}">
-	
-		<c:set var="cronDayChecked" value=""/>
-		<c:set var="found" value="false"/>
-		<c:forEach var="selectedCronDay" items="${state.selectedCronDays}">
-			<c:if test="${!found && selectedCronDay == cronDay}">
-				<c:set var="cronDayChecked" value="checked"/>
-				<c:set var="found" value="true"/>
-			</c:if>
-		</c:forEach>
-	
-		<label><input type="checkbox" name="${id}_${cronDay.requestName}" value="${cronDay.number}" ${cronDayChecked}> ${cronDay.abbreviatedName}</label>&nbsp;
-	
-	</c:forEach>
-	
+    <c:forEach var="cronDay" items="${state.allCronDays}">
+    
+        <c:set var="cronDayChecked" value=""/>
+        <c:set var="found" value="false"/>
+        <c:forEach var="selectedCronDay" items="${state.selectedCronDays}">
+            <c:if test="${!found && selectedCronDay == cronDay}">
+                <c:set var="cronDayChecked" value="checked"/>
+                <c:set var="found" value="true"/>
+            </c:if>
+        </c:forEach>
+    
+        <label><input type="checkbox" name="${id}_${cronDay.requestName}" value="${cronDay.number}" ${cronDayChecked}> ${cronDay.abbreviatedName}</label>&nbsp;
+    
+    </c:forEach>
+    
 </div>
 
 <%-- MONTHLY --%>
 <div id="${id}_cronExpMonthlyDiv" style="padding-top:6px;display:none;">
 
-	<c:choose>
-		<c:when test="${empty state.cronExpressionMontlyOptionOnDayX}">
-			<c:set var="cronExpressionMontlyOptionOnDayX" value="1"/>
-		</c:when>
-		<c:otherwise>
-			<c:set var="cronExpressionMontlyOptionOnDayX" value="${state.cronExpressionMontlyOptionOnDayX}"/>
-		</c:otherwise>
-	</c:choose>
+    <c:choose>
+        <c:when test="${empty state.cronExpressionMontlyOptionOnDayX}">
+            <c:set var="cronExpressionMontlyOptionOnDayX" value="1"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="cronExpressionMontlyOptionOnDayX" value="${state.cronExpressionMontlyOptionOnDayX}"/>
+        </c:otherwise>
+    </c:choose>
 
-	<input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="ON_DAY" 
+    <input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="ON_DAY" 
         <c:if test="${state.cronExpressionMontlyOption == 'ON_DAY'}">checked</c:if>>
     <i:inline key="yukon.web.components.cronPicker.onDay"/>
     <input type="text" name="${id}_CRONEXP_MONTHLY_OPTION_ON_DAY_X" size="3" maxlength="3" 
         style="text-align:right;" value="${cronExpressionMontlyOptionOnDayX}">
     <i:inline key="yukon.web.components.cronPicker.ofMonth"/>
-	<br>
-	<input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="LAST_DAY" 
+    <br>
+    <input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="LAST_DAY" 
         <c:if test="${state.cronExpressionMontlyOption == 'LAST_DAY'}">checked</c:if>>
     <i:inline key="yukon.web.components.cronPicker.onLastDayOfMonth"/>
-	
+    
 </div>
 
 <%-- ONE-TIME --%>
 <div id="${id}_cronExpOneTimeDiv" style="padding-top:6px;display:none;">
-	<dt:date name="${id}_CRONEXP_ONETIME_DATE" value="${state.date}"/>
+    <dt:date name="${id}_CRONEXP_ONETIME_DATE" value="${state.date}"/>
 </div>
 
 <%-- CUSTOM --%>
 <div id="${id}_cronExpCustomDiv" style="display:none;">
 
-	<i:inline key="yukon.web.components.cronPicker.cronExpression"/><br>
+    <i:inline key="yukon.web.components.cronPicker.cronExpression"/><br>
     <c:if test="${not empty invalidCronString}">
         <c:set var="errorClass" value="error"/>
     </c:if>
     <div class="clearfix">
-    	<input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}" class="fl ${errorClass}"> 
-    	<cti:icon icon="icon-help" id="cron_help_icon"/>
+        <input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}" class="fl ${errorClass}"> 
+        <cti:icon icon="icon-help" id="cron_help_icon"/>
     </div>
     <c:if test="${invalidCronString}">
         <div class="error"><i:inline key="yukon.common.invalidCron"/></div>
     </c:if>
-	
+    
     <cti:msg2 var="cronTitle" key="yukon.web.components.cronPicker.cronHelpTitle"/>
-	<tags:simplePopup id="${id}_customCronExpressInfoPopup" title="${cronTitle}" on="#cron_help_icon">
+    <tags:simplePopup id="${id}_customCronExpressInfoPopup" title="${cronTitle}" on="#cron_help_icon">
         <i:inline key="yukon.web.components.cronPicker.cronHelpStart" />
         <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/TutorialLesson06" target="_blank">
             <i:inline key="yukon.web.components.cronPicker.cronHelpLink"/>
         </a>
         <i:inline key="yukon.web.components.cronPicker.cronHelpEnd" />
     </tags:simplePopup>
-	
+    
 </div>
 
 </div>
 
 <script type="text/javascript">
 yukon.ui.util.callAfterMainWindowLoad(function () {
-    cronExpFreqChange('${id}', $('#' + '${id}_cronExpFreq')[0]);
+    yukon.ui.util.cronExpFreqChange('${id}', $('#' + '${id}_cronExpFreq')[0]);
 });
 </script>

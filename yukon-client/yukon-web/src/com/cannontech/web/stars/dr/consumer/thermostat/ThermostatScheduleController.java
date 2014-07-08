@@ -29,9 +29,7 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.temperature.TemperatureUnit;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -230,14 +228,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
     }
     
-    @RequestMapping(value = "history", 
-                    method = RequestMethod.GET)
+    @RequestMapping(value = "history", method = RequestMethod.GET)
     public String history(HttpServletRequest request,
                          @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-                         @RequestParam(defaultValue = "10") int itemsPerPage,
-                         @RequestParam(defaultValue = "1", value="page") int currentPage,
                          LiteYukonUser user,
-                         ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
+                         ModelMap map) throws ServletRequestBindingException {
 
         if(isCommunicationDisabled(user)){
             return "consumer/thermostat/thermostatDisabled.jsp";
@@ -246,13 +241,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         List<Integer> thermostatIdsList = getThermostatIds(request);
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
 
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
-        SearchResults<ThermostatEvent> result = SearchResults.pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
-        map.addAttribute("searchResult", result);
-        map.addAttribute("eventHistoryList", result.getResultList());
+        map.addAttribute("eventHistoryList", eventHistoryList);
         
         List<Thermostat> thermostats = new ArrayList<Thermostat>();
         for(int statId : thermostatIds) {

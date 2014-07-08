@@ -29,24 +29,24 @@
 
     <input id="assetId" type="hidden" value="${controlAreaId}"/>
 
-    <div class="column-12-12">
+    <div class="column-12-12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="heading.info">
                 <tags:nameValueContainer2 tableClass="stacked">
-                        <tags:nameValue2 nameKey=".info.state">
-                            <dr:controlAreaState controlAreaId="${controlAreaId}"/>
-                        </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".info.state">
+                        <dr:controlAreaState controlAreaId="${controlAreaId}"/>
+                    </tags:nameValue2>
                     <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
                         <tags:nameValue2 nameKey=".info.priority">
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/PRIORITY"/>
                         </tags:nameValue2>
                     </cti:checkRolesAndProperties>
                     
-                        <tags:nameValue2 nameKey=".info.startStop">
-                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
-                            <i:inline key=".info.separator"/>
-                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
-                        </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".info.startStop">
+                        <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
+                        <i:inline key=".info.separator"/>
+                        <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
+                    </tags:nameValue2>
                     
                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                         <cti:dataUpdaterCallback
@@ -92,19 +92,15 @@
                                 <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>
                                 <tags:nameValue2 rowClass="strong-label-small" nameKey=".info.trigger" argument="${triggerNumber}"></tags:nameValue2>
                                 <tags:nameValue2 nameKey=".info.loadCapacity">
-                                    
-                                        <tags:nameValue2 nameKey=".info.valueThreshold">
-                                            <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE_THRESHOLD"/>
-                                        </tags:nameValue2>
-                                                                        
-                                        <tags:nameValue2 nameKey=".info.peakProjection">
-                                            <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK_PROJECTION"/>
-                                        </tags:nameValue2>
-                                    
-                                        <tags:nameValue2 nameKey=".info.atku">
-                                            <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
-                                        </tags:nameValue2>
-                                    
+                                    <tags:nameValue2 nameKey=".info.valueThreshold">
+                                        <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE_THRESHOLD"/>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".info.peakProjection">
+                                        <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK_PROJECTION"/>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".info.atku">
+                                        <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
+                                    </tags:nameValue2>
                                 </tags:nameValue2>
                             </cti:checkRolesAndProperties>
                         </c:forEach>
@@ -122,16 +118,12 @@
                     </div>
                 </tags:sectionContainer2>
             </cti:checkRolesAndProperties>
-            
         </div>
+        
     </div>
 
-    <div class="column-24">
-        <div class="column one nogutter">
-            <c:set var="baseUrl" value="/dr/controlArea/detail"/>
-            <%@ include file="../program/programList.jspf" %>
-        </div>
-    </div>
+    <c:set var="baseUrl" value="/dr/controlArea/detail?controlAreaId=${controlAreaId}"/>
+    <%@ include file="../program/programList.jspf" %>
     
     <%--
         Control Area Actions section each action has a simpleDialogLink that

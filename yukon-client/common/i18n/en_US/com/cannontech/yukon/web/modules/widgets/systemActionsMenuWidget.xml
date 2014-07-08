@@ -6,5 +6,4 @@
     <entry key="yukon.web.widgets.systemActionsMenuWidget.meterEventsReport">Meter Events Report</entry>
     <entry key="yukon.web.widgets.systemActionsMenuWidget.waterLeakReport">Water Leak Report</entry>
     <entry key="yukon.web.widgets.systemActionsMenuWidget.meterEventsJobs">Scheduled Meter Events Reports</entry>
-    <entry key="yukon.web.widgets.systemActionsMenuWidget.waterLeakJobs">Scheduled Water Leak Reports</entry>
 </properties>

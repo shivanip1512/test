@@ -10,9 +10,9 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupReques
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.web.util.ListBackingBean;
 
-public class ScheduledJobsFilterBackingBean extends ListBackingBean {
+public class ScheduledJobsFilter {
+    
     private Date toDate;
     private Date fromDate;
     private ScheduleGroupRequestExecutionDaoEnabledFilter statusFilter =
@@ -20,11 +20,6 @@ public class ScheduledJobsFilterBackingBean extends ListBackingBean {
     boolean excludePendingFilterBool = false;
     boolean includeOnetimeFilterBool = false;
     private String typeFilterAsString;
-    
-    public ScheduledJobsFilterBackingBean() {
-        setSort("NEXT_RUN");
-        setItemsPerPage(10);
-    }
     
     public Date getToDate() {
         return toDate;

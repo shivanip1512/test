@@ -47,64 +47,72 @@
 
 <c:if test="${fn:length(audit.controlledRows) > 0}">
     <tags:sectionContainer2 nameKey="controlledDevices" styleClass="stacked cl" hideEnabled="true">
-        <div class="column-18-6">
-                <div class="column one" data-reloadable>
-                    <dr:controlAuditResult result="${audit.controlledPaged}" type="CONTROLLED" auditId="${auditId}"/>
-                </div>
-                <div class="column two nogutter">
-                    <tags:nameValueContainer2 tableClass="stats">
-                        <c:set var="percent" value="${fn:length(audit.controlledRows) / fn:length(settings.collection.list)}"/>
-                        <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.controlledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <ul class="labeled-image-stack">
-                        <li class="clearfix">
-                            <cti:url var="newOperationControlled" value="newOperation">
-                                <cti:param name="auditId" value="${audit.auditId}"/>
-                                <cti:param name="type" value="CONTROLLED"/>
-                            </cti:url>
-                            <a href="${newOperationControlled}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
-                        </li>
-                        <li class="clearfix">
-                            <cti:url var="download" value="download">
-                                <cti:param name="auditId" value="${audit.auditId}"/>
-                                <cti:param name="type" value="CONTROLLED"/>
-                            </cti:url>
-                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
-                        </li>
-                    </ul>
-                </div>
+        <div class="column-18-6 clearfix">
+            <cti:url var="url" value="page">
+                <cti:param name="auditId" value="${audit.auditId}"/>
+                <cti:param name="type" value="CONTROLLED"/>
+            </cti:url>
+            <div class="column one" data-url="${url}">
+                <dr:controlAuditResult result="${audit.controlledPaged}" type="CONTROLLED" auditId="${auditId}"/>
+            </div>
+            <div class="column two nogutter">
+                <tags:nameValueContainer2 tableClass="stats">
+                    <c:set var="percent" value="${fn:length(audit.controlledRows) / fn:length(settings.collection.list)}"/>
+                    <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.controlledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
+                </tags:nameValueContainer2>
+                <ul class="labeled-image-stack">
+                    <li class="clearfix">
+                        <cti:url var="newOperationControlled" value="newOperation">
+                            <cti:param name="auditId" value="${audit.auditId}"/>
+                            <cti:param name="type" value="CONTROLLED"/>
+                        </cti:url>
+                        <a href="${newOperationControlled}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
+                    </li>
+                    <li class="clearfix">
+                        <cti:url var="download" value="download">
+                            <cti:param name="auditId" value="${audit.auditId}"/>
+                            <cti:param name="type" value="CONTROLLED"/>
+                        </cti:url>
+                        <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </tags:sectionContainer2>    
+    </tags:sectionContainer2>
 </c:if>
 
 <c:if test="${fn:length(audit.uncontrolledRows) > 0}">
     <tags:sectionContainer2 nameKey="uncontrolledDevices"  hideEnabled="true" styleClass="stacked cl">
-        <div class="column-18-6">
-                <div class="column one" data-reloadable>
-                    <dr:controlAuditResult result="${audit.uncontrolledPaged}" type="UNCONTROLLED" auditId="${auditId}"/>
-                </div>
-                <div class="column two nogutter">
-                    <tags:nameValueContainer2>
-                        <c:set var="percent" value="${fn:length(audit.uncontrolledRows) / fn:length(settings.collection.list)}"/>
-                        <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.uncontrolledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <ul class="labeled-image-stack">
-                        <li class="clearfix">
-                            <cti:url var="newOperationUncontrolled" value="newOperation">
-                                <cti:param name="auditId" value="${audit.auditId}"/>
-                                <cti:param name="type" value="UNCONTROLLED"/>
-                            </cti:url>
-                            <a href="${newOperationUncontrolled}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
-                        </li>
-                        <li class="clearfix">
-                            <cti:url var="download" value="download">
-                                <cti:param name="auditId" value="${audit.auditId}"/>
-                                <cti:param name="type" value="UNCONTROLLED"/>
-                            </cti:url>
-                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
-                        </li>
-                    </ul>
-                </div>
+        <div class="column-18-6 clearfix">
+            <cti:url var="url" value="page">
+                <cti:param name="auditId" value="${audit.auditId}"/>
+                <cti:param name="type" value="UNCONTROLLED"/>
+            </cti:url>
+            <div class="column one" data-url="${url}">
+                <dr:controlAuditResult result="${audit.uncontrolledPaged}" type="UNCONTROLLED" auditId="${auditId}"/>
+            </div>
+            <div class="column two nogutter">
+                <tags:nameValueContainer2>
+                    <c:set var="percent" value="${fn:length(audit.uncontrolledRows) / fn:length(settings.collection.list)}"/>
+                    <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.uncontrolledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
+                </tags:nameValueContainer2>
+                <ul class="labeled-image-stack">
+                    <li class="clearfix">
+                        <cti:url var="newOperationUncontrolled" value="newOperation">
+                            <cti:param name="auditId" value="${audit.auditId}"/>
+                            <cti:param name="type" value="UNCONTROLLED"/>
+                        </cti:url>
+                        <a href="${newOperationUncontrolled}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
+                    </li>
+                    <li class="clearfix">
+                        <cti:url var="download" value="download">
+                            <cti:param name="auditId" value="${audit.auditId}"/>
+                            <cti:param name="type" value="UNCONTROLLED"/>
+                        </cti:url>
+                        <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </tags:sectionContainer2>
 </c:if>
@@ -112,31 +120,35 @@
 <c:if test="${fn:length(audit.unknownRows) > 0}">
     <tags:sectionContainer2 nameKey="unknownDevices" hideEnabled="true" styleClass="stacked cl">
         <div class="column-18-6">
-                <div class="column one" data-reloadable>
-                    <dr:controlAuditResult result="${audit.unknownPaged}" type="UNKNOWN" auditId="${auditId}"/>
-                </div>
-                <div class="column two nogutter">
-                    <tags:nameValueContainer2>
-                        <c:set var="percent" value="${fn:length(audit.unknownRows) / fn:length(settings.collection.list)}"/>
-                        <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.unknownRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <ul class="labeled-image-stack">
-                        <li class="clearfix">
-                            <cti:url var="newOperationUnknown" value="newOperation">
-                                <cti:param name="auditId" value="${audit.auditId}"/>
-                                <cti:param name="type" value="UNKNOWN"/>
-                            </cti:url>
-                            <a href="${newOperationUnknown}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
-                        </li>
-                        <li class="clearfix">
-                            <cti:url var="download" value="download">
-                                <cti:param name="auditId" value="${audit.auditId}"/>
-                                <cti:param name="type" value="UNKNOWN"/>
-                            </cti:url>
-                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
-                        </li>
-                    </ul>
-                </div>
+            <cti:url var="url" value="page">
+                <cti:param name="auditId" value="${audit.auditId}"/>
+                <cti:param name="type" value="UNKNOWN"/>
+            </cti:url>
+            <div class="column one" data-url="${url}">
+                <dr:controlAuditResult result="${audit.unknownPaged}" type="UNKNOWN" auditId="${auditId}"/>
+            </div>
+            <div class="column two nogutter">
+                <tags:nameValueContainer2>
+                    <c:set var="percent" value="${fn:length(audit.unknownRows) / fn:length(settings.collection.list)}"/>
+                    <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.unknownRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
+                </tags:nameValueContainer2>
+                <ul class="labeled-image-stack">
+                    <li class="clearfix">
+                        <cti:url var="newOperationUnknown" value="newOperation">
+                            <cti:param name="auditId" value="${audit.auditId}"/>
+                            <cti:param name="type" value="UNKNOWN"/>
+                        </cti:url>
+                        <a href="${newOperationUnknown}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
+                    </li>
+                    <li class="clearfix">
+                        <cti:url var="download" value="download">
+                            <cti:param name="auditId" value="${audit.auditId}"/>
+                            <cti:param name="type" value="UNKNOWN"/>
+                        </cti:url>
+                        <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </tags:sectionContainer2>
 </c:if>
@@ -144,31 +156,35 @@
 <c:if test="${fn:length(audit.unsupportedRows) > 0}">
     <tags:sectionContainer2 nameKey="unsupportedDevices" styleClass="stacked cl" hideEnabled="true">
         <div class="column-18-6">
-                <div class="column one" data-reloadable>
-                    <dr:controlAuditResult result="${audit.unsupportedPaged}" type="UNSUPPORTED" auditId="${auditId}"/>
-                </div>
-                <div class="column two nogutter">
-                    <tags:nameValueContainer2 tableClass="stats">
-                        <c:set var="percent" value="${fn:length(audit.unsupportedRows) / fn:length(settings.collection.list)}"/>
-                        <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.unsupportedRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <ul class="labeled-image-stack">
-                        <li class="clearfix">
-                            <cti:url var="newOperationControlled" value="newOperation">
-                                <cti:param name="auditId" value="${audit.auditId}"/>
-                                <cti:param name="type" value="UNSUPPORTED"/>
-                            </cti:url>
-                            <a href="${newOperationControlled}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
-                        </li>
-                        <li class="clearfix">
-                            <cti:url var="download" value="download">
-                                <cti:param name="auditId" value="${audit.auditId}"/>
-                                <cti:param name="type" value="UNSUPPORTED"/>
-                            </cti:url>
-                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
-                        </li>
-                    </ul>
-                </div>
+            <cti:url var="url" value="page">
+                <cti:param name="auditId" value="${audit.auditId}"/>
+                <cti:param name="type" value="UNSUPPORTED"/>
+            </cti:url>
+            <div class="column one" data-url="${url}">
+                <dr:controlAuditResult result="${audit.unsupportedPaged}" type="UNSUPPORTED" auditId="${auditId}"/>
+            </div>
+            <div class="column two nogutter">
+                <tags:nameValueContainer2 tableClass="stats">
+                    <c:set var="percent" value="${fn:length(audit.unsupportedRows) / fn:length(settings.collection.list)}"/>
+                    <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.unsupportedRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
+                </tags:nameValueContainer2>
+                <ul class="labeled-image-stack">
+                    <li class="clearfix">
+                        <cti:url var="newOperationControlled" value="newOperation">
+                            <cti:param name="auditId" value="${audit.auditId}"/>
+                            <cti:param name="type" value="UNSUPPORTED"/>
+                        </cti:url>
+                        <a href="${newOperationControlled}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
+                    </li>
+                    <li class="clearfix">
+                        <cti:url var="download" value="download">
+                            <cti:param name="auditId" value="${audit.auditId}"/>
+                            <cti:param name="type" value="UNSUPPORTED"/>
+                        </cti:url>
+                        <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </tags:sectionContainer2>
 </c:if>

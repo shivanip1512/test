@@ -20,14 +20,11 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -82,50 +79,45 @@ public class EstimatedLoadController {
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private FormulaBeanValidator formulaBeanValidator;
 
-    public static enum SortBy {NAME, CALCULATION_TYPE, TYPE, GEAR_CONTROL_METHOD,
-                               APP_CAT_AVERAGE_LOAD, IS_ASSIGNED, PROGRAM_NAME}
+    public static enum SortBy {
+        NAME, 
+        CALCULATION_TYPE, 
+        TYPE, 
+        GEAR_CONTROL_METHOD,
+        APP_CAT_AVERAGE_LOAD, 
+        IS_ASSIGNED, 
+        PROGRAM_NAME
+    }
 
-    private static final String ITEMS_PER_PAGE = "10";
     private String baseKey = "yukon.web.modules.dr.formula.";
 
     @RequestMapping("home")
-    public String home(ModelMap model,YukonUserContext context) {
+    public String home(ModelMap model, YukonUserContext context) {
 
-        listPageAjax(model, context, SortBy.NAME, false, 10, 1);
-        appCatAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
-        gearAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
+        listPageAjax(model, context);
+        appCatAssignmentsPage(model, context);
+        gearAssignmentsPage(model, context);
 
         return "dr/estimatedLoad/home.jsp";
     }
 
     @RequestMapping("listPageAjax")
-    public String listPageAjax(ModelMap model, YukonUserContext userContext,
-                       @RequestParam(defaultValue="NAME") SortBy sort, final boolean descending,
-                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                       @RequestParam(defaultValue="1") int page) {
-
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
+    public String listPageAjax(ModelMap model, YukonUserContext userContext) {
         
         List<FormulaBean> allFormulas = FormulaBean.toBeans(formulaDao.getAllFormulas(), userContext);
-        allFormulas = sortFormulas(allFormulas, sort, descending, userContext);
+        allFormulas = sortFormulas(allFormulas, SortBy.NAME, false, userContext);
 
-        SearchResults<FormulaBean> pagedFormulas
-            = SearchResults.pageBasedForWholeList(page, itemsPerPage, allFormulas);
-
-        model.addAttribute("sort", sort);
-        model.addAttribute("descending", descending);
-        model.addAttribute("pagedFormulas", pagedFormulas);
+        model.addAttribute("allFormulas", allFormulas);
 
         return "dr/estimatedLoad/_formulasTable.jsp";
     }
 
     @RequestMapping("formula/view")
     public String viewPage(ModelMap model, Integer formulaId, YukonUserContext userContext) {
+        
         model.addAttribute("mode", PageEditMode.VIEW);
-
         Formula formula = formulaDao.getFormulaById(formulaId);
         FormulaBean formulaBean = new FormulaBean(formula, userContext);
-
         populateFormulaPageModel(model, formulaBean);
 
         return "dr/estimatedLoad/formula.jsp";
@@ -133,8 +125,8 @@ public class EstimatedLoadController {
 
     @RequestMapping(value="formula/create", method=RequestMethod.GET)
     public String createPage(ModelMap model) {
+        
         model.addAttribute("mode", PageEditMode.CREATE);
-
         populateFormulaPageModel(model, new FormulaBean());
 
         return "dr/estimatedLoad/formula.jsp";
@@ -163,11 +155,10 @@ public class EstimatedLoadController {
 
     @RequestMapping(value="formula/edit", method=RequestMethod.GET)
     public String editPage(ModelMap model, Integer formulaId, YukonUserContext userContext) {
+        
         model.addAttribute("mode", PageEditMode.EDIT);
-
         Formula formula = formulaDao.getFormulaById(formulaId);
         FormulaBean formulaBean = new FormulaBean(formula, userContext);
-
         populateFormulaPageModel(model, formulaBean);
 
         return "dr/estimatedLoad/formula.jsp";
@@ -196,13 +187,16 @@ public class EstimatedLoadController {
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "success.updated", formulaBean.getName()));
 
         model.addAttribute("pointNames", getPointNames(formulaBean));
+        
         return "redirect:view?formulaId=" + formulaBean.getFormulaId();
     }
 
     @RequestMapping("formula/delete")
     public String doDelete(Integer formulaId, FlashScope flashScope) {
+        
         formulaDao.deleteFormulaById(formulaId);
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "success.deleted"));
+        
         return "redirect:../home";
     }
 
@@ -214,34 +208,22 @@ public class EstimatedLoadController {
         } else {
             formulaDao.saveGearAssignmentForId(formulaId, gearId);
         }
-
         GearAssignment currentAssignment = formulaDao.getAssignmentForGear(gearId);
-
         model.addAttribute("gearAssignment", currentAssignment);
 
         return "dr/estimatedLoad/_gearFormulaPicker.jsp";
     }
 
     @RequestMapping("gearAssignmentsPage")
-    public String gearAssignmentsPage(ModelMap model, YukonUserContext context,
-                       @RequestParam(defaultValue="NAME") SortBy sort, final boolean descending,
-                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                       @RequestParam(defaultValue="1") int page) {
+    public String gearAssignmentsPage(ModelMap model, YukonUserContext context) {
 
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-        
         Map<Integer, LMProgramDirectGear> allGears = gearDao.getAllGears();
         List<GearAssignment> gearAssignments = formulaDao.getAssignmentsForGears(allGears.keySet());
 
         Map<Integer, LiteYukonPAObject> gearPrograms = getGearPrograms();
-        gearAssignments = sortGearAssignments(gearAssignments, gearPrograms, sort, descending, context);
+        gearAssignments = sortGearAssignments(gearAssignments, gearPrograms, SortBy.NAME, false, context);
 
-        SearchResults<GearAssignment> pagedGears
-            = SearchResults.pageBasedForWholeList(page, itemsPerPage, gearAssignments);
-
-        model.addAttribute("sort", sort);
-        model.addAttribute("descending", descending);
-        model.addAttribute("pagedGears", pagedGears);
+        model.addAttribute("gearAssignments", gearAssignments);
         model.addAttribute("gearPrograms", gearPrograms);
 
         return "dr/estimatedLoad/_gearAssignmentsTable.jsp";
@@ -258,19 +240,14 @@ public class EstimatedLoadController {
         }
 
         ApplianceCategoryAssignment currentAssignment = formulaDao.getAssignmentForApplianceCategory(appCatId);
-
         model.addAttribute("appCatAssignment", currentAssignment);
+        
         return "dr/estimatedLoad/_appCatFormulaPicker.jsp";
     }
 
     @RequestMapping("appCatAssignmentsPage")
-    public String appCatAssignmentsPage(ModelMap model, YukonUserContext context,
-                       @RequestParam(defaultValue="NAME") SortBy sort, final boolean descending,
-                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                       @RequestParam(defaultValue="1") int page) {
+    public String appCatAssignmentsPage(ModelMap model, YukonUserContext context) {
 
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-        
         YukonEnergyCompany yec = null;
         try {
             yec = ecDao.getEnergyCompanyByOperator(context.getYukonUser());
@@ -283,15 +260,10 @@ public class EstimatedLoadController {
         Map<Integer, Integer> energyCompanyIds = applianceCategoryDao.getEnergyCompanyIdsForApplianceCategoryIds(appCatIds);
         List<ApplianceCategoryAssignment> appCatAssignments = formulaDao.getAssignmentsForApplianceCategories(appCatIds);
 
-        appCatAssignments = sortAppCatAssignments(appCatAssignments, sort, descending, context);
-
-        SearchResults<ApplianceCategoryAssignment> pagedAppCats
-            = SearchResults.pageBasedForWholeList(page, itemsPerPage, appCatAssignments);
+        appCatAssignments = sortAppCatAssignments(appCatAssignments, SortBy.NAME, false, context);
 
         model.addAttribute("energyCompanyIds", energyCompanyIds);
-        model.addAttribute("sort", sort);
-        model.addAttribute("descending", descending);
-        model.addAttribute("pagedAppCats", pagedAppCats);
+        model.addAttribute("appCatAssignments", appCatAssignments);
 
         return "dr/estimatedLoad/_appCatAssignmentsTable.jsp";
     }

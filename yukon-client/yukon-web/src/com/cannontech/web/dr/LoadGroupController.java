@@ -25,10 +25,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -44,6 +49,7 @@ import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -56,12 +62,12 @@ public class LoadGroupController extends DemandResponseControllerBase {
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
-    @Autowired private LoadGroupControllerHelper loadGroupControllerHelper;
+    @Autowired private LoadGroupHelper loadGroupHelper;
     @Autowired private LoadGroupService loadGroupService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private ProgramService programService;
     @Autowired private RolePropertyDao rolePropertyDao;
-
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     private final static Map<Integer, String> shedTimeOptions;
     static {
@@ -86,18 +92,27 @@ public class LoadGroupController extends DemandResponseControllerBase {
 
     @RequestMapping("/loadGroup/list")
     public String list(ModelMap model,
-            @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
+            @ModelAttribute("filter") LoadGroupHelper.LoadGroupFilter filter,
             BindingResult bindingResult, YukonUserContext userContext,
-            FlashScope flashScope) {
-        loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
-                                               bindingResult, null, flashScope);
+            FlashScope flashScope,
+            @DefaultItemsPerPage(25) PagingParameters paging,
+            @DefaultSort(dir=Direction.asc, sort="NAME") SortingParameters sorting) {
+        
+        loadGroupHelper.filterGroups(model, userContext, filter,
+                                               bindingResult, null, flashScope,
+                                               paging, sorting);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        loadGroupHelper.addColumns(model, accessor, sorting);
+        
         return "dr/loadGroup/list.jsp";
     }    
 
     @RequestMapping("/loadGroup/detail")
     public String detail(int loadGroupId, ModelMap model, LiteYukonUser user,
-            @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
-            BindingResult bindingResult, FlashScope flashScope, YukonUserContext userContext) {
+            @ModelAttribute("filter") LoadGroupHelper.LoadGroupFilter filter,
+            BindingResult bindingResult, FlashScope flashScope, YukonUserContext userContext,
+            @DefaultItemsPerPage(25) PagingParameters paging,
+            @DefaultSort(dir=Direction.asc, sort="NAME") SortingParameters sorting) {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         paoAuthorizationService.verifyAllPermissions(user, loadGroup, Permission.LM_VISIBLE);
@@ -115,8 +130,12 @@ public class LoadGroupController extends DemandResponseControllerBase {
         model.addAttribute("allowShed", allowShed);
         
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForMacroLoadGroupFilter(loadGroupId);
-        loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
-                                               bindingResult, detailFilter, flashScope);
+        loadGroupHelper.filterGroups(model, userContext, filter,
+                                               bindingResult, detailFilter, flashScope,
+                                               paging, sorting);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        loadGroupHelper.addColumns(model, accessor, sorting);
 
         return "dr/loadGroup/detail.jsp";
     }
@@ -132,10 +151,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
     }
     
     @RequestMapping("/loadGroup/assetDetails")
-    public String assetDetails(@RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                               @RequestParam(defaultValue="1") int page,
-                               @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
-                               final boolean descending,
+    public String assetDetails(@DefaultItemsPerPage(25) PagingParameters paging,
+                               @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
                                int assetId, 
                                ModelMap model, 
                                YukonUserContext userContext) throws IOException {
@@ -144,11 +161,11 @@ public class LoadGroupController extends DemandResponseControllerBase {
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(assetId);
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, null);
-        sortAssetDetails(resultsList, sortBy, descending, userContext);
+        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
+        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
         
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
+                SearchResults.pageBasedForWholeList(paging, resultsList);
 
         model = getAssetAvailabilityInfo(loadGroup, model, userContext);
         
@@ -157,7 +174,9 @@ public class LoadGroupController extends DemandResponseControllerBase {
         model.addAttribute("loadGroup", loadGroup);
         model.addAttribute("type", "loadGroup");
         model.addAttribute("result", result);
-        model.addAttribute("itemsPerPage", itemsPerPage);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        addAssetColumns(model, accessor, sorting);
         
         return "dr/assetDetails.jsp";
     }
@@ -169,32 +188,29 @@ public class LoadGroupController extends DemandResponseControllerBase {
         assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier(), user);
     }
 
-    /**
-     * Used for paging and filtering operations.
-     */
     @RequestMapping("/loadGroup/page")
     public String page(ModelMap model, 
                        YukonUserContext userContext,
                        String assetId,
-                       @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
-                       final boolean descending,
-                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                       @RequestParam(defaultValue="1") int page,
+                       @DefaultItemsPerPage(25) PagingParameters paging,
+                       @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
                        @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
         List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, filters);
-        sortAssetDetails(resultsList, sortBy, descending, userContext);
+        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
+        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
 
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
+                SearchResults.pageBasedForWholeList(paging, resultsList);
         
         model.addAttribute("result", result);
         model.addAttribute("type", "loadGroup");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
-        model.addAttribute("itemsPerPage", itemsPerPage);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        addAssetColumns(model, accessor, sorting);
         
         return "dr/assetTable.jsp";
     }
@@ -359,6 +375,6 @@ public class LoadGroupController extends DemandResponseControllerBase {
                 new YukonMessageCodeResolver("yukon.web.modules.dr.loadGroup.");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
-        loadGroupControllerHelper.initBinder(binder, userContext);
+        loadGroupHelper.initBinder(binder, userContext);
     }
 }

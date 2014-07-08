@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.model.PointSortField;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -26,9 +27,7 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     @Override
-    public List<LiteYukonPoint> getYukonPoints(final YukonPao pao, String orderBy, Boolean descending) {
-        orderBy = StringUtils.isBlank(orderBy) ? PointSortField.POINTNAME.name() : orderBy;
-        descending = (descending == null) ? false : descending;
+    public List<LiteYukonPoint> getYukonPoints(final YukonPao pao, SortingParameters sorting) {
         
         Function<LitePoint, LiteYukonPoint> pointFunction = new Function<LitePoint, LiteYukonPoint>() {
             @Override
@@ -43,9 +42,10 @@ public class YukonPointHelperImpl implements YukonPointHelper {
         List<LitePoint> points = pointDao.getLitePointsByPaObjectId(pao.getPaoIdentifier().getPaoId());
         
         List<LiteYukonPoint> liteYukonPoints = new ArrayList<>(Lists.transform(points, pointFunction));
-        Collections.sort(liteYukonPoints, LiteYukonPoint.getComparatorForSortField(PointSortField.valueOf(orderBy)));
+        PointSortField sortField = PointSortField.valueOf(sorting.getSort());
+        Collections.sort(liteYukonPoints, LiteYukonPoint.getComparatorForSortField(sortField));
         
-        if (descending) {
+        if (sorting.getDirection() == Direction.desc) {
             liteYukonPoints = Lists.reverse(liteYukonPoints);
         }
         
@@ -54,6 +54,6 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     
     @Override
     public List<LiteYukonPoint> getYukonPoints(final YukonPao pao) {
-        return getYukonPoints(pao, null, null);
+        return getYukonPoints(pao, SortingParameters.of(PointSortField.POINTNAME.name(), Direction.asc));
     }
 }

@@ -14,7 +14,7 @@ public final class PagingParameters {
      * @param itemsPerPage must be greater than 0
      * @param page is 1-based (i.e. starts at 1, not 0)
      */
-    public PagingParameters(int itemsPerPage, int page) {
+    private PagingParameters(int itemsPerPage, int page) {
         checkArgument(itemsPerPage > 0);
         checkArgument(page > 0);
 
@@ -47,4 +47,15 @@ public final class PagingParameters {
     public int getOneBasedEndIndex() {
         return endIndex + 1;
     }
+
+    @Override
+    public String toString() {
+        return String.format("PagingParameters [page=%s, itemsPerPage=%s, startIndex=%s, endIndex=%s]",
+                        page, itemsPerPage, startIndex, endIndex);
+    }
+    
+    public static PagingParameters of(int itemsPerPage, int page) {
+        return new PagingParameters(itemsPerPage, page);
+    }
+    
 }

@@ -2,27 +2,24 @@ package com.cannontech.web.common.events;
 
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -48,6 +45,8 @@ import com.cannontech.common.events.service.EventLogService;
 import com.cannontech.common.events.service.EventLogUIService;
 import com.cannontech.common.events.service.impl.MethodLogDetail;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -58,8 +57,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.common.events.model.EventLogCategoryBackingBean;
-import com.cannontech.web.common.events.model.EventLogTypeBackingBean;
+import com.cannontech.web.common.events.model.EventLogTypeFilter;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -80,8 +78,8 @@ import com.google.common.collect.SetMultimap;
 @Controller
 @RequestMapping("/eventLog/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_EVENT_LOGS)
-public class EventLogViewerController {
-
+public class EventLogTypeController {
+    
     private final int maxCsvRows = 65535; // The total number of rows possible in excel minus one row for the header row.
     private final String eventLogResolvablePrefix ="yukon.common.events.";
     
@@ -92,179 +90,40 @@ public class EventLogViewerController {
     @Autowired private EventLogDao eventLogDao;
     @Autowired private EventLogService eventLogService;
     @Autowired private EventLogUIService eventLogUIService;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DateFormattingService dateFormattingService;
-
-    @RequestMapping(value="viewByCategory", params="!export")
-    public void viewByCategory(@ModelAttribute("eventLogCategoryBackingBean") EventLogCategoryBackingBean backingBean, 
-                               BindingResult bindingResult,
-                               FlashScope flashScope,
-                               YukonUserContext userContext,
-                               HttpServletRequest request,
-                               ModelMap model) throws ServletException, ParseException {
-        // Validating the search data
-        eventLogCategoryValidator.doValidation(backingBean, bindingResult);
-        if (bindingResult.hasErrors()) {
-            
-            List<MessageSourceResolvable> messages = 
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return;
-        } 
-        
-        List<EventCategory> eventCategories = Lists.newArrayList();
-        eventCategories.addAll(Arrays.asList(backingBean.getCategories()));
-        
-        // Getting the search results
-        SearchResults<EventLog> searchResult = 
-            eventLogUIService.getFilteredPagedSearchResultByCategories(eventCategories, 
-                                                                       backingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                       backingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                       backingBean.getStartIndex(), 
-                                                                       backingBean.getItemsPerPage(),
-                                                                       backingBean.getFilterValue(),
-                                                                       userContext);
-        
-        model.addAttribute("searchResult", searchResult);
-        
-        String csvLink = ServletUtil.tweakHTMLRequestURI(request, "export", "CSV");
-        model.addAttribute("csvLink", csvLink);
-
-    }
-
-    @RequestMapping(value="viewByCategory", params="export", method=RequestMethod.GET)
-    public void exportByCategory(@ModelAttribute("eventLogCategoryBackingBean") EventLogCategoryBackingBean backingBean,
-                           HttpServletResponse response,
-                           YukonUserContext userContext, 
-                           ModelMap model) throws ServletException, ParseException, IOException {
-
-        List<EventCategory> eventCategories = Lists.newArrayList();
-        eventCategories.addAll(Arrays.asList(backingBean.getCategories()));
-        
-        // Getting the search results
-        SearchResults<EventLog> searchResult = 
-            eventLogUIService.getFilteredPagedSearchResultByCategories(eventCategories, 
-                                                                       backingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                       backingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                       backingBean.getStartIndex(), 
-                                                                       Integer.MAX_VALUE,
-                                                                       backingBean.getFilterValue(),
-                                                                       userContext);
-        
-        // Get column names
-        List<String> columnNames = Lists.newArrayList();
-        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-
-        columnNames.add(messageSourceAccessor.getMessage("yukon.common.events.columnHeader.event"));
-        columnNames.add(messageSourceAccessor.getMessage("yukon.common.events.columnHeader.dateAndTime"));
-        columnNames.add(messageSourceAccessor.getMessage("yukon.common.events.columnHeader.message"));
-        
-        // Get data grid
-        List<List<String>> dataGrid = 
-            eventLogUIService.getDataGridRowByCategory(searchResult, userContext);
-        
-        // Build and write csv report
-        String categoryCsvFileName = messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byCategory.csvExport.fileName");
-        WebFileUtils.writeToCSV(response, columnNames, dataGrid, categoryCsvFileName + ".csv");
-    }
-
-    
-    @ModelAttribute("eventLogCategoryBackingBean")
-    public EventLogCategoryBackingBean initializeEventLogCategoryBackingBean(YukonUserContext userContext) {
-        EventLogCategoryBackingBean backingBean = new EventLogCategoryBackingBean();
-        backingBean.setStartDate(new LocalDate(userContext.getJodaTimeZone()).minusDays(1));
-        backingBean.setStopDate(new LocalDate(userContext.getJodaTimeZone()));
-        
-        backingBean.setCategories(getAllEventCategories().toArray(new EventCategory[]{}));
-        
-        return backingBean;
-    }
 
     @RequestMapping(value="viewByType", method=RequestMethod.GET)
     public void selectByType(ModelMap model) {
+        
         SearchResults<EventLog> emptyResult = SearchResults.emptyResult();
-        
         model.addAttribute("searchResult", emptyResult);
-    }
-    
-    @RequestMapping(value="viewByType", params={"eventLogType", "!export"}, method=RequestMethod.GET)
-    public void viewByType(@ModelAttribute("eventLogTypeBackingBean") EventLogTypeBackingBean eventLogTypeBackingBean,
-                           BindingResult bindingResult,
-                           FlashScope flashScope,
-                           YukonUserContext userContext, 
-                           HttpServletRequest request,
-                           ModelMap model) throws ServletRequestBindingException{
-
-        // Validating the search data
-        eventLogTypeValidator.doValidation(eventLogTypeBackingBean, bindingResult);
-        if (bindingResult.hasErrors()) {
-
-            List<MessageSourceResolvable> messages = 
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return;
-        } 
-
-        UiFilter<EventLog> eventLogSqlFilters = getEventLogUIFilters(eventLogTypeBackingBean);
-
-        // Get default search results
-        SearchResults<EventLog> searchResult = 
-            eventLogUIService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
-                                                                 eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                 eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                 eventLogTypeBackingBean.getStartIndex(), 
-                                                                 eventLogTypeBackingBean.getItemsPerPage(),
-                                                                 eventLogSqlFilters,
-                                                                 userContext);
-
-        buildEventLogResults(userContext, eventLogTypeBackingBean, searchResult, model);
-        
-        String csvLink = ServletUtil.tweakHTMLRequestURI(request, "export", "CSV");
-        model.addAttribute("csvLink", csvLink);
-    }
-    
-    @ModelAttribute("eventLogTypeBackingBean")
-    public EventLogTypeBackingBean initializeEventLogTypeBackingBean(String eventLogType,
-            YukonUserContext userContext) {
-        if (StringUtils.isBlank(eventLogType)) return null;
-        
-        List<EventLogFilter> eventLogFilters = getEventLogFilter(eventLogType, userContext);
-        EventLogTypeBackingBean eventLogTypeBackingBean = 
-            new EventLogTypeBackingBean(eventLogType,
-                                        userContext.getJodaTimeZone(),
-                                        eventLogFilters);
-        return eventLogTypeBackingBean;
-    }
-
-    @ModelAttribute
-    public void setupTreeModelData(String eventLogType, ModelMap map) throws JsonProcessingException {
-        buildTreeModelData(eventLogType, map);
+        model.addAttribute("paging", PagingParameters.of(50, 1));
     }
     
     @RequestMapping(value="viewByType", params="export", method=RequestMethod.GET)
-    public void exportByType(@ModelAttribute("eventLogTypeBackingBean") EventLogTypeBackingBean eventLogTypeBackingBean,
+    public void exportByType(@ModelAttribute("filter") EventLogTypeFilter filter,
                            HttpServletResponse response,
-                           YukonUserContext userContext, 
-                           ModelMap model) throws ServletException, ParseException, IOException {
+                           YukonUserContext userContext) throws IOException {
 
-        UiFilter<EventLog> eventLogSqlFilters = getEventLogUIFilters(eventLogTypeBackingBean);
+        UiFilter<EventLog> eventLogSqlFilters = getEventLogUIFilters(filter);
         
         // Get search results
         SearchResults<EventLog> searchResult = 
-            eventLogUIService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
-                                                                 eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                 eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                 0, 
-                                                                 Integer.MAX_VALUE,
-                                                                 eventLogSqlFilters,
-                                                                 userContext);
+            eventLogUIService.getFilteredPagedSearchResultByType(filter.getEventLogType(), 
+                 filter.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                 filter.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                 0, 
+                 Integer.MAX_VALUE,
+                 eventLogSqlFilters,
+                 userContext);
         
         // Get column names
         List<String> columnNames = Lists.newArrayList();
         final MessageSourceAccessor messageSourceAccessor = 
-            messageSourceResolver.getMessageSourceAccessor(userContext);
+            messageResolver.getMessageSourceAccessor(userContext);
 
-        List<EventLogFilter> eventLogFilters = eventLogTypeBackingBean.getEventLogFilters();
+        List<EventLogFilter> eventLogFilters = filter.getEventLogFilters();
         columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.event"));
         columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.dateAndTime"));
         for (EventLogFilter eventLogFilter : eventLogFilters) {
@@ -276,51 +135,172 @@ public class EventLogViewerController {
             eventLogUIService.getDataGridRowByType(searchResult, userContext);
         
         // Build and write csv report
-        WebFileUtils.writeToCSV(response, columnNames, dataGrid, eventLogTypeBackingBean.getEventLogType() + ".csv");
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, filter.getEventLogType() + ".csv");
     }
 
+    @RequestMapping(value="viewByType", params={"eventLogType", "!export"}, method=RequestMethod.GET)
+    public void viewByType(@ModelAttribute("filter") EventLogTypeFilter filter,
+                           BindingResult bindingResult,
+                           FlashScope flashScope,
+                           YukonUserContext userContext, 
+                           HttpServletRequest request,
+                           ModelMap model,
+                           @DefaultItemsPerPage(50) PagingParameters paging) {
+        
+        model.addAttribute("paging", paging);
+
+        // Validating the search data
+        eventLogTypeValidator.doValidation(filter, bindingResult);
+        if (bindingResult.hasErrors()) {
+
+            List<MessageSourceResolvable> messages = 
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            return;
+        } 
+
+        UiFilter<EventLog> eventLogSqlFilters = getEventLogUIFilters(filter);
+
+        // Get default search results
+        SearchResults<EventLog> searchResult = 
+            eventLogUIService.getFilteredPagedSearchResultByType(filter.getEventLogType(), 
+                 filter.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                 filter.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                 paging.getStartIndex(), 
+                 paging.getItemsPerPage(),
+                 eventLogSqlFilters,
+                 userContext);
+
+        buildEventLogResults(userContext, filter, searchResult, model);
+        
+        String csvLink = ServletUtil.tweakHTMLRequestURI(request, "export", "CSV");
+        model.addAttribute("csvLink", csvLink);
+    }
+    
+    @RequestMapping("testAll")
+    public void testAll(ModelMap map) {
+        Date now = new Date();
+        List<ArgumentColumn> argumentColumns = eventLogDao.getArgumentColumns();
+        Object[] fakeArguments = new Object[argumentColumns.size()];
+        int i = 0;
+        for (ArgumentColumn argumentColumn : argumentColumns) {
+            fakeArguments[i++] = argumentColumn.getColumnName();
+        }
+        ListMultimap<EventCategory, String> typeMultiMap = eventLogService.getEventLogTypeMultiMap();
+        
+        List<MessageSourceResolvable> allKeys = Lists.newArrayList();
+        
+        for (Entry<EventCategory, String> type : typeMultiMap.entries()) {
+            String fullType = EventLog.getFullName(type.getKey(), type.getValue());
+            MethodLogDetail detailForEventType = eventLogService.getDetailForEventType(fullType);
+            EventLog eventLog = new EventLog();
+            eventLog.setDateTime(now);
+            eventLog.setEventType(fullType);
+            eventLog.setArguments(fakeArguments);
+            MessageSourceResolvable eventDescription = eventLog.getMessageSourceResolvable();
+            allKeys.add(eventDescription);
+            Set<EventParameter> keySet = detailForEventType.getParameterToColumnMapping().keySet();
+            for (EventParameter eventParameter : keySet) {
+                MessageSourceResolvable columnKey = getColumnKey(fullType, eventParameter);
+                allKeys.add(columnKey);
+            }
+        }
+        
+        map.addAttribute("allKeys", allKeys);
+    }
+    
+    @ModelAttribute("filter")
+    public EventLogTypeFilter initializeTypeFilter(String eventLogType, YukonUserContext userContext) {
+        
+        if (StringUtils.isBlank(eventLogType)) return null;
+        
+        List<EventLogFilter> filters = getEventLogFilter(eventLogType, userContext);
+        DateTimeZone tz = userContext.getJodaTimeZone();
+        EventLogTypeFilter filter = new EventLogTypeFilter(eventLogType, tz, filters);
+        
+        return filter;
+    }
+    
+    @ModelAttribute("maxCsvRows")
+    public int getMaxCsvRows() {
+        return maxCsvRows;
+    }
+    
+    @ModelAttribute
+    public void setupTreeModelData(String eventLogType, ModelMap map) throws JsonProcessingException {
+        buildTreeModelData(eventLogType, map);
+    }
+    
+    @ModelAttribute
+    public List<EventCategory> getAllEventCategories() {
+        Set<EventCategory> allCategories = eventLogDao.getAllCategories();
+        List<EventCategory> result = Ordering.natural().sortedCopy(allCategories);
+        return result;
+    }
+    
+    /* INIT BINDER */
+    @InitBinder
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        binder.registerCustomEditor(LocalDate.class, 
+            datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
+        
+        binder.registerCustomEditor(EventLogColumnTypeEnum.class, new EventLogColumnTypePropertyEditor());
+        
+        binder.registerCustomEditor(EventCategory.class, new PropertyEditorSupport() {
+            @Override
+            public String getAsText() {
+                EventCategory eventCategory = (EventCategory) getValue();
+                return eventCategory.getFullName();
+            }
+            
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                EventCategory eventCategory = EventCategory.createCategory(text);
+                setValue(eventCategory);
+            }
+        });
+    }
+    
     /**
      * This method builds up a list of UIFilters from the given backing bean.
-     *
      */
-    private UiFilter<EventLog> getEventLogUIFilters(EventLogTypeBackingBean eventLogTypeBackingBean) {
+    private UiFilter<EventLog> getEventLogUIFilters(EventLogTypeFilter filter) {
 
         // Build up filter list
         List<UiFilter<EventLog>> filters = Lists.newArrayList();
-        for (EventLogFilter eventLogFilter : eventLogTypeBackingBean.getEventLogFilters()) {
+        for (EventLogFilter eventLogFilter : filter.getEventLogFilters()) {
             FilterValue filterValue = eventLogFilter.getFilterValue();
             
             // Create and add event log filter
-            UiFilter<EventLog> filter = 
+            UiFilter<EventLog> uifilter = 
                 eventLogFilterFactory.getFilter(filterValue, eventLogFilter.getArgumentColumn());
-            if (filter != null) {
-                filters.add(filter);
+            if (uifilter != null) {
+                filters.add(uifilter);
             }
         }
         UiFilter<EventLog> eventLogSqlFilters = UiFilterList.wrap(filters);
         return eventLogSqlFilters;
     }
-
+    
     /**
      * This method loads up the model the search results, column headers, and also 
      * data grid that is used to display the results.
-     *
      */
     private void buildEventLogResults(YukonUserContext userContext,
-            EventLogTypeBackingBean eventLogTypeBackingBean,
+            EventLogTypeFilter filter,
             SearchResults<EventLog> rawResults,
             ModelMap model) {
         // Get column names
         List<ColumnHeader> columnNames = Lists.newArrayList();
         List<Integer> columnArgumentIndexes = Lists.newArrayList();
         
-        String eventLogType = eventLogTypeBackingBean.getEventLogType();
-        MethodLogDetail eventTypeDetail = eventLogService.getDetailForEventType(eventLogType);
+        String eventLogName = filter.getEventLogType();
+        MethodLogDetail eventTypeDetail = eventLogService.getDetailForEventType(eventLogName);
         Set<EventParameter> parameters = eventTypeDetail.getParameterToColumnMapping().keySet();
         // TODO see if parameters could be sorted 
         for (EventParameter eventParameter : parameters) {
             // get name for column
-            MessageSourceResolvable columnKey = getColumnKey(eventLogType, eventParameter);
+            MessageSourceResolvable columnKey = getColumnKey(eventLogName, eventParameter);
             ArgumentColumn argumentColumn = eventTypeDetail.getParameterToColumnMapping().get(eventParameter);
             
             ColumnHeader columnHeader = new ColumnHeader(columnKey, argumentColumn);
@@ -349,10 +329,9 @@ public class EventLogViewerController {
         model.addAttribute("searchResult", result);
     }
     
-    
     private String formatCell(Object argument, YukonUserContext userContext) {
-        if (argument == null) {	// return empty string if argument is null.
-        	return "";
+        if (argument == null) { // return empty string if argument is null.
+            return "";
         } else if (argument instanceof Date) {
             return dateFormattingService.format(argument, DateFormatEnum.BOTH, userContext);
         } else {
@@ -421,29 +400,7 @@ public class EventLogViewerController {
                 
         return eventLogFilters;
     }
-
-    private MessageSourceResolvable getColumnKey(String eventLogType, EventParameter eventParameter) {
-        ArrayList<String> keys = Lists.newArrayListWithCapacity(3);
-        String key1 = eventLogResolvablePrefix + eventLogType + "." + eventParameter.getArgumentNumber();
-        keys.add(key1);
-        if (eventParameter.isNamed()) {
-            String key2 = eventLogResolvablePrefix + eventLogType + "." + eventParameter.getAnnotatedName();
-            keys.add(key2);
-            String key3 = eventLogResolvablePrefix + eventParameter.getAnnotatedName();
-            keys.add(key3);
-        }
-        
-        String name = "unknown";
-        if (eventParameter.isNamed()) {
-            name = eventParameter.getName();
-        }
-        String defaultText = name + " (#" + eventParameter.getArgumentNumber() + ")";
-        
-        MessageSourceResolvable result = 
-            YukonMessageSourceResolvable.createMultipleCodesWithDefault(keys, defaultText);
-        return result;
-    }
-
+    
     private EventCategoryHierarchy getEventLogHierarchy() {
 
         ListMultimap<EventCategory, String> eventLogTypeMultiMap = 
@@ -459,7 +416,7 @@ public class EventLogViewerController {
         
         return eventLogHierarchy;
     }
-
+    
     private SetMultimap<EventCategory, EventCategory> getCategoriesByParent(
             Iterable<EventCategory> categories) {
         SetMultimap<EventCategory, EventCategory> parentChildLookup = HashMultimap.create();
@@ -491,73 +448,43 @@ public class EventLogViewerController {
         List<String> childTypes = eventLogTypeMultiMap.get(eventCategory);
         parentHierarchy.setEventLogTypes(Ordering.natural().sortedCopy(childTypes));
     }
-
-    @ModelAttribute
-    public List<EventCategory> getAllEventCategories() {
-        Set<EventCategory> allCategories = eventLogDao.getAllCategories();
-        List<EventCategory> result = Ordering.natural().sortedCopy(allCategories);
+    
+    private MessageSourceResolvable getColumnKey(String eventLogType, EventParameter eventParameter) {
+        ArrayList<String> keys = Lists.newArrayListWithCapacity(3);
+        String key1 = eventLogResolvablePrefix + eventLogType + "." + eventParameter.getArgumentNumber();
+        keys.add(key1);
+        if (eventParameter.isNamed()) {
+            String key2 = eventLogResolvablePrefix + eventLogType + "." + eventParameter.getAnnotatedName();
+            keys.add(key2);
+            String key3 = eventLogResolvablePrefix + eventParameter.getAnnotatedName();
+            keys.add(key3);
+        }
+        
+        String name = "unknown";
+        if (eventParameter.isNamed()) {
+            name = eventParameter.getName();
+        }
+        String defaultText = name + " (#" + eventParameter.getArgumentNumber() + ")";
+        
+        MessageSourceResolvable result = 
+            YukonMessageSourceResolvable.createMultipleCodesWithDefault(keys, defaultText);
         return result;
     }
-
-    @ModelAttribute("maxCsvRows")
-    public int getMaxCsvRows(){
-        return maxCsvRows;
-    }
     
-    /* INIT BINDER */
-    @InitBinder
-    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        binder.registerCustomEditor(LocalDate.class, 
-                                    datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
-        
-        binder.registerCustomEditor(EventLogColumnTypeEnum.class,
-                                    new EventLogColumnTypePropertyEditor());
-        
-        binder.registerCustomEditor(EventCategory.class, new PropertyEditorSupport() {
-            @Override
-            public String getAsText() {
-                EventCategory eventCategory = (EventCategory) getValue();
-                return eventCategory.getFullName();
-            }
-            
-            @Override
-            public void setAsText(String text) throws IllegalArgumentException {
-                EventCategory eventCategory = EventCategory.createCategory(text);
-                setValue(eventCategory);
-            }
-        });
-    }
-    
-    @RequestMapping("testAll")
-    public void testAll(ModelMap map) {
-        Date now = new Date();
-        List<ArgumentColumn> argumentColumns = eventLogDao.getArgumentColumns();
-        Object[] fakeArguments = new Object[argumentColumns.size()];
-        int i = 0;
-        for (ArgumentColumn argumentColumn : argumentColumns) {
-            fakeArguments[i++] = argumentColumn.getColumnName();
+    public static class ColumnHeader {
+        private MessageSourceResolvable label;
+        private ArgumentColumn argumentColumn;
+        private ColumnHeader(MessageSourceResolvable label, ArgumentColumn argumentColumn) {
+            this.label = label;
+            this.argumentColumn = argumentColumn;
         }
-        ListMultimap<EventCategory, String> typeMultiMap = eventLogService.getEventLogTypeMultiMap();
-        
-        List<MessageSourceResolvable> allKeys = Lists.newArrayList();
-        
-        for (Entry<EventCategory, String> type : typeMultiMap.entries()) {
-            String fullType = EventLog.getFullName(type.getKey(), type.getValue());
-            MethodLogDetail detailForEventType = eventLogService.getDetailForEventType(fullType);
-            EventLog eventLog = new EventLog();
-            eventLog.setDateTime(now);
-            eventLog.setEventType(fullType);
-            eventLog.setArguments(fakeArguments);
-            MessageSourceResolvable eventDescription = eventLog.getMessageSourceResolvable();
-            allKeys.add(eventDescription);
-            Set<EventParameter> keySet = detailForEventType.getParameterToColumnMapping().keySet();
-            for (EventParameter eventParameter : keySet) {
-                MessageSourceResolvable columnKey = getColumnKey(fullType, eventParameter);
-                allKeys.add(columnKey);
-            }
+        public MessageSourceResolvable getLabel() {
+            return label;
+        }
+        public ArgumentColumn getArgumentColumn() {
+            return argumentColumn;
         }
         
-        map.addAttribute("allKeys", allKeys);
     }
     
     public static class ReportableEventLog {
@@ -576,19 +503,4 @@ public class EventLogViewerController {
         }
     }
     
-    public static class ColumnHeader {
-        private MessageSourceResolvable label;
-        private ArgumentColumn argumentColumn;
-        private ColumnHeader(MessageSourceResolvable label, ArgumentColumn argumentColumn) {
-            this.label = label;
-            this.argumentColumn = argumentColumn;
-        }
-        public MessageSourceResolvable getLabel() {
-            return label;
-        }
-        public ArgumentColumn getArgumentColumn() {
-            return argumentColumn;
-        }
-        
-    }
 }

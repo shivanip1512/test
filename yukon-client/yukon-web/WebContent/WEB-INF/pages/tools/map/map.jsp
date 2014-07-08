@@ -78,7 +78,7 @@
             <cti:button id="no-filter-btn" icon="icon-cross disabled cp" classes="right dn" renderMode="buttonImage"/>
         </div>
     
-        <div id="map-popup" dialog class="dn" data-title="<cti:msg2 key=".filter.title"/>" data-event="yukon.map.filter"
+        <div id="map-popup" data-dialog class="dn" data-title="<cti:msg2 key=".filter.title"/>" data-event="yukon.map.filter"
             data-width="500" data-height="250">
             <cti:url value="/tools/map/filter" var="filterUrl"/>
             <form:form commandName="filter" id="filter-form" action="${filterUrl}">
@@ -139,7 +139,7 @@
         </div>
         
         <c:if test="${dynamic}">
-            <div id="map-updater" class="button-group toggle-on-off fr">
+            <div id="map-updater" class="toggle-btns fr">
                 <cti:button nameKey="on" classes="on yes"/>
                 <cti:button nameKey="off" classes="no"/>
             </div>

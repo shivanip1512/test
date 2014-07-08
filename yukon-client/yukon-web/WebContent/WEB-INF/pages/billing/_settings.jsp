@@ -36,36 +36,37 @@
                         </c:forEach>
                     </select>
                 </tags:nameValue>
+                
                 <cti:msg key="yukon.web.billing.billingEndDate" var="billingEndDate" />
                 <tags:nameValue name="${billingEndDate}">
                     <dt:date name="endDate" value="${origEndDate}" />
                 </tags:nameValue>
+                
                 <cti:msg key="yukon.web.billing.demandDaysPrevious" var="demandDaysPrevious" />
                 <tags:nameValue name="${demandDaysPrevious}" id="row-demand-days-previous">
-                 <input type="text" name="demandDays" value="${BILLING_BEAN.demandDaysPrev}" size = "8">                    
+                 <input type="text" name="demandDays" value="${BILLING_BEAN.demandDaysPrev}" size = "8">
                 </tags:nameValue>
+                
                 <cti:msg key="yukon.web.billing.energyDaysPrevious" var="energyDaysPrevious" />
                 <tags:nameValue name="${energyDaysPrevious}" id="row-energy-days-previous">
                     <input type="text" name="energyDays" value="${BILLING_BEAN.energyDaysPrev}" size = "8">
                 </tags:nameValue>
+                
                 <cti:msg key="yukon.web.billing.removeMultiplier" var="removeMultiplier" />
                 <tags:nameValue  name="${removeMultiplier}">
                     <input type="checkbox" name="removeMultiplier" ${(BILLING_BEAN.removeMult)? 'checked':''} >
                 </tags:nameValue>
+
                 <cti:msg key="yukon.web.billing.billingGroup" var="billingGroup" />
                 <tags:nameValue name="${billingGroup}" id="row_billing_group" nameClass="vat">
-
-                  <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
+                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
                     <tags:deviceGroupNameSelector fieldName="billGroup" fieldValue="${billGroup}" dataJson="${dataJson}" classes="fl"/>
-					
                 </tags:nameValue>
 
             </tags:nameValueContainer>
             <div class="page-action-area">
-                <cti:msg key="yukon.web.generate" var="generateLabel" />
-                <cti:msg key="yukon.web.billing.schedule" var="scheduleLabel" />
-                <cti:button label="${generateLabel}" name="generate" icon="icon-page-white-excel"/>
-                <cti:button label="${scheduleLabel}" name="schedule" icon="icon-calendar-view-day"/>
+                <cti:button nameKey="generate" name="generate" icon="icon-page-white-excel"/>
+                <cti:button nameKey="schedule" name="schedule" icon="icon-calendar-view-day"/>
             </div>
         </form>
     </tags:sectionContainer>

@@ -13,7 +13,7 @@
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
 
-    <cm:dropdown containerCssClass="fr">
+    <cm:dropdown triggerClasses="fr">
         <div data-start-action="on" data-pao-id="${paoId}">
             <li>
                 <cti:url var="startProgramUrl" value="/dr/program/start/details">
@@ -51,7 +51,7 @@
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
     <cti:msg2 var="noProgramControl" key=".programDetail.noControl"/>
-    <cm:dropdown containerCssClass="fr">
+    <cm:dropdown triggerClasses="fr">
         <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${noProgramControl}">
             <cti:msg2  key=".programDetail.actions.start"/>
         </cm:dropdownOption>

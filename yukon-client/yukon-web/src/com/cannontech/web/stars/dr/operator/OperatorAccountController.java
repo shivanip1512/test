@@ -40,8 +40,9 @@ import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.Substation;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.PasswordPolicy;
@@ -313,8 +314,7 @@ public class OperatorAccountController {
     // SEARCH PAGE
     @RequestMapping("search")
     public String search(HttpServletRequest request,
-                        Integer itemsPerPage, 
-                        Integer page,
+                        @DefaultItemsPerPage(25) PagingParameters paging,
                         ModelMap modelMap, 
                         YukonUserContext userContext,
                         FlashScope flashScope) throws ServletRequestBindingException {
@@ -334,17 +334,11 @@ public class OperatorAccountController {
         OperatorAccountSearchBy searchBy = OperatorAccountSearchBy.valueOf(searchByStr);
         String searchValue = ServletRequestUtils.getStringParameter(request, "searchValue", null);
         
-        // paging
-        if(page == null){
-            page = 1;
-        }
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-        int startIndex = (page - 1) * itemsPerPage;
-        
         // it is important for searching to use the energyCompany of the user
         YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        AccountSearchResultHolder accountSearchResultHolder = operatorGeneralSearchService.customerAccountSearch(searchBy, searchValue, startIndex, itemsPerPage, energyCompany, userContext);
+        AccountSearchResultHolder accountSearchResultHolder = operatorGeneralSearchService.customerAccountSearch(
+                searchBy, searchValue, paging.getStartIndex(), paging.getItemsPerPage(), energyCompany, userContext);
         
         boolean adminManageMembers = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, userContext.getYukonUser());
         modelMap.addAttribute("searchMembers", adminManageMembers && energyCompany.hasChildEnergyCompanies());
@@ -353,7 +347,6 @@ public class OperatorAccountController {
         if (accountSearchResultHolder.isSingleResult() && !accountSearchResultHolder.isHasWarning()) {
             
             AccountSearchResult accountSearchResult = accountSearchResultHolder.getAccountSearchResults().getResultList().get(0);
-            
             modelMap.addAttribute("accountId", accountSearchResult.getAccountId());
             
             return "redirect:view";
@@ -367,6 +360,7 @@ public class OperatorAccountController {
         modelMap.addAttribute("searchResultTitleArguments", searchResultTitleArguments);
         modelMap.addAttribute("accountSearchResultHolder", accountSearchResultHolder);
         modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
+        
         return "operator/account/accountList.jsp";
     }
     

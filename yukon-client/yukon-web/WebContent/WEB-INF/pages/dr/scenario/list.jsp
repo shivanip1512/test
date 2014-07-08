@@ -1,52 +1,30 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="scenarioList">
 
-    <tags:simpleDialog id="drDialog" />
+    <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
     <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
 
-    <c:set var="baseUrl" value="/dr/scenario/list" />
-    <cti:url var="baseUrlWithContext" value="${baseUrl}" />
-
-    <cti:msg2 var="filterLabel" key=".filters" />
-    <tags:simplePopup id="filterPopup" title="${filterLabel}">
-        <form:form action="${baseUrlWithContext}" commandName="backingBean" method="get">
-            <tags:sortFields backingBean="${backingBean}" />
-            <tags:nameValueContainer>
-                <cti:msg2 var="fieldName" key=".filter.name" />
-                <tags:nameValue name="${fieldName}">
-                    <form:input path="name" size="40" />
-                </tags:nameValue>
-            </tags:nameValueContainer>
-            <div class="action-area">
-                <cti:button nameKey="filter" classes="primary action" type="submit"/>
-                <cti:button nameKey="showAll" href="${baseUrlWithContext}"/>
-            </div>
-        </form:form>
-    </tags:simplePopup>
-
-    <cti:msg var="scenarioTitle" key="yukon.web.modules.dr.scenarioList.scenarios" />
-    <tags:pagedBox title="${scenarioTitle}" searchResult="${searchResult}"
-        filterDialog="filterPopup" baseUrl="${baseUrl}"
-        isFiltered="${isFiltered}" showAllUrl="${baseUrlWithContext}">
-        <c:choose>
-            <c:when test="${searchResult.hitCount == 0}">
-                <cti:msg key="yukon.web.modules.dr.scenarioList.noResults" />
-            </c:when>
-            <c:otherwise>
-                <table id="scenarioList" class="compact-results-table has-actions">
+    <c:choose>
+        <c:when test="${scenarios.hitCount == 0}">
+            <span class="empty-list"><i:inline key=".noResults"/></span>
+        </c:when>
+        <c:otherwise>
+            <div data-url="<cti:url value="/dr/scenario/list"/>" data-static>
+                <table class="compact-results-table has-actions">
                     <thead>
                         <tr>
-                            <th><tags:sortLink nameKey="heading.name"
-                                baseUrl="${baseUrl}" fieldName="NAME"/></th>
+                            <th><i:inline key=".heading.name"/></th>
                             <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                 <th><i:inline key=".heading.kwSavings"/></th>
                             </cti:checkRolesAndProperties>
@@ -55,10 +33,10 @@
                     </thead>
                     <tfoot></tfoot>
                     <tbody>
-                        <c:forEach var="scenario" items="${scenarios}">
-                            <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}" />
+                        <c:forEach var="scenario" items="${scenarios.resultList}">
+                            <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
                             <c:url var="scenarioUrl" value="/dr/scenario/detail">
-                                <c:param name="scenarioId" value="${scenarioId}" />
+                                <c:param name="scenarioId" value="${scenarioId}"/>
                             </c:url>
                             <tr>
                                 <td><a href="${scenarioUrl}">${fn:escapeXml(scenario.name)}</a>
@@ -75,19 +53,16 @@
                                         </span>
                                     </td>
                                 </cti:checkRolesAndProperties>
-                                <td><dr:scenarioListActions pao="${scenario}" /></td>
+                                <td><dr:scenarioListActions pao="${scenario}"/></td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
-            </c:otherwise>
-        </c:choose>
-    </tags:pagedBox>
+                <tags:pagingResultsControls result="${scenarios}" adjustPageCount="true"/>
+            </div>
+        </c:otherwise>
+    </c:choose>
 
-    <c:if test="${hasFilterErrors}">
-        <script type="text/javascript">
-            $("#filterPopup").dialog("open");
-        </script>
-    </c:if>
     <dt:pickerIncludes/>
+
 </cti:standardPage>

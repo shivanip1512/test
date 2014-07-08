@@ -42,17 +42,18 @@ import com.cannontech.web.search.lucene.index.site.DocumentBuilder;
 
 @Component
 public class SiteSearchServiceImpl implements SiteSearchService {
+    
     private final Logger log = YukonLogManager.getLogger(SiteSearchServiceImpl.class);
+    private final static Analyzer analyzer = new YukonObjectSearchAnalyzer();
 
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private SiteSearchIndexManager siteSearchIndexManager;
     @Autowired private RolePropertyDao rolePropertyDao;;
 
-    private final static Analyzer analyzer = new YukonObjectSearchAnalyzer();
 
     @Override
-    public String sanitizeSearchStr(String searchStr) {
-        return searchStr == null ? "" : searchStr.replaceAll("[^\\p{Alnum}]+", " ").trim();
+    public String sanitizeQuery(String query) {
+        return query == null ? "" : query.replaceAll("[^\\p{Alnum}]+", " ").trim();
     }
 
     /**
@@ -63,6 +64,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
      * we match them.  (We need to use complicated service calls to check permissions.) 
      */
     private class DocumentHandler implements TopDocsCallbackHandler<Boolean> {
+        
         final int startIndex;
         final int numWanted;
         final LiteYukonUser user;
@@ -136,9 +138,9 @@ public class SiteSearchServiceImpl implements SiteSearchService {
     }
 
     @Override
-    public SearchResults<Page> search(String searchStr, int startIndex, int numWanted, YukonUserContext userContext) {
+    public SearchResults<Page> search(String queryString, int startIndex, int numWanted, YukonUserContext userContext) {
         if (log.isDebugEnabled()) {
-            log.debug("searching for [" + searchStr + "], starting at " + startIndex + ", count = " + numWanted);
+            log.debug("searching for [" + queryString + "], starting at " + startIndex + ", count = " + numWanted);
         }
 
         if (startIndex + numWanted > 1000) {
@@ -152,9 +154,9 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         BooleanQuery searchStrQuery = new BooleanQuery();
         QueryParser parser = new QueryParser(Version.LUCENE_34, "primarySearch", analyzer);
         try {
-            searchStrQuery.add(parser.parse(searchStr), Occur.MUST);
+            searchStrQuery.add(parser.parse(queryString), Occur.MUST);
         } catch (ParseException parseException) {
-            throw new RuntimeException("could not parse search string " + searchStr, parseException);
+            throw new RuntimeException("could not parse search string " + queryString, parseException);
         }
         query.add(searchStrQuery, Occur.MUST);
 
@@ -170,11 +172,14 @@ public class SiteSearchServiceImpl implements SiteSearchService {
                     log.debug("searching, for up to " + handler.numToQuery + " documents");
                 }
             } while (!searchTemplate.doCallBackSearch(query, handler, handler.numToQuery));
-             SearchResults<Page> results = handler.getSearchResults();
-             return results;
+
+            SearchResults<Page> results = handler.getSearchResults();
+            return results;
+
         } catch (IOException e) {
-            log.error("error querying for [" + searchStr + "]", e);
-            throw new RuntimeException("error querying for [" + searchStr + "]", e);
+            log.error("error querying for [" + queryString + "]", e);
+            throw new RuntimeException(
+                    "error querying for [" + queryString + "]", e);
         }
     }
 
@@ -213,20 +218,22 @@ public class SiteSearchServiceImpl implements SiteSearchService {
      * Find auto-complete results using the given field.  Return true if results were found and stuff those
      * results into the intoResults parameter.
      */
-    private boolean autocompleteOn(final String fieldName, String searchStr,
+    private boolean autocompleteOn(final String fieldName, String queryString,
             final LinkedHashSet<String> intoResults, final int maxResults, YukonUserContext userContext) {
+        
         if (log.isTraceEnabled()) {
-            log.trace("autocompleteOn(" + fieldName + ", " + searchStr + ", " + intoResults + ", "
+            log.trace("autocompleteOn(" + fieldName + ", " + queryString + ", " + intoResults + ", "
                     + maxResults + ", " + userContext + ");");
         }
+        
         final LiteYukonUser user = userContext.getYukonUser();
         BooleanQuery baseQuery = buildBaseQuery(user);
         QueryParser parser = new QueryParser(Version.LUCENE_34, fieldName, analyzer);
         parser.setDefaultOperator(Operator.AND);
         try {
-            baseQuery.add(parser.parse(searchStr), Occur.MUST);
+            baseQuery.add(parser.parse(queryString), Occur.MUST);
         } catch (ParseException parseException) {
-            throw new IllegalStateException("Error parsing search string " + searchStr, parseException);
+            throw new IllegalStateException("Error parsing search string " + queryString, parseException);
         }
 
         final AtomicInteger numResultsFiltered = new AtomicInteger();
@@ -264,16 +271,16 @@ public class SiteSearchServiceImpl implements SiteSearchService {
             boolean foundOne = searchTemplate.doCallBackSearch(baseQuery, handler, maxResults);
             return foundOne;
         } catch (IOException e) {
-            log.error("error querying for [" + searchStr + "]", e);
-            throw new RuntimeException("error querying for [" + searchStr + "]", e);
+            log.error("error querying for [" + queryString + "]", e);
+            throw new RuntimeException("error querying for [" + queryString + "]", e);
         }
     }
 
     @Override
-    public List<String> autocomplete(String searchStr, YukonUserContext userContext) {
-        searchStr = sanitizeSearchStr(searchStr);
+    public List<String> autocomplete(String query, YukonUserContext userContext) {
+        query = sanitizeQuery(query);
         if (log.isDebugEnabled()) {
-            log.debug("autocompleting [" + searchStr + "]");
+            log.debug("autocompleting [" + query + "]");
         }
 
         int maxResults = 10;
@@ -281,15 +288,17 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
         // TODO:  Consider combine all the autocompleteOn calls into a single Lucene query with weighting.
         for (int index = 0; index < DocumentBuilder.MAX_PAGE_ARGS && results.size() < maxResults; index++) {
-            autocompleteOn("pageArg" + index, searchStr, results, maxResults, userContext);
+            autocompleteOn("pageArg" + index, query, results, maxResults, userContext);
         }
         for (int index = 0; index < DocumentBuilder.MAX_SUMMARY_ARGS && results.size() < maxResults; index++) {
-            autocompleteOn("summaryArg" + index, searchStr, results, maxResults, userContext);
+            autocompleteOn("summaryArg" + index, query, results, maxResults, userContext);
         }
 
         if (log.isDebugEnabled()) {
             log.debug("found " + results);
         }
+        
         return new ArrayList<String>(results);
     }
+    
 }

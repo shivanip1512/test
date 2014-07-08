@@ -19,7 +19,7 @@
         <cti param name="command" value="${param.command}" />
     </cti:url>
     <div id="start-assignments"
-        dialog
+        data-dialog
         data-event="yukon.vv.schedules.start.all" 
         data-title="<cti:msg2 key=".play.label"/>" 
         data-url="${startAssignmentsUrl}" 
@@ -31,7 +31,7 @@
         <cti param name="command" value="${param.command}" />
     </cti:url>
     <div id="stop-assignments" 
-        dialog
+        data-dialog
         data-event="yukon.vv.schedules.stop.all"
         data-title="<cti:msg2 key=".stop.label"/>" 
         data-url="${stopAssignmentsUrl}" 
@@ -42,7 +42,7 @@
         <cti param name="command" value="${param.command}" />
     </cti:url>
     <div id="add-assignments" 
-        dialog
+        data-dialog
         data-event="yukon.vv.schedules.add"
         data-title="<cti:msg2 key=".add.label"/>" 
         data-url="${newAssignmentsUrl}" 

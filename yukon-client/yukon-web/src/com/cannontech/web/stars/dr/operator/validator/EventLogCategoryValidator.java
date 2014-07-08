@@ -5,17 +5,17 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.web.common.events.model.EventLogCategoryBackingBean;
+import com.cannontech.web.common.events.model.EventLogCategoryFilter;
 
-public class EventLogCategoryValidator extends SimpleValidator<EventLogCategoryBackingBean> {
+public class EventLogCategoryValidator extends SimpleValidator<EventLogCategoryFilter> {
 
     public EventLogCategoryValidator() {
-        super(EventLogCategoryBackingBean.class);
+        super(EventLogCategoryFilter.class);
     }
 
     @Override
-    public void doValidation(EventLogCategoryBackingBean target, Errors errors) {
-        EventLogCategoryBackingBean eventLogCategoryBackingBean = (EventLogCategoryBackingBean)target;
+    public void doValidation(EventLogCategoryFilter target, Errors errors) {
+        EventLogCategoryFilter eventLogCategoryBackingBean = (EventLogCategoryFilter)target;
 
         // Validate filter value
         YukonValidationUtils.checkExceedsMaxLength(errors, "filterValue", 

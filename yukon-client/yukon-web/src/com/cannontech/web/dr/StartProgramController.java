@@ -604,7 +604,7 @@ public class StartProgramController extends ProgramControllerBase {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        programControllerHelper.initBinder(binder, userContext, "program.startProgram");
+        programsHelper.initBinder(binder, userContext, "program.startProgram");
     }
 
     private void addConstraintsInfoToModel(ModelMap model, Boolean fromBack,

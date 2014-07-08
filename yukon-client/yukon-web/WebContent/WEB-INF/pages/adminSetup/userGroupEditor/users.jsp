@@ -1,11 +1,11 @@
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <cti:standardPage module="adminSetup" page="users">
 
@@ -15,18 +15,19 @@ function addUsers() {
 }
 </script>
     
-    <cti:url var="baseUrl" value="/adminSetup/userGroup/users" />
     <cti:msg2 var="usersContainerTitle" key=".usersContainer"/>
-
-    <tags:pagedBox title="${usersContainerTitle}" searchResult="${searchResult}" isFiltered="false" baseUrl="${baseUrl}" styleClass="usersContainer">
+    <tags:sectionContainer title="${usersContainerTitle}">
         <c:choose>
-            <c:when test="${!empty users}">
+            <c:when test="${fn:length(users.resultList) > 0}">
                 <cti:url var="removeUserUrl" value="/adminSetup/userGroup/removeUser"/>
                 <form action="${removeUserUrl}" method="post">
                     <cti:csrfToken/>
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
-                    <div class="usersContainer">
-                        <table class="compact-results-table row-highlighting">
+                    <cti:url var="url" value="/adminSetup/userGroup/users">
+                        <cti:param name="userGroupId" value="${userGroupId}"/>
+                    </cti:url>
+                    <div data-url="${url}" data-static>
+                        <table class="compact-results-table">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".username"/></th>
@@ -37,7 +38,7 @@ function addUsers() {
                             </thead>
                             <tfoot></tfoot>
                             <tbody>
-                                <c:forEach items="${users}" var="user">
+                                <c:forEach items="${users.resultList}" var="user">
                                     <cti:url value="/adminSetup/user/view" var="editUserUrl">
                                         <cti:param name="userId" value="${user.userID}"/>
                                     </cti:url>
@@ -64,6 +65,7 @@ function addUsers() {
                                 </c:forEach>
                             </tbody>
                         </table>
+                        <tags:pagingResultsControls result="${users}" adjustPageCount="true" hundreds="true"/>
                     </div>
                 </form>
             </c:when>
@@ -82,6 +84,6 @@ function addUsers() {
 
             </form>
         </div>
-    </tags:pagedBox>
+    </tags:sectionContainer>
     
 </cti:standardPage>

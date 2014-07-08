@@ -1,11 +1,11 @@
 package com.cannontech.common.model;
 
-public class SortingParameters {
+public final class SortingParameters {
 
     private final String sort; 
     private final Direction direction;
     
-    public SortingParameters(String sort, Direction direction) {
+    private SortingParameters(String sort, Direction direction) {
         this.sort = sort;
         this.direction = direction;
     }
@@ -21,6 +21,10 @@ public class SortingParameters {
     @Override
     public String toString() {
         return String.format("SortingParameters [sort=%s, direction=%s]", sort, direction);
+    }
+
+    public static SortingParameters of(String sort, Direction direction) {
+        return new SortingParameters(sort, direction);
     }
     
 }

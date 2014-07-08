@@ -7,12 +7,12 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="triggerClasses" %>
 <%@ attribute name="icon" description="The css class name of the icon to use. Default: 'icon-cog'" %>
 <%@ attribute name="id" %>
 <%@ attribute name="key" %>
 <%@ attribute name="menuBeanId" required="true" description="The bean id of the menu you want to render" %>
 <%@ attribute name="menuClasses" %>
+<%@ attribute name="triggerClasses" %>
 <%@ attribute name="showArrow" type="java.lang.Boolean" description="Show the down arrow? Default: 'true'" %>
 <%@ attribute name="showIcon" type="java.lang.Boolean" description="Ignored when type = 'icon'. Default: 'true'" %>
 <%@ attribute name="type" description="The type of this element. Either 'button', 'link', or 'icon'. Default: 'icon'. 'link' and 'button' require a 'key'" %>

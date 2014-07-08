@@ -368,7 +368,7 @@ function makeFirstSelectedFilterValueVisible () {
                       </td>
                       <td class="main">
                         <button id="Generate" name="Generate" border="0" alt="Generate" align="middle" <%=(model == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport"; return true;'>
-                            <cti:msg key="yukon.web.generate"/>
+                            <cti:msg key="yukon.web.components.button.generate.label"/>
                         </button>
                       </td>
                     </tr>
@@ -544,7 +544,6 @@ function makeFirstSelectedFilterValueVisible () {
                                                      id="programPicker" 
                                                      multiSelectMode="true"
                                                      destinationFieldId="selectedPickerValues"
-                                                     styleClass="simpleLink"
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');">
                                  
                                 <cti:icon icon="icon-add"/>
@@ -560,7 +559,6 @@ function makeFirstSelectedFilterValueVisible () {
                                                      id="programPicker" 
                                                      multiSelectMode="false"
                                                      destinationFieldId="selectedPickerValues"
-                                                     styleClass="simpleLink"
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');"
                                                      immediateSelectMode="true">
                                                      
@@ -588,7 +586,6 @@ function makeFirstSelectedFilterValueVisible () {
                                                      id="groupPicker" 
                                                      multiSelectMode="true"
                                                      destinationFieldId="selectedPickerValues"
-                                                     styleClass="simpleLink"
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedGroupNamesSpan');">
                                  
                                  <cti:icon icon="icon-add"/>
@@ -610,7 +607,6 @@ function makeFirstSelectedFilterValueVisible () {
                                                      id="controlAreaPicker" 
                                                      multiSelectMode="true"
                                                      destinationFieldId="selectedPickerValues"
-                                                     styleClass="simpleLink"
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedControlAreaNamesSpan');">
                                  
                                  <cti:icon icon="icon-add"/>
@@ -633,7 +629,6 @@ function makeFirstSelectedFilterValueVisible () {
                                                      id="scenarioPicker" 
                                                      multiSelectMode="true"
                                                      destinationFieldId="selectedPickerValues"
-                                                     styleClass="simpleLink"
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedScenarioNamesSpan');">
                                  
                                  <cti:icon icon="icon-add"/>
@@ -657,7 +652,6 @@ function makeFirstSelectedFilterValueVisible () {
                                                     id="customerAccountPicker" 
                                                     multiSelectMode="true"
                                                     destinationFieldId="selectedPickerValues"
-                                                    styleClass="simpleLink"
                                                     endAction="setPickerSelectedAccountNumberNamesFunction('selectedAccountNumberNamesSpan');">
                                 
                                 <cti:icon icon="icon-add"/>
@@ -682,7 +676,6 @@ function makeFirstSelectedFilterValueVisible () {
                                                     id="serialNumberPicker" 
                                                     multiSelectMode="true"
                                                     destinationFieldId="selectedPickerValues"
-                                                    styleClass="simpleLink"
                                                     endAction="setPickerSelectedSerialNumberNamesFunction('selectedSerialNumberNamesSpan');">
                                 
                                 <cti:icon icon="icon-add"/>
@@ -707,7 +700,6 @@ function makeFirstSelectedFilterValueVisible () {
                                                     id="userPicker" 
                                                     multiSelectMode="true"
                                                     destinationFieldId="selectedPickerValues"
-                                                    styleClass="simpleLink"
                                                     endAction="setPickerSelectedUserNamesFunction('selectedUserNamesSpan');">
                                 
                                 <cti:icon icon="icon-add"/>

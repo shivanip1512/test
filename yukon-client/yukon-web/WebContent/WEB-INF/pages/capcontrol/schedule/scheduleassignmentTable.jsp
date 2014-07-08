@@ -9,7 +9,7 @@
 <cti:msgScope paths="modules.capcontrol">
 
 <c:choose>
-    <c:when test="${searchResult.hitCount == 0}">
+    <c:when test="${fn:length(assignments) == 0}">
         <span class="empty-list"><i:inline key=".scheduleAssignments.noScheduleAssignments" /></span>
     </c:when>
     
@@ -27,7 +27,7 @@
             </thead>
             
             <tbody>
-            <c:forEach var="item" items="${itemList}">
+            <c:forEach var="item" items="${assignments}">
             
                 <tr id="s_${item.eventId}_${item.paoId}">
                     <td name="schedName">${fn:escapeXml(item.scheduleName)}</td>
@@ -96,6 +96,4 @@
     </c:otherwise>
 </c:choose>
 
-<c:set var="baseUrl" value="scheduleAssignmentsTable" />
-<tags:pagingResultsControls baseUrl="${baseUrl}" result="${pagedResults}" adjustPageCount="true"/>
 </cti:msgScope>

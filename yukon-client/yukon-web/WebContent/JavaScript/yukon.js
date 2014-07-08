@@ -35,10 +35,10 @@ if (!Array.prototype.forEach) {
 
 // Object.create Polyfill
 if (!Object.create) {
-    Object.create = (function(){
+    Object.create = (function (){
         function F(){}
 
-        return function(o){
+        return function (o){
             if (arguments.length != 1) {
                 throw new Error('Object.create implementation only accepts one parameter.');
             }
@@ -91,7 +91,9 @@ var yukon = (function () {
         /** JavaScript side of JsonTag.java */
         fromJson : function (selector) {
             return JSON.parse($(selector).text());
-        }
+        },
+        /** Convenient 'do nothing' function that doesn't require an argument like void(0); */
+        nothing: function () {}
     };
     return mod;
 })();
@@ -105,7 +107,7 @@ var yukon = (function () {
  * See Zakas, Maintainable JavaScript, pp. 72-73, and Stefanov,
  * Javascript Patterns, pp. 89-90
  */
-yukon.namespace = function(ns) {
+yukon.namespace = function (ns) {
     var parts = ns.split('.'),
         object = this,
         i,
@@ -141,6 +143,7 @@ yukon.ui = (function () {
         mod = {};
 
     mod = {
+            
         init: function () {
             if (!initialized) {
                 mod.autoWire();
@@ -148,7 +151,7 @@ yukon.ui = (function () {
                 mod.wizard.init();
             }
         },
-    
+        
         exclusiveSelect: function (item) {
             item = $(item);
             item.siblings().removeClass('selected');
@@ -174,7 +177,7 @@ yukon.ui = (function () {
 
             label = btn.children('.b-label');
             busyText = btn.attr('data-busy');
-            if (label.length > 0 && busyText.length > 0) {
+            if (busyText && label.length > 0) {
                 originalText = label.html(); 
                 label.html(busyText);
                 btn.data('data-original-text', originalText);
@@ -190,13 +193,13 @@ yukon.ui = (function () {
     
             btn.prop('disabled', false);
             btn.removeClass('busy');
-                // if this button has an icon show it
-                btn.children('.icon').show();
-                btn.children('.icon.busy').hide();
-            
-                label = btn.children('.b-label');
-                originalText = btn.data('data-original-text');
-            if (typeof originalText !== 'undefined' && label.length > 0 && originalText.length > 0) {
+            // if this button has an icon show it
+            btn.children('.icon').show();
+            btn.children('.icon.busy').hide();
+        
+            label = btn.children('.b-label');
+            originalText = btn.data('data-original-text');
+            if (originalText && label.length > 0) {
                 label.html(originalText);
             }
             
@@ -214,7 +217,7 @@ yukon.ui = (function () {
          *        {string} [okText=yg.text.ok] - The text of the ok button. Defaults to yg.text.ok.
          *        {string} [cancelText=yg.text.cancel] - The text of the cancel button. Defaults to yg.text.cancel.
          */
-        buttons: function(options) {
+        buttons: function (options) {
             
             var defaults = {
                     event: 'yukon.dialog.ok',
@@ -225,9 +228,9 @@ yukon.ui = (function () {
                 $.extend(defaults, options);
             }
             
-            return [{text: defaults.cancelText, click: function(ev) { $(this).dialog('close'); }},
+            return [{text: defaults.cancelText, click: function (ev) { $(this).dialog('close'); }},
                     {text: defaults.okText, 
-                     click: function(ev) {
+                     click: function (ev) {
                          // Don't close the popup here.  We may want it to stay open, ie: validation failed.
                          if (defaults.hasOwnProperty('form')) {
                              var form = $(defaults.form);
@@ -258,13 +261,13 @@ yukon.ui = (function () {
             // some pages do not include the tipsy libary
             if ('undefined' !== typeof $.fn.tipsy) {
                 // use browser-native tooltips for all but the fancy HTML ones
-                $('.f-has-tooltip').each(function(index, element) {
+                $('.f-has-tooltip').each(function (index, element) {
                     $(element).tipsy({
                         html: true,
                         // some tooltips actually are around 175 px in height
                         gravity: $.fn.tipsy.autoBounds(175, 'nw'),
                         opacity: 1.0,
-                        title: function() {
+                        title: function () {
                             var elem = $(this),
                             tip,
                             toolTipped = elem.closest('.f-has-tooltip');
@@ -272,7 +275,7 @@ yukon.ui = (function () {
                                 tip = toolTipped.prevAll('.f-tooltip').first();
                                 if (0 < tip.length) { // if a .f-tooltip was found...
                                     // voodoo so inner div has full height of its container
-                                    setTimeout(function() { $('.tipsy-inner').addClass('clearfix'); }, 100);
+                                    setTimeout(function () { $('.tipsy-inner').addClass('clearfix'); }, 100);
                                     return tip.html();
                                 }
                             }
@@ -285,21 +288,17 @@ yukon.ui = (function () {
                 
             /** Add placeholder functionality if needed */
             if (!Modernizr.input.placeholder) $('input, textarea').placeholder();
-
-            /** Initialize our keyboard table traversal (j/k keys) */
-            $('.compact-results-table.f-traversable').traverse('tr', {
-                table_row_helper: true
-            });
-        
+            
             /** Reload or page a container */
-            $(document).on('click', '[data-reload]', function(ev) {
+            $(document).on('click', '[data-reload]', function (ev) {
+                
                 var elem = $(this),
                     url = elem.data('reload'),
                     target = elem.closest('[data-reloadable]'),
                     completeEvent = target.data('reloadable');
                 
                 if (target.length > 0) {
-                    target.load(url, function() {
+                    target.load(url, function () {
                         if (completeEvent) {
                             target.trigger(completeEvent);
                         }
@@ -311,35 +310,104 @@ yukon.ui = (function () {
                 return false;
             });
             
-            /** Sort a table */
-            $(document).on('click', '.sortable', function(ev) {
+            /** Sorting Handler: Sort a table by column. */
+            $(document).on('click', '.sortable', function (ev) {
+                
                 var anchor = $(this),
+                    dir = anchor.is('.desc') ? 'asc' : 'desc',
                     sort = anchor.data('sort'),
                     container = anchor.closest('[data-url]'),
                     url = container.data('url'),
-                    dir = anchor.is('.desc') ? 'asc' : 'desc';
+                    pagingArea = container.find('.paging-area'), 
+                    params = {sort: sort, dir: dir};
                 
-                $.get(url, {sort: sort, dir: dir}).done(function(data) {
-                    container.html(data);
-                });
-                
-                return false;
-            });
-            
-            /** Toggle buttons in a button group */
-            $(document).on('click', '.js-toggle .button, .toggle-on-off .button', function(ev) {
-                var button = $(this),
-                    value = button.data('value'),
-                    input = button.closest('.js-toggle, .toggle-on-off').find('[data-radio]');
-
-                button.addClass('on').siblings('.button').removeClass('on');
-                if (typeof input !== 'undefined' && typeof value !== 'undefined') {
-                    input.val(value);
+                // add page size if paging is available
+                if (pagingArea.length) {
+                    params.itemsPerPage = pagingArea.data('pageSize');
+                    params.page = 1;
+                }
+                if (container.is('[data-static]')) {
+                    var joiner = url.indexOf('?') === -1 ? '?' : '&';
+                    window.location.href = url + joiner + $.param(params);
+                } else {
+                    $.get(url, params).done(function (data) {
+                        container.html(data);
+                    });
                 }
             });
             
+            /** Paging Handler: Get the next or previous page, or change page size. */
+            $(document).on('click', '.paging-area .previous-page .button, .paging-area .next-page .button, .paging-area .page-size a', function (ev) {
+                
+                var 
+                target = $(this),
+                container = target.closest('[data-url]'),
+                sortables = container.find('.sortable'),
+                url = container.data('url'),
+                pagingArea = container.find('.paging-area'),
+                page = pagingArea.data('currentPage'),
+                pageSize = pagingArea.data('pageSize'),
+                changePage = target.parent().is('.previous-page') || target.parent().is('.next-page'),
+                params = {},
+                sort;
+                
+                if (changePage) {
+                    // they clicked the next or previous page buttons
+                    params.page = target.parent().is('.previous-page') ? page - 1 : page + 1;
+                    params.itemsPerPage = pageSize;
+                } else {
+                    // they clicked one of the page size links
+                    params.page = 1;
+                    params.itemsPerPage = target.data('pageSize');
+                }
+                
+                // add sorting parameters if necessary
+                if (sortables.length) {
+                    sort = sortables.filter('.desc');
+                    if (sort.length) {
+                        params.dir = 'desc';
+                        params.sort = sort.data('sort');
+                    } else {
+                        sort = sortables.filter('.asc');
+                        if (sort.length) {
+                            params.dir = 'asc';
+                            params.sort = sort.data('sort');
+                        }
+                    }
+                }
+                
+                if (container.is('[data-static]')) {
+                    var joiner = url.indexOf('?') === -1 ? '?' : '&';
+                    window.location.href = url + joiner + $.param(params);
+                } else {
+                    $.get(url, params).done(function (data) {
+                        container.html(data);
+                    });
+                }
+                return false; // return false to stop form submissions
+            });
+            
+            /** Toggle buttons in a button group */
+            $(document).on('click', '.toggle-btns .button', function (ev) { 
+                
+                var btn = $(this),
+                    value = btn.data('value'),
+                    input = btn.closest('.toggle-btns').find('[data-input]');
+                
+                btn.addClass('on').siblings('.button').removeClass('on');
+                // Toggle visibility of show/hide elements
+                if (btn.is('[data-show]')) {
+                    btn.siblings('[data-show]').each(function () {
+                        $($(this).data('show')).hide();
+                    });
+                    $(btn.data('show')).show();
+                }
+                // Set an input if we need to
+                if (value && typeof input.length) input.val(value);
+            });
+            
             /** Elements that navigate on click */
-            $(document).on('click', '[data-href]', function(ev) { window.location = $(this).attr('data-href'); });
+            $(document).on('click', '[data-href]', function (ev) { window.location = $(this).attr('data-href'); });
         
             /** Page blockers */
             $(document).on('click', '.f-blocker', mod.block);
@@ -349,15 +417,15 @@ yukon.ui = (function () {
             $(document).on('click', '.f-clearBlocker', mod.unblockPage);
     
             /** Disable a form element after clicked */
-            $(document).on('click', '.f-disable-after-click', function() {
-                var button = $(this),
-                    group,
-                    form;
+            $(document).on('click', '.f-disable-after-click', function (ev) {
+                
+                var button = $(this), group, form;
+                
                 if (button.is(':input')) {
                     this.disabled = true;
                     group = button.attr('data-disable-group');
                     if (group != '') {
-                        $("[data-disable-group='" + group + "']").each(function(idx) {
+                        $("[data-disable-group='" + group + "']").each(function (idx) {
                             this.disabled = true;
                         });
                     }
@@ -382,7 +450,7 @@ yukon.ui = (function () {
             });
     
             /** Prevent forms from submitting via enter key */
-            $(document).on('keydown', 'form.f-preventSubmitViaEnterKey', function(e) {
+            $(document).on('keydown', 'form.f-preventSubmitViaEnterKey', function (e) {
                 // allow override submission elements
                 if ($(e.target).hasClass('f-allowSubmitViaEnterKey')) {
                     return true;
@@ -393,41 +461,41 @@ yukon.ui = (function () {
             });
     
             /** Close dialogs when clicking .f-close elements or the yukon.dialog.ok event fires. */
-            $(document).on('click', '.f-close', function(ev) {
+            $(document).on('click', '.f-close', function (ev) {
                 $(ev.target).closest('.ui-dialog-content').dialog('close');
             });
-            $(document).on('yukon.dialog.ok', function(ev) {
+            $(document).on('yukon.dialog.ok', function (ev) {
                 $(ev.target).closest('.ui-dialog-content').dialog('close');
             });
 
             /** Format phone numbers initially and on input blur */
-            $('input.f-format-phone').each(function(idx, elem) {
+            $('input.f-format-phone').each(function (idx, elem) {
                 mod.formatPhone(elem);
             });
-            $(document).on('blur', 'input.f-format-phone', function(event) {
+            $(document).on('blur', 'input.f-format-phone', function (event) {
                 mod.formatPhone(event.target);
             });
 
             /** Disable or enable all form controls */
-            $('input.f-toggle:checkbox').each(function(idx, elem) {
-                $(elem).on('change', function(e) {
+            $('input.f-toggle:checkbox').each(function (idx, elem) {
+                $(elem).on('change', function (e) {
                     mod.toggleInputs(e.target);
                 });
-                $(elem).on('click', function(e) {
+                $(elem).on('click', function (e) {
                     mod.toggleInputs(e.target);
                 });
                 mod.toggleInputs(elem);
             });
 
             /** Select all ? */
-            $("input.f-select-all").each(function(index, input) {
-                $(input).on('focus', function(elem) {
+            $("input.f-select-all").each(function (index, input) {
+                $(input).on('focus', function (elem) {
                     elem.target.select();
                 });
             });
 
             /** Focus the designated input element */
-            mod._autofocus();
+            mod.autofocus();
 
             /** Init page 'Actions' button */
             html = $('#page-actions')[0];
@@ -449,7 +517,7 @@ yukon.ui = (function () {
             }
         
             /** Add additional options to page 'Actions' button */
-            $('.f-page-additional-actions').each(function(index, elem) {
+            $('.f-page-additional-actions').each(function (index, elem) {
                 $('#b-page-actions .dropdown-menu').append(elem.innerHTML);
                 $(elem).remove();
             });
@@ -459,67 +527,98 @@ yukon.ui = (function () {
         
             /** 
              * Show a popup when a popup trigger (element with a [popup] attribute) is clicked.
-             * The value of the [popup] attribute should be a css selector of the popup element.
-             * The popup element's attributes are as follows:
-             * 
-             * dialog -          If present the popup will have 'ok', 'cancel' buttons. See yukon.ui.buttons
-             *                   function for button behaviors.
-             * data-width  -     Width of the popup. Default is 'auto'.
-             * data-height -     Height of the popup. Default is 'auto'.
-             * data-title  -     The title of the popup.
-             * data-event  -     If present and [dialog] is present, the value of [data-event] will be the name
-             *                   of the event to fire when clicking the 'ok' button.
-             * data-target -     If present and [dialog] is present' the value of [data-target] will be the 
-             *                   target of the event fired when clicking the ok button.
-             * data-url          If present, the contents of the popup element will be replaced with the 
-             *                   response of an ajax request to the url before the popup is shown.
-             * data-load-event - If present and data-url is present, this event will be fired after the popup 
-             *                   has been loaded from the data-url.
+             * If the trigger element has a [data-popup-toggle] attribute and the popup is currently open,
+             * the popup will be closed instead and the event propigated normally...otherwise yukon.ui.dialog is 
+             * called passing the popup element.
              */
-            $(document).on('click', '[popup]', function(ev) {
+            $(document).on('click', '[popup]', function (ev) {
                 var trigger = $(this),
-                    popup = $(trigger.attr('popup')),
-                    dialog = popup.is('[dialog]'),
-                    options = {
-                        width: popup.is('[data-width]') ? popup.data('width') : 'auto',
-                        height: popup.is('[data-height]') ? popup.data('height') : 'auto'
-                    },
-                    buttonOptions = {};
+                    popup = $(trigger.attr('popup'));
                 
-                if (popup.is('[data-title]')) options.title = popup.data('title');
-                if (popup.is('[title]')) options.title = popup.attr('title');
-                
-                if (dialog) {
-                    if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
-                    if (popup.is('[data-target]')) buttonOptions.target = popup.data('target');
-                    if (popup.is('[data-form]')) buttonOptions.form = popup.data('form');
-                    options.buttons = mod.buttons(buttonOptions);
-                }
-                
-                if (popup.is('[data-url]')) {
-                    popup.load(popup.data('url'), function() {
-                        // if no title provided, try to find one hidden in the popup contents
-                        if (!options.title) {
-                            var title = popup.find('.f-popup-title');
-                            if (title[0]) options.title = title[0].value;
-                        }
-                        if (popup.is('[data-load-event]')) {
-                            popup.trigger(popup.data('loadEvent'));
-                        }
-                        popup.dialog(options);
-                    });
-                } else {
-                    if (popup.is('[data-load-event]')) {
-                        popup.trigger(popup.data('loadEvent'), ev.target);
+                try { /* Close popup if the trigger is a toggle and the popup is open */
+                    if (trigger.is('[data-popup-toggle]') && popup.dialog('isOpen')) {
+                        popup.dialog('close');
+                        // Return so we don't re-open it, return true to propigate event incase others are listening.
+                        return true; 
                     }
-                    popup.dialog(options);
-                }
+                } catch (error) {/* Ignore error, occurs when dialog not initialized yet. */ }
+                
+                // show the popup
+                mod.dialog(popup);
             });
         },
+        
+        /** 
+         * Show a popup. Popup style/behavior should be stored in data attributes described below.
+         * 
+         * @param {sting|object} popup - DOM Object, jQuery DOM object, or css selector string of the popup
+         *                               element, usually a div, to use as a popup.
+         * @param {string} [url] - If provided, the popup element will be loaded with the response from an
+         *                         ajax request to that url. It will override the [data-url] attribute value 
+         *                         if it exists.
+         *                               
+         * The popup element's attributes are as follows:
+         * 
+         * data-dialog -       If present the popup will have 'ok', 'cancel' buttons. See yukon.ui.buttons
+         *                     function for button behaviors.
+         * data-width  -       Width of the popup. Default is 'auto'.
+         * data-height -       Height of the popup. Default is 'auto'.
+         * data-title  -       The title of the popup.
+         * data-event  -       If present and [data-dialog] is present, the value of [data-event] will be the name
+         *                     of the event to fire when clicking the 'ok' button.
+         * data-target -       If present and [data-dialog] is present' the value of [data-target] will be the 
+         *                     target of the event fired when clicking the ok button.
+         * data-url -          If present, the contents of the popup element will be replaced with the 
+         *                     response of an ajax request to the url before the popup is shown.
+         * data-load-event -   If present, this event will be fired right before the popup is shown.
+         *                     If 'data-url' is used, the event will be fired after the dialog is loaded with
+         *                     the response body.
+         * data-popup-toggle - If present, the trigger element can be clicked to close the popup as well.
+         */
+        dialog: function (popup, url) {
+            
+            popup = $(popup);
+            var dialog = popup.is('[data-dialog]'),
+                options = {
+                    width: popup.is('[data-width]') ? popup.data('width') : 'auto',
+                    height: popup.is('[data-height]') ? popup.data('height') : 'auto'
+                },
+                buttonOptions = {};
+            
+            if (popup.is('[data-title]')) options.title = popup.data('title');
+            if (popup.is('[title]')) options.title = popup.attr('title');
+            
+            if (dialog) {
+                if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
+                if (popup.is('[data-target]')) buttonOptions.target = popup.data('target');
+                if (popup.is('[data-form]')) buttonOptions.form = popup.data('form');
+                options.buttons = mod.buttons(buttonOptions);
+            }
+            
+            if (popup.is('[data-url]') || url) {
+                url = url || popup.data('url');
+                popup.load(url, function () {
+                    // if no title provided, try to find one hidden in the popup contents
+                    if (!options.title) {
+                        var title = popup.find('.f-popup-title');
+                        if (title[0]) options.title = title[0].value;
+                    }
+                    if (popup.is('[data-load-event]')) {
+                        popup.trigger(popup.data('loadEvent'));
+                    }
+                    popup.dialog(options);
+                });
+            } else {
+                if (popup.is('[data-load-event]')) {
+                    popup.trigger(popup.data('loadEvent'));
+                }
+                popup.dialog(options);
+            }
+        },
 
-        _AUTOFOCUS_TRIES: 0,
+        AUTOFOCUS_TRIES: 0,
 
-        _autofocus: function () {
+        autofocus: function () {
             var focusElement = $('[autofocus], .f-focus:first')[0];
         
             if (focusElement) {
@@ -527,9 +626,9 @@ yukon.ui = (function () {
                     focusElement.focus();
 	            } catch(err) {
                     //give the autofocus element 3 seconds to show itself
-                    if (mod._AUTOFOCUS_TRIES < 30) {
+                    if (mod.AUTOFOCUS_TRIES < 30) {
                         //certain browsers will error if the element to be focused is not yet visible
-                        setTimeout(mod._autofocus, 100);
+                        setTimeout(mod.autofocus, 100);
                     }
                 }
             }
@@ -537,12 +636,12 @@ yukon.ui = (function () {
 
         /** Sets the focus to the first input/textarea found on the page having a class of "error" */
         focusFirstError: function () {
-            mod._setFocusFirstError();
-            mod._autofocus();
+            mod.setFocusFirstError();
+            mod.autofocus();
         },
 
         /** Applies the "f-focus" class to the first input/textarea element having a class of "error" */
-        _setFocusFirstError: function () {
+        setFocusFirstError: function () {
             var error_field = $('input.error, textarea.error').first();
             if (error_field.length === 1) {
                 $('.f-focus').removeClass('f-focus');
@@ -625,7 +724,7 @@ yukon.ui = (function () {
                 container.addClass('disabled');
             }
             for (inputInd = 0; inputInd < inputList.length; inputInd += 1) {
-                container.find(inputList[inputInd]).each(function(idx, elem) {
+                container.find(inputList[inputInd]).each(function (idx, elem) {
                     $(elem).prop('disabled', !enable);
                 });
             }
@@ -639,15 +738,15 @@ yukon.ui = (function () {
          * @param {function} [rowCallback] - Optional function to fire after processing each row.
          *                                   Takes the row element as an arg.
          */
-        reindexInputs: function(table, rowCallback) {
+        reindexInputs: function (table, rowCallback) {
             table = $(table);
             var rows = table.find('tbody tr');
                 
-            rows.each(function(idx, row) {
+            rows.each(function (idx, row) {
                 row = $(row);
                 var inputs = row.find('input, select, textarea, button');
                 
-                inputs.each(function(inputIdx, input) {
+                inputs.each(function (inputIdx, input) {
                     
                     input = $(input);
                     var name;
@@ -677,7 +776,42 @@ yukon.ui = (function () {
                 if (typeof(rowCallback) === 'function') rowCallback(row);
             });
         },
-
+        
+        /** 
+         * Adjusts row move up/down buttons so that the first row's move up
+         * and the last row's move down buttons are disabled. 
+         * 
+         * @param {element, string} table - Element or css selector for the table/table ancestor.
+         * @param {function} [rowCallback] - Optional function to fire after processing each row.
+         *                                   Takes the row element as an arg.
+         */
+        adjustRowMovers: function (table, rowCallback) {
+            table = $(table);
+            var rows = table.find('tbody tr');
+            
+            rows.each(function (idx, row) {
+                row = $(row);
+                
+                // fix up the move up/down buttons
+                if (row.has('.f-up, .f-down').length) {
+                    if (rows.length === 1) { // only one row
+                        row.find('.f-up, .f-down').prop('disabled', true); 
+                    } else if (idx === 0) { // first row
+                        row.find('.f-up').prop('disabled', true);
+                        row.find('.f-down').prop('disabled', false);
+                    } else if (idx === rows.length -1) { // last row
+                        row.find('.f-up').prop('disabled', false);
+                        row.find('.f-down').prop('disabled', true);
+                    } else { // middle row
+                        row.find('.f-up').prop('disabled', false);
+                        row.find('.f-down').prop('disabled', false);
+                    }
+                }
+                
+                if (typeof(rowCallback) === 'function') rowCallback(row);
+            });
+        },
+        
         /** Pad a string */
         pad: function (number, length) {
 
@@ -738,16 +872,16 @@ yukon.ui = (function () {
         wizard: {
             _initialized: false,
 
-            init: function() {
+            init: function () {
                 $('.f-wizard').each(function (idx, elem) {
                     $(elem).find('.f-next').each(function (index, nextButton) {
-                        $(nextButton).on('click', function(event) {
+                        $(nextButton).on('click', function (event) {
                                 mod.wizard.nextPage($(event.target).closest('.f-page'));
                         });
                     });
 
                     $(elem).find('.f-prev').each(function (index, prevButton) {
-                        $(prevButton).on('click', function(event) {
+                        $(prevButton).on('click', function (event) {
                                 mod.wizard.prevPage($(event.target).closest('.f-page'));
                         });
                     });
@@ -764,7 +898,7 @@ yukon.ui = (function () {
                 mod.wizard._initialized = true;
             },
     
-            nextPage: function(page) {
+            nextPage: function (page) {
                 var nextPage;
                     page = $(page);
                     
@@ -777,7 +911,7 @@ yukon.ui = (function () {
                 }
             },
     
-            prevPage: function(page) {
+            prevPage: function (page) {
                 var prevPage;
                 
                 if (typeof page !== 'undefined') {
@@ -798,7 +932,7 @@ yukon.ui = (function () {
              * node, it will search for and reset ALL f-wizard containers within
              * 
              */
-            reset: function(wizard) {
+            reset: function (wizard) {
                 wizard = $(wizard);
                 if (wizard.hasClass('f-wizard')) {
                     $('.f-page', wizard).hide();
@@ -812,7 +946,7 @@ yukon.ui = (function () {
 
         /** Object to glass out an element, used by #block and #unblock */
         elementGlass: {
-            show: function(element) {
+            show: function (element) {
                 
                 element = $(element);
                 var glass;
@@ -829,24 +963,24 @@ yukon.ui = (function () {
                 return null;
             },
     
-            hide: function(element) {
-                $(element).find('.glass:first').fadeOut(200, function() {$(this).remove();});
+            hide: function (element) {
+                $(element).find('.glass:first').fadeOut(200, function () {$(this).remove();});
             },
     
-            redraw: function(glass) {
+            redraw: function (glass) {
                     var container = glass.closest('.f-block-this');
                 // resize the glass
                 glass.css('width', container.outerWidth()).css('height', container.outerHeight()).fadeIn(200);
             },
     
-            resize: function(ev) {
+            resize: function (ev) {
                 mod.elementGlass.redraw($(ev.currentTarget));
             }
         },
 
         /** Object to glass out the page, used by #block and #unblock */
         pageGlass: {
-            show: function(args) {
+            show: function (args) {
                 var defaults = $.extend({color:'#000', alpha: 0.25}, args),
                     glass = $('#modal-glass');
                 
@@ -860,7 +994,7 @@ yukon.ui = (function () {
                 glass.fadeIn(200);
             },
     
-            hide: function() {
+            hide: function () {
                 $('#modal-glass').fadeOut(200);
             }
         },
@@ -897,9 +1031,9 @@ yukon.ui = (function () {
     
             actionDo();
     
-            undoLink.click(function() {
+            undoLink.click(function () {
                 actionUndo();
-                undo.fadeOut(100, function() {
+                undo.fadeOut(100, function () {
                     undo.after(jElem);
                     jElem.fadeIn(100);
                     undo.remove();
@@ -913,7 +1047,7 @@ yukon.ui = (function () {
                 undo.append(undoTd);
             }
     
-            jElem.fadeOut(100, function() {
+            jElem.fadeOut(100, function () {
                 jElem.after(undo);
                 undoneElements.append(jElem);
                 undo.fadeIn(100);
@@ -925,7 +1059,7 @@ yukon.ui = (function () {
             theInput.autocomplete({
                 delay: 100, // Delay 100ms after keyUp before sending request.
                 minLength: 2, // User must type 2 characters before any search is done.
-                source: function(request, response) {
+                source: function (request, response) {
                     $.ajax({
                         type: 'get',
                         url: yukon.url('/search/autocomplete.json'),
@@ -933,8 +1067,8 @@ yukon.ui = (function () {
                         data: {
                             q: request.term
                         }
-                    }).done(function(data) {
-                        response($.map(data, function(item) {
+                    }).done(function (data) {
+                        response($.map(data, function (item) {
                             return {
                                 label: item,
                                 value: item
@@ -942,14 +1076,14 @@ yukon.ui = (function () {
                         }));
                     });
                 },
-                select: function(event, ui) {
+                select: function (event, ui) {
                     theInput.val(ui.item.value);
                     theInput.parents('.yukon-search-form').submit();
                 },
-                open: function() {
+                open: function () {
                     $(this).removeClass('ui-corner-all').addClass('ui-corner-top');
                 },
-                close: function() {
+                close: function () {
                     $(this).removeClass('ui-corner-top').addClass('ui-corner-all');
                 }
             });
@@ -960,7 +1094,7 @@ yukon.ui = (function () {
 })();
 
 /** Add some helpful functionality to jQuery */
-$.fn.selectText = function() {
+$.fn.selectText = function () {
     var text = this[0],
         range,
         selection;
@@ -977,16 +1111,16 @@ $.fn.selectText = function() {
     }
 };
 
-$.fn.toggleDisabled = function() {
-    return this.each(function() {
+$.fn.toggleDisabled = function () {
+    return this.each(function () {
         if ($(this).is(':input')) {
             this.disabled = !this.disabled;
         }
     });
 };
 
-$.fn.flashColor = function(args) {
-    return this.each(function() {
+$.fn.flashColor = function (args) {
+    return this.each(function () {
         var _self = $(this),
             prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
         _self.data('previous_color', prevColor);
@@ -1001,8 +1135,8 @@ $.fn.flashColor = function(args) {
     });
 };
 
-$.fn.flashYellow = function(duration) {
-    return this.each(function() {
+$.fn.flashYellow = function (duration) {
+    return this.each(function () {
         if (typeof(duration) != 'number') {
             duration = 0.8;
         }
@@ -1011,7 +1145,7 @@ $.fn.flashYellow = function(duration) {
 };
 
 /** Initialize the lib */
-$(function() {
+$(function () {
     yukon.ui.init();
     yukon.ui.initSitewideSearchAutocomplete();
 

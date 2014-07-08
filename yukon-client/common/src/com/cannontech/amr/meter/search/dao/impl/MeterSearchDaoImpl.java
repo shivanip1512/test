@@ -23,7 +23,6 @@ public class MeterSearchDaoImpl implements MeterSearchDao {
     @Autowired private MeterRowMapper meterRowMapper;
 
     @Override
-    @SuppressWarnings("unchecked")
     public SearchResults<YukonMeter> search(List<FilterBy> filterByList,
                                           MeterSearchOrderBy orderBy, 
                                           final int start, 
@@ -80,7 +79,4 @@ public class MeterSearchDaoImpl implements MeterSearchDao {
         return searchResult;
     }
     
-    /**
-     * Inner class used to create a list of SearchPaos from a result set
-     */
 }

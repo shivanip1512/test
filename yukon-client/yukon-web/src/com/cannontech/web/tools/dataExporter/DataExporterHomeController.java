@@ -44,11 +44,9 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -141,19 +139,19 @@ public class DataExporterHomeController {
             archivedValuesExporter.setDeviceCollection(deviceCollection);
         }
 
-        scheduledJobsTable(model, new PagingParameters(10, 1));
+        scheduledJobsTable(model);
 
         return "data-exporter/home.jsp";
     }
     
     @RequestMapping("/data-exporter/scheduledJobsTable")
-    public String scheduledJobsTable(ModelMap model, PagingParameters paging) {
-        SearchResults<ScheduledFileExportJobData> reportsResult
-            = scheduledFileExportService.getScheduledFileExportJobData(ScheduledExportType.ARCHIVED_DATA_EXPORT,
-                                                                       paging);
+    public String scheduledJobsTable(ModelMap model) {
+        List<ScheduledFileExportJobData> jobs
+            = scheduledFileExportService.getScheduledFileExportJobData(ScheduledExportType.ARCHIVED_DATA_EXPORT);
 
         model.addAttribute("jobType", FileExportType.ARCHIVED_DATA_EXPORT);
-        model.addAttribute("scheduledJobsSearchResult", reportsResult);
+        model.addAttribute("jobs", jobs);
+        
         return "data-exporter/scheduledJobsTable.jsp";
     }
     

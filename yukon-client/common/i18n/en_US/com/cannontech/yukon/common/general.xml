@@ -11,6 +11,8 @@
 <entry key="yukon.common.search">Search</entry>
 <entry key="yukon.common.search.placeholder">search</entry>
 
+<entry key="yukon.common.filter">Filter</entry>
+
 <entry key="yukon.common.deviceName">Device Name</entry>
 <entry key="yukon.common.deviceType">Device Type</entry>
 <entry key="yukon.common.device">Device</entry>
@@ -99,6 +101,9 @@
 <entry key="yukon.common.timestamp">Timestamp</entry>
 <entry key="yukon.common.value">State/Value</entry>
 <entry key="yukon.common.quality">Quality</entry>
+<entry key="yukon.common.pointName">Point Name</entry>
+<entry key="yukon.common.pointType">Point Type</entry>
+<entry key="yukon.common.pointOffset">Point Offset</entry>
 
 <entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 

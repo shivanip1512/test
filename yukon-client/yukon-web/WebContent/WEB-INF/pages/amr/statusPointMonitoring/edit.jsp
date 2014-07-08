@@ -74,7 +74,7 @@
                 <tags:nameValue2 nameKey=".deviceGroup">
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
                     <tags:deviceGroupNameSelector fieldName="groupName" 
-                                                    fieldValue="${statusPointMonitor.groupName}" 
+                                                  fieldValue="${statusPointMonitor.groupName}" 
                                                   dataJson="${groupDataJson}"
                                                   linkGroupName="true"/>
                     <tags:helpInfoPopup title="${deviceGroupTitle}">

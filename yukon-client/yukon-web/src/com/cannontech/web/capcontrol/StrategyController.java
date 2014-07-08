@@ -8,14 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.ViewableStrategy;
-import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
@@ -32,22 +28,11 @@ public class StrategyController {
     @Autowired private StrategyDao strategyDao;
     
     @RequestMapping("strategies")
-    public String strategies(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws ServletRequestBindingException {
+    public String strategies(HttpServletRequest request, YukonUserContext userContext, ModelMap model) {
+        
         List<ViewableStrategy> strategies = strategyDao.getAllViewableStrategies(userContext);
         
-        int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
-        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
-        int startIndex = (currentPage - 1) * itemsPerPage;
-        int toIndex = startIndex + itemsPerPage;
-        int numberOfResults = strategies.size();
-        
-        if(numberOfResults < toIndex) toIndex = numberOfResults;
-        strategies = strategies.subList(startIndex, toIndex);
-        
-        SearchResults<ViewableStrategy> result = new SearchResults<ViewableStrategy>();
-        result.setResultList(strategies);
-        result.setBounds(startIndex, itemsPerPage, numberOfResults);
-        model.addAttribute("searchResult", result);
+        model.addAttribute("strategies", strategies);
         
         String urlParams = request.getQueryString();
         String requestURI = request.getRequestURI().substring(request.getContextPath().length()) + ((urlParams != null) ? "?" + urlParams : "");
@@ -58,6 +43,7 @@ public class StrategyController {
 
     @RequestMapping(value="deleteStrategy")
     public String deleteStrategy(int strategyId, FlashScope flash) {
+        
         String name = strategyDao.getForId(strategyId).getStrategyName();
         List<String> otherPaosUsingStrategy = strategyDao.getAllOtherPaoNamesUsingStrategyAssignment(strategyId, strategyId);
         if (otherPaosUsingStrategy.isEmpty()) {

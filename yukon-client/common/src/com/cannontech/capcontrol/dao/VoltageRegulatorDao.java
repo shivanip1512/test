@@ -1,7 +1,8 @@
 package com.cannontech.capcontrol.dao;
 
+import java.util.List;
+
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.common.search.result.SearchResults;
 
 public interface VoltageRegulatorDao {
 
@@ -23,14 +24,7 @@ public interface VoltageRegulatorDao {
      */
     public double getVoltChangePerTapForRegulator(int regulatorId);
 
-    /**
-     * Returns a list of all un-assigned Regulators as Search Results.
-     * 
-     * @param start
-     * @param count
-     * @return
-     */
-    public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count);
+    public List<LiteCapControlObject> getOrphans();
     
     /**
      * @return true if the regulator is an orphan, otherwise false

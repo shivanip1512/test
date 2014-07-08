@@ -99,6 +99,67 @@ public class FilterDaoImpl implements FilterDao {
 
         return retVal;
     }
+    
+    @Override
+    public <T> List<T> filter(UiFilter<T> filter, Comparator<? super T> sorter, RowMapperWithBaseQuery<T> rowMapper) {
+        
+        SqlFragmentCollection whereClause = SqlFragmentCollection.newAndCollection();
+        if (filter != null) {
+            Iterable<SqlFilter> sqlFilters = filter.getSqlFilters();
+            if (sqlFilters != null) {
+                for (SqlFilter sqlFilter : sqlFilters) {
+                    whereClause.add(sqlFilter.getWhereClauseFragment());
+                }
+            }
+        }
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(rowMapper.getBaseQuery());
+        String filterSql = whereClause.getSql();
+        if (!StringUtils.isEmpty(filterSql))
+        {
+            if (rowMapper.needsWhere()) {
+                sql.append("WHERE");
+            } else {
+                sql.append("AND");
+            }
+            sql.append(whereClause);
+        }
+
+        SqlFragmentSource orderByClause = rowMapper.getOrderBy();
+        if (orderByClause != null) {
+            sql.append(orderByClause);
+        }
+
+        List<T> objectsFromDb = yukonJdbcTemplate.query(sql, rowMapper);
+        
+        log.debug("Retrieved " + objectsFromDb.size() + " objects from database.");
+        
+        List<T> objectsThatPassedFilters = new ArrayList<T>();
+        if (filter == null || filter.getPostProcessingFilters() == null
+                || !filter.getPostProcessingFilters().iterator().hasNext()) {
+            objectsThatPassedFilters = objectsFromDb;
+        } else {
+            
+            log.debug("Begin applying post processing filter(s).");
+            
+            for (PostProcessingFilter<T> postProcessingFilter : 
+                filter.getPostProcessingFilters()) {
+                
+                List<T> processedList = postProcessingFilter.process(objectsFromDb);
+                objectsFromDb = processedList;
+            }
+            
+            objectsThatPassedFilters = objectsFromDb;
+            log.debug("Finished applying post processing filter(s): " + objectsThatPassedFilters.size() + "/" + objectsFromDb.size() + " objects passed filter.");
+        }
+
+        if (sorter != null) {
+            log.debug("Sorting objects.");
+            Collections.sort(objectsThatPassedFilters, sorter);
+        }
+
+        return objectsThatPassedFilters;
+    }
 
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {

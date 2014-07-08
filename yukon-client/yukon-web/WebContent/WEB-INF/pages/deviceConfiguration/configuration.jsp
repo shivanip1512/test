@@ -146,7 +146,7 @@
         <cti:param name="configId" value="${deviceConfig.configId}" />
     </cti:url>
     <cti:msg2 var="popupTitle" key="yukon.web.modules.tools.configs.config.addSupportedTypes.title"/>
-    <div id="supportedTypePopup" dialog data-config-id="${deviceConfig.configId}"
+    <div id="supportedTypePopup" data-dialog data-config-id="${deviceConfig.configId}"
         data-url="${processAddTypes}" data-width="900" data-title="${popupTitle}" data-form="#supported-types-form" />
     <div id="category-popup" class="dn" />
     

@@ -19,7 +19,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,9 +32,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoScheduleDao;
@@ -76,22 +73,22 @@ public class ScheduleController {
     @Autowired private FilterDao filterService;
     @Autowired private CapControlCommandExecutor executor;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-	@Autowired private DbChangeManager dbChangeManager;
-	
-	private final String NO_FILTER = "All";
-	
-	public ScheduleController() {
-	    PeriodFormatterBuilder builder = new PeriodFormatterBuilder()
-	    .appendMinutes().appendLiteral(" min ")
-	    .appendHours().appendLiteral(" hr ")
-	    .appendDays().appendLiteral(" day ")
-	    .appendWeeks().appendLiteral(" wk");
-	    periodFormatter = builder.toFormatter();
-	}
-	
-	private void setUpModel(HttpServletRequest request, LiteYukonUser user, ModelMap model, 
-	        PagingParameters pagingParameters) {
-	    boolean hasEditingRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+    @Autowired private DbChangeManager dbChangeManager;
+    
+    private final String NO_FILTER = "All";
+    
+    public ScheduleController() {
+        PeriodFormatterBuilder builder = new PeriodFormatterBuilder()
+        .appendMinutes().appendLiteral(" min ")
+        .appendHours().appendLiteral(" hr ")
+        .appendDays().appendLiteral(" day ")
+        .appendWeeks().appendLiteral(" wk");
+        periodFormatter = builder.toFormatter();
+    }
+    
+    private void setUpModel(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
+        
+        boolean hasEditingRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         boolean hasCapBankRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
         boolean hasSubbusRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
         model.addAttribute("hasEditingRole", hasEditingRole);
@@ -102,6 +99,7 @@ public class ScheduleController {
         String filterByCommand = ServletRequestUtils.getStringParameter(request, "command", "");
         String filterBySchedule = ServletRequestUtils.getStringParameter(request, "schedule", "");
         List<UiFilter<PaoScheduleAssignment>> filters = new ArrayList<UiFilter<PaoScheduleAssignment>>();
+        
         if (StringUtils.isNotEmpty(filterByCommand) && !filterByCommand.equals("All")) {
             filters.add(new ScheduleAssignmentCommandFilter(ScheduleCommand.valueOf(filterByCommand)));
             isFiltered = true;
@@ -123,100 +121,71 @@ public class ScheduleController {
         ScheduleAssignmentRowMapper rowMapper = new ScheduleAssignmentRowMapper();
         
         //Filter, sort and get search results
-        SearchResults<PaoScheduleAssignment> result = filterService.filter(filter, sorter, 
-                pagingParameters.getStartIndex(), pagingParameters.getItemsPerPage(), rowMapper);
+        List<PaoScheduleAssignment> assignments = filterService.filter(filter, sorter, rowMapper);
+        model.addAttribute("assignments", assignments);
         
-        //for pagination
-        SearchResults<PaoScheduleAssignment> pagedRows = SearchResults.pageBasedForSublist(result.getResultList(), 
-                pagingParameters.getPage(), pagingParameters.getItemsPerPage(),
-                result.getHitCount());
-        model.addAttribute("pagedResults", pagedRows);
-        
-        model.addAttribute("searchResult", result);
-        model.addAttribute("itemList", result.getResultList());
         model.addAttribute("commandList", ScheduleCommand.values());
         model.addAttribute("verifyCommandsList", ScheduleCommand.getVerifyCommandsList());
         List<PAOSchedule> schedules = paoScheduleDao.getAllPaoScheduleNames(); 
         Collections.sort(schedules);
-        model.addAttribute("scheduleList", schedules);
-	}
-	
-	@RequestMapping("scheduleAssignmentsTable")
-	public String scheduleAssignmentsTable(HttpServletRequest request, LiteYukonUser user, ModelMap model, 
-	        PagingParameters pagingParameters) {
-	    
-	    setUpModel(request, user, model, pagingParameters);
-		return "schedule/scheduleassignmentTable.jsp";
+        
+        model.addAttribute("schedules", schedules);
+        
+    }
+    
+    @RequestMapping("scheduleAssignmentsTable")
+    public String scheduleAssignmentsTable(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
+        
+        setUpModel(request, user, model);
+        return "schedule/scheduleassignmentTable.jsp";
     }
 
-	@RequestMapping("scheduleAssignments")
-	public String scheduleAssignments(HttpServletRequest request, LiteYukonUser user, ModelMap model, 
-	        PagingParameters pagingParameters) {
-	    
-	    setUpModel(request, user, model, pagingParameters);
-	    return "schedule/scheduleassignment.jsp";
-	}
+    @RequestMapping("scheduleAssignments")
+    public String scheduleAssignments(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
+        
+        setUpModel(request, user, model);
+        return "schedule/scheduleassignment.jsp";
+    }
 
-	@RequestMapping("filter")
-	public String scheduleAssignmentsFilter(HttpServletRequest request, LiteYukonUser user, ModelMap model, 
-	        PagingParameters pagingParameters) {
-	    
-	    setUpModel(request, user, model, pagingParameters);
-	    return "schedule/scheduleassignmentTable.jsp";
-	}
-	
-	private void setupSchedulesTabModel(HttpServletRequest request, LiteYukonUser user, ModelMap map, 
-	        PagingParameters pagingParameters) throws ServletRequestBindingException {
-	    boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        map.addAttribute("hasEditingRole", hasEditingRole);
-        List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
-        Collections.sort(schedList);
+    @RequestMapping("filter")
+    public String scheduleAssignmentsFilter(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
         
-        int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
-        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
-        int startIndex = (currentPage - 1) * itemsPerPage;
-        int toIndex = startIndex + itemsPerPage;
-        int numberOfResults = schedList.size();
+        setUpModel(request, user, model);
+        return "schedule/scheduleassignmentTable.jsp";
+    }
+    
+    private void setupSchedulesTabModel(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
         
-        if (numberOfResults < toIndex) toIndex = numberOfResults;
-        schedList = schedList.subList(startIndex, toIndex);
-        
-        SearchResults<PAOSchedule> result = new SearchResults<PAOSchedule>();
-        result.setResultList(schedList);
-        result.setBounds(startIndex, itemsPerPage, numberOfResults);
-        map.addAttribute("searchResult", result);
-        map.addAttribute("scheduleList", result.getResultList());
+        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        model.addAttribute("hasEditingRole", hasEditingRole);
+        List<PAOSchedule> schedules = paoScheduleDao.getAllPaoScheduleNames();
+        Collections.sort(schedules);
+        model.addAttribute("schedules", schedules);
         
         long startOfTime = CtiUtilities.get1990GregCalendar().getTime().getTime();
-        map.addAttribute("startOfTime", startOfTime);
-        
-        //for pagination
-        SearchResults<PAOSchedule> pagedRows = SearchResults.pageBasedForSublist(result.getResultList(), 
-                pagingParameters.getPage(), pagingParameters.getItemsPerPage(),
-                result.getHitCount());
-        map.addAttribute("pagedResults", pagedRows);
+        model.addAttribute("startOfTime", startOfTime);
         
         String urlParams = request.getQueryString();
         String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
-	}
-	
-	@RequestMapping("schedules")
-    public String schedules(HttpServletRequest request, LiteYukonUser user, ModelMap map, 
-            PagingParameters pagingParameters) throws ServletRequestBindingException {
-	    setupSchedulesTabModel(request, user, map, pagingParameters);
+    }
+    
+    @RequestMapping("schedules")
+    public String schedules(HttpServletRequest request, LiteYukonUser user, ModelMap map) {
+        setupSchedulesTabModel(request, user, map);
         return "schedule/schedules.jsp";
     }
-	
-	@RequestMapping("schedulesTable")
-	public String schedulesTable(HttpServletRequest request, LiteYukonUser user, ModelMap map, 
-	        PagingParameters pagingParameters) throws ServletRequestBindingException {
-	    setupSchedulesTabModel(request, user, map, pagingParameters);	    
-	    return "schedule/schedulesTable.jsp";
-	}
-	
-	private boolean executeScheduleCommand(PaoScheduleAssignment assignment, LiteYukonUser user) {
-	    boolean isCommandValid = true;
+    
+    @RequestMapping("schedulesTable")
+    public String schedulesTable(HttpServletRequest request, LiteYukonUser user, ModelMap map) {
+        
+        setupSchedulesTabModel(request, user, map);
+        
+        return "schedule/schedulesTable.jsp";
+    }
+    
+    private boolean executeScheduleCommand(PaoScheduleAssignment assignment, LiteYukonUser user) {
+        boolean isCommandValid = true;
         ScheduleCommand schedCommand = null;
         
         try{
@@ -252,63 +221,63 @@ public class ScheduleController {
             return false;
         }
         return true;
-	}
-	
-	/**
-	 * Run multiple schedule assignment commands.  The schedule assignments are optionally 
-	 * filtered by command and/or schedule.
-	 */
-	@RequestMapping("startMultiple")
-	public @ResponseBody Map<String, Object> startMultiple(HttpServletRequest request, YukonUserContext context, 
-	        LiteYukonUser user, ModelMap map, PagingParameters pagingParameters) {
-        setUpModel(request, user, map, pagingParameters);
+    }
+    
+    /**
+     * Run multiple schedule assignment commands.  The schedule assignments are optionally 
+     * filtered by command and/or schedule.
+     */
+    @RequestMapping("startMultiple")
+    public @ResponseBody Map<String, Object> startMultiple(HttpServletRequest request, YukonUserContext context, 
+            LiteYukonUser user, ModelMap map) {
         
-	    String filterByCommand = ServletRequestUtils.getStringParameter(request, "startCommand", "");
-	    String filterBySchedule = ServletRequestUtils.getStringParameter(request, "startSchedule", "");
-	    
-	    SearchResults<PaoScheduleAssignment> searchResult = 
-	        filterPaoScheduleAssignments(filterByCommand, filterBySchedule, 0);
+        setUpModel(request, user, map);
         
-	    int numberFailed = 0;
+        String filterByCommand = ServletRequestUtils.getStringParameter(request, "startCommand", "");
+        String filterBySchedule = ServletRequestUtils.getStringParameter(request, "startSchedule", "");
+        
+        List<PaoScheduleAssignment> assignments = filterPaoScheduleAssignments(filterByCommand, filterBySchedule);
+        
+        int numberFailed = 0;
         String result = "";
         
-        for (PaoScheduleAssignment assignment : searchResult.getResultList()) {
+        for (PaoScheduleAssignment assignment : assignments) {
             boolean success = executeScheduleCommand(assignment, context.getYukonUser());
             if (!success) numberFailed++;
         }
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         result = accessor.getMessage("yukon.web.modules.capcontrol.scheduleAssignments.startedSchedules", 
-                searchResult.getResultCount() - numberFailed, numberFailed);
+                assignments.size() - numberFailed, numberFailed);
         
         Map<String, Object> json = new HashMap<>();
         //if at least one command succeeded, consider it a success
-        boolean success = (searchResult.getResultCount() - numberFailed) > 0;
+        boolean success = (assignments.size() - numberFailed) > 0;
         json.put("success", success);
         json.put("resultText" , result);
         json.put("schedule", filterBySchedule);
         json.put("command", filterByCommand);
+        
         return json;
-	}
-	
-	/**
+    }
+    
+    /**
      * Stop multiple schedule assignment commands.  The schedule assignments are optionally 
      * filtered by command and/or schedule.  This is only applicable to "verify" commands.  
      * Any other schedule assignment commands that match the filter criteria will be ignored. 
      */
-	@RequestMapping("stopMultiple")
+    @RequestMapping("stopMultiple")
     public  @ResponseBody Map<String, Object> stopMultiple(HttpServletRequest request, YukonUserContext context, 
             ModelMap map) {
         String filterByCommand = ServletRequestUtils.getStringParameter(request, "stopCommand", "");
         String filterBySchedule = ServletRequestUtils.getStringParameter(request, "stopSchedule", "");
-	    
-        SearchResults<PaoScheduleAssignment> searchResult =
-            filterPaoScheduleAssignments(filterByCommand, filterBySchedule, 0);
+        
+        List<PaoScheduleAssignment> assignments = filterPaoScheduleAssignments(filterByCommand, filterBySchedule);
         
         String result = "";
         int commandsSentCount = 0;
         
-        for (PaoScheduleAssignment assignment : searchResult.getResultList()) {
+        for (PaoScheduleAssignment assignment : assignments) {
             
             boolean stopApplicable = true;
             int deviceId = assignment.getPaoId();
@@ -351,35 +320,36 @@ public class ScheduleController {
         json.put("resultText" , result);
         json.put("schedule", filterBySchedule);
         json.put("command", filterByCommand);
+        
         return json;
-	}
-	
-	/**
+    }
+    
+    /**
      * Run a single schedule assignment command.
      */
-	@RequestMapping("startSchedule")
-	public @ResponseBody Map<String, Object> startSchedule(Integer eventId, String deviceName, YukonUserContext context) {
-	    MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-	    String result;
-	    PaoScheduleAssignment assignment = paoScheduleDao.getScheduleAssignmentByEventId(eventId);
-	    boolean success = executeScheduleCommand(assignment, context.getYukonUser());
-	    if (success) {
-	        result = accessor.getMessage("yukon.web.modules.capcontrol.scheduleAssignments.startedScheduleSuccess", 
-	                deviceName, assignment.getCommandName());
-	    } else {
-	        result = accessor.getMessage("yukon.web.modules.capcontrol.scheduleAssignments.startedScheduleFailed", 
-	                assignment.getCommandName());
-	    }
+    @RequestMapping("startSchedule")
+    public @ResponseBody Map<String, Object> startSchedule(Integer eventId, String deviceName, YukonUserContext context) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        String result;
+        PaoScheduleAssignment assignment = paoScheduleDao.getScheduleAssignmentByEventId(eventId);
+        boolean success = executeScheduleCommand(assignment, context.getYukonUser());
+        if (success) {
+            result = accessor.getMessage("yukon.web.modules.capcontrol.scheduleAssignments.startedScheduleSuccess", 
+                    deviceName, assignment.getCommandName());
+        } else {
+            result = accessor.getMessage("yukon.web.modules.capcontrol.scheduleAssignments.startedScheduleFailed", 
+                    assignment.getCommandName());
+        }
 
-	    Map<String, Object> json = new HashMap<>();
-	    json.put("sentCommand", assignment.getCommandName());
-	    json.put("success", success);
-	    json.put("resultText" , result);
+        Map<String, Object> json = new HashMap<>();
+        json.put("sentCommand", assignment.getCommandName());
+        json.put("success", success);
+        json.put("resultText" , result);
 
         return json;
-	}
-	
-	/**
+    }
+    
+    /**
      * Send a stop verify command to the specified subbus. 
      */
     @RequestMapping("stopSchedule")
@@ -400,8 +370,8 @@ public class ScheduleController {
 
         return json;
     }
-	
-	@RequestMapping(value="removePao", method=RequestMethod.POST)
+    
+    @RequestMapping(value="removePao", method=RequestMethod.POST)
     public String removePao(Integer eventId, Integer paoId, ModelMap map, FlashScope flash) {
         boolean success = paoScheduleDao.unassignCommandByEventId(eventId);
         
@@ -421,11 +391,11 @@ public class ScheduleController {
         
         return "redirect:scheduleAssignments";
     }
-	
-	@RequestMapping(value="deleteSchedule")
+    
+    @RequestMapping(value="deleteSchedule")
     public String deleteSchedule(int scheduleId, FlashScope flash) {
-	    List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(scheduleId);
-	    boolean success = paoScheduleDao.delete(scheduleId);
+        List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(scheduleId);
+        boolean success = paoScheduleDao.delete(scheduleId);
         if (success) {
             //Send DB Change
             //These can only be assigned to sub bus objects right now, if that changes, this needs to change with it.
@@ -445,7 +415,7 @@ public class ScheduleController {
         
         return "redirect:schedules";
     }
-	
+    
     @RequestMapping("setOvUv")
     public @ResponseBody Map<String, Object> setOvUv(Integer eventId, Integer ovuv, ModelMap map, 
             YukonUserContext context) {
@@ -465,39 +435,39 @@ public class ScheduleController {
         return json;
     }
 
-	@RequestMapping(value="addPao")
-	public String addPao(String addSchedule, String addCommand, String filterCommand, String filterSchedule, 
-	        String paoIdList, ModelMap map, FlashScope flash) {
-		ScheduleCommand cmd = ScheduleCommand.valueOf(addCommand);
-		boolean success = true;
-		YukonMessageSourceResolvable message;
-		
-		Integer schedId = Integer.parseInt(addSchedule);
-		if (addSchedule != null && cmd != null) {
-			List<Integer> paoIds = ServletUtil.getIntegerListFromString(paoIdList);
+    @RequestMapping(value="addPao")
+    public String addPao(String addSchedule, String addCommand, String filterCommand, String filterSchedule, 
+            String paoIdList, ModelMap map, FlashScope flash) {
+        ScheduleCommand cmd = ScheduleCommand.valueOf(addCommand);
+        boolean success = true;
+        YukonMessageSourceResolvable message;
+        
+        Integer schedId = Integer.parseInt(addSchedule);
+        if (addSchedule != null && cmd != null) {
+            List<Integer> paoIds = ServletUtil.getIntegerListFromString(paoIdList);
 
-			if (paoIds.size() == 0) {
-			    success = false;
-			    message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.noDeviceSelected");
-			} else {
-    			List<PaoScheduleAssignment> assignments = new ArrayList<PaoScheduleAssignment>();
-    			
-    			for (Integer paoId : paoIds) {
-    				PaoScheduleAssignment newAssignment = new PaoScheduleAssignment();
-    				newAssignment.setCommandName(cmd.getCommandName());
-    				newAssignment.setPaoId(paoId);
-    				newAssignment.setScheduleId(schedId);
-    				newAssignment.setDisableOvUv("N");
-    				
-    				assignments.add(newAssignment);
-    			}
-    			
-    			try {
-    				paoScheduleDao.assignCommand(assignments);
-    				message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.addSuccessful", assignments.size());
-    				
-    				//Send DB Change
-    				//These can only be assigned to sub bus objects right now, if that changes, this needs to change with it.
+            if (paoIds.size() == 0) {
+                success = false;
+                message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.noDeviceSelected");
+            } else {
+                List<PaoScheduleAssignment> assignments = new ArrayList<PaoScheduleAssignment>();
+                
+                for (Integer paoId : paoIds) {
+                    PaoScheduleAssignment newAssignment = new PaoScheduleAssignment();
+                    newAssignment.setCommandName(cmd.getCommandName());
+                    newAssignment.setPaoId(paoId);
+                    newAssignment.setScheduleId(schedId);
+                    newAssignment.setDisableOvUv("N");
+                    
+                    assignments.add(newAssignment);
+                }
+                
+                try {
+                    paoScheduleDao.assignCommand(assignments);
+                    message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.addSuccessful", assignments.size());
+                    
+                    //Send DB Change
+                    //These can only be assigned to sub bus objects right now, if that changes, this needs to change with it.
                     for (Integer paoId : paoIds) {
                         //Each paoId is a bus to be reloaded.
                         DBChangeMsg dbChange = new DBChangeMsg(paoId,
@@ -507,28 +477,28 @@ public class ScheduleController {
                                                                DbChangeType.UPDATE);
                         dbChangeManager.processDbChange(dbChange);
                     }
-    				
-    				
-    			} catch (DataIntegrityViolationException e) {
-    				success = false;
-    				message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.duplicate");
-    			}
-			}
-		} else {
-			success = false;
-			message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.noScheduleOrCommand");
-		}
-		
-		if (success) {
-		    flash.setConfirm(message);
-		} else {
-		    flash.setError(message);
-		}
-		
-		return "redirect:scheduleAssignments";
-	}
-	
-	/**
+                    
+                    
+                } catch (DataIntegrityViolationException e) {
+                    success = false;
+                    message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.duplicate");
+                }
+            }
+        } else {
+            success = false;
+            message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.noScheduleOrCommand");
+        }
+        
+        if (success) {
+            flash.setConfirm(message);
+        } else {
+            flash.setError(message);
+        }
+        
+        return "redirect:scheduleAssignments";
+    }
+    
+    /**
      * Returns the "Run Multiple Schedule Assignment Commands" popup form.
      */
     @RequestMapping("startMultiScheduleAssignmentPopup")
@@ -581,25 +551,25 @@ public class ScheduleController {
         
         return "schedule/newScheduleAssignmentPopup.jsp";
     }
-	
-	/*
-	 * Helper method to parse the time variables out of a
-	 * "verify not operated in..." command
-	 */
-	private long parseSecondsNotOperatedIn(PaoScheduleAssignment assignment) {
+    
+    /*
+     * Helper method to parse the time variables out of a
+     * "verify not operated in..." command
+     */
+    private long parseSecondsNotOperatedIn(PaoScheduleAssignment assignment) {
         String timeString = assignment.getCommandName().replaceAll(ScheduleCommand.VerifyNotOperatedIn.getCommandName() 
                 + " ", "");
     
         //parse min/hr/day/wk value from command string
         Period period = periodFormatter.parsePeriod(timeString);
         return period.toStandardSeconds().getSeconds();
-	}
-	
+    }
+    
     /* 
      * Helper method to simplify filtering schedule assignments.
      */
-    private SearchResults<PaoScheduleAssignment> filterPaoScheduleAssignments(String filterCommand, 
-                                                    String filterSchedule, int startIndex) {
+    private List<PaoScheduleAssignment> filterPaoScheduleAssignments(String filterCommand, String filterSchedule) {
+        
         //Convert filter strings into filters
         //Filtering on "All" is equivalent to no filters
         List<UiFilter<PaoScheduleAssignment>> filters = new ArrayList<UiFilter<PaoScheduleAssignment>>();
@@ -620,10 +590,8 @@ public class ScheduleController {
         
         ScheduleAssignmentRowMapper rowMapper = new ScheduleAssignmentRowMapper();
         
-        //Filter, sort and get search results
-        SearchResults<PaoScheduleAssignment> searchResult = 
-            filterService.filter(filter, sorter, startIndex, Integer.MAX_VALUE, rowMapper);
+        List<PaoScheduleAssignment> assignments = filterService.filter(filter, sorter, rowMapper);
         
-        return searchResult;
+        return assignments;
     }
 }

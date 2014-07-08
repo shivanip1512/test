@@ -20,7 +20,7 @@ yukon.dr.rf.performance = (function () {
             /** 
              * Handle click for success, failed, and unknown popups.
              * The unknown popup is slightly different and has a pie chart */
-            $(document).on('click', '.f-success, .f-failed, .f-unknown', function(event) {
+            $(document).on('click', '.f-success, .f-failed, .f-unknown', function(ev) {
                 
                 var popup = $('#devices-popup'),
                     url = yukon.url('/dr/rf/details'),

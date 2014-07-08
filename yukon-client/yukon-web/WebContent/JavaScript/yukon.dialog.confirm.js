@@ -23,9 +23,6 @@ yukon.dialogConfirm = (function () {
         _ok_event = 'yukon.dialog.confirm.ok',
         _cancel_event = 'yukon.dialog.confirm.cancel',
 
-        /*---------------------*/
-        /* 'PRIVATE' functions */
-        /*---------------------*/
         _init = function () {
             if (!_initialized) {
                 $('html').append('<div id="yukon_dialog_confirm" style="display:none;"><span class="confirm-message"></span></div>');
@@ -57,33 +54,34 @@ yukon.dialogConfirm = (function () {
             actionButton = {text: args.strings.ok, click: _default._ok_action, 'class': 'primary action'};
             buttons.push(actionButton);
 
-            // Determine the 'ok' and 'cancel' events.
-            if (element.attr('ok-event')) {
+            // Determine the 'ok' click action.
+            if (element.data('okEvent')) {
+                // fire an event
                 actionButton.click = function () {
-                    _current_dialog.trigger(element.attr('ok-event'));
+                    element.trigger(element.data('okEvent'));
                     _close_dialog();
                 };
-            }
-            // Is the intent to redirect on ok?
-            else if (element.attr("href")) {
+            } else if (element.attr("href")) {
+                // go to a url
                 actionButton.click = function () {
                     _close_dialog();
                     window.location = element.attr("href");
                 };
             } else if (element.attr("data-href") || element.data("href")) {
+                // go to a url
                 actionButton.click = function () {
                     _close_dialog();
                     window.location = element.data("href");
                 };
             } else if (element.data("onclick")) {
+                // fire onclick function
                 actionButton.click = function () {
                     _close_dialog();
                     var scripts =  element.data("onclick");
                     eval(scripts);
                 };
-            }
-            // Is the intent to submit a form on ok?
-            else if (typeof element.attr("type") !== 'undefined' && element.attr("type").toLowerCase() == "submit") {
+            } else if (typeof element.attr("type") !== 'undefined' && element.attr("type").toLowerCase() == "submit") {
+                // submit a form
                 actionButton.click = function () {
                     var form = element.closest("form")[0],
                         value = element.val(),
@@ -93,9 +91,8 @@ yukon.dialogConfirm = (function () {
                     }
                     form.submit();
                 };
-            }
-            // Is the intent to submit a specific form on ok?
-            else if (element.attr("data-form")) {
+            } else if (element.attr("data-form")) {
+                // submit a specific form
                 actionButton.click = function () {
                     $(element.attr("data-form"))[0].submit();
                 };

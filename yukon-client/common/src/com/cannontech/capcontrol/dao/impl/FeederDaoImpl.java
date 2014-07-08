@@ -14,19 +14,19 @@ import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.PointIdContainer;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
-import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
-public class FeederDaoImpl implements FeederDao {    
-    private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
+public class FeederDaoImpl implements FeederDao {
+    
+    private static final YukonRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     @Autowired private PaoDao paoDao;
     @Autowired private DbChangeManager dbChangeManager;
@@ -82,11 +82,8 @@ public class FeederDaoImpl implements FeederDao {
     }
 
     @Override
-	public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count) {
-	    /* Get the unordered total count */
-        int orphanCount = yukonJdbcTemplate.queryForInt("SELECT COUNT(*) FROM CapControlFeeder where FeederId not in (SELECT FeederId FROM CCFeederSubAssignment)");
-        
-        /* Get the paged subset of cc objects */
+    public List<LiteCapControlObject> getOrphans() {
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, PAOName, Type, Description");
         sql.append("FROM YukonPAObject");
@@ -94,84 +91,76 @@ public class FeederDaoImpl implements FeederDao {
         sql.append("    AND PAObjectID not in (SELECT FeederId FROM CCFeederSubAssignment)");
         sql.append("ORDER BY PAOName");
         
-        PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, 
-        																													liteCapControlObjectRowMapper);
-        yukonJdbcTemplate.query(sql.getSql(), sql.getArguments(), orphanExtractor);
+        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, liteCapControlObjectRowMapper);
         
-        List<LiteCapControlObject> unassignedFeeders = orphanExtractor.getResultList();
-        
-        SearchResults<LiteCapControlObject> searchResult = new SearchResults<LiteCapControlObject>();
-        searchResult.setResultList(unassignedFeeders);
-        searchResult.setBounds(start, count, orphanCount);
-        
-        return searchResult;
-	}
+        return orphans;
+    }
     
     /**
      * This method returns the SubBus ID that owns the given feeder ID.
      */
     @Override
     public int getParentSubBusID( int feederID ) throws EmptyResultDataAccessException {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	sql.append("SELECT SubstationBusID");
-    	sql.append("FROM CCFeederSubAssignment");
-    	sql.append("WHERE FeederId").eq(feederID);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT SubstationBusID");
+        sql.append("FROM CCFeederSubAssignment");
+        sql.append("WHERE FeederId").eq(feederID);
 
         return yukonJdbcTemplate.queryForInt(sql);
     }
     
-	@Override
-	public boolean assignFeeder(int feederId, String subBusName) {
-	    YukonPao pao = paoDao.findYukonPao(subBusName, PaoType.CAP_CONTROL_SUBBUS);
+    @Override
+    public boolean assignFeeder(int feederId, String subBusName) {
+        YukonPao pao = paoDao.findYukonPao(subBusName, PaoType.CAP_CONTROL_SUBBUS);
         return (pao == null) ? false : assignFeeder(pao.getPaoIdentifier().getPaoId(), feederId);
-	};
+    };
 
-	@Override
-	public boolean assignFeeder(int substationBusId, int feederId) {
-		SqlStatementBuilder displaySql = new SqlStatementBuilder();
-		
-		displaySql.append("SELECT MAX(DisplayOrder)");
-		displaySql.append("FROM CCFeederSubAssignment");
-		displaySql.append("WHERE SubStationBusID").eq(substationBusId);
-		
-		int displayOrder = yukonJdbcTemplate.queryForInt(displaySql);
-		
-		//remove any existing assignment
-    	unassignFeeder(feederId);
-		
-		SqlStatementBuilder assignSql = new SqlStatementBuilder();
-		SqlParameterSink params = assignSql.insertInto("CCFeederSubAssignment");
-		
-		params.addValue("SubStationBusID", substationBusId);
-		params.addValue("FeederID", feederId);
-		params.addValue("DisplayOrder", ++displayOrder);
-    	
-		int rowsAffected = yukonJdbcTemplate.update(assignSql);
-		
-		boolean result = (rowsAffected == 1);
-		
-		if (result) {
-		    YukonPao feeder = paoDao.getYukonPao(feederId);
-		    YukonPao subBus = paoDao.getYukonPao(substationBusId);
-		    dbChangeManager.processPaoDbChange(feeder, DbChangeType.UPDATE);
-		    dbChangeManager.processPaoDbChange(subBus, DbChangeType.UPDATE);
-		}
-		
-		return result;
-	}
+    @Override
+    public boolean assignFeeder(int substationBusId, int feederId) {
+        SqlStatementBuilder displaySql = new SqlStatementBuilder();
+        
+        displaySql.append("SELECT MAX(DisplayOrder)");
+        displaySql.append("FROM CCFeederSubAssignment");
+        displaySql.append("WHERE SubStationBusID").eq(substationBusId);
+        
+        int displayOrder = yukonJdbcTemplate.queryForInt(displaySql);
+        
+        //remove any existing assignment
+        unassignFeeder(feederId);
+        
+        SqlStatementBuilder assignSql = new SqlStatementBuilder();
+        SqlParameterSink params = assignSql.insertInto("CCFeederSubAssignment");
+        
+        params.addValue("SubStationBusID", substationBusId);
+        params.addValue("FeederID", feederId);
+        params.addValue("DisplayOrder", ++displayOrder);
+        
+        int rowsAffected = yukonJdbcTemplate.update(assignSql);
+        
+        boolean result = (rowsAffected == 1);
+        
+        if (result) {
+            YukonPao feeder = paoDao.getYukonPao(feederId);
+            YukonPao subBus = paoDao.getYukonPao(substationBusId);
+            dbChangeManager.processPaoDbChange(feeder, DbChangeType.UPDATE);
+            dbChangeManager.processPaoDbChange(subBus, DbChangeType.UPDATE);
+        }
+        
+        return result;
+    }
 
-	@Override
-	public boolean unassignFeeder(int feederId) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		
-		sql.append("DELETE FROM CCFeederSubAssignment");
-		sql.append("WHERE FeederID").eq(feederId);
-		
-		int rowsAffected = yukonJdbcTemplate.update(sql);
-		
-		boolean result = (rowsAffected == 1);
-		return result;
+    @Override
+    public boolean unassignFeeder(int feederId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("DELETE FROM CCFeederSubAssignment");
+        sql.append("WHERE FeederID").eq(feederId);
+        
+        int rowsAffected = yukonJdbcTemplate.update(sql);
+        
+        boolean result = (rowsAffected == 1);
+        return result;
     }
 
     @Override

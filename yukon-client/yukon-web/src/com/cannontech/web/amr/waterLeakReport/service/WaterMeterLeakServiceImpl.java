@@ -1,4 +1,4 @@
-package com.cannontech.amr.waterMeterLeak.service.impl;
+package com.cannontech.web.amr.waterLeakReport.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,23 +11,24 @@ import java.util.Set;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.amr.waterMeterLeak.model.WaterMeterLeak;
-import com.cannontech.amr.waterMeterLeak.service.WaterMeterLeakService;
 import com.cannontech.common.chart.service.NormalizedUsageService;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.waterLeakReport.model.WaterLeakReportFilter;
+import com.cannontech.web.amr.waterLeakReport.model.WaterMeterLeak;
 import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -40,6 +41,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
     @Autowired private NormalizedUsageService normalizedUsageService;
 
     private static class MeterPointValueHolder {
+        
         private YukonMeter meter;
         private PointValueHolder pointValueHolder;
 
@@ -47,6 +49,12 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
             this.meter = meter;
             this.pointValueHolder = pointValueHolder;
         }
+
+        @Override
+        public String toString() {
+            return String.format("MeterPointValueHolder [meter=%s, pointValueHolder=%s]", meter, pointValueHolder);
+        }
+        
     }
 
     private static class PointIdTimestamp {
@@ -88,31 +96,42 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
     }
 
     @Override
-    public List<WaterMeterLeak> getWaterMeterLeakIntervalData(Set<SimpleDevice> devices,
-                                                              ReadableRange<Instant> range,
-                                                              boolean includeDisabledPaos,
-                                                              double threshold,
-                                                              YukonUserContext userContext) {
-        return getLeaks(devices, range, includeDisabledPaos, threshold, userContext, true);
+    public List<WaterMeterLeak> getIntervalLeaks(WaterLeakReportFilter filter, YukonUserContext userContext) {
+        return getLeaks(filter.getDeviceCollection().getDeviceList(),
+                filter.getRange(),
+                filter.isIncludeDisabledPaos(),
+                filter.getThreshold(),
+                userContext, 
+                true);
     }
 
     @Override
-    public List<WaterMeterLeak> getWaterMeterLeaks(Set<SimpleDevice> devices,
-                                                   ReadableRange<Instant> range,
-                                                   boolean includeDisabledPaos,
-                                                   double threshold,
-                                                   YukonUserContext userContext) {
+    public List<WaterMeterLeak> getLeaks(WaterLeakReportFilter filter, YukonUserContext userContext) {
+        return getLeaks(filter.getDeviceCollection().getDeviceList(),
+                filter.getRange(),
+                filter.isIncludeDisabledPaos(),
+                filter.getThreshold(),
+                userContext, 
+                false);
+    }
+    
+    @Override
+    public List<WaterMeterLeak> getLeaks(Iterable<? extends YukonPao> devices,
+            Range<Instant> range, 
+            boolean includeDisabledPaos,
+            double threshold, 
+            YukonUserContext userContext) {
         return getLeaks(devices, range, includeDisabledPaos, threshold, userContext, false);
     }
 
-    private List<WaterMeterLeak> getLeaks(Set<SimpleDevice> devices,
-                                          ReadableRange<Instant> range,
+    private List<WaterMeterLeak> getLeaks(Iterable<? extends YukonPao> devices,
+                                          Range<Instant> range,
                                           boolean includeDisabledPaos,
-                                          double threshold,
+                                          double threshold, 
                                           YukonUserContext userContext,
                                           boolean getIntervalData) {
         
-        if (CollectionUtils.isEmpty(devices)) {
+        if (Iterables.isEmpty(devices)) {
             return new ArrayList<WaterMeterLeak>();
         }
 

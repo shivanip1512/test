@@ -51,7 +51,7 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT)
 @RequestMapping("/optOutSurvey/*")
 public class OptOutSurveyController {
-    private final static String baseKey = "yukon.web.modules.operator.surveyList";
+    
 
     @Autowired private OptOutSurveyDao optOutSurveyDao;
     @Autowired private OptOutSurveyService optOutSurveyService;
@@ -59,6 +59,8 @@ public class OptOutSurveyController {
     @Autowired private PaoDao paoDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private EnergyCompanyDao ecDao;
+    
+    private final static String baseKey = "yukon.web.modules.operator.surveyList";
     
     private Validator validator = new SimpleValidator<OptOutSurveyDto>(OptOutSurveyDto.class) {
         @Override

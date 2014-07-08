@@ -3,7 +3,7 @@
 <cti:standardPage module="tools" page="bulk.analysis.list">
     <cti:includeScript link="/JavaScript/yukon.data.analysis.js"/>
     
-    <div class="f-table-container" data-reloadable>
+    <div data-reloadable>
         <%@ include file="listFragment.jsp" %>
     </div>
 </cti:standardPage>

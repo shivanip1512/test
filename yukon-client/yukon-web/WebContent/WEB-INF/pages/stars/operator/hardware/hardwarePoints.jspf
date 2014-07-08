@@ -59,7 +59,7 @@ $(function() {
             <div id="commandStatus" class="dn error"></div>
         </c:if>
     <div class="action-area">
-        <cti:url var="pointsUrl" value="/common/operator/points">
+        <cti:url var="pointsUrl" value="/stars/operator/hardware/points">
             <cti:param name="deviceId" value="${hardware.deviceId}"/>
             <cti:param name="accountId" value="${accountId}"/>
         </cti:url>

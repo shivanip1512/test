@@ -141,7 +141,7 @@ var programIdsAlreadyEnrolled = [];
                 <tags:pickerDialog type="assignedProgramPicker" id="programPicker"
                     memoryGroup="programPicker"
                     destinationFieldName="assignedProgramId"
-                    endAction="addEnrollment" styleClass="simpleLink"
+                    endAction="addEnrollment"
                     immediateSelectMode="true" extraArgs="${energyCompanyId}"
                     linkType="button" nameKey="add" icon="icon-add"/>
                 <script type="text/javascript">

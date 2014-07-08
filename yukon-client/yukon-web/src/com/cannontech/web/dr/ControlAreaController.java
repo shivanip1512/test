@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
+
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +27,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.IntegerRange;
 import com.cannontech.common.util.JsonUtils;
-import com.cannontech.common.util.MutableRange;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -59,13 +67,14 @@ import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.ListBackingBean;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Ordering;
 
@@ -81,22 +90,25 @@ public class ControlAreaController extends DemandResponseControllerBase {
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private DurationFormattingService durationFormattingService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
-    @Autowired private ProgramControllerHelper programControllerHelper;
+    @Autowired private ProgramsHelper programsHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private TriggerFieldService triggerFieldService;
-
-    public static class ControlAreaListBackingBean extends ListBackingBean {
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    
+    public static class ControlAreaFilter {
+        
+        private String name;
         private String state;
         private IntegerRange priority = new IntegerRange();
 
-        // TODO:
-        // START and STOP (HH:MM only)
-        // private String start;
-        // private String stop;
-
-        // probably can move this up to ListBackingBean
-        private MutableRange<Double> loadCapacity = new MutableRange<Double>();
-
+        public String getName() {
+            return name;
+        }
+        
+        public void setName(String name) {
+            this.name = name;
+        }
+        
         public String getState() {
             return state;
         }
@@ -113,34 +125,57 @@ public class ControlAreaController extends DemandResponseControllerBase {
             this.priority = priority;
         }
 
-        public MutableRange<Double> getLoadCapacity() {
-            return loadCapacity;
-        }
-
-        public void setLoadCapacity(MutableRange<Double> loadCapacity) {
-            this.loadCapacity = loadCapacity;
-        }
     }
 
-    private SimpleValidator<ControlAreaListBackingBean> filterValidator =
-        new SimpleValidator<ControlAreaListBackingBean>(ControlAreaListBackingBean.class) {
+    private SimpleValidator<ControlAreaFilter> filterValidator =
+        new SimpleValidator<ControlAreaFilter>(ControlAreaFilter.class) {
             @Override
-            protected void doValidation(ControlAreaListBackingBean target,
+            protected void doValidation(ControlAreaFilter target,
                     Errors errors) {
                 if (!target.priority.isValid() || target.priority.isEmpty()) {
                     errors.reject("priorityFromAfterTo");
                 }
             }
     };
+    
+    private enum SortBy implements DisplayableEnum {
+        
+        CA_NAME,
+        CA_STATE,
+        TR_VALUE_THRESHOLD,
+        TR_PEAK_PROJECTION,
+        TR_ATKU,
+        CA_PRIORITY,
+        CA_START;
 
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.dr.controlAreaList.heading." + name();
+        }
+        
+    }
+    
+    private void buildColumn(ModelMap model, MessageSourceAccessor accessor, SortBy field, SortingParameters sorting) {
+        
+        Direction dir = sorting.getDirection();
+        SortBy sort = SortBy.valueOf(sorting.getSort());
+        
+        String text = accessor.getMessage(field);
+        boolean active = sort == field;
+        SortableColumn col = new SortableColumn(dir, active, text, field.name());
+        model.addAttribute(field.name(), col);
+    }
+    
     @RequestMapping("/controlArea/list")
     public String list(ModelMap model,
-            @ModelAttribute("backingBean") ControlAreaListBackingBean backingBean,
+            @ModelAttribute("filter") ControlAreaFilter filter,
+            @DefaultItemsPerPage(25) PagingParameters paging,
+            @DefaultSort(dir=Direction.asc, sort="CA_NAME") SortingParameters sorting,
             BindingResult bindingResult, 
             FlashScope flashScope,
             YukonUserContext userContext) {
         
-        filterValidator.validate(backingBean, bindingResult);
+        filterValidator.validate(filter, bindingResult);
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
 
@@ -149,11 +184,11 @@ public class ControlAreaController extends DemandResponseControllerBase {
                                          Permission.LM_VISIBLE));
 
         boolean isFiltered = false;
-        if (!StringUtils.isEmpty(backingBean.getName())) {
-            filters.add(new NameFilter(backingBean.getName()));
+        if (!StringUtils.isEmpty(filter.getName())) {
+            filters.add(new NameFilter(filter.getName()));
             isFiltered = true;
         }
-        String stateFilter = backingBean.getState();
+        String stateFilter = filter.getState();
         if (!StringUtils.isEmpty(stateFilter)) {
             if (stateFilter.equals("active")) {
                 filters.add(new StateFilter(controlAreaService, true));
@@ -163,8 +198,8 @@ public class ControlAreaController extends DemandResponseControllerBase {
                 isFiltered = true;
             }
         }
-        if (!backingBean.getPriority().isUnbounded()) {
-            filters.add(new PriorityFilter(controlAreaService, backingBean.getPriority()));
+        if (!filter.getPriority().isUnbounded()) {
+            filters.add(new PriorityFilter(controlAreaService, filter.getPriority()));
             isFiltered = true;
         }
         model.addAttribute("isFiltered", isFiltered);
@@ -172,11 +207,10 @@ public class ControlAreaController extends DemandResponseControllerBase {
         // Sorting - name is default sorter
         Comparator<DisplayablePao> defaultSorter = controlAreaNameField.getSorter(userContext);
         Comparator<DisplayablePao> sorter = defaultSorter;
-        if (!StringUtils.isEmpty(backingBean.getSort())) {
+        if (!StringUtils.isEmpty(sorting.getSort())) {
             // If there is a custom sorter, add it
-
             boolean backWithNameSorter = true;
-            String sortFieldName = backingBean.getSort();
+            String sortFieldName = sorting.getSort();
             if (sortFieldName.startsWith("CA_")) {
                 DemandResponseBackingField<LMControlArea> sortField = controlAreaFieldService.getBackingField(sortFieldName.substring(3));
                 sorter = sortField.getSorter(userContext);
@@ -188,7 +222,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
                 throw new RuntimeException("invalid sort field name");
             }
 
-            if (backingBean.getDescending()) {
+            if (sorting.getDirection() == Direction.desc) {
                 sorter = Collections.reverseOrder(sorter);
             }
 
@@ -198,40 +232,55 @@ public class ControlAreaController extends DemandResponseControllerBase {
             }
         }
 
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
-        int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
+        UiFilter<DisplayablePao> uifilter = UiFilterList.wrap(filters);
         SearchResults<DisplayablePao> searchResult =
-            controlAreaService.filterControlAreas(filter, sorter, startIndex,
-                                                  backingBean.getItemsPerPage(), userContext);
+            controlAreaService.filterControlAreas(uifilter, sorter, paging.getStartIndex(),
+                                                  paging.getItemsPerPage(), userContext);
 
-        model.addAttribute("searchResult", searchResult);
-        model.addAttribute("controlAreas", searchResult.getResultList());
+        model.addAttribute("areas", searchResult);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
+        
+        // add columns
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        buildColumn(model, accessor, SortBy.CA_NAME, sorting);
+        buildColumn(model, accessor, SortBy.CA_STATE, sorting);
+        buildColumn(model, accessor, SortBy.TR_VALUE_THRESHOLD, sorting);
+        buildColumn(model, accessor, SortBy.TR_PEAK_PROJECTION, sorting);
+        buildColumn(model, accessor, SortBy.TR_ATKU, sorting);
+        buildColumn(model, accessor, SortBy.CA_PRIORITY, sorting);
+        buildColumn(model, accessor, SortBy.CA_START, sorting);
 
         return "dr/controlArea/list.jsp";
     }
 
     @RequestMapping("/controlArea/detail")
     public String detail(int controlAreaId, ModelMap model,YukonUserContext userContext,
-            @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
-            BindingResult bindingResult, FlashScope flashScope, LiteYukonUser user) {
+            @ModelAttribute("filter") ProgramsHelper.ProgramFilter filter,
+            BindingResult bindingResult,
+            @DefaultItemsPerPage(10) PagingParameters paging,
+            @DefaultSort(dir=Direction.asc, sort="NAME") SortingParameters sorting,
+            FlashScope flashScope) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        paoAuthorizationService.verifyAllPermissions(user, controlArea, Permission.LM_VISIBLE);
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), controlArea, Permission.LM_VISIBLE);
 
         model.addAttribute("controlArea", controlArea);
         UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
-        programControllerHelper.filterPrograms(model, userContext, backingBean,
-                                               bindingResult, detailFilter);
+        programsHelper.filterPrograms(model, userContext, filter, bindingResult, detailFilter, sorting, paging);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
+        
+        // add columns
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        programsHelper.addColumns(model, accessor, sorting);
         
         return "dr/controlArea/detail.jsp";
     }
     
     @RequestMapping("/controlArea/assetAvailability")
     public String assetAvailability(ModelMap model, YukonUserContext userContext, int paoId) {
+        
         model.addAttribute("paoId", paoId);
         DisplayablePao controlArea = controlAreaService.getControlArea(paoId);
         if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
@@ -239,13 +288,10 @@ public class ControlAreaController extends DemandResponseControllerBase {
         }
         return "dr/assetAvailability.jsp";
     }
-
     
     @RequestMapping("/controlArea/assetDetails")
-    public String assetDetails(@RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                               @RequestParam(defaultValue="1") int page,
-                               @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
-                               final boolean descending,
+    public String assetDetails(@DefaultItemsPerPage(25) PagingParameters paging,
+                               @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
                                int assetId, 
                                ModelMap model, 
                                YukonUserContext userContext) throws IOException {
@@ -254,11 +300,11 @@ public class ControlAreaController extends DemandResponseControllerBase {
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, null);
-        sortAssetDetails(resultsList, sortBy, descending, userContext);
+        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
+        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
         
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
+                SearchResults.pageBasedForWholeList(paging, resultsList);
 
         model = getAssetAvailabilityInfo(controlArea, model, userContext);
         
@@ -267,40 +313,36 @@ public class ControlAreaController extends DemandResponseControllerBase {
         model.addAttribute("controlArea", controlArea);
         model.addAttribute("type", "controlArea");
         model.addAttribute("result", result);
-        model.addAttribute("itemsPerPage", itemsPerPage);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        addAssetColumns(model, accessor, sorting);
         
         return "dr/assetDetails.jsp";
     }
-
-
-    /**
-     * Used for paging and filtering operations.
-     * @throws IOException 
-     * @throws  
-     */
+    
     @RequestMapping("/controlArea/page")
     public String page(ModelMap model, 
                        YukonUserContext userContext,
                        int assetId,
-                       @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
-                       final boolean descending,
-                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                       @RequestParam(defaultValue="1") int page,
+                       @DefaultItemsPerPage(25) PagingParameters paging,
+                       @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
                        @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
         List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, filters);
-        sortAssetDetails(resultsList, sortBy, descending, userContext);
+        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
+        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
 
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
+                SearchResults.pageBasedForWholeList(paging, resultsList);
         
         model.addAttribute("result", result);
         model.addAttribute("type", "controlArea");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
-        model.addAttribute("itemsPerPage", itemsPerPage);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        addAssetColumns(model, accessor, sorting);
         
         return "dr/assetTable.jsp";
     }
@@ -688,6 +730,6 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        programControllerHelper.initBinder(binder, userContext, "controlArea");
+        programsHelper.initBinder(binder, userContext, "controlArea");
     }
 }

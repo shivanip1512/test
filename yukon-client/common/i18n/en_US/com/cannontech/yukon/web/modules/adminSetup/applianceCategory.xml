@@ -70,23 +70,22 @@
     Unchecking this will remove the appliance category from the consumer enrollment page.
 </entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.filters">Filters</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.filterButton.label">Filter</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.showAllButton.label">Show All</entry>
-
-<entry key="yukon.web.modules.adminSetup.applianceCategory.assignedPrograms">Assigned Programs</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.assignedPrograms.filterBy.title">Filter Programs</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.assignedPrograms.filterBy">Filter By:</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.assignedPrograms.title">Assigned Programs</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.noAssignedPrograms">There are currently no programs assigned to this appliance category.</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.programName">Program Name</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.programName.linkText">Program Name</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.virtualProgramName">Virtual Program {0}</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.actions">Actions</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.displayOrder.linkText">Display Order</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.displayOrder">Display Order</entry>
 
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.hoverText">Edit Assigned Program</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.title">Edit Assigned Program</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.success">Program assignment saved.</entry>
 
 <entry key="yukon.web.modules.adminSetup.applianceCategory.unassignProgram.hoverText">Remove Program from Appliance Category</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.unassignProgram.title">Remove Program</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.unassignProgram.success">Program {0} unassigned successfully.</entry>
 
 <!-- validation errors -->
 <entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.empty.name">Name cannot be empty.</entry>

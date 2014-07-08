@@ -19,8 +19,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -47,8 +45,6 @@ import com.cannontech.cbc.commands.CommandResultCallback;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LazyList;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
@@ -210,11 +206,9 @@ public class ZoneDetailController {
     }
 
     @RequestMapping("voltageDeltas")
-    public String voltageDeltas(ModelMap model, 
-            HttpServletRequest request,
-            LiteYukonUser user, int zoneId) throws ServletRequestBindingException {
+    public String voltageDeltas(ModelMap model, LiteYukonUser user, int zoneId) {
         
-        setupDeltas(model, request, zoneId);
+        setupDeltas(model, zoneId);
         setupBreadCrumbs(model, user, zoneId);
         
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
@@ -225,10 +219,9 @@ public class ZoneDetailController {
     }
     
     @RequestMapping("voltageDeltasTable")
-    public String voltageDeltasTable(ModelMap model, HttpServletRequest request, LiteYukonUser user, int zoneId) 
-    throws ServletRequestBindingException {
+    public String voltageDeltasTable(ModelMap model, LiteYukonUser user, int zoneId) {
         
-        setupDeltas(model, request, zoneId);
+        setupDeltas(model, zoneId);
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole", hasEditingRole);
         model.addAttribute("zoneId", zoneId);
@@ -492,31 +485,12 @@ public class ZoneDetailController {
         model.addAttribute("regulatorPointMappingsMap", pointMappingsMap);
     }
     
-    private void setupDeltas(ModelMap model, HttpServletRequest request, int zoneId) throws ServletRequestBindingException {
+    private void setupDeltas(ModelMap model, int zoneId) {
         
         List<Integer> bankIds = zoneService.getCapBankIdsForZoneId(zoneId);
         
         List<CapBankPointDelta> pointDeltas = zoneService.getAllPointDeltasForBankIds(bankIds);
         
-        int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
-        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
-        int startIndex = (currentPage - 1) * itemsPerPage;
-        
-        SearchResults<CapBankPointDelta> searchResults = new SearchResults<CapBankPointDelta>();
-        List<CapBankPointDelta> trimmedPointDeltas = Lists.newArrayList();
-        
-        if (startIndex < pointDeltas.size()) {
-            int endIndex;
-            
-            if (startIndex + itemsPerPage > pointDeltas.size()) {
-                endIndex = pointDeltas.size();
-            } else {
-                endIndex = startIndex + itemsPerPage;
-            }
-            
-        	trimmedPointDeltas = pointDeltas.subList(startIndex,endIndex);
-        }
-
         Ordering<CapBankPointDelta> capBankOrdering =
             Ordering.from(String.CASE_INSENSITIVE_ORDER)
                 .onResultOf(new Function<CapBankPointDelta, String>() {
@@ -540,11 +514,8 @@ public class ZoneDetailController {
                         }
                     }));
 
-        Collections.sort(trimmedPointDeltas, capBankOrdering);
+        Collections.sort(pointDeltas, capBankOrdering);
 
-        searchResults.setResultList(trimmedPointDeltas);
-        searchResults.setBounds(startIndex, itemsPerPage, pointDeltas.size());
-        
         // Set the CapBankPointDelta.deltaRounded value to the delta value rounded down
         // to the number of decimal places stored in the PointUnit table for that point
         for (CapBankPointDelta pointDelta: pointDeltas) {
@@ -554,7 +525,7 @@ public class ZoneDetailController {
             pointDelta.setDeltaRounded(bdDelta.doubleValue());
         }
         
-        model.addAttribute("searchResults", searchResults);
+        model.addAttribute("pointDeltas", pointDeltas);
     }
 
     private void setupBreadCrumbs(ModelMap model, LiteYukonUser user, int zoneId) {

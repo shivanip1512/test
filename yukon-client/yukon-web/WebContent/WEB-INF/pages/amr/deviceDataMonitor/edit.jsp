@@ -60,7 +60,7 @@
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
                     <tags:deviceGroupNameSelector fieldName="groupName"
                         fieldValue="${monitor.groupName}" dataJson="${groupDataJson}"
-                        linkGroupName="true" submitCallback="yukon.DeviceDataMonitor.device_group_changed();"/>
+                        linkGroupName="true" submitCallback="yukon.DeviceDataMonitor.device_group_changed"/>
                 </tags:nameValue2>
 
                 <cti:displayForPageEditModes modes="EDIT">

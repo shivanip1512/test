@@ -7,6 +7,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.user.YukonUserContext;
 
 public interface DemandResponseService {
+    
     public static enum CombinedSortableField {
         NAME,
         TYPE,

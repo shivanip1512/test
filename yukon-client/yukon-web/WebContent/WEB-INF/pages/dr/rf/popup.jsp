@@ -29,8 +29,8 @@
             </div>
         </div>
     </c:if>
-    
-    <div data-reloadable>
+    <cti:url var="url" value="/dr/rf/details/${type}/${test}/page"/>
+    <div data-url="${url}">
         <%@ include file="table.jsp" %>
     </div>
     

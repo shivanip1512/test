@@ -22,7 +22,7 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.selected">selected</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.selectBy">Select By</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.cog.title">Display Events</entry>
-    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.dateFrom">From</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.range">Date Range</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.dateTo">To</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyAbnormalEvents">Only Abnormal Events</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.onlyAbnormalEvents.help.title">Only Abnormal Events</entry>

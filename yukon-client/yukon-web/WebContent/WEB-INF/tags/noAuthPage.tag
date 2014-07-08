@@ -38,7 +38,6 @@
 <cti:includeScript link="JQUERY_CHECK_ALL" force="true"/>
 <cti:includeScript link="JQUERY_FORM" force="true"/>
 <cti:includeScript link="JQUERY_PLACEHOLDER" force="true"/>
-<cti:includeScript link="JQUERY_TRAVERSABLE" force="true"/>
 <cti:includeScript link="YUKON" force="true"/>
 <cti:includeScript link="JQUERY_TIPSY" force="true"/>
 <script src="<cti:url value="/JavaScript/yukon.ui.util.js"/>"></script>

@@ -17,6 +17,11 @@ import org.springframework.web.bind.WebDataBinder;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DateRange;
@@ -39,16 +44,26 @@ import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.input.DatePropertyEditorFactory;
-import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Ordering;
 
-public class LoadGroupControllerHelper {
+public class LoadGroupHelper {
     
-    public static class LoadGroupListBackingBean extends ListBackingBean {
+    public static class LoadGroupFilter {
+        
+        private String name;
         private String state;
         private DateRange lastAction = new DateRange();
         private MutableRange<Double> loadCapacity = new MutableRange<Double>();
+        
+        public String getName() {
+            return name;
+        }
+        
+        public void setName(String name) {
+            this.name = name;
+        }
         
         public String getState() {
             return state;
@@ -68,13 +83,13 @@ public class LoadGroupControllerHelper {
         public void setLoadCapacity(MutableRange<Double> loadCapacity) {
             this.loadCapacity = loadCapacity;
         }
+        
     }
 
-    private SimpleValidator<LoadGroupListBackingBean> validator =
-        new SimpleValidator<LoadGroupListBackingBean>(LoadGroupListBackingBean.class) {
+    private SimpleValidator<LoadGroupFilter> validator =
+        new SimpleValidator<LoadGroupFilter>(LoadGroupFilter.class) {
             @Override
-            protected void doValidation(LoadGroupListBackingBean target,
-                    Errors errors) {
+            protected void doValidation(LoadGroupFilter target, Errors errors) {
                 if (!target.lastAction.isValid() || target.lastAction.isEmpty()) {
                     errors.reject("lastActionFromTimeAfterToTime");
                 }
@@ -104,9 +119,11 @@ public class LoadGroupControllerHelper {
     }
 
     public void filterGroups(ModelMap model, YukonUserContext userContext,
-            LoadGroupListBackingBean backingBean, BindingResult bindingResult,
-            UiFilter<DisplayablePao> detailFilter, FlashScope flashScope) {
-        validator.validate(backingBean, bindingResult);
+            LoadGroupFilter filter, BindingResult bindingResult,
+            UiFilter<DisplayablePao> detailFilter, FlashScope flashScope,
+            PagingParameters paging, SortingParameters sorting) {
+        
+        validator.validate(filter, bindingResult);
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
         if (detailFilter != null) {
@@ -118,11 +135,11 @@ public class LoadGroupControllerHelper {
                 Permission.LM_VISIBLE));
 
         boolean isFiltered = false;
-        if (!StringUtils.isEmpty(backingBean.getName())) {
-            filters.add(new NameFilter(backingBean.getName()));
+        if (!StringUtils.isEmpty(filter.getName())) {
+            filters.add(new NameFilter(filter.getName()));
             isFiltered = true;
         }
-        String stateFilter = backingBean.getState();
+        String stateFilter = filter.getState();
         if (!StringUtils.isEmpty(stateFilter)) {
             if (stateFilter.equals("active")) {
                 filters.add(new LoadGroupStateFilter(loadGroupService, true));
@@ -132,12 +149,12 @@ public class LoadGroupControllerHelper {
                 isFiltered = true;
             }
         }
-        if (!backingBean.getLastAction().isUnbounded()) {
-            filters.add(new LoadGroupLastActionFilter(loadGroupService, backingBean.getLastAction()));
+        if (!filter.getLastAction().isUnbounded()) {
+            filters.add(new LoadGroupLastActionFilter(loadGroupService, filter.getLastAction()));
             isFiltered = true;
         }
-        if (!backingBean.getLoadCapacity().isUnbounded()) {
-            filters.add(new LoadGroupLoadCapacityFilter(loadGroupService, backingBean.getLoadCapacity()));
+        if (!filter.getLoadCapacity().isUnbounded()) {
+            filters.add(new LoadGroupLoadCapacityFilter(loadGroupService, filter.getLoadCapacity()));
             isFiltered = true;
         }
         model.addAttribute("isFiltered", isFiltered);
@@ -145,14 +162,14 @@ public class LoadGroupControllerHelper {
         // Sorting - name is default sorter
         Comparator<DisplayablePao> defaultSorter = loadGroupNameField.getSorter(userContext);
         Comparator<DisplayablePao> sorter = defaultSorter;
-        if(!StringUtils.isEmpty(backingBean.getSort())) {
+        if(!StringUtils.isEmpty(sorting.getSort())) {
             // If there is a custom sorter, add it
             
             DemandResponseBackingField<LMDirectGroupBase> sortField = 
-                loadGroupFieldService.getBackingField(backingBean.getSort());
+                loadGroupFieldService.getBackingField(sorting.getSort());
             
             sorter = sortField.getSorter(userContext);
-            if(backingBean.getDescending()) {
+            if(sorting.getDirection() == Direction.desc) {
                 sorter = Collections.reverseOrder(sorter);
             }
             
@@ -162,14 +179,12 @@ public class LoadGroupControllerHelper {
             }
         }
         
-        int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
-        SearchResults<DisplayablePao> searchResult =
-            loadGroupService.filterGroups(filter, sorter, startIndex,
-                                          backingBean.getItemsPerPage(), userContext);
+        UiFilter<DisplayablePao> uifilter = UiFilterList.wrap(filters);
+        SearchResults<DisplayablePao> loadGroups =
+            loadGroupService.filterGroups(uifilter, sorter, paging.getStartIndex(),
+                                          paging.getItemsPerPage(), userContext);
 
-        model.addAttribute("searchResult", searchResult);
-        model.addAttribute("loadGroups", searchResult.getResultList());
+        model.addAttribute("loadGroups", loadGroups);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
     }
@@ -181,6 +196,39 @@ public class LoadGroupControllerHelper {
             List<MessageSourceResolvable> messages =
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
+    }
+    
+    public void addColumns(ModelMap model, MessageSourceAccessor accessor, SortingParameters sorting) {
+        buildColumn(model, accessor, SortBy.NAME, sorting);
+        buildColumn(model, accessor, SortBy.STATE, sorting);
+        buildColumn(model, accessor, SortBy.LAST_ACTION, sorting);
+        buildColumn(model, accessor, SortBy.CONTROL_STATISTICS, sorting);
+        buildColumn(model, accessor, SortBy.REDUCTION, sorting);
+    }
+    
+    private void buildColumn(ModelMap model, MessageSourceAccessor accessor, SortBy field, SortingParameters sorting) {
+        
+        Direction dir = sorting.getDirection();
+        SortBy sort = SortBy.valueOf(sorting.getSort());
+        
+        String text = accessor.getMessage(field);
+        boolean active = sort == field;
+        SortableColumn col = new SortableColumn(dir, active, text, field.name());
+        model.addAttribute(field.name(), col);
+    }
+    
+    public enum SortBy implements DisplayableEnum {
+        
+        NAME,
+        STATE,
+        LAST_ACTION,
+        CONTROL_STATISTICS,
+        REDUCTION;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.dr.loadGroupList.heading." + name();
         }
     }
 

@@ -2,86 +2,55 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-    <!-- DEVICE COLLECTION SELECTION selectDevices.jsp -->
-    <entry key="yukon.web.modules.amr.waterLeakReport.selectDevices.pageName">Meter Events Report Device Selection</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.selectDevices.pageDescription">Meter Events Report Device Selection</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.selectDevices.selectionContainer.title">Select Devices</entry>
-	
-	<!-- WATER LEAK REPORT jobs.jsp -->
-	<entry key="yukon.web.modules.amr.waterLeakReport.jobs.pageName">Scheduled Water Leak Reports</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.jobs.pageDescription">Scheduled Water Leak Reports</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.jobs.scheduleSuccess">Water Leak Report "{0}" successfully scheduled.</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.jobs.updateSuccess">Water Leak Report "{0}" successfully updated.</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.jobs.deletedSuccess">Water Leak Report "{0}" was deleted.</entry>
-	
     <!-- WATER LEAK REPORT report.jsp -->
     <entry key="yukon.web.modules.amr.waterLeakReport.report.pageName">Water Leak Report</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.pageDescription">Water Leak Report</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.firstVisit"><![CDATA[
-        Below is a report based on default filter values using our {0}.
-        <ul>
-        <li>To change the filter click the cog button on the right or {1}</li>
-        <li>To view interval data check the respective checkbox in the table below, then click the "View Interval Data" button</li>
-        </ul>
-    ]]></entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.noResults">No leaks were found using our {0} and the {1}. This is possibly an indication that your filter needs tweaking.</entry>
+    
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.title">Filter</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.devices">Devices</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.deviceGroup">Device Group - {0}</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.dateRange">Date Range</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.threshold">Threshold (gal)</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.threshold.helpText"><![CDATA[If all readings during the filter period are above this value,<br>the device is considered leaking.]]></entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.includeDisabledDevices">Include Disabled Devices</entry>
+    
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.scheduledReports.title">Scheduled Reports</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.filterBetweenFromAndToBreach"><![CDATA[
          The {0} has a from date and to date that are {1,choice,0#0 hours|1#1 hour|1<{1} hours} apart. A {2} hour period or longer is recommended for accurately determining leaks. See the {3} for more information.
     ]]></entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.filterBetweenToAndNowBreach"><![CDATA[
          The {0} is showing leaks up to {1,choice,0#now|1#1 hour ago|1<{1} hours ago}. Data may not be available for some devices in the last 24 hours. See the {2} for more information.
     ]]></entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.foundLeaks">There have been {0} water leaks identified (see below) using our {1} and based on the {2}.</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.defaultFilter">default filter</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.currentFilter">current filter</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.clickHere">click here</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm">leak detection algorithm</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm.title">Leak Detection Algorithm</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.leaks.title">Water Leaks</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.algorithm">Algorithm Details</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.algorithm.title">Leak Detection Algorithm</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason1">A leak is detected when every metering interval over the selected reporting period has usage greater than the filter's threshold value in gallons (this is zero by default).</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason2">The size of the leak (Leak Rate) is the smallest interval usage value over the selected reporting period converted to gallons/hr.</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason3">If any of the interval data during the period is not yet collected for a meter, that meter will not be flagged for leaks regardless of what any partial data shows. This is to prevent false alarms.</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason4">To ensure meters have a full set of data for the reporting period, it's recommended that the report stop time is at least as far back from the current time as the RFN reporting interval (the water node reporting interval is 24 hours by default, so the report defaults to 25+ hours ago for the stop time).</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterShortcutOpen">Shortcut: Pressing f also opens this dialog box</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.scheduleShortcutOpen">Shortcut: Pressing s also opens this dialog box</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.scheduleButton">Schedule</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterButtonTitle">View report using above values</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.scheduleButtonTitle">Schedule report export</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.updateButton">Update</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.updateButtonTitle">Update report export</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterResetButtonTitle">View default report</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterShortcutClose">Press Esc to close</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.deviceSectionHeader.title">Devices</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterSectionHeader.title">Filter</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter">Filter</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.schedule">Schedule</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.leakFilterDialog.title">Water Leak Report</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakScheduleDialog.title">Schedule Report {0}</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.helpText">Help</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.section">Filter Options</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.deviceGroup">Device Group - {0}</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.fromDate">From Date</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.fromHour">From Hour</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.toDate">To Date</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.toHour">To Hour</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.threshold">Threshold (gal)</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.threshold.helpText">If all readings during the filter period are above this value, the device is considered leaking</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.includeDisabledDevices">Include Disabled Devices</entry>
-   	<entry key="yukon.web.modules.amr.waterLeakReport.report.schedule.hoursPrevious">Hours Previous</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableTitle.title">Water Leaks</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.deviceName.linkText">Device Name</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.meterNumber.linkText">Meter Number</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.deviceType.linkText">Device Type</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.leakRate.linkText">Leak Rate</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.schedule.hoursPrevious">Hours Previous</entry>
+    
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.DEVICE_NAME">Device Name</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.METER_NUMBER">Meter Number</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.PAO_TYPE">Device Type</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.LEAK_RATE">Leak Rate</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.USAGE">Usage</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.DATE">Date</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.cisDetails">Customer Info</entry>
+    
     <entry key="yukon.web.modules.amr.waterLeakReport.report.viewCISDetails">View Details</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.noLeaks">No Leaks</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.viewIntervalData">View Interval Data</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.viewIntervalDataTitle">View interval data for the selected devices</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.performCollectionAction">Collection Action (All Devices)</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.intervals.label">View Interval Data</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakRateLabel">{0,number,0.000} gal/hr</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.exportCSV">Export to CSV</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.results.deviceCollectionDescription">Water Leak Report Results</entry>
-
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.scheduleSuccess">Water Leak Report "{0}" successfully scheduled.</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.updateSuccess">Water Leak Report "{0}" successfully updated.</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.deletedSuccess">Water Leak Report "{0}" was deleted.</entry>
+    
+    <!-- Validation Errors -->
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.thresholdNegative">Threshold cannot be negative</entry>
+    
     <!-- WATER LEAK REPORT ACCOUNT INFO DIALOG accountInfoAjax.jsp -->
     <entry key="yukon.web.modules.amr.waterLeakReport.accountInfo.title">Account Info</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.custInfo">Customer Information</entry>
@@ -99,20 +68,9 @@
     <!-- WATER LEAK REPORT INTERVAL DATA intervalData.jsp -->
     <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.pageName">Interval Data</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.pageDescription">Interval Data</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.legend">Indicates a Leak</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.tableTitle.title">Water Leak Interval Data</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.tableHeader.deviceName.linkText">Device Name</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.tableHeader.meterNumber.linkText">Meter Number</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.tableHeader.deviceType.linkText">Device Type</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.tableHeader.usage.linkText">Usage (Gallons)</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.tableHeader.date.linkText">Date</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.noUsage">No Usage</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.leakIndicationDescription">The highlighted rows below represent intervals where a leak was detected using our {0}</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.results.deviceCollectionDescription">Water Leak Report Interval Data Results</entry>
-
-    <!-- Validation Errors -->
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.thresholdNegative">Threshold cannot be negative</entry>
-    
-    <entry key="yukon.web.modules.amr.waterLeakReport.jobs.scheduleSuccess">File export "{0}" scheduled successfully.</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.jobs.updateSuccess">File export "{0}" updated successfully.</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.intervalData.results.deviceCollectionDescription">Water Leak Report - Interval Data</entry>
     
 </properties>

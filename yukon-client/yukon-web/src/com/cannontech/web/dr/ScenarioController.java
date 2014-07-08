@@ -2,11 +2,11 @@ package com.cannontech.web.dr;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
+
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -20,12 +20,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -37,16 +43,15 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.filter.AuthorizedFilter;
-import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.service.ScenarioService;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
+import com.cannontech.web.dr.ProgramsHelper.ProgramFilter;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.ListBackingBean;
 import com.cannontech.web.util.WebFileUtils;
 
 @Controller
@@ -56,64 +61,54 @@ public class ScenarioController extends DemandResponseControllerBase {
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
-    @Autowired private ProgramControllerHelper programControllerHelper;
+    @Autowired private ProgramsHelper programsHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private ScenarioService scenarioService;
-
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping("/scenario/list")
     public String list(ModelMap model,
-            @ModelAttribute("backingBean") ListBackingBean backingBean,
-            BindingResult bindingResult, FlashScope flashScope,
+            @DefaultItemsPerPage(25) PagingParameters paging,
             YukonUserContext userContext) {
+        
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
 
         filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, 
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
 
-        boolean isFiltered = false;
-        if (!StringUtils.isEmpty(backingBean.getName())) {
-            filters.add(new NameFilter(backingBean.getName()));
-            isFiltered = true;
-        }
-        model.addAttribute("isFiltered", isFiltered);
-
         // Sorting - name is default sorter
         Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
-        if(backingBean.getDescending()) {
-            sorter = Collections.reverseOrder(sorter);
-        }
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
-        int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        SearchResults<DisplayablePao> searchResult =
-            scenarioService.filterScenarios(userContext, filter, sorter, startIndex,
-                                            backingBean.getItemsPerPage());
+        UiFilter<DisplayablePao> uifilter = UiFilterList.wrap(filters);
+        SearchResults<DisplayablePao> scenarios =
+            scenarioService.filterScenarios(userContext, uifilter, sorter, 
+                    paging.getStartIndex(), paging.getItemsPerPage());
 
-        model.addAttribute("searchResult", searchResult);
-        model.addAttribute("scenarios", searchResult.getResultList());
-
-        addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
+        model.addAttribute("scenarios", scenarios);
 
         return "dr/scenario/list.jsp";
     }
 
     @RequestMapping("/scenario/detail")
-    public String detail(int scenarioId, ModelMap model, LiteYukonUser user,
-            @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
+    public String detail(int scenarioId, ModelMap model,
+            @ModelAttribute("filter") ProgramFilter filter,
             BindingResult bindingResult, YukonUserContext userContext,
+            @DefaultItemsPerPage(25) PagingParameters paging,
+            @DefaultSort(dir=Direction.asc, sort="NAME") SortingParameters sorting,
             FlashScope flashScope) {
         
         DisplayablePao scenario = scenarioDao.getScenario(scenarioId);
-        paoAuthorizationService.verifyAllPermissions(user, scenario, Permission.LM_VISIBLE);
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), scenario, Permission.LM_VISIBLE);
         model.addAttribute("scenario", scenario);
 
         UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);
-        programControllerHelper.filterPrograms(model, userContext, backingBean,
-                                               bindingResult, detailFilter);
+        programsHelper.filterPrograms(model, userContext, filter, bindingResult, detailFilter, sorting, paging);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        programsHelper.addColumns(model, accessor, sorting);
         
         return "dr/scenario/detail.jsp";
     }
@@ -130,10 +125,8 @@ public class ScenarioController extends DemandResponseControllerBase {
     
 
     @RequestMapping("/scenario/assetDetails")
-    public String assetDetails(@RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                               @RequestParam(defaultValue="1") int page,
-                               @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
-                               final boolean descending,
+    public String assetDetails(@DefaultItemsPerPage(25) PagingParameters paging,
+                               @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
                                int assetId, 
                                ModelMap model, 
                                YukonUserContext userContext) throws IOException {
@@ -142,11 +135,11 @@ public class ScenarioController extends DemandResponseControllerBase {
         DisplayablePao scenario = scenarioService.getScenario(assetId);
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, null);
-        sortAssetDetails(resultsList, sortBy, descending, userContext);
+        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
+        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
         
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
+                SearchResults.pageBasedForWholeList(paging, resultsList);
 
         model = getAssetAvailabilityInfo(scenario, model, userContext);
         
@@ -155,7 +148,9 @@ public class ScenarioController extends DemandResponseControllerBase {
         model.addAttribute("scenario", scenario);
         model.addAttribute("type", "scenario");
         model.addAttribute("result", result);
-        model.addAttribute("itemsPerPage", itemsPerPage);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        addAssetColumns(model, accessor, sorting);
         
         return "dr/assetDetails.jsp";
     }
@@ -174,27 +169,25 @@ public class ScenarioController extends DemandResponseControllerBase {
     public String page(ModelMap model, 
                        YukonUserContext userContext,
                        int assetId,
-                       @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
-                       final boolean descending,
-                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                       @RequestParam(defaultValue="1") int page,
+                       @DefaultItemsPerPage(25) PagingParameters paging,
+                       @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
                        @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters) throws IOException {
 
         DisplayablePao scenario = scenarioService.getScenario(assetId);
         List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filters);
-        sortAssetDetails(resultsList, sortBy, descending, userContext);
+        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
+        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
 
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
+                SearchResults.pageBasedForWholeList(paging, resultsList);
         
         model.addAttribute("result", result);
         model.addAttribute("type", "scenario");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
-        model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("assetDetailsSortBy", sortBy);
-        model.addAttribute("assetDetailsSortDesc", descending);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        addAssetColumns(model, accessor, sorting);
         
         return "dr/assetTable.jsp";
     }
@@ -250,6 +243,6 @@ public class ScenarioController extends DemandResponseControllerBase {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        programControllerHelper.initBinder(binder, userContext, "programList");
+        programsHelper.initBinder(binder, userContext, "programList");
     }
 }

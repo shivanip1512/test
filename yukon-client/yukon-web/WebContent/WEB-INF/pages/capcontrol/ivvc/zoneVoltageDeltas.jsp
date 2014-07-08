@@ -26,10 +26,6 @@
                 }
             });
             
-            $(document).on('yukon.vv.ivvc.voltage.deltas.reloaded', function() {
-                disableButtons();
-            });
-            
             $(document).on('click', 'input[type="checkbox"].editableStaticDelta', function(e) {
                 $(e.currentTarget).toggleClass("staticChanged");
                 $(e.currentTarget).parent("label").toggleClass("staticChangedLabel");
@@ -111,12 +107,11 @@
         <cti:csrfToken/>
         <input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
 
-        <div class="stacked" data-reloadable="yukon.vv.ivvc.voltage.deltas.reloaded">
-            <%@ include file="zoneVoltageDeltasTable.jsp" %>
+        <%@ include file="zoneVoltageDeltasTable.jsp" %>
+        
+        <div id="deltaFormButtons" class="action-area clear">
+            <cti:button id="deltaSubmitBtn" nameKey="update" type="submit" classes="primary action" disabled="true"/>
+            <cti:button nameKey="cancel" type="reset" id="deltaReset" disabled="true"/>
         </div>
-            <div id="deltaFormButtons" class="action-area clear">
-                <cti:button id="deltaSubmitBtn" nameKey="update" type="submit" classes="primary action" disabled="true"/>
-                <cti:button nameKey="cancel" type="reset" id="deltaReset" disabled="true"/>
-            </div>
     </form:form>
 </cti:standardPage>

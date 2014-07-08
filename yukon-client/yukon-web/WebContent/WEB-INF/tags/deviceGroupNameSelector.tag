@@ -7,6 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="dataJson" required="true" %>
+<%@ attribute name="id" %>
 <%@ attribute name="classes" %>
 <%@ attribute name="fieldId" description="If not supplied, the fieldName will be used" %>
 <%@ attribute name="fieldName" required="true" %>
@@ -16,6 +17,8 @@
 <%@ attribute name="noGroupSelectedAlertText" %>
 <%@ attribute name="showSelectedDevicesIcon" %>
 <%@ attribute name="submitCallback" description="optional additional function to call when group is picked" %>
+
+<cti:default var="submitCallback" value="yukon.nothing"/>
 
 <cti:uniqueIdentifier var="uniqueId" prefix="deviceGroupNameSelectorTag_"/>
 
@@ -64,7 +67,7 @@
         dialog.dialog('open');
         
         // height (26px) plus margin (3px) of controls element
-        $('#selectGroupTree_${uniqueId}').css('max-height', content.height() -29);
+        $('#selectGroupTree_${uniqueId}').css('max-height', content.height() - 29);
     });
     
     window['setSelectedGroupName_${uniqueId}'] = function() {
@@ -83,35 +86,33 @@
     }
 
 </script>
-<div class="dib wsnw ${pageScope.classes}">
 
+<div class="dib wsnw ${pageScope.classes}"<c:if test="${!empty pageScope.id}"> id="${id}"</c:if>>
 <%-- NO GROUP SELECTED TEXT --%>
 <c:if test="${empty pageScope.fieldValue}">
     <a id="noGroupSelectedText_${uniqueId}" href="javascript:void(0);"
-        class="fl simpleLink leftOfImageLabel chooseGroupIcon_${uniqueId}">
+        class="fl chooseGroupIcon_${uniqueId}">
         <span class="noSelectionPickerLabel empty-list">${noGroupSelectedText}</span>
     </a>
     <c:set var="linkCssClass" value=" dn"/>
 </c:if>
-
 <c:choose>
     <%-- PLAIN GROUP NAME --%>
     <c:when test="${not pageScope.linkGroupName}">
         <a id="deviceGroupName_${uniqueId}" href="javascript:void(0);"
            title="${selectDeviceGroupChooseText}" 
-           class="chooseGroupIcon_${uniqueId} fl simpleLink leftOfImageLabel">${pageScope.fieldValue}&nbsp;</a>
+           class="chooseGroupIcon_${uniqueId} fl">${pageScope.fieldValue}&nbsp;</a>
     </c:when>
 
     <%-- LINKED GROUP NAME --%>
     <c:otherwise>
         <a id="deviceGroupName_${uniqueId}" href="javascript:void(0);" 
-            class="deviceGroupLink_${uniqueId} fl leftOfImageLabel${linkCssClass}">${pageScope.fieldValue}&nbsp;</a>
+            class="deviceGroupLink_${uniqueId} fl${linkCssClass}">${pageScope.fieldValue}&nbsp;</a>
     </c:otherwise>
 </c:choose>
 <%-- EDIT FOLDER --%>
 <a href="javascript:void(0);" title="${selectDeviceGroupChooseText}"
     class="chooseGroupIcon_${uniqueId}"><i class="icon icon-folder-edit"></i></a>
-
 <%-- MAGNIFIER ICON --%>
 <c:if test="${pageScope.showSelectedDevicesIcon}">
     <cti:msg2 var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle"/>
@@ -122,7 +123,6 @@
     </span>
 </c:if>
 </div>
-
 <%-- PICKER TREE TAG --%>
 <cti:msg2 var="cancelButtonText" key="yukon.web.deviceGroups.deviceGroupPicker.cancelButton"/>
 <cti:msg2 var="selectButtonText" key="yukon.web.deviceGroups.deviceGroupPicker.selectButton"/>
@@ -133,7 +133,7 @@
                                 nodeValueName="groupName"
                                 submitButtonText="${selectButtonText}"
                                 cancelButtonText="${cancelButtonText}"
-                                submitCallback="setSelectedGroupName_${uniqueId}();${pageScope.submitCallback}"
+                                submitCallback="setSelectedGroupName_${uniqueId}();${pageScope.submitCallback}();"
                                 id="selectGroupTree_${uniqueId}"
                                 dataJson="${dataJson}"
                                 title="${pickerTitleText}"

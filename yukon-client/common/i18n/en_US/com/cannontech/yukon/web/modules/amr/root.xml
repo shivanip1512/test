@@ -61,7 +61,7 @@
     ]]></entry>
     
     <!-- meters.jsp -->
-    <entry key="yukon.web.modules.amr.meterSearchResults.meterSearchResultsTitle">Meter Search Results</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.searchResults"><![CDATA[Search Results:&nbsp;&nbsp;<span class="badge">{0}</span>&nbsp;&nbsp;<span class="fwn">Meters</span>]]></entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.deviceName.linkText">Device Name</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.meterNumber.linkText">Meter Number</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.deviceType.linkText">Device Type</entry>
@@ -76,7 +76,7 @@
     <entry key="yukon.web.modules.amr.meterSearchResults.editFilters">Edit Filters</entry>
     <entry key="yukon.web.modules.amr.deviceSelection.performCollectionAction">Perform Collection Action</entry>
     <entry key="yukon.web.modules.amr.deviceSelection.performCollectionAction.title">Click to perform a bulk operation on these devices</entry>
-    <entry key="yukon.web.modules.amr.meterSearch.title">Meter Search</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.searchCriteria">Search Criteria</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.notFound">No Results Found</entry>
     <entry key="yukon.web.modules.amr.meterSearch.helpText"><![CDATA[
         Returns meters that match the combination of all values provided.
@@ -188,10 +188,6 @@
     <!-- meterPoints.jsp -->
     <entry key="yukon.web.modules.amr.meterPoints.pageName">Point Values</entry>
     <entry key="yukon.web.modules.amr.meterPoints.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.amr.meterPoints.columnHeader.attribute.linkText">Attribute</entry>
-    <entry key="yukon.web.modules.amr.meterPoints.columnHeader.pointName.linkText">Point Name</entry>
-    <entry key="yukon.web.modules.amr.meterPoints.columnHeader.pointType.linkText">Point Type</entry>
-    <entry key="yukon.web.modules.amr.meterPoints.columnHeader.pointOffset.linkText">Point Offset</entry>
     
     <!-- voltageAndTou.jsp -->
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageName">Voltage &amp; TOU</entry>

@@ -6,14 +6,11 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="cronExpressionTagState" required="true" rtexprvalue="true" 
-    type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" %>
+<%@ attribute name="cronExpressionTagState" required="true"
+        type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" %>
 <%@ attribute name="exportData" required="true" type="java.lang.Object" %>
 
-<cti:includeScript link="/JavaScript/yukon.tag.scheduled.file.export.inputs.js"/>
-
 <cti:msgScope paths="yukon.web.modules.tools.scheduledFileExport.inputs">
-    <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
 
     <tags:inputNameValue nameKey=".scheduleName" path="scheduleName" maxlength="100"/>
 
@@ -25,7 +22,10 @@
             <input id="sameAsSchedName" type="checkbox" ${checked}/><cti:msg2 key=".sameAsScheduleName"/>
         </label>
         <tags:input path="exportFileName" id="exportFileName" maxlength="100"/>
-        <img src="${infoImg}" title="<cti:msg2 key=".exportFileNameInfo"/>"/>
+        <div id="export-file-name-info" class="dn" data-title="<cti:msg2 key=".exportFileName"/>" data-width="500">
+            <i:inline key=".exportFileNameInfo"/>
+        </div>
+        <cti:icon icon="icon-information" classes="fn cp" popup="#export-file-name-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
     <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
@@ -37,7 +37,10 @@
 
     <tags:nameValue2 nameKey=".timestampPatternField">
         <tags:input id="timestampPatternField" path="timestampPatternField" maxlength="20" />
-        <img src="${infoImg}" title="<cti:msg2 key=".exportTimestampInfo"/>"/>
+        <div id="export-timestamp-info" class="dn" data-title="<cti:msg2 key=".appendDateToFileName"/>" data-width="500">
+            <i:inline key=".exportTimestampInfo"/>
+        </div>
+        <cti:icon icon="icon-information" classes="fn cp" popup="#export-timestamp-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
     <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
@@ -51,7 +54,10 @@
         <tags:bind path="exportFileExtension">
             <form:select id="exportFileExtension" path="exportFileExtension" items="${fileExtensionChoices}" />
         </tags:bind>
-        <img src="${infoImg}" title="<cti:msg2 key=".exportFileExtensionInfo"/>"/>
+        <div id="export-file-extension-info" class="dn" data-title="<cti:msg2 key=".exportFileExtension"/>" data-width="500">
+            <i:inline key=".exportFileExtensionInfo"/>
+        </div>
+        <cti:icon icon="icon-information" classes="fn cp" popup="#export-file-extension-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
 
@@ -66,7 +72,10 @@
         <tags:bind path="exportPath">
             <form:select id="exportPath" path="exportPath" items="${exportPathChoices}" />
         </tags:bind>
-        <img src="${infoImg}" title="<cti:msg2 key=".exportPathInfo"/>"/>
+        <div id="export-path-info" class="dn" data-title="<cti:msg2 key=".exportPath"/>" data-width="500">
+            <i:inline key=".exportPathInfo"/>
+        </div>
+        <cti:icon icon="icon-information" classes="fn cp" popup="#export-path-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
     <tags:nameValue2 nameKey=".scheduleCronString" nameClass="vat">

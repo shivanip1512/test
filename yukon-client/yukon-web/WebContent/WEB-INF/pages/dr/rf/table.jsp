@@ -43,5 +43,5 @@
             </c:forEach>
         </tbody>
     </table>
-    <tags:pagingResultsControls result="${result}" baseUrl="/dr/rf/details/${type}/${test}/page"/>
+    <tags:pagingResultsControls result="${result}"/>
 </cti:msgScope>

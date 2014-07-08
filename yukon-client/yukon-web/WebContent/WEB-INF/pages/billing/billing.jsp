@@ -13,10 +13,8 @@
 
 <cti:standardPage module="amr" page="billing">
 
-<cti:includeScript link="/JavaScript/yukon.cron.js" />
 <cti:includeScript link="/JavaScript/yukon.ami.billing.js"/>
 <cti:includeScript link="/JavaScript/yukon.ami.billing.dynamic.js"/>
-<cti:includeScript link="/JavaScript/yukon.tag.scheduled.file.export.inputs.js"/>
 
 <cti:tabbedContentSelector id="billing_tab_container" mode="section">
 
@@ -27,7 +25,7 @@
         </div>
         <tags:sectionContainer2 nameKey="billing.jobs">
             <div id="billing_schedules_jobs" data-reloadable>
-                    <jsp:include page="../amr/scheduledBilling/_jobs.jsp"></jsp:include>
+                <jsp:include page="../amr/scheduledBilling/_jobs.jsp"></jsp:include>
             </div>
         </tags:sectionContainer2>
     </cti:tabbedContentSelectorContent>

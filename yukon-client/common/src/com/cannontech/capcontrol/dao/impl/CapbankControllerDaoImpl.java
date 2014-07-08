@@ -1,12 +1,10 @@
 package com.cannontech.capcontrol.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
@@ -16,14 +14,14 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -35,18 +33,18 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private AttributeService attributeService;
 
-    private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
+    private static final YukonRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
 
     static {
         liteCapControlObjectRowMapper =
             CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
     }
 
-    public static final ParameterizedRowMapper<LiteCapControlObject> createLiteCapControlObjectRowMapper() {
-        ParameterizedRowMapper<LiteCapControlObject> rowMapper =
-            new ParameterizedRowMapper<LiteCapControlObject>() {
+    public static final YukonRowMapper<LiteCapControlObject> createLiteCapControlObjectRowMapper() {
+        YukonRowMapper<LiteCapControlObject> rowMapper =
+            new YukonRowMapper<LiteCapControlObject>() {
                 @Override
-                public LiteCapControlObject mapRow(ResultSet rs, int rowNum) throws SQLException {
+                public LiteCapControlObject mapRow(YukonResultSet rs) throws SQLException {
 
                     LiteCapControlObject lco = new LiteCapControlObject();
                     lco.setId(rs.getInt("PAObjectID"));
@@ -118,42 +116,22 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
     @Override
     @Transactional
-    public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count) {
+    public List<LiteCapControlObject> getOrphans() {
+        
         SqlStatementBuilder controlSql = new SqlStatementBuilder();
         controlSql.append("SELECT DISTINCT ControlDeviceId");
         controlSql.append("FROM CapBank");
         
-        /* Get the unordered total count */
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*)");
-        sql.append("FROM YukonPAObject");
-        sql.append("WHERE Type").in(PaoType.getCbcTypes());
-        sql.append("    AND PAObjectID").notIn(controlSql);
-
-        int orphanCount = yukonJdbcTemplate.queryForInt(sql);
-
-        /* Get the paged subset of cc objects */
-        sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, PAOName, Type, Description");
         sql.append("FROM YukonPAObject");
         sql.append("WHERE Type").in(PaoType.getCbcTypes());
         sql.append("    AND PAObjectID").notIn(controlSql);
         sql.append("ORDER BY PAOName");
-
-        PagingResultSetExtractor<LiteCapControlObject> cbcOrphanExtractor =
-            new PagingResultSetExtractor<LiteCapControlObject>(start,
-                                                               count,
-                                                               liteCapControlObjectRowMapper);
         
-        yukonJdbcTemplate.query(sql, cbcOrphanExtractor);
+        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, liteCapControlObjectRowMapper);
 
-        List<LiteCapControlObject> unassignedCbcs = cbcOrphanExtractor.getResultList();
-
-        SearchResults<LiteCapControlObject> searchResult = new SearchResults<LiteCapControlObject>();
-        searchResult.setResultList(unassignedCbcs);
-        searchResult.setBounds(start, count, orphanCount);
-
-        return searchResult;
+        return orphans;
     }
     
     @Override

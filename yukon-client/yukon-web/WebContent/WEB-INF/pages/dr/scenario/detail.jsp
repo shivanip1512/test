@@ -177,7 +177,7 @@
 
     <div class="column-24">
         <div class="column one nogutter">
-            <c:set var="baseUrl" value="/dr/scenario/detail"/>
+            <c:set var="baseUrl" value="/dr/scenario/detail?scenarioId=${scenarioId}"/>
             <%@ include file="../program/programList.jspf" %>
         </div>
     </div>

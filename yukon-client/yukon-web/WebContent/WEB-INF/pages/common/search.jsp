@@ -8,7 +8,7 @@
 
     <div class="stacked">
         <form action="" method="get" id="formSiteSearch" class="clearfix yukon-search-form">
-            <input id="searchString" name="q" value="${fn:escapeXml(searchString)}" size="50" type="text"
+            <input id="query" name="q" value="${fn:escapeXml(query)}" size="50" type="text"
                 class="fl search-field" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>">
                <input type="hidden" name="itemsPerPage" value="${itemsPerPage}">
             <cti:msg2 key="yukon.common.search" var="searchLabel"/>
@@ -22,14 +22,14 @@
         </c:if>
         <c:if test="${empty error}">
             <c:if test="${empty results.resultList}">
-                <i:inline key=".noResults" arguments="${fn:escapeXml(searchString)}"/>
+                <i:inline key=".noResults" arguments="${fn:escapeXml(query)}"/>
             </c:if>
             <c:if test="${!empty results.resultList}">
                 <cti:list var="msgArgs">
                     <cti:item value="${results.startIndex + 1}"/>
                     <cti:item value="${results.endIndex}"/>
                     <cti:item value="${results.hitCount}"/>
-                    <cti:item value="${searchString}"/>
+                    <cti:item value="${query}"/>
                 </cti:list>
                 <i:inline key=".results.summary" arguments="${msgArgs}"/>
             </c:if>
@@ -37,24 +37,28 @@
     </div>
     <c:if test="${!empty results.resultList}">
         <hr>
-        <c:forEach var="result" items="${results.resultList}">
-            <div class="stacked-medium">
-                <div>
-                    <a href="<cti:url value="${result.path}"/>">
-                        <cti:searchTerm term="${searchString}" asLuceneTerms="true">
-                            <c:if test="${result.legacyPage}">
-                                <i:inline key="${result.title}"/>
-                            </c:if>
-                            <c:if test="${!result.legacyPage}">
-                                <cti:pageName userPage="${result.userPage}"/>
-                            </c:if>
-                       </cti:searchTerm>
-                   </a>
+        <cti:url var="url" value="search">
+            <cti:param name="q" value="${query}"/>
+        </cti:url>
+        <div data-url="${url}" data-static>
+            <c:forEach var="result" items="${results.resultList}">
+                <div class="stacked-medium">
+                    <div>
+                        <a href="<cti:url value="${result.path}"/>">
+                            <cti:searchTerm term="${query}" asLuceneTerms="true">
+                                <c:if test="${result.legacyPage}">
+                                    <i:inline key="${result.title}"/>
+                                </c:if>
+                                <c:if test="${!result.legacyPage}">
+                                    <cti:pageName userPage="${result.userPage}"/>
+                                </c:if>
+                           </cti:searchTerm>
+                       </a>
+                    </div>
+                    <div><cti:msg2 key="${result.summary}" blankIfMissing="true"/></div>
                 </div>
-                <div><cti:msg2 key="${result.summary}" blankIfMissing="true"/></div>
-            </div>
-        </c:forEach>
-        <c:set value="/search" var="baseUrl"/>
-        <tags:pagingResultsControls baseUrl="${baseUrl}" result="${results}" adjustPageCount="true"/>
+            </c:forEach>
+            <tags:pagingResultsControls result="${results}" adjustPageCount="true"/>
+        </div>
     </c:if>
 </cti:standardPage>

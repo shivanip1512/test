@@ -12,9 +12,7 @@ import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.google.common.collect.Lists;
@@ -60,7 +58,8 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
     }
     
     @Override
-    public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count) {
+    public List<LiteCapControlObject> getOrphans() {
+        
         ParameterizedRowMapper<LiteCapControlObject> rowMapper = new ParameterizedRowMapper<LiteCapControlObject>() {
             public LiteCapControlObject mapRow(ResultSet rs, int rowNum) throws SQLException {
                 
@@ -79,19 +78,7 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         regulatorTypes.add(PaoType.PHASE_OPERATED);
         regulatorTypes.add(PaoType.LOAD_TAP_CHANGER);
         
-        /* Get the unordered total count */
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*)");
-        sql.append("FROM YukonPAObject");
-        sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
-        sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
-        sql.append("    AND PAObjectID not in (SELECT RegulatorId FROM RegulatorToZoneMapping)");
-        sql.append("    AND Type").in(regulatorTypes);
-        
-        int orphanCount = yukonJdbcTemplate.queryForInt(sql);
-        
-        /* Get the paged subset of cc objects */
-        sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, PAOName, Type, Description");
         sql.append("FROM YukonPAObject");
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
@@ -100,16 +87,9 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         sql.append("    AND Type").in(regulatorTypes);
         sql.append("ORDER BY PAOName");
         
-        PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, rowMapper);
-        yukonJdbcTemplate.query(sql, orphanExtractor);
+        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, rowMapper);
         
-        List<LiteCapControlObject> unassignedLtcs = orphanExtractor.getResultList();
-        
-        SearchResults<LiteCapControlObject> searchResult = new SearchResults<LiteCapControlObject>();
-        searchResult.setResultList(unassignedLtcs);
-        searchResult.setBounds(start, count, orphanCount);
-        
-        return searchResult;
+        return orphans;
     }
     
     @Override

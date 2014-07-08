@@ -1,15 +1,26 @@
 package com.cannontech.amr.meter.model;
 
-/**
- * Enumeration of the fields for point sorting
- */
-public enum PointSortField {
-    ATTRIBUTE, 
-    POINTNAME,
-    POINTTYPE,
-    POINTOFFSET, 
-    TIMESTAMP,
-    VALUE,
-    QUALITY,
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum PointSortField implements DisplayableEnum {
+    
+    ATTRIBUTE("attribute"),
+    POINTNAME("pointName"),
+    POINTTYPE("pointType"),
+    POINTOFFSET("pointOffset"),
+    TIMESTAMP("timestamp"),
+    VALUE("value"),
+    QUALITY("quality"),
     ;
+    
+    private String keyPart;
+    
+    private PointSortField(String keyPart) {
+        this.keyPart = keyPart;
+    }
+    
+    @Override
+    public String getFormatKey() {
+        return "yukon.common." + keyPart;
+    }
 }

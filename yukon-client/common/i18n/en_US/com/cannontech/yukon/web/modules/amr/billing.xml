@@ -256,7 +256,6 @@ greater than one.
 	<entry key="yukon.web.billing.removeMultiplier">Remove Multiplier</entry>
 	<entry key="yukon.web.billing.billingGroup">Billing Group</entry>
 	<entry key="yukon.web.billing.timeZoneDisclaimer">* All times are {0}</entry>
-	<entry key="yukon.web.billing.schedule">Schedule</entry>
 
     <entry key="yukon.web.billing.tab.generation.title">Generation</entry>
     <entry key="yukon.web.billing.tab.setup.title">Setup</entry>

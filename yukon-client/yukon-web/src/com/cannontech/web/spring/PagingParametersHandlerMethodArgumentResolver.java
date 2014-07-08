@@ -21,9 +21,13 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
     }
 
     @Override
-    public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer mavContainer,
-        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(MethodParameter methodParameter, 
+                                  ModelAndViewContainer mavContainer,
+                                  NativeWebRequest webRequest, 
+                                  WebDataBinderFactory binderFactory) throws Exception {
+        
         HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
+        
         int itemsPerPage;
         if (methodParameter.hasParameterAnnotation(DefaultItemsPerPage.class)) {
             int defaultItemsPerPage = methodParameter.getParameterAnnotation(DefaultItemsPerPage.class).value();
@@ -33,6 +37,6 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
         }
         int page = ServletRequestUtils.getIntParameter(nativeRequest, "page", 1);
 
-        return new PagingParameters(itemsPerPage, page);
+        return PagingParameters.of(itemsPerPage, page);
     }
 }

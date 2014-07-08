@@ -56,17 +56,34 @@ button[disabled] .icon, .button[disabled] .icon {background-image: url(../Icons/
 
 button.action[disabled], .button.action[disabled] {filter: alpha(opacity=50);opacity: .5;}
 
-button.left, .button.left, input.left, select.left, .button-group button:first-of-type {
+button.left, 
+.button.left, 
+input.left, 
+select.left, 
+.button-group button:first-of-type,
+.toggle-btns button:first-of-type {
     margin: 0 0 0 5px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
-button.middle, .button.middle, input.middle, select.middle, .button-group button:not(:first-of-type):not(:last-of-type) {
+
+button.middle, 
+.button.middle, 
+input.middle, 
+select.middle, 
+.button-group button:not(:first-of-type):not(:last-of-type),
+.toggle-btns button:not(:first-of-type):not(:last-of-type) {
     margin: 0;
     border-left: 0;
     border-radius: 0;
 }
-button.right, .button.right, input.right, select.right, .button-group button:last-of-type {
+
+button.right, 
+.button.right, 
+input.right, 
+select.right, 
+.button-group button:last-of-type,
+.toggle-btns button:last-of-type {
     border-left: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;

@@ -28,7 +28,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -43,7 +42,10 @@ import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.scheduledFileExport.MeterEventsExportGenerationParameters;
@@ -73,6 +75,7 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
@@ -86,69 +89,57 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-@CheckRoleProperty(YukonRoleProperty.METER_EVENTS)
 @Controller
 @RequestMapping("/meterEventsReport/*")
+@CheckRoleProperty(YukonRoleProperty.METER_EVENTS)
 public class MeterEventsReportController {
     
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private DeviceCollectionService deviceCollectionService;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private DeviceCollectionService collectionService;
+    @Autowired private DeviceGroupCollectionHelper collectionHelper;
     @Autowired private JobManager jobManager;
     @Autowired private MeterEventLookupService meterEventLookupService;
     @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private PaoPointValueService paoPointValueService;
     @Autowired private PointFormattingService pointFormattingService;
-    @Autowired private ScheduledFileExportService scheduledFileExportService;
+    @Autowired private ScheduledFileExportService exportService;
     @Autowired private ScheduledFileExportHelper exportHelper;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    private ScheduledFileExportValidator scheduledFileExportValidator = 
+    private ScheduledFileExportValidator exportValidator = 
             new ScheduledFileExportValidator(MeterEventsReportController.class);
-    private final static Set<String> NON_ABNORMAL_VALUES = Sets.newHashSet(OutageStatus.GOOD.name().toLowerCase(),
-                                                                           EventStatus.CLEARED.name().toLowerCase());
-    private final String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
+    
+    private final static Set<String> NON_ABNORMAL_VALUES = Sets.newHashSet(
+            OutageStatus.GOOD.name().toLowerCase(),
+            EventStatus.CLEARED.name().toLowerCase());
+    
+    private final String baseKey = "yukon.web.modules.amr.meterEventsReport";
 
-    static enum SortBy {NAME, METER_NUMBER, TYPE, DATE, EVENT, VALUE;}
-
-    private Comparator<MeterPointValue> getSorter(SortBy SortBy, YukonUserContext context) {
-        switch(SortBy) {
-            case DATE: 
-                return MeterPointValue.getDateMeterNameComparator();
-            case EVENT: 
-                return MeterPointValue.getPointNameMeterNameComparator();
-            case METER_NUMBER: 
-                return MeterPointValue.getMeterNumberComparator();
-            case TYPE: 
-                return MeterPointValue.getDeviceTypeComparator();
-            case VALUE: 
-                return MeterPointValue.getFormattedValueComparator(pointFormattingService, context);
-            default:
-            case NAME: 
-                return MeterPointValue.getMeterNameComparator();
-        }
-    }
+    static enum SortBy { NAME, METER_NUMBER, TYPE, DATE, EVENT, VALUE; }
 
     @RequestMapping(value="home", params="jobId")
     public String homeWithJob(ModelMap model, Integer jobId, YukonUserContext userContext) {
+        
         setupExistingJobHomeModelMap(model, jobId, userContext);
-        scheduledJobsTable(model, new PagingParameters(10, 1));
+        scheduledJobsTable(model);
+        
         return "meterEventsReport/home.jsp";
     }
 
     @RequestMapping(value="home", params="collectionType")
-    public String homeWithDeviceCollection(ModelMap model, DeviceCollection deviceCollection,
-                       YukonUserContext userContext) {
-        setupNewHomeModelMap(model, deviceCollection, userContext);
-        scheduledJobsTable(model, new PagingParameters(10, 1));
+    public String homeWithDeviceCollection(ModelMap model, DeviceCollection collection, YukonUserContext userContext) {
+        
+        setupNewHomeModelMap(model, collection, userContext);
+        scheduledJobsTable(model);
+        
         return "meterEventsReport/home.jsp";
     }
 
     @RequestMapping(value="home")
     public String homeJustSchedules(ModelMap model) {
-        scheduledJobsTable(model, new PagingParameters(10, 1));
+        scheduledJobsTable(model);
         return "meterEventsReport/home.jsp";
     }
     
@@ -166,10 +157,10 @@ public class MeterEventsReportController {
         CronExpressionTagState cronExpressionTagState = 
                 cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
         //set backing bean parameters
-        DeviceCollection deviceCollection = deviceCollectionService.loadCollection(task.getDeviceCollectionId());
+        DeviceCollection collection = collectionService.loadCollection(task.getDeviceCollectionId());
 
         Set<Attribute> availableEventAttributes = 
-                meterEventLookupService.getAvailableEventAttributes(deviceCollection.getDeviceList());
+                meterEventLookupService.getAvailableEventAttributes(collection.getDeviceList());
 
         Map<Attribute, Boolean> meterEventTypesMap
             = Maps.newHashMapWithExpectedSize(availableEventAttributes.size());
@@ -185,31 +176,32 @@ public class MeterEventsReportController {
 
         MeterEventsFilter meterEventsFilter = 
                 new MeterEventsFilter(fromInstant, toInstant, availableEventAttributes, false, false, false);
-        meterEventsTable(model, meterEventsFilter, new PagingParameters(10, 1), deviceCollection,
-                         SortBy.NAME, false, userContext);
+        meterEventsTable(model, meterEventsFilter, PagingParameters.of(10, 1), 
+                SortingParameters.of("DATE", Direction.asc), collection, userContext);
 
         model.addAttribute("numSelectedEventTypes", availableEventAttributes.size());
 
         model.addAttribute("exportData", exportData);
         model.addAttribute("jsonModel", getJsonModel(userContext, meterEventTypesMap, exportData, false));
         model.addAttribute("cronExpressionTagState", cronExpressionTagState);
-        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", collection);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
         
-        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", collection);
         model.addAttribute("fromInstant", fromInstant);
         model.addAttribute("toInstant", toInstant);
         model.addAttribute("jobId", jobId);
     }
     
-    private void setupNewHomeModelMap(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext) {
+    private void setupNewHomeModelMap(ModelMap model, DeviceCollection collection, YukonUserContext userContext) {
+        
         LocalDate now = new LocalDate(userContext.getJodaTimeZone());
         Instant toInstantMidnight = now.plusDays(1).toDateTimeAtStartOfDay().toInstant().minus(1);
         Instant fromInstantStartOfDay = now.toDateTimeAtStartOfDay().toInstant().minus(Duration.standardDays(7));
 
         Set<Attribute> availableEventAttributes = 
-                meterEventLookupService.getAvailableEventAttributes(deviceCollection.getDeviceList());
+                meterEventLookupService.getAvailableEventAttributes(collection.getDeviceList());
 
         Map<Attribute, Boolean> meterEventTypesMap
             = Maps.newHashMapWithExpectedSize(availableEventAttributes.size());
@@ -217,10 +209,10 @@ public class MeterEventsReportController {
             meterEventTypesMap.put(attr, true);
         }
         
-        MeterEventsFilter meterEventsFilter = 
-                new MeterEventsFilter(fromInstantStartOfDay, toInstantMidnight, availableEventAttributes, false, false, false);
-        meterEventsTable(model, meterEventsFilter, new PagingParameters(10, 1), deviceCollection,
-                         SortBy.DATE, false, userContext);
+        MeterEventsFilter meterEventsFilter = new MeterEventsFilter(fromInstantStartOfDay, toInstantMidnight, 
+                availableEventAttributes, false, false, false);
+        meterEventsTable(model, meterEventsFilter, PagingParameters.of(10, 1), 
+                SortingParameters.of("DATE", Direction.asc), collection, userContext);
 
         model.addAttribute("numSelectedEventTypes", availableEventAttributes.size());
 
@@ -228,138 +220,178 @@ public class MeterEventsReportController {
         model.addAttribute("exportData", exportData);
         model.addAttribute("jsonModel", getJsonModel(userContext, meterEventTypesMap, exportData, true));
         model.addAttribute("cronExpressionTagState", new CronExpressionTagState());
-        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", collection);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
         
-        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", collection);
         model.addAttribute("fromInstant", fromInstantStartOfDay);
         model.addAttribute("toInstant", toInstantMidnight);
     }
 
     private Map<String, Object> getJsonModel(YukonUserContext userContext, Map<Attribute, Boolean> meterEventTypesMap,
         ScheduledFileExportData exportData, boolean isNewSchedule) {
-        MessageSourceAccessor messageAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        Map<String, Object> jsonModel = Maps.newHashMapWithExpectedSize(18);
-        jsonModel.put("meterEventTypesMap", meterEventTypesMap);
-        jsonModel.put("generalEvents", getAttributesData(MeterEventStatusTypeGroupings.getGeneral(), userContext));
-        jsonModel.put("hardwareEvents", getAttributesData(MeterEventStatusTypeGroupings.getHardware(), userContext));
-        jsonModel.put("tamperEvents", getAttributesData(MeterEventStatusTypeGroupings.getTamper(), userContext));
-        jsonModel.put("outageEvents", getAttributesData(MeterEventStatusTypeGroupings.getOutage(), userContext));
-        jsonModel.put("meteringEvents", getAttributesData(MeterEventStatusTypeGroupings.getMetering(), userContext));
         
-        jsonModel.put("allTitle", messageAccessor.getMessage(baseKey + ".filter.tree.all"));
-        jsonModel.put("generalTitle", messageAccessor.getMessage(baseKey + ".filter.tree.general"));
-        jsonModel.put("hardwareTitle", messageAccessor.getMessage(baseKey + ".filter.tree.hardware"));
-        jsonModel.put("tamperTitle", messageAccessor.getMessage(baseKey + ".filter.tree.tamper"));
-        jsonModel.put("outageTitle", messageAccessor.getMessage(baseKey + ".filter.tree.outage"));
-        jsonModel.put("meteringTitle", messageAccessor.getMessage(baseKey + ".filter.tree.metering"));
-        jsonModel.put("schedulePopupTitle", 
-                messageAccessor.getMessage(baseKey + ".schedulePopup.title", exportData.getScheduleName()));
-        jsonModel.put("newSchedulePopupTitle", messageAccessor.getMessage(baseKey + ".schedulePopup.title", ""));
-        jsonModel.put("confirmScheduleDeletion", 
-                messageAccessor.getMessage("yukon.web.modules.tools.scheduledFileExport.jobs.deleteSchedule.title"));
-        jsonModel.put("okBtnLbl", messageAccessor.getMessage("yukon.web.components.button.ok.label"));
-        jsonModel.put("cancelBtnLbl", messageAccessor.getMessage("yukon.web.components.button.cancel.label"));
-        jsonModel.put("openScheduleDialog", !isNewSchedule);
-        return jsonModel;
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> json = Maps.newHashMapWithExpectedSize(18);
+        
+        json.put("meterEventTypesMap", meterEventTypesMap);
+        json.put("generalEvents", getAttributesData(MeterEventStatusTypeGroupings.getGeneral(), userContext));
+        json.put("hardwareEvents", getAttributesData(MeterEventStatusTypeGroupings.getHardware(), userContext));
+        json.put("tamperEvents", getAttributesData(MeterEventStatusTypeGroupings.getTamper(), userContext));
+        json.put("outageEvents", getAttributesData(MeterEventStatusTypeGroupings.getOutage(), userContext));
+        json.put("meteringEvents", getAttributesData(MeterEventStatusTypeGroupings.getMetering(), userContext));
+        
+        json.put("allTitle", accessor.getMessage(baseKey + ".report.filter.tree.all"));
+        json.put("generalTitle", accessor.getMessage(baseKey + ".report.filter.tree.general"));
+        json.put("hardwareTitle", accessor.getMessage(baseKey + ".report.filter.tree.hardware"));
+        json.put("tamperTitle", accessor.getMessage(baseKey + ".report.filter.tree.tamper"));
+        json.put("outageTitle", accessor.getMessage(baseKey + ".report.filter.tree.outage"));
+        json.put("meteringTitle", accessor.getMessage(baseKey + ".report.filter.tree.metering"));
+        json.put("schedulePopupTitle", 
+                accessor.getMessage(baseKey + ".report.schedulePopup.title", exportData.getScheduleName()));
+        json.put("newSchedulePopupTitle", accessor.getMessage(baseKey + ".report.schedulePopup.title", ""));
+        json.put("openScheduleDialog", !isNewSchedule);
+        
+        return json;
     }
 
     @RequestMapping("meterEventsTable")
-    public String meterEventsTable(ModelMap model, MeterEventsFilter meterEventsFilter,
-            @DefaultItemsPerPage(10) PagingParameters paging, DeviceCollection deviceCollection,
-            @RequestParam(defaultValue="DATE") SortBy sort, boolean descending, YukonUserContext userContext) {
+    public String meterEventsTable(ModelMap model, 
+            MeterEventsFilter meterEventsFilter,
+            @DefaultItemsPerPage(10) PagingParameters paging,
+            @DefaultSort(sort="DATE", dir=Direction.asc) SortingParameters sorting,
+            DeviceCollection collection,
+            YukonUserContext userContext) {
+        
+        SortBy sort = SortBy.valueOf(sorting.getSort());
+        
         List<MeterPointValue> events = 
             paoPointValueService.getMeterPointValues(
-                Sets.newHashSet(deviceCollection.getDeviceList()), meterEventsFilter.getAttributes(),
+                Sets.newHashSet(collection.getDeviceList()), meterEventsFilter.getAttributes(),
                 Range.inclusive(meterEventsFilter.getFromInstant(), meterEventsFilter.getToInstant()),
                 meterEventsFilter.isOnlyLatestEvent() ? 1 : null,  meterEventsFilter.isIncludeDisabledPaos(),
                 meterEventsFilter.isOnlyAbnormalEvents() ? NON_ABNORMAL_VALUES : null, userContext);
 
-        if (descending) {
+        if (sorting.getDirection() == Direction.desc) {
             Collections.sort(events, Collections.reverseOrder(getSorter(sort, userContext)));
         } else {
             Collections.sort(events, getSorter(sort, userContext));
         }
 
-        DeviceCollection collectionFromReportResults = getDeviceCollectionFromReportResults(events, userContext);
+        DeviceCollection collectionFromReportResults = getCollectionFromReport(events, userContext);
         SearchResults<MeterPointValue> meterEvents = SearchResults.pageBasedForWholeList(paging, events);
 
-        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", collection);
         model.addAttribute("collectionFromReportResults", collectionFromReportResults);
         model.addAttribute("meterEvents", meterEvents);
         model.addAttribute("meterEventsFilter", meterEventsFilter);
 
-        model.addAttribute("sort", sort);
-        model.addAttribute("descending", descending);
-
         Map<String, Object> meterEventsTableModelData = Maps.newHashMapWithExpectedSize(2);
         meterEventsTableModelData.put("sort", sort);
-        meterEventsTableModelData.put("descending", descending);
+        meterEventsTableModelData.put("descending", sorting.getDirection() == Direction.desc);
         model.addAttribute("meterEventsTableModelData", meterEventsTableModelData);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        
+        // Add sortable table headers
+        String nameText = accessor.getMessage(baseKey + ".report.tableHeader.deviceName.linkText");
+        SortableColumn nameColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.NAME, nameText, SortBy.NAME.name());
+        model.addAttribute("nameColumn", nameColumn);
+        
+        String numberText = accessor.getMessage(baseKey + ".report.tableHeader.meterNumber.linkText");
+        SortableColumn numberColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.METER_NUMBER, numberText, SortBy.METER_NUMBER.name());
+        model.addAttribute("numberColumn", numberColumn);
+        
+        String typeText = accessor.getMessage(baseKey + ".report.tableHeader.deviceType.linkText");
+        SortableColumn typeColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.TYPE, typeText, SortBy.TYPE.name());
+        model.addAttribute("typeColumn", typeColumn);
+        
+        String dateText = accessor.getMessage(baseKey + ".report.tableHeader.date.linkText");
+        SortableColumn dateColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.DATE, dateText, SortBy.DATE.name());
+        model.addAttribute("dateColumn", dateColumn);
+        
+        String eventText = accessor.getMessage(baseKey + ".report.tableHeader.event.linkText");
+        SortableColumn eventColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.EVENT, eventText, SortBy.EVENT.name());
+        model.addAttribute("eventColumn", eventColumn);
+        
+        String valueText = accessor.getMessage(baseKey + ".report.tableHeader.value.linkText");
+        SortableColumn valueColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.VALUE, valueText, SortBy.VALUE.name());
+        model.addAttribute("valueColumn", valueColumn);
         
         return "meterEventsReport/meterEventsTable.jsp";
     }
 
     @RequestMapping("scheduledJobsTable")
-    public String scheduledJobsTable(ModelMap model, @DefaultItemsPerPage(10) PagingParameters paging) {
-        SearchResults<ScheduledFileExportJobData> reportsResult
-            = scheduledFileExportService.getScheduledFileExportJobData(ScheduledExportType.METER_EVENT, paging);
+    public String scheduledJobsTable(ModelMap model) {
+        
+        List<ScheduledFileExportJobData> jobs
+            = exportService.getScheduledFileExportJobData(ScheduledExportType.METER_EVENT);
 
         model.addAttribute("jobType", FileExportType.METER_EVENTS);
-        model.addAttribute("scheduledJobsSearchResult", reportsResult);
+        model.addAttribute("jobs", jobs);
+        
         return "meterEventsReport/scheduledJobsTable.jsp";
     }
 
     @RequestMapping("scheduledMeterEventsDialog")
-    public String scheduledMeterEventsDialog(ModelMap model, DeviceCollection deviceCollection) {
+    public String scheduledMeterEventsDialog(ModelMap model, DeviceCollection collection) {
+        
         ScheduledFileExportData exportData = new ScheduledFileExportData();
         model.addAttribute("exportData", exportData);
         model.addAttribute("cronExpressionTagState", new CronExpressionTagState());
-        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", collection);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
+        
         return "meterEventsReport/scheduledMeterEventsDialog.jsp";
     }
 
     @RequestMapping("saveScheduledMeterEventJob")
-    public String saveScheduledMeterEventJob(ModelMap model, MeterEventsFilter meterEventsFilter,
-           @ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult,
-           FlashScope flashScope, DeviceCollection deviceCollection, YukonUserContext userContext, Integer jobId,
-           HttpServletRequest request) throws ServletRequestBindingException, IllegalArgumentException, ParseException {
-        scheduledFileExportValidator.validate(exportData, bindingResult);
-        if(bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages =
-                    YukonValidationUtils.errorsForBindingResult(bindingResult);
+    public String saveScheduledMeterEventJob(ModelMap model, 
+            MeterEventsFilter meterEventsFilter,
+            @ModelAttribute("exportData") ScheduledFileExportData exportData, 
+            BindingResult result,
+            FlashScope flashScope, 
+            DeviceCollection collection, 
+            YukonUserContext userContext, 
+            Integer jobId,
+            HttpServletRequest request) 
+                    throws ServletRequestBindingException, IllegalArgumentException, ParseException {
+        
+        exportValidator.validate(exportData, result);
+        if (result.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             CronExpressionTagState cronExpressionTagState = new CronExpressionTagState();
             model.addAttribute("exportData", exportData);
             model.addAttribute("cronExpressionTagState", cronExpressionTagState);
             model.addAttribute("scheduledFileExport", new ScheduledFileExport());
-            model.addAttribute("deviceCollection", deviceCollection);
+            model.addAttribute("deviceCollection", collection);
             model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
             model.addAttribute("jobId", jobId);
             model.addAttribute("scheduleModelData", Collections.singletonMap("success", false));
+            
             return "meterEventsReport/scheduledMeterEventsDialog.jsp";
         }
 
         MeterEventsExportGenerationParameters parameters = 
             new MeterEventsExportGenerationParameters(exportData.getDaysPrevious(),
                 meterEventsFilter.isOnlyLatestEvent(), meterEventsFilter.isOnlyAbnormalEvents(),
-                meterEventsFilter.isIncludeDisabledPaos(), deviceCollection, meterEventsFilter.getAttributes());
+                meterEventsFilter.isIncludeDisabledPaos(), collection, meterEventsFilter.getAttributes());
         exportData.setParameters(parameters);
 
         String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
         exportData.setScheduleCronString(scheduleCronString);
 
-        if(jobId == null) {
-            scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.meterEventsReport.jobs.scheduleSuccess",
+        if (jobId == null) {
+            exportService.scheduleFileExport(exportData, userContext, request);
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".jobs.scheduleSuccess",
                                                                    exportData.getScheduleName()));
         } else {
-            scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.meterEventsReport.jobs.updateSuccess",
+            exportService.updateFileExport(exportData, userContext, request, jobId);
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".jobs.updateSuccess",
                                                                    exportData.getScheduleName()));
         }
 
@@ -373,47 +405,60 @@ public class MeterEventsReportController {
         return "meterEventsReport/selectDevices.jsp";
     }
 
+    
     @RequestMapping("delete")
-    @ResponseBody
-    public Map<String, Object> delete(int jobId, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> delete(int jobId, YukonUserContext userContext) {
+        
         YukonJob job = jobManager.getJob(jobId);
         ScheduledMeterEventsFileExportTask task = (ScheduledMeterEventsFileExportTask) jobManager.instantiateTask(job);
         String jobName = task.getName();
         jobManager.deleteJob(job);
+        
         int deviceCollectionId = task.getDeviceCollectionId();
-        deviceCollectionService.deleteCollection(deviceCollectionId);
-        String key = "yukon.web.modules.amr.meterEventsReport.jobs.deletedSuccess";
-        String successMessage = 
-                objectFormatingService.formatObjectAsString(new YukonMessageSourceResolvable(key, jobName), userContext);
-        Map<String, Object> returnJson = Maps.newHashMapWithExpectedSize(2);
-        returnJson.put("success", true);
-        returnJson.put("successMsg", successMessage);
-        return returnJson;
+        collectionService.deleteCollection(deviceCollectionId);
+        
+        String key = baseKey + ".jobs.deletedSuccess";
+        YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable(key, jobName);
+        String message = objectFormatingService.formatObjectAsString(resolvable, userContext);
+        
+        Map<String, Object> json = Maps.newHashMapWithExpectedSize(2);
+        json.put("success", true);
+        json.put("successMsg", message);
+        
+        return json;
     }
 
     @RequestMapping("csv")
-    public void csv(HttpServletResponse response, MeterEventsFilter meterEventsFilter,
-                    DeviceCollection deviceCollection, @RequestParam(defaultValue="DATE") SortBy sort,
-                    boolean descending, YukonUserContext userContext) 
-                            throws IOException, DeviceCollectionCreationException {
+    public void csv(HttpServletResponse response, 
+            MeterEventsFilter meterEventsFilter,
+            DeviceCollection collection,
+            @DefaultSort(sort="DATE", dir=Direction.asc) SortingParameters sorting,
+            YukonUserContext userContext) throws IOException, DeviceCollectionCreationException {
 
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
+        
+        SortBy sort = SortBy.DATE;
+        boolean desc = false;
+        if (sorting != null) {
+            sort = SortBy.valueOf(sorting.getSort());
+            desc = sorting.getDirection() == Direction.desc;
+        }
 
         String[] headerRow = new String[5];
-        headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceName.linkText");
-        headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.meterNumber.linkText");
-        headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.date.linkText");
-        headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.event.linkText");
-        headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.value.linkText");
+        headerRow[0] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.deviceName.linkText");
+        headerRow[1] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.meterNumber.linkText");
+        headerRow[2] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.date.linkText");
+        headerRow[3] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.event.linkText");
+        headerRow[4] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.value.linkText");
 
         List<MeterPointValue> events = 
                 paoPointValueService.getMeterPointValues(
-                    Sets.newHashSet(deviceCollection.getDeviceList()), meterEventsFilter.getAttributes(),
+                    Sets.newHashSet(collection.getDeviceList()), meterEventsFilter.getAttributes(),
                     Range.inclusive(meterEventsFilter.getFromInstant(), meterEventsFilter.getToInstant()),
                     meterEventsFilter.isOnlyLatestEvent() ? 1 : null,  meterEventsFilter.isIncludeDisabledPaos(),
                     meterEventsFilter.isOnlyAbnormalEvents() ? NON_ABNORMAL_VALUES : null, userContext);
 
-            if (descending) {
+            if (desc) {
                 Collections.sort(events, Collections.reverseOrder(getSorter(sort, userContext)));
             } else {
                 Collections.sort(events, getSorter(sort, userContext));
@@ -422,7 +467,7 @@ public class MeterEventsReportController {
         //data rows
         List<String[]> dataRows = Lists.newArrayList();
 
-        for(MeterPointValue event : events) {
+        for (MeterPointValue event : events) {
             String[] dataRow = new String[5];
             dataRow[0] = event.getMeter().getName();
             dataRow[1] = event.getMeter().getMeterNumber();
@@ -440,37 +485,60 @@ public class MeterEventsReportController {
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "MeterEvents_" + dateStr + ".csv");
     }
     
-    private DeviceCollection getDeviceCollectionFromReportResults(List<MeterPointValue> events, YukonUserContext userContext) {
+    private DeviceCollection getCollectionFromReport(List<MeterPointValue> events, YukonUserContext userContext) {
+        
         Set<YukonMeter> meters = Sets.newHashSet();
         for (MeterPointValue reportEvent : events) {
             meters.add(reportEvent.getMeter());
         }
 
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String message = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.results.deviceCollectionDescription");
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String message = accessor.getMessage(baseKey + ".report.results.deviceCollectionDescription");
 
-        DeviceCollection resultsDeviceCollection = deviceGroupCollectionHelper.createDeviceGroupCollection(meters.iterator(), message);
-        return resultsDeviceCollection;
+        DeviceCollection collection = collectionHelper.createDeviceGroupCollection(meters.iterator(), message);
+        
+        return collection;
     }
 
-    private Map<String, Object> getAttributesData(Set<BuiltInAttribute> originalSet, YukonUserContext context) {
+    private Map<String, Object> getAttributesData(Set<BuiltInAttribute> originalSet, YukonUserContext userContext) {
+        
         Map<String, BuiltInAttribute> attributeMap = Maps.newHashMapWithExpectedSize(originalSet.size());
-        List<String> strList = new ArrayList<>(originalSet.size());
+        List<String> attributes = new ArrayList<>(originalSet.size());
         for (BuiltInAttribute attr: originalSet) {
-            String formatedAttr = objectFormatingService.formatObjectAsString(attr.getMessage(), context);
+            String formatedAttr = objectFormatingService.formatObjectAsString(attr.getMessage(), userContext);
             attributeMap.put(formatedAttr, attr);
-            strList.add(formatedAttr);
+            attributes.add(formatedAttr);
         }
-        Collections.sort(strList);
+        Collections.sort(attributes);
 
-        Map<String, Object> jsonObj = Maps.newHashMapWithExpectedSize(2);
-        jsonObj.put("attributes", strList);
-        jsonObj.put("attributeMap", attributeMap);
-        return jsonObj;
+        Map<String, Object> json = Maps.newHashMapWithExpectedSize(2);
+        json.put("attributes", attributes);
+        json.put("attributeMap", attributeMap);
+        
+        return json;
+    }
+    
+    private Comparator<MeterPointValue> getSorter(SortBy SortBy, YukonUserContext userContext) {
+        switch (SortBy) {
+            case DATE: 
+                return MeterPointValue.getDateMeterNameComparator();
+            case EVENT: 
+                return MeterPointValue.getPointNameMeterNameComparator();
+            case METER_NUMBER: 
+                return MeterPointValue.getMeterNumberComparator();
+            case TYPE: 
+                return MeterPointValue.getDeviceTypeComparator();
+            case VALUE: 
+                return MeterPointValue.getFormattedValueComparator(pointFormattingService, userContext);
+            default:
+            case NAME: 
+                return MeterPointValue.getMeterNameComparator();
+        }
     }
 
     @InitBinder
     public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
+        
         datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
 
         PropertyEditor dayStartDateEditor = datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM,

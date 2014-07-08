@@ -1,6 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
@@ -15,15 +14,15 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
 <cti:msg var="dialogTitle" key="${title}"/>
 <div title="${dialogTitle}" id="${id}" class="dn pickerDialog" role="dialog">
     <div class="clearfix">
-	    <div class="fl">
-	        <div class="stacked">
-	            <label class="wsnw"><i:inline key=".query"/><input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;"/></label>
-	            <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll.call(${id})" style="margin-left: 3px;"><i:inline key=".showAll"/></a>
-	        </div>
-	    </div>
-	    <div class="fr paging-area">
-	        <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})" mode="javascript"/>
-	    </div>
+        <div class="fl">
+            <div class="stacked">
+                <label class="wsnw"><i:inline key=".query"/><input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;"/></label>
+                <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll.call(${id})" style="margin-left: 3px;"><i:inline key=".showAll"/></a>
+            </div>
+        </div>
+        <div class="fr paging-area">
+            <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})"/>
+        </div>
     </div>
     
     <div id="picker_${id}_nothingSelected" style="display:none" class="error"><i:inline key=".nothingSelected"/></div>
@@ -33,9 +32,9 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
     </div>
 
     <c:if test="${multiSelectMode}">
-	    <div class="action-area">
+        <div class="action-area">
             <input type="checkbox" id="picker_${id}_selectAll" onclick="javascript:${id}.selectAll.call(${id})">
-            <label for="picker_${id}_selectAll" class="simpleLink pointer"><i:inline key=".selectAll"/></label>
+            <label for="picker_${id}_selectAll" class="cp"><i:inline key=".selectAll"/></label>
             &nbsp;&nbsp;
             <span style="display: none">
                 <i:inline key=".pageSelected"/>&nbsp;&nbsp;
@@ -53,7 +52,7 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
             <span id="picker_${id}_entireSelectionCleared" style="display: none">
                 <i:inline key=".entireSelectionCleared"/>
             </span>
-	    </div>
+        </div>
     </c:if>
 </div>
 </cti:msgScope>

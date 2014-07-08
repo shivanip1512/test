@@ -11,17 +11,17 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <c:set var="previewAtts" value=" align=\"right\""/>
 <c:set var="iconInputAtts" value=" colspan=\"2\""/>
-<c:set var="baseDir" value="/WebConfig/yukon/Icons/"/>
+<cti:url var="baseDir" value="/WebConfig/yukon/Icons/"/>
 <c:if test="${pageScope.applianceCategoryIconMode}">
     <c:set var="previewAtts" value=" rowspan=\"2\""/>
     <c:set var="iconInputAtts" value=""/>
-    <c:set var="baseDir" value="/WebConfig/"/>
+    <cti:url var="baseDir" value="/WebConfig/"/>
 </c:if>
 
 <cti:displayForPageEditModes modes="VIEW">

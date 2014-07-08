@@ -75,7 +75,7 @@
 		        </div>
 		    </c:if>
             <br>
-		    <table class="results-table activeResultsTable" align="center">
+		    <table class="results-table" align="center">
 		        <tr>
 		            <th nowrap="nowrap">${deviceNameColumn}</th>
 		            <th nowrap="nowrap">${configNameColumn}</th>

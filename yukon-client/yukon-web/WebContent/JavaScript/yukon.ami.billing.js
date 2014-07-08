@@ -6,7 +6,6 @@
  * @requires JQUERYUI
  * @requires yukon
  * @requires yukon.ami
- * @requires yukon.tag.scheduled.file.export.inputs.js
  */
 
 yukon.namespace('yukon.ami.billing');
@@ -134,14 +133,12 @@ yukon.ami.billing = (function() {
         },
 
         /** Refreshes the exported schedule jobs list.
-         * @param {Object} params - Request Parameters.
          * @param {function} [after_function] - A callback function to fire when the refresh finishes.
          */
-        _do_refresh_schedules_jobs_list = function(params, after_function) {
+        _do_refresh_schedules_jobs_list = function(after_function) {
             $.ajax({
                 url: _url_list_schedule_jobs,
-                type: 'get',
-                data: params
+                type: 'get'
             }).done( function(html) {
                 $('#billing_tab_container').tabs('option','active',2); // THIRD tab
                 $('#billing_schedules_jobs').html(html);
@@ -151,30 +148,18 @@ yukon.ami.billing = (function() {
             });
         },
         
-        /** Returns the pagination data.
-         * @param {Object} jQueryContainer - JQuery object containing the paging elements.
-         * @returns {Object} - Pagination data.
-         */
-        _get_pagination_state = function(jQueryContainer) {
-            var countPerPage = jQueryContainer.find('.perPageArea .selectedItem').text();
-            var currPage = jQueryContainer.find('.paging-area').data('currentPage');
-            return {'page': currPage, 'itemsPerPage': countPerPage};
-        },
-
         /** Deletes a schedule and refreshes the job list.
          * @param {Object} jQueryBtn - jquery button object.
          * @param {Object} params - Request parameters.
          */
-        _delete_schedule_job = function(jQueryBtn, params) {
+        _delete_schedule_job = function(params) {
             $.ajax({
                 url: _url_delete_scheduled_job,
                 type: 'post',
                 data: params
             }).done( function(results) {
                 if (results.success) {
-                    _do_refresh_schedules_jobs_list(
-                        _get_pagination_state($('#billing_schedules_jobs')), function() {
-                    });
+                    _do_refresh_schedules_jobs_list();
                 } else { // ?
                     alert('An error prevented deleting this job: \n\t'+ results.error);
                 }
@@ -185,12 +170,12 @@ yukon.ami.billing = (function() {
          * @param {Object} jQueryBtn - jquery button object.
          * @param {Object} params - Request parameters.
          */
-        _show_edit_schedule_job = function(jQueryBtn, params) {
+        _show_edit_schedule_job = function(params) {
             $.ajax({
                 url: _url_scheduled_billing_form,
                 type: 'get',
                 data: params
-            }).done( function(html) {
+            }).done(function(html) {
                 _populate_generation_schedule_form(html);
                 $('#billing_tab_container').tabs('option','active',0); // FIRST tab
             });
@@ -307,7 +292,8 @@ yukon.ami.billing = (function() {
         _url_format_edit = yukon.url('/dynamicBilling/_edit.html'),
         _url_format_save = yukon.url('/dynamicBilling/save.json'),
         _url_base_setup = yukon.url('/dynamicBilling/'),
-        mod;
+        
+        mod = {};
 
     /* PUBLIC METHODS */
     mod = {
@@ -328,7 +314,6 @@ yukon.ami.billing = (function() {
                 activate: mod.on_tab_change });
 
             doc.on('click', '#tab_schedules a', mod.update_schedules_job_list);
-            doc.on('click', '#billing_schedules_jobs button', mod.do_schedules_job_list_button);
 
             // 2nd tab
             doc.on('click change', '#formatForm #availableFormat', mod.unfreeze_billing_setup);
@@ -341,17 +326,18 @@ yukon.ami.billing = (function() {
             doc.on('click', '#btnCancelSetup', mod.reset_setup_tab);
             doc.on('submit', '#billingFormatForm', mod.do_save_format);
             doc.on('click', '#btnDeleteFormat', mod.do_delete_format);
+            doc.on('click', '.js-edit-job, .js-delete-job', mod.do_schedules_job_list_button);
 
             _initialized = true;
         },
 
 
         /** Deletes a scheduled billing job and refreshes the job list.
-         * Used by _jobs.jsp, ASSUMED TO EXIST BY scheduledFileExportJobs.tag
+         * Used by _jobs.jsp.
          * @param {string} jobId  - Id of the schedule which is to be deleted.
          */
         delete_schedule_job : function(jobId) {
-            _delete_schedule_job(null, {'jobId': jobId});
+            _delete_schedule_job({'jobId': jobId});
         },
 
         /** Handles the creation of new billing format.
@@ -508,7 +494,7 @@ yukon.ami.billing = (function() {
                 form.find('input').removeClass('error').closest('td').find('div.error').remove();
 
                 if (data.success) {
-                    _do_refresh_schedules_jobs_list(null, function() {
+                    _do_refresh_schedules_jobs_list(function() {
                         mod.reset_generation_tab();
                     });
                     return false;
@@ -546,32 +532,26 @@ yukon.ami.billing = (function() {
          */
         update_schedules_job_list: function(event) {
             _STOP_EVENT(event);
-            var href = $(event.currentTarget).attr('href');
-            var at = href.indexOf('?') + 1;
-            _do_refresh_schedules_jobs_list(href.substr(at), null);
+            _do_refresh_schedules_jobs_list();
         },
 
         /** Performs delete / edit actions on the exported schedule list item.
          * @param {Object} event - jquery event object.
          */
         do_schedules_job_list_button : function(event) {
-            var btn = $(event.currentTarget);
-            var href = btn.attr('data-url');
-            if (href == null) { // history: navigate to the list
-                return true;
-            }
-            var action = href.substr(0, href.indexOf('?'));
-            var params = href.substr(href.indexOf('?')+1);
-            if (action == 'delete') {
+            var btn = $(this),
+                isEdit = btn.is('.js-edit-job'),
+                jobId = btn.parent().data('jobId');
+            
+            if (isEdit) {
                 _STOP_EVENT(event);
-
+                _show_edit_schedule_job({jobId: jobId});
                 return false;
-            } else if (action == 'showForm') {
+            } else {
                 _STOP_EVENT(event);
-                _show_edit_schedule_job(btn, params);
+                _delete_schedule_job({jobId: jobId});
                 return false;
             }
-            return true; // This should never be hit.
         },
 
         /** Enables/Disables the buttons on billing setup page.

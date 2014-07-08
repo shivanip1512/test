@@ -53,9 +53,5 @@
             </c:forEach>
         </tbody>
     </table>
+    <tags:pagingResultsControls result="${result}"/>
 </div>
-<c:set var="baseUrl" value="page" />
-<c:if test="${empty param.type}">
-    <c:set var="baseUrl" value="${baseUrl}?type=${type}" />
-</c:if>
-<tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>

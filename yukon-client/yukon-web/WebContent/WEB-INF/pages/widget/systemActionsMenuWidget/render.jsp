@@ -4,10 +4,7 @@
 <cti:url var="phaseDetectUrl" value="/amr/phaseDetect/home"/>
 <cti:url var="archiveDataAnalysesUrl" value="/bulk/archiveDataAnalysis/list/view"/>
 <cti:url var="meterEventsReportUrl" value="/amr/meterEventsReport/home"/>
-<cti:url var="waterLeakReportUrl" value="/amr/waterLeakReport/report">
-    <cti:param name="initReport" value="true"/>
-</cti:url>
-<cti:url var="waterLeakJobsUrl" value="/amr/waterLeakReport/jobs"/>
+<cti:url var="waterLeakReportUrl" value="/amr/waterLeakReport/report"/>
 
 <div>
     <cti:checkRolesAndProperties value="ARCHIVED_DATA_ANALYSIS">
@@ -21,6 +18,5 @@
     </cti:checkRolesAndProperties>
     <cti:checkRolesAndProperties value="REPORTING">
         <a href="${waterLeakReportUrl}"><i:inline key=".waterLeakReport"/></a><br/>
-        <a href="${waterLeakJobsUrl}"><i:inline key=".waterLeakJobs"/></a><br/>
     </cti:checkRolesAndProperties>
 </div>

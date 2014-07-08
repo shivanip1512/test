@@ -1,15 +1,14 @@
 <%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<%@ attribute name="name" required="true" type="java.lang.String" %>
-<%@ attribute name="value" required="true" type="java.lang.String" %>
-<%@ attribute name="maxLength" required="false" type="java.lang.Integer" %>
+<%@ attribute name="name" required="true" %>
+<%@ attribute name="value" required="true" %>
+<%@ attribute name="maxLength" type="java.lang.Integer" %>
 
-<c:if test="${empty maxLength}">
-    <c:set var="maxLength" value="50"/>
-</c:if>
+<cti:default var="maxLength" value="50"/>
 <c:set var="space" value=" "/>
 <c:set var="underscore" value="_"/>
 
@@ -20,8 +19,7 @@
             <a href="" class="${cleanName}_link">(expand)</a>
         </span>
         <span id="${cleanName}_full_span" style="display:none;">
-            <a href="" class="${cleanName}_link">(shrink)</a><br>
-            ${value}
+            <a href="" class="${cleanName}_link">(shrink)</a><br>${value}
         </span>
         <script>
             $('.${cleanName}_link').click(function() {
@@ -31,7 +29,5 @@
             });
         </script>
     </c:when>
-    <c:otherwise>
-        ${value}
-    </c:otherwise>
+    <c:otherwise>${value}</c:otherwise>
 </c:choose>

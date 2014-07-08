@@ -153,12 +153,12 @@
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.noPingDevices.label">Ping Unavailable</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.noPingDevices.hoverText">Unable to ping more than 1000 devices</entry>
 
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.serialNumber.linkText">Serial Number</entry>
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.type.linkText">Type</entry>
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.lastCommunication.linkText">Last Communication</entry>
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.lastRuntime.linkText">Last Runtime</entry>
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.appliances.linkText">Appliances</entry>
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.availability.linkText">Availability</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.SERIAL_NUM">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.TYPE">Type</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.LAST_COMM">Last Communication</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.LAST_RUN">Last Runtime</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.APPLIANCES">Appliances</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.AVAILABILITY">Availability</entry>
 
     
     <!-- Errors -->

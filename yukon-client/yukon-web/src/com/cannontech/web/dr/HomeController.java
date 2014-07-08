@@ -1,8 +1,6 @@
 package com.cannontech.web.dr;
 
-import java.text.ParseException;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +11,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -41,7 +38,6 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
 
 @Controller
 @CheckRole(YukonRole.DEMAND_RESPONSE)
@@ -63,44 +59,17 @@ public class HomeController {
     @Autowired private EnergyCompanyDao ecDao;
 
     @RequestMapping("/home")
-    public String home(ModelMap model,
-                    YukonUserContext userContext,
-                    String favSort,
-                    Boolean favDescending,
-                    String rvSort,
-                    Boolean rvDescending) throws ParseException {
+    public String home(ModelMap model, YukonUserContext userContext) {
 
         LiteYukonUser user = userContext.getYukonUser();
         List<DisplayablePao> favorites = userPageDao.getDrFavorites(user);
         favorites = paoAuthorizationService.filterAuthorized(user, favorites, Permission.LM_VISIBLE);
-
-        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
-        if (favSort != null) {
-            CombinedSortableField sortField = CombinedSortableField.valueOf(favSort);
-            sorter = demandResponseService.getSorter(sortField, userContext);
-            if (favDescending != null && favDescending && sorter != null) {
-                sorter = Ordering.from(sorter).reverse();
-            }
-        }
-
-        Collections.sort(favorites, sorter);
+        Collections.sort(favorites, demandResponseService.getSorter(CombinedSortableField.NAME, userContext));
         model.addAttribute("favorites", favorites);
 
         List<DisplayablePao> recentlyViewed = userPageDao.getDrRecentViewed(user);
-
         recentlyViewed = paoAuthorizationService.filterAuthorized(user, recentlyViewed, Permission.LM_VISIBLE);
-        sorter = null;
-        if (rvSort != null) {
-            CombinedSortableField sortField = CombinedSortableField.valueOf(rvSort);
-            sorter = demandResponseService.getSorter(sortField, userContext);
-            if (rvDescending != null && rvDescending && sorter != null) {
-                sorter = Ordering.from(sorter).reverse();
-            }
-        }
-        if (sorter == null) {
-            sorter = new DisplayablePaoComparator();
-        }
-        Collections.sort(recentlyViewed, sorter);
+        Collections.sort(recentlyViewed, demandResponseService.getSorter(CombinedSortableField.NAME, userContext));
         model.addAttribute("recents", recentlyViewed);
 
         /** RF BROADCAST PERMORMANCE */

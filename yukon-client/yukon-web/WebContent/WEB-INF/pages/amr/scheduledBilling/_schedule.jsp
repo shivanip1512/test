@@ -6,11 +6,6 @@
 
 <cti:verifyRolesAndProperties value="APPLICATION_BILLING"/>
 
-<%--
-    REQUIRES CONTAINER INCLUDES:
-        <cti:includeScript link="/JavaScript/yukon.cron.js" />
- --%>
-
 <cti:msgScope paths="modules.amr.billing.schedule">
 
 <div class="error dn f-errors"></div>

@@ -5,22 +5,21 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.ArchiveAnalysisResult;
@@ -41,14 +40,14 @@ public class AdaResultsController {
     @Autowired private RolePropertyDao rolePropertyDao;
     
     @RequestMapping("view")
-    public String view(ModelMap model, int analysisId, Integer itemsPerPage, 
-            @RequestParam(defaultValue="1") int page, 
-            YukonUserContext userContext, FlashScope flashScope) throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String view(ModelMap model, int analysisId, 
+            @DefaultItemsPerPage(10) PagingParameters paging, 
+            YukonUserContext userContext, FlashScope flashScope) {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
         
         // Warn the user if the analysis was interrupted
-        if(analysis.getStatus() == AdaStatus.INTERRUPTED) {
+        if (analysis.getStatus() == AdaStatus.INTERRUPTED) {
             flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.analysis.analysisInterruptedWarning"));
         }
             
@@ -59,25 +58,26 @@ public class AdaResultsController {
         
         // Page the result
         List<PaoIdentifier> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId);
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-        int startIndex = (page - 1) * itemsPerPage;
-        int toIndex = startIndex + itemsPerPage;
+        
+        int toIndex = paging.getStartIndex() + paging.getItemsPerPage();
         int numberOfResults = deviceIds.size();
         if (numberOfResults < toIndex) toIndex = numberOfResults;
         
         // Build bars for this page of devices
-        deviceIds = deviceIds.subList(startIndex, toIndex);
+        deviceIds = deviceIds.subList(paging.getStartIndex(), toIndex);
         List<DeviceArchiveData> data = archiveDataAnalysisDao.getSlotValues(analysisId, deviceIds);
         AdaResultsHelper.buildBars(analysis, BAR_WIDTH, data);
         
         SearchResults<DeviceArchiveData> searchResult = new SearchResults<DeviceArchiveData>();
         searchResult.setResultList(data);
-        searchResult.setBounds(startIndex, itemsPerPage, numberOfResults);
+        searchResult.setBounds(paging.getStartIndex(), paging.getItemsPerPage(), numberOfResults);
         result.setSearchResult(searchResult);
         
         model.addAttribute("barWidth", BAR_WIDTH);
         
-        if (analysis.getAttribute().isReadableProfile() && rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION, userContext.getYukonUser())) {
+        LiteYukonUser user = userContext.getYukonUser();
+        boolean profileCollection = rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION, user);
+        if (analysis.getAttribute().isReadableProfile() && profileCollection) {
             model.addAttribute("showReadOption", true);
         }
         
@@ -86,7 +86,7 @@ public class AdaResultsController {
         
         int numberOfDataPoints = data.size() * numberOfIntervals;
         boolean underTabularSizeLimit = true;
-        if(numberOfDataPoints > TABULAR_SIZE_LIMIT) {
+        if (numberOfDataPoints > TABULAR_SIZE_LIMIT) {
             underTabularSizeLimit = false;
         }
         model.addAttribute("underTabularSizeLimit", underTabularSizeLimit);

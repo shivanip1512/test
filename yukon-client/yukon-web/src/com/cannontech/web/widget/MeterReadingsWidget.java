@@ -92,7 +92,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), allExistingAttributes, user);
         mav.addObject("readable", readable);
         
-        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(meter, null, null);
+        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(meter);
         mav.addObject("points", points);
         mav.addObject("deviceName", paoLoadingService.getDisplayablePao(meter).getName());
         

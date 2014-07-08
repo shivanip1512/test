@@ -1,16 +1,17 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="${type}.assetDetails">
 
 <input id="assetId" type="hidden" value="${assetId}"/>
-<input id="itemsPerPage" type="hidden" value="${itemsPerPage}"/>
 
 <cti:includeScript link="/JavaScript/yukon.dr.asset.details.js"/>
 
@@ -46,9 +47,9 @@
 </cti:msgScope>
 
     <%-- Paged results table goes here... --%>
-    <h2><cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.devices"/></h2>
+    <h2><cti:msg2 key="modules.operator.hardware.assetAvailability.devices"/></h2>
     <div class="clear device-detail-table">
-        <dr:assetDetailsResult result="${result}" assetId="${assetId}" itemsPerPage="${itemsPerPage}"/>
+        <dr:assetDetailsResult result="${result}" assetId="${assetId}"/>
     </div>
 
 </cti:standardPage>

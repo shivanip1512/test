@@ -14,8 +14,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -55,8 +56,7 @@ public class InventorySearchController {
                          ModelMap model, 
                          YukonUserContext context, 
                          @ModelAttribute InventorySearch inventorySearch, 
-                         Integer itemsPerPage, 
-                         Integer page,
+                         @DefaultItemsPerPage(25) PagingParameters paging,
                          FlashScope flashScope) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.INVENTORY_SEARCH, context.getYukonUser());
@@ -84,22 +84,17 @@ public class InventorySearchController {
         }
         
         if(!hasWarnings){
-            MeteringType value = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getEnergyCompanyId());
+            MeteringType value = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, 
+                    MeteringType.class, ec.getEnergyCompanyId());
 
             boolean starsMeters = value == MeteringType.stars;
             model.addAttribute("starsMeters", starsMeters);
             
-            if (page == null) {
-                page = 1;
-            }
-            itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-            int startIndex = (page - 1) * itemsPerPage;
-            
             List<EnergyCompany> descendantEcs = 
                     energyCompanyDao.getEnergyCompany(liteEc.getEnergyCompanyId()).getDescendants(true);
             List<Integer> ecDescendantIds = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
-            SearchResults<InventorySearchResult> results = 
-                    inventoryDao.search(inventorySearch, ecDescendantIds, startIndex, itemsPerPage, starsMeters);
+            SearchResults<InventorySearchResult> results = inventoryDao.search(inventorySearch, ecDescendantIds, 
+                    paging.getStartIndex(), paging.getItemsPerPage(), starsMeters);
 
             // Redirect to inventory page if only one result is found
            if (results.getHitCount() == 1) {
@@ -129,7 +124,9 @@ public class InventorySearchController {
         return "operator/inventory/inventoryList.jsp";
     }
     
-    private void updateInventorySearch(InventorySearch inventorySearch, OperatorInventorySearchBy searchBy, String searchValue){
+    private void updateInventorySearch(InventorySearch inventorySearch, OperatorInventorySearchBy searchBy, 
+            String searchValue){
+        
         switch(searchBy){
         case serialNumber:
             inventorySearch.setSerialNumber(searchValue);

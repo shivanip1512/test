@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.dao.CapbankDao;
@@ -15,12 +14,10 @@ import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
-import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -30,8 +27,9 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
-public class CapbankDaoImpl implements CapbankDao {    
-    private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
+public class CapbankDaoImpl implements CapbankDao {
+    
+    private static final YukonRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDao paoDao;
@@ -93,19 +91,8 @@ public class CapbankDaoImpl implements CapbankDao {
     }
     
     @Override
-    public SearchResults<LiteCapControlObject> getOrphans(int start, int count) {
-        /* Get the unordered total count */
-        SqlStatementBuilder orphanSql = new SqlStatementBuilder();
-        
-        orphanSql.append("SELECT COUNT(*)");
-        orphanSql.append("FROM CapBank");
-        orphanSql.append("WHERE DeviceID NOT IN");
-        orphanSql.append(   "(SELECT DeviceID");
-        orphanSql.append(   " FROM CCFeederBankList)");
-        
-        int orphanCount = yukonJdbcTemplate.queryForInt(orphanSql);
-        
-        /* Get the paged subset of cc objects */
+    public List<LiteCapControlObject> getOrphans() {
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, PAOName, Type, Description");
         sql.append("FROM YukonPAObject");
@@ -115,16 +102,9 @@ public class CapbankDaoImpl implements CapbankDao {
         sql.append(      " FROM CCFeederBankList)");
         sql.append("ORDER BY PAOName");
         
-        PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, liteCapControlObjectRowMapper);
-        yukonJdbcTemplate.query(sql, orphanExtractor);
+        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, liteCapControlObjectRowMapper);
         
-        List<LiteCapControlObject> unassignedBanks = orphanExtractor.getResultList();
-        
-        SearchResults<LiteCapControlObject> searchResult = new SearchResults<LiteCapControlObject>();
-        searchResult.setResultList(unassignedBanks);
-        searchResult.setBounds(start, count, orphanCount);
-        
-        return searchResult;
+        return orphans;
     }
     
     /**

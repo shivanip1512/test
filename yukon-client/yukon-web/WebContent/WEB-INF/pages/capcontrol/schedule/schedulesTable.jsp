@@ -7,7 +7,7 @@
 <cti:msgScope paths="modules.capcontrol">
 
     <c:choose>
-        <c:when test="${searchResult.hitCount == 0}">
+        <c:when test="${fn:length(schedules) == 0}">
             <span class="empty-list"><i:inline key=".schedules.noSchedules"/></span>
         </c:when>
         <c:otherwise>
@@ -22,7 +22,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="item" items="${scheduleList}">
+                    <c:forEach var="item" items="${schedules}">
                         <tr>
                             <td class="wsnw">
                                 <cti:url var="editUrl" value="/editor/cbcBase.jsf">
@@ -68,7 +68,5 @@
             </table>
         </c:otherwise>
     </c:choose>
-    <c:set var="baseUrl" value="schedulesTable" />
-    <tags:pagingResultsControls baseUrl="${baseUrl}" result="${pagedResults}" adjustPageCount="true"/>
     
 </cti:msgScope>

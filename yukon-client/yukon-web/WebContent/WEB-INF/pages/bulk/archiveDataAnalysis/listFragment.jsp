@@ -1,10 +1,14 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
-<%@ taglib tagdir="/WEB-INF/tags/dialog" prefix="d"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="yukon.web.modules.tools.bulk.analysis.list">
+
+<div data-url="<cti:url value="page"/>">
 <table class="compact-results-table">
     <thead>
         <tr>
@@ -79,33 +83,43 @@
                         <div class="f-analysis-actions">
                             <c:choose>
                                 <c:when test="${analysis.running}">
-                                    <cti:button classes="f-results-button" nameKey="viewButtonAnalyzing" renderMode="image" href="${viewUrl}" disabled="true" icon="icon-application-view-columns"/>
+                                    <cti:button classes="f-results-button" nameKey="viewButtonAnalyzing" renderMode="image" 
+                                            href="${viewUrl}" disabled="true" icon="icon-application-view-columns"/>
                                 </c:when>
                                 <c:when test="${analysis.reading}">
-                                    <cti:button classes="f-results-button" nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
+                                    <cti:button classes="f-results-button" nameKey="viewButton" renderMode="image" 
+                                            href="${viewUrl}" icon="icon-application-view-columns"/>
                                 </c:when>
                                 <c:when test="${analysis.done}">
                                     <c:choose>
                                         <c:when test="${analysis.deviceCount == 0}">
-                                            <cti:button classes="f-results-button" nameKey="viewButtonNoDevices" renderMode="image" disabled="true" icon="icon-application-view-columns"/>
+                                            <cti:button classes="f-results-button" nameKey="viewButtonNoDevices" 
+                                                    renderMode="image" disabled="true" icon="icon-application-view-columns"/>
                                         </c:when>
                                         <c:otherwise>
-                                            <cti:button classes="f-results-button" nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
+                                            <cti:button classes="f-results-button" nameKey="viewButton" renderMode="image" 
+                                                    href="${viewUrl}" icon="icon-application-view-columns"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </c:when>
                             </c:choose>
-                            <cti:url var="deleteURL" value="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysis.analysisId}"/>
-                            <cti:button id="deleteButton_${analysis.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="${deleteURL}" />
-                            <d:confirm on="#deleteButton_${analysis.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
+                            <cti:url var="deleteUrl" value="/bulk/archiveDataAnalysis/list/delete">
+                                <cti:param name="analysisId" value="${analysis.analysisId}"/>
+                            </cti:url>
+                            <cti:button id="delete-result-${analysis.analysisId}" nameKey="remove" renderMode="image" 
+                                    icon="icon-cross" href="${deleteUrl}"/>
+                            <d:confirm on="#delete-result-${analysis.analysisId}" nameKey="deleteConfirmation" 
+                                    argument="${attribName}"/>
                         </div>
                     </td>
+                    <cti:dataUpdaterCallback function="yukon.dataAnalysis.changeStatus"
+                                value="ARCHIVE_DATA_ANALYSIS/${analysis.analysisId}/STATUS"/>
                     
                 </tr>
             </c:if>
         </c:forEach>
     </tbody>
 </table>
-<c:set var="baseUrl" value="page"/>
-<tags:pagingResultsControls adjustPageCount="true" baseUrl="${baseUrl}" result="${result}"/>
+<tags:pagingResultsControls adjustPageCount="true" result="${result}"/>
+</div>
 </cti:msgScope>

@@ -20,46 +20,46 @@
 <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
     <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.menu.config.commander.select.devices" 
                                    initiallySelected="${isDevicesPage}">
-        <c:url value="/commander/select?category=MCT" />
+        <c:url value="/commander/select?category=MCT"/>
     </cti:linkTab>
 
     <cti:linkTab tabId="loadMgtTab" selectorKey="yukon.web.menu.config.commander.select.lm" 
                                     initiallySelected="${isLoadMngtPage}">
-        <c:url value="/commander/select?category=LMGROUP" />
+        <c:url value="/commander/select?category=LMGROUP"/>
     </cti:linkTab>
 
     <cti:linkTab tabId="capControlTab" selectorKey="yukon.web.menu.config.commander.select.capcontrol"
                                     initiallySelected="${isCapCtrlPage}">
-        <c:url value="/commander/select?category=CAP" />
+        <c:url value="/commander/select?category=CAP"/>
     </cti:linkTab>
 </cti:linkTabbedContainer>
 
 <%-- START Secondary Menu --%>
 <c:if test="${isDevicesPage}">
     <div id="menuL2Devices" class="secondary-menu">
-        <c:url var="tab_url" value="/commander/select" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.mct" showPlainText='${category == "MCT"}' href="${tab_url}" />
+        <c:url var="tab_url" value="/commander/select"/>
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.mct" showPlainText='${category == "MCT"}' href="${tab_url}"/>
         |
-        <c:url var="tab_url" value="/commander/select?category=IED" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.ied" showPlainText='${category == "IED"}' href="${tab_url}" />
+        <c:url var="tab_url" value="/commander/select?category=IED"/>
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.ied" showPlainText='${category == "IED"}' href="${tab_url}"/>
         |
-        <c:url var="tab_url" value="/commander/select?category=RTU" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.rtu" showPlainText='${category == "RTU"}' href="${tab_url}" />
+        <c:url var="tab_url" value="/commander/select?category=RTU"/>
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.rtu" showPlainText='${category == "RTU"}' href="${tab_url}"/>
         |
-        <c:url var="tab_url" value="/commander/select?category=TRANSMITTER" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.transmitter" showPlainText='${category == "TRANSMITTER"}' href="${tab_url}" />
+        <c:url var="tab_url" value="/commander/select?category=TRANSMITTER"/>
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.transmitter" showPlainText='${category == "TRANSMITTER"}' href="${tab_url}"/>
     </div>
 </c:if>
 <c:if test="${isLoadMngtPage}">
     <div id="menuL2LoadMgt" class="secondary-menu">
-        <c:url var="tab_url" value="/commander/select?category=LMGROUP" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.lm.group" showPlainText='${category == "LMGROUP"}' href="${tab_url}" />
+        <c:url var="tab_url" value="/commander/select?category=LMGROUP"/>
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.lm.group" showPlainText='${category == "LMGROUP"}' href="${tab_url}"/>
         |
-        <c:url var="tab_url" value="/commander/command/xcom" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.lm.xcom.tab.title" showPlainText='${serialType == "xcom"}' href="${tab_url}" />
+        <c:url var="tab_url" value="/commander/command/xcom"/>
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.lm.xcom.tab.title" showPlainText='${serialType == "xcom"}' href="${tab_url}"/>
         |
-        <c:url var="tab_url" value="/commander/command/vcom" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.lm.vcom.tab.title" showPlainText='${serialType == "vcom"}' href="${tab_url}" />
+        <c:url var="tab_url" value="/commander/command/vcom"/>
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.lm.vcom.tab.title" showPlainText='${serialType == "vcom"}' href="${tab_url}"/>
     </div>
 </c:if>
 <%-- END Secondary Menu --%>
@@ -73,16 +73,15 @@
                 
                 $('#filterForm')[0].submit();
             });
+            
+            $('#search-results-container').attr('data-url', 'select?' + $('#filterForm').serialize());
         });
     </script>
     
     <c:set var="baseUrl" value="/commander/select"/>
     
-    <tags:boxContainer2 nameKey="deviceSearch">
+    <tags:sectionContainer2 nameKey="deviceSearch">
         <form id="filterForm" action="<cti:url value="${baseUrl}"/>">
-            <input type="hidden" name="startIndex" value="${deviceSearchResults.startIndex}"> 
-            <input type="hidden" name="itemsPerPage" value="${deviceSearchResults.count}">
-            <input type="hidden" name="orderBy" value="${orderBy}">
             <input type="hidden" name="category" value="${category}">
 
             <div class="column-8-8-8 tiles clearfix">
@@ -104,54 +103,53 @@
             </div>
 
             <div class="action-area">
-                <cti:button nameKey="search" type="submit" />
-                <cti:button nameKey="showAll" classes="f-show-all" />
+                <cti:button nameKey="search" type="submit" classes="primary action"/>
+                <cti:button nameKey="showAll" classes="f-show-all"/>
             </div>
         </form>
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
     
-    <tags:pagedBox2 nameKey="deviceSearchResults" searchResult="${deviceSearchResults}" baseUrl="${baseUrl}" pageByHundereds="true">
-        <c:if test="${deviceSearchResults.hitCount == 0}">
-            <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
-        </c:if>
-        <c:if test="${deviceSearchResults.hitCount > 0}">
-            <table class="compact-results-table row-highlighting">
+    <c:if test="${deviceSearchResults.hitCount == 0}">
+        <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
+    </c:if>
+    <c:if test="${deviceSearchResults.hitCount > 0}">
+        <div id="search-results-container" data-static>
+            <table class="compact-results-table">
                 <thead>
-	                <tr>
-		                <c:forEach var="field" items="${fields}">
-		                    <c:if test="${field.visible}">
-		                      <th><tags:sortLink nameKey="deviceSearchField.${field}" baseUrl="${baseUrl}" fieldName="${field}" sortParam="orderBy"/></th>
-		                    </c:if>
-		                </c:forEach>
-	                </tr>
+                    <tr>
+                        <c:forEach var="column" items="${columns}">
+                            <tags:sort column="${column}"/>
+                        </c:forEach>
+                    </tr>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-		            <c:forEach var="searchResultRow" items="${deviceSearchResults.resultList}">
-		                <tr>
-		                    <c:forEach var="field" items="${fields}">
-		                        <c:if test="${field.visible}">
-		                        <c:set var="value" value="${fn:escapeXml(searchResultRow.map[field.fieldName])}"/>
-		                        <c:choose>
-		                            <c:when test="${field eq 'NAME'}">
-		                            <cti:url var="commandUrl" value="/commander/command">
-		                                <cti:param name="deviceId" value="${searchResultRow.map['id']}"/>
-		                                <cti:param name="category" value="${category}"/>
-		                            </cti:url>
-		                            <td><a href="${commandUrl}">${value}</a></td>
-		                            </c:when>
-		                            <c:when test="${field eq 'TYPE'}"><td>${value}</td></c:when>
-		                            <c:otherwise><td><c:choose>
-		                                <c:when test="${empty value}">-</c:when>
-		                                <c:otherwise>${value}</c:otherwise>
-		                            </c:choose></td></c:otherwise>
-		                        </c:choose>
-		                        </c:if>
-		                    </c:forEach>
-		                </tr>
-		            </c:forEach>
+                    <c:forEach var="searchResultRow" items="${deviceSearchResults.resultList}">
+                        <tr>
+                            <c:forEach var="field" items="${fields}">
+                                <c:if test="${field.visible}">
+                                <c:set var="value" value="${fn:escapeXml(searchResultRow.map[field.fieldName])}"/>
+                                <c:choose>
+                                    <c:when test="${field eq 'NAME'}">
+                                    <cti:url var="commandUrl" value="/commander/command">
+                                        <cti:param name="deviceId" value="${searchResultRow.map['id']}"/>
+                                        <cti:param name="category" value="${category}"/>
+                                    </cti:url>
+                                    <td><a href="${commandUrl}">${value}</a></td>
+                                    </c:when>
+                                    <c:when test="${field eq 'TYPE'}"><td>${value}</td></c:when>
+                                    <c:otherwise><td><c:choose>
+                                        <c:when test="${empty value}">-</c:when>
+                                        <c:otherwise>${value}</c:otherwise>
+                                    </c:choose></td></c:otherwise>
+                                </c:choose>
+                                </c:if>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
                 </tbody>
             </table>
-        </c:if>
-    </tags:pagedBox2>
+            <tags:pagingResultsControls result="${deviceSearchResults}" hundreds="true" adjustPageCount="true"/>
+        </div>
+    </c:if>
 </cti:standardPage>

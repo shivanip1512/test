@@ -1,4 +1,4 @@
-package com.cannontech.amr.waterMeterLeak.model;
+package com.cannontech.web.amr.waterLeakReport.model;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.core.dynamic.PointValueHolder;

@@ -1,3 +1,5 @@
+yukon.namespace('yukon.ami.meterEventsReport');
+
 /**
  * Handles Meter Events Reports. 
  * 
@@ -7,31 +9,24 @@
  * @requires jquery.dynatree.js
  * @requires yukon
  * @requires yukon.ui.util
- * @requires yukon.tag.scheduled.file.export.inputs.js
  */
-
-yukon.namespace('yukon.ami.meterEventsReport');
-
 yukon.ami.meterEventsReport = (function () {
 
-    var mod,
+    var 
+    /** @type {boolean} - This flag is set to true when the event types tree is initialized. */
+    _eventTypesTreeInitialized = false,
     
-    /** @type {boolean} - This flag is set to true when the event types tree is initialized.  */
-        eventTypesTreeInitialized = false,
-        
     /** @type {Array.<string>} - Array of all the titles of event types that need to be ignored. */
-        titlesToIgnore = [],
-        
-    /** @type {Object} - Model Data. */        
-        _modelData;
-
+    _titlesToIgnore = [],
+    
+    /** @type {Object} - Model Data. */
+    _modelData = {},
     
     /** Populates the tree with attributes for all the event Types.
      * @param {Object} allAttributesMap - all events and attribute Map.
      * @param {Object} eventNode - Event Type.
-     * @param {string} url - url to be invoked. 
      */ 
-    function _populateTreeNodes(allAttributesMap, eventNode) {
+    _populateTreeNodes = function (allAttributesMap, eventNode) {
         var nodes = [],
             attributeMap = eventNode.attributeMap;
         for (var i = 0; i < eventNode.attributes.length; i++) {
@@ -42,23 +37,23 @@ yukon.ami.meterEventsReport = (function () {
             }
         }
         return nodes;
-    }
+    },
 
     /** Ignores the event type title from the event Types Nodes.
      *  @param {string} title - node name of events Map.
      */
-    function _ignoreTitle(title) {
-        for (var i = 0; i < titlesToIgnore.length; i++) {
-            if (title === titlesToIgnore[i]) {
+    _ignoreTitle = function (title) {
+        for (var i = 0; i < _titlesToIgnore.length; i++) {
+            if (title === _titlesToIgnore[i]) {
                 return true;
             };
         }
         return false;
-    }
+    },
 
     /** Initializes the Event types tree. */ 
-    function _initEventTypesTree() {
-        if (eventTypesTreeInitialized === true) {
+    _initEventTypesTree = function () {
+        if (_eventTypesTreeInitialized === true) {
             return;
         }
 
@@ -69,12 +64,12 @@ yukon.ami.meterEventsReport = (function () {
             outageNodes = _populateTreeNodes(allEventsMap, _modelData.outageEvents),
             meteringNodes = _populateTreeNodes(allEventsMap, _modelData.meteringEvents);
 
-        titlesToIgnore.push(_modelData.allTitle);
-        titlesToIgnore.push(_modelData.generalTitle);
-        titlesToIgnore.push(_modelData.hardwareTitle);
-        titlesToIgnore.push(_modelData.tamperTitle);
-        titlesToIgnore.push(_modelData.outageTitle);
-        titlesToIgnore.push(_modelData.meteringTitle);
+        _titlesToIgnore.push(_modelData.allTitle);
+        _titlesToIgnore.push(_modelData.generalTitle);
+        _titlesToIgnore.push(_modelData.hardwareTitle);
+        _titlesToIgnore.push(_modelData.tamperTitle);
+        _titlesToIgnore.push(_modelData.outageTitle);
+        _titlesToIgnore.push(_modelData.meteringTitle);
 
         var treeChildrenGroups = [];
         if (generalNodes.length > 0) {
@@ -94,21 +89,21 @@ yukon.ami.meterEventsReport = (function () {
         }
 
         var treeChildren = [{title: _modelData.allTitle, isFolder: true, expand: true, children: treeChildrenGroups}];
-        $("#eventTree").dynatree({
+        $('#eventTree').dynatree({
             checkbox: true,
             selectMode: 3,
             children: treeChildren
         });
 
-        eventTypesTreeInitialized = true;
-    }
+        _eventTypesTreeInitialized = true;
+    },
 
     /** Updates the event types. */
-    function _updateEventTypes() {
+    _updateEventTypes = function () {
         var numSelected = 0,
             selectedNodes;
-        $("#eventTypeInputs").empty();
-        selectedNodes = $("#eventTree").dynatree("getSelectedNodes");
+        $('#eventTypeInputs').empty();
+        selectedNodes = $('#eventTree').dynatree('getSelectedNodes');
         if ('undefined' !== typeof selectedNodes) {
             $(selectedNodes).each(function(index, node) {
                 if (_ignoreTitle(node.data.title) === false) {
@@ -123,121 +118,101 @@ yukon.ami.meterEventsReport = (function () {
         }
         $('#numEventTypes').html(numSelected);
         $('#filterPopupEventTypes').dialog('close');
-    }
+    },
     
     /** Schedules a meter event report. */
-    function _submitSchedule() {
-        var formSerialized = $("#filterForm").serialize();
-        formSerialized += "&" + $("#scheduleForm").serialize();
-        $.post("saveScheduledMeterEventJob?" + formSerialized, function (data) {
+    _submitSchedule = function () {
+        var formSerialized = $('#filter-form').serialize();
+        formSerialized += '&' + $('#schedule-form').serialize();
+        $.post('saveScheduledMeterEventJob?' + formSerialized, function (data) {
             var response = $(data),
-                scheduleModelData = yukon.fromJson(response.filter("#scheduleModelData"));
+                scheduleModelData = yukon.fromJson(response.filter('#scheduleModelData'));
             if (scheduleModelData.success) {
-                $("#scheduleDialog").dialog('close');
-                _reloadScheduledJobsTable(response.filter("#flashScopeMsg"));
+                $('#scheduleDialog').dialog('close');
+                _reloadScheduledJobsTable(response.filter('#flashScopeMsg'));
             } else {
-                $("#scheduleDialog").html(response);
+                $('#scheduleDialog').html(response);
                 yukon.tag.scheduledFileExportInputs.initializeFields();
             }
         });
-    }
+    },
 
     /** Refreshes the schedule table. 
      *  @param {string} flashScope - inner html content.  */
-    function _reloadScheduledJobsTable(flashScope) {
-        $("#scheduledJobsTable").load("scheduledJobsTable", function () {
-            $("#scheduledJobsTableFlashScope").hide().html(flashScope).fadeIn(150);
+    _reloadScheduledJobsTable = function (flashScope) {
+        $('#scheduledJobsTable').load('scheduledJobsTable', function () {
+            $('#scheduledJobsTableFlashScope').hide().html(flashScope).fadeIn(150);
         });
-    }
+    },
 
     /** Deletes the schedule with give Id. 
      *  @param {string} jobId - Schedule Id.  */
-    function _deleteJob(jobId) {
+    _deleteJob = function (jobId) {
         var data = {jobId : jobId};
 
-        $.post("delete", data, 'json').done(function (data) {
-            var flashScopeEl = $("<div>").attr('class','user-message success').text(data.successMsg);
+        $.post('delete', data, 'json').done(function (data) {
+            var flashScopeEl = $('<div>').attr('class','user-message success').text(data.successMsg);
             _reloadScheduledJobsTable(flashScopeEl);
-            $("#scheduledJobsTableFlashScope").html(flashScopeEl);
+            $('#scheduledJobsTableFlashScope').html(flashScopeEl);
         });
-    }
+    },
     
     /**  Opens the schedule dialog with given name.
      * @param {string} title - Dialog box title.  */
-    function _createScheduleReportDialog(title) {
-        $("#scheduleDialog").dialog({'title' : title, 'modal' : true, 'height' : 'auto',
-            'width' : 'auto'});
-    }
+    _createScheduleReportDialog = function (title) {
+        $('#scheduleDialog').dialog({
+            'title' : title, 
+            'modal' : true, 
+            width: 'auto', 
+            height: 'auto',
+            show: { complete: function () { $('#scheduleDialog :text').focus(); } },
+        });
+    },
     
     /**  Updates the meter events table. */
-    function _updateMeterEventsTable() {
-        var formSerialized = $("#filterForm").serialize(),
-        formUrl = $("#filterForm").attr('action');
-        $.post(formUrl, formSerialized, function (data) {
-            $("#meterEventsTable").html(data);
-            yukon.ui.unbusy($("#updateMeterEventsBtn"));
+    _updateMeterEventsTable = function () {
+        var 
+        params = $('#filter-form').serialize(),
+        url = $('#filter-form').attr('action'),
+        sorting = $('.sortable.desc, .sortable.asc'),
+        paging = $('.paging-area'),
+        extras = {};
+        
+        if (sorting.length > 0) {
+            extras.sort = sorting.data('sort'),
+            extras.dir = sorting.is('.desc') ? 'desc' : 'asc';
+        }
+        extras.itemsPerPage = paging.length > 0 ? paging.data('pageSize') : 10;
+        
+        $.post(url, params + '&' + $.param(extras), function (data) {
+            $('#meterEventsTable').html(data);
+            yukon.ui.unbusy($('#update-meter-events-btn'));
+            $('#meterEventsTable').data('url', url + '?' + params);
         });
-    }
+    },
 
-    mod = {
+    _mod = {
+            
         updateEventTypes: function() {
             _updateEventTypes();
             _updateMeterEventsTable();
         },
 
         init: function() {
-            _modelData = yukon.fromJson("#modelData");
-            $("#updateMeterEventsBtn").click(_updateMeterEventsTable);
-
-            $("#scheduleMeterEventsBtn").click(function() {
-                var formSerialized = $("#filterForm").serialize();
-                $.post("scheduledMeterEventsDialog", formSerialized, function (data) {
-                    $("#scheduleDialog").html(data);
-                    yukon.tag.scheduledFileExportInputs.initializeFields();
-                });
-                if ($("scheduleDialog").hasClass("ui-dialog-content")) {
-                    $("#scheduleDialog").dialog('destroy');
-                }
-                _createScheduleReportDialog(_modelData.newSchedulePopupTitle);
-            });
-
-            $("#eventTypesFilterOkBtn").click(function () {
-                _updateEventTypes();
-                _updateMeterEventsTable();
-            });
-
-            $("#exportCsvBtn").click(function () {
-                var _meterEventsTableModel = yukon.fromJson("#meterEventsTableModelData"),
-                    downloadForm = $("#downloadFormContents").empty();
-                $("#filterForm").find(":input[name]").each(function() {
-                    var self = $(this);
-                    downloadForm.append($("<input>")
-                                .attr("name", self.attr("name"))
-                                .attr("type", self.attr("type"))
-                                .val(self.val()));
-                });
-                downloadForm.append($("<input>").attr("name", "sort").val(_meterEventsTableModel.sort));
-                downloadForm.append($("<input>").attr("name", "descending").val(_meterEventsTableModel.descending));
-                $("#downloadForm").submit();
-            });
-
-            $(document).on('click', '#scheduledJobDialogSchedule', _submitSchedule);
-
-            $(document).on('click', '#scheduledJobDialogCancel', function() {
-                $('#scheduleDialog').dialog('close');
-            });
-
+            
             $(document).on('click', '.f-delete-schedule-item', function (event) {
                 event.preventDefault();
-                var jobId = $(this).closest("[data-job-id]").data("job-id");
-                $("#scheduledJobsConfirmDeleteDialog").dialog({'title' : _modelData.confirmScheduleDeletion,
-                    'modal': true, 'height' : 'auto', 'width' : 'auto',
+                var jobId = $(this).closest('[data-job-id]').data('job-id');
+                $('#scheduledJobsConfirmDeleteDialog').dialog({
+                    'modal': true, 
+                    'height' : 'auto', 
+                    'width' : 'auto',
                     'buttons': 
                         [{
-                             text: _modelData.cancelBtnLbl, 
+                             text: yg.text.cancel, 
                              click: function() {$(this).dialog('close');}
                         }, {
-                             text: _modelData.okBtnLbl, 
+                             text: yg.text.ok, 
                              click: function() {
                                  $(this).dialog('close');
                                  _deleteJob(jobId);
@@ -246,18 +221,62 @@ yukon.ami.meterEventsReport = (function () {
                         }]
                      });
             });
+            
+            if ($('#modelData').length) {
+                _modelData = yukon.fromJson('#modelData');
+                $('#update-meter-events-btn').click(_updateMeterEventsTable);
 
-            if (_modelData.openScheduleDialog) {
-                _createScheduleReportDialog(_modelData.schedulePopupTitle);
+                $('#schedule-meter-events-btn').click(function() {
+                    var formSerialized = $('#filter-form').serialize();
+                    $.post('scheduledMeterEventsDialog', formSerialized, function (data) {
+                        $('#scheduleDialog').html(data);
+                        yukon.tag.scheduledFileExportInputs.initializeFields();
+                    });
+                    if ($('scheduleDialog').hasClass('ui-dialog-content')) {
+                        $('#scheduleDialog').dialog('destroy');
+                    }
+                    _createScheduleReportDialog(_modelData.newSchedulePopupTitle);
+                });
+
+                $(document).on('yukon.ami.meter.events.filter', function () {
+                    $('#filter-events-popup').dialog('close');
+                    _updateEventTypes();
+                    _updateMeterEventsTable();
+                });
+
+                $('#download-meter-events-btn').click(function () {
+                    var _meterEventsTableModel = yukon.fromJson('#meterEventsTableModelData'),
+                        downloadForm = $('#downloadFormContents').empty();
+                    $('#filter-form').find(':input[name]').each(function() {
+                        var self = $(this);
+                        downloadForm.append($('<input>')
+                                    .attr('name', self.attr('name'))
+                                    .attr('type', self.attr('type'))
+                                    .val(self.val()));
+                    });
+                    downloadForm.append($('<input>').attr('name', 'sort').val(_meterEventsTableModel.sort));
+                    downloadForm.append($('<input>').attr('name', 'descending').val(_meterEventsTableModel.descending));
+                    $('#downloadForm').submit();
+                });
+
+                $(document).on('click', '#scheduledJobDialogSchedule', _submitSchedule);
+
+                $(document).on('click', '#scheduledJobDialogCancel', function() {
+                    $('#scheduleDialog').dialog('close');
+                });
+
+                if (_modelData.openScheduleDialog) {
+                    _createScheduleReportDialog(_modelData.schedulePopupTitle);
+                }
+
+                _initEventTypesTree();
+                _updateEventTypes();
             }
-
-            _initEventTypesTree();
-            _updateEventTypes();
+            
         }
     };
-    return mod;
+    
+    return _mod;
 }());
 
-$(function () {
-    yukon.ami.meterEventsReport.init();
-});
+$(function () { yukon.ami.meterEventsReport.init(); });

@@ -23,14 +23,14 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -257,8 +257,7 @@ public class ControlAuditController {
     public String page(ModelMap model, 
                        ResultType type,
                        String auditId,
-                       @RequestParam(defaultValue="10") int itemsPerPage, 
-                       @RequestParam(defaultValue="1") int page) {
+                       @DefaultItemsPerPage(10) PagingParameters paging) {
         
         ControlAuditResult result = resultsCache.getResult(auditId);
         List<AuditRow> inventory = null;
@@ -277,8 +276,7 @@ public class ControlAuditController {
             break;
         }
         
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-        SearchResults<AuditRow> pagedRows = SearchResults.pageBasedForWholeList(page, itemsPerPage, inventory);
+        SearchResults<AuditRow> pagedRows = SearchResults.pageBasedForWholeList(paging, inventory);
         model.addAttribute("result", pagedRows);
         model.addAttribute("type", type);
         model.addAttribute("auditId", auditId);

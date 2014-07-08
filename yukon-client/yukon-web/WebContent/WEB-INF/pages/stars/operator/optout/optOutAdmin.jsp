@@ -93,7 +93,6 @@
                                   <tags:pickerDialog type="assignedProgramPicker"
                                                            id="systemProgramPicker" 
                                                            destinationFieldId="systemProgramPaoIds"
-                                                           styleClass="simpleLink"
                                                            allowEmptySelection="true"
                                                            extraArgs="${energyCompanyId}"
                                                            endAction="setPickerSelectedProgramNamesFunction('systemProgramNameDisplaySpan');"
@@ -170,7 +169,6 @@
                                         <tags:pickerDialog  type="lmProgramPicker"
                                                              id="disabledProgramPicker" 
                                                              destinationFieldId="disabledProgramPaoId"
-                                                             styleClass="simpleLink"
                                                              immediateSelectMode="true"
                                                              extraDestinationFields="paoName:disabledProgramName;paoName:disabledProgramNameDisplaySpan"
                                                              extraArgs="${energyCompanyId}">
@@ -220,7 +218,6 @@
                                         <tags:pickerDialog  type="lmProgramPicker"
                                                              id="cancelOptOutsProgramPicker" 
                                                              destinationFieldId="cancelOptOutsProgramPaoId"
-                                                             styleClass="simpleLink"
                                                              immediateSelectMode="true"
                                                              extraDestinationFields="paoName:cancelOptOutsProgramName;paoName:cancelOptOutsProgramNameDisplaySpan"
                                                              extraArgs="${energyCompanyId}">
@@ -296,7 +293,6 @@
                                         <tags:pickerDialog  type="lmProgramPicker"
                                                              id="disabledCountProgramPicker" 
                                                              destinationFieldId="disabledCountProgramPaoId"
-                                                             styleClass="simpleLink"
                                                              immediateSelectMode="true"
                                                              extraDestinationFields="paoName:disabledCountProgramName;paoName:disabledCountProgramNameDisplaySpan"
                                                              extraArgs="${energyCompanyId}">

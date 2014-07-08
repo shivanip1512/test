@@ -1,6 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
@@ -13,7 +12,7 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
 </script>
 
 <div id="${id}">
-    <div class="column-12-12 clear">
+    <div class="column-12-12 clearfix">
         <div class="column one">
             <label>
                 <i:inline key=".query"/> <input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;"/>
@@ -23,7 +22,7 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
             </a>
         </div>
         <div class="column two nogutter paging-area">
-            <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})" mode="javascript"/>
+            <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})"/>
         </div>
     </div>
 
@@ -35,7 +34,7 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
     <c:if test="${multiSelectMode}">
         <div class="action-area">
             <input type="checkbox" id="picker_${id}_selectAll" onclick="javascript:${id}.selectAll.call(${id})">
-            <label for="picker_${id}_selectAll" class="simpleLink pointer"><i:inline key=".selectAll"/></label>
+            <label for="picker_${id}_selectAll" class="cp"><i:inline key=".selectAll"/></label>
             &nbsp;&nbsp;
             <span style="display: none">
                 <i:inline key=".pageSelected"/>&nbsp;&nbsp;

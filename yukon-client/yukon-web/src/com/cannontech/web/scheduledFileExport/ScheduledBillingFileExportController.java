@@ -3,6 +3,7 @@ package com.cannontech.web.scheduledFileExport;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,11 +25,9 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.scheduledFileExport.BillingFileExportGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -68,13 +67,13 @@ public class ScheduledBillingFileExportController {
             Integer demandDays, Integer energyDays, @RequestParam(defaultValue="false") boolean removeMultiplier,
             @RequestParam(defaultValue="null") String[] billGroup) {
 
-        if(billGroup == null) {
+        if (billGroup == null) {
             billGroup = new String[0];
         }
 
         CronExpressionTagState cronExpressionTagState = new CronExpressionTagState();
 
-        if(jobId != null) {
+        if (jobId != null) {
             //edit existing schedule
             ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
             ScheduledBillingFileExportTask task = (ScheduledBillingFileExportTask) jobManager.instantiateTask(job);
@@ -147,7 +146,7 @@ public class ScheduledBillingFileExportController {
 
         MessageSourceResolvable msgObj = null;
 
-        if(jobId == null) {
+        if (jobId == null) {
             //new schedule
             scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobCreated", exportData.getScheduleName());
@@ -161,17 +160,20 @@ public class ScheduledBillingFileExportController {
     }
 
     @RequestMapping("jobs")
-    public String jobs(ModelMap model, PagingParameters paging) {
-        SearchResults<ScheduledFileExportJobData> reportsResult
-            = scheduledFileExportService.getScheduledFileExportJobData(ScheduledExportType.BILLING, paging);
+    public String jobs(ModelMap model) {
+
+        List<ScheduledFileExportJobData> jobs
+            = scheduledFileExportService.getScheduledFileExportJobData(ScheduledExportType.BILLING);
 
         model.addAttribute("jobType", FileExportType.BILLING);
-        model.addAttribute("scheduledJobsSearchResult", reportsResult);
+        model.addAttribute("jobs", jobs);
+        
         return "jobs.jsp";
     }
 
     @RequestMapping(value = "delete.json")
     public @ResponseBody Map<String, Object> delete(int jobId, YukonUserContext userContext) {
+        
         YukonJob job = jobManager.getJob(jobId);
         ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
         String jobName = task.getName();
@@ -179,6 +181,7 @@ public class ScheduledBillingFileExportController {
 
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         MessageSourceResolvable msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.deletedSuccess", jobName);
+        
         return JsonUtils.getSuccessJson(msgObj, accessor);
     }
 
@@ -188,13 +191,13 @@ public class ScheduledBillingFileExportController {
         Iterator<? extends DeviceGroup> iterator = deviceGroups.iterator();
         for(int i = 0; i < maxDisplayedGroupNames; i++) {
             DeviceGroup group = iterator.next();
-            if(i > 0) {
+            if (i > 0) {
                 groupNames += ", ";
             }
             groupNames += group.getName();
         }
         
-        if(maxDisplayedGroupNames < deviceGroups.size()) {
+        if (maxDisplayedGroupNames < deviceGroups.size()) {
             groupNames += "...";
         }
         

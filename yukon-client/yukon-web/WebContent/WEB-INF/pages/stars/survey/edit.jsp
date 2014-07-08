@@ -48,7 +48,7 @@
                         </cti:url>
                         <cti:msg2 var="detailsTitle" key="modules.adminSetup.survey.list.details.title"/>
                         <cti:button nameKey="edit" icon="icon-pencil" renderMode="labeledImage" popup="#details-popup"/>
-                        <div id="details-popup" dialog data-event="yukon.survey.details.edit" data-url="${detailUrl}" data-title="${detailsTitle}"></div>
+                        <div id="details-popup" data-dialog data-event="yukon.survey.details.edit" data-url="${detailUrl}" data-title="${detailsTitle}"></div>
                     </li>
                     <li>
                         <cti:url var="addQuestionUrl" value="addQuestion">

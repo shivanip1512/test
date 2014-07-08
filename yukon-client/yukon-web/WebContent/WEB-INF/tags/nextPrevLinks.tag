@@ -1,59 +1,20 @@
-<%@ tag trimDirectiveWhitespaces="true" body-content="empty" %>
+<%@ tag trimDirectiveWhitespaces="true" body-content="empty" description="Display 'next' and 'previous' links inside a picker." %>
 
-<%@ attribute name="mode" required="true" description="The mode attribute can be 'jsp' or 'javascript'.If it's 'jsp', baseUrl and searchResult are required. If it's 'javascript', nextUrl and previousUrl are required." %>
-<%@ attribute name="baseUrl" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+
 <%@ attribute name="previousUrl" %>
 <%@ attribute name="nextUrl" %>
-<%@ attribute name="searchResult" type="com.cannontech.common.search.result.SearchResults" %>
-<%@ attribute name="overrideParams" type="java.lang.Boolean" description="Ignores params from the previous request. Set to true if they are specified in the baseUrl" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
-<c:set var="previousEnabled" value="true"/>
-<c:set var="nextEnabled" value="true"/>
-
-<c:if test="${pageScope.mode == 'jsp'}">
-    <c:set var="currentPage" value="${param.page}"/>
-    <c:if test="${empty currentPage}">
-        <c:set var="currentPage" value="1"/>
-    </c:if>
-
-    <c:if test="${currentPage <= 1}">
-        <c:set var="previousEnabled" value="false"/>
-    </c:if>
-    <c:if test="${currentPage >= pageScope.searchResult.numberOfPages ||
-                   pageScope.searchResult.count >= pageScope.searchResult.hitCount}">
-        <c:set var="nextEnabled" value="false"/>
-    </c:if>
-</c:if>
 <span class="paging-area clearfix" data-current-page="${currentPage}">
-    <c:if test="${pageScope.mode == 'javascript' || !previousEnabled}">
-        <tags:pageNumberLink direction="previous" enabled="false" classes="dn"/>
-    </c:if>
-    <c:if test="${previousEnabled}">
-        <c:if test="${pageScope.mode == 'jsp'}">
-            <tags:pageNumberLink pageNumber="${currentPage - 1}" direction="previous" baseUrl="${pageScope.baseUrl}" enabled="true" overrideParams="${pageScope.overrideParams}"/>
-        </c:if>
-        <c:if test="${pageScope.mode == 'javascript'}">
-            <tags:pageNumberLink direction="previous" url="${pageScope.previousUrl}" enabled="true"/>
-        </c:if>
-    </c:if>
-    <span class="page-num-text">
-        <c:if test="${!empty pageScope.searchResult && pageScope.searchResult.hitCount > 0}">
-            <cti:msg key="yukon.common.paging.viewing" arguments="${pageScope.searchResult.startIndex + 1},${pageScope.searchResult.endIndex},${pageScope.searchResult.hitCount}"/>
-        </c:if>
-    </span>
-    <c:if test="${pageScope.mode == 'javascript' || !nextEnabled}">
-        <tags:pageNumberLink direction="next" enabled="false" classes="dn"/>
-    </c:if>
-    <c:if test="${nextEnabled}">
-        <c:if test="${pageScope.mode == 'jsp'}">
-            <tags:pageNumberLink pageNumber="${currentPage + 1}" direction="next" baseUrl="${pageScope.baseUrl}" enabled="true" overrideParams="${pageScope.overrideParams}"/>
-        </c:if>
-        <c:if test="${pageScope.mode == 'javascript'}">
-            <tags:pageNumberLink direction="next" url="${pageScope.nextUrl}" enabled="true"/>
-        </c:if>
-    </c:if>
+    <cti:url var="previousUrl" value="${previousUrl}"/>
+    <a href="${previousUrl}" class="previous-page f-enabled-action">
+        <cti:icon icon="icon-resultset-previous-gray"/>
+        <span class="fl"><cti:msg2 key="yukon.common.paging.previous"/></span>
+    </a>
+    <span class="page-num-text"></span>
+    <cti:url var="nextUrl" value="${nextUrl}"/>
+    <a href="${nextUrl}" class="next-page f-enabled-action">
+        <span class="fl"><cti:msg2 key="yukon.common.paging.next"/></span>
+        <cti:icon icon="icon-resultset-next-gray"/>
+    </a>
 </span>

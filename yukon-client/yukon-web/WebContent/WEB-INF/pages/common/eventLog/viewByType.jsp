@@ -10,8 +10,18 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="support" page="eventViewer.byType">
-    <cti:standardMenu menuSelection="events|byType" />
-    <cti:url var="baseUrl" value="viewByType"/>
+
+<script>
+$(function () {
+    $('#events-container').attr('data-url', 'viewByType?' + $('#filter-form').serialize());
+    
+    $('#filter-btn').click(function (ev) {
+        var itemsPerPage = $('#events-container .paging-area').data('pageSize');
+        $('#filter-form').append('<input type="hidden" name="itemsPerPage" value="' + itemsPerPage + '">');
+        $('#filter-form').submit();
+    });
+});
+</script>
 
     <cti:linkTabbedContainer>
         <cti:msg2 key=".byCategory.contextualPageName" var="byCategoryTab"/>
@@ -26,18 +36,18 @@
     
     <%-- Filtering popup --%>
     <cti:msg2 var="eventLogFiltersTitle" key=".eventLogFilters" />
-    <tags:simplePopup id="filterPopup" title="${eventLogFiltersTitle}">
+    <div id="filter-popup" data-title="${eventLogFiltersTitle}" class="dn">
         <c:choose>
-            <c:when test="${not empty eventLogTypeBackingBean}">
-                <form:form id="filterForm" action="" commandName="eventLogTypeBackingBean" method="get">
-                <form:hidden path="eventLogType"/>
+            <c:when test="${not empty filter}">
+                <form:form id="filter-form" commandName="filter" method="get">
+                    <form:hidden path="eventLogType"/>
                     <tags:nameValueContainer2>
         
                         <tags:nameValue2 nameKey=".eventLogDateRange">
                             <dt:dateRange startPath="startDate" endPath="stopDate" />
                         </tags:nameValue2>
         
-                        <c:forEach var="eventLogFilter" items="${eventLogTypeBackingBean.eventLogFilters}" varStatus="status">
+                        <c:forEach var="eventLogFilter" items="${filter.eventLogFilters}" varStatus="status">
                             <c:if test="${eventLogFilter.eventLogColumnType eq 'STRING'}" >
                                 <filterValue:stringFilterValue eventLogFilter="${eventLogFilter}" count="${status.count}" />
                             </c:if>
@@ -51,7 +61,7 @@
                         
                     </tags:nameValueContainer2>
                     <div class="action-area">
-                        <cti:button nameKey="filter" type="submit" classes="action primary"/>
+                        <cti:button id="filter-btn" nameKey="filter" classes="action primary"/>
                     </div>
                 </form:form>
             </c:when>
@@ -59,7 +69,7 @@
                 <i:inline key=".noFilterOptionsAvailable"/>
             </c:otherwise>
         </c:choose>
-    </tags:simplePopup>
+    </div>
 
     <%-- Event Type Section with Event Type popup tree --%>
     <table>
@@ -68,15 +78,15 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".eventType">
                         <a id="showPopupButton" title="<cti:msg2 key=".eventLogTypeTreeSector.hoverText"/>" href="javascript:void(0);">
-                        <c:choose>
-                            <c:when test="${empty eventLogTypeBackingBean or empty eventLogTypeBackingBean.eventLogType}">
-                                <span class="b-label empty-list"><i:inline key=".noEventLogTypeSelected" /></span>
-                            </c:when>
-                            <c:otherwise>
-                                <span class="b-label">${eventLogTypeBackingBean.eventLogType}</span>
-                            </c:otherwise>
-                        </c:choose>
-                            <i class="icon icon-folder"></i>
+                            <c:choose>
+                                <c:when test="${empty filter or empty filter.eventLogType}">
+                                    <span class="empty-list"><i:inline key=".noEventLogTypeSelected" /></span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span>${filter.eventLogType}</span>
+                                </c:otherwise>
+                            </c:choose>
+                            <cti:icon icon="icon-folder" classes="fn"/>
                         </a>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
@@ -91,57 +101,69 @@
                 <cti:msg2 var="noEventLogSelected" key=".noEventLogSelected"/>
                                                             
                 <t:popupTree id="eventCategoryEditorTree"
-                               treeCss="/resources/js/lib/dynatree/skin/event.type.css"
-                               triggerElement="showPopupButton"
-                               dataJson="${allEventCategoriesDataJson}" highlightNodePath="${extSelectedNodePath}"
-                               title="${selectEventLog}"
-                               treeParameters="{onActivate: yukon.dynatree.redirectOnActivate}"
-                               includeControlBar="true" styleClass="contained"/>
+                             styleClass="event-tree"
+                             triggerElement="showPopupButton"
+                             dataJson="${allEventCategoriesDataJson}" 
+                             highlightNodePath="${extSelectedNodePath}"
+                             title="${selectEventLog}"
+                             treeParameters="{onActivate: yukon.dynatree.redirectOnActivate}"
+                             includeControlBar="true"/>
             </td>
         </tr>
         
     </table>
     <div class="action-area stacked">
-	    <c:choose>
-	        <c:when test="${maxCsvRows > searchResult.hitCount}">
-	            <cti:button nameKey="download" href="${csvLink}" icon="icon-page-excel"/>
-	        </c:when>
-	        <c:otherwise>
-	            <cti:button nameKey="download" href="${csvLink}" id="csvExportButton" icon="icon-page-excel"/>
+        <c:choose>
+            <c:when test="${maxCsvRows > searchResult.hitCount}">
+                <cti:button nameKey="download" href="${csvLink}" icon="icon-page-excel"/>
+            </c:when>
+            <c:otherwise>
+                <cti:button nameKey="download" href="${csvLink}" id="csvExportButton" icon="icon-page-excel"/>
                 <d:confirm on="#csvExportButton" nameKey="confirmExport"/>
-	        </c:otherwise>
-	    </c:choose>
+            </c:otherwise>
+        </c:choose>
     </div>
+    
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
-    <tags:pagedBox filterDialog="filterPopup" title="${eventsTitle}" searchResult="${searchResult}" baseUrl="${baseUrl}" pageByHundereds="true">
+    <c:set var="controls">
+        <a href="javascript:void(0);" popup="#filter-popup" data-popup-toggle>
+            <cti:icon icon="icon-filter"/>&nbsp;
+            <i:inline key="yukon.common.filter"/>
+        </a>
+    </c:set>
+    <tags:sectionContainer title="${eventsTitle}" controls="${controls}">
     
         <c:choose>
             <c:when test="${searchResult.count == 0}">
                 <span class="empty-list"><i:inline key="yukon.common.events.noResults"/></span>
             </c:when>
             <c:otherwise>
-                <table class="compact-results-table row-highlighting" style="width: 100%;">
-                    <tr>
-                      <th><i:inline key=".dateAndTime"/></th>
-                        <c:forEach items="${columnNames}" var="column">
-                            <th title="${column.argumentColumn.columnName}">
-                                <i:inline key="${column.label}"/>
-                            </th>
-                        </c:forEach>
-                    </tr>
-                    <c:forEach items="${searchResult.resultList}" var="row">
-                        <tr>
-                        <td title="<cti:msg2 htmlEscape="true" key="${row.eventLog.messageSourceResolvable}"/>"><cti:formatDate type="FULL" value="${row.eventLog.dateTime}"/></td>
-                            <c:forEach items="${row.parameters}" var="parameter">
-                                <td>
-                                    ${fn:escapeXml(parameter)}
-                                </td>
+                <div id="events-container" data-static>
+                    <table class="compact-results-table">
+                        <thead>
+                            <tr>
+                                <th><i:inline key=".dateAndTime"/></th>
+                                <c:forEach items="${columnNames}" var="column">
+                                    <th title="${column.argumentColumn.columnName}"><i:inline key="${column.label}"/></th>
+                                </c:forEach>
+                            </tr>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach items="${searchResult.resultList}" var="row">
+                                <tr>
+                                <td title="<cti:msg2 htmlEscape="true" key="${row.eventLog.messageSourceResolvable}"/>"><cti:formatDate type="FULL" value="${row.eventLog.dateTime}"/></td>
+                                    <c:forEach items="${row.parameters}" var="parameter">
+                                        <td>${fn:escapeXml(parameter)}</td>
+                                    </c:forEach>
+                                </tr>
                             </c:forEach>
-                        </tr>
-                    </c:forEach>
-                </table>
+                        </tbody>
+                    </table>
+                    <tags:pagingResultsControls result="${searchResult}" adjustPageCount="true" hundreds="true"/>
+                </div>
             </c:otherwise>
         </c:choose>
-    </tags:pagedBox>
+    </tags:sectionContainer>
 
 </cti:standardPage>

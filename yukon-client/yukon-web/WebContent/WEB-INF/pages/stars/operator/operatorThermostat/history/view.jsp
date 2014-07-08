@@ -37,10 +37,14 @@ $(function(){
         <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp"/>
     </div>
     <cti:msg2 var="historyTableTitle" key="yukon.web.modules.operator.thermostatHistory.historyTableTitle"/>
-    <tags:pagedBox title="${historyTableTitle}" searchResult="${searchResult}"
-        filterDialog="" baseUrl="view"
-        isFiltered="false" showAllUrl="/stars/operator/thermostat/history/view">
-        <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/history/commandHistory.jsp"/>
-    </tags:pagedBox>
+    <cti:url var="url" value="view">
+        <cti:param name="thermostatIds" value="${param.thermostatIds}"/>
+        <cti:param name="accountId" value="${param.accountId}"/>
+    </cti:url>
+    <div data-url="${url}" data-static>
+        <tags:sectionContainer title="${historyTableTitle}">
+            <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/history/commandHistory.jsp"/>
+        </tags:sectionContainer>
+    </div>
 
 </cti:standardPage>

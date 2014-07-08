@@ -11,7 +11,7 @@
         <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
     </div>
     
-    <div class="column-12-12">
+    <div class="column-12-12 clearfix">
     
         <%-- Analysis Info --%>
         <div class="column one">
@@ -105,32 +105,35 @@
     </div>
     
     <%-- Results Data --%>
-    <div class="clear">
-    <tags:pagedBox2 nameKey="resultsTable" searchResult="${result.searchResult}" baseUrl="view" >
+    <cti:url var="url" value="view">
+        <cti:param name="analysisId" value="${result.analysis.analysisId}"/>
+    </cti:url>
+    <div data-url="${url}" data-static>
+    <tags:sectionContainer2 nameKey="resultsTable">
         
         <table class="compact-results-table">
             <thead>
-	            <tr>
-	                <th><i:inline key=".deviceName"/></th>
-	                <th><i:inline key=".deviceType"/></th>
-	                <th><i:inline key=".holes"/></th>
-	                <th><i:inline key=".timeline" arguments="${intervals}"/></th>
-	            </tr>
-	        </thead>
-	        <tfoot></tfoot>
-	        <tbody>
-	            <c:forEach items="${result.searchResult.resultList}" var="row">
-	                <tr>
-	                    <td><cti:deviceName deviceId="${row.id.paoId}"/></td>
-	                    <td><cti:formatObject value="${row.id.paoType}"/></td>
-	                    <td>${row.holeCount}</td>
-	                    <td><amr:analysisResult data="${row}" width="${barWidth}"/></td>
-	                </tr>
-	            </c:forEach>
+                <tr>
+                    <th><i:inline key=".deviceName"/></th>
+                    <th><i:inline key=".deviceType"/></th>
+                    <th><i:inline key=".holes"/></th>
+                    <th><i:inline key=".timeline" arguments="${intervals}"/></th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach items="${result.searchResult.resultList}" var="row">
+                    <tr>
+                        <td><cti:deviceName deviceId="${row.id.paoId}"/></td>
+                        <td><cti:formatObject value="${row.id.paoType}"/></td>
+                        <td>${row.holeCount}</td>
+                        <td><amr:analysisResult data="${row}" width="${barWidth}"/></td>
+                    </tr>
+                </c:forEach>
             </tbody>
         </table>
-        
-    </tags:pagedBox2>
+        <tags:pagingResultsControls result="${result.searchResult}" adjustPageCount="true" hundreds="true"/>
+    </tags:sectionContainer2>
     </div>
     
 </cti:standardPage>

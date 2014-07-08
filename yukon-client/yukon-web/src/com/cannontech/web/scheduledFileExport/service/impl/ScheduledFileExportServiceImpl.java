@@ -12,10 +12,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
@@ -119,17 +117,16 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
     }
 
     @Override
-    public SearchResults<ScheduledFileExportJobData> getScheduledFileExportJobData(ScheduledExportType scheduleType,
-                                                                                    PagingParameters paging) {
+    public List<ScheduledFileExportJobData> getScheduledFileExportJobData(ScheduledExportType scheduleType) {
 
         List<ScheduledRepeatingJob> exportJobs = getJobsByType(scheduleType);
-        List<ScheduledFileExportJobData> jobDataObjects = Lists.newArrayListWithCapacity(exportJobs.size());
+        List<ScheduledFileExportJobData> jobs = Lists.newArrayListWithCapacity(exportJobs.size());
         for(ScheduledRepeatingJob job : exportJobs) {
-            jobDataObjects.add(getExportJobData(job));
+            jobs.add(getExportJobData(job));
         }
-        Collections.sort(jobDataObjects);
+        Collections.sort(jobs);
 
-        return SearchResults.pageBasedForWholeList(paging, jobDataObjects);
+        return jobs;
     }
 
     private int deleteJobsByFormatId(int formatId, ScheduledExportType type) {

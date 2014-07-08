@@ -68,8 +68,8 @@ yukon.ami.validation = (function () {
         //save/remove actioned items
         $('#review-form').on('click','[id="saveButton"]', function(e) {
             var urlParams ='?itemsPerPage=';
-            if ($('.paging-area .selectedItem').text().length > 0) {
-                urlParams += $('.paging-area .selectedItem').text();
+            if ($('.paging-area span[data-page-size]').text().length > 0) {
+                urlParams += $('.paging-area span[data-page-size]').text();
             } else {
                 urlParams = '';
             }

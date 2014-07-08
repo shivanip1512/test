@@ -20,6 +20,11 @@ import org.springframework.web.bind.WebDataBinder;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DateRange;
@@ -43,18 +48,28 @@ import com.cannontech.dr.program.service.ProgramFieldService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.input.DatePropertyEditorFactory;
-import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Ordering;
 
-public class ProgramControllerHelper {
+public class ProgramsHelper {
     
-    public static class ProgramListBackingBean extends ListBackingBean {
+    public static class ProgramFilter {
+        
+        private String name;
         private String state;
         private DateRange start = new DateRange();
         private DateRange stop = new DateRange();
         private IntegerRange priority = new IntegerRange();
         private MutableRange<Double> loadCapacity = new MutableRange<Double>();
+        
+        public String getName() {
+            return name;
+        }
+        
+        public void setName(String name) {
+            this.name = name;
+        }
 
         public String getState() {
             return state;
@@ -97,10 +112,10 @@ public class ProgramControllerHelper {
         }
     }
 
-    private SimpleValidator<ProgramListBackingBean> validator =
-        new SimpleValidator<ProgramListBackingBean>(ProgramListBackingBean.class) {
+    private SimpleValidator<ProgramFilter> validator =
+        new SimpleValidator<ProgramFilter>(ProgramFilter.class) {
             @Override
-            protected void doValidation(ProgramListBackingBean target,
+            protected void doValidation(ProgramFilter target,
                     Errors errors) {
                 if (!target.start.isValid() || target.start.isEmpty()) {
                     errors.reject("startFromTimeAfterToTime");
@@ -161,9 +176,12 @@ public class ProgramControllerHelper {
     }
 
     public void filterPrograms(ModelMap modelMap, YukonUserContext userContext,
-            ProgramListBackingBean backingBean, BindingResult bindingResult,
-            UiFilter<DisplayablePao> detailFilter) {
-        validator.validate(backingBean, bindingResult);
+            ProgramFilter filter, BindingResult bindingResult,
+            UiFilter<DisplayablePao> detailFilter,
+            SortingParameters sorting,
+            PagingParameters paging) {
+        
+        validator.validate(filter, bindingResult);
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
         if (detailFilter != null) {
@@ -175,11 +193,11 @@ public class ProgramControllerHelper {
                                          Permission.LM_VISIBLE));
 
         boolean isFiltered = false;
-        if (!StringUtils.isEmpty(backingBean.getName())) {
-            filters.add(new NameFilter(backingBean.getName()));
+        if (!StringUtils.isEmpty(filter.getName())) {
+            filters.add(new NameFilter(filter.getName()));
             isFiltered = true;
         }
-        String stateFilter = backingBean.getState();
+        String stateFilter = filter.getState();
         if (!StringUtils.isEmpty(stateFilter)) {
             FilteredState filteredState = FilteredState.valueOf(stateFilter);
             if (filteredState != FilteredState.ALL) {
@@ -187,16 +205,16 @@ public class ProgramControllerHelper {
                 isFiltered = true;
             }
         }
-        if (!backingBean.getStart().isUnbounded()) {
-            filters.add(new StartStopFilter(programService, backingBean.getStart(), true));
+        if (!filter.getStart().isUnbounded()) {
+            filters.add(new StartStopFilter(programService, filter.getStart(), true));
             isFiltered = true;
         }
-        if (!backingBean.getStop().isUnbounded()) {
-            filters.add(new StartStopFilter(programService, backingBean.getStop(), false));
+        if (!filter.getStop().isUnbounded()) {
+            filters.add(new StartStopFilter(programService, filter.getStop(), false));
             isFiltered = true;
         }
-        if (!backingBean.getPriority().isUnbounded()) {
-            filters.add(new PriorityFilter(programService, backingBean.getPriority()));
+        if (!filter.getPriority().isUnbounded()) {
+            filters.add(new PriorityFilter(programService, filter.getPriority()));
             isFiltered = true;
         }
         modelMap.addAttribute("isFiltered", isFiltered);
@@ -204,14 +222,14 @@ public class ProgramControllerHelper {
         // Sorting - name is default sorter
         Comparator<DisplayablePao> defaultSorter = programNameField.getSorter(userContext);
         Comparator<DisplayablePao> sorter = defaultSorter;
-        if (!StringUtils.isEmpty(backingBean.getSort())) {
+        if (!StringUtils.isEmpty(sorting.getSort())) {
             // If there is a custom sorter, add it
             
             DemandResponseBackingField<LMProgramBase> sortField = 
-                programFieldService.getBackingField(backingBean.getSort());
+                programFieldService.getBackingField(sorting.getSort());
             
             sorter = sortField.getSorter(userContext);
-            if (backingBean.getDescending()) {
+            if (sorting.getDirection() == Direction.desc) {
                 sorter = Collections.reverseOrder(sorter);
             }
             
@@ -221,13 +239,49 @@ public class ProgramControllerHelper {
             }
         }
         
-        int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
-        SearchResults<DisplayablePao> searchResult =
-            programService.filterPrograms(filter, sorter, startIndex, backingBean.getItemsPerPage(),
-                                          userContext);
+        UiFilter<DisplayablePao> uiFilter = UiFilterList.wrap(filters);
+        SearchResults<DisplayablePao> programs =
+            programService.filterPrograms(uiFilter, sorter, 
+                    paging.getStartIndex(), paging.getItemsPerPage(), userContext);
 
-        modelMap.addAttribute("searchResult", searchResult);
-        modelMap.addAttribute("programs", searchResult.getResultList());
+        modelMap.addAttribute("programs", programs);
     }
+
+    public void addColumns(ModelMap model, MessageSourceAccessor accessor, SortingParameters sorting) {
+        buildColumn(model, accessor, SortBy.NAME, sorting);
+        buildColumn(model, accessor, SortBy.STATE, sorting);
+        buildColumn(model, accessor, SortBy.START, sorting);
+        buildColumn(model, accessor, SortBy.STOP, sorting);
+        buildColumn(model, accessor, SortBy.CURRENT_GEAR, sorting);
+        buildColumn(model, accessor, SortBy.PRIORITY, sorting);
+        buildColumn(model, accessor, SortBy.REDUCTION, sorting);
+    }
+    
+    private void buildColumn(ModelMap model, MessageSourceAccessor accessor, SortBy field, SortingParameters sorting) {
+        
+        Direction dir = sorting.getDirection();
+        SortBy sort = SortBy.valueOf(sorting.getSort());
+        
+        String text = accessor.getMessage(field);
+        boolean active = sort == field;
+        SortableColumn col = new SortableColumn(dir, active, text, field.name());
+        model.addAttribute(field.name(), col);
+    }
+    
+    public enum SortBy implements DisplayableEnum {
+        
+        NAME,
+        STATE,
+        START,
+        STOP,
+        CURRENT_GEAR,
+        PRIORITY,
+        REDUCTION;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.dr.programList.heading." + name();
+        }
+    }
+    
 }

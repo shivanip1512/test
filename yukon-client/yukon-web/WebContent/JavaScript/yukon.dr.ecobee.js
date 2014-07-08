@@ -93,12 +93,29 @@ yukon.dr.ecobee = (function () {
                 });
             });
 
-            $(document).on('yukon.dr.ecobee.fix.init', function (ev, originalTarget) {
-                mod.initFixIssue(ev, originalTarget);
+            $(document).on('click', '.js-fixable-issue, .js-unfixable-issue', function (ev) {
+                var btn = $(this),
+                    isFixable = btn.is('.js-fixable-issue'),
+                    reportId = $('#sync-issues').data('reportId'),
+                    errorId = btn.closest('tr').data('errorId'),
+                    issueExplanation = btn.closest('tr').data('explanation'),
+                    popup = isFixable ? $('#ecobee-fixable') : $('#ecobee-unfixable');
+                
+                if (isFixable) {
+                    $('#ecobee-report-id').val(reportId);
+                    $('#ecobee-error-id').val(errorId);
+                    $('#ecobee-issue-explanation').html(issueExplanation);
+                    
+                    popup.dialog({width: 400, buttons: yukon.ui.buttons({form: ''})});
+                    
+                } else {
+                    $('#ecobee-unfixable-explanation').html(issueExplanation);
+                    popup.dialog({width: 400});
+                }
             });
 
-            $(document).on('click', '#ecobee-error-checking-toggle .toggle-on-off .button', function () {
-                var checkErrorsOn = $('#ecobee-error-checking-toggle .toggle-on-off .button.yes').hasClass('on');
+            $(document).on('click', '#ecobee-error-checking-toggle .toggle-btns .button', function () {
+                var checkErrorsOn = $('#ecobee-error-checking-toggle .toggle-btns .button.yes').hasClass('on');
                 if (checkErrorsOn) {
                     $('#ecobee-check-errors').val('true');
                     $('#ecobee-error-check-schedule').show('fade');
@@ -108,8 +125,8 @@ yukon.dr.ecobee = (function () {
                 }
             });
 
-            $(document).on('click', '#ecobee-data-collection-toggle .toggle-on-off .button', function() {
-                var dataCollectionOn = $('#ecobee-data-collection-toggle .toggle-on-off .button.yes').hasClass('on');
+            $(document).on('click', '#ecobee-data-collection-toggle .toggle-btns .button', function() {
+                var dataCollectionOn = $('#ecobee-data-collection-toggle .toggle-btns .button.yes').hasClass('on');
                 if (dataCollectionOn) {
                     $('#ecobee-data-collection').val('true');
                     $('#ecobee-data-collection-schedule').show('fade');
@@ -121,22 +138,22 @@ yukon.dr.ecobee = (function () {
             });
 
             if ('true' === $('#ecobee-check-errors').val()) {
-                $('#ecobee-error-checking-toggle .toggle-on-off .yes').addClass('on');
-                $('#ecobee-error-checking-toggle .toggle-on-off .no').removeClass('on');
+                $('#ecobee-error-checking-toggle .toggle-btns .yes').addClass('on');
+                $('#ecobee-error-checking-toggle .toggle-btns .no').removeClass('on');
                 $('#ecobee-error-check-schedule').show();
             } else {
-                $('#ecobee-error-checking-toggle .toggle-on-off .no').addClass('on');
-                $('#ecobee-error-checking-toggle .toggle-on-off .yes').removeClass('on');
+                $('#ecobee-error-checking-toggle .toggle-btns .no').addClass('on');
+                $('#ecobee-error-checking-toggle .toggle-btns .yes').removeClass('on');
                 $('#ecobee-error-check-schedule').hide();
             }
 
             if ('true' === $('#ecobee-data-collection').val()) {
-                $('#ecobee-data-collection-toggle .toggle-on-off .yes').addClass('on');
-                $('#ecobee-data-collection-toggle .toggle-on-off .no').removeClass('on');
+                $('#ecobee-data-collection-toggle .toggle-btns .yes').addClass('on');
+                $('#ecobee-data-collection-toggle .toggle-btns .no').removeClass('on');
                 $('#ecobee-data-collection-schedule').show();
             } else {
-                $('#ecobee-data-collection-toggle .toggle-on-off .no').addClass('on');
-                $('#ecobee-data-collection-toggle .toggle-on-off .yes').removeClass('on');
+                $('#ecobee-data-collection-toggle .toggle-btns .no').addClass('on');
+                $('#ecobee-data-collection-toggle .toggle-btns .yes').removeClass('on');
                 $('#ecobee-data-collection-schedule').hide();
             }
             
@@ -281,35 +298,7 @@ yukon.dr.ecobee = (function () {
             }
             
             row.find('.js-percent-done').html(status.percentDone);
-        },
-        /**
-         * This callback is fired right before the popup is shown.
-         * @callback
-         * @param {module:yukon.dr.ecobee#event:yukon.dr.ecobee.fix.init} ev - A yukon.dr.ecobee.fix.init event.
-         * @param {Object} originalTarget - in this case, the button that was clicked that has data attributes on it.
-         */
-        initFixIssue: function (ev, originalTarget) {
-            var popupId = $(ev.target).attr('id'), 
-                reportId = $('#sync-issues').data('reportId'),
-                errorId = $(originalTarget).closest('button').data('errorId'),
-                issueExplanation = $(originalTarget).closest('button').data('explanation');
-            switch (popupId) {
-            case 'ecobee-fixable':
-                $('#ecobee-report-id').val(reportId);
-                $('#ecobee-error-id').val(errorId);
-                $('#ecobee-issue-explanation').html(issueExplanation);
-                break;
-            case 'ecobee-unfixable':
-                $('#ecobee-unfixable-explanation').html(issueExplanation);
-                break;
-            case 'ecobee-fixall':
-                $('#ecobee-fixall-report-id').val(reportId);
-                $('#ecobee-fixall-explanation').html(issueExplanation);
-                break;
-            default:
-                break;
-            }
-        } 
+        }
     };
     return mod;
 })();

@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Answer;
@@ -48,7 +50,6 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.ListBackingBean;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Function;
@@ -59,6 +60,7 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_SURVEY_EDIT)
 @RequestMapping("/survey/*")
 public class SurveyController {
+    
     private final static String baseKey = "yukon.web.modules.adminSetup.survey.";
     private final static Pattern validKeyPattern = Pattern.compile("^\\w*$");
     private final static Function<Answer, String> answerKeyTransformer = new Function<Answer, String>() {
@@ -130,13 +132,14 @@ public class SurveyController {
     };
 
     @RequestMapping("list")
-    public String list(ModelMap model, @ModelAttribute("backingBean") ListBackingBean backingBean, Integer ecId,
-            YukonUserContext userContext) {
+    public String list(ModelMap model, Integer ecId, YukonUserContext userContext,
+            @DefaultItemsPerPage(10) PagingParameters paging) {
+        
         if (ecId == null) {
             ecId = ecDao.getEnergyCompany(userContext.getYukonUser()).getId();
         }
         SearchResults<Survey> surveys =
-            surveyService.findSurveys(ecId, backingBean.getStartIndex(), backingBean.getItemsPerPage());
+            surveyService.findSurveys(ecId, paging.getStartIndex(), paging.getItemsPerPage());
         model.addAttribute("surveys", surveys);
         model.addAttribute("ecId", ecId);
         model.addAttribute("energyCompanyName", ecDao.getEnergyCompany(ecId).getName());
@@ -145,12 +148,13 @@ public class SurveyController {
     }
 
     @RequestMapping("listTable")
-    public String listTable(ModelMap model, @ModelAttribute("backingBean") ListBackingBean backingBean,
+    public String listTable(ModelMap model, 
+            @DefaultItemsPerPage(10) PagingParameters paging,
             YukonUserContext userContext) {
+        
         EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         SearchResults<Survey> surveys =
-            surveyService.findSurveys(energyCompany.getId(), backingBean.getStartIndex(),
-                backingBean.getItemsPerPage());
+            surveyService.findSurveys(energyCompany.getId(), paging.getStartIndex(), paging.getItemsPerPage());
         model.addAttribute("surveys", surveys);
 
         return "survey/listTable.jsp";

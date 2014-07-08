@@ -13,10 +13,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.taglibs.standard.tag.common.core.ParamParent;
 
 public class MapParamTag extends SimpleTagSupport {
+    
     private Map<String, String> value;
+    private final static String enc = "UTF-8";
 
     @Override
     public void doTag() throws JspException, IOException {
+        
         JspTag t = findAncestorWithClass(this, ParamParent.class);
         if (t == null) {
             throw new JspTagException("MapParamTag must be used within a tag that implements ParamParent.class");
@@ -32,16 +35,12 @@ public class MapParamTag extends SimpleTagSupport {
             }
 
             // send the parameter to the appropriate ancestor
-            String enc = "UTF-8";
             parent.addParameter(URLEncoder.encode(theName, enc), URLEncoder.encode(theValue, enc));
         }
-    }
-
-    public Map<String, String> getValue() {
-        return value;
     }
 
     public void setValue(Map<String, String> value) {
         this.value = value;
     }
+    
 }

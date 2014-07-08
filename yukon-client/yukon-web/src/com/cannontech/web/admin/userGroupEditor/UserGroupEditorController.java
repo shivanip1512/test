@@ -23,9 +23,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.user.UserAuthenticationInfo;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
@@ -227,27 +228,20 @@ public class UserGroupEditorController {
     
     /* Users Tab */
     @RequestMapping("users")
-    public String users(ModelMap model, FlashScope flash, int userGroupId, Integer itemsPerPage, Integer page) {
-        
-        if(page == null){
-            page = 1;
-        }
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-        
-        int startIndex = (page - 1) * itemsPerPage;
+    public String users(ModelMap model, FlashScope flash, int userGroupId,
+            @DefaultItemsPerPage(10) PagingParameters paging) {
         
         com.cannontech.database.db.user.UserGroup userGroup = userGroupDao.getDBUserGroup(userGroupId);
-        SearchResults<LiteYukonUser> searchResult = yukonUserDao.getUsersForUserGroup(userGroupId, startIndex, itemsPerPage);
-        model.addAttribute("searchResult", searchResult);
-        List<LiteYukonUser> users = searchResult.getResultList();
+        SearchResults<LiteYukonUser> users = yukonUserDao.getUsersForUserGroup(userGroupId, paging.getStartIndex(), paging.getItemsPerPage());
         model.addAttribute("users", users);
         Map<Integer, UserAuthenticationInfo> userAuthenticationInfo =
-                yukonUserDao.getUserAuthenticationInfo(Iterables.transform(users, LiteYukonUser.USER_ID_FUNCTION));
+                yukonUserDao.getUserAuthenticationInfo(Iterables.transform(users.getResultList(), LiteYukonUser.USER_ID_FUNCTION));
         model.addAttribute("userAuthenticationInfo", userAuthenticationInfo);
 
-        List<Integer> alreadyAssignedUserIds = Lists.transform(users, LiteBase.ID_FUNCTION);
+        List<Integer> alreadyAssignedUserIds = Lists.transform(users.getResultList(), LiteBase.ID_FUNCTION);
         model.addAttribute("alreadyAssignedUserIds", alreadyAssignedUserIds);
         setupModelMap(model, userGroup);
+        
         return "userGroupEditor/users.jsp";
     }
     

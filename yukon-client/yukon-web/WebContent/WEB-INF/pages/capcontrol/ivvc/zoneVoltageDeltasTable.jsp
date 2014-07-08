@@ -5,12 +5,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="modules.capcontrol.ivvc.zoneVoltageDeltas">
-<c:if test="${searchResults.hitCount == 0}">
-    <span class="empty-list"><i:inline key=".deltas.emptyTable"/></span>
-</c:if>
-<c:if test="${searchResults.hitCount != 0}">
-    <div data-reloadable>
-        <table id="deltaTable" class="compact-results-table row-highlighting">
+
+<c:choose>
+    <c:when test="${fn:length(pointDeltas) == 0}">
+        <span class="empty-list"><i:inline key=".deltas.emptyTable"/></span>
+    </c:when>
+    <c:otherwise>
+        <table id="deltaTable" class="compact-results-table">
             <thead>
                 <tr>
                     <th><i:inline key=".deltas.cbcName" /></th>
@@ -24,27 +25,17 @@
             </thead>
             <tfoot></tfoot>
             <tbody>
-                <c:forEach var="pointDelta" items="${searchResults.resultList}" varStatus="status">
+                <c:forEach var="pointDelta" items="${pointDeltas}" varStatus="status">
                     <tr>
                         <td class="dn bankAndPointIds">
                             <input class="pointDeltaBankId" type="hidden" value="${pointDelta.bankId}"/>
                             <input class="pointDeltaPointId" type="hidden" value="${pointDelta.pointId}"/>
                         </td>
-                        <td>
-                            ${fn:escapeXml(pointDelta.cbcName)}
-                        </td>
-                        <td>
-                            ${fn:escapeXml(pointDelta.bankName)}
-                        </td>
-                        <td>
-                            ${fn:escapeXml(pointDelta.affectedDeviceName)}
-                        </td>
-                        <td>
-                            ${fn:escapeXml(pointDelta.affectedPointName)}
-                        </td>
-                        <td>
-                            ${fn:escapeXml(pointDelta.preOpValue)}
-                        </td>
+                        <td>${fn:escapeXml(pointDelta.cbcName)}</td>
+                        <td>${fn:escapeXml(pointDelta.bankName)}</td>
+                        <td>${fn:escapeXml(pointDelta.affectedDeviceName)}</td>
+                        <td>${fn:escapeXml(pointDelta.affectedPointName)}</td>
+                        <td>${fn:escapeXml(pointDelta.preOpValue)}</td>
                         <c:choose>
                             <c:when test="${hasEditingRole}">
                                 <td><label class="staticDeltaLabel"><input type="checkbox" class="editableStaticDelta"
@@ -69,27 +60,15 @@
                                 </td>
                             </c:when>
                             <c:otherwise>
-                                <td><input type="checkbox"
-                                    disabled="disabled"
-                                    <c:choose>
-                                            <c:when test="${pointDelta.staticDelta}">
-                                                checked="checked"
-                                            </c:when>
-                                        </c:choose>>
-                                </td>
-                                <td>
-                                    <div>
-                                        ${fn:escapeXml(pointDelta.deltaRounded)}
-                                    </div>
-                                </td>
+                                <td><input type="checkbox" disabled="disabled" <c:if test="${pointDelta.staticDelta}">checked="checked"</c:if>></td>
+                                <td><div>${fn:escapeXml(pointDelta.deltaRounded)}</div></td>
                             </c:otherwise>
                         </c:choose>
                     </tr>
                 </c:forEach>
             </tbody>
         </table>
-        <c:set var="baseUrl" value="/capcontrol/ivvc/zone/voltageDeltasTable" />
-        <tags:pagingResultsControls baseUrl="${baseUrl}"  result="${searchResults}" adjustPageCount="true"/>
-    </div>
-</c:if>
+    </c:otherwise>
+</c:choose>
+
 </cti:msgScope>

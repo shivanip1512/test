@@ -1,11 +1,12 @@
 <%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
-<%@ attribute name="dialogId" required="true"%>
-<%@ attribute name="titleKey" required="true"%>
-<%@ attribute name="actionUrl" required="true"%>
+
+<%@ attribute name="dialogId" required="true" %>
+<%@ attribute name="titleKey" required="true" %>
+<%@ attribute name="actionUrl" required="true" %>
 <%@ attribute name="icon" %>
-<%@ attribute name="labelKey" description="i18n key of label text"%>
-<%@ attribute name="labelText" description="plain text of label text"%>
-<%@ attribute name="styleClass" description="link class, defaults to 'simpleLink'"%>
+<%@ attribute name="labelKey" description="i18n key of label text" %>
+<%@ attribute name="labelText" description="plain text of label text" %>
+<%@ attribute name="styleClass" %>
 <%@ attribute name="disabled" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>

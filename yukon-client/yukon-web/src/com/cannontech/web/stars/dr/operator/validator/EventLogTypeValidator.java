@@ -12,17 +12,17 @@ import com.cannontech.common.events.model.NumberFilterValue;
 import com.cannontech.common.events.model.StringFilterValue;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.web.common.events.model.EventLogTypeBackingBean;
+import com.cannontech.web.common.events.model.EventLogTypeFilter;
 
-public class EventLogTypeValidator extends SimpleValidator<EventLogTypeBackingBean> {
+public class EventLogTypeValidator extends SimpleValidator<EventLogTypeFilter> {
 
     public EventLogTypeValidator() {
-        super(EventLogTypeBackingBean.class);
+        super(EventLogTypeFilter.class);
     }
 
     @Override
-    public void doValidation(EventLogTypeBackingBean target, Errors errors) {
-        EventLogTypeBackingBean eventLogTypeBackingBean = (EventLogTypeBackingBean)target;
+    public void doValidation(EventLogTypeFilter target, Errors errors) {
+        EventLogTypeFilter eventLogTypeBackingBean = (EventLogTypeFilter)target;
 
         // Validate filter value
         List<EventLogFilter> eventLogFilters = eventLogTypeBackingBean.getEventLogFilters();

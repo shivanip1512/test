@@ -17,9 +17,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
 import com.cannontech.common.dynamicBilling.model.DynamicFormat;
 import com.cannontech.common.fileExportHistory.FileExportType;
-import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
@@ -54,7 +52,7 @@ public class BillingController {
         modelMap.addAttribute("allRows", allRows);
 
         // 3rd tab: Scheduling
-        setupJobs(modelMap, new PagingParameters(10, 1));
+        setupJobs(modelMap);
 
         return "billing.jsp";
     }
@@ -67,24 +65,23 @@ public class BillingController {
     }
 
     @RequestMapping(value="_jobs", method=RequestMethod.GET)
-    public String showJobs(ModelMap model, PagingParameters paging) {
-        setupJobs(model, paging);
+    public String showJobs(ModelMap model) {
+        setupJobs(model);
         return "../amr/scheduledBilling/_jobs.jsp";
     }
 
-    private void setupJobs(ModelMap model, PagingParameters paging) {
+    private void setupJobs(ModelMap model) {
+        
         List<ScheduledRepeatingJob> billingExportJobs =
                 scheduledFileExportService.getJobsByType(ScheduledExportType.BILLING);
-        List<ScheduledFileExportJobData> jobDataObjects = Lists.newArrayListWithCapacity(billingExportJobs.size());
+        List<ScheduledFileExportJobData> jobs = Lists.newArrayListWithCapacity(billingExportJobs.size());
 
         for(ScheduledRepeatingJob job : billingExportJobs) {
-            jobDataObjects.add(scheduledFileExportService.getExportJobData(job));
+            jobs.add(scheduledFileExportService.getExportJobData(job));
         }
-        Collections.sort(jobDataObjects);
+        Collections.sort(jobs);
 
-        SearchResults<ScheduledFileExportJobData> filterResult =
-                SearchResults.pageBasedForWholeList(paging, jobDataObjects);
-        model.addAttribute("scheduledJobsSearchResult", filterResult);
+        model.addAttribute("jobs", jobs);
         model.addAttribute("jobType", FileExportType.BILLING);
     }
 

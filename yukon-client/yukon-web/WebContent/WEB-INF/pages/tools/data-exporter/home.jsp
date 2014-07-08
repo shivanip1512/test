@@ -96,7 +96,7 @@
             <pre><div preview-header>${preview.header}</div><div preview-body><c:forEach items="${preview.body}" var="line">${line}<br></c:forEach></div><div preview-footer>${preview.footer}</div></pre>
         </c:if>
 
-        <div class="f-table-container" data-reloadable>
+        <div data-reloadable>
             <%@ include file="scheduledJobsTable.jsp" %>
         </div>
     </div>

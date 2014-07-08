@@ -32,95 +32,95 @@ $(function() {
 </h3>
 
 <c:set var="multipleThermostatsSelected" value="false"></c:set>
-<cti:msg2 var="historyTableTitle" key=".historyTableTitle"/>
-    <tags:pagedBox2 nameKey="${historyTableTitle}" searchResult="${searchResult}"
-        baseUrl="/stars/consumer/thermostat/schedule/history">
+    <tags:sectionContainer2 nameKey=".historyTableTitle">
         <c:choose>
             <c:when test="${searchResult.hitCount == 0}">
                 <cti:msg key="yukon.web.modules.operator.thermostatManual.noItems"/>
             </c:when>
             <c:otherwise>
-                <table class="compact-results-table smallPadding">
-                    <thead>
-                        <tr>
-                            <c:if test="${multipleThermostatsSelected}">
-                                <th><cti:msg key="yukon.web.modules.operator.thermostatManual.thermostatHeader"/></th>
-                            </c:if>
-                            <th><cti:msg key="yukon.web.modules.operator.thermostatManual.typeHeader"/></th>
-                            <th><cti:msg key="yukon.web.modules.operator.thermostatManual.dateHeader"/></th>
-                            <th><cti:msg key="yukon.web.modules.operator.thermostatManual.detailsHeader"/></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="historyItem" items="${eventHistoryList}" varStatus="status">
+                <div class="scroll-large">
+                    <table class="compact-results-table smallPadding">
+                        <thead>
                             <tr>
-                                <!-- Thermostat -->
                                 <c:if test="${multipleThermostatsSelected}">
-                                    <td>
-                                        ${fn:escapeXml(historyItem.thermostatName)}
-                                    </td>
+                                    <th><cti:msg key="yukon.web.modules.operator.thermostatManual.thermostatHeader"/></th>
                                 </c:if>
-                                <!-- Type -->
-                                <td>
-                                    <cti:msg key="${historyItem.eventType}"/>
-                                </td>
-                                <!-- Date -->
-                                <td>
-                                    <cti:formatDate value="${historyItem.eventTime}" type="DATEHM" />
-                                </td>
-                                <!-- Details -->
-                                <td>
-                                    <c:if test="${historyItem.eventType == 'MANUAL'}">
-                                        <!-- Temperature and Degree Units -->
-                                        <c:if test="${historyItem.manualCoolTemp.value != 0}">
-                                            <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>"/>
-                                            <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.celsius" /></span>
-                                            <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.fahrenheit" /></span>
-                                        </c:if>
-
-										<c:if test="${historyItem.manualHeatTemp.value != 0}">
-                                            <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>"/>
-                                            <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.celsius" /></span>
-                                            <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.fahrenheit" /></span>
-                                        </c:if>
-                                        
-                                        <!-- Heat/Cool Mode -->
-                                        [<cti:msg key="yukon.web.modules.operator.thermostatManual.unitMode" /> 
-                                        <cti:msg key="${historyItem.manualMode}" />, 
-                                        <!-- Fan Setting -->
-                                        <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsFan" /> 
-                                        <cti:msg key="${historyItem.manualFan}" />]
-                                        <!-- Hold Setting -->
-                                        <c:if test="${historyItem.manualHold == true}">
-                                            (<cti:msg key="yukon.web.modules.operator.thermostatManual.hold"/>)
-                                        </c:if>
-                                    </c:if>
-                                    <c:if test="${historyItem.eventType == 'SCHEDULE'}">
-                                        <!-- Schedule Name and Link -->
-                                        <c:choose>
-                                            <c:when test="${historyItem.scheduleName == null}">
-                                                <cti:msg key="yukon.web.modules.operator.thermostatHistory.noInfo"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <cti:url var="viewArchivedScheduleUrl" value="/stars/consumer/thermostat/schedule/viewArchivedSchedule">
-                                                    <cti:param name="thermostatIds" value="${thermostatIds}"/>
-                                                    <cti:param name="scheduleId" value="${historyItem.scheduleId}"/>
-                                                </cti:url>
-                                                <a href="javascript:void(0);" popup="#command-details-${status.index}">${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
-                                                <cti:msg2 var="title" key="modules.operator.thermostatHistory.details.title"/>
-                                                <div id="command-details-${status.index}" data-url="${viewArchivedScheduleUrl}" data-title="${title}"></div>
-                                            </c:otherwise>
-                                        </c:choose> 
-                                    </c:if>
-                                    <c:if test="${historyItem.eventType == 'RESTORE'}">
-                                        <i:inline key="yukon.web.defaults.dashes"/>
-                                    </c:if>
-                                </td>
+                                <th><cti:msg key="yukon.web.modules.operator.thermostatManual.typeHeader"/></th>
+                                <th><cti:msg key="yukon.web.modules.operator.thermostatManual.dateHeader"/></th>
+                                <th><cti:msg key="yukon.web.modules.operator.thermostatManual.detailsHeader"/></th>
                             </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="historyItem" items="${eventHistoryList}" varStatus="status">
+                                <tr>
+                                    <!-- Thermostat -->
+                                    <c:if test="${multipleThermostatsSelected}">
+                                        <td>
+                                            ${fn:escapeXml(historyItem.thermostatName)}
+                                        </td>
+                                    </c:if>
+                                    <!-- Type -->
+                                    <td>
+                                        <cti:msg key="${historyItem.eventType}"/>
+                                    </td>
+                                    <!-- Date -->
+                                    <td>
+                                        <cti:formatDate value="${historyItem.eventTime}" type="DATEHM" />
+                                    </td>
+                                    <!-- Details -->
+                                    <td>
+                                        <c:if test="${historyItem.eventType == 'MANUAL'}">
+                                            <!-- Temperature and Degree Units -->
+                                            <c:if test="${historyItem.manualCoolTemp.value != 0}">
+                                                <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>"/>
+                                                <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.celsius" /></span>
+                                                <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.fahrenheit" /></span>
+                                            </c:if>
+    
+                                            <c:if test="${historyItem.manualHeatTemp.value != 0}">
+                                                <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>"/>
+                                                <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.celsius" /></span>
+                                                <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.fahrenheit" /></span>
+                                            </c:if>
+                                            
+                                            <!-- Heat/Cool Mode -->
+                                            [<cti:msg key="yukon.web.modules.operator.thermostatManual.unitMode" /> 
+                                            <cti:msg key="${historyItem.manualMode}" />, 
+                                            <!-- Fan Setting -->
+                                            <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsFan" /> 
+                                            <cti:msg key="${historyItem.manualFan}" />]
+                                            <!-- Hold Setting -->
+                                            <c:if test="${historyItem.manualHold == true}">
+                                                (<cti:msg key="yukon.web.modules.operator.thermostatManual.hold"/>)
+                                            </c:if>
+                                        </c:if>
+                                        <c:if test="${historyItem.eventType == 'SCHEDULE'}">
+                                            <!-- Schedule Name and Link -->
+                                            <c:choose>
+                                                <c:when test="${historyItem.scheduleName == null}">
+                                                    <cti:msg key="yukon.web.modules.operator.thermostatHistory.noInfo"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <cti:url var="viewArchivedScheduleUrl" value="/stars/consumer/thermostat/schedule/viewArchivedSchedule">
+                                                        <cti:param name="thermostatIds" value="${thermostatIds}"/>
+                                                        <cti:param name="scheduleId" value="${historyItem.scheduleId}"/>
+                                                    </cti:url>
+                                                    <a href="javascript:void(0);" popup="#command-details-${status.index}">${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
+                                                    <cti:msg2 var="title" key="modules.operator.thermostatHistory.details.title"/>
+                                                    <div id="command-details-${status.index}" data-url="${viewArchivedScheduleUrl}" data-title="${title}"></div>
+                                                </c:otherwise>
+                                            </c:choose> 
+                                        </c:if>
+                                        <c:if test="${historyItem.eventType == 'RESTORE'}">
+                                            <i:inline key="yukon.web.defaults.dashes"/>
+                                        </c:if>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
             </c:otherwise>
         </c:choose>
-    </tags:pagedBox2>
+    </tags:sectionContainer2>
 </cti:standardPage>

@@ -3,7 +3,6 @@
 <properties>
 
 <entry key="yukon.web.settings">Settings</entry>
-<entry key="yukon.web.generate">Generate</entry>
 <entry key="yukon.web.reports">Reports</entry>
 <entry key="yukon.web.format">Format</entry>
 <entry key="yukon.web.min">Min</entry>

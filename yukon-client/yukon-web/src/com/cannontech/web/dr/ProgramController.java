@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -20,16 +22,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.cannontech.core.roleproperties.YukonRole;
+
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
@@ -52,8 +59,8 @@ import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.dr.LoadGroupControllerHelper.LoadGroupListBackingBean;
-import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
+import com.cannontech.web.dr.LoadGroupHelper.LoadGroupFilter;
+import com.cannontech.web.dr.ProgramsHelper.ProgramFilter;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
@@ -64,18 +71,22 @@ public class ProgramController extends ProgramControllerBase {
 
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private LoadGroupControllerHelper loadGroupControllerHelper;
+    @Autowired private LoadGroupHelper loadGroupHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ScenarioService scenarioService;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
 
     @RequestMapping("/program/list")
     public String list(ModelMap model, YukonUserContext userContext,
-            @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
-            BindingResult bindingResult, FlashScope flashScope) {
-        programControllerHelper.filterPrograms(model, userContext, backingBean,
-                                               bindingResult, null);
+            @ModelAttribute("filter") ProgramFilter filter, BindingResult bindingResult,
+            @DefaultItemsPerPage(25) PagingParameters paging,
+            @DefaultSort(dir=Direction.asc, sort="NAME") SortingParameters sorting,
+            FlashScope flashScope) {
+        
+        programsHelper.filterPrograms(model, userContext, filter, bindingResult, null, sorting, paging);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        programsHelper.addColumns(model, accessor, sorting);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
 
@@ -84,17 +95,23 @@ public class ProgramController extends ProgramControllerBase {
 
     @RequestMapping("/program/detail")
     public String detail(int programId, ModelMap model, LiteYukonUser user,
-            @ModelAttribute("backingBean") LoadGroupListBackingBean backingBean,
+            @ModelAttribute("filter") LoadGroupFilter filter,
             BindingResult bindingResult, YukonUserContext userContext,
-            FlashScope flashScope) {
+            FlashScope flashScope,
+            @DefaultItemsPerPage(25) PagingParameters paging,
+            @DefaultSort(dir=Direction.asc, sort="NAME") SortingParameters sorting) {
         
         DisplayablePao program = programService.getProgram(programId);
         paoAuthorizationService.verifyAllPermissions(user, program, Permission.LM_VISIBLE);
         model.addAttribute("program", program);
 
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
-        loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
-                                               bindingResult, detailFilter, flashScope);
+        loadGroupHelper.filterGroups(model, userContext, filter,
+                                               bindingResult, detailFilter, flashScope,
+                                               paging, sorting);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        loadGroupHelper.addColumns(model, accessor, sorting);
 
         DisplayablePao parentControlArea =
             controlAreaService.findControlAreaForProgram(userContext, programId);
@@ -116,10 +133,8 @@ public class ProgramController extends ProgramControllerBase {
     }
 
     @RequestMapping("/program/assetDetails")
-    public String assetDetails(@RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                               @RequestParam(defaultValue="1") int page,
-                               @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
-                               final boolean descending,
+    public String assetDetails(@DefaultItemsPerPage(25) PagingParameters paging,
+                               @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
                                int assetId, 
                                ModelMap model, 
                                YukonUserContext userContext) throws IOException {
@@ -128,11 +143,11 @@ public class ProgramController extends ProgramControllerBase {
         DisplayablePao program = programService.getProgram(assetId);
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, null);
-        sortAssetDetails(resultsList, sortBy, descending, userContext);
+        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
+        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
         
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
+                SearchResults.pageBasedForWholeList(paging, resultsList);
 
         model = getAssetAvailabilityInfo(program, model, userContext);
         
@@ -141,7 +156,9 @@ public class ProgramController extends ProgramControllerBase {
         model.addAttribute("program", program);
         model.addAttribute("type", "program");
         model.addAttribute("result", result);
-        model.addAttribute("itemsPerPage", itemsPerPage);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        addAssetColumns(model, accessor, sorting);
         
         return "dr/assetDetails.jsp";
     }
@@ -161,27 +178,25 @@ public class ProgramController extends ProgramControllerBase {
     public String page(ModelMap model, 
                        YukonUserContext userContext,
                        int assetId,
-                       @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
-                       final boolean descending,
-                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
-                       @RequestParam(defaultValue="1") int page,
+                       @DefaultItemsPerPage(25) PagingParameters paging,
+                       @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
                        @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters) {
 
         DisplayablePao program = programService.getProgram(assetId);
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filters);
-        sortAssetDetails(resultsList, sortBy, descending, userContext);
+        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
+        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
 
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
+                SearchResults.pageBasedForWholeList(paging, resultsList);
         
         model.addAttribute("result", result);
         model.addAttribute("type", "program");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
-        model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("assetDetailsSortBy", sortBy);
-        model.addAttribute("assetDetailsSortDesc", descending);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        addAssetColumns(model, accessor, sorting);
         
         return "dr/assetTable.jsp";
     }
@@ -260,42 +275,42 @@ public class ProgramController extends ProgramControllerBase {
     }
     
     @RequestMapping("/program/changeGearMultiplePopup")
-    public String changeGearMultiplePopup(ModelMap model, @ModelAttribute("backingBean") ChangeMultipleGearsBackingBean backingBean,
+    public String changeGearMultiplePopup(ModelMap model, @ModelAttribute("filter") ChangeMultipleGearsBackingBean filter,
                                           BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
-        UiFilter<DisplayablePao> filter = null;
+        UiFilter<DisplayablePao> uifilter = null;
 
         String paoName = null;
         Map<Integer, ScenarioProgram> scenarioPrograms = null;
-        if (backingBean.getControlAreaId() != null) {
-            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+        if (filter.getControlAreaId() != null) {
+            DisplayablePao controlArea = controlAreaService.getControlArea(filter.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          controlArea,
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             model.addAttribute("controlArea", controlArea);
             paoName = controlArea.getName();
-            filter = new ForControlAreaFilter(backingBean.getControlAreaId());
+            uifilter = new ForControlAreaFilter(filter.getControlAreaId());
         }
-        if (backingBean.getScenarioId() != null) {
-            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+        if (filter.getScenarioId() != null) {
+            DisplayablePao scenario = scenarioDao.getScenario(filter.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          scenario,
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             model.addAttribute("scenario", scenario);
             paoName = scenario.getName();
-            filter = new ForScenarioFilter(backingBean.getScenarioId());
+            uifilter = new ForScenarioFilter(filter.getScenarioId());
             scenarioPrograms =
-                scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
+                scenarioDao.findScenarioProgramsForScenario(filter.getScenarioId());
             model.addAttribute("scenarioPrograms", scenarioPrograms);
         }
 
-        if (filter == null) {
+        if (uifilter == null) {
             throw new IllegalArgumentException();
         }
 
         SearchResults<DisplayablePao> searchResult =
-            programService.filterPrograms(filter, new DisplayablePaoComparator(),
+            programService.filterPrograms(uifilter, new DisplayablePaoComparator(),
                                           0, Integer.MAX_VALUE, userContext);
         List<DisplayablePao> programs = searchResult.getResultList();
         if (programs == null || programs.size() == 0) {
@@ -303,7 +318,7 @@ public class ProgramController extends ProgramControllerBase {
             model.addAttribute("popupId", "drDialog");
             YukonMessageSourceResolvable error =
                 new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startMultiplePrograms.noPrograms." +
-                                                 (backingBean.getControlAreaId() != null ? "controlArea" : "scenario"),
+                                                 (filter.getControlAreaId() != null ? "controlArea" : "scenario"),
                                                  paoName);
             model.addAttribute("userMessage", error);
             return "common/userMessage.jsp";
@@ -323,7 +338,7 @@ public class ProgramController extends ProgramControllerBase {
             }
             programGearChangeInfo.add(new ProgramGearChangeInfo(programId, gearNumber, true));
         }
-        backingBean.setProgramGearChangeInfo(programGearChangeInfo);
+        filter.setProgramGearChangeInfo(programGearChangeInfo);
         
         addGearsToModel(searchResult.getResultList(), model);
         addErrorsToFlashScopeIfNecessary(bindingResult, flashScope);
@@ -336,19 +351,19 @@ public class ProgramController extends ProgramControllerBase {
     
     @RequestMapping("/program/changeMultipleGears")
     public @ResponseBody Map<String, String> changeMultipleGears(ModelMap model,
-                @ModelAttribute("backingBean") ChangeMultipleGearsBackingBean backingBean, BindingResult bindingResult,
+                @ModelAttribute("filter") ChangeMultipleGearsBackingBean filter, BindingResult bindingResult,
                 YukonUserContext userContext, FlashScope flashScope) {
 
-        if (backingBean.getControlAreaId() != null) {
-            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+        if (filter.getControlAreaId() != null) {
+            DisplayablePao controlArea = controlAreaService.getControlArea(filter.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          controlArea,
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             model.addAttribute("controlArea", controlArea);
         }
-        if (backingBean.getScenarioId() != null) {
-            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+        if (filter.getScenarioId() != null) {
+            DisplayablePao scenario = scenarioDao.getScenario(filter.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          scenario,
                                                          Permission.LM_VISIBLE,
@@ -356,7 +371,7 @@ public class ProgramController extends ProgramControllerBase {
             model.addAttribute("scenario", scenario);
         }
         boolean gearChanged = false;
-        for (ProgramGearChangeInfo gearChangeInfo : backingBean.getProgramGearChangeInfo()) {
+        for (ProgramGearChangeInfo gearChangeInfo : filter.getProgramGearChangeInfo()) {
             if (gearChangeInfo.isChangeGear()) {
                 gearChanged = true;
                 DisplayablePao program = programService.getProgram(gearChangeInfo.getProgramId());
@@ -421,13 +436,13 @@ public class ProgramController extends ProgramControllerBase {
         
         //Determine if parent object is a control area or scenario
         DisplayablePao parent = null;
-        UiFilter<DisplayablePao> filter = null;
+        UiFilter<DisplayablePao> uifilter = null;
         if(controlAreaId != null) {
             parent = controlAreaService.getControlArea(controlAreaId);
-            filter = new ForControlAreaFilter(controlAreaId);
+            uifilter = new ForControlAreaFilter(controlAreaId);
         } else if(scenarioId != null){
             parent = scenarioService.getScenario(scenarioId);
-            filter = new ForScenarioFilter(scenarioId);
+            uifilter = new ForScenarioFilter(scenarioId);
         } else {
             modelMap.addAttribute("popupId", "drDialog");
             YukonMessageSourceResolvable error =
@@ -442,7 +457,7 @@ public class ProgramController extends ProgramControllerBase {
                                                      Permission.LM_VISIBLE,
                                                      Permission.CONTROL_COMMAND);
         //Get programs
-        SearchResults<DisplayablePao> searchResult = programService.filterPrograms(filter, 
+        SearchResults<DisplayablePao> searchResult = programService.filterPrograms(uifilter, 
                                                                                   new DisplayablePaoComparator(),
                                                                                   0, 
                                                                                   Integer.MAX_VALUE, 
@@ -475,7 +490,7 @@ public class ProgramController extends ProgramControllerBase {
             if (gear != null) {
                 gears.add(gear.getGearName());
             } else {
-                MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+                MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
                 String dashes = messageSourceAccessor.getMessage("");
                 gears.add(dashes);
             }
@@ -532,7 +547,7 @@ public class ProgramController extends ProgramControllerBase {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        programControllerHelper.initBinder(binder, userContext, "programList");
-        loadGroupControllerHelper.initBinder(binder, userContext);
+        programsHelper.initBinder(binder, userContext, "programList");
+        loadGroupHelper.initBinder(binder, userContext);
     }
 }

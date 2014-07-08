@@ -1,59 +1,59 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="searchResults">
 
-	<tags:simpleDialog id="drDialog" />
+    <cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
 
-	<c:set var="baseUrl" value="/dr/search" />
-        
-	<div id="findForm" class="action-area stacked">
-	   <form accept-charset="ISO-8859-1" method="get" action="/dr/search" enctype="application/x-www-form-urlencoded">
+    <tags:simpleDialog id="drDialog"/>
+
+    <div id="findForm" class="action-area stacked">
+       <form accept-charset="ISO-8859-1" method="get" action="<cti:url value="/dr/search"/>" enctype="application/x-www-form-urlencoded">
             <label class="box fl">
-                <cti:msg key="yukon.web.modules.dr.searchResults.searchBoxLabel" />
-                <input type="text" id="textinput" class="search_text" value="${quickSearchBean.name}" name="name" />
+                <i:inline key=".searchBoxLabel"/>
+                <input type="text" id="textinput" class="search_text" value="${quickSearchBean.name}" name="name"/>
             </label>
             <cti:button nameKey="search" type="submit" icon="icon-magnifier" classes="fl"/>
-	   </form>
+       </form>
     </div>
 
-	<cti:msg var="searchTitle"
-		key="yukon.web.modules.dr.searchResults.searchResult"
-		argument="${quickSearchBean.name}" />
-	<tags:pagedBox title="${searchTitle}" searchResult="${searchResult}"
-		baseUrl="${baseUrl}">
-		<c:choose>
-			<c:when test="${searchResult.hitCount == 0}">
-				<cti:msg key="yukon.web.modules.dr.searchResults.noResults" />
-			</c:when>
-			<c:otherwise>
-				<table class="compact-results-table row-highlighting">
-					<tr>
-						<th><tags:sortLink nameKey="nameHeader" baseUrl="${baseUrl}" fieldName="NAME"/></th>
-						<th><tags:sortLink nameKey="typeHeader" baseUrl="${baseUrl}" fieldName="TYPE"/></th>
-						<th><tags:sortLink nameKey="stateHeader" baseUrl="${baseUrl}" fieldName="STATE"/></th>
-						<th><cti:msg
-							key="yukon.web.modules.dr.searchResults.actionsHeader" /></th>
-					</tr>
-					<c:forEach var="pao" items="${searchResult.resultList}">
-						<tr>
-							<td><cti:paoDetailUrl yukonPao="${pao}">
-								<spring:escapeBody htmlEscape="true">${pao.name}</spring:escapeBody>
-							</cti:paoDetailUrl></td>
-							<td><cti:msg
-								key="yukon.web.modules.dr.paoType.${pao.paoIdentifier.paoType}" />
-							</td>
-							<td><dr:stateText pao="${pao}" /></td>
-							<td><dr:listActions pao="${pao}" /></td>
-						</tr>
-					</c:forEach>
-				</table>
-			</c:otherwise>
-		</c:choose>
-	</tags:pagedBox>
+    <cti:msg2 var="searchTitle" key=".searchResult" argument="${quickSearchBean.name}"/>
+    <tags:sectionContainer title="${searchTitle}">
+        <c:choose>
+            <c:when test="${searchResult.hitCount == 0}">
+                <span class="empty-list"><i:inline key=".noResults"/></span>
+            </c:when>
+            <c:otherwise>
+                <cti:url value="/dr/search" var="url">
+                    <cti:param name="name" value="${quickSearchBean.name}"/>
+                </cti:url>
+                <div data-url="${url}" data-static>
+                    <table class="compact-results-table has-actions">
+                        <tr>
+                            <th><i:inline key=".name"/></th>
+                            <th><i:inline key=".type"/></th>
+                            <th><i:inline key=".state"/></th>
+                            <th></th>
+                        </tr>
+                        <c:forEach var="pao" items="${searchResult.resultList}">
+                            <tr>
+                                <td><cti:paoDetailUrl yukonPao="${pao}">${fn:escapeXml(pao.name)}</cti:paoDetailUrl></td>
+                                <td><i:inline key=".paoType.${pao.paoIdentifier.paoType}"/></td>
+                                <td><dr:stateText pao="${pao}"/></td>
+                                <td><dr:listActions pao="${pao}"/></td>
+                            </tr>
+                        </c:forEach>
+                    </table>
+                    <tags:pagingResultsControls result="${searchResult}" hundreds="true" adjustPageCount="true"/>
+                </div>
+            </c:otherwise>
+        </c:choose>
+    </tags:sectionContainer>
+
 </cti:standardPage>

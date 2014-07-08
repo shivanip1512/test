@@ -31,17 +31,6 @@
     </div>
 </tags:sectionContainer>
 
-<tags:sectionContainer title="Paged Containers">
-    <div class="example section">
-        <div class="clearfix">
-<%--             <tags:pagedBox searchResult="" baseUrl="" title="This is a Paged Box Container"></tags:pagedBox> --%>
-            <div>Joe...put a paged box here...quit slacking</div>
-            <span class="description">a paged box container</span>
-        </div>
-        <pre class="code prettyprint">&lt;tags:pagedBox searchResult=&quot;&quot; baseUrl=&quot;&quot; title=&quot;This is a Paged Box Container&quot;&gt;:D&lt;/tags:sectionContainer&gt;</pre>
-    </div>
-</tags:sectionContainer>
-
 <tags:sectionContainer title="Containers Side by Side Test">
     <div class="column-6-6-6-6">
         <div class="column one">

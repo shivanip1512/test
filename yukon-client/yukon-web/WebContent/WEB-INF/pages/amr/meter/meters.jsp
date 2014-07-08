@@ -1,3 +1,5 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
@@ -8,119 +10,77 @@
 
 <cti:standardPage module="amr" page="meterSearchResults">
 
-    <cti:url value="/meter/home" var="meterHomeUrl"/>
-
-    <script type="text/javascript">
-    
-        function forwardToMeterHome(row, id) {
-            $('#deviceTable').removeClass('activeResultsTable');
-            window.location = "${meterHomeUrl}?deviceId=" + id;
-        }
-    
-        function clearFilter() {
-    
+    <h3><i:inline key=".searchCriteria"/></h3>
+    <form id="filter-form" action="<cti:url value="/meter/search"/>" class="stacked">
+        <div class="clearfix">
             <c:forEach var="filter" items="${filterByList}">
-              $('#${filter.name}').val('');
+                <div style="width: 21em; text-align: right; float: left; margin-bottom: 5px; margin-right: 5px;">
+                    <label>
+                        <i:inline key="${filter.formatKey}"/>&nbsp;
+                        <input style="width: 10em" type="text" name="${filter.name}" value="${fn:escapeXml(filter.filterValue)}">
+                    </label>
+                </div>
             </c:forEach>
-            
-            $('#filterForm')[0].submit();
-        }
-        
-    </script>
-    
-    
-    <cti:url var="formBaseUrl" value="/meter/search"/>
-    <form id="filterForm" action="${formBaseUrl}">
-        <tags:boxContainer2 nameKey="meterSearch">
-            <input type="hidden" name="startIndex" value="${meterSearchResults.startIndex}" />
-            <input type="hidden" name="itemsPerPage" value="${meterSearchResults.count}" />
-            <input type="hidden" name="orderBy" value="${orderBy.field}" />
-            <c:if test="${orderBy.descending}">
-                <input type="hidden" name="descending" value="true" />
-            </c:if>
-            <div class="filters">
-                <c:forEach var="filter" items="${filterByList}">
-                    <div style="width: 21em; text-align: right; float: left; margin-bottom: 5px; margin-right: 5px;">
-                        <label for="${filter.name}"><i:inline key="${filter.formatKey}" /> </label><input
-                            style="width: 10em" type="text" id="${filter.name}" name="${filter.name}"
-                            value="${fn:escapeXml(filter.filterValue)}"
-                        />
-                    </div>
-                </c:forEach>
-            </div>
-            <div class="action-area clear">
-                <cti:button nameKey="search" name="filter" value="true" type="submit" classes="primary"/>
-                <cti:button nameKey="showAll" onclick="javascript:clearFilter()" />
-            </div>
-        </tags:boxContainer2>
+        </div>
+        <div class="action-area">
+            <cti:button nameKey="search" classes="primary action js-ami-search"/>
+            <cti:button nameKey="showAll" classes="js-ami-search-clear "/>
+        </div>
     </form>
-
-    <br>
     
-    <c:set var="baseUrl" value="/meter/search"/>
-        <%-- DATA ROWS --%>
-    <c:if test="${meterSearchResults.hitCount > 0}">
-        <c:set var="linkHeaderHtml">
-            <span class="navLink fr">
-                <cm:deviceCollectionMenu deviceCollection="${deviceGroupCollection}"
-                    key="yukon.web.modules.common.contextualMenu.actions"/>
-            </span>
-        </c:set>
-    </c:if>
-    <cti:msg2 var="meterSearchTitle" key=".meterSearchResultsTitle" />
-    <tags:pagedBox title="${meterSearchTitle}" searchResult="${meterSearchResults}" baseUrl="${baseUrl}"
-        pageByHundereds="true" titleLinkHtml="${linkHeaderHtml}">
-        <table class="compact-results-table f-traversable row-highlighting has-actions">
-            <c:if test="${meterSearchResults.hitCount > 0}">
-                <thead>
-                    <tr>
-                        <th><tags:sortLink nameKey="columnHeader.deviceName" baseUrl="${baseUrl}" fieldName="PAONAME"
-                                sortParam="orderBy" isDefault="${defaultSearchField == 'PAONAME'}"/>
-                        </th>
-                        <th><tags:sortLink nameKey="columnHeader.meterNumber" baseUrl="${baseUrl}"
-                                fieldName="METERNUMBER" sortParam="orderBy"
-                                isDefault="${defaultSearchField == 'METERNUMBER'}" />
-                        </th>
-                        <th><tags:sortLink nameKey="columnHeader.deviceType" baseUrl="${baseUrl}" fieldName="TYPE"
-                                sortParam="orderBy" />
-                        </th>
-                        <th><tags:sortLink nameKey="columnHeader.address" baseUrl="${baseUrl}" fieldName="ADDRESS"
-                                sortParam="orderBy"/>
-                        </th>
-                        <th><tags:sortLink nameKey="columnHeader.route" baseUrl="${baseUrl}" fieldName="ROUTE"
-                                sortParam="orderBy" />
-                       </th>
-                       <th></th>
-                    </tr>
-                </thead>
-                <tfoot></tfoot>
-            </c:if>
-            <tbody>
-            <c:forEach var="searchResultRow" items="${meterSearchResults.resultList}">
-                <tr>
-                    <td>
-                        <cti:paoDetailUrl yukonPao="${searchResultRow}">
-                            <c:if test="${!empty searchResultRow.name}">${fn:escapeXml(searchResultRow.name)}</c:if>
-                        </cti:paoDetailUrl>
-                    </td>
-                    <td><c:if test="${!empty searchResultRow.meterNumber}">${fn:escapeXml(searchResultRow.meterNumber)}</c:if></td>
-                    <td><tags:paoType yukonPao="${searchResultRow}"/></td>
-                    <td><c:if test="${!empty searchResultRow.serialOrAddress}">${fn:escapeXml(searchResultRow.serialOrAddress)}</c:if></td>
-                    <td><c:if test="${!empty searchResultRow.route}">${fn:escapeXml(searchResultRow.route)}</c:if></td>
-                    <td>
-                        <cm:singleDeviceMenu deviceId="${searchResultRow.paoIdentifier.paoId}" triggerClasses="fr"/>
-                    </td>
-                </tr>
-            </c:forEach>
-
-            <c:if test="${meterSearchResults.hitCount == 0}">
-                <tr>
-                    <td colspan="5"><i:inline key=".notFound" /></td>
-                </tr>
-            </c:if>
-            </tbody>
-        </table>
-
-    </tags:pagedBox>
-
+    <h3>
+        <i:inline key=".searchResults" arguments="${meterSearchResults.hitCount}"/>&nbsp;
+        <c:if test="${meterSearchResults.hitCount > 0}">
+            <cm:deviceCollectionMenu deviceCollection="${deviceGroupCollection}"
+                triggerClasses="pull-icon-down"
+                key="yukon.web.modules.common.contextualMenu.actions"/>
+        </c:if>
+    </h3>
+    <c:choose>
+        <c:when test="${meterSearchResults.hitCount > 0}">
+            <cti:url var="dataUrl" value="/meter/search">
+                <c:forEach var="filter" items="${filterByList}">
+                    <cti:param name="${filter.name}" value="${filter.filterValue}"/>
+                </c:forEach>
+            </cti:url>
+            <div data-url="${dataUrl}" data-static>
+                <table class="compact-results-table has-actions">
+                    <thead>
+                        <tr>
+                            <tags:sort column="${nameColumn}"/>
+                            <tags:sort column="${meterNumberColumn}"/>
+                            <tags:sort column="${typeColumn}"/>
+                            <tags:sort column="${addressColumn}"/>
+                            <tags:sort column="${routeColumn}"/>
+                           <th></th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="row" items="${meterSearchResults.resultList}">
+                            <tr>
+                                <td>
+                                    <cti:paoDetailUrl yukonPao="${row}">
+                                        <c:if test="${!empty row.name}">${fn:escapeXml(row.name)}</c:if>
+                                    </cti:paoDetailUrl>
+                                </td>
+                                <td><c:if test="${!empty row.meterNumber}">${fn:escapeXml(row.meterNumber)}</c:if></td>
+                                <td><tags:paoType yukonPao="${row}"/></td>
+                                <td><c:if test="${!empty row.serialOrAddress}">${fn:escapeXml(row.serialOrAddress)}</c:if></td>
+                                <td><c:if test="${!empty row.route}">${fn:escapeXml(row.route)}</c:if></td>
+                                <td><cm:singleDeviceMenu deviceId="${row.paoIdentifier.paoId}" triggerClasses="fr"/></td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+                <tags:pagingResultsControls result="${meterSearchResults}" adjustPageCount="true" hundreds="true"/>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <span class="empty-list"><i:inline key=".notFound"/></span>
+        </c:otherwise>
+    </c:choose>
+        
+    <cti:includeScript link="/JavaScript/yukon.ami.search.js"/>
+    
 </cti:standardPage>

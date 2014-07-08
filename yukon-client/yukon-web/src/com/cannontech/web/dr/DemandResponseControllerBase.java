@@ -8,13 +8,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
+
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -35,17 +40,18 @@ import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.NaturalOrderComparator;
 import com.cannontech.web.common.chart.service.AssetAvailabilityChartService;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public abstract class DemandResponseControllerBase {
     
     private static final Logger log = YukonLogManager.getLogger(DemandResponseControllerBase.class);
+    
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
@@ -67,10 +73,32 @@ public abstract class DemandResponseControllerBase {
         colorMap.put(AssetAvailabilityCombinedStatus.OPTED_OUT, "grey");
     }
 
-    protected static final String ITEMS_PER_PAGE = "10";
+    protected static enum AssetDetailsColumn implements DisplayableEnum {
+        
+        SERIAL_NUM, 
+        TYPE,
+        LAST_COMM,
+        LAST_RUN,
+        APPLIANCES,
+        AVAILABILITY;
 
-    protected static enum AssetDetailsColumn {SERIAL_NUM, TYPE, LAST_COMM, LAST_RUN, APPLIANCES, AVAILABILITY};
-
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.hardware.assetAvailability." + name();
+        }
+    };
+    
+    protected void addAssetColumns(ModelMap model, MessageSourceAccessor accessor, SortingParameters sorting) {
+        Direction dir = sorting.getDirection();
+        for (AssetDetailsColumn col : AssetDetailsColumn.values()) {
+            AssetDetailsColumn sort = AssetDetailsColumn.valueOf(sorting.getSort());
+            String text = accessor.getMessage(col);
+            boolean active = sort == col;
+            SortableColumn sortable = new SortableColumn(dir, active, text, col.name());
+            model.addAttribute(col.name(), sortable);
+        }
+    }
+    
     protected static NaturalOrderComparator naturalOrder = new NaturalOrderComparator();
 
 
@@ -254,12 +282,12 @@ public abstract class DemandResponseControllerBase {
 
         // header row
         String[] headerRow = new String[6];
-        headerRow[0] = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.serialNumber.linkText");
-        headerRow[1] = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.type.linkText");
-        headerRow[2] = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.lastCommunication.linkText");
-        headerRow[3] = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.lastRuntime.linkText");
-        headerRow[4] = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.appliances.linkText");
-        headerRow[5] = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.availability.linkText");
+        headerRow[0] = msa.getMessage(AssetDetailsColumn.SERIAL_NUM);
+        headerRow[1] = msa.getMessage(AssetDetailsColumn.TYPE);
+        headerRow[2] = msa.getMessage(AssetDetailsColumn.LAST_COMM);
+        headerRow[3] = msa.getMessage(AssetDetailsColumn.LAST_RUN);
+        headerRow[4] = msa.getMessage(AssetDetailsColumn.APPLIANCES);
+        headerRow[5] = msa.getMessage(AssetDetailsColumn.AVAILABILITY);
         
         return headerRow;
     }

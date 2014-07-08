@@ -32,7 +32,9 @@ public class RoleAndPropertyDescriptionService {
 
     /**
      * This will check that the user has the given roles, categories, has a
-     * true value for the given role properties, or a true GlobalSetting value.
+     * true value for the given role properties, or a boolean GlobalSetting value,
+     * or a boolean EnergyCompanySetting, a boolean MasterConfig parameter.
+     * 
      * Categories, roles and properties are specified as a comma-separated
      * list of enum names.
      * 

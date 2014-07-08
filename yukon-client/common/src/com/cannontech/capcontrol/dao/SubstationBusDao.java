@@ -10,7 +10,6 @@ import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -52,7 +51,7 @@ public interface SubstationBusDao {
      */
     public List<LiteYukonPAObject> getUnassignedBuses();
     
-    public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count);
+    public List<LiteCapControlObject> getOrphans();
     
     /**
      * This method assigns a {@link SubstationBus} to a {@link Substation} and performs all

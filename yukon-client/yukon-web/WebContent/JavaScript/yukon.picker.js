@@ -259,19 +259,19 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
         if (json && json.hits.startIndex > 0) {
             this.previousIndex = json.hits.previousStartIndex;
-            $('.previous-link.f-enabled-action', $(pickerDiv)).show();
-            $('.previous-link.f-disabled-action', $(pickerDiv)).hide();
+            $('.previous-page.f-enabled-action', $(pickerDiv)).show();
+            $('.previous-page.f-disabled-action', $(pickerDiv)).hide();
         } else {
-            $('.previous-link.f-enabled-action', $(pickerDiv)).hide();
-            $('.previous-link.f-disabled-action', $(pickerDiv)).show();
+            $('.previous-page.f-enabled-action', $(pickerDiv)).hide();
+            $('.previous-page.f-disabled-action', $(pickerDiv)).show();
         }
         if (json && json.hits.endIndex < json.hits.hitCount) {
             this.nextIndex = json.hits.endIndex;
-            $('.next-link.f-enabled-action', $(pickerDiv)).show();
-            $('.next-link.f-disabled-action', $(pickerDiv)).hide();
+            $('.next-page.f-enabled-action', $(pickerDiv)).show();
+            $('.next-page.f-disabled-action', $(pickerDiv)).hide();
         } else {
-            $('.next-link.f-enabled-action', $(pickerDiv)).hide();
-            $('.next-link.f-disabled-action', $(pickerDiv)).show();
+            $('.next-page.f-enabled-action', $(pickerDiv)).hide();
+            $('.next-page.f-disabled-action', $(pickerDiv)).show();
         }
         $('.page-num-text', $(pickerDiv))[0].innerHTML = json ? json.pages : '';
     },

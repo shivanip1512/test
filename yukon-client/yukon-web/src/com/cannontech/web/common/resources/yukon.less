@@ -97,7 +97,7 @@ a,
 .vertical-menu a:hover, 
 .ui-widget-content a, 
 #subMenu a:visited, 
-.perPageArea a:visited {
+.page-size a:visited {
     color: @primary-color;
 }
 .primary-background {
@@ -394,7 +394,8 @@ table.nowrap td {
     margin-top: 5px;
 }
 
-.three-column-table th { width: 33%; }
+.three-column-table td { width: 33%; }
+.four-column-table td { width: 25%; }
 
 .two-column-table { width:100%; }
 .two-column-table th, 
@@ -546,7 +547,7 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .paged-container .contextArea {margin: 0 20px 0 0;}
 .paged-container .contextArea .navLink {position: relative;}
 .paging-area {min-width: 250px; white-space: nowrap; display: inline-block; float: right;}
-.paging-area .page-num-text, .paging-area .next-link, .paging-area .previous-link {padding-left: 10px; line-height: 16px;display: inline-block;float: left;}
+.paging-area .page-num-text, .paging-area .next-page, .paging-area .previous-page {padding-left: 10px; line-height: 16px;display: inline-block;float: left;}
 
 .box-container.with-footer {border-radius: 2px 2px 0 0;margin-bottom: 0;}
 .box-container-footer {border:1px solid #ccc;border-radius: 0 0 2px 2px;border-top: none;}
@@ -632,7 +633,6 @@ ol.error{list-style-type: none;}
     border-style: solid; 
     margin-bottom: 10px;
 }
-.user-message ul { list-style: disc inside none; }
 .user-message.error {
     background: pink url('../Icons/error.gif') 5px no-repeat;
     border-color:@red;
@@ -869,15 +869,17 @@ hr.dashed,
     border: 2px solid @red;
 }
 
-.toggle-on-off .button:focus { outline: none; }
-.toggle-on-off .yes.on .b-label, 
-.toggle-on-off .yes.on:hover .b-label { 
+.toggle-btns .button:focus { outline: none; }
+.toggle-btns .yes.on .b-label, 
+.toggle-btns .yes.on:hover .b-label { 
     color: @green;
 }
-.toggle-on-off .no.on .b-label, 
-.toggle-on-off .no.on:hover .b-label {
+.toggle-btns .no.on .b-label, 
+.toggle-btns .no.on:hover .b-label {
     color: @red;
 }
+/* Pulls icon down towards middle of the container/tr instead of the top */
+.pull-icon-down { margin-bottom: -3px; }
 
 /* COLOR PICKER */
 .color-picker {

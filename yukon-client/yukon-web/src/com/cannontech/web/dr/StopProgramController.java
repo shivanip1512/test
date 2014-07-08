@@ -435,7 +435,7 @@ public class StopProgramController extends ProgramControllerBase {
     
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        programControllerHelper.initBinder(binder, userContext, "program.stopProgram");
+        programsHelper.initBinder(binder, userContext, "program.stopProgram");
     }
 
     private void assertStopGearAllowed(YukonUserContext userContext) {

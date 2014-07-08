@@ -7,7 +7,7 @@
 <%@ attribute name="dialogId" required="true" %>
 <%@ attribute name="nameKey" required="true" %>
 <%@ attribute name="actionUrl" required="true" %>
-<%@ attribute name="styleClass" description="link class, defaults to 'simpleLink'" %>
+<%@ attribute name="styleClass" %>
 <%@ attribute name="skipLabel" type="java.lang.Boolean" %>
 <%@ attribute name="icon" description="the icon classname" %>
 

@@ -6,9 +6,8 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.util.Range;
-import com.cannontech.web.util.ListBackingBean;
 
-public class WaterLeakReportFilterBackingBean extends ListBackingBean {
+public class WaterLeakReportFilter {
 
     public final static int DEFAULT_FROM_HOURS = 49;
     public final static int DEFAULT_TO_HOURS = 25;
@@ -32,16 +31,6 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
         toInstant = toInstant.minus(toInstant.get(DateTimeFieldType.millisOfSecond()));
     }
     
-    public WaterLeakReportFilterBackingBean() {/* Needed by Spring */}
-    
-    public WaterLeakReportFilterBackingBean(WaterLeakReportFilterBackingBean backingBean) {
-        // Just using the backingbean for the paging & sorting values
-        setSort(backingBean.getSort());
-        setDescending(backingBean.getDescending());
-        setPage(backingBean.getPage());
-        setItemsPerPage(backingBean.getItemsPerPage());
-    }
-
     public DeviceCollection getDeviceCollection() {
         return deviceCollection;
     }

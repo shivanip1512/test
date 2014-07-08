@@ -5,197 +5,165 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
 
 <cti:msgScope paths="modules.dr.programList">
 
-    <cti:url var="submitUrl" value="${baseUrl}" />
-    <cti:url var="clearFilterUrl" value="${baseUrl}">
-        <c:if test="${!empty param.itemsPerPage}">
-            <cti:param name="itemsPerPage" value="${param.itemsPerPage}" />
-        </c:if>
-        <c:if test="${!empty param.sort}">
-            <cti:param name="sort" value="${param.sort}" />
-        </c:if>
-        <c:if test="${!empty param.descending}">
-            <cti:param name="descending" value="${param.descending}" />
-        </c:if>
-        <c:if test="${!empty param.controlAreaId}">
-            <cti:param name="controlAreaId" value="${param.controlAreaId}" />
-        </c:if>
-        <c:if test="${!empty param.scenarioId}">
-            <cti:param name="scenarioId" value="${param.scenarioId}" />
-        </c:if>
-    </cti:url>
-
     <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
 
-    <script type="text/javascript">
-        function clearFilter() {
-            window.location = '${clearFilterUrl}';
-        }
-    </script>
-
     <%-- Program filtering popup section --%>
-
-    <cti:msg var="filterLabel" key="yukon.web.modules.dr.programList.filters" />
-    <tags:simplePopup id="filterPopup" title="${filterLabel}">
-        <cti:flashScopeMessages />
-
-        <form:form action="${submitUrl}" commandName="backingBean" method="get">
+    <div id="filter-popup" class="dn" data-title="<cti:msg2 key=".filters"/>">
+        <cti:flashScopeMessages/>
+        <cti:url var="url" value="${baseUrl}"/>
+        <form:form action="${url}" commandName="filter" method="get">
             <c:if test="${!empty param.controlAreaId}">
-                <input type="hidden" name="controlAreaId" value="${param.controlAreaId}" />
+                <input type="hidden" name="controlAreaId" value="${param.controlAreaId}"/>
             </c:if>
             <c:if test="${!empty param.scenarioId}">
-                <input type="hidden" name="scenarioId" value="${param.scenarioId}" />
+                <input type="hidden" name="scenarioId" value="${param.scenarioId}"/>
             </c:if>
-            <tags:sortFields backingBean="${backingBean}" />
-            <cti:msg var="minStr" key="yukon.web.modules.dr.programList.filter.min" />
-            <cti:msg var="maxStr" key="yukon.web.modules.dr.programList.filter.max" />
-            <cti:msg var="toStr" key="yukon.web.modules.dr.programList.filter.to" />
-
-            <tags:nameValueContainer>
-                <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.name" />
-                <tags:nameValue name="${fieldName}">
-                    <form:input path="name" size="40" />
-                </tags:nameValue>
+            
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".filter.name">
+                    <form:input path="name" size="40"/>
+                </tags:nameValue2>
  
-                   <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.state" />
-                    <tags:nameValue name="${fieldName}">
-                        <form:select path="state">
-                            <form:option value="ALL">
-                                <cti:msg key="yukon.web.modules.dr.programList.filter.state.all" />
-                            </form:option>
-                            <form:option value="ACTIVE">
-                                <cti:msg key="yukon.web.modules.dr.programList.filter.state.active" />
-                            </form:option>
-                            <form:option value="SCHEDULED">
-                                <cti:msg
-                                    key="yukon.web.modules.dr.programList.filter.state.scheduled" />
-                            </form:option>
-                            <form:option value="INACTIVE">
-                                <cti:msg
-                                    key="yukon.web.modules.dr.programList.filter.state.inactive" />
-                            </form:option>
-                        </form:select>
-                    </tags:nameValue>
-                               
-                    <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.start" />
-                        <tags:nameValue name="${fieldName}">
-                            <dt:dateRange startPath="start.min" endPath="start.max">
-                                <span class="fl" style="margin-right: 5px;">${toStr}</span>
-                            </dt:dateRange>
-                        </tags:nameValue>
+                <tags:nameValue2 nameKey=".filter.state">
+                    <form:select path="state">
+                        <form:option value="ALL"><cti:msg2 key=".filter.state.all"/></form:option>
+                        <form:option value="ACTIVE"><cti:msg2 key=".filter.state.active"/></form:option>
+                        <form:option value="SCHEDULED"><cti:msg2 key=".filter.state.scheduled"/></form:option>
+                        <form:option value="INACTIVE"><cti:msg2 key=".filter.state.inactive"/></form:option>
+                    </form:select>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".filter.start">
+                    <dt:dateRange startPath="start.min" endPath="start.max">
+                        <span class="fl" style="margin-right: 5px;"><cti:msg2 key=".filter.to"/></span>
+                    </dt:dateRange>
+                </tags:nameValue2>
                         
                 <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
-                        <cti:msg var="fieldName"
-                            key="yukon.web.modules.dr.programList.filter.priority" />
-                        <tags:nameValue name="${fieldName}">
-                            <tags:input path="priority.min" size="5" />&nbsp;${minStr}
-                       <tags:input path="priority.max" size="5" />&nbsp;${maxStr}
-                    </tags:nameValue>                    
+                    <tags:nameValue2 nameKey=".filter.priority">
+                        <tags:input path="priority.min" size="5"/>&nbsp;<cti:msg2 key=".filter.min"/>
+                        <tags:input path="priority.max" size="5"/>&nbsp;<cti:msg2 key=".filter.max"/>
+                    </tags:nameValue2>
                 </cti:checkRolesAndProperties>
 
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.stop" />
-                            <tags:nameValue name="${fieldName}">
-                                <dt:dateRange startPath="stop.min" endPath="stop.max">
-                                    <span class="fl" style="margin-right: 5px;">${toStr}</span>
-                                </dt:dateRange>
-                            </tags:nameValue>               
-            </tags:nameValueContainer>
+                <tags:nameValue2 nameKey=".filter.stop">
+                    <dt:dateRange startPath="stop.min" endPath="stop.max">
+                        <span class="fl" style="margin-right: 5px;"><cti:msg2 key=".filter.to"/></span>
+                    </dt:dateRange>
+                </tags:nameValue2>
+            </tags:nameValueContainer2>
 
             <div class="action-area">
-                <cti:button nameKey="filter" classes="primary action" type="submit" />
-                <cti:button nameKey="showAll" onclick="javascript:clearFilter()" />
+                <cti:button nameKey="filter" classes="primary action" type="submit"/>
+                <cti:button nameKey="showAll" href="${url}"/>
             </div>
         </form:form>
-    </tags:simplePopup>
+    </div>
 
     <%-- Main Program list table section --%>
-
-    <cti:msg var="programTitle" key="yukon.web.modules.dr.programList.programs" />
-    <tags:pagedBox title="${programTitle}" searchResult="${searchResult}" filterDialog="filterPopup"
-        baseUrl="${baseUrl}" isFiltered="${isFiltered}" showAllUrl="${clearFilterUrl}">
-
+    <cti:msg2 var="programTitle" key=".programs"/>
+    <c:set var="controls">
+        <a href="javascript:void(0);" popup="#filter-popup" data-popup-toggle>
+            <cti:icon icon="icon-filter"/>&nbsp;
+            <i:inline key="yukon.common.filter"/>
+        </a>
+    </c:set>
+    <tags:sectionContainer title="${programTitle}" controls="${controls}">
         <c:choose>
-            <c:when test="${searchResult.hitCount == 0}">
-                <cti:msg key="yukon.web.modules.dr.programList.noResults" />
+            <c:when test="${programs.hitCount == 0}">
+                <span class="empty-list"><i:inline key=".noResults"/></span>
             </c:when>
             <c:otherwise>
-                <table id="programList" class="compact-results-table has-actions">
-
-                    <thead>
-                        <tr>
-                            <th><tags:sortLink nameKey="heading.name" baseUrl="${baseUrl}" fieldName="NAME" /></th>
-                            <th><tags:sortLink nameKey="heading.state" baseUrl="${baseUrl}" fieldName="STATE" /></th>
-                            <th><tags:sortLink nameKey="heading.start" baseUrl="${baseUrl}" fieldName="START" /></th>
-                            <th><tags:sortLink nameKey="heading.stop" baseUrl="${baseUrl}" fieldName="STOP" /></th>
-                            <th><tags:sortLink nameKey="heading.currentGear" baseUrl="${baseUrl}" fieldName="CURRENT_GEAR" /></th>
-                            
-                            <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
-                                <th><tags:sortLink nameKey="heading.priority" baseUrl="${baseUrl}" fieldName="PRIORITY" /></th>
-                            </cti:checkRolesAndProperties>
-
-                            <cti:checkRolesAndProperties value="DR_VIEW_REDUCTION">
-                                <th><tags:sortLink nameKey="heading.reduction" baseUrl="${baseUrl}" fieldName="REDUCTION" /></th>
-                            </cti:checkRolesAndProperties>
-
-                            <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                <th><i:inline key="yukon.web.modules.dr.heading.kwSavings"/></th>
-                            </cti:checkRolesAndProperties>
-                            <th class="action-column"></th>
-                        </tr>
-                    </thead>
-                    <tfoot></tfoot>
-                    <tbody>
-                        <c:forEach var="program" items="${programs}">
-                            <c:set var="programId" value="${program.paoIdentifier.paoId}" />
-                            <c:url var="programURL" value="/dr/program/detail">
-                                <c:param name="programId" value="${programId}" />
-                            </c:url>
-                            <tr id="programRow${programId}">
-                                <td>
-                                    <%-- TODO:  in phase 3, update cti:classUpdater to be able to update the class of the row instead --%> 
-                                    <a href="${programURL}">${fn:escapeXml(program.name)}</a>
-                                </td>
-                                <td><dr:programState programId="${programId}" /></td>
-                                <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM" /></td>
-                                <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM" /></td>
-                                <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM" /></td>
-                                
+                <cti:url var="url" value="${baseUrl}">
+                    <c:if test="${!empty param.controlAreaId}">
+                        <cti:param name="controlAreaId" value="${param.controlAreaId}"/>
+                    </c:if>
+                    <c:if test="${!empty param.scenarioId}">
+                        <cti:param name="scenarioId" value="${param.scenarioId}"/>
+                    </c:if>
+                    <cti:param name="name" value="${filter.name}"/>
+                    <cti:param name="state" value="${filter.state}"/>
+                    <cti:param name="start.min" value="${filter.start.min}"/>
+                    <cti:param name="start.max" value="${filter.start.max}"/>
+                    <cti:param name="stop.min" value="${filter.stop.min}"/>
+                    <cti:param name="stop.max" value="${filter.stop.max}"/>
+                    <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
+                        <cti:param name="priority.min" value="${filter.priority.min}"/>
+                        <cti:param name="priority.max" value="${filter.priority.max}"/>
+                    </cti:checkRolesAndProperties>
+                </cti:url>
+                <div data-url="${url}" data-static>
+                    <table class="compact-results-table has-actions">
+                        <thead>
+                            <tr>
+                                <tags:sort column="${NAME}"/>
+                                <tags:sort column="${STATE}"/>
+                                <tags:sort column="${START}"/>
+                                <tags:sort column="${STOP}"/>
+                                <tags:sort column="${CURRENT_GEAR}"/>
                                 <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
-                                    <td><cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM" /></td>
+                                    <tags:sort column="${PRIORITY}"/>
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="DR_VIEW_REDUCTION">
-                                    <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM" /></td>
+                                    <tags:sort column="${REDUCTION}"/>
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                    <td data-pao="${programId}">
-                                        <cti:icon icon="icon-error" classes="dn"/>
-                                        <cti:icon icon="icon-spinner"/>
-                                        <span class="f-kw-savings">
-                                            <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
-                                        </span>
-                                        <cti:dataUpdaterCallback
-                                            function="yukon.dr.estimatedLoad.displayProgramValue"
-                                            value="ESTIMATED_LOAD/${programId}/PROGRAM"
-                                            initialize="true"/>
-                                    </td>
+                                    <th><i:inline key="yukon.web.modules.dr.heading.kwSavings"/></th>
                                 </cti:checkRolesAndProperties>
-                                <td><dr:programListActions pao="${program}" /></td>
+                                <th class="action-column"></th>
                             </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach var="program" items="${programs.resultList}">
+                                <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
+                                <c:url var="programURL" value="/dr/program/detail">
+                                    <c:param name="programId" value="${programId}"/>
+                                </c:url>
+                                <tr id="programRow${programId}">
+                                    <td>
+                                        <%-- TODO:  in phase 3, update cti:classUpdater to be able to update the class of the row instead --%> 
+                                        <a href="${programURL}">${fn:escapeXml(program.name)}</a>
+                                    </td>
+                                    <td><dr:programState programId="${programId}"/></td>
+                                    <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/></td>
+                                    <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/></td>
+                                    <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
+                                    
+                                    <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
+                                        <td><cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/></td>
+                                    </cti:checkRolesAndProperties>
+                                    <cti:checkRolesAndProperties value="DR_VIEW_REDUCTION">
+                                        <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/></td>
+                                    </cti:checkRolesAndProperties>
+                                    <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                                        <td data-pao="${programId}">
+                                            <cti:icon icon="icon-error" classes="dn"/>
+                                            <cti:icon icon="icon-spinner"/>
+                                            <span class="f-kw-savings">
+                                                <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                                            </span>
+                                            <cti:dataUpdaterCallback
+                                                function="yukon.dr.estimatedLoad.displayProgramValue"
+                                                value="ESTIMATED_LOAD/${programId}/PROGRAM"
+                                                initialize="true"/>
+                                        </td>
+                                    </cti:checkRolesAndProperties>
+                                    <td><dr:programListActions pao="${program}"/></td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                    <tags:pagingResultsControls result="${programs}" adjustPageCount="true"/>
+                </div>
             </c:otherwise>
         </c:choose>
-    </tags:pagedBox>
-    <c:if test="${hasFilterErrors}">
-        <script type="text/javascript">
-            $('#filterPopup').show();
-        </script>
-    </c:if>
+    </tags:sectionContainer>
+    
 </cti:msgScope>

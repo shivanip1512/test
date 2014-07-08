@@ -32,7 +32,7 @@ public class ProgramControllerBase extends DemandResponseControllerBase {
     @Autowired protected ScenarioDao scenarioDao;
     @Autowired protected ProgramService programService;
     @Autowired protected PaoAuthorizationService paoAuthorizationService;
-    @Autowired protected ProgramControllerHelper programControllerHelper;
+    @Autowired protected ProgramsHelper programsHelper;
     @Autowired protected RolePropertyDao rolePropertyDao;
     @Autowired protected DemandResponseEventLogService demandResponseEventLogService;
 

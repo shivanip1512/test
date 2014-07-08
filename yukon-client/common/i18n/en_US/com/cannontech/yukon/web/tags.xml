@@ -4,7 +4,7 @@
 
     <!-- selectDevicesTabbed.tag -->
     <entry key="yukon.web.device.bulk.selectDevicesTabbed.group">Group</entry>
-    <entry key="yukon.web.device.bulk.selectDevicesTabbed.individual">Individual</entry>
+    <entry key="yukon.web.device.bulk.selectDevicesTabbed.selected">Selected</entry>
     <entry key="yukon.web.device.bulk.selectDevicesTabbed.deviceGroup">Device Group</entry>
     <entry key="yukon.web.device.bulk.selectDevicesTabbed.devices">Devices</entry>
     <entry key="yukon.web.device.bulk.selectDevicesTabbed.devicesCount">Count</entry>

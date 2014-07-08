@@ -1,9 +1,12 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
 <cti:msgScope paths="modules.capcontrol.areas, modules.capcontrol">
 <c:if test="${searchResults.hitCount == 0}">
     <span class="empty-list"><i:inline key=".noResults"/></span>
@@ -57,6 +60,6 @@
             </c:forEach>
         </tbody>
     </table>
-    <tags:pagingResultsControls baseUrl="areas/${areaType}" result="${searchResults}" adjustPageCount="true"/>
+    <tags:pagingResultsControls result="${searchResults}" adjustPageCount="true"/>
 </c:if>
 </cti:msgScope>

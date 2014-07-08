@@ -1,11 +1,11 @@
-(function( $ ) {
-  $.fn.addMessage = function(args) {
+(function ($) {
+  $.fn.addMessage = function (args) {
       //maintain the chain!
-      return this.each(function() {
+      return this.each(function () {
           var messages = [];
           var create = !$(this).children('[data-ui-add-message]').length;
           
-          switch(typeof(args.message)){
+          switch(typeof(args.message)) {
           case 'string':
               messages.push('<li>'+ args.message +'</li>');
               break;
@@ -33,10 +33,10 @@
           }
           
           //
-          if(messages.length > 0){
-              if(create){
-                  $(this).prepend('<div class="user-message '+ args.messageClass +' box" data-ui-add-message=""><ul class="simple-list">'+ messages.join('') +'</ul></div>');
-              }else{
+          if (messages.length > 0) {
+              if (create) {
+                  $(this).prepend('<div class="user-message '+ args.messageClass +'" data-ui-add-message><ul class="simple-list">'+ messages.join('') +'</ul></div>');
+              } else {
                   $(this).children('[data-ui-add-message]').addClass(args.messageClass).find('ul').html(messages.join(''));
               }
           }
@@ -48,4 +48,4 @@
           $(this).children('[data-ui-add-message]').remove();
       });
   }
-})( jQuery );
+})(jQuery);

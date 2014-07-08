@@ -1,66 +1,60 @@
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" 
+    description="Creates a scrolled table listing all jobs. Provides an actions menu for each row
+                 with edit, view and delete options with class names (js-edit-job, js-view-job, js-delete-job).  The view 
+                 option is linked for you.  You will need to register click handlers for edit and delete. The tr, edit 
+                 option, and delete opiton have data-job-id attributes. Clicking the ok button on the confrimation dialog 
+                 for deleting will fire the 'yukon.job.delete' event with the delete option li element as the event target." %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
-<%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.result.SearchResults" %>
+<%@ attribute name="id" description="html id attribute on the table" %>
+<%@ attribute name="jobs" required="true" type="java.util.List" %>
 <%@ attribute name="jobType" required="true" type="com.cannontech.common.fileExportHistory.FileExportType" %>
-<%@ attribute name="baseUrl" %>
-<%@ attribute name="editUrl" required="true" %>
-<%@ attribute name="deleteUrl" required="true" %>
-<%@ attribute name="ajaxEnableUrls"  type="java.lang.Boolean" %>
 
 <cti:msgScope paths="yukon.web.modules.tools.scheduledFileExport.jobs">
-    <c:if test="${empty searchResult.resultList}">
-        <span class="empty-list"><i:inline key=".noJobs"/></span>
-    </c:if>
-    <c:if test="${not empty searchResult.resultList}">
-        <table class="compact-results-table dashed">
-            <thead>
-                <th><i:inline key=".nameHeader"/></th>
-                <th><i:inline key=".scheduleHeader"/></th>
-                <th><i:inline key=".nextRunHeader"/></th>
-                <th><i:inline key=".actions"/></th>
-            </thead>
-            <tfoot></tfoot>
-            <tbody>
-                <c:forEach var="job" items="${searchResult.resultList}">
-                    <tr>
-                        <td>${fn:escapeXml(job.name)}</td>
-                        <td>${job.cronString}</td>
-                        <td><cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/></td>
-                        <td>
-                            <cti:url var="finalEditUrl" value="${editUrl}">
-                                <cti:param name="jobId" value="${job.id}"/>
-                            </cti:url>
-                            <cti:button nameKey="edit" renderMode="image"
-                                href='${ajaxEnableUrls ? "javascript:void(0);": finalEditUrl}'
-                                data-url='${ajaxEnableUrls ? finalEditUrl : ""}' icon="icon-pencil"/>
-    
-                            <cti:msg2 var="initiator" key="yukon.web.modules.support.fileExportHistory.types.${jobType}"/>
-                            <cti:msg2 var="scheduleAppender" key="yukon.web.modules.support.fileExportHistory.types.scheduleAppender"/>
-                            <cti:url var="historyUrl" value="/support/fileExportHistory/list">
-                                <cti:param name="initiator" value="${initiator} ${scheduleAppender} ${job.name}"/>
-                            </cti:url>
-                            <cti:button nameKey="history" renderMode="image" href="${historyUrl}" icon="icon-script"/>
-    
-                            <cti:url var="finalDeleteUrl" value="${deleteUrl}">
-                                <cti:param name="jobId" value="${job.id}"/>
-                            </cti:url>
-                            <c:set var="ajaxDeleteUrl" value="javascript:yukon.ami.billing.delete_schedule_job(${job.id});" />
-                            <cti:button id="deleteItem_${job.id}" nameKey="delete" renderMode="image"
-                                href='${ajaxEnableUrls
-                                    ? ajaxDeleteUrl
-                                    : finalDeleteUrl}'
-                                icon="icon-cross"/>
-                            <d:confirm on="#deleteItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
-    </c:if>
-    <tags:pagingResultsControls baseUrl="${baseUrl}"  result="${searchResult}" adjustPageCount="true"/>
+    <c:choose>
+        <c:when test="${fn:length(jobs) == 0}">
+            <span class="empty-list"><i:inline key=".noJobs"/></span>
+        </c:when>
+        <c:otherwise>
+            <div class="scroll-large">
+                <table class="compact-results-table dashed has-actions" <c:if test="${!empty pageScope.id}">id="${id}"</c:if>>
+                    <thead>
+                        <th><i:inline key=".nameHeader"/></th>
+                        <th><i:inline key=".scheduleHeader"/></th>
+                        <th><i:inline key=".nextRunHeader"/></th>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="job" items="${jobs}">
+                            <tr data-job-id="${job.id}">
+                                <td>${fn:escapeXml(job.name)}</td>
+                                <td>${job.cronString}</td>
+                                <td>
+                                    <cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/>
+                                    <cti:msg2 var="initiator" key="yukon.web.modules.support.fileExportHistory.types.${jobType}"/>
+                                    <cti:msg2 var="scheduleAppender" key="yukon.web.modules.support.fileExportHistory.types.scheduleAppender"/>
+                                    <cti:url var="historyUrl" value="/support/fileExportHistory/list">
+                                        <cti:param name="initiator" value="${initiator} ${scheduleAppender} ${job.name}"/>
+                                    </cti:url>
+                                    <cm:dropdown triggerClasses="fr">
+                                        <cm:dropdownOption classes="js-edit-job" data-job-id="${job.id}" icon="icon-pencil" key="components.button.edit.label"/>
+                                        <cm:dropdownOption classes="js-view-job" icon="icon-script" key="components.button.history.label" href="${historyUrl}"/>
+                                        <cm:dropdownOption classes="js-delete-job" id="delete-job-${job.id}" data-job-id="${job.id}" icon="icon-cross" key="components.button.delete.label" data-ok-event="yukon.job.delete"/>
+                                    </cm:dropdown>
+                                    <d:confirm on="#delete-job-${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </c:otherwise>
+    </c:choose>
 </cti:msgScope>

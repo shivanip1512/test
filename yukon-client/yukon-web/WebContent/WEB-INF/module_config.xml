@@ -1170,6 +1170,9 @@
                                         <link>/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
                                         <labelArgument>${displayName}</labelArgument>
                                         <pages>
+                                            <page name="hardware.points" type="DETAIL_CHILD">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
                                             <page name="hardware.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>

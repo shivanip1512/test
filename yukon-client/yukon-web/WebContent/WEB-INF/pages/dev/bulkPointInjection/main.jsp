@@ -20,7 +20,8 @@ $(document).on('click', '.bulkInject', function(event) {
         <tags:nameValue2 nameKey=".deviceGroup">
             <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
             <tags:deviceGroupNameSelector fieldName="groupName"
-                fieldValue="${bulkInjection.groupName}" dataJson="${groupDataJson}"
+                fieldValue="${bulkInjection.groupName}" 
+                dataJson="${groupDataJson}"
                 linkGroupName="true" />
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".attribute">

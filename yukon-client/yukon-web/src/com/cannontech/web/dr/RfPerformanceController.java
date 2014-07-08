@@ -209,7 +209,7 @@ public class RfPerformanceController {
         if (to == null) {
             to =  new Instant();
         }
-        Instant toFullDay = to.plus(Duration.standardDays(1)).toDateTime().toDateMidnight().toInstant();
+        Instant toFullDay = to.plus(Duration.standardDays(1)).toDateTime().withTimeAtStartOfDay().toInstant();
         
         model.addAttribute("from", from);
         model.addAttribute("to", to);

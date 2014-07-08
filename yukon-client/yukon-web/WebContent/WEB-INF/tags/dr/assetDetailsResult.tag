@@ -2,7 +2,6 @@
 
 <%@ attribute name="result" required="true" type="com.cannontech.common.search.result.SearchResults" %>
 <%@ attribute name="assetId" required="true" %>
-<%@ attribute name="itemsPerPage" required="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -10,28 +9,24 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<c:set var="baseUrl" value="page"/>
+<cti:url var="baseUrl" value="page">
+    <cti:param name="assetId" value="${assetId}"/>
+</cti:url>
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 
-<div class="f-table-container" data-reloadable>
-    <table class="compact-results-table sortable-table row-highlighting">
+<div data-url="${baseUrl}">
+    <table class="compact-results-table">
         <thead>
             <tr>
-                <th><tags:sortLink nameKey="serialNumber" baseUrl="${baseUrl}" fieldName="SERIAL_NUM" 
-                                   sortParam="sortBy" styleClass="f-sort-link" isDefault="true" /></th>
-                <th><tags:sortLink nameKey="type" baseUrl="${baseUrl}" fieldName="TYPE" 
-                                   sortParam="sortBy" styleClass="f-sort-link" /></th>
-                <th><tags:sortLink nameKey="lastCommunication" baseUrl="${baseUrl}" fieldName="LAST_COMM" 
-                                   sortParam="sortBy" styleClass="f-sort-link" /></th>
-                <th><tags:sortLink nameKey="lastRuntime" baseUrl="${baseUrl}" fieldName="LAST_RUN" 
-                                   sortParam="sortBy" styleClass="f-sort-link" /></th>
-                <th><tags:sortLink nameKey="appliances" baseUrl="${baseUrl}" fieldName="APPLIANCES" 
-                                   sortParam="sortBy" styleClass="f-sort-link" /></th>
-                <th><tags:sortLink nameKey="availability" baseUrl="${baseUrl}" fieldName="AVAILABILITY" 
-                                   sortParam="sortBy" styleClass="f-sort-link" /></th>
+                <tags:sort column="${SERIAL_NUM}"/>
+                <tags:sort column="${TYPE}"/>
+                <tags:sort column="${LAST_COMM}"/>
+                <tags:sort column="${LAST_RUN}"/>
+                <tags:sort column="${APPLIANCES}"/>
+                <tags:sort column="${AVAILABILITY}"/>
             </tr>
         </thead>
-        
+        <tfoot></tfoot>
         <tbody>
             <c:forEach items="${result.resultList}" var="row">
                 <tr>
@@ -39,16 +34,14 @@
                     <td><i:inline key="${row.type}"/></td>
                     <td><cti:formatDate type="BOTH" value="${row.lastComm}"/></td>
                     <td><cti:formatDate type="BOTH" value="${row.lastRun}"/></td>
-                    <td>
-                        <tags:expandableString name="${row.serialNumber}" value="${row.appliances}" maxLength="20"/>
-                    </td>
+                    <td><tags:expandableString name="${row.serialNumber}" value="${row.appliances}" maxLength="20"/></td>
                     <c:set var="availabilityClass" value="${colorMap[row.availability]}"></c:set>
                     <td class="${availabilityClass}"><i:inline key="${row.availability}"/></td>
                 </tr>
             </c:forEach>
         </tbody>
-        <tfoot></tfoot>
     </table>
-    <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
+    <tags:pagingResultsControls result="${result}" adjustPageCount="true"/>
 </div>
+
 </cti:msgScope>

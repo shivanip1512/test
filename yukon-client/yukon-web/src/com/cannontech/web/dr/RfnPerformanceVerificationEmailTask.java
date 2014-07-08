@@ -19,6 +19,7 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
@@ -167,9 +168,9 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
 
         List<PerformanceVerificationEventMessageStats> reports = performanceVerificationDao.getReports(reportDates);
 
-        Map<DateMidnight,MutablePerformanceVerificationEventStats> eventStatsByDate = new HashMap<>();
+        Map<DateTime, MutablePerformanceVerificationEventStats> eventStatsByDate = new HashMap<>();
         for (PerformanceVerificationEventMessageStats report : reports) {
-            DateMidnight day = report.getTimeMessageSent().toDateTime().toDateMidnight();
+            DateTime day = report.getTimeMessageSent().toDateTime().withTimeAtStartOfDay();
             MutablePerformanceVerificationEventStats stats = eventStatsByDate.get(day);
 
             if (stats == null) {
@@ -181,12 +182,12 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
             }
         }
 
-        List<DateMidnight> eventDates = new ArrayList<>(eventStatsByDate.keySet());
+        List<DateTime> eventDates = new ArrayList<>(eventStatsByDate.keySet());
         Collections.sort(eventDates, Collections.reverseOrder());
 
         boolean altStyledRow = false;
         StringBuilder tbody = new StringBuilder();
-        for (DateMidnight date : eventDates) {
+        for (DateTime date : eventDates) {
 
             PerformanceVerificationEventStats eventStats = eventStatsByDate.get(date).getImmutable();
             String formattedDate = dateFormatter.format(date.toDate());

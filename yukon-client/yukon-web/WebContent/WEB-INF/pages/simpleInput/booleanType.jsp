@@ -6,11 +6,11 @@
 
 <cti:displayForPageEditModes modes="VIEW">
     <cti:msg2 key="yukon.common.${status.value}"/>
-    <input type="hidden" value="${status.value}"/>
+    <input type="hidden" name="${status.expression}" value="${status.value}">
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="CREATE,EDIT">
     <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
-    <div class="button-group toggle-on-off clearfix">
+    <div class="toggle-btns clearfix">
         <cti:msg2 var="trueText" key="yukon.common.true"/>
         <cti:msg2 var="falseText" key="yukon.common.false"/>
         <c:choose>
@@ -27,7 +27,7 @@
         <cti:button label="${trueText}" classes="yes ${trueClass}" data-value="true"/>
         <cti:button label="${falseText}" classes="no ${falseClass}" data-value="false"/>
 
-        <input type="hidden" name="${status.expression}" value="${status.value}" data-radio/>
+        <input type="hidden" name="${status.expression}" value="${status.value}" data-input>
 
     </div>
 </cti:displayForPageEditModes>

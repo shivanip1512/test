@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,13 +15,12 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -40,8 +38,10 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -60,76 +60,92 @@ public class HistoricalReadingsController {
     private static String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
     
     private static int MAX_ROWS_DISPLAY = 100;
-    
     private static final String PERIOD = "period";
-    
     private static final String ALL = "all";
     private static final String ONE_MONTH = "oneMonth";
     private static final String DISPLAY = "display";
+    
+    private static final Map<String, OrderBy> sorters = ImmutableMap.of(
+            "timestamp", OrderBy.TIMESTAMP, 
+            "value", OrderBy.VALUE);
 
     @RequestMapping("view")
     public String view(ModelMap model, 
             Integer deviceId, 
             String attribute,
             int pointId,
-            @RequestParam(value="sort", required=false) String sortBy,
-            @RequestParam(value="descending", required=false, defaultValue="false") Boolean isDescending,
-            final YukonUserContext context) throws ServletRequestBindingException {
+            final YukonUserContext context) {
         
         //default sort
-        OrderBy orderBy =  OrderBy.TIMESTAMP;   
+        OrderBy orderBy =  OrderBy.TIMESTAMP;
+        Order order = Order.REVERSE;
+
+        setupTable(model, context, order, orderBy, pointId);
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        String attributeMsg = getAttributeMessage(deviceId, attribute, pointId, context);
+        String readings = accessor.getMessage(baseKey + "readings");
+        String title = StringUtils.isBlank(attributeMsg) ? readings : attributeMsg + " " + readings;
+        
+        model.addAttribute("pointId", pointId);
+        model.addAttribute("deviceId", deviceId);
+        model.addAttribute("attribute", attribute);
+        model.addAttribute("resultLimit", accessor.getMessage(baseKey + "resultLimit", MAX_ROWS_DISPLAY));
+        model.addAttribute(ALL, accessor.getMessage(baseKey + ALL));
+        model.addAttribute(ONE_MONTH,  accessor.getMessage(baseKey + ONE_MONTH));
+        model.addAttribute("title", title);
+        model.addAttribute("allUrl", getDownloadUrl(ALL, pointId));
+        model.addAttribute("oneMonthUrl", getDownloadUrl(ONE_MONTH, pointId));
+        
+        return "historicalReadings/view.jsp";
+    }
+    
+    @RequestMapping("values")
+    public String values(ModelMap model, int pointId, SortingParameters sorting, YukonUserContext context) {
+        
+        OrderBy orderBy =  OrderBy.TIMESTAMP;
         Order order = Order.REVERSE;
         
-        if (!StringUtils.isEmpty(sortBy)) {
-            //change the sort order
-            orderBy = OrderBy.valueOf(sortBy);
-            if (isDescending) {
+        if (sorting != null) {
+            orderBy = sorters.get(sorting.getSort());
+            if (sorting.getDirection() == Direction.desc) {
                 order = Order.FORWARD;
             } else {
                 order = Order.REVERSE; 
             }
-        } else {
-            model.addAttribute("descending", false);
         }
-
-        List<List<String>> points  = getLimitedPointData(DISPLAY, context, order, orderBy, pointId); 
         
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-
-        String attributeMsg = getAttributeMessage(deviceId, attribute, pointId, context);
-        String readings = accessor.getMessage(baseKey+"readings");
-        String title = StringUtils.isBlank(attributeMsg) ? readings : attributeMsg + " " + readings;
+        setupTable(model, context, order, orderBy, pointId);
         
-        //setup ModelMap
-        model.addAttribute("points", points);
-        model.addAttribute("pointId", pointId);
-        model.addAttribute("resultLimit", accessor.getMessage(baseKey + "resultLimit", MAX_ROWS_DISPLAY));
-        model.addAttribute("attribute", attribute);
-        model.addAttribute(ALL, accessor.getMessage(baseKey + ALL));
-        model.addAttribute(ONE_MONTH,  accessor.getMessage(baseKey + ONE_MONTH));
-        model.addAttribute("title", title);
-        model.addAttribute("allUrl", getDownloadUrl(ALL, pointId, order, orderBy));
-        model.addAttribute("oneMonthUrl", getDownloadUrl(ONE_MONTH, pointId, order, orderBy));
-        
-        return "historicalReadings/home.jsp";
+        return "historicalReadings/values.jsp";
     }
      
     @RequestMapping("download")
-    public String download(ModelMap model,
-                       HttpServletRequest request, 
-                       HttpServletResponse response,
-                       YukonUserContext context) throws ServletRequestBindingException, IOException{
+    public String download(String period, int pointId, HttpServletResponse response, YukonUserContext context) 
+            throws IOException {
         
-        String period = ServletRequestUtils.getRequiredStringParameter(request, PERIOD);
-        int pointId = ServletRequestUtils.getRequiredIntParameter(request, "pointId");
-        Order order = Order.valueOf(ServletRequestUtils.getRequiredStringParameter(request, "order"));
-        OrderBy orderBy = OrderBy.valueOf(ServletRequestUtils.getRequiredStringParameter(request, "orderBy"));
-        
-        List<List<String>> points = getLimitedPointData(period, context, order, orderBy, pointId);
-        
+        List<List<String>> points = getLimitedPointData(period, context, Order.REVERSE, OrderBy.TIMESTAMP, pointId);
         buildCsv(context, points, response);
 
         return null;
+    }
+    
+    private void setupTable(ModelMap model, YukonUserContext context, Order order, OrderBy orderBy, int pointId) {
+        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        
+        List<List<String>> points  = getLimitedPointData(DISPLAY, context, order, orderBy, pointId); 
+        model.addAttribute("points", points);
+        
+        String timestampHeader = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");
+        SortableColumn timestamp = new SortableColumn(order == Order.FORWARD ? Direction.desc : Direction.asc, 
+                orderBy == OrderBy.TIMESTAMP, timestampHeader, "timestamp");
+        model.addAttribute("timestamp", timestamp);
+        
+        String valueHeader = accessor.getMessage(baseKey + "tableHeader.value.linkText");
+        SortableColumn value = new SortableColumn(order == Order.FORWARD ? Direction.desc : Direction.asc, 
+                orderBy != OrderBy.TIMESTAMP, valueHeader, "value");
+        model.addAttribute("value", value);
     }
     
     /**
@@ -231,12 +247,12 @@ public class HistoricalReadingsController {
         return points;
     }
     
-    private String getDownloadUrl(String period, int pointId, Order order, OrderBy orderBy){
-        return "/meter/historicalReadings/download?" 
-                + PERIOD + "=" + period + "&pointId=" + pointId + "&orderBy=" + orderBy + "&order=" + order;
+    private String getDownloadUrl(String period, int pointId) {
+        return "/meter/historicalReadings/download?" + PERIOD + "=" + period + "&pointId=" + pointId;
     }
 
     private List<PointValueHolder> sort(List<PointValueHolder> data, final Order order, OrderBy orderBy) {
+        
         List<PointValueHolder> modifiableList = new ArrayList<PointValueHolder>(data);
         if (orderBy == OrderBy.TIMESTAMP) {
             Collections.sort(modifiableList, new Comparator<PointValueHolder>() {
@@ -245,17 +261,16 @@ public class HistoricalReadingsController {
                     if (order == Order.FORWARD) {
                         return pvh1.getPointDataTimeStamp().compareTo(pvh2.getPointDataTimeStamp());
                     } else {
-                        return -pvh1.getPointDataTimeStamp().compareTo(pvh2.getPointDataTimeStamp());
+                        return - pvh1.getPointDataTimeStamp().compareTo(pvh2.getPointDataTimeStamp());
                     }
                 }
             });
-        }
-        else if (orderBy == OrderBy.VALUE) {
+        } else if (orderBy == OrderBy.VALUE) {
             Collections.sort(modifiableList, new Comparator<PointValueHolder>() {
                 @Override
                 public int compare(PointValueHolder pvh1, PointValueHolder pvh2) {
                     if (order == Order.FORWARD) {
-                        return -new Double(pvh1.getValue()).compareTo(pvh2.getValue());
+                        return - new Double(pvh1.getValue()).compareTo(pvh2.getValue());
                     } else {
                         return new Double(pvh1.getValue()).compareTo(pvh2.getValue());
                     }

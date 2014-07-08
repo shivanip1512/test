@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -109,32 +110,37 @@ public class TdcDisplayController {
 
         model.addAttribute("mode", PageEditMode.VIEW);
         Display display = displayDao.getDisplayById(displayId);
-        PagingParameters pagingParameters = null;
-        if(display.isPageable()){
-            pagingParameters = new PagingParameters(itemsPerPage, 1);
+        boolean pageable = display.isPageable();
+        model.addAttribute("pageable", pageable);
+        
+        PagingParameters paging = null;
+        if (pageable) {
+            paging = PagingParameters.of(itemsPerPage, 1);
         }
-        List<DisplayData> displayData =
-            tdcService.getDisplayData(display, userContext.getJodaTimeZone(), pagingParameters);
+        DateTimeZone tz = userContext.getJodaTimeZone();
+        List<DisplayData> displayData = tdcService.getDisplayData(display, tz, paging);
         int totalCount;
-        if(display.isPageable()){
-            totalCount = tdcService.getDisplayDataCount(displayId, userContext.getJodaTimeZone());
-        }else{
+        
+        if (pageable) {
+            totalCount = tdcService.getDisplayDataCount(displayId, tz);
+        } else {
             totalCount = displayData.size();
             //display all the data on one page
-            if(totalCount == 0){
+            if (totalCount == 0) {
                 totalCount = itemsPerPage;
             }
-            pagingParameters = new PagingParameters(totalCount, 1);
+            paging = PagingParameters.of(totalCount, 1);
         }
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
         model.addAttribute("backingBean", new DisplayBackingBean());
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
-        if(display.getType() == DisplayType.CUSTOM_DISPLAYS){
+        
+        if (display.getType() == DisplayType.CUSTOM_DISPLAYS) {
             model.addAttribute("hasPointValueColumn", display.hasColumn(ColumnType.POINT_VALUE));
         }
-        SearchResults<DisplayData> result = 
-                SearchResults.pageBasedForSublist(displayData, pagingParameters, totalCount);
+        
+        SearchResults<DisplayData> result = SearchResults.pageBasedForSublist(displayData, paging, totalCount);
         model.addAttribute("result", result);
         
         return "data-viewer/display.jsp";
@@ -143,7 +149,9 @@ public class TdcDisplayController {
     @RequestMapping(value = "data-viewer/{displayId}/page", method = RequestMethod.GET)
     public String page(YukonUserContext userContext, ModelMap model, @PathVariable int displayId,
                        PagingParameters pagingParameters) {
-
+        
+        model.addAttribute("pageable", true);
+        
         model.addAttribute("mode", PageEditMode.VIEW);
         Display display = displayDao.getDisplayById(displayId);
         model.addAttribute("displayName", display.getName());

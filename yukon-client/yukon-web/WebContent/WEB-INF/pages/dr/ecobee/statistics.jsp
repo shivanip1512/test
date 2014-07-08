@@ -29,7 +29,7 @@
         <div class="action-area">
             <a href="<cti:url value="/dr/ecobee"/>"><i:inline key=".details"/></a>
             <cti:button nameKey="configure" popup="#ecobee-config" icon="icon-cog-edit"/>
-            <div dialog
+            <div data-dialog
                 data-form
                 id="ecobee-config"
                 data-width="500"
@@ -41,7 +41,7 @@
                     <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                         <tags:nameValue2 nameKey=".ecobee.configure.errorChecking" rowId="ecobee-error-checking-toggle" valueClass="full-width">
                             <tags:hidden path="checkErrors" id="ecobee-check-errors"/>
-                            <div class="button-group toggle-on-off">
+                            <div class="toggle-btns">
                                 <cti:button nameKey="on" classes="on yes M0"/>
                                 <cti:button nameKey="off" classes="no M0"/>
                             </div>
@@ -59,7 +59,7 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ecobee.configure.dataCollection" rowId="ecobee-data-collection-toggle" valueClass="full-width">
                             <tags:hidden path="dataCollection" id="ecobee-data-collection"/>
-                            <div class="button-group toggle-on-off">
+                            <div class="toggle-btns">
                                 <cti:button nameKey="on" classes="on yes M0"/>
                                 <cti:button nameKey="off" classes="no M0"/>
                             </div>

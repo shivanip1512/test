@@ -561,8 +561,7 @@
 <h3 class="subtle">Sorting</h3>
 <div class="table-example clearfix stacked">
     <p class="description">
-        Sorting can be done using the <span class="label label-info">SortableData</span> and 
-        <span class="label label-info">SortableColumn</span> Java classes, the 
+        Sorting can be done using the <span class="label label-info">SortableColumn</span> Java class, the 
         <span class="label label-info">tags:sort</span> tag and the 
         <span class="label label-info">data-url</span> attribute. Click the headers in the table below.
     </p>
@@ -573,29 +572,34 @@
     <h4 class="subtle">Sort Request Mapping:</h4>
 <pre class="code prettyprint">
 @RequestMapping(&quot;/styleguide/tables/sort-example&quot;)
-public String tables(ModelMap model, SortingParameters sorting) {
+public String tables(ModelMap model, SortingParameters sorting, PagingParameters paging) {
     
-    List&lt;Population&gt; data = new ArrayList&lt;&gt;();
-    data.add(new Population(&quot;Daluth&quot;, 86211));
-    data.add(new Population(&quot;Minneapolis&quot;, 392880));
-    data.add(new Population(&quot;St. Paul&quot;, 290770));
+    ArrayList&lt;Population&gt; copy = Lists.newArrayList(cities);
     
-    Comparator&lt;Population&gt; comparator = compares.get(sorting.getSort());
-    
-    if (sorting.getDirection() == Direction.desc) {
-        comparator = Collections.reverseOrder(comparator);
+    // sort the list
+    if (sorting != null) {
+        Comparator&lt;Population&gt; comparator = compares.get(sorting.getSort());
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        Collections.sort(copy, comparator);
+        
+        boolean sortByCity = sorting.getSort().equalsIgnoreCase(&quot;city&quot;);
+        boolean sortByPop = sorting.getSort().equalsIgnoreCase(&quot;pop&quot;);
+        SortableColumn c1 = new SortableColumn(sorting.getDirection(), sortByCity, &quot;City&quot;, &quot;city&quot;);
+        SortableColumn c2 = new SortableColumn(sorting.getDirection(), sortByPop, &quot;Population&quot;, &quot;pop&quot;);
+        model.addAttribute(&quot;columns&quot;, ImmutableList.of(c1, c2));
+    } else {
+        SortableColumn c1 = new SortableColumn(Direction.desc, false, &quot;City&quot;, &quot;city&quot;);
+        SortableColumn c2 = new SortableColumn(Direction.desc, false, &quot;Population&quot;, &quot;pop&quot;);
+        model.addAttribute(&quot;columns&quot;, ImmutableList.of(c1, c2));
     }
     
-    Collections.sort(data, comparator);
-    
-    boolean sortByCity = sorting.getSort().equalsIgnoreCase(&quot;city&quot;) ? true : false;
-    boolean sortByPop = sorting.getSort().equalsIgnoreCase(&quot;pop&quot;) ? true : false;
-    SortableColumn c1 = new SortableColumn(sorting.getDirection(), sortByCity, true, &quot;City&quot;, &quot;city&quot;);
-    SortableColumn c2 = new SortableColumn(sorting.getDirection(), sortByPop, true, &quot;Population&quot;, &quot;pop&quot;);
-    List&lt;SortableColumn&gt; columns = ImmutableList.of(c1, c2);
-    
-    SortableData pops = new SortableData(data, columns);
-    model.addAttribute(&quot;pops&quot;, pops);
+    // page the list
+    int page = paging.getPage();
+    int size = paging.getItemsPerPage();
+    SearchResults&lt;Population&gt; paged = SearchResults.pageBasedForWholeList(page, size, copy);
+    model.addAttribute(&quot;pops&quot;, paged);
     
     return &quot;styleguide/sort-example.jsp&quot;;
 }

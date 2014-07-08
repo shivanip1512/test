@@ -18,4 +18,5 @@
     <bean class="com.cannontech.web.common.resources.ThemeableResourceCache"/>
 
     <bean class="com.cannontech.web.support.SiteMapHelper"/>
+    <bean class="com.cannontech.web.amr.waterLeakReport.service.WaterMeterLeakServiceImpl"/>
 </beans>

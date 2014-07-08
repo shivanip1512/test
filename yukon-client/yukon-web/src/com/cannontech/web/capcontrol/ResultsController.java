@@ -23,7 +23,6 @@ import com.cannontech.cbc.exceptions.MissingSearchType;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.PaoDao;
@@ -40,7 +39,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.capcontrol.models.ControlEventSet;
 import com.cannontech.web.capcontrol.models.ResultRow;
-import com.cannontech.web.lite.LiteBaseResults;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ParamUtil;
@@ -73,13 +71,9 @@ public class ResultsController {
     }
 
     @RequestMapping("searchResults")
-    public String searchResults(HttpServletRequest request, ModelMap model, YukonUserContext context, Integer itemsPerPage, Integer page) throws MissingSearchType {
+    public String searchResults(HttpServletRequest request, ModelMap model, YukonUserContext context) throws MissingSearchType {
+        
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        if(page == null){
-            page = 1;
-        }
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-        int startIndex = (page - 1) * itemsPerPage;
         
         String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);
         if( srchCriteria == null ) {
@@ -95,58 +89,49 @@ public class ResultsController {
         
         int hitCount = 0;
         List<LiteWrapper> items = Lists.newArrayList();
-        SearchResults<LiteCapControlObject> ccObjects = null;
+        List<LiteCapControlObject> ccObjects = null;
         SearchType searchType = null;
 
         if( CBCWebUtils.TYPE_ORPH_SUBSTATIONS.equals(srchCriteria) ) {
             searchType = SearchType.CAPCONTROL;
-            ccObjects = substationDao.getOrphans(startIndex, itemsPerPage);
+            ccObjects = substationDao.getOrphans();
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedSubs.pageName");
             model.addAttribute("pageName", "orphanedSubs");
         }
         else if( CBCWebUtils.TYPE_ORPH_SUBS.equals(srchCriteria) ) {
             searchType = SearchType.CAPCONTROL;
-            ccObjects = substationBusDao.getOrphans(startIndex, itemsPerPage);
+            ccObjects = substationBusDao.getOrphans();
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedBuses.pageName");
             model.addAttribute("pageName", "orphanedBuses");
         }
         else if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) ) {
             searchType = SearchType.CAPCONTROL;
-            ccObjects = feederDao.getOrphans(startIndex, itemsPerPage);
+            ccObjects = feederDao.getOrphans();
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedFeeders.pageName");
             model.addAttribute("pageName", "orphanedFeeders");
         }
         else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(srchCriteria) ) {
             searchType = SearchType.CAPCONTROL;
-            ccObjects = capbankDao.getOrphans(startIndex, itemsPerPage);
+            ccObjects = capbankDao.getOrphans();
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedBanks.pageName");
             model.addAttribute("pageName", "orphanedBanks");
         }
         else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(srchCriteria) ) {
             searchType = SearchType.CBC;
-            ccObjects = cbcDao.getOrphans(startIndex, itemsPerPage);
+            ccObjects = cbcDao.getOrphans();
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedCbcs.pageName");
             model.addAttribute("pageName", "orphanedCbcs");
         }
         else if( CBCWebUtils.TYPE_ORPH_REGULATORS.equals(srchCriteria) ) {
             searchType = SearchType.REGULATOR;
-            ccObjects = voltageRegulatorDao.getOrphans(startIndex, itemsPerPage);
+            ccObjects = voltageRegulatorDao.getOrphans();
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedRegulators.pageName");
             model.addAttribute("pageName", "orphanedRegulators");
-        }
-        else {
-            model.addAttribute("pageName", "general");
-            searchType = SearchType.GENERAL;
-            orphan = false;
-            LiteBaseResults lbr = new LiteBaseResults();
-            lbr.searchLiteObjects( srchCriteria );
-            items = lbr.getFoundItems(startIndex, itemsPerPage);
-            hitCount = lbr.getFoundItems().size();
         }
         
         model.addAttribute("label", label);
         
-        List<ResultRow> rows = new ArrayList<ResultRow>();
+        List<ResultRow> results = new ArrayList<ResultRow>();
         if (ccObjects == null) {
             for (LiteWrapper item : items) {
                 ResultRow row = new ResultRow();
@@ -166,11 +151,11 @@ public class ResultsController {
                 String displayableType = getDisplayableType(searchType, item.getItemType());
                 row.setItemType(displayableType);
                 
-                rows.add(row);
+                results.add(row);
             }
         } else {
-            hitCount = ccObjects.getHitCount();
-            for (LiteCapControlObject item : ccObjects.getResultList()) {
+            hitCount = ccObjects.size();
+            for (LiteCapControlObject item : ccObjects) {
                 ResultRow row = new ResultRow();
                 row.setName(item.getName());
                 row.setItemId(item.getId());
@@ -192,21 +177,12 @@ public class ResultsController {
                 String displayableType = getDisplayableType(searchType, item.getType());
                 row.setItemType(displayableType);
                 
-                rows.add(row);
+                results.add(row);
             }
         }
         
-        SearchResults<ResultRow> searchResult = new SearchResults<ResultRow>();
-        searchResult.setResultList(rows);
-        if (rows.isEmpty()) {
-            searchResult.setBounds(0, itemsPerPage, 0);
-        }
-        searchResult.setBounds(startIndex, itemsPerPage, hitCount);
-        
-        model.addAttribute("rows", rows);
-        model.addAttribute("searchResult", searchResult);
-        model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("resultsFound", hitCount);
+        model.addAttribute("results", results);
+        model.addAttribute("resultsFound", results.size());
         
         String urlParams = request.getQueryString();
         String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
