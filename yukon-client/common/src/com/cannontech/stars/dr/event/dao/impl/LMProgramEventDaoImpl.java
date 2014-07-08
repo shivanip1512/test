@@ -9,21 +9,21 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
 
 public class LMProgramEventDaoImpl implements LMProgramEventDao {
 
-    SimpleJdbcTemplate simpleJdbcTemplate;
-    ECMappingDao ecMappingDao;
-    LMCustomerEventBaseDao lmCustomerEventBaseDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private LMCustomerEventBaseDao lmCustomerEventBaseDao;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
     
     @Override
@@ -55,7 +55,7 @@ public class LMProgramEventDaoImpl implements LMProgramEventDao {
     public List<Integer> getProgramEventIdsForAccount(int accountId){
         List<Integer> eventIds = new ArrayList<Integer>();
         String sql = "SELECT EventId FROM LMProgramEvent WHERE AccountId = ?";
-        eventIds = simpleJdbcTemplate.query(sql, new ParameterizedRowMapper<Integer>(){
+        eventIds = jdbcTemplate.query(sql, new ParameterizedRowMapper<Integer>(){
 
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -65,23 +65,8 @@ public class LMProgramEventDaoImpl implements LMProgramEventDao {
         return eventIds;
     }
 
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-
-    @Autowired
-    public void setECMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setLMCustomerEventBaseDao(LMCustomerEventBaseDao lmCustomerEventBaseDao) {
-        this.lmCustomerEventBaseDao = lmCustomerEventBaseDao;
-    }
-
     @PostConstruct
     public void init() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(jdbcTemplate);
     }
 }

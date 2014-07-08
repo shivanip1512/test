@@ -5,8 +5,6 @@ import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-
 
 import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
@@ -14,18 +12,20 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoPropertyDao;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class PaoPropertyDaoImpl implements PaoPropertyDao {
     
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     private static final ParameterizedRowMapper<PaoProperty> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
-    
+   
     static { 
         rowMapper = PaoPropertyDaoImpl.createRowMapper();
     }
     
     private static final ParameterizedRowMapper<PaoProperty> createRowMapper() {
         ParameterizedRowMapper<PaoProperty> rowMapper = new ParameterizedRowMapper<PaoProperty>() {
+            @Override
             public PaoProperty mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PaoProperty property = new PaoProperty();
                 
@@ -50,7 +50,7 @@ public class PaoPropertyDaoImpl implements PaoPropertyDao {
     public boolean add(PaoProperty property) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO PaoProperty (PaObjectID, PropertyName, PropertyValue) VALUES (?,?,?)");
-        int rowsAffected = simpleJdbcTemplate.update(sql.toString(),
+        int rowsAffected = jdbcTemplate.update(sql.toString(),
                                                      property.getPaoIdentifier().getPaoId(),
                                                      property.getPropertyName().name(),
                                                      property.getPropertyValue());
@@ -65,14 +65,14 @@ public class PaoPropertyDaoImpl implements PaoPropertyDao {
         sql.append("SELECT pp.PaObjectID,pp.PropertyName,pp.PropertyValue,yp.Type FROM PaoProperty pp,YukonPaObject yp");
         sql.append("WHERE pp.PaObjectID = yp.PAObjectID AND pp.PaObjectID = ? AND PropertyName = ?");
         
-        PaoProperty property = simpleJdbcTemplate.queryForObject(sql.toString(), rowMapper, id, propertyName.name());
+        PaoProperty property = jdbcTemplate.queryForObject(sql.toString(), rowMapper, id, propertyName.name());
         
         return property;
     }
     
     @Override
     public boolean removeAll(int id) {
-        simpleJdbcTemplate.update("DELETE FROM PaoProperty WHERE PaObjectID = ?",id);
+        jdbcTemplate.update("DELETE FROM PaoProperty WHERE PaObjectID = ?",id);
         
         return true;
     }
@@ -81,7 +81,7 @@ public class PaoPropertyDaoImpl implements PaoPropertyDao {
     public boolean remove(PaoProperty property) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM PaoProperty WHERE PaObjectID = ? AND PropertyName = ?");
-        int rows = simpleJdbcTemplate.update(sql.toString(),property.getPaoIdentifier().getPaoId(),property.getPropertyName().name());
+        int rows = jdbcTemplate.update(sql.toString(),property.getPaoIdentifier().getPaoId(),property.getPropertyName().name());
         
         boolean ret = (rows == 1);
         return ret;
@@ -92,17 +92,12 @@ public class PaoPropertyDaoImpl implements PaoPropertyDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE PaoProperty SET PropertyValue = ? WHERE PaObjectID = ? AND PropertyName = ?");
         
-        int rowsAffected = simpleJdbcTemplate.update(sql.toString(),
+        int rowsAffected = jdbcTemplate.update(sql.toString(),
                                                      property.getPropertyValue(),
                                                      property.getPaoIdentifier().getPaoId(),
                                                      property.getPropertyName().name());
         boolean result = (rowsAffected == 1);
         
         return result;
-    }
-
-    @Autowired
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 }

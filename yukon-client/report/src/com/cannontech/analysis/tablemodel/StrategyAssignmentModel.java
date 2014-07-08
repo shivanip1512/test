@@ -9,26 +9,25 @@ import java.util.Set;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.service.SystemDateFormattingService;
+import com.cannontech.database.YukonJdbcTemplate;
 
 
 public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignmentModel.ModelRow> implements CapControlFilterable {
     
     // dependencies
-    private JdbcOperations jdbcOps;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     //inputs
     private String selectedStrategy;
     
     // member variables
-    private List<ModelRow> data = new ArrayList<ModelRow>();
+    private final List<ModelRow> data = new ArrayList<ModelRow>();
 
-	private List<Integer> strategyIds;
+    private List<Integer> strategyIds;
 
     private SystemDateFormattingService systemDateFormattingService;
     
@@ -55,20 +54,24 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
         return ModelRow.class;
     }
     
+    @Override
     public String getTitle() {
         return "Strategy Assignment Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public void doLoadData() {
         
             
         String sql = buildSQLStatement();
         
-        jdbcOps.query(sql, new RowCallbackHandler() {
+        jdbcTemplate.query(sql, new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 
                 StrategyAssignmentModel.ModelRow row = new StrategyAssignmentModel.ModelRow();
@@ -124,15 +127,15 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
         
         //Filter here by Selected Strategy
         if( strategyIds.size() > 0) {
-        	query += "and (";
-        	
-        	for (int i = 0 ; i < strategyIds.size(); i++) {
-        		query += " strat.strategyid = " + strategyIds.get(i);
-        		if (i < strategyIds.size()-1) {
-        			query += " OR ";
-        		}
-        	}
-        	query += " ) ";
+            query += "and (";
+            
+            for (int i = 0 ; i < strategyIds.size(); i++) {
+                query += " strat.strategyid = " + strategyIds.get(i);
+                if (i < strategyIds.size()-1) {
+                    query += " OR ";
+                }
+            }
+            query += " ) ";
         }
         
         query += "order by strategyname, paoname ";
@@ -140,51 +143,46 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
         return query;
     }
 
-    @Required
-    public void setJdbcOps(JdbcOperations jdbcOps) {
-        this.jdbcOps = jdbcOps;
-    }
-    
     @Autowired
     public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
         this.systemDateFormattingService = systemDateFormattingService;
     }
 
-	public String getSelectedStrategy() {
-		return selectedStrategy;
-	}
+    public String getSelectedStrategy() {
+        return selectedStrategy;
+    }
 
-	public void setSelectedStrategy(String selectedStrategy) {
-		this.selectedStrategy = selectedStrategy;
-	}
+    public void setSelectedStrategy(String selectedStrategy) {
+        this.selectedStrategy = selectedStrategy;
+    }
     
-	@Override
-	public void setAreaIdsFilter(Set<Integer> areaIds) {
-		//No filter used.
-	}
-
-	@Override
-	public void setCapBankIdsFilter(Set<Integer> capBankIds) {
-		//No filter used.
-	}
-
-	@Override
-	public void setFeederIdsFilter(Set<Integer> feederIds) {
-		//No filter used.
-	}
-
-	@Override
-	public void setSubbusIdsFilter(Set<Integer> subbusIds) {
-		//No filter used.
-	}
-
-	@Override
-	public void setSubstationIdsFilter(Set<Integer> substationIds) {
-		//No filter used.
-	}
-	
     @Override
-	public void setStrategyIdsFilter(Set<Integer> strategyIds) {
-		this.strategyIds = new ArrayList<Integer>(strategyIds);
-	}
+    public void setAreaIdsFilter(Set<Integer> areaIds) {
+        //No filter used.
+    }
+
+    @Override
+    public void setCapBankIdsFilter(Set<Integer> capBankIds) {
+        //No filter used.
+    }
+
+    @Override
+    public void setFeederIdsFilter(Set<Integer> feederIds) {
+        //No filter used.
+    }
+
+    @Override
+    public void setSubbusIdsFilter(Set<Integer> subbusIds) {
+        //No filter used.
+    }
+
+    @Override
+    public void setSubstationIdsFilter(Set<Integer> substationIds) {
+        //No filter used.
+    }
+    
+    @Override
+    public void setStrategyIdsFilter(Set<Integer> strategyIds) {
+        this.strategyIds = new ArrayList<Integer>(strategyIds);
+    }
 }

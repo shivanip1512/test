@@ -127,11 +127,7 @@
         <property name="scanIndicatingDevice" ref="accumulatorScanIndicatingDevice"/>
     </bean>
     
-    <bean id="deviceGroupEditorDao"
-        class="com.cannontech.common.device.groups.editor.dao.impl.DeviceGroupEditorDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="nextValueHelper" ref="nextValueHelper"/>
-    </bean>
+    <bean id="deviceGroupEditorDao" class="com.cannontech.common.device.groups.editor.dao.impl.DeviceGroupEditorDaoImpl"/>
     
     <bean id="disabledMeterGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.DisabledMeterGroupProvider">
@@ -204,18 +200,13 @@
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
         <property name="deviceGroupService" ref="deviceGroupService"/>
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
     
     <bean id="deviceGroupComposedDao" class="com.cannontech.common.device.groups.composed.dao.impl.DeviceGroupComposedDaoImpl"/>
     <bean id="deviceGroupComposedGroupDao" class="com.cannontech.common.device.groups.composed.dao.impl.DeviceGroupComposedGroupDaoImpl"/>
     <bean id="deviceGroupComposedGroupRowAndFieldMapper" class="com.cannontech.common.device.groups.composed.dao.impl.DeviceGroupComposedGroupRowAndFieldMapper"/>
     
-    <bean id="peakReportDao"
-        class="com.cannontech.common.device.peakReport.dao.impl.PeakReportDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="nextValueHelper" ref="nextValueHelper"></property>
-    </bean>
+    <bean id="peakReportDao" class="com.cannontech.common.device.peakReport.dao.impl.PeakReportDaoImpl"/>
     
     <bean id="deviceGroupTreeFactory"
         class="com.cannontech.common.device.groups.service.DeviceGroupTreeFactory">

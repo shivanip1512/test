@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -29,7 +28,6 @@ public class FixedDeviceGroupingHack {
     private DeviceGroupProviderDao deviceGroupDao;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private SimpleJdbcOperations jdbcTemplate;
 
     public Set<Integer> getDeviceIds(FixedDeviceGroups group, String groupName) {
         String fullName = group.getPrefix() + "/" + groupName;
@@ -122,10 +120,5 @@ public class FixedDeviceGroupingHack {
     @Required
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
-    }
-    
-    @Required
-    public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
     }
 }

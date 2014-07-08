@@ -11,7 +11,6 @@ import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.dao.CustomerStubDao;
@@ -27,6 +26,7 @@ import com.cannontech.cc.service.EconomicService;
 import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -185,11 +185,11 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 		String customerName = "";
 		Vector<Integer> accountIDs = liteCustomer.getAccountIDs();
 		if (!accountIDs.isEmpty() ) {	//setup "should" be such that there is only one account per customer
-			SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+		    YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 			String sql = "Select AccountNumber from CustomerAccount " +
 						" where AccountId = ? ";
 			try {
-				customerName = simpleJdbcTemplate.queryForObject(sql, String.class, accountIDs.get(0));
+				customerName = jdbcTemplate.queryForObject(sql, String.class, accountIDs.get(0));
 			} catch(IncorrectResultSizeDataAccessException e) {
 				CTILogger.error(e);
 			}

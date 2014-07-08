@@ -8,8 +8,8 @@ import java.util.Map.Entry;
 
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.google.common.base.Function;
@@ -23,11 +23,11 @@ import com.google.common.collect.SetMultimap;
 
 public class ChunkingMappedSqlTemplate {
     
-    private SimpleJdbcOperations simpleJdbcTemplate;
+    private final YukonJdbcTemplate jdbcTemplate;
     private int chunkSize = ChunkingSqlTemplate.DEFAULT_SIZE;
 
-    public ChunkingMappedSqlTemplate(final SimpleJdbcOperations simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public ChunkingMappedSqlTemplate(final YukonJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
@@ -206,7 +206,7 @@ public class ChunkingMappedSqlTemplate {
             Function<C, I> inputTypeToSqlGeneratorTypeMapper, PairProcessor<C, R> processor) {
         final Multimap<I, R> intermediaryResult = ArrayListMultimap.create();
 
-        ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
+        ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
         chunkingTemplate.setChunkSize(chunkSize);
         chunkingTemplate.query(sqlGenerator, 
                                Lists.transform(Lists.newArrayList(input), inputTypeToSqlGeneratorTypeMapper), 

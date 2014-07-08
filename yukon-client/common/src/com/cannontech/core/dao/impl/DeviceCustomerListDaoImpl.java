@@ -1,23 +1,17 @@
 package com.cannontech.core.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.core.dao.DeviceCustomerListDao;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class DeviceCustomerListDaoImpl implements DeviceCustomerListDao {
 
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Override
     public void deleteDeviceListForCustomer(int customerId) {
         String sql = "DELETE FROM DeviceCustomerList WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(sql, customerId);
+        jdbcTemplate.update(sql, customerId);
     }
-	
-	@Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-
 }

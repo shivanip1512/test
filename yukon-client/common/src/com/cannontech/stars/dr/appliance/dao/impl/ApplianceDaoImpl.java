@@ -32,7 +32,7 @@ public class ApplianceDaoImpl implements ApplianceDao {
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
 
     
-    private String applianceSQLHeader = 
+    private final String applianceSQLHeader = 
         "SELECT AB.applianceId, AB.applianceCategoryId, AB.accountId, "+
         "       AB.programId, LMHC.inventoryId, LMHC.addressingGroupId, "+
         "       LMHC.loadNumber, AB.kwCapacity, AB.ManufacturerId, "+
@@ -95,6 +95,7 @@ public class ApplianceDaoImpl implements ApplianceDao {
         return list;
     }
 
+    @Override
     public Appliance getByAccountIdAndProgramIdAndInventoryId(int accountId, int assignedProgramId, int inventoryId) {
 
         SqlStatementBuilder applianceSQL = new SqlStatementBuilder();
@@ -134,6 +135,7 @@ public class ApplianceDaoImpl implements ApplianceDao {
         }
     }
     
+    @Override
     public void deleteAppliancesByAccountIdAndInventoryId(int accountId, int inventoryId) {
         
         String applianceIdsSQL = "Select AB.applianceId " + 
@@ -145,7 +147,7 @@ public class ApplianceDaoImpl implements ApplianceDao {
         SqlStatement stmt = new SqlStatement( "", CtiUtilities.getDatabaseAlias() );
         
         try {
-            List<Integer> applianceIds = yukonJdbcTemplate.getJdbcOperations().queryForList(applianceIdsSQL, Integer.class);
+            List<Integer> applianceIds = yukonJdbcTemplate.queryForList(applianceIdsSQL, Integer.class);
                 
             for (int i = 0; i < ApplianceBase.DEPENDENT_TABLES.length; i++) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();

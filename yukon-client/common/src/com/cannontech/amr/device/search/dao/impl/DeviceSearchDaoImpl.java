@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.cannontech.amr.device.search.dao.DeviceSearchDao;
@@ -19,11 +18,12 @@ import com.cannontech.amr.device.search.model.SearchField;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 
 @Repository
 public class DeviceSearchDaoImpl implements DeviceSearchDao {
-    @Autowired private SimpleJdbcTemplate jdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DeviceSearchRowMapper deviceSearchRowMapper;
     
     @Override
@@ -43,7 +43,7 @@ public class DeviceSearchDaoImpl implements DeviceSearchDao {
         if (!whereClause.isEmpty()) {
             countSql.append("WHERE").append(whereClause);
         }
-        totalCount = jdbcTemplate.getJdbcOperations().queryForInt(countSql.getSql(), countSql.getArguments());
+        totalCount = jdbcTemplate.queryForInt(countSql.getSql(), countSql.getArguments());
         
         // Get devices
         SqlStatementBuilder meterSql = new SqlStatementBuilder();
@@ -54,7 +54,7 @@ public class DeviceSearchDaoImpl implements DeviceSearchDao {
         meterSql.append("ORDER BY").append(orderBy.getSqlOrderByClause());
         
         List<DeviceSearchResultEntry> resultList = null;
-        resultList = jdbcTemplate.getJdbcOperations().<List<DeviceSearchResultEntry>>query(meterSql.getSql(), meterSql.getArguments(), new SearchResultSetExtractor(start, count));
+        resultList = jdbcTemplate.query(meterSql.getSql(), meterSql.getArguments(), new SearchResultSetExtractor(start, count));
         
         SearchResults<DeviceSearchResultEntry> searchResult = new SearchResults<DeviceSearchResultEntry>();
         searchResult.setBounds(start, count, totalCount);
@@ -75,6 +75,7 @@ public class DeviceSearchDaoImpl implements DeviceSearchDao {
             this.start = start;
         }
         
+        @Override
         public List<DeviceSearchResultEntry> extractData(ResultSet rs) throws SQLException, DataAccessException {
             List<DeviceSearchResultEntry> entryList = new ArrayList<DeviceSearchResultEntry>();
             

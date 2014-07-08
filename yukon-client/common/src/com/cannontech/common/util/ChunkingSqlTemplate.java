@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -19,17 +18,9 @@ import com.google.common.collect.Lists;
 public class ChunkingSqlTemplate {
     public static final int DEFAULT_SIZE = 1000;
 
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    private final YukonJdbcTemplate yukonJdbcTemplate;
     private int chunkSize = DEFAULT_SIZE;
-    
-    /**
-     * @deprecated - instead of using this constructor use the YukonJdbTemplate constructor.
-     */
-    @Deprecated
-    public ChunkingSqlTemplate(final SimpleJdbcOperations simpleJdbcTemplate) {
-        this.yukonJdbcTemplate = new YukonJdbcTemplate(simpleJdbcTemplate.getJdbcOperations());
-    }
-    
+        
     public ChunkingSqlTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
@@ -130,6 +121,7 @@ public class ChunkingSqlTemplate {
     /**
      * @deprecated - args should not be passed into this method.  We should include them in the sqlGenerator.
      */
+    @Deprecated
     public <I> void update(final SqlGenerator<I> sqlGenerator, final Iterable<I> input, final Object... args) {
         final List<I> tempInputList = Lists.newArrayList(input);
         final List<String> queryList = new ArrayList<String>();

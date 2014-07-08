@@ -52,11 +52,6 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
     }
 
     @Override
-    public List<PaoPermission> getPermissionsForPao(LiteUserGroup userGroup, YukonPao pao) {
-        return this.getPermissionsForPao(userGroup.getUserGroupId(), pao.getPaoIdentifier().getPaoId());
-    }
-
-    @Override
     public AuthorizationResponse hasPermissionForPao(LiteUserGroup userGroup, YukonPao pao, Permission permission) {
         return this.isHasPermissionForPao(Collections.singletonList(userGroup.getUserGroupId()), pao.getPaoIdentifier().getPaoId(), permission);
     }

@@ -21,7 +21,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.device.lm.LMFactory;
@@ -45,7 +45,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private PaoPermissionService paoPermissionService;
-    @Autowired private YukonJdbcOperations yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
     
     @Override
@@ -71,7 +71,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql2.append("  JOIN LMGroupVersacom LMGV ON PAO.PAObjectId = LMGV.DeviceId");
         sql2.append("WHERE LMGV.DeviceId").in(serialGroupIds);
 
-        List<Integer> versacomDefaultRouteIds = yukonJdbcTemplate.query(sql2, RowMapper.INTEGER);
+        List<Integer> versacomDefaultRouteIds = jdbcTemplate.query(sql2, RowMapper.INTEGER);
         if (versacomDefaultRouteIds.size() > 0) {
             return versacomDefaultRouteIds.get(0);
         }
@@ -83,7 +83,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql3.append("  JOIN LMGroupExpresscom LMGE ON PAO.PAObjectId = LMGE.LMGroupId");
         sql3.append("WHERE LMGE.LmGroupId").in(serialGroupIds);
 
-        List<Integer> expresscomDefaultRouteIds = yukonJdbcTemplate.query(sql3, RowMapper.INTEGER);
+        List<Integer> expresscomDefaultRouteIds = jdbcTemplate.query(sql3, RowMapper.INTEGER);
         if (expresscomDefaultRouteIds.size() > 0) {
             return expresscomDefaultRouteIds.get(0);
         }
@@ -150,7 +150,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql.append("  AND exc.SerialNumber = '0'");
         sql.append("  AND macro.OwnerID").in(permittedPaoIDs);
         
-        List<Integer> routeGroupIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> routeGroupIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
         return routeGroupIds;
     }
 
@@ -219,7 +219,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql1.append(  "AND PAO.PAOClass").eq_k(PaoClass.GROUP);
         sql1.append(  "AND PAO.PAOName").eq(nameOfDefaultRoute);
 
-        List<Integer> paoObjectIds = yukonJdbcTemplate.query(sql1, RowMapper.INTEGER);
+        List<Integer> paoObjectIds = jdbcTemplate.query(sql1, RowMapper.INTEGER);
         return paoObjectIds;
     }
     
@@ -235,7 +235,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
             sql.append(  "AND exc.SerialNumber = '0'");
             sql.append(  "AND macro.OwnerID").in(permittedPaoIds);
             
-            yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
                 
                 @Override
                 public void processRow(YukonResultSet rs) throws SQLException {

@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStringStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
@@ -18,7 +18,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class EnergyCompany extends DBPersistent {
     
     public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
-    private static SimpleJdbcTemplate simpleJdbcTemplate;
+    private static YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
     private Integer energyCompanyId;
     private String name;
     private Integer primaryContactId = CtiUtilities.NONE_ZERO_ID;
@@ -106,8 +106,7 @@ public class EnergyCompany extends DBPersistent {
                     return rs.getLong("EnergyCompanyId");
                 }
             };
-            simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
-            final List<Long> list = simpleJdbcTemplate.query(sql.toString(), longMapper);
+            final List<Long> list = jdbcTemplate.query(sql.toString(), longMapper);
             
             final long[] idArray = new long[list.size()];
             for (int x = 0; x < list.size(); x++) {
@@ -139,8 +138,7 @@ public class EnergyCompany extends DBPersistent {
                     return company;
                 }
             };
-            simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
-    	    List<EnergyCompany> list = simpleJdbcTemplate.query(sql.toString(), energyCompanyRowMapper);
+    	    List<EnergyCompany> list = jdbcTemplate.query(sql.toString(), energyCompanyRowMapper);
             
             return list.toArray(new EnergyCompany[list.size()]);
     	} catch (DataAccessException e) {

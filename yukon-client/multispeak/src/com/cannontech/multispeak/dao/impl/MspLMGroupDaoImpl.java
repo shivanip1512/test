@@ -8,13 +8,13 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.loadcontrol.data.LMGroupBase;
@@ -29,9 +29,9 @@ import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMProgramMode;
 
 public class MspLMGroupDaoImpl implements MspLMGroupDao {
 
-	private SimpleJdbcTemplate template;
-	private PointDao pointDao;
-	private DynamicDataSource dynamicDataSource;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private PointDao pointDao;
+    @Autowired private DynamicDataSource dynamicDataSource;
 	
 	static String selectClause;
 	static String joinClause;
@@ -56,6 +56,7 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
     }
 
 	private final ParameterizedRowMapper<MspLMGroupCommunications> mspLMGroupCommunicationsMapper = new ParameterizedRowMapper<MspLMGroupCommunications>() {
+        @Override
         public MspLMGroupCommunications mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createMspLMGroupCommunicationsMapping(rs);
         };
@@ -79,21 +80,21 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 	public List<MspLMGroupCommunications> getLMGroupEmetconCommunications(
 			LMGroupEmetcon lmGroupEmetcon) {
 		String sql = sqlEmetcon + " WHERE grp.DeviceId = ? ";
-		return template.query(sql, mspLMGroupCommunicationsMapper, lmGroupEmetcon.getYukonID());
+		return jdbcTemplate.query(sql, mspLMGroupCommunicationsMapper, lmGroupEmetcon.getYukonID());
 	}
 
 	@Override
 	public List<MspLMGroupCommunications> getLMGroupExpresscomCommunications(
 			LMGroupExpresscom lmGroupExpresscom) {
 		String sql = sqlExpresscom + " WHERE grp.LMGroupId = ? ";
-		return template.query(sql, mspLMGroupCommunicationsMapper, lmGroupExpresscom.getYukonID());
+		return jdbcTemplate.query(sql, mspLMGroupCommunicationsMapper, lmGroupExpresscom.getYukonID());
 	}
 
 	@Override
 	public List<MspLMGroupCommunications> getLMGroupVerscomCommunications(
 			LMGroupVersacom lmGroupVersacom) {
 		String sql = sqlVersacom + " WHERE grp.DeviceId = ? ";
-		return template.query(sql, mspLMGroupCommunicationsMapper, lmGroupVersacom.getYukonID());
+		return jdbcTemplate.query(sql, mspLMGroupCommunicationsMapper, lmGroupVersacom.getYukonID());
 	}
 
 	@Override
@@ -198,17 +199,4 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
         																					disabled);
         return mspLMGroupCommunications;
     }
-
-    @Autowired
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate template) {
-        this.template = template;
-    }
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-		this.pointDao = pointDao;
-	}
-    @Autowired
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-		this.dynamicDataSource = dynamicDataSource;
-	}
 }

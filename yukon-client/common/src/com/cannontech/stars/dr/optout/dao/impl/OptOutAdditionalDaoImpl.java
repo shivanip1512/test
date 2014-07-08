@@ -2,10 +2,10 @@ package com.cannontech.stars.dr.optout.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
 
 /**
@@ -13,7 +13,7 @@ import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
  */
 public class OptOutAdditionalDaoImpl implements OptOutAdditionalDao {
 
-	private SimpleJdbcTemplate simpleJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 	
 
 	@Override
@@ -26,7 +26,7 @@ public class OptOutAdditionalDaoImpl implements OptOutAdditionalDao {
 		sql.append("	AND CustomerAccountId = ?");
 		
 		try {
-			int additionalOptOuts = simpleJdbcTemplate.queryForInt(sql.toString(), 
+			int additionalOptOuts = jdbcTemplate.queryForInt(sql.toString(), 
 					inventoryId, 
 					customerAccountId);
 
@@ -49,7 +49,7 @@ public class OptOutAdditionalDaoImpl implements OptOutAdditionalDao {
 		sql.append("WHERE InventoryId = ?");
 		sql.append("	AND CustomerAccountId = ?");
 		
-		int rowCount = simpleJdbcTemplate.queryForInt(sql.toString(), 
+		int rowCount = jdbcTemplate.queryForInt(sql.toString(), 
 				inventoryId, 
 				customerAccountId);
 
@@ -70,16 +70,11 @@ public class OptOutAdditionalDaoImpl implements OptOutAdditionalDao {
 
 		}
 		
-		simpleJdbcTemplate.update(sql.toString(), 
+		jdbcTemplate.update(sql.toString(), 
 				additionalOptOuts, 
 				inventoryId, 
 				customerAccountId);
 		
 	}
 
-	@Autowired
-	public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-		this.simpleJdbcTemplate = simpleJdbcTemplate;
-	}
-	
 }

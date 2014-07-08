@@ -39,7 +39,7 @@ public class YukonUserRolePropertyLookup {
         }};
 
 	public static LiteYukonRole loadSpecificRole(LiteYukonUser user, int roleId) {
-	    YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+	    YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Distinct YR.RoleId, YR.RoleName, YR.Category, YR.RoleDescription");

@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.ContactNotificationType;
@@ -34,7 +33,7 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public final class ContactNotificationDaoImpl implements ContactNotificationDao {
     @Autowired private IDatabaseCache databaseCache;
-    @Autowired private SimpleJdbcTemplate simpleJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -139,7 +138,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
         
         String disableFlag = notification.getDisableFlag();
         notificationText = SqlUtils.convertStringToDbValue(notificationText);
-        simpleJdbcTemplate.update(sql.toString(),
+        jdbcTemplate.update(sql.toString(),
                                   contactId,
                                   notificationCategoryId,
                                   disableFlag,
@@ -312,6 +311,6 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
     
     @PostConstruct
     public void init() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(jdbcTemplate);
     }
 }

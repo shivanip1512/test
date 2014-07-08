@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,10 +30,10 @@ import com.cannontech.stars.dr.event.model.EventBase;
 
 public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
     private static final ParameterizedRowMapper<EventWorkOrder> rowMapper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
     
-    private SqlStatementBuilder selectSql = new SqlStatementBuilder();
+    private final SqlStatementBuilder selectSql = new SqlStatementBuilder();
     {
         selectSql.append("SELECT EB.EventId, EB.UserId, EB.SystemCategoryId, EB.ActionId, EB.EventTimestamp, OrderId");
         selectSql.append("FROM EventBase EB");
@@ -52,7 +53,7 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
         insertSql.append("INSERT INTO EventWorkOrder");
         insertSql.values(eventWorkOrder.getEventId(), eventWorkOrder.getWorkOrderId());
 
-        yukonJdbcTemplate.update(insertSql);
+        jdbcTemplate.update(insertSql);
     
     }
     
@@ -77,7 +78,7 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
         
         final Map<Integer,List<EventWorkOrder>> resultMap = new HashMap<Integer,List<EventWorkOrder>>(workOrderList.size());
         for (final String sql : queryList) {
-            yukonJdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
+            jdbcTemplate.query(sql, new RowCallbackHandler() {
                 @Override
                 public void processRow(ResultSet rs) throws SQLException {
                     final Integer key = rs.getInt("ORDERID");
@@ -101,7 +102,7 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
         sql.append("WHERE MAP.WorkOrderId").eq(workOrderId);
         sql.append("ORDER BY EB.EventTimestamp DESC");
         
-        return yukonJdbcTemplate.query(sql, new EventBaseRowMapper());
+        return jdbcTemplate.query(sql, new EventBaseRowMapper());
     }
     
     @Override
@@ -142,7 +143,7 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
     public List<Integer> getEventIdsForWorkOrder(Integer workOrderId){
         String sql = "SELECT EventId FROM EventWorkOrder WHERE OrderId = ?";
         List<Integer> eventIds = new ArrayList<Integer>();
-        eventIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper(), workOrderId);
+        eventIds = jdbcTemplate.query(sql, new IntegerRowMapper(), workOrderId);
         
         return eventIds;
     }
@@ -181,13 +182,9 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
             return eventBase;
         }
     }
-    
-    public void setSimpleJdbcTemplate(com.cannontech.database.YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
+        
     @PostConstruct
     public void init() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate(yukonJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(jdbcTemplate);
     }
 }

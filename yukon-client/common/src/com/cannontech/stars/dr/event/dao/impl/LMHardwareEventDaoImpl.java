@@ -6,20 +6,17 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
@@ -38,11 +35,10 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
     private static final String insertHardwareEventSql;    
     private static final String updateLmHwEventSql;
     private static final ParameterizedRowMapper<LiteLMHardwareEvent> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
-    private NextValueHelper nextValueHelper;
-    private ChunkingSqlTemplate chunkingJdbcTemplate;
-    private ECMappingDao ecMappingDao;
-    private LMCustomerEventBaseDao customerEventBaseDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private LMCustomerEventBaseDao customerEventBaseDao;
 
     static {
         selectAllSql = "SELECT ce.EventID,EventTypeID,ActionID,EventDateTime,Notes,InventoryID" 
@@ -73,7 +69,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LiteLMHardwareEvent getById(final int id)
             throws DataRetrievalFailureException {
-        LiteLMHardwareEvent event = simpleJdbcTemplate.queryForObject(selectByIdSql,
+        LiteLMHardwareEvent event = jdbcTemplate.queryForObject(selectByIdSql,
                                                                       rowMapper,
                                                                       id);
         return event;
@@ -83,7 +79,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LiteLMHardwareEvent> getByInventoryId(final int inventoryId) {
 
-        List<LiteLMHardwareEvent>  eventList = simpleJdbcTemplate.query(selecyByInventoryIdSql,
+        List<LiteLMHardwareEvent>  eventList = jdbcTemplate.query(selecyByInventoryIdSql,
                                                                         rowMapper,
                                                                         inventoryId);
         return eventList;
@@ -94,7 +90,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
     public List<LiteLMHardwareEvent> getByInventoryAndActionId(int inventoryId,
             int actionId) {
 
-        List<LiteLMHardwareEvent> eventList = simpleJdbcTemplate.query(selecyByInventoryAndActionIdSql,
+        List<LiteLMHardwareEvent> eventList = jdbcTemplate.query(selecyByInventoryAndActionIdSql,
                                                                        rowMapper,
                                                                        inventoryId,
                                                                        actionId);
@@ -108,7 +104,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
         final int eventId = nextValueHelper.getNextValue("LMCustomerEventBase");
         lmHwEvent.setEventID(eventId);
 
-        simpleJdbcTemplate.update(insertCustomerEventSql,
+        jdbcTemplate.update(insertCustomerEventSql,
                                   eventId,
                                   lmHwEvent.getEventTypeID(),
                                   lmHwEvent.getActionID(),
@@ -116,11 +112,11 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
                                   SqlUtils.convertStringToDbValue(lmHwEvent.getNotes()),
                                   lmHwEvent.getAuthorizedBy());
 
-        simpleJdbcTemplate.update(insertEcToCustomerEventSql,
+        jdbcTemplate.update(insertEcToCustomerEventSql,
                                   eventId,
                                   energyCompanyId);
 
-        simpleJdbcTemplate.update(insertHardwareEventSql,
+        jdbcTemplate.update(insertHardwareEventSql,
                                   eventId,
                                   lmHwEvent.getInventoryID());
 
@@ -131,7 +127,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
     @Transactional
     public LiteLMHardwareEvent update(LiteLMHardwareEvent lmHwEvent) {
 
-        simpleJdbcTemplate.update(updateLmHwEventSql,
+        jdbcTemplate.update(updateLmHwEventSql,
                                   new Timestamp(lmHwEvent.getEventDateTime()),
                                   lmHwEvent.getNotes(),
                                   lmHwEvent.getAuthorizedBy(),
@@ -162,7 +158,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
     private List<Integer> getAllLMHardwareEventIds(Integer inventoryId) {
         List<Integer> eventIds = new ArrayList<Integer>();
         String sql = "SELECT EventId FROM LMHardwareEvent WHERE InventoryId = ?";
-        eventIds = simpleJdbcTemplate.query(sql,
+        eventIds = jdbcTemplate.query(sql,
                                             new IntegerRowMapper(),
                                             inventoryId);
 
@@ -186,34 +182,9 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
         }
     }
 
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
-    @PostConstruct
-    public void init() throws Exception {
-        chunkingJdbcTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
-    }
-
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-
-    @Autowired
-    public void setCustomerEventBaseDao(LMCustomerEventBaseDao customerEventBaseDao) {
-        this.customerEventBaseDao = customerEventBaseDao;
-    }
-
     @Override
     public void deleteHardwareToMeterMapping(Integer inventoryId) {
         String delete = "DELETE FROM LMHardwareToMeterMapping WHERE LMHardwareInventoryId = ?";
-        simpleJdbcTemplate.update(delete, inventoryId);
+        jdbcTemplate.update(delete, inventoryId);
     }
 }

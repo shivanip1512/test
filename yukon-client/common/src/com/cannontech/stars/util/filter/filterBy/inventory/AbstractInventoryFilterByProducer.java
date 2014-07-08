@@ -6,20 +6,16 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.util.filter.JoinTable;
 import com.cannontech.stars.util.filter.filterBy.FilterBy;
 import com.cannontech.stars.util.filter.filterBy.FilterByProducer;
 
 public abstract class AbstractInventoryFilterByProducer implements FilterByProducer {
-    protected SimpleJdbcTemplate simpleJdbcTemplate;
     
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    };
+    @Autowired protected YukonJdbcTemplate jdbcTemplate;
     
     protected static final FilterBy NON_DUMMY_METER = new FilterBy() {
         @Override

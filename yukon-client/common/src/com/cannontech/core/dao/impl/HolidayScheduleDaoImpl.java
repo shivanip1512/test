@@ -5,20 +5,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.model.Holiday;
 
 public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
 
-    private SimpleJdbcOperations jdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     private static final ParameterizedRowMapper<Holiday> holidayRowMapper = new ParameterizedRowMapper<Holiday>() {
         @Override
@@ -129,10 +130,6 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
     public List<HolidaySchedule> getAllHolidaySchedules() {
        String sql = "select HolidayScheduleID, HolidayScheduleName from HolidaySchedule where HolidayScheduleId <> 0 order by HolidayScheduleName";
        return jdbcTemplate.query(sql, holidayScheduleRowMapper);
-    }
-
-    public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override

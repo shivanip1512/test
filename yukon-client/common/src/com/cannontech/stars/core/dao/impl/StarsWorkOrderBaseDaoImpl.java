@@ -11,13 +11,13 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
@@ -26,9 +26,9 @@ import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
 public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
     private static final String selectSql;
     private static final ParameterizedRowMapper<LiteWorkOrderBase> rowMapper = createRowMapper();
-    private SimpleJdbcTemplate simpleJdbcTemplate;
-    private ECMappingDao ecMappingDao;
-    private EventWorkOrderDao eventWorkOrderDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EventWorkOrderDao eventWorkOrderDao;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
 
     static {
@@ -46,7 +46,7 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
     public LiteWorkOrderBase getById(int workOrderId) {
         String sql = selectSql + " WHERE OrderID = ?";
         
-        LiteWorkOrderBase workOrder = simpleJdbcTemplate.queryForObject(sql,
+        LiteWorkOrderBase workOrder = jdbcTemplate.queryForObject(sql,
                                                                         rowMapper,
                                                                         workOrderId);
         return workOrder;
@@ -62,7 +62,7 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
         sqlBuilder.append(")");
         String sql = sqlBuilder.toString();
         
-        List<LiteWorkOrderBase> list = simpleJdbcTemplate.query(sql, rowMapper);
+        List<LiteWorkOrderBase> list = jdbcTemplate.query(sql, rowMapper);
         return list;
     }
     
@@ -86,7 +86,7 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
     public List<LiteWorkOrderBase> getAll(int energyCompanyId) {
         String sql = selectSql + " WHERE ectwm.EnergyCompanyID = ?";
         
-        List<LiteWorkOrderBase> list = simpleJdbcTemplate.query(sql,
+        List<LiteWorkOrderBase> list = jdbcTemplate.query(sql,
                                                                 rowMapper,
                                                                 energyCompanyId);
         return list;
@@ -146,27 +146,12 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
     @Override
     public List<Integer> getByAccount(int accountId){
         String sql = "SELECT OrderId FROM WorkOrderBase WHERE AccountId = ?";
-        List<Integer> workOrderIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), accountId);
+        List<Integer> workOrderIds = jdbcTemplate.query(sql, new IntegerRowMapper(), accountId);
         return workOrderIds;
-    }
-    
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-
-    @Autowired
-    public void setECMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setEventWorkOrderDao(EventWorkOrderDao eventWorkOrderDao) {
-        this.eventWorkOrderDao = eventWorkOrderDao;
     }
     
     @PostConstruct
     public void init() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(jdbcTemplate);
     }
 }

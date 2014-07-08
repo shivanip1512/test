@@ -6,11 +6,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.purchasing.DeliverySchedule;
 import com.cannontech.stars.database.db.purchasing.Invoice;
@@ -22,7 +23,7 @@ import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class PurchaseChangeController extends StarsInventoryActionController {
 
-    private SimpleJdbcOperations jdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,
@@ -128,10 +129,5 @@ public class PurchaseChangeController extends StarsInventoryActionController {
         String redirect = request.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
     	response.sendRedirect(redirect);
     }
-
-    public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-	
     
 }

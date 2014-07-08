@@ -1,6 +1,5 @@
 package com.cannontech.web.search.lucene.index;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +10,7 @@ import org.apache.lucene.index.Term;
 
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -26,20 +26,20 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected String getDocumentQuery() {
+    protected SqlStatementBuilder getDocumentQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select *");
         sql.append(getQueryGuts());
         sql.append(getOrderBy());
-        return sql.getSql();
+        return sql;
     }
 
     @Override
-    protected String getDocumentCountQuery() {
+    protected SqlStatementBuilder getDocumentCountQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(*)");
         sql.append(getQueryGuts());
-        return sql.getSql();
+        return sql;
     }
     
     private SqlStatementBuilder getQueryGuts() {
@@ -57,7 +57,7 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected Document createDocument(ResultSet rs) throws SQLException {
+    protected Document createDocument(YukonResultSet rs) throws SQLException {
 
         Document doc = new Document();
 
@@ -142,9 +142,7 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
         sql.append("AND d.deviceid").eq(deviceId);
         sql.append(getOrderBy());
 
-        docList = this.jdbcTemplate.query(sql.getSql(),
-                                          sql.getArguments(),
-                                          new DocumentMapper());
+        docList = this.jdbcTemplate.query(sql, new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }
 
@@ -169,9 +167,7 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
         sql.append(" AND p.pointid").eq(pointId);
         sql.append(getOrderBy());
 
-        docList = this.jdbcTemplate.query(sql.getSql(),
-                                          sql.getArguments(),
-                                          new DocumentMapper());
+        docList = this.jdbcTemplate.query(sql, new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }
 

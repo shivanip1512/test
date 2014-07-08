@@ -1,6 +1,5 @@
 package com.cannontech.web.search.lucene.index;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.common.util.SqlStringStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -19,38 +18,31 @@ import com.cannontech.message.dispatch.message.DbChangeType;
  */
 public class CustomerAccountIndexManager extends SimpleIndexManager {
 
-    private static String documentQuery;
-    {
-        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
-        sql.append(getQuerySelect());
-        sql.append(getQueryGuts());
-        sql.append(getQueryOrderBy());
+    private static SqlStatementBuilder documentQuery = new SqlStatementBuilder();
+    private static SqlStatementBuilder documentCountQuery  = new SqlStatementBuilder();
+   
+    static{
+        documentQuery.append(getQuerySelect());
+        documentQuery.append(getQueryGuts());
+        documentQuery.append(getQueryOrderBy());
         
-        documentQuery = sql.toString();
+        documentCountQuery.append("SELECT COUNT(*)");
+        documentCountQuery.append(getQueryGuts());
     }
     
-    private static String documentCountQuery;
-    {
-        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
-        sql.append("SELECT COUNT(*)");
-        sql.append(getQueryGuts());
-
-        documentCountQuery = sql.toString();
-    }
-    
-    private SqlStatementBuilder getQuerySelect() {
+    private static SqlStatementBuilder getQuerySelect() {
         // TODO:  need to index more fields for search (and include them in search)
         return new SqlStatementBuilder("SELECT CA.AccountId, CA.AccountNumber, ECTAM.EnergyCompanyId");
     }
     
-    private SqlStatementBuilder getQueryGuts() {
+    private static SqlStatementBuilder getQueryGuts() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("FROM CustomerAccount CA");
         sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = CA.AccountId");
         return sql;
     }
     
-    private SqlStatementBuilder getQueryOrderBy() {
+    private static SqlStatementBuilder getQueryOrderBy() {
         return new SqlStatementBuilder("ORDER BY CA.AccountNumber, ECTAM.EnergyCompanyID");
     }
 
@@ -60,17 +52,17 @@ public class CustomerAccountIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected String getDocumentQuery() {
+    protected SqlStatementBuilder getDocumentQuery() {
         return documentQuery;
     }
 
     @Override
-    protected String getDocumentCountQuery() {
+    protected SqlStatementBuilder getDocumentCountQuery() {
         return documentCountQuery;
     }
 
     @Override
-    protected Document createDocument(ResultSet rs) throws SQLException {
+    protected Document createDocument(YukonResultSet rs) throws SQLException {
 
         Document doc = new Document();
 
@@ -116,7 +108,7 @@ public class CustomerAccountIndexManager extends SimpleIndexManager {
         sql.append("WHERE CA.AccountId").eq(accountId);
         sql.append(getQueryOrderBy());
         
-        docList = this.jdbcTemplate.query(sql.getSql(), sql.getArguments(), new DocumentMapper());
+        docList = jdbcTemplate.query(sql, new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }
 

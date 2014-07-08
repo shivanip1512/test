@@ -20,12 +20,7 @@
     </bean>
     
     <!-- LCR 3102 Data -->
-    <bean id="lcr3102DataModel" class="com.cannontech.analysis.tablemodel.LCR3102DataModel"
-    scope="prototype">
-        <property name="jdbcOps" ref="jdbcTemplate"/>
-        <property name="deviceGroupService" ref="deviceGroupService" />
-        <property name="deviceDao" ref="deviceDao" />
-    </bean>
+    <bean id="lcr3102DataModel" class="com.cannontech.analysis.tablemodel.LCR3102DataModel" scope="prototype"/>
     
     <bean id="lcr3102DataDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
         <property name="reportModelName"><idref local="lcr3102DataModel"/></property>
@@ -35,11 +30,8 @@
     </bean>
     
     <!-- Cap Control Strategy Assignment -->
-    <bean id="strategyAssignmentModel" class="com.cannontech.analysis.tablemodel.StrategyAssignmentModel"
-    scope="prototype">
-        <property name="jdbcOps" ref="jdbcTemplate"/>
-    </bean>
-    
+    <bean id="strategyAssignmentModel" class="com.cannontech.analysis.tablemodel.StrategyAssignmentModel" scope="prototype"/>
+
     <bean id="startegyAssingmentDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
         <property name="reportModelName"><idref local="strategyAssignmentModel"/></property>
         <property name="inputs">
@@ -75,14 +67,14 @@
     <!-- Device Readings Model -->
    <bean id="deviceReadingsModel" class="com.cannontech.analysis.tablemodel.DeviceReadingsModel" scope="prototype"/>
 
-	<!-- Meter Outage Log Model -->
-	<bean id="meterOutageModel" class="com.cannontech.analysis.tablemodel.MeterOutageModel" scope="prototype"/>
+    <!-- Meter Outage Log Model -->
+    <bean id="meterOutageModel" class="com.cannontech.analysis.tablemodel.MeterOutageModel" scope="prototype"/>
 
     <!-- Meter Usage Model -->
    <bean id="meterUsageModel" class="com.cannontech.analysis.tablemodel.MeterUsageModel" scope="prototype"/>
 
-	<!-- Disconnect Status Model -->
-	<bean id="disconnectModel" class="com.cannontech.analysis.tablemodel.DisconnectModel" scope="prototype"/>
+    <!-- Disconnect Status Model -->
+    <bean id="disconnectModel" class="com.cannontech.analysis.tablemodel.DisconnectModel" scope="prototype"/>
 
     <!-- Meter Read Percentage Model -->
    <bean id="meterReadPercentageModel" class="com.cannontech.analysis.tablemodel.MeterReadPercentageModel" scope="prototype"/>
@@ -91,11 +83,7 @@
    <bean id="deviceRequestDetailModel" class="com.cannontech.analysis.tablemodel.DeviceRequestDetailModel" scope="prototype"/>
 
     <!-- Device Read Statistics Summary Model -->
-   <bean id="deviceReadStatisticsSummaryModel" class="com.cannontech.analysis.tablemodel.DeviceReadStatisticsSummaryModel" scope="prototype">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="attributeService" ref="attributeService" />
-        <property name="deviceGroupService" ref="deviceGroupService" />
-    </bean>
+   <bean id="deviceReadStatisticsSummaryModel" class="com.cannontech.analysis.tablemodel.DeviceReadStatisticsSummaryModel" scope="prototype"/>
     
    <!-- Cap Control Disabled Devices -->
    <bean id="capControlDisabledDevicesModel" class="com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel"
@@ -159,10 +147,7 @@
     </bean>
     
     <!-- Time Controlled CapBanks -->
-   <bean id="timeControlledCapBanksModel" class="com.cannontech.analysis.tablemodel.TimeControlledCapBanksModel"
-         scope="prototype">
-        <property name="jdbcOps" ref="jdbcTemplate"/>
-    </bean>
+   <bean id="timeControlledCapBanksModel" class="com.cannontech.analysis.tablemodel.TimeControlledCapBanksModel" scope="prototype"/>
     
     <bean id="timeControlledCapBanksDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
         <property name="reportModelName"><idref local="timeControlledCapBanksModel"/></property>
@@ -222,10 +207,7 @@
     </bean>
     
     <!-- Var Imbalance On Execution Report Model -->
-   <bean id="varImbalanceOnExecutionModel" class="com.cannontech.analysis.tablemodel.VarImbalanceOnExecutionModel"
-         scope="prototype">
-        <property name="jdbcOps" ref="jdbcTemplate"/>
-    </bean>
+    <bean id="varImbalanceOnExecutionModel" class="com.cannontech.analysis.tablemodel.VarImbalanceOnExecutionModel" scope="prototype"/>
     
     <bean id="varImbalanceOnExecutionDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
         <property name="reportModelName"><idref local="varImbalanceOnExecutionModel"/></property>
@@ -530,7 +512,7 @@
         <property name="dateFormattingService" ref="dateFormattingService"/>
         <property name="capControlCache" ref="capControlCache"/>
         <property name="substationBusDao" ref="substationBusDao"/>
-    	<property name="feederDao" ref="feederDao"/>
+        <property name="feederDao" ref="feederDao"/>
     </bean>
     
     <bean id="kVarPhaseWattRPHDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
@@ -783,7 +765,7 @@
     </bean>
     
     <!-- Command Request Execution Results Report -->
-   	<bean id="commandRequestExecutionResultsModel" class="com.cannontech.analysis.tablemodel.CommandRequestExecutionResultsModel" scope="prototype">
+    <bean id="commandRequestExecutionResultsModel" class="com.cannontech.analysis.tablemodel.CommandRequestExecutionResultsModel" scope="prototype">
     </bean>
     
     <bean id="commandRequestExecutionResultsDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
@@ -818,7 +800,7 @@
     </bean>
     
     <!-- Command Request Execution Failure Stats Report -->
-   	<bean id="commandRequestExecutionFailureStatsModel" class="com.cannontech.analysis.tablemodel.CommandRequestExecutionFailureStatsModel" scope="prototype">
+    <bean id="commandRequestExecutionFailureStatsModel" class="com.cannontech.analysis.tablemodel.CommandRequestExecutionFailureStatsModel" scope="prototype">
     </bean>
     
     <bean id="commandRequestExecutionFailureStatsDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">

@@ -43,13 +43,13 @@ import com.google.common.collect.Maps;
 
 public class CMEP_MEPMD01Format extends FileFormatBase  {
 
-    private ConfigurationSource configurationSource = YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
-    private DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-    private MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
-    private PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
-    private PersistedSystemValueDao persistedSystemValueDao = YukonSpringHook.getBean("persistedSystemValueDaoImpl", PersistedSystemValueDao.class);
-    private RawPointHistoryDao rawPointHistoryDao = YukonSpringHook.getBean("rphDao", RawPointHistoryDao.class);
-    private YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+    private final ConfigurationSource configurationSource = YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
+    private final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+    private final MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
+    private final PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
+    private final PersistedSystemValueDao persistedSystemValueDao = YukonSpringHook.getBean("persistedSystemValueDaoImpl", PersistedSystemValueDao.class);
+    private final RawPointHistoryDao rawPointHistoryDao = YukonSpringHook.getBean("rphDao", RawPointHistoryDao.class);
+    private YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
     @Override
 	public boolean retrieveBillingData() {	
@@ -189,7 +189,7 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
             sql.append("FROM DeviceLoadProfile");
             sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
                 
-            int deviceLoadProfile = yukonJdbcTemplate.queryForInt(sql);
+            int deviceLoadProfile = jdbcTemplate.queryForInt(sql);
             if (deviceLoadProfile != 0) {
                 return deviceLoadProfile/ 3600f; // An hour in seconds
             }

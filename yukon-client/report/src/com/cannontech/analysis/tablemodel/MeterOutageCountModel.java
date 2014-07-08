@@ -12,14 +12,13 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -29,6 +28,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.ImmutableMultimap;
@@ -69,8 +69,8 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
     private Integer minimumOutageCount = 0;
     private boolean incompleteDataReport = false;
     /** Map of PaObjectId to GrandTotalOutageCount for each pao **/
-    private Map<Integer, Integer> paoIdToGrandOutageTotalMap = new HashMap<Integer, Integer>();
-    private Vector<OutageCountRow> allData = new Vector<OutageCountRow>();
+    private final Map<Integer, Integer> paoIdToGrandOutageTotalMap = new HashMap<Integer, Integer>();
+    private final Vector<OutageCountRow> allData = new Vector<OutageCountRow>();
     
     static public class OutageCountRow
     {	
@@ -132,7 +132,7 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
      */
     public void loadOutageCountData() {
         
-        for (OutageCountRow outageCountRow : (Vector<OutageCountRow>)allData) {
+        for (OutageCountRow outageCountRow : allData) {
             
             Integer total = paoIdToGrandOutageTotalMap.get(outageCountRow.paobjectId);
             if(total != null && 
@@ -144,7 +144,7 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
     
     public void loadIncompleteData() {
 
-        for (OutageCountRow outageCountRow : (Vector<OutageCountRow>)allData) {
+        for (OutageCountRow outageCountRow : allData) {
             
             Integer total = paoIdToGrandOutageTotalMap.get(outageCountRow.paobjectId);
             if(total == null ) {
@@ -219,14 +219,14 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
         }
         ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoUtils.mapPaoPointIdentifiers(identifiers);
 
-        SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
         for(final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()){
             List<Integer> deviceIds = Lists.newArrayList();
             for(PaoIdentifier paoIdentifier :  paoPointIdentifiersMap.get(pointIdentifier)){
                 deviceIds.add(paoIdentifier.getPaoId());
             }
 
-            ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
+            ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
 
             SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
                 @Override
@@ -332,7 +332,8 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
 		if ( o instanceof OutageCountRow)
 		{
@@ -365,7 +366,8 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -384,7 +386,8 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@Override
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -403,7 +406,8 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -423,7 +427,8 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString() {
+	@Override
+    public String getTitleString() {
 		if( isIncompleteDataReport())
 			return incompleteDataTitle;
 		return title;

@@ -199,7 +199,7 @@ public final class SimpleTableAccessTemplate<T> {
         
         PreparedStatementSetter pss = createPreparedStatementSetter(parameterSource, fieldNameList);
 
-        jdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
+        jdbcTemplate.update(sql.toString(), pss);
         baseFieldMapper.setPrimaryKey(object, nextId);
 
         if (helper != null) {
@@ -264,7 +264,7 @@ public final class SimpleTableAccessTemplate<T> {
         // get property setter
         PreparedStatementSetter pss = createPreparedStatementSetter(parameterSource, fieldNameList);
         
-        jdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
+        jdbcTemplate.update(sql.toString(), pss);
         
         if (helper != null) {
             // children handling

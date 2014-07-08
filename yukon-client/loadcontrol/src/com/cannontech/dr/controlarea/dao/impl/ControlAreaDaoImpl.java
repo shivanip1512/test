@@ -15,18 +15,18 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.IntegerRowMapper;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.RowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
 import com.google.common.collect.Sets;
 
 public class ControlAreaDaoImpl implements ControlAreaDao {
-    private YukonJdbcOperations yukonJdbcOperations;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     private static class ControlAreaRowMapper implements ParameterizedRowMapper<ControlArea>  {
-        private Map<Integer, List<ControlAreaTrigger>> triggerMap;        
+        private final Map<Integer, List<ControlAreaTrigger>> triggerMap;        
         ControlAreaRowMapper(Map<Integer, List<ControlAreaTrigger>> triggerMap){
             this.triggerMap = triggerMap;
         }
@@ -44,7 +44,7 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
     }
 
     private static class TriggerRowCallbackHandler implements RowCallbackHandler {
-        private Map<Integer, List<ControlAreaTrigger>> triggerMap =
+        private final Map<Integer, List<ControlAreaTrigger>> triggerMap =
             new HashMap<Integer, List<ControlAreaTrigger>>();
 
         public Map<Integer, List<ControlAreaTrigger>> getTriggerMap() {
@@ -73,7 +73,7 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT paObjectId, paoName FROM yukonPAObject");
         sql.append("WHERE type = 'LM CONTROL AREA' AND paObjectId =").appendArgument(controlAreaId);
-        ControlArea controlArea = yukonJdbcOperations.queryForObject(sql, new ControlAreaRowMapper(triggerMap));
+        ControlArea controlArea = jdbcTemplate.queryForObject(sql, new ControlAreaRowMapper(triggerMap));
 
         return controlArea;
     }
@@ -89,7 +89,7 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
         sql.append("        WHERE deviceId").eq(controlAreaId);
         sql.append("     )");
         
-        List<Integer> programIdList = yukonJdbcOperations.query(sql, new IntegerRowMapper());
+        List<Integer> programIdList = jdbcTemplate.query(sql, RowMapper.INTEGER);
         return Sets.newHashSet(programIdList);
     }
 
@@ -99,18 +99,13 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
         if (controlAreaId < 0) {
             sql.append("SELECT deviceId, triggerNumber, triggerType FROM lmControlAreaTrigger");
             sql.append("ORDER BY deviceId, triggerNumber");
-            yukonJdbcOperations.query(sql, triggerRowCallbackHandler);
+            jdbcTemplate.query(sql, triggerRowCallbackHandler);
         } else {
             sql.append("SELECT deviceId, triggerNumber, triggerType FROM lmControlAreaTrigger");
             sql.append("WHERE deviceId =").appendArgument(controlAreaId);
             sql.append("ORDER BY triggerNumber");
-            yukonJdbcOperations.query(sql, triggerRowCallbackHandler);
+            jdbcTemplate.query(sql, triggerRowCallbackHandler);
         }
         return triggerRowCallbackHandler.getTriggerMap();
-    }
-
-    @Autowired
-    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-        this.yukonJdbcOperations = yukonJdbcOperations;
     }
 }

@@ -24,20 +24,20 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class ValidationHelperServiceImpl implements ValidationHelperService {
     private static final Logger log = YukonLogManager.getLogger(ValidationHelperServiceImpl.class);
     
-    private RawPointHistoryDao rawPointHistoryDao;
-    private RphTagDao rphTagDao;
-    private RphTagUiDao rphTagUiDao;
-    private VeeReviewEventLogService veeReviewEventLogService;
-    private PersistedSystemValueDao persistedSystemValueDao;
-    private YukonJdbcOperations yukonJdbcOperations;
-    private PointDao pointDao;
-    private PaoLoadingService paoLoadingService;
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private RphTagDao rphTagDao;
+    @Autowired private RphTagUiDao rphTagUiDao;
+    @Autowired private VeeReviewEventLogService veeReviewEventLogService;
+    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private PointDao pointDao;
+    @Autowired private PaoLoadingService paoLoadingService;
 
     @Override
     public void acceptAllMatchingRows(Set<RphTag> tags, LiteYukonUser liteYukonUser) {
@@ -64,7 +64,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
             sql.append("from RawPointHistory");
             sql.append("where TimeStamp").gte(since);
             
-            changeIdToResetTo = yukonJdbcOperations.queryForLong(sql) - 1; // one less because we start after
+            changeIdToResetTo = jdbcTemplate.queryForLong(sql) - 1; // one less because we start after
         }
         persistedSystemValueDao.setValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID, changeIdToResetTo);
     }
@@ -134,44 +134,4 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
 															   user);
         }
     }
-    
-    @Autowired
-    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
-        this.rawPointHistoryDao = rawPointHistoryDao;
-    }
-    
-    @Autowired
-    public void setRphTagDao(RphTagDao rphTagDao) {
-        this.rphTagDao = rphTagDao;
-    }
-    
-    @Autowired
-    public void setRphTagUiDao(RphTagUiDao rphTagUiDao) {
-        this.rphTagUiDao = rphTagUiDao;
-    }
-    
-    @Autowired
-    public void setVeeReviewEventLogService(VeeReviewEventLogService veeReviewEventLogService) {
-        this.veeReviewEventLogService = veeReviewEventLogService;
-    }
-    
-    @Autowired
-    public void setPersistedSystemValueDao(PersistedSystemValueDao persistedSystemValueDao) {
-        this.persistedSystemValueDao = persistedSystemValueDao;
-    }
-    
-    @Autowired
-    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-        this.yukonJdbcOperations = yukonJdbcOperations;
-    }
-
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-		this.pointDao = pointDao;
-	}
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-		this.paoLoadingService = paoLoadingService;
-	}
 }

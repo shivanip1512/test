@@ -182,12 +182,6 @@
     </property>
     <property name="requiredPointGroup" value="ISOC"/>
   </bean>
-  
-  <bean id="yukonJdbcDao" abstract="true" 
-        class="com.cannontech.core.dao.support.YukonBaseJdbcDao">
-    <property name="jdbcTemplate" ref="jdbcTemplate" />
-  </bean>
-  
   <bean id="programDao" class="com.cannontech.cc.daojdbc.ProgramDaoImpl">
     <property name="programGroupDao" ref="availableProgramGroupDao"/>
     <property name="programParameterDao" ref="programParameterDao"/>
@@ -218,9 +212,7 @@
     <property name="accountingEventParticipantDao" ref="accountingEventParticipantDao"/>
   </bean>
   <bean id="accountingEventParticipantDao" class="com.cannontech.cc.daojdbc.AccountingEventParticipantDaoImpl"/>
-  <bean id="programNotificationGroupDao" class="com.cannontech.cc.daojdbc.ProgramNotificationGroupDaoImpl" parent="yukonJdbcDao">
-    <property name="notificationGroupDao" ref="notificationGroupDao"/>
-  </bean>
+  <bean id="programNotificationGroupDao" class="com.cannontech.cc.daojdbc.ProgramNotificationGroupDaoImpl"/>
   <bean id="baseEventDao" class="com.cannontech.cc.dao.BaseEventDao" autowire="byType">
     <property name="childDaos">
       <set>

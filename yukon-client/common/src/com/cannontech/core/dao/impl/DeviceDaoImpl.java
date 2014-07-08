@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -52,7 +51,6 @@ import com.google.common.collect.Maps;
 public final class DeviceDaoImpl implements DeviceDao {
     private YukonDeviceRowMapper deviceRowMapper;
 
-    @Autowired private JdbcOperations jdbcOps;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache databaseCache;
@@ -87,7 +85,7 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     private void enableDisableDevice(YukonDevice device, String disableFlag) {
         String sql = "UPDATE yukonpaobject SET disableflag = ? WHERE paobjectid = ?";
-        jdbcOps.update(sql, new Object[] { disableFlag, device.getPaoIdentifier().getPaoId() });
+        jdbcTemplate.update(sql, new Object[] { disableFlag, device.getPaoIdentifier().getPaoId() });
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
@@ -135,7 +133,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public SimpleDevice getYukonDeviceObjectById(int deviceId) {
         String sql = "SELECT ypo.PAObjectID, ypo.Type FROM YukonPaObject ypo WHERE ypo.PAObjectID = ?";
-        SimpleDevice device = jdbcOps.queryForObject(sql, new Object[] { deviceId }, deviceRowMapper);
+        SimpleDevice device = jdbcTemplate.queryForObject(sql, new Object[] { deviceId }, deviceRowMapper);
         return device;
     }
 
@@ -187,7 +185,7 @@ public final class DeviceDaoImpl implements DeviceDao {
         sqlBuilder.append("INNER JOIN DeviceMeterGroup DMG ON PAO.PAObjectID = DMG.DeviceID ");
         sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(?) ");
         SimpleDevice device =
-            jdbcOps.queryForObject(sqlBuilder.getSql(), new Object[] { meterNumber }, deviceRowMapper);
+            jdbcTemplate.queryForObject(sqlBuilder.getSql(), new Object[] { meterNumber }, deviceRowMapper);
         return device;
     }
 
@@ -196,7 +194,7 @@ public final class DeviceDaoImpl implements DeviceDao {
         String sql =
             "SELECT ypo.PAObjectID, ypo.Type " + " FROM YukonPaObject ypo "
                 + " INNER JOIN DeviceCarrierSettings dcs ON ypo.PAObjectID = dcs.DeviceID " + " WHERE dcs.ADDRESS = ? ";
-        SimpleDevice device = jdbcOps.queryForObject(sql, new Object[] { address }, deviceRowMapper);
+        SimpleDevice device = jdbcTemplate.queryForObject(sql, new Object[] { address }, deviceRowMapper);
         return device;
     }
 
@@ -294,21 +292,21 @@ public final class DeviceDaoImpl implements DeviceDao {
         String sql =
             "SELECT yp.PAObjectId, yp.Type FROM YukonPAObject yp " + "JOIN Device d ON yp.PAObjectId = d.DeviceId "
                 + "JOIN DeviceRoutes dr ON d.DeviceId = dr.DeviceId " + "WHERE dr.RouteId = ?";
-        List<SimpleDevice> devices = jdbcOps.query(sql, new Integer[] { routeId }, new YukonDeviceRowMapper());
+        List<SimpleDevice> devices = jdbcTemplate.query(sql, new Integer[] { routeId }, new YukonDeviceRowMapper());
         return devices;
     }
 
     @Override
     public int getRouteDeviceCount(int routeId) {
         String sql = "SELECT COUNT(*) FROM DeviceRoutes WHERE RouteId = ?";
-        return jdbcOps.queryForInt(sql, new Object[] { routeId });
+        return jdbcTemplate.queryForInt(sql, new Object[] { routeId });
     }
 
     @Override
     public void changeRoute(YukonDevice device, int newRouteId) {
         // Updates the meter's meter number
         String sql = " UPDATE DeviceRoutes SET RouteID = ? WHERE DeviceID = ?";
-        jdbcOps.update(sql, new Object[] { newRouteId, device.getPaoIdentifier().getPaoId() });
+        jdbcTemplate.update(sql, new Object[] { newRouteId, device.getPaoIdentifier().getPaoId() });
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
@@ -316,7 +314,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public void changeName(YukonDevice device, String newName) {
         String sql = " UPDATE YukonPAObject SET PAOName = ? WHERE PAObjectID = ?";
-        jdbcOps.update(sql, new Object[] { newName, device.getPaoIdentifier().getPaoId() });
+        jdbcTemplate.update(sql, new Object[] { newName, device.getPaoIdentifier().getPaoId() });
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
@@ -324,7 +322,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public void changeAddress(YukonDevice device, int newAddress) {
         String sql = " UPDATE " + DeviceCarrierSettings.TABLE_NAME + " SET ADDRESS = ? WHERE DeviceID = ?";
-        jdbcOps.update(sql, new Object[] { newAddress, device.getPaoIdentifier().getPaoId() });
+        jdbcTemplate.update(sql, new Object[] { newAddress, device.getPaoIdentifier().getPaoId() });
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
@@ -332,7 +330,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public void changeMeterNumber(YukonDevice device, String newMeterNumber) {
         String sql = " UPDATE DEVICEMETERGROUP SET METERNUMBER = ? WHERE DeviceID = ?";
-        jdbcOps.update(sql, new Object[] { newMeterNumber, device.getPaoIdentifier().getPaoId() });
+        jdbcTemplate.update(sql, new Object[] { newMeterNumber, device.getPaoIdentifier().getPaoId() });
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }

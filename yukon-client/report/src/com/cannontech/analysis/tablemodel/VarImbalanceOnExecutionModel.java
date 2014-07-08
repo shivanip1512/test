@@ -7,18 +7,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 
 
 public class VarImbalanceOnExecutionModel extends BareDatedReportModelBase<VarImbalanceOnExecutionModel.ModelRow> implements CapControlFilterable {
     
     // dependencies
-    private JdbcOperations jdbcOps;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     // inputs
     private Set<Integer> capBankIds;
@@ -37,7 +37,7 @@ public class VarImbalanceOnExecutionModel extends BareDatedReportModelBase<VarIm
     public final static int FEEDER_NAME_COLUMN = 3;
     
     // member variables
-    private List<ModelRow> data = new ArrayList<ModelRow>();
+    private final List<ModelRow> data = new ArrayList<ModelRow>();
     
     public VarImbalanceOnExecutionModel() {
     }
@@ -66,20 +66,24 @@ public class VarImbalanceOnExecutionModel extends BareDatedReportModelBase<VarIm
         return ModelRow.class;
     }
     
+    @Override
     public String getTitle() {
         return "Var Imbalance on Execution Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public void doLoadData() {
         
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
         Object[] args = {getStartDate(), getStopDate(), imbalance, imbalance,imbalance};
-        jdbcOps.query(sql.toString(), args ,new RowCallbackHandler() {
+        jdbcTemplate.query(sql.toString(), args ,new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 
                 VarImbalanceOnExecutionModel.ModelRow row = new VarImbalanceOnExecutionModel.ModelRow();
@@ -220,18 +224,13 @@ public class VarImbalanceOnExecutionModel extends BareDatedReportModelBase<VarIm
         this.areaIds = areaIds;
     }
     
-    @Required
-    public void setJdbcOps(JdbcOperations jdbcOps) {
-        this.jdbcOps = jdbcOps;
-    }
-    
     public void setImbalance(Integer imbalance) {
         this.imbalance = imbalance;
     }
     
     @Override
-	public void setStrategyIdsFilter(Set<Integer> strategyIds) {
-		//Not used
-	}
+    public void setStrategyIdsFilter(Set<Integer> strategyIds) {
+        //Not used
+    }
     
 }

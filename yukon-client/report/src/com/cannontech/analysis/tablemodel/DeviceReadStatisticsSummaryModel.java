@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -27,26 +26,27 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 
 public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<DeviceReadStatisticsSummaryModel.ModelRow> implements UserContextModelAttributes {
 
-    private Logger log = YukonLogManager.getLogger(DeviceReadStatisticsSummaryModel.class);
+    private final Logger log = YukonLogManager.getLogger(DeviceReadStatisticsSummaryModel.class);
 
     // dependencies
-    private SimpleJdbcOperations simpleJdbcTemplate;
-    private AttributeService attributeService;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private AttributeService attributeService;
+    @Autowired private DeviceGroupService deviceGroupService;
     
     // member variables
     private YukonUserContext context;
     private String title = "Device Read Statistics Summary Report";
-    private List<ModelRow> data = new ArrayList<ModelRow>();
+    private final List<ModelRow> data = new ArrayList<ModelRow>();
     private Attribute attribute;
     private List<String> groupNames;
-    private DeviceGroupService deviceGroupService;
-
+    
     static public class ModelRow {
         public String groupName;
         public Integer deviceCount;
@@ -69,6 +69,7 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
         return ModelRow.class;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
@@ -77,10 +78,12 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
         this.title = title;
     }
     
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public void doLoadData() {
         Set<? extends DeviceGroup> groups = deviceGroupService.resolveGroupNames(groupNames);
         for(DeviceGroup group : groups) {
@@ -135,7 +138,7 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
                 deviceIds.add(paoIdentifier.getPaoId());
             }
 
-            ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
+            ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
 
             SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
                 @Override
@@ -174,6 +177,7 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
         this.context = context;
     }
     
+    @Override
     public YukonUserContext getUserContext() {
         return context;
     }
@@ -189,20 +193,4 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
     public void setGroupsFilter(List<String> groupNames) {
         this.groupNames = groupNames;
     }
-
-    @Required
-    public void setSimpleJdbcTemplate(SimpleJdbcOperations simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-    @Required
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-
 }

@@ -3,22 +3,23 @@ package com.cannontech.common.device.peakReport.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.device.peakReport.dao.PeakReportDao;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class PeakReportDaoImpl implements PeakReportDao {
 
-    private SimpleJdbcTemplate jdbcTemplate = null;
-    private NextValueHelper nextValueHelper = null;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
     
     
+    @Override
     public PeakReportResult getResult(int deviceId, PeakReportRunType runType) {
         
         String sql = "SELECT * FROM PeakReport WHERE deviceId = ? AND runType = ?";
@@ -39,6 +40,7 @@ public class PeakReportDaoImpl implements PeakReportDao {
 
     }
 
+    @Override
     public void saveResult(PeakReportResult peakResult) {
 
         // Delete any existing rows
@@ -59,6 +61,7 @@ public class PeakReportDaoImpl implements PeakReportDao {
                             peakResult.getResultString());
     }
 
+    @Override
     public void deleteReport(int deviceId, PeakReportRunType runType) {
         
         // Delete any existing rows
@@ -71,6 +74,7 @@ public class PeakReportDaoImpl implements PeakReportDao {
      */
     private class PeakReportResultMapper implements ParameterizedRowMapper<PeakReportResult> {
 
+        @Override
         public PeakReportResult mapRow(ResultSet rs, int rowNum) throws SQLException {
 
             PeakReportResult peakResult = new PeakReportResult();
@@ -87,15 +91,5 @@ public class PeakReportDaoImpl implements PeakReportDao {
             
             return peakResult;
         }
-    }
-    
-    @Required
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Required
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
 }

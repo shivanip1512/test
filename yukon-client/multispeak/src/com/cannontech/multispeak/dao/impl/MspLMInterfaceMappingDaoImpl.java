@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,18 +14,20 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.multispeak.dao.MspLMInterfaceMappingDao;
 import com.cannontech.multispeak.db.MspLMInterfaceMapping;
 
 public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
 
-	private String TABLENAME = "MspLMInterfaceMapping";
-	private SimpleJdbcTemplate template;
-    private NextValueHelper nextValueHelper;
+	private final String TABLENAME = "MspLMInterfaceMapping";
+	@Autowired private YukonJdbcTemplate jdbcTemplate;
+	@Autowired private NextValueHelper nextValueHelper;
     private PaoDao paoDao;
 
     private final ParameterizedRowMapper<MspLMInterfaceMapping> mspLMInterfaceMappingRowMapper = new ParameterizedRowMapper<MspLMInterfaceMapping>() {
+        @Override
         public MspLMInterfaceMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createMspLMInterfaceMapping(rs);
         };
@@ -39,7 +40,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
        					  " MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId)" + 
        					  " VALUES(?,?,?,?)";
 
-        int result = template.update(insertSql.toString(),  
+        int result = jdbcTemplate.update(insertSql.toString(),  
         		getNextMspLMInterfaceMappingId(), 
         		strategyName, substationName, paobjectId);
         return (result == 1);
@@ -55,7 +56,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
         sql.append("WHERE StrategyName = ").appendArgument(strategyName);
         sql.append("AND SubstationName = ").appendArgument(substationName);
 
-        int result = template.update(sql.getSql(), sql.getArguments()); 
+        int result = jdbcTemplate.update(sql.getSql(), sql.getArguments()); 
 		return (result == 1);
 	}
 	
@@ -66,7 +67,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
                          " FROM " + TABLENAME +
                          " WHERE MspLMInterfaceMappingId = ? ";
 			
-            return template.queryForObject(sql, mspLMInterfaceMappingRowMapper, new Object[] { new Integer(mspLMInterfaceMappingId)});
+            return jdbcTemplate.queryForObject(sql, mspLMInterfaceMappingRowMapper, new Object[] { new Integer(mspLMInterfaceMappingId)});
 
 		} catch (IncorrectResultSizeDataAccessException e) {
 			throw new NotFoundException("A MSP LM Interace with MspLmInterfaceMappingId " + mspLMInterfaceMappingId + " cannot be found.");
@@ -82,7 +83,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
                          " WHERE StrategyName = ? " + 
                          " AND SubstationName = ? ";
 			
-            return template.queryForObject(sql, mspLMInterfaceMappingRowMapper, new Object[] { strategyName, substationName});            
+            return jdbcTemplate.queryForObject(sql, mspLMInterfaceMappingRowMapper, new Object[] { strategyName, substationName});            
 		} catch (IncorrectResultSizeDataAccessException e) {
 			throw new NotFoundException("A MSP LM Interace with StrategyName = " + strategyName + " and SubstationName = " + substationName + " cannot be found.");
 		}
@@ -96,7 +97,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
                          " WHERE StrategyName = ? " + 
                          " AND SubstationName = ? ";
 			
-            return template.queryForInt(sql, new Object[] { strategyName, substationName});            
+            return jdbcTemplate.queryForInt(sql, new Object[] { strategyName, substationName});            
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
@@ -107,7 +108,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
         String sql = "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " +
                      " FROM " + TABLENAME;
 		
-        return template.query(sql, mspLMInterfaceMappingRowMapper);         
+        return jdbcTemplate.query(sql, mspLMInterfaceMappingRowMapper);         
 	}
 	
 	@Override
@@ -115,7 +116,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
 	public boolean remove(int mspLMInterfaceMappingId) {
 		String sql = "DELETE FROM " + TABLENAME + 
 					 " WHERE MspLmInterfaceMappingId = ?";
-        int result = template.update(sql, mspLMInterfaceMappingId);
+        int result = jdbcTemplate.update(sql, mspLMInterfaceMappingId);
         return (result == 1);
 	}
 
@@ -124,7 +125,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
 	public boolean removeAllByStrategyName(String strategyName) {
 		String sql = "DELETE FROM " + TABLENAME + 
 					 " WHERE StrategyName = ?";
-		int result = template.update(sql, strategyName);
+		int result = jdbcTemplate.update(sql, strategyName);
 		return (result == 1);
 	}
 
@@ -147,19 +148,4 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
     private int getNextMspLMInterfaceMappingId() {
         return nextValueHelper.getNextValue("MSPLMINTERFACEMAPPING");
     }
-    
-    @Autowired
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate template) {
-        this.template = template;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
-	}
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
-	}
 }

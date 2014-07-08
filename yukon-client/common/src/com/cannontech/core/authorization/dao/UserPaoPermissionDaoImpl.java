@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.pao.PaoIdentifier;
@@ -20,6 +20,7 @@ import com.cannontech.core.authorization.model.UserPaoPermission;
 import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -31,30 +32,13 @@ import com.google.common.collect.Multimap;
  * User implementation for PaoPermissionDao
  */
 public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser> {
-    private JdbcOperations jdbcTemplate = null;
-    private YukonJdbcTemplate yukonJdbcTemplate = null;
-    private NextValueHelper nextValueHelper = null;
-
-    public void setJdbcOps(JdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
+    
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
 
     @Override
     public List<PaoPermission> getPermissions(LiteYukonUser user) {
         return getPermissions(user.getUserID());
-    }
-
-    @Override
-    public List<PaoPermission> getPermissionsForPao(LiteYukonUser user, YukonPao pao) {
-        return getPermissionsForPao(user.getUserID(), pao.getPaoIdentifier().getPaoId());
     }
 
     @Override
@@ -101,10 +85,11 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     }
 
     private List<Integer> getPaosForPermission(int userID, Permission permission) {
-        String sql = "select paoid from userpaopermission where userid = ? and permission = ?";
-
-        List<Integer> paoIdList =
-            jdbcTemplate.queryForList(sql, new Object[] { userID, permission.name() }, Integer.class);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select paoid from UserPaoPermission where userid").eq(userID);
+        sql.append(    "and permission").eq(permission.name());
+        
+        List<Integer> paoIdList = jdbcTemplate.query(sql,  RowMapper.INTEGER);
         return paoIdList;
     }
 
@@ -125,10 +110,13 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
 
     @Override
     public AuthorizationResponse hasPermissionForPao(int userId, int paoId, Permission permission) {
-        String sql = "select allow from UserPaoPermission where userid = ? and paoid = ? and permission = ?";
-
-        List<String> allowList =
-            jdbcTemplate.queryForList(sql, new Object[] { userId, paoId, permission.name() }, String.class);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select allow from UserPaoPermission where userid").eq(userId);
+        sql.append(    "and paoId").eq(paoId);
+        sql.append(    "and permission").eq(permission.name());
+                        
+        List<String> allowList = jdbcTemplate.query(sql, RowMapper.STRING);
 
         if (allowList.size() == 0) {
             return AuthorizationResponse.UNKNOWN;
@@ -154,7 +142,7 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
             paoLookup.put(paoId, pao);
         }
 
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
 
         template.query(new SqlFragmentGenerator<Integer>() {
             @Override
@@ -183,19 +171,10 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     }
 
     private List<PaoPermission> getPermissions(int userId) {
-        String sql = "select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission "
-                + "where userid = ?";
-        List<? extends PaoPermission> uppList =
-            jdbcTemplate.query(sql, new Object[] { userId }, new UserPaoPermissionMapper());
-        List<PaoPermission> result = Lists.newArrayList(uppList);
-        return result;
-    }
-
-    private List<PaoPermission> getPermissionsForPao(int userId, int paoId) {
-        String sql = "select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission "
-                + "where userid = ? and paoid = ?";
-        List<? extends PaoPermission> uppList =
-            jdbcTemplate.query(sql, new Object[] { userId, paoId }, new UserPaoPermissionMapper());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission where userid")
+            .eq(userId);
+        List<? extends PaoPermission> uppList = jdbcTemplate.query(sql, new UserPaoPermissionMapper());
         List<PaoPermission> result = Lists.newArrayList(uppList);
         return result;
     }

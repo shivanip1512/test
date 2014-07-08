@@ -31,9 +31,6 @@
     <!-- Authorization Daos -->
     <bean id="userPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserPaoPermissionDaoImpl">
         <qualifier value="user"/>
-        <property name="jdbcOps" ref="jdbcTemplate" />
-        <property name="nextValueHelper" ref="nextValueHelper" />
-        <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
 	
     <bean id="userGroupPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserGroupPaoPermissionDaoImpl">

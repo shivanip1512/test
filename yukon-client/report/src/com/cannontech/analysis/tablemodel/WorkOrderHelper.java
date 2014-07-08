@@ -8,22 +8,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 
 public final class WorkOrderHelper {
     private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
         YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-    private final SimpleJdbcTemplate simpleJdbcTemplate = 
-        YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+    
+    private static YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
     
     private final Map<Integer, Map<Integer, LiteAccountInfo>> ecToAccountMap = 
         new HashMap<Integer, Map<Integer, LiteAccountInfo>>();
@@ -97,7 +97,7 @@ public final class WorkOrderHelper {
         };
         
         // Run SQL for Inventory that contain non-zero DeviceID's.
-        final ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
+        final ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         List<Holder> list1 = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {

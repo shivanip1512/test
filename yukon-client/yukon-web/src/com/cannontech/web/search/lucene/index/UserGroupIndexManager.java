@@ -1,6 +1,5 @@
 package com.cannontech.web.search.lucene.index;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -9,6 +8,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Lists;
@@ -23,24 +23,24 @@ public class UserGroupIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected String getDocumentQuery() {
+    protected SqlStatementBuilder getDocumentQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM UserGroup");
         sql.append("ORDER BY Name");
-        return sql.getSql();
+        return sql;
     }
 
     @Override
-    protected String getDocumentCountQuery() {
+    protected SqlStatementBuilder getDocumentCountQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
         sql.append("FROM UserGroup");
-        return sql.getSql();
+        return sql;
     }
 
     @Override
-    protected Document createDocument(ResultSet rs) throws SQLException {
+    protected Document createDocument(YukonResultSet rs) throws SQLException {
 
         Document doc = new Document();
 
@@ -82,10 +82,10 @@ public class UserGroupIndexManager extends SimpleIndexManager {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM UserGroup");
-        sql.append("WHERE UserGroupId = ?");
+        sql.append("WHERE UserGroupId").eq(userGroupId);
         sql.append("ORDER BY Name");
 
-        docList = jdbcTemplate.query(sql.getSql(), new Object[] { userGroupId }, new DocumentMapper());
+        docList = jdbcTemplate.query(sql, new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }
 }

@@ -117,7 +117,7 @@ public final class YukonImageDaoImpl implements YukonImageDao {
         OutputStream out = new FileOutputStream(temp);
         FileCopyUtils.copy(in, out);
 
-        template.getJdbcOperations().update("insert into YukonImage values (?, ?, ?, ?)", new PreparedStatementSetter() {
+        template.update("insert into YukonImage values (?, ?, ?, ?)", new PreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps) throws SQLException {
                 ps.setInt(1, id);

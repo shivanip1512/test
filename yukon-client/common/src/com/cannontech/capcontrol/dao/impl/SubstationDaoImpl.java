@@ -150,7 +150,7 @@ public class SubstationDaoImpl implements SubstationDao {
         sql.append("ORDER BY PAOName");
         
         PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, liteCapControlObjectRowMapper);
-        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
+        yukonJdbcTemplate.query(sql.getSql(), sql.getArguments(), orphanExtractor);
         
         List<LiteCapControlObject> unassignedSubstations = orphanExtractor.getResultList();
         

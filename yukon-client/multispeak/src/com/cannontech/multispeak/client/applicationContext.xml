@@ -58,12 +58,7 @@
 	</property>
   </bean>
   
-  <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">
-    <property name="jdbcOps" ref="jdbcTemplate"/> 
-    <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
-    <property name="transactionTemplate" ref="transactionTemplate"/> 
-    <property name="nextValueHelper" ref="nextValueHelper"/>  
-  </bean>
+  <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl"/>
   
   <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.MspRawPointHistoryDaoImpl"/>
   

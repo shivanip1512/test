@@ -15,7 +15,7 @@ import org.springframework.jdbc.core.StatementCallback;
 import com.cannontech.clientutils.YukonLogManager;
 
 public class LoggingJdbcTemplate extends JdbcTemplate {
-    private Logger log = YukonLogManager.getLogger(LoggingJdbcTemplate.class);
+    private final Logger log = YukonLogManager.getLogger(LoggingJdbcTemplate.class);
     @Override
     public Object execute(StatementCallback action) throws DataAccessException {
         long startTime = System.nanoTime();

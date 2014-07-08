@@ -10,7 +10,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.analysis.ColumnProperties;
@@ -32,6 +31,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
 import com.google.common.collect.ImmutableMultimap;
@@ -127,14 +127,14 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
         }
         ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoUtils.mapPaoPointIdentifiers(identifiers);
 
-        SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
         for(final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()){
             List<Integer> deviceIds = Lists.newArrayList();
             for(PaoIdentifier paoIdentifier :  paoPointIdentifiersMap.get(pointIdentifier)){
                 deviceIds.add(paoIdentifier.getPaoId());
             }
 
-            ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
+            ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
 
             SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
                 @Override

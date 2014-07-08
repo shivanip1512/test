@@ -48,7 +48,7 @@ public class DeviceStatusFilterByProducer extends AbstractInventoryFilterByProdu
                 sb1.append(")");
                 String sql1 = sb1.toString();
                 
-                List<Integer> list = simpleJdbcTemplate.query(sql1, rowMapper, filterValue);
+                List<Integer> list = jdbcTemplate.query(sql1, rowMapper, filterValue);
                 
                 if (list.isEmpty()) {
                     list.add(Integer.MIN_VALUE);

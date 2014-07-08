@@ -1,6 +1,5 @@
 package com.cannontech.web.search.lucene.index;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +15,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.service.PaoLoadingService;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -31,11 +31,11 @@ public class PaoIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected String getDocumentQuery() {
+    protected SqlStatementBuilder getDocumentQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(getBaseQuery());
         sql.append(getOrderBy());
-        return sql.getSql();
+        return sql;
     }
     
     private SqlStatementBuilder getBaseQuery() {
@@ -53,16 +53,16 @@ public class PaoIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected String getDocumentCountQuery() {
+    protected SqlStatementBuilder getDocumentCountQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(*)");
         sql.append("from yukonpaobject");
-        return sql.getSql();
+        return sql;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected Document createDocument(ResultSet rs) throws SQLException {
+    protected Document createDocument(YukonResultSet rs) throws SQLException {
         Document doc = new Document();
 
         int paoId = rs.getInt("paobjectId");
@@ -137,9 +137,7 @@ public class PaoIndexManager extends SimpleIndexManager {
         sql.append("WHERE ypo.paobjectid").eq(paoId);
         sql.append(getOrderBy());
 
-        docList = this.jdbcTemplate.query(sql.getSql(),
-                                          sql.getArguments(),
-                                          new DocumentMapper());
+        docList = this.jdbcTemplate.query(sql, new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }
 

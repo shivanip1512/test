@@ -5,21 +5,17 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.stars.util.filter.JoinTable;
 import com.cannontech.stars.util.filter.filterBy.FilterBy;
 import com.cannontech.stars.util.filter.filterBy.FilterByProducer;
 
 public abstract class AbstractWorkOrderFilterByProducer implements FilterByProducer {
-    protected SimpleJdbcTemplate simpleJdbcTemplate;
     
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-    
+    @Autowired YukonJdbcTemplate jdbcTemplate;
+        
     protected static final FilterBy RESIDENTIAL_CUSTOMER_TYPE = new FilterBy() {
         @Override
         public Collection<JoinTable> getJoinTables() {

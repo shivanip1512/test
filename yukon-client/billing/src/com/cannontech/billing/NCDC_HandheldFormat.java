@@ -6,12 +6,12 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.billing.record.NCDC_Handheld;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -86,9 +86,9 @@ public class NCDC_HandheldFormat extends FileFormatBase
 	    sql.append(SQLStringBuilder.PT_POINTOFFSET, ", ");
 	    sql.append(SQLStringBuilder.RPH_TIMESTAMP, " DESC ");
 
-	    JdbcTemplate jdbcTemplate = YukonSpringHook.getBean("jdbcTemplate", JdbcTemplate.class);
+	    YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
-	    jdbcTemplate.query(sql.getSql(), sql.getArguments(), new ResultSetExtractor() {
+	    jdbcTemplate.query(sql, new ResultSetExtractor() {
 	        @Override
 	        public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
 	            //PT_POINTID, PT_POINTOFFSET, RPH_TIMESTAMP, RPH_VALUE, PAO_PAOBJECTID, PAO_PAONAME				

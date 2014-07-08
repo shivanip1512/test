@@ -16,7 +16,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.spring.YukonBaseXmlApplicationContext;
@@ -24,8 +24,9 @@ import com.google.common.collect.Lists;
 
 public class YukonServiceManagerImpl implements YukonServiceManager, ApplicationContextAware {
     private Logger log = YukonLogManager.getLogger(YukonServiceManagerImpl.class);
+    
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     private ApplicationContext applicationContext;
-    private YukonJdbcOperations yukonJdbcOperations;
     private CountDownLatch shutdownLatch = new CountDownLatch(1);
     private List<ConfigurableApplicationContext> contexts = Lists.newArrayList();
     
@@ -42,7 +43,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
         sql.append("FROM YukonServices");
         sql.append("WHERE ServiceID > 0 and AppName = ").appendArgument(BootstrapUtils.getApplicationName());
         
-        yukonJdbcOperations.query(sql, new YukonRowCallbackHandler() {
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rset) throws SQLException {
             	String displayName = rset.getString("ServiceName");
@@ -123,10 +124,5 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
             throws BeansException {
         this.applicationContext = applicationContext;
         
-    }
-    
-    @Autowired
-    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-        this.yukonJdbcOperations = yukonJdbcOperations;
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
@@ -19,7 +19,7 @@ import com.google.common.collect.Maps;
 
 public class ScenarioDaoImpl implements ScenarioDao {
 	
-    private YukonJdbcOperations yukonJdbcOperations;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     private SqlStatementBuilder singleScenarioByIdQuery;
     {
@@ -71,7 +71,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
         sql.append("AND PAO.PAObjectId").eq(scenarioId);
         sql.append(singleScenarioByIdQueryGroupBy);
         
-        return yukonJdbcOperations.queryForObject(sql, scenarioRowMapper);
+        return jdbcTemplate.queryForObject(sql, scenarioRowMapper);
     }
     
     @Override
@@ -81,7 +81,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
     	sql.appendFragment(singleScenarioByIdQuery);
     	sql.append(singleScenarioByIdQueryGroupBy);
     	
-        return yukonJdbcOperations.query(sql, scenarioRowMapper);
+        return jdbcTemplate.query(sql, scenarioRowMapper);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
         sql.append("AND PAO.PAObjectId").in(innerSql);
         sql.append(singleScenarioByIdQueryGroupBy);
         
-        List<Scenario> retVal = yukonJdbcOperations.query(sql, scenarioRowMapper);
+        List<Scenario> retVal = jdbcTemplate.query(sql, scenarioRowMapper);
         return retVal;
     }
 
@@ -106,7 +106,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
         Map<Integer, ScenarioProgram> retVal = Maps.newHashMap();
 
         List<ScenarioProgram> scenarioPrograms =
-        	yukonJdbcOperations.query("SELECT scenarioId, programId, " +
+                jdbcTemplate.query("SELECT scenarioId, programId, " +
             		"startOffset, stopOffset, startGear" +
             		" FROM lmControlScenarioProgram WHERE scenarioid = ?",
             		scenarioProgramRowMapper, scenarioId);
@@ -116,9 +116,4 @@ public class ScenarioDaoImpl implements ScenarioDao {
 
         return retVal;
     }
-
-    @Autowired
-    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-		this.yukonJdbcOperations = yukonJdbcOperations;
-	}
 }

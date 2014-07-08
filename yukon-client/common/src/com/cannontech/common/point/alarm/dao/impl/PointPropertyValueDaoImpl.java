@@ -4,15 +4,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class PointPropertyValueDaoImpl implements PointPropertyValueDao{
+    
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     private static final String insertSql;
     private static final String removeSql;
     private static final String removeByPointIdSql;
@@ -22,7 +25,6 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao{
     private static final String selectByIdAndAttributeSql;
     
     private static final ParameterizedRowMapper<PointPropertyValue> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
     
     static {
             insertSql = "INSERT INTO PointPropertyValue (pointid," + 
@@ -42,6 +44,7 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao{
             selectByIdAndAttributeSql = selectAllSql + " WHERE pointid = ? AND PointPropertyCode = ?";
             
             rowMapper = new ParameterizedRowMapper<PointPropertyValue>() {
+            @Override
             public PointPropertyValue mapRow(ResultSet rs, int rowNum) throws SQLException {
             	PointPropertyValue attribute = new PointPropertyValue();
             	attribute.setPointId(rs.getInt("PointID"));
@@ -52,46 +55,48 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao{
         };
     
     }
-    
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-	
+    	
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean add(PointPropertyValue attrib) {
-		int rowsAffected = simpleJdbcTemplate.update(insertSql, attrib.getPointId(),
+		int rowsAffected = jdbcTemplate.update(insertSql, attrib.getPointId(),
 																attrib.getPointPropertyCode(),
 																attrib.getFloatValue());
 		return (rowsAffected == 1);
 	}
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public List<PointPropertyValue> getById(int id) {
-		return simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
+		return jdbcTemplate.query(selectByIdSql, rowMapper, id);
 	}
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public PointPropertyValue getByIdAndPropertyId(int id, int attributeId) {
-    	return simpleJdbcTemplate.queryForObject(selectByIdAndAttributeSql, rowMapper, new Object[] {id, attributeId});
+    	return jdbcTemplate.queryForObject(selectByIdAndAttributeSql, rowMapper, new Object[] {id, attributeId});
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	@Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean remove(PointPropertyValue attrib) {
-        int rowsAffected = simpleJdbcTemplate.update(removeSql,attrib.getPointId(),attrib.getPointPropertyCode() );
+        int rowsAffected = jdbcTemplate.update(removeSql,attrib.getPointId(),attrib.getPointPropertyCode() );
 
         return (rowsAffected > 0);
 	}
     
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	@Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean removeByPointId(int id) {
-        int rowsAffected = simpleJdbcTemplate.update(removeByPointIdSql,id );
+        int rowsAffected = jdbcTemplate.update(removeByPointIdSql,id );
 
         return (rowsAffected > 0);
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	@Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean update(PointPropertyValue attrib) {
-		int rowsAffected = simpleJdbcTemplate.update(updateSql,
+		int rowsAffected = jdbcTemplate.update(updateSql,
 				attrib.getFloatValue(),
 				attrib.getPointId(),
 				attrib.getPointPropertyCode());

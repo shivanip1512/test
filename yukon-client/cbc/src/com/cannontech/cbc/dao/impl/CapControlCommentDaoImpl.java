@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,8 +39,8 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
     private static final String selectLastTenForPaoAndActon;
     private static final YukonRowMapper<CapControlComment> rowMapper;
     private static final ParameterizedRowMapper<List<Integer>> paoIdRowMapper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
     
     static {
             insertSql = "INSERT INTO CapControlComment (commentid,paoid,userid,commentTime,Action,capComment,altered) VALUES (?,?,?,?,?,?,?)";
@@ -93,6 +93,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
             paoIdRowMapper = createPaoIdRowMapper();
         }
 
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(CapControlComment comment) {
         int id = nextValueHelper.getNextValue("CapControlComment");
@@ -109,6 +110,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         return result;
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove( CapControlComment comment ){
         int rowsAffected = yukonJdbcTemplate.update(removeSql, comment.getId());
@@ -116,6 +118,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         return result;
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update( CapControlComment comment ){
         int rowsAffected = yukonJdbcTemplate.update(updateSql, comment.getPaoId(),
@@ -129,12 +132,14 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         return result;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CapControlComment getById(int id) throws IncorrectResultSizeDataAccessException {
         CapControlComment comment = yukonJdbcTemplate.queryForObject(new SqlFragment(selectByIdSql, id), rowMapper);
         return comment;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CapControlComment getDisabledByPaoId(int paoId) throws IncorrectResultSizeDataAccessException {
         List<CapControlComment> list = yukonJdbcTemplate.query(new SqlFragment(selectByPaoIdActionSql, paoId, CommentAction.DISABLED.name()), rowMapper);
@@ -143,6 +148,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         return comment;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CapControlComment getDisabledOVUVByPaoId(final int paoId, final CapControlType type) throws DataRetrievalFailureException {
         String paoIdSql;
@@ -196,6 +202,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         return comment;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CapControlComment getStandaloneReasonByPaoId(int paoId) throws IncorrectResultSizeDataAccessException {
         List<CapControlComment> list = yukonJdbcTemplate.query(new SqlFragment(selectByPaoIdActionSql, paoId, CommentAction.STANDALONE_REASON.name()), rowMapper);
@@ -204,6 +211,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         return comment;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CapControlComment> getUserCommentsByPaoId(final int paoId, final int num) {
         List<CapControlComment> list = yukonJdbcTemplate.query(new SqlFragment(selectByPaoIdActionSql, paoId, CommentAction.USER_COMMENT.name()), rowMapper);
@@ -212,6 +220,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         return resultList; 
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CapControlComment> getAllCommentsByPao( int paoId ) { 
         String sql = selectAllSql + " WHERE paoId = ? ORDER BY commentTime asc";
@@ -219,19 +228,20 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         return list;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<String> getLastTenCommentsByActionAndType(int paoId, CommentAction action ) {
         MaxListResultSetExtractor<String> rse = new MaxListResultSetExtractor<String>(createSimpleCommentRowMapper(), 10);
         String sql = selectLastTenForPaoAndActon;
-        JdbcOperations oldTemplate = yukonJdbcTemplate.getJdbcOperations();
         Object[] arguments = new Object[] {action.name(), paoId};
-        oldTemplate.query(sql, arguments, rse);
+        yukonJdbcTemplate.query(sql, arguments, rse);
         List<String> result = rse.getResult();
         return result;
     }
     
     private static final ParameterizedRowMapper<String> createSimpleCommentRowMapper() {
         ParameterizedRowMapper<String> rowMapper = new ParameterizedRowMapper<String>() {
+            @Override
             public String mapRow(ResultSet rs, int rowNum) throws SQLException {
                 
                 String comment = rs.getString("Comment");
@@ -243,6 +253,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
     
     private static final YukonRowMapper<CapControlComment> createRowMapper() {
     	YukonRowMapper<CapControlComment> rowMapper = new YukonRowMapper<CapControlComment>() {
+            @Override
             public CapControlComment mapRow(YukonResultSet rs) throws SQLException {
                 CapControlComment comment = new CapControlComment();
                 comment.setId(rs.getInt("CommentID"));
@@ -278,14 +289,6 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
             }
         };
         return rowMapper;
-    }
-
-    public void setSimpleJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
 }
 

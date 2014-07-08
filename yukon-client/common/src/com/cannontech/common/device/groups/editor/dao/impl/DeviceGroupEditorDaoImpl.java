@@ -16,7 +16,6 @@ import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -49,7 +48,6 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -64,15 +62,14 @@ import com.google.common.collect.Lists;
 public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGroupMemberEditorDao, PartialDeviceGroupDao {
     private final Logger log = YukonLogManager.getLogger(DeviceGroupEditorDaoImpl.class);
     
-    private YukonJdbcOperations jdbcTemplate;
-    private NextValueHelper nextValueHelper;
-    private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DeviceGroupService deviceGroupService;
     
     private StoredDeviceGroup rootGroupCache = null;
-    private Map<SystemGroupEnum, String> systemGroupPaths = new HashMap<>();
+    private final Map<SystemGroupEnum, String> systemGroupPaths = new HashMap<>();
     
     @PostConstruct
     private void initialize() {
@@ -406,7 +403,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sink.addValue("Type",  type.name());
         sink.addValue("CreatedDate", now);               
         try {
-            yukonJdbcTemplate.update(sql);
+            jdbcTemplate.update(sql);
         } catch (DataAccessException e) {
             throw new DuplicateException("Cannot create group with the same name as an existing group with the same parent.", e);
         }
@@ -701,21 +698,5 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         }
 
         return fullPath;
-    }
-    
-    @Required
-    public void setJdbcTemplate(YukonJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-    
-    @Required
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setVendorSpecificSqlBuilderFactory(
-            VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory) {
-        this.vendorSpecificSqlBuilderFactory = vendorSpecificSqlBuilderFactory;
     }
 }

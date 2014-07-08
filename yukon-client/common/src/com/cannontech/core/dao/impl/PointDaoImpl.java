@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.creation.DeviceCreationException;
@@ -85,7 +84,6 @@ public class PointDaoImpl implements PointDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     private static final Logger log = YukonLogManager.getLogger(PointDaoImpl.class);
-    private JdbcOperations jdbcOps;
     private ChunkingSqlTemplate chunkingTemplate;
     private ChunkingMappedSqlTemplate chunkingMappedSqlTemplate;
     
@@ -93,7 +91,6 @@ public class PointDaoImpl implements PointDao {
     public void init() {
         chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
         chunkingMappedSqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
-        jdbcOps = jdbcTemplate.getJdbcOperations();
     }
     
     private final YukonRowMapper<LitePoint> litePointRowMapper = new YukonRowMapper<LitePoint>() {
@@ -255,7 +252,7 @@ public class PointDaoImpl implements PointDao {
         SqlUtil.buildInClause("and", "ypo", "cateogry", paoCategoriesStr, sql);
         SqlUtil.buildInClause("and", "ypo", "paoclass", paoClassesStr, sql);
         
-        List<LitePoint> points = jdbcOps.query(sql.toString(), new YukonRowMapperAdapter<LitePoint>(litePointRowMapper));
+        List<LitePoint> points =  jdbcTemplate.query(sql.toString(), new YukonRowMapperAdapter<LitePoint>(litePointRowMapper));
         
         return points;
     }
@@ -388,7 +385,7 @@ public class PointDaoImpl implements PointDao {
 
     private static class EntryRowMapper implements YukonRowMapper<Map.Entry<Integer, PointInfo>> {
         
-        private Map<PointInfo, PointInfo> alreadyCreated = Maps.newHashMap();
+        private final Map<PointInfo, PointInfo> alreadyCreated = Maps.newHashMap();
 
         @Override
         public Map.Entry<Integer, PointInfo> mapRow(YukonResultSet rs) throws SQLException {
@@ -402,7 +399,7 @@ public class PointDaoImpl implements PointDao {
     
     private static class PointIdToPointInfoRowMapper implements YukonRowMapper<Map.Entry<Integer, PointInfo>> {
         
-        private Map<PointInfo, PointInfo> alreadyCreated = Maps.newHashMap();
+        private final Map<PointInfo, PointInfo> alreadyCreated = Maps.newHashMap();
         
         @Override
         public Map.Entry<Integer, PointInfo> mapRow(YukonResultSet rs) throws SQLException {
@@ -416,7 +413,7 @@ public class PointDaoImpl implements PointDao {
     
     private class PointIdToLitePointRowMapper implements YukonRowMapper<Map.Entry<Integer, LitePoint>> {
         
-        private Map<LitePoint, LitePoint> alreadyCreated = Maps.newHashMap();
+        private final Map<LitePoint, LitePoint> alreadyCreated = Maps.newHashMap();
 
         @Override
         public Map.Entry<Integer, LitePoint> mapRow(YukonResultSet rs) throws SQLException {

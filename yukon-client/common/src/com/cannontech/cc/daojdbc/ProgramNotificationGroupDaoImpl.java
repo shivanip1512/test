@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,18 +16,16 @@ import com.cannontech.cc.dao.ProgramNotificationGroupDao;
 import com.cannontech.cc.model.Program;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotificationGroupDao;
-import com.cannontech.core.dao.support.YukonBaseJdbcDao;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.spring.CollectionResultSetExtractor;
 
-public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements ProgramNotificationGroupDao {
+public class ProgramNotificationGroupDaoImpl implements ProgramNotificationGroupDao {
     
-    private NotificationGroupDao notificationGroupDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private NotificationGroupDao notificationGroupDao;
     
-    public ProgramNotificationGroupDaoImpl() {
-        super();
-    }
-
+    @Override
     public Set<LiteNotificationGroup> getNotificationGroupsForProgram(Program program) {
         SqlStatementBuilder query = new SqlStatementBuilder();
         query.append("select NotificationGroupId");
@@ -34,6 +33,7 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
         query.append("where CCurtProgramId = ?");
         Object[] args = new Object[] {program.getId()};
         RowMapper rowMapper = new RowMapper() {
+            @Override
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
                 int notificationGroupId = rs.getInt("NotificationGroupId");
                 LiteNotificationGroup lng = 
@@ -43,10 +43,11 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
         };
         Set<LiteNotificationGroup> result = new HashSet<LiteNotificationGroup>();
         CollectionResultSetExtractor extractor = new CollectionResultSetExtractor(result,rowMapper);
-        getJdbcTemplate().query(query.toString(), args, extractor);
+        jdbcTemplate.query(query.getSql(), args, extractor);
         return result;
     }
     
+    @Override
     @Transactional(propagation=Propagation.REQUIRED)
     public void setNotificationGroupsForProgram(Program program, Set<LiteNotificationGroup> notificationGroups) {
         Set<LiteNotificationGroup> currentDbSet = getNotificationGroupsForProgram(program);
@@ -60,12 +61,13 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
             final int notifGroupId = notifGroup.getLiteID();
             final int programId = program.getId();
             PreparedStatementSetter pss = new PreparedStatementSetter() {
+                @Override
                 public void setValues(PreparedStatement ps) throws SQLException {
                     ps.setInt(1, notifGroupId);
                     ps.setInt(2, programId);
                 }
             };
-            getJdbcTemplate().update(addSql.toString(), pss);
+            jdbcTemplate.update(addSql.getSql(), pss);
         }
         
         // find ids that are to be added
@@ -80,9 +82,10 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
         deleteSql.append("from CCurtProgramNotifGroup");
         deleteSql.append("where NotificationGroupId in (", toDeleteInts, ")");
         deleteSql.append("and CCurtProgramId = ", program.getId());
-        getJdbcTemplate().execute(deleteSql.toString());
+        jdbcTemplate.update(deleteSql);
     }
     
+    @Override
     public void deleteForProgram(Program program) {
         Object[] args = new Object[] {program.getId()};
         SqlStatementBuilder query = new SqlStatementBuilder();
@@ -90,11 +93,6 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
         query.append("from CCurtProgramNotifGroup");
         query.append("where CCurtProgramId = ?");
         
-        getJdbcTemplate().update(query.toString(), args);
+        jdbcTemplate.update(query.getSql(), args);
     }
-
-    public void setNotificationGroupDao(NotificationGroupDao notificationGroupDao) {
-        this.notificationGroupDao = notificationGroupDao;
-    }
-
 }

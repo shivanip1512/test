@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
     private static final SqlStatementBuilder selectAllSql;
     private static final SqlStatementBuilder selectBySubIdSql;
     private static final SqlStatementBuilder selectAvailableSql;
-    private YukonJdbcTemplate template;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     static {
         insertSql = new SqlStatementBuilder();
@@ -63,30 +64,35 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
         selectAvailableSql.append("(SELECT DISTINCT RouteID FROM SubstationToRouteMapping WHERE SubstationID = ?)");
     }
 
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(final int substationId, final int routeId, final int ordering) {
-        int result = template.update(insertSql.toString(), substationId, routeId, ordering);
+        int result = jdbcTemplate.update(insertSql.toString(), substationId, routeId, ordering);
         return (result == 1);
     }
 
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(final int substationId, final int routeId) {
-        int result = template.update(deleteSql.toString(), substationId, routeId);
+        int result = jdbcTemplate.update(deleteSql.toString(), substationId, routeId);
         return (result == 1);
     }
 
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean removeAllBySubstationId(final int substationId) {
-        int result = template.update(deleteBySubIdSql.toString(), new Object[]{substationId});
+        int result = jdbcTemplate.update(deleteBySubIdSql.toString(), new Object[]{substationId});
         return (result >= 0);
     }
 
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean removeAllByRouteId(final int routeId) {
-        int result = template.update(deleteByRouteIdSql.toString(), routeId);
+        int result = jdbcTemplate.update(deleteByRouteIdSql.toString(), routeId);
         return (result >= 0);
     }
 
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update(final int substationId, final List<Integer> routeIdList) {
         removeAllBySubstationId(substationId);
@@ -99,9 +105,11 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
         return true;
     }
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Route> getRoutesBySubstationId(final int substationId) {
-        return template.query(selectBySubIdSql.toString(), new ParameterizedRowMapper<Route>() {
+        return jdbcTemplate.query(selectBySubIdSql.toString(), new ParameterizedRowMapper<Route>() {
+            @Override
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PaoType type = PaoType.getForDbString(rs.getString("Type"));
                 return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), rs.getInt("Ordering"), type);
@@ -109,18 +117,22 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
         }, substationId);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getRouteIdsBySubstationId(final int substationId) {
-        return template.query(selectBySubIdSql.toString(), new ParameterizedRowMapper<Integer>() {
+        return jdbcTemplate.query(selectBySubIdSql.toString(), new ParameterizedRowMapper<Integer>() {
+            @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return rs.getInt("PAObjectID");
             };
         }, substationId);
     }
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Route> getAvailableRoutesBySubstationId(final int substationId) {
-        return template.query(selectAvailableSql.toString(), new ParameterizedRowMapper<Route>() {
+        return jdbcTemplate.query(selectAvailableSql.toString(), new ParameterizedRowMapper<Route>() {
+            @Override
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PaoType type = PaoType.getForDbString(rs.getString("Type"));
                 return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), -1, type);
@@ -128,9 +140,11 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
         }, substationId);
     }
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Route> getAll() {
-        return template.query(selectAllSql.toString(), new ParameterizedRowMapper<Route>() {
+        return jdbcTemplate.query(selectAllSql.toString(), new ParameterizedRowMapper<Route>() {
+            @Override
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PaoType type = PaoType.getForDbString(rs.getString("Type"));
                 return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), -1, type);
@@ -148,13 +162,8 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
         sql.append("where DeviceRoutes.DeviceID").eq(device.getPaoIdentifier().getPaoId());
         sql.append("  and Substation.SubstationId != 0");
         
-        List<Substation> result = template.query(sql, new SubstationRowMapper());
+        List<Substation> result = jdbcTemplate.query(sql, new SubstationRowMapper());
         
         return result;
     }
-
-    public void setSimpleJdbcTemplate(final YukonJdbcTemplate template) {
-        this.template = template;
-    }
-
 }

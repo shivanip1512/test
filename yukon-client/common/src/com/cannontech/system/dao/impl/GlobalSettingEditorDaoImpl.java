@@ -14,7 +14,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.InputTypeFactory;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.encryption.CryptoException;
@@ -31,7 +31,7 @@ import com.google.common.collect.Sets;
 public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
     private final Logger log = YukonLogManager.getLogger(GlobalSettingEditorDaoImpl.class);
 
-    @Autowired private YukonJdbcOperations yukonJdbcOperations;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Override
     public Map<GlobalSettingType, GlobalSetting> getSettingsForCategory(GlobalSettingSubCategory category) {
@@ -45,7 +45,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
         final Set<GlobalSettingType> found = Sets.newHashSet();
         final Map<GlobalSettingType, GlobalSetting> settings = Maps.newHashMap();
         
-        yukonJdbcOperations.query(sql, new YukonRowCallbackHandler() {
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
 

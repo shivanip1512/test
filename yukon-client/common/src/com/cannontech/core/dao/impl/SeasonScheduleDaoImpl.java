@@ -8,22 +8,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
-import com.cannontech.core.dao.SeasonScheduleDao;
-import com.cannontech.database.model.Season;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.season.SeasonSchedule;
+import com.cannontech.database.model.Season;
 
 public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
 
-    private SimpleJdbcOperations jdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     private static final ParameterizedRowMapper<Season> seasonRowMapper = new ParameterizedRowMapper<Season>() {
+        @Override
         public Season mapRow(ResultSet rs, int rowNum) throws SQLException {
             Season season = new Season();
             season.setSeasonName( rs.getString("SeasonName"));
@@ -33,12 +35,14 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
     };
     
     private static final ParameterizedRowMapper<Integer> scheduleIDRowMapper = new ParameterizedRowMapper<Integer>() {
+        @Override
         public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
             int scheduleId = rs.getInt("SeasonScheduleId");
             return scheduleId;
         }
     };
     
+    @Override
     public SeasonSchedule getScheduleForPao(int paoId) {
         
         String sql = "Select SeasonScheduleID " + 
@@ -75,6 +79,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         return schedule;
     }
     
+    @Override
     public Map<Season, Integer> getSeasonStrategyAssignments(int paoId) {
         HashMap<Season, Integer> map = new HashMap<Season, Integer>();
         SeasonSchedule schedule = getScheduleForPao(paoId);
@@ -93,6 +98,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         return map;
     }
     
+    @Override
     public Map<Season, Integer> getUserFriendlySeasonStrategyAssignments(int paoId) {
         HashMap<Season, Integer> map = new HashMap<Season, Integer>();
         SeasonSchedule schedule = getScheduleForPao(paoId);
@@ -120,6 +126,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         return map;
     }
 
+    @Override
     public List<Season> getSeasonsForSchedule(Integer scheduleId) {
         
         String sql = "SELECT SeasonName, SeasonScheduleID FROM DateOfSeason WHERE SeasonScheduleID = ?" 
@@ -130,6 +137,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         return seasons;
     }
     
+    @Override
     public List<Season> getUserFriendlySeasonsForSchedule(Integer scheduleId) {
         
         String sql = "Select SeasonName, SeasonScheduleID From DateOfSeason Where SeasonScheduleID = ?";
@@ -147,6 +155,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         return seasons;
     }
 
+    @Override
     public void saveSeasonStrategyAssigment(int paoId, Map<Season, Integer> map, int scheduleId) {
         List<Season> actualSeasons = getSeasonsForSchedule(scheduleId);
         Map<Season, Integer> fixedMap = fixSeasonMapForEndOfYearJump(map, actualSeasons);
@@ -175,6 +184,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
      * @param actualSeasons
      * @return
      */
+    @Override
     public Map<Season, Integer> fixSeasonMapForEndOfYearJump(Map<Season, Integer> map, List<Season> actualSeasons){
         HashMap<Season, Integer> newMap = new HashMap<Season, Integer>();
         
@@ -210,10 +220,6 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
                 connection.close();
             } catch (SQLException e) {}
         }
-    }
-
-    public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override

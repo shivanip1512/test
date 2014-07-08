@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.billing.device.BillableDeviceFactory;
@@ -38,6 +37,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
@@ -113,11 +113,11 @@ public class BillingDao {
 
         CTILogger.info("SQL Statement: " + sql);
 
-        JdbcTemplate jdbcTemplate = YukonSpringHook.getBean("jdbcTemplate", JdbcTemplate.class);
+        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
 
         final List<BillableDevice> deviceList = new ArrayList<BillableDevice>();
-        jdbcTemplate.query(sql.getSql(), sql.getArguments(), new ResultSetExtractor() {
+        jdbcTemplate.query(sql, new ResultSetExtractor() {
             @Override
             public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
 
@@ -397,7 +397,7 @@ public class BillingDao {
 
         Iterator<BillableDevice> iter = deviceList.iterator();
         while (iter.hasNext()) {
-            BillableDevice device = (BillableDevice) iter.next();
+            BillableDevice device = iter.next();
             // System.out.println(device.getMeterNumber()
             // + ", " + device.getTotalConsumption() + ", " +
             // device.getTotalDate());

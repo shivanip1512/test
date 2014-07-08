@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -18,23 +17,22 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.google.common.collect.Lists;
 
 
     public class LCR3102DataModel extends BareDatedReportModelBase<LCR3102DataModel.ModelRow> {
         
         // dependencies
-    private JdbcOperations jdbcOps;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private DeviceDao deviceDao;
     
     // member variables
-    private List<ModelRow> data = Lists.newArrayList();
-    private Logger log = YukonLogManager.getLogger(LCR3102DataModel.class);
+    private final List<ModelRow> data = Lists.newArrayList();
+    private final Logger log = YukonLogManager.getLogger(LCR3102DataModel.class);
     private List<String> deviceNames;
     private List<String> groupNames;
-
-    private DeviceGroupService deviceGroupService;
-
-    private DeviceDao deviceDao;
     
     public LCR3102DataModel() {
     }
@@ -59,20 +57,24 @@ import com.google.common.collect.Lists;
         return ModelRow.class;
     }
     
+    @Override
     public String getTitle() {
         return "LCR 3102 Data Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public void doLoadData() {
         
             
         SqlFragmentSource sql = buildSQLStatement();
         
-        jdbcOps.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+        jdbcTemplate.query(sql, new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 
                 LCR3102DataModel.ModelRow row = new LCR3102DataModel.ModelRow();
@@ -95,11 +97,11 @@ import com.google.common.collect.Lists;
     
     public SqlStatementBuilder buildSQLStatement() {
 
-    	SqlStatementBuilder devicesWhereClause = new SqlStatementBuilder();
+        SqlStatementBuilder devicesWhereClause = new SqlStatementBuilder();
         if(deviceNames != null && !deviceNames.isEmpty()){
-        	devicesWhereClause.append("AND pao.PAObjectID IN (").appendArgumentList(getDeviceNameIdList()).append(")");
+            devicesWhereClause.append("AND pao.PAObjectID IN (").appendArgumentList(getDeviceNameIdList()).append(")");
         } else if (groupNames != null && !groupNames.isEmpty()){
-        	devicesWhereClause.append("AND ", getDeviceGroupWhereClause());
+            devicesWhereClause.append("AND ", getDeviceGroupWhereClause());
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -118,45 +120,45 @@ import com.google.common.collect.Lists;
         sql.append(            "CASE WHEN runTimeLoadTime IS NULL THEN relayShedTime");
         sql.append(                "ELSE runTimeLoadTime");
         sql.append(            "END maxDateTime,");
-        sql.append(            "(runTime.POINTOFFSET - 4) runTimeRelay,");	//removing 4 to get to a 1-based relay value
-        sql.append(            "(relayShed.POINTOFFSET - 8) relayShedRelay");	//removing 8 to get to a 1-based relay value
+        sql.append(            "(runTime.POINTOFFSET - 4) runTimeRelay,");  //removing 4 to get to a 1-based relay value
+        sql.append(            "(relayShed.POINTOFFSET - 8) relayShedRelay");   //removing 8 to get to a 1-based relay value
         sql.append(        "FROM (");
         sql.append(            "SELECT DISTINCT PAO.paobjectid, RTPOINT.POINTNAME runTimePointName, RTPOINT.POINTOFFSET,");
         sql.append(                "RTRPH.VALUE runTimeLoad, RTRPH.TIMESTAMP runTimeLoadTime");
         sql.append(            "FROM YukonPAObject PAO");
         sql.append(                "JOIN Point RTPOINT ON RTPOINT.PAObjectID = PAO.PAObjectID");
         sql.append(                "JOIN RawPointHistory RTRPH ON RTPOINT.PointID = RTRPH.PointID"); 
-        sql.append(            "WHERE RTPOINT.POINTOFFSET IN (5, 6, 7, 8)");	// 5, 6, 7, 8 are defined point offsets for RunTime Load points on LCR-3102 devices
+        sql.append(            "WHERE RTPOINT.POINTOFFSET IN (5, 6, 7, 8)");    // 5, 6, 7, 8 are defined point offsets for RunTime Load points on LCR-3102 devices
         sql.append(                "AND PAO.Type").eq_k(PaoType.LCR3102);
         sql.appendFragment(devicesWhereClause);
-		sql.append(                "AND RTRPH.TIMESTAMP").gt(getStartDate());
-		sql.append(                "AND RTRPH.TIMESTAMP").lte(getStopDate());
-		sql.append(            ") runTime");
-		sql.append(        "FULL OUTER JOIN (");
-		sql.append(            "SELECT DISTINCT PAO.PAObjectID, rsPoint.POINTNAME relayShedPointName, rsPoint.POINTOFFSET,");
-		sql.append(                "RSRPH.VALUE relayShed, RSRPH.TIMESTAMP relayShedTime");
-		sql.append(            "FROM YukonPAObject PAO");
-		sql.append(                "JOIN Point RSPOINT ON RSPOINT.PAObjectID = PAO.PAObjectID");
-		sql.append(                "LEFT JOIN RawPointHistory RSRPH ON RSPOINT.PointID = RSRPH.PointID");
-		sql.append(            "WHERE RSPOINT.POINTOFFSET IN (9, 10, 11, 12)");	// 9, 10, 11, 12 are defined point offsets for RelayShed points on LCR-3102 devices
+        sql.append(                "AND RTRPH.TIMESTAMP").gt(getStartDate());
+        sql.append(                "AND RTRPH.TIMESTAMP").lte(getStopDate());
+        sql.append(            ") runTime");
+        sql.append(        "FULL OUTER JOIN (");
+        sql.append(            "SELECT DISTINCT PAO.PAObjectID, rsPoint.POINTNAME relayShedPointName, rsPoint.POINTOFFSET,");
+        sql.append(                "RSRPH.VALUE relayShed, RSRPH.TIMESTAMP relayShedTime");
+        sql.append(            "FROM YukonPAObject PAO");
+        sql.append(                "JOIN Point RSPOINT ON RSPOINT.PAObjectID = PAO.PAObjectID");
+        sql.append(                "LEFT JOIN RawPointHistory RSRPH ON RSPOINT.PointID = RSRPH.PointID");
+        sql.append(            "WHERE RSPOINT.POINTOFFSET IN (9, 10, 11, 12)"); // 9, 10, 11, 12 are defined point offsets for RelayShed points on LCR-3102 devices
         sql.append(                "AND PAO.Type").eq_k(PaoType.LCR3102);
         sql.appendFragment(devicesWhereClause);
-		sql.append(                "AND RSRPH.TIMESTAMP").gt(getStartDate());
-		sql.append(                "AND RSRPH.TIMESTAMP").lte(getStopDate());
-		sql.append(            ") relayShed ON runTime.PAObjectID = relayShed.PAObjectID");
+        sql.append(                "AND RSRPH.TIMESTAMP").gt(getStartDate());
+        sql.append(                "AND RSRPH.TIMESTAMP").lte(getStopDate());
+        sql.append(            ") relayShed ON runTime.PAObjectID = relayShed.PAObjectID");
 
-		/* These offsets correspond to point pairs of 'Runtime Load X' and 'Relay X Shed Time' */
+        /* These offsets correspond to point pairs of 'Runtime Load X' and 'Relay X Shed Time' */
         /* on LCR-3102 devices, there are 4 pairs total. */
-		sql.append(                "AND ((runTime.POINTOFFSET = 5 AND relayShed.POINTOFFSET = 9 )");
-		sql.append(                    "OR (runTime.POINTOFFSET = 6 AND relayShed.POINTOFFSET = 10 )");
-		sql.append(                    "OR (runTime.POINTOFFSET = 7 AND relayShed.POINTOFFSET = 11 )");
-		sql.append(                    "OR (runTime.POINTOFFSET = 8 AND relayShed.POINTOFFSET = 12 ))");
-		sql.append(                "AND runTimeLoadTime = relayShedTime");
-		sql.append(    ") rphstuff ON (rphstuff.RunTimePaoId = PAO.PAObjectID OR RelayShedPaoId = PAO.PAObjectID)");
-		sql.append("WHERE NOT (runTimeLoad IS NULL AND relayShed IS NULL)");
-		sql.append("ORDER BY deviceName, runTimePointName, maxDateTime");
+        sql.append(                "AND ((runTime.POINTOFFSET = 5 AND relayShed.POINTOFFSET = 9 )");
+        sql.append(                    "OR (runTime.POINTOFFSET = 6 AND relayShed.POINTOFFSET = 10 )");
+        sql.append(                    "OR (runTime.POINTOFFSET = 7 AND relayShed.POINTOFFSET = 11 )");
+        sql.append(                    "OR (runTime.POINTOFFSET = 8 AND relayShed.POINTOFFSET = 12 ))");
+        sql.append(                "AND runTimeLoadTime = relayShedTime");
+        sql.append(    ") rphstuff ON (rphstuff.RunTimePaoId = PAO.PAObjectID OR RelayShedPaoId = PAO.PAObjectID)");
+        sql.append("WHERE NOT (runTimeLoad IS NULL AND relayShed IS NULL)");
+        sql.append("ORDER BY deviceName, runTimePointName, maxDateTime");
 
-		return sql;
+        return sql;
     }
     
     private SqlFragmentSource getDeviceGroupWhereClause() {
@@ -168,8 +170,8 @@ import com.google.common.collect.Lists;
     private List<Integer> getDeviceNameIdList() {
         List<Integer> paoIds = Lists.newArrayList();
         for(String name : deviceNames){
-        	try {
-        		paoIds.add(deviceDao.getYukonDeviceObjectByName(name).getDeviceId());
+            try {
+                paoIds.add(deviceDao.getYukonDeviceObjectByName(name).getDeviceId());
             } catch (EmptyResultDataAccessException e) {
                 log.error("Unable to find device with name: " + name + ". This device will be skipped.");
                 continue;
@@ -185,20 +187,4 @@ import com.google.common.collect.Lists;
     public void setDeviceFilter(List<String> deviceNames) {
         this.deviceNames = deviceNames;
     }
-    
-    @Required
-    public void setJdbcOps(JdbcOperations jdbcOps) {
-        this.jdbcOps = jdbcOps;
-    }
-    
-    @Required
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    
-    @Required
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-
 }

@@ -36,11 +36,8 @@
     
     <bean id="processorFactory" class="com.cannontech.common.bulk.processor.ProcessorFactoryImpl"/>
     
-    <bean id="bulkImportDataDao" class="com.cannontech.common.bulk.importdata.dao.impl.BulkImportDataDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="dateFormattingService" ref="dateFormattingService"/>
-    </bean>
-    
+    <bean id="bulkImportDataDao" class="com.cannontech.common.bulk.importdata.dao.impl.BulkImportDataDaoImpl"/>
+
     <bean id="addressToYukonDeviceMapper" class="com.cannontech.common.bulk.mapper.AddressToYukonDeviceMapper"/>
     <bean id="bulkImporterToYukonDeviceMapper" class="com.cannontech.common.bulk.mapper.BulkImporterToYukonDeviceMapper"/>
     <bean id="liteYukonPAObjectToYukonDeviceMapper" class="com.cannontech.common.bulk.mapper.LiteYukonPAObjectToYukonDeviceMapper"/>

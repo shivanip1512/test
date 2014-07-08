@@ -7,18 +7,18 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 
 
 public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControlledCapBanksModel.ModelRow> implements CapControlFilterable {
     
     // dependencies
-    private JdbcOperations jdbcOps;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     // inputs
     private Set<Integer> capBankIds;
@@ -28,7 +28,7 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
     private Set<Integer> areaIds;
     
     // member variables
-    private List<ModelRow> data = new ArrayList<ModelRow>();
+    private final List<ModelRow> data = new ArrayList<ModelRow>();
     
     public TimeControlledCapBanksModel() {
     }
@@ -69,7 +69,7 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
         
-        jdbcOps.query(sql.toString(), new RowCallbackHandler() {
+        jdbcTemplate.query(sql.toString(), new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int startMonth = rs.getInt("seasonStartMonth");
@@ -192,15 +192,10 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
         this.areaIds = areaIds;
     }
     
-    @Required
-    public void setJdbcOps(JdbcOperations jdbcOps) {
-        this.jdbcOps = jdbcOps;
-    }
-    
     @Override
-	public void setStrategyIdsFilter(Set<Integer> strategyIds) {
-		//Not used
-	}
+    public void setStrategyIdsFilter(Set<Integer> strategyIds) {
+        //Not used
+    }
     
     private class MonthDay implements Comparable<MonthDay> {
         private final int month;

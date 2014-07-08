@@ -6,13 +6,13 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
@@ -22,29 +22,14 @@ import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
  */
 public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
 
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
-    private ECMappingDao ecMappingDao;
-    private LMCustomerEventBaseDao lmCustomerEventBaseDao;
-
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private LMCustomerEventBaseDao lmCustomerEventBaseDao;
     
     @PostConstruct
     public void init() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
-    }
-
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setLMCustomerEventBaseDao(LMCustomerEventBaseDao lmCustomerEventBaseDao) {
-        this.lmCustomerEventBaseDao = lmCustomerEventBaseDao;
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(jdbcTemplate);
     }
 
     @Override
@@ -52,7 +37,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
         List<Integer> eventIds = new ArrayList<Integer>();
         
         String sql = "SELECT EventId FROM LMThermostatManualEvent WHERE InventoryId = ? ORDER BY EventID";
-        eventIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), inventoryId);
+        eventIds = jdbcTemplate.query(sql, new IntegerRowMapper(), inventoryId);
         
         return eventIds;
     }

@@ -11,7 +11,6 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.analysis.ColumnProperties;
@@ -21,6 +20,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DynamicVerification;
 import com.cannontech.spring.YukonSpringHook;
@@ -206,8 +206,8 @@ public class LoadControlVerificationModel extends ReportModelBase
 		setData(null);
 				
 		SqlFragmentSource sql = buildSQLStatement();
-		JdbcTemplate jdbcTemplate = YukonSpringHook.getBean("jdbcTemplate", JdbcTemplate.class);
-		jdbcTemplate.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+		YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
+		jdbcTemplate.query(sql, new RowCallbackHandler() {
 		    @Override
 		    public void processRow(ResultSet rs) throws SQLException {
 		        addDataRow(rs);
@@ -227,7 +227,8 @@ public class LoadControlVerificationModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
 		if( o instanceof TempVerification)
 		{
@@ -265,7 +266,8 @@ public class LoadControlVerificationModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -286,7 +288,8 @@ public class LoadControlVerificationModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@Override
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -308,7 +311,8 @@ public class LoadControlVerificationModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -330,7 +334,8 @@ public class LoadControlVerificationModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 		return title;
 	}

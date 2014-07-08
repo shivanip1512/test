@@ -8,7 +8,6 @@ import java.util.SortedMap;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
@@ -23,7 +22,7 @@ import com.google.common.collect.Maps;
  * @author: 
  */
 public final class FileFormatTypes {
-    private static YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+    private static YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
     
 	// Constants representing types of file formats
 	// ** THESE MUST MATCH THE DATABASE TABLE BILLINGFILEFORMATS **
@@ -133,7 +132,7 @@ public final class FileFormatTypes {
         sql.append("WHERE BFF.FormatType").eq(typeStr);
         sql.append("  AND BFF.FormatId").gte(0);
 
-        int formatId = yukonJdbcTemplate.queryForInt(sql);
+        int formatId = jdbcTemplate.queryForInt(sql);
         return formatId;
     }
 
@@ -144,7 +143,7 @@ public final class FileFormatTypes {
         sql.append("FROM BillingFileFormats BFF");
         sql.append("WHERE BFF.FormatId").eq(typeEnum);
 
-        String formatType = yukonJdbcTemplate.queryForString(sql);
+        String formatType = jdbcTemplate.queryForString(sql);
         return formatType;
     }
 
@@ -159,7 +158,7 @@ public final class FileFormatTypes {
         sql.append("WHERE BFF.FormatId").gte(0);
         
         try {
-            List<Integer> list = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+            List<Integer> list = jdbcTemplate.query(sql, new IntegerRowMapper());
             
             if (list.size() > 0) {
                 int[] formatIds = new int[list.size()];
@@ -181,7 +180,7 @@ public final class FileFormatTypes {
         sql.append("WHERE BFF.FormatId").gte(0);
 
         try {
-            List<String> formatTypes = yukonJdbcTemplate.query(sql, new StringRowMapper());
+            List<String> formatTypes = jdbcTemplate.query(sql, new StringRowMapper());
             
             if (formatTypes.size() > 0) {
                 return formatTypes.toArray(new String[formatTypes.size()]);
@@ -200,7 +199,7 @@ public final class FileFormatTypes {
         
         final SortedMap<String, Integer> typeToFormatIdsMap = Maps.newTreeMap();
         try {
-            yukonJdbcTemplate.query(sql, new RowCallbackHandler() {
+            jdbcTemplate.query(sql, new RowCallbackHandler() {
                 @Override
                 public void processRow(ResultSet rs) throws SQLException {
                     typeToFormatIdsMap.put(rs.getString("FormatType"), rs.getInt("FormatId"));
@@ -227,8 +226,5 @@ public final class FileFormatTypes {
         }
     	return extension;
     }
-    
-    public static void setSimpleJdbcTemplate(final SimpleJdbcTemplate jdbcTemplate) {
-        FileFormatTypes.yukonJdbcTemplate = (YukonJdbcTemplate)jdbcTemplate;
-    }
+   
 }

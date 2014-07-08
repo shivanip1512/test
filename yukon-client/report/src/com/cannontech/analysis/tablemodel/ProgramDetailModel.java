@@ -85,7 +85,7 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 		SqlStatementBuilder sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 
-		YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+		YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 		yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
 			
 			@Override
@@ -165,7 +165,7 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 
 		CTILogger.info(sql.toString());
 		
-		YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+		YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
 			
 			@Override

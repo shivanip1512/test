@@ -1,15 +1,12 @@
 package com.cannontech.core.dao.impl;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -17,31 +14,39 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.LMDirectCustomerListDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.RowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.web.LMDirectCustomerList;
+import com.google.common.collect.Sets;
 
 public class LMDirectCustomerListDaoImpl implements LMDirectCustomerListDao {
-    private JdbcOperations jdbcOperations;
-    private TransactionTemplate transactionTemplate;
-    private PaoDao paoDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private TransactionTemplate transactionTemplate;
+    @Autowired private PaoDao paoDao;
+
+    @Override
+    public Set<LiteYukonPAObject> getLMProgramPaosForCustomer(Integer customerId) {
+        Set<LiteYukonPAObject> resultSet = new HashSet<LiteYukonPAObject>();
+        Set<Integer> programIdsForCustomer = getLMProgramIdsForCustomer(customerId);
+        for (Integer integer : programIdsForCustomer) {
+            resultSet.add(paoDao.getLiteYukonPAO(integer));
+        }
+        return resultSet;
+    }
+
+    @Override
+    public void setLMProgramPaosForCustomer(Integer customerId, Set<LiteYukonPAObject> lmProgramPaos) {
+        HashSet<Integer> programIds = new HashSet<Integer>();
+        for (LiteYukonPAObject pao : lmProgramPaos) {
+            programIds.add(pao.getLiteID());
+        }
+        setLMProgramIdsForCustomer(customerId, programIds);
+    }
     
-    public LMDirectCustomerListDaoImpl() {
-        super();
-    }
-
-    public Set<Integer> getLMProgramIdsForCustomer(Integer customerId) {
-        String programCustomerSql =
-            "SELECT ProgramID FROM " + LMDirectCustomerList.tableName + " WHERE CustomerID = ?";
-        
-        Set<Integer> result = new HashSet<Integer>();
-        
-        IntegerSetResultSetExtractor resultSetExtractor = new IntegerSetResultSetExtractor(result);
-        jdbcOperations.query(programCustomerSql, new Object[] {customerId}, resultSetExtractor);
-        return result;
-    }
-
-    public void setLMProgramIdsForCustomer(final Integer customerId, final Set<Integer> lmProgramIds) {
+    private void setLMProgramIdsForCustomer(final Integer customerId, final Set<Integer> lmProgramIds) {
         transactionTemplate.execute(new TransactionCallback() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 Set<Integer> currentDbSet = getLMProgramIdsForCustomer(customerId);
                 // find ids that are to be removed
@@ -53,12 +58,13 @@ public class LMDirectCustomerListDaoImpl implements LMDirectCustomerListDao {
                 for (Integer programId : toAdd) {
                     final int finalProgramid = programId.intValue();
                     PreparedStatementSetter pss = new PreparedStatementSetter() {
+                        @Override
                         public void setValues(PreparedStatement ps) throws SQLException {
                             ps.setInt(1, finalProgramid);
                             ps.setInt(2, customerId);
                         }
                     };
-                    jdbcOperations.update(addSql.toString(), pss);
+                    jdbcTemplate.update(addSql.getSql(), pss);
                 }
                 
                 // find ids that are to be added
@@ -68,73 +74,17 @@ public class LMDirectCustomerListDaoImpl implements LMDirectCustomerListDao {
                 deleteSql.append("delete from", LMDirectCustomerList.tableName);
                 deleteSql.append("where ProgramId in (", toDelete, ")");
                 deleteSql.append("and CustomerId = ", customerId);
-                jdbcOperations.execute(deleteSql.toString());
+                jdbcTemplate.update(deleteSql);
                 
                 return null;
             }
         });
     }
-    
-    class IntegerSetResultSetExtractor implements ResultSetExtractor {
-        private Set<Integer> outputSet;
-
-        public IntegerSetResultSetExtractor() {
-            outputSet = new HashSet<Integer>();
-        }
-        
-        public IntegerSetResultSetExtractor(Set<Integer> outputSet) {
-            this.outputSet = outputSet;
-        }
-
-        public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
-            while (rs.next()) {
-                int value = rs.getInt(1);
-                outputSet.add(value);
-            }
-            return outputSet;
-        }
-        
+       
+    private Set<Integer> getLMProgramIdsForCustomer(Integer customerId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select ProgramID from LMDirectCustomerList where CustomerID").eq(customerId);
+        Set<Integer> result = Sets.newHashSet(jdbcTemplate.query(sql, RowMapper.INTEGER));
+        return result;
     }
-
-    public Set<LiteYukonPAObject> getLMProgramPaosForCustomer(Integer customerId) {
-        Set<LiteYukonPAObject> resultSet = new HashSet<LiteYukonPAObject>();
-        Set<Integer> programIdsForCustomer = getLMProgramIdsForCustomer(customerId);
-        for (Integer integer : programIdsForCustomer) {
-            resultSet.add(paoDao.getLiteYukonPAO(integer));
-        }
-        return resultSet;
-    }
-
-    public void setLMProgramPaosForCustomer(Integer customerId, Set<LiteYukonPAObject> lmProgramPaos) {
-        HashSet<Integer> programIds = new HashSet<Integer>();
-        for (LiteYukonPAObject pao : lmProgramPaos) {
-            programIds.add(pao.getLiteID());
-        }
-        setLMProgramIdsForCustomer(customerId, programIds);
-    }
-
-    public JdbcOperations getJdbcOperations() {
-        return jdbcOperations;
-    }
-
-    public void setJdbcOperations(JdbcOperations jdbcOperations) {
-        this.jdbcOperations = jdbcOperations;
-    }
-
-    public PaoDao getPaoDao() {
-        return paoDao;
-    }
-
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    public TransactionTemplate getTransactionTemplate() {
-        return transactionTemplate;
-    }
-
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
-    }
-
 }

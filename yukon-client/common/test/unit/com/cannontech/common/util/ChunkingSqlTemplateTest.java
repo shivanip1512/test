@@ -10,6 +10,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.mock.MockDataSource;
@@ -21,7 +22,7 @@ public class ChunkingSqlTemplateTest {
     private final List<Integer> chunkedList1 = Lists.newArrayList(0,1,2,3,4);
     private final List<Integer> chunkedList2 = Lists.newArrayList(5,6,7,8,9);
     private final List<Integer> chunkedList3 = Lists.newArrayList(10);
-    private int initSize = chunkedList1.size() + chunkedList2.size() + chunkedList3.size();
+    private final int initSize = chunkedList1.size() + chunkedList2.size() + chunkedList3.size();
 
     List<Integer> fullSizeList = new ArrayList<Integer>(initSize);
     {
@@ -90,7 +91,7 @@ public class ChunkingSqlTemplateTest {
         
         @SuppressWarnings("unchecked")
         @Override
-        public <T> List<T> query(String sql, ParameterizedRowMapper<T> rm, Object... args) throws DataAccessException {
+        public <T> List<T> query(String sql, RowMapper<T> rm, Object... args) throws DataAccessException {
             return (List<T>) Arrays.asList(new String[]{sql});
         }
 

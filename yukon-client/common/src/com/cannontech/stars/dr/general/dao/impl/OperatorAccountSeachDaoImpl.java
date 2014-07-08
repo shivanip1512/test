@@ -21,7 +21,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -37,11 +37,11 @@ import com.google.common.collect.Maps;
 
 public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	
-    @Autowired private YukonJdbcOperations yukonJdbcOperations;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 	@Autowired private ContactNotificationDao contactNotificationDao;
 	@Autowired private EnergyCompanyDao ecDao;
 
-	private AccountSearchResultRowMapper accountSearchResultRowMapper = new AccountSearchResultRowMapper();
+	private final AccountSearchResultRowMapper accountSearchResultRowMapper = new AccountSearchResultRowMapper();
 
 	// ACCOUNT NUMBER
 	@Override
@@ -55,7 +55,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY ca.AccountNumber");
 		
-		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, RowMapper.INTEGER);
 	}
 	
 	// PHONE NUMBER
@@ -81,7 +81,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY ca.AccountNumber");
 		
-		List<Integer> accountIds = yukonJdbcOperations.query(sql, RowMapper.INTEGER);
+		List<Integer> accountIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
 				
 		return accountIds;
 	}
@@ -111,7 +111,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY cont.ContLastName, cont.ContFirstName");
 		
-		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, RowMapper.INTEGER);
 	}
 	
 	// SERIAL NUMBER
@@ -128,7 +128,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ib.AccountId").gt(0);
 		sql.append("ORDER BY lhb.ManufacturerSerialNumber");
 		
-		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, RowMapper.INTEGER);
 	}
 	
 	// MAP NUMBER
@@ -144,7 +144,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY site.SiteNumber");
 		
-		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, RowMapper.INTEGER);
 	}
 	
 	// ADDRESS
@@ -161,7 +161,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY addr.LocationAddress1, addr.LocationAddress2, addr.CityName, addr.StateCode");
 		
-		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, RowMapper.INTEGER);
 	}
 	
 	// ALT TRACKING NUMBER
@@ -177,7 +177,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY cust.AltTrackNum");
 		
-		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, RowMapper.INTEGER);
 	}
 	
 	// COMPANY NAME
@@ -193,7 +193,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY cicb.CompanyName");
 		
-		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, RowMapper.INTEGER);
 	}
      
 	@Override
@@ -202,13 +202,13 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		SqlFragmentGenerator<Integer> sqlGenerator = getAccountSearchResultSqlFragmentGenerator();
 		SqlFragmentSource sql = sqlGenerator.generate(Collections.singletonList(accountId));
 		
-		return yukonJdbcOperations.queryForObject(sql, accountSearchResultRowMapper);
+		return jdbcTemplate.queryForObject(sql, accountSearchResultRowMapper);
 	}
 	
 	@Override
 	public List<AccountSearchResult> getAccountSearchResultsForAccountIds(List<Integer> accountIds) {
 		
-		ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcOperations);
+		ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 		
 		SqlFragmentGenerator<Integer> sqlGenerator = getAccountSearchResultSqlFragmentGenerator();
         

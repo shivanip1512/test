@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -18,50 +18,37 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 
 public final class MultispeakDaoImpl implements MultispeakDao {
+    
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private TransactionTemplate transactionTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    
     private static final Map<String, MultispeakVendor> vendorCache = Collections.synchronizedMap(new HashMap<String, MultispeakVendor>());
     private static final String MSPVENDOR_TABLENAME = "MSPVendor";
     private static final String MSPINTERFACE_TABLENAME = "MSPInterface";
 
     private final ParameterizedRowMapper<MultispeakVendor> mspVendorRowMapper = new ParameterizedRowMapper<MultispeakVendor>() {
+        @Override
         public MultispeakVendor mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createMspVendor(rs);
         }
     };
 
     private final ParameterizedRowMapper<MultispeakInterface> mspInterfaceRowMapper = new ParameterizedRowMapper<MultispeakInterface>() {
+        @Override
         public MultispeakInterface mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createMspInterface(rs);
         };
     };
-    
-    private JdbcOperations jdbcOps;
-    private YukonJdbcOperations yukonJdbcTemplate;
-    private TransactionTemplate transactionTemplate;
-    private NextValueHelper nextValueHelper;
 
-    public void setJdbcOps(JdbcOperations jdbcOps) {
-        this.jdbcOps = jdbcOps;
-    }
-
-    public void setYukonJdbcTemplate(YukonJdbcOperations yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
-    }
-
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
+    @Override
     public synchronized MultispeakVendor getMultispeakVendorFromCache(String vendorName, String appName) {
         String key = vendorName + appName;
         MultispeakVendor vendor = vendorCache.get(key);
@@ -83,6 +70,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
      * When no match on the appname, the (random) first found MultispeakVendor object is returned.
      * Throws NotFoundException if vendorName (and/or appName) are not found.
      */
+    @Override
     public MultispeakVendor getMultispeakVendor(String vendorName, String appName) 
         throws NotFoundException {
 
@@ -94,7 +82,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                      " WHERE UPPER(COMPANYNAME) = ? " +
                      " ORDER BY COMPANYNAME, APPNAME ";
 
-        List<MultispeakVendor> mspVendors = yukonJdbcTemplate.query(sql, mspVendorRowMapper,
+        List<MultispeakVendor> mspVendors = jdbcTemplate.query(sql, mspVendorRowMapper,
                                                                     upperVendorName);
 
         if( mspVendors == null || mspVendors.isEmpty()) {
@@ -116,6 +104,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     /**
      * Returns the MultispeakVendor object having vendorIF.
      */
+    @Override
     public MultispeakVendor getMultispeakVendor(int vendorID) {
         try {
             String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, URL, " +
@@ -124,7 +113,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                          " FROM " + MSPVENDOR_TABLENAME +
                          " WHERE VENDORID = ? ";
             
-            MultispeakVendor mspVendor = yukonJdbcTemplate.queryForObject(sql, mspVendorRowMapper, 
+            MultispeakVendor mspVendor = jdbcTemplate.queryForObject(sql, mspVendorRowMapper, 
                                                                           vendorID);
             return mspVendor;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -132,13 +121,14 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         }
     }
     
+    @Override
     public List<MultispeakInterface> getMultispeakInterfaces(int vendorID) {
         try {
             String sql = "SELECT VENDORID, INTERFACE, ENDPOINT " +
                          " FROM " + MSPINTERFACE_TABLENAME + 
                          " WHERE VENDORID = ? ";
             
-            List<MultispeakInterface> mspInterfaces = yukonJdbcTemplate.query(sql, mspInterfaceRowMapper,
+            List<MultispeakInterface> mspInterfaces = jdbcTemplate.query(sql, mspInterfaceRowMapper,
                                                                               vendorID);
             return mspInterfaces;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -146,6 +136,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         }
     }
     
+    @Override
     public List<MultispeakVendor> getMultispeakVendors()
     {
         try {
@@ -154,7 +145,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                          " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT " +
                          " FROM " + MSPVENDOR_TABLENAME;
             
-            List<MultispeakVendor> mspVendors = yukonJdbcTemplate.query(sql, mspVendorRowMapper);
+            List<MultispeakVendor> mspVendors = jdbcTemplate.query(sql, mspVendorRowMapper);
             
             return mspVendors;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -162,6 +153,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         }
     }
     
+    @Override
     public List<MultispeakVendor> getMultispeakCISVendors()
     {
         try {
@@ -171,7 +163,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                          " FROM MSPVENDOR V JOIN MSPINTERFACE I on V.VENDORID = I.VENDORID " +
                          " WHERE INTERFACE IN ('CB_Server', 'CB_MR')";
             
-            List<MultispeakVendor> mspVendors = yukonJdbcTemplate.query(sql,mspVendorRowMapper);
+            List<MultispeakVendor> mspVendors = jdbcTemplate.query(sql,mspVendorRowMapper);
             
             return mspVendors;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -180,13 +172,14 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     }
 
     
+    @Override
     public synchronized int deleteMultispeakInterface(int vendorID)
     {
         try {
             String sql = "DELETE FROM " + MSPINTERFACE_TABLENAME + 
                          " WHERE VENDORID = ? ";
             
-            int numDeleted = jdbcOps.update(sql,new Object[]{new Integer(vendorID)});
+            int numDeleted = jdbcTemplate.update(sql,new Object[]{new Integer(vendorID)});
             clearMultispeakVendorCache();
             return numDeleted;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -194,13 +187,14 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         }        
     }
     
+    @Override
     public synchronized int addMultispeakInterfaces(MultispeakInterface mspInterface)
     {
         try {
             String sql = "INSERT INTO " + MSPINTERFACE_TABLENAME + 
                          " VALUES (?, ?, ?)";
             
-            int numAdded = jdbcOps.update(sql,new Object[]{mspInterface.getVendorID(), 
+            int numAdded = jdbcTemplate.update(sql,new Object[]{mspInterface.getVendorID(), 
                                                            mspInterface.getMspInterface(),
                                                            mspInterface.getMspEndpoint()});
             clearMultispeakVendorCache();
@@ -210,6 +204,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         }        
     }
     
+    @Override
     public synchronized void updateMultispeakVendor(final MultispeakVendor mspVendor)
     {
         transactionTemplate.execute(new TransactionCallbackWithoutResult(){
@@ -246,7 +241,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                         mspVendor.getTemplateNameDefault(),
                         mspVendor.getVendorID()//Where Clause
                     };
-                    jdbcOps.update(sql, args);
+                    jdbcTemplate.update(sql, args);
                     
                 } catch (IncorrectResultSizeDataAccessException e) {
                     throw new NotFoundException("Multispeak Vendor not updated for vendorID "+ mspVendor.getVendorID() +".");
@@ -262,6 +257,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         });
         
     }
+    @Override
     public synchronized void addMultispeakVendor(final MultispeakVendor mspVendor)
     {
         transactionTemplate.execute(new TransactionCallbackWithoutResult(){
@@ -288,7 +284,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                         mspVendor.getMaxInitiateRequestObjects(),
                         mspVendor.getTemplateNameDefault()
                     };
-                    jdbcOps.update(sql, args);
+                    jdbcTemplate.update(sql, args);
                     
                 } catch (IncorrectResultSizeDataAccessException e) {
                     throw new NotFoundException("Multispeak Vendor not inserted for Company Name "+ mspVendor.getCompanyName() +".");
@@ -307,6 +303,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         });        
     }
     
+    @Override
     public synchronized void deleteMultispeakVendor(final int vendorID)
     {
         transactionTemplate.execute(new TransactionCallbackWithoutResult(){
@@ -317,7 +314,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                     String sql = "DELETE FROM " + MSPVENDOR_TABLENAME + 
                     " WHERE VENDORID = ? ";
                     
-                    jdbcOps.update(sql,new Object[]{new Integer(vendorID)});
+                    jdbcTemplate.update(sql,new Object[]{new Integer(vendorID)});
                     clearMultispeakVendorCache();
                 } catch (IncorrectResultSizeDataAccessException e) {
                     throw new NotFoundException("Multispeak Vendor not deleted for VendorID "+ vendorID +".");
@@ -325,6 +322,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             };
         });        
     }    
+    @Override
     public int getNextVendorId() {
         return nextValueHelper.getNextValue("MSPVendor");
     }

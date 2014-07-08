@@ -5,20 +5,22 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.model.LMCustomerEventBase;
 
 public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao {
+    
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
     private static final String[] insertSql;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
-    private NextValueHelper nextValueHelper;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
 
     static {
@@ -31,20 +33,21 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao {
         
     }
     
+    @Override
     public boolean addHardwareEvent(final LMCustomerEventBase eventBase, final int energyCompanyId, final int inventoryId) {
         final int eventId = nextValueHelper.getNextValue("LMCustomerEventBase");
         eventBase.setEventId(eventId);
         
-        int rows = simpleJdbcTemplate.update(insertSql[0], eventId,
+        int rows = jdbcTemplate.update(insertSql[0], eventId,
                                                 eventBase.getEventTypeId(),
                                                 eventBase.getActionId(),
                                                 eventBase.getEventDateTime(),
                                                 eventBase.getNotes(),
                                                 eventBase.getAuthorizedBy());
         
-        int rows2 = simpleJdbcTemplate.update(insertSql[1], eventId, energyCompanyId);
+        int rows2 = jdbcTemplate.update(insertSql[1], eventId, energyCompanyId);
         
-        int rows3 = simpleJdbcTemplate.update(insertSql[2], eventId, inventoryId);
+        int rows3 = jdbcTemplate.update(insertSql[2], eventId, inventoryId);
         
         boolean result = ((rows == 1) && (rows2 == 1) && (rows3 == 1));
         return result;
@@ -57,7 +60,7 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao {
         sql.append("set Notes ").eq(SqlUtils.convertStringToDbValue(notes));
         sql.append(", EventDateTime ").eq(date);
         sql.append("where EventId ").eq(eventId);
-        simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
+        jdbcTemplate.update(sql.getSql(), sql.getArguments());
     }
     
     @Override
@@ -80,17 +83,9 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao {
             return sql.toString();
         }
     }
-
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-    
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
     
     @PostConstruct
     public void init() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(jdbcTemplate);
     }
 }

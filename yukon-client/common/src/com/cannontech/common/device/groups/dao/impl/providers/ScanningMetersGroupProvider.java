@@ -25,7 +25,7 @@ public class ScanningMetersGroupProvider extends DeviceGroupProviderSqlBase {
         sql.append("FROM (" , scanIndicatingDevice.getDeviceIdSql(), ") ypo ");
         sql.append("WHERE ypo.deviceid = ").appendArgument(device.getPaoIdentifier().getPaoId());
         
-        Integer deviceCount = getSimpleJdbcTemplate().queryForInt(sql.getSql(), sql.getArguments());
+        Integer deviceCount = jdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
         
         return deviceCount > 0;
     }

@@ -66,7 +66,7 @@ public class WorkOrderStatusFilterByProducer extends AbstractWorkOrderFilterByPr
                 sb1.append("where y.actionid = ?");
                 String sql1 = sb1.toString();
                 
-                List<Integer> list = simpleJdbcTemplate.query(sql1,
+                List<Integer> list = jdbcTemplate.query(sql1,
                                                               rowMapper,
                                                               stopDate,
                                                               startDate,

@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.loadcontrol.dao.LmProgramGearHistory;
 import com.cannontech.loadcontrol.dao.LmProgramGearHistoryMapper;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 
 public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 
-    private YukonJdbcOperations yukonJdbcOperations;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Override
     public int getProgramIdByProgramName(String programName) throws NotFoundException {
@@ -38,7 +38,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
                   " INNER JOIN LMPROGRAM lmp ON (ypo.PAObjectID = lmp.DEVICEID)" +
                   " WHERE ypo.PAOName = ?";
             
-            return yukonJdbcOperations.queryForInt(sql, programName);
+            return jdbcTemplate.queryForInt(sql, programName);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("No program named " + programName);
         }
@@ -52,7 +52,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
                         " FROM YukonPaObject ypo" +
                         " WHERE ypo.PAOName = ? AND ypo.Type = 'LMSCENARIO'";
             
-            return yukonJdbcOperations.queryForInt(sql, scenarioName);
+            return jdbcTemplate.queryForInt(sql, scenarioName);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("No scenario named " + scenarioName);
         }
@@ -64,7 +64,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         String sql = "SELECT ypo.PAObjectID AS ProgramID" +
             " FROM YukonPaObject ypo" +
             " INNER JOIN LMPROGRAM lmp ON (ypo.PAObjectID = lmp.DEVICEID)";
-        List<Integer> programIds = yukonJdbcOperations.query(sql, new ProgramIdMapper());
+        List<Integer> programIds = jdbcTemplate.query(sql, new ProgramIdMapper());
         
         return programIds;
     }
@@ -75,7 +75,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         String sql = "SELECT lmsc.ProgramID" +
                     " FROM LMControlScenarioProgram lmsc" +
                     " WHERE lmsc.scenarioId = ?";
-        List<Integer> programIds = yukonJdbcOperations.query(sql, new ProgramIdMapper(), scenarioId);
+        List<Integer> programIds = jdbcTemplate.query(sql, new ProgramIdMapper(), scenarioId);
         
         return programIds;
     }
@@ -95,7 +95,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
                     " FROM LMControlScenarioProgram lmcsp" +
                     " WHERE lmcsp.programid = ? AND lmcsp.scenarioid = ?";
 
-        return yukonJdbcOperations.queryForInt(sql, programId, scenarioId);
+        return jdbcTemplate.queryForInt(sql, programId, scenarioId);
     }
     
     @Override
@@ -109,6 +109,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         
         ParameterizedRowMapper<ProgramStartingGear> programStartingGearMapper = new ParameterizedRowMapper<ProgramStartingGear>() {
             
+            @Override
             public ProgramStartingGear mapRow(ResultSet rs, int rowNum) throws SQLException {
                 
             	int programId = rs.getInt("PAObjectID");
@@ -122,7 +123,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         };
            
         
-        List<ProgramStartingGear> programStartingGears = yukonJdbcOperations.query(sql, programStartingGearMapper, scenarioId);
+        List<ProgramStartingGear> programStartingGears = jdbcTemplate.query(sql, programStartingGearMapper, scenarioId);
         return programStartingGears;
     }
     
@@ -163,7 +164,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
     		sql.append("AND ph.ProgramId").eq(programId);
     	}
 		sql.append("ORDER BY ph.ProgramId, hist.LMProgramHistoryId, hist.EventTime, hist.LMProgramGearHistoryId");
-		List<LmProgramGearHistory> rawHistory = yukonJdbcOperations.query(sql, new LmProgramGearHistoryMapper());
+		List<LmProgramGearHistory> rawHistory = jdbcTemplate.query(sql, new LmProgramGearHistoryMapper());
 		
 		// generate ProgramControlHistory list by creating a new object for each non "Stop" action and filling in the object stop time with the EventTime of the following record (if one exists) 
 		// * ProgramControlHistory may be organized in a few different ways:
@@ -261,7 +262,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         sql.append("WHERE rowNumber = 1");
         LmProgramGearHistory startHist;
         try {
-            startHist = yukonJdbcOperations.queryForObject(sql, new LmProgramGearHistoryMapper());
+            startHist = jdbcTemplate.queryForObject(sql, new LmProgramGearHistoryMapper());
         } catch (EmptyResultDataAccessException erdae) {
             return null;
         }
@@ -283,7 +284,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         sql.append("WHERE rowNumber = 1");
         LmProgramGearHistory stopHist = null;
         try {
-            stopHist = yukonJdbcOperations.queryForObject(sql, new LmProgramGearHistoryMapper());
+            stopHist = jdbcTemplate.queryForObject(sql, new LmProgramGearHistoryMapper());
         } catch (EmptyResultDataAccessException erdae) {
             // no stop history means control is still ongoing
         }
@@ -306,15 +307,10 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 	        " WHERE lmpdg.GEARNAME = ?" +
 	        " AND lmp.DEVICEID = ?";
     		
-    		return yukonJdbcOperations.queryForInt(sql, gearName, programId);
+    		return jdbcTemplate.queryForInt(sql, gearName, programId);
     	
     	} catch (IncorrectResultSizeDataAccessException e) {
     		throw new NotFoundException("Gear not found (programId = " + programId + ", gearName = " + gearName + ")");
     	}
     }
-    
-    @Autowired
-    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-		this.yukonJdbcOperations = yukonJdbcOperations;
-	}
 }

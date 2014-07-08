@@ -29,13 +29,6 @@ public interface PaoPermissionDao<T> {
      */
     public List<PaoPermission> getPermissions(List<T> itList);
 
-    /**
-     * Method to get a list of pao permissions for a given thing and pao
-     * @param it - Thing to get permissions for
-     * @param pao - Pao to get permissions for
-     * @return List of permissions
-     */
-    public List<PaoPermission> getPermissionsForPao(T it, YukonPao pao);
 
     /**
      * Method to get all paoids for which the thing has the given permission

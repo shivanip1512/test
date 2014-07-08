@@ -10,9 +10,7 @@
 
     <bean id="inventoryStaticLoadGroupMap" class="com.cannontech.web.stars.action.inventory.StaticLoadGroupMapController"/>
 
-    <bean id="inventoryPurchaseChange" class="com.cannontech.web.stars.action.inventory.PurchaseChangeController">
-          <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
-    </bean>
+    <bean id="inventoryPurchaseChange" class="com.cannontech.web.stars.action.inventory.PurchaseChangeController"/>
 
     <bean id="inventoryRequestNewPurchasePlan" class="com.cannontech.web.stars.action.inventory.RequestNewPurchasePlanController"/>
 

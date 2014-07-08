@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.dynamicBilling.Channel;
@@ -16,6 +16,7 @@ import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
 import com.cannontech.common.dynamicBilling.model.DynamicBillingField;
 import com.cannontech.common.dynamicBilling.model.DynamicFormat;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 /**
@@ -23,25 +24,26 @@ import com.cannontech.database.incrementer.NextValueHelper;
  */
 public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 
-	private SimpleJdbcTemplate simpleJdbcTemplate = null;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-	private NextValueHelper nextValueHelper = null;
+    @Autowired private NextValueHelper nextValueHelper;
 
 	/**
 	 * Method to delete a dynamic billing format
 	 * 
 	 * @param formatID - Id of format to delete
 	 */
-	@Transactional
+	@Override
+    @Transactional
 	public void delete(int formatID) {
 		String sql = " delete from DynamicBillingFormat where formatid = ? ";
-		simpleJdbcTemplate.update(sql, formatID);
+		jdbcTemplate.update(sql, formatID);
 
 		sql = " delete from DynamicBillingField where formatid = ? ";
-		simpleJdbcTemplate.update(sql, formatID);
+		jdbcTemplate.update(sql, formatID);
 
 		sql = " delete from BillingFileFormats where formatid = ? ";
-		simpleJdbcTemplate.update(sql, formatID);
+		jdbcTemplate.update(sql, formatID);
 	}
 
 	/**
@@ -49,7 +51,8 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 	 * 
 	 * @param formatId - Id of format to load
 	 */
-	public DynamicFormat retrieve(int formatId) {
+	@Override
+    public DynamicFormat retrieve(int formatId) {
 		
 		String sql = "SELECT " +
 				"	dbf.formatId " +
@@ -63,11 +66,11 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 				"	, BillingFileFormats bff" +
 				" WHERE " +
 				"	bff.FormatID= dbf.formatId AND bff.formatid = ?";
-		DynamicFormat format = simpleJdbcTemplate.queryForObject(sql,
+		DynamicFormat format = jdbcTemplate.queryForObject(sql,
 				new DynamicFormatRowMapper(), formatId);
 
 		sql = "SELECT * FROM DynamicBillingField WHERE FormatID = ? ORDER BY FieldOrder";
-		List<DynamicBillingField> tempList = simpleJdbcTemplate.query(sql,
+		List<DynamicBillingField> tempList = jdbcTemplate.query(sql,
 				new BillingFieldRowMapper(), formatId);
 		format.setFieldList(tempList);
 
@@ -79,7 +82,8 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 	 * 
 	 * @param format - Format to be saved
 	 */
-	@Transactional
+	@Override
+    @Transactional
 	public void save(DynamicFormat format) {
 
 		String bffSql = null;
@@ -112,12 +116,12 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 
 			// Delete any existing field info for this format
 			String sql = "DELETE FROM DynamicBillingField WHERE FormatID = ?";
-			simpleJdbcTemplate.update(sql, format.getFormatId());
+			jdbcTemplate.update(sql, format.getFormatId());
 		}
 
 		// Execute the format update or insert
-		simpleJdbcTemplate.update(bffSql, format.getName(), format.getFormatId());
-		simpleJdbcTemplate.update(dbfSql, 
+		jdbcTemplate.update(bffSql, format.getName(), format.getFormatId());
+		jdbcTemplate.update(dbfSql, 
 		                          SqlUtils.convertStringToDbValue(format.getDelim()),
 		                          SqlUtils.convertStringToDbValue(format.getHeader()),
 		                          SqlUtils.convertStringToDbValue(format.getFooter()),
@@ -126,7 +130,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 		// Insert the format field data
 		for (DynamicBillingField field : format.getFieldList()) {
 			int currentId = nextValueHelper.getNextValue("DynamicBillingField");
-			simpleJdbcTemplate.update(
+			jdbcTemplate.update(
 					"INSERT INTO DynamicBillingField (id, FormatID, FieldName, FieldOrder, FieldFormat, MaxLength, PadChar, PadSide, ReadingType, RoundingMode, Channel) "
 						+ "VALUES(?,?,?,?,?,?,?,?,?,?,?)", 
 					currentId, 
@@ -146,7 +150,8 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 	/**
 	 * Method to retrieve all Dynamic billing formats.
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<DynamicFormat> retrieveAll() {
 		
 		String sql = "SELECT c.formatid FROM "
@@ -154,7 +159,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 				+ " WHERE a.formatid = c.formatid ORDER BY FormatType";
 
 		//get all the format id
-		List<Integer> formatIdList = simpleJdbcTemplate.getJdbcOperations().queryForList(sql, Integer.class);
+		List<Integer> formatIdList = jdbcTemplate.queryForList(sql, Integer.class);
 		
 		List<DynamicFormat> allFormats = new ArrayList<DynamicFormat>();
 		
@@ -171,7 +176,8 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 	private class DynamicFormatRowMapper implements
 			ParameterizedRowMapper<DynamicFormat> {
 
-		public DynamicFormat mapRow(ResultSet rs, int row) throws SQLException {
+		@Override
+        public DynamicFormat mapRow(ResultSet rs, int row) throws SQLException {
 			DynamicFormat format = new DynamicFormat();
 			format.setFormatId(rs.getInt("FormatID"));
 			format.setDelim(SqlUtils.convertDbValueToString(rs.getString("Delimiter")));
@@ -190,7 +196,8 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 	private class BillingFieldRowMapper implements
 			ParameterizedRowMapper<DynamicBillingField> {
 
-		public DynamicBillingField mapRow(ResultSet rs, int row)
+		@Override
+        public DynamicBillingField mapRow(ResultSet rs, int row)
 				throws SQLException {
 			DynamicBillingField field = new DynamicBillingField();
 			field.setId(rs.getInt("id"));
@@ -216,6 +223,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 	/**
      * Check to see if the format name provided is unique.
      */
+    @Override
     public boolean isFormatNameUnique(DynamicFormat format) {
         
         String sql = "SELECT COUNT(*) "
@@ -223,27 +231,11 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
                 + " WHERE BFF.formatType = ? "
                 + " AND BFF.formatId != ? ";
 
-        int resultCount = simpleJdbcTemplate.queryForInt(sql, format.getName(), format.getFormatId());
+        int resultCount = jdbcTemplate.queryForInt(sql, format.getName(), format.getFormatId());
         
         if (resultCount == 0) {
             return true;
         }
         return false;
     }
-	
-	public SimpleJdbcTemplate getSimpleJdbcTemplate() {
-		return simpleJdbcTemplate;
-	}
-
-	public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-		this.simpleJdbcTemplate = simpleJdbcTemplate;
-	}
-
-	public NextValueHelper getNextValueHelper() {
-		return nextValueHelper;
-	}
-
-	public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
-	}
 }

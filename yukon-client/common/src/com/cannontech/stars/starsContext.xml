@@ -228,16 +228,11 @@
 
     <bean id="eventBaseDao" class="com.cannontech.stars.dr.event.dao.impl.EventBaseDaoImpl"/>
 
-    <bean id="customerEventBaseDao" class="com.cannontech.stars.dr.event.dao.impl.LMCustomerEventBaseDaoImpl">
-        <property name="nextValueHelper" ref="nextValueHelper" />
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-    </bean>
-    
+    <bean id="customerEventBaseDao" class="com.cannontech.stars.dr.event.dao.impl.LMCustomerEventBaseDaoImpl"/>
+
     <bean id="hardwareEventDao" class="com.cannontech.stars.dr.event.dao.impl.LMHardwareEventDaoImpl"/>
     
-    <bean id="eventWorkOrderDao" class="com.cannontech.stars.dr.event.dao.impl.EventWorkOrderDaoImpl">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-    </bean>
+    <bean id="eventWorkOrderDao" class="com.cannontech.stars.dr.event.dao.impl.EventWorkOrderDaoImpl"/>
     
     <bean class="com.cannontech.stars.core.dao.impl.EnergyCompanyDaoImpl"/>
     

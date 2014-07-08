@@ -1,6 +1,5 @@
 package com.cannontech.web.search.lucene.index;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +9,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -23,20 +23,20 @@ public class LoginGroupIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected String getDocumentQuery() {
+    protected SqlStatementBuilder getDocumentQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select *");
         sql.append(getBaseQuery());
         sql.append(getOrderBy());
-        return sql.getSql();
+        return sql;
     }
 
     @Override
-    protected String getDocumentCountQuery() {
+    protected SqlStatementBuilder getDocumentCountQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(*)");
         sql.append(getBaseQuery());
-        return sql.getSql();
+        return sql;
     }
     
     private SqlStatementBuilder getBaseQuery() {
@@ -48,7 +48,7 @@ public class LoginGroupIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected Document createDocument(ResultSet rs) throws SQLException {
+    protected Document createDocument(YukonResultSet rs) throws SQLException {
 
         Document doc = new Document();
 
@@ -93,9 +93,7 @@ public class LoginGroupIndexManager extends SimpleIndexManager {
         sql.append("WHERE groupid").eq(groupId);
         sql.append(getOrderBy());
 
-        docList = this.jdbcTemplate.query(sql.getSql(),
-                                          sql.getArguments(),
-                                          new DocumentMapper());
+        docList = this.jdbcTemplate.query(sql, new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }
 

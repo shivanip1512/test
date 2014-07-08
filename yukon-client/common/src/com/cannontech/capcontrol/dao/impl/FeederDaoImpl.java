@@ -96,7 +96,7 @@ public class FeederDaoImpl implements FeederDao {
         
         PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, 
         																													liteCapControlObjectRowMapper);
-        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
+        yukonJdbcTemplate.query(sql.getSql(), sql.getArguments(), orphanExtractor);
         
         List<LiteCapControlObject> unassignedFeeders = orphanExtractor.getResultList();
         

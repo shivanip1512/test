@@ -1,43 +1,39 @@
 package com.cannontech.web.search.lucene.index;
 
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.YukonRowMapper;
 
 /**
  * Abstract class which manages index building and updating indexes based on a single database query.
  */
 public abstract class SimpleIndexManager extends AbstractIndexManager {
     private static final Logger log = YukonLogManager.getLogger(SimpleIndexManager.class);
-
-    protected JdbcOperations jdbcTemplate = null;
-
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
+    
+    @Autowired protected YukonJdbcTemplate jdbcTemplate;
     /**
      * Method to get the query used to build documents for a specific index.
      * <br />
      * <br />
      * @return Index specific document query
      */
-    abstract protected String getDocumentQuery();
+    abstract protected SqlStatementBuilder getDocumentQuery();
 
     @Override
     protected void buildDocuments(IndexWriter indexWriter, AtomicInteger counter) {
-        RowCallbackHandler rch = new LuceneRowIndexer(indexWriter, counter);
+        YukonRowCallbackHandler rch = new LuceneRowIndexer(indexWriter, counter);
         jdbcTemplate.query(getDocumentQuery(), rch);
     }
 
@@ -49,12 +45,11 @@ public abstract class SimpleIndexManager extends AbstractIndexManager {
      * <br />
      * @return Index specific document count query
      */
-    abstract protected String getDocumentCountQuery();
+    abstract protected SqlStatementBuilder getDocumentCountQuery();
 
     @Override
     protected int calculateDocumentCount() {
-        String sql = getDocumentCountQuery();
-        int recordCount = jdbcTemplate.queryForInt(sql);
+        int recordCount = jdbcTemplate.queryForInt(getDocumentCountQuery());
         return recordCount;
     }
 
@@ -65,13 +60,13 @@ public abstract class SimpleIndexManager extends AbstractIndexManager {
      * @param rs - Result set to build the document from
      * @return Index specific document
      */
-    abstract protected Document createDocument(ResultSet rs) throws SQLException;
+    abstract protected Document createDocument(YukonResultSet rs) throws SQLException;
 
     /**
      * Helper class which is used to process a result set into documents and
      * write each document into the index.
      */
-    private final class LuceneRowIndexer implements RowCallbackHandler {
+    private final class LuceneRowIndexer implements YukonRowCallbackHandler {
         private final IndexWriter writer;
         private final AtomicInteger count;
 
@@ -81,7 +76,7 @@ public abstract class SimpleIndexManager extends AbstractIndexManager {
         }
 
         @Override
-        public void processRow(ResultSet rs) throws SQLException {
+        public void processRow(YukonResultSet rs) throws SQLException {
             Document doc = createDocument(rs);
 
             try {
@@ -98,9 +93,10 @@ public abstract class SimpleIndexManager extends AbstractIndexManager {
     /**
      * Mapping class to process a result set row into a Document
      */
-    protected class DocumentMapper implements RowMapper<Document> {
+    protected class DocumentMapper implements YukonRowMapper<Document> {
+
         @Override
-        public Document mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public Document mapRow(YukonResultSet rs) throws SQLException {
             return createDocument(rs);
         }
     }

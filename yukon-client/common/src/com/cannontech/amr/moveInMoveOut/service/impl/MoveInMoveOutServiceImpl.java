@@ -14,7 +14,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.deviceread.dao.CalculatedPointService;
@@ -52,6 +51,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -61,11 +61,11 @@ import com.cannontech.message.dispatch.message.PointData;
 
 public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
-    private Logger logger = YukonLogManager.getLogger(MoveInMoveOutServiceImpl.class);
+    private final Logger logger = YukonLogManager.getLogger(MoveInMoveOutServiceImpl.class);
     private final int NEW_DAY_BUFFER_HRS = 2; // 2 hours
     private final int JOB_SCHEDULER_START_BUFFER = 4; // 4 minutes
 
-    @Autowired private JobManager jobManager = null;
+    @Autowired private final JobManager jobManager = null;
     private YukonJobDefinition<MoveInTask> moveInDefinition = null;
     private YukonJobDefinition<MoveOutTask> moveOutDefinition = null;
     @Autowired private AttributeService attributeService;
@@ -76,10 +76,10 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private MeterDao meterDao;
     @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
-    @Autowired private SimpleJdbcOperations jdbcTemplate = null;
-    @Autowired private NextValueHelper nextValueHelper = null;
-    @Autowired private PaoCommandAuthorizationService paoCommandAuthorizationService = null;
-    @Autowired private RolePropertyDao rolePropertyDao = null;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private PaoCommandAuthorizationService paoCommandAuthorizationService;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Override
     public MoveInResult moveIn(MoveInForm moveInFormObj) {
 

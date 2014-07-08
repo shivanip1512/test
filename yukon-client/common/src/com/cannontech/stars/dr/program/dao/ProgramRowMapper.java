@@ -4,13 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.program.model.Program;
 
@@ -21,10 +21,10 @@ import com.cannontech.stars.dr.program.model.Program;
  */
 public class ProgramRowMapper extends AbstractRowMapperWithBaseQuery<Program> {
 	
-	private SimpleJdbcTemplate simpleJdbcTemplate;
+	private final YukonJdbcTemplate jdbcTemplate;
 	
-	public ProgramRowMapper(SimpleJdbcTemplate simpleJdbcTemplate) {
-		this.simpleJdbcTemplate = simpleJdbcTemplate;
+	public ProgramRowMapper(YukonJdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
     @Override
@@ -113,7 +113,7 @@ public class ProgramRowMapper extends AbstractRowMapperWithBaseQuery<Program> {
         
         String sql = sb.toString();
         String applianceCategoryLogoLocation = 
-        	simpleJdbcTemplate.queryForObject(sql, String.class, applianceCategoryId);
+        	jdbcTemplate.queryForObject(sql, String.class, applianceCategoryId);
         return applianceCategoryLogoLocation;
     }
 }

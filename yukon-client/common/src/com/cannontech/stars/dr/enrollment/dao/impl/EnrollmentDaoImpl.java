@@ -282,7 +282,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append(" GROUP BY pdg.DeviceId");
 		
 		final Map<Integer, Integer> programIdCountMap = new HashMap<Integer, Integer>();
-		yukonJdbcTemplate.getJdbcOperations().query(sql.toString(), sql.getArguments(), new RowCallbackHandler() {
+		yukonJdbcTemplate.query(sql.toString(), sql.getArguments(), new RowCallbackHandler() {
 		
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {

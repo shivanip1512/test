@@ -13,7 +13,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
@@ -65,7 +64,6 @@ public final class PaoDaoImpl implements PaoDao {
 
     private final ParameterizedRowMapper<LiteYukonPAObject> litePaoRowMapper = new LitePaoRowMapper();
 
-    @Autowired private JdbcOperations jdbcOps;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private NextValueHelper nextValueHelper;
@@ -133,10 +131,10 @@ public final class PaoDaoImpl implements PaoDao {
     @Override
     public LiteYukonPAObject getLiteYukonPAO(int paoID) {
         try {
-            String sql = litePaoSql + "where y.paobjectid=?";
-
-            LiteYukonPAObject pao = jdbcOps.queryForObject(sql, new Object[] { paoID }, litePaoRowMapper);
-
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(litePaoSql);
+            sql.append("where y.PAObjectId").eq(paoID);
+            LiteYukonPAObject pao = jdbcTemplate.queryForObject(sql, litePaoRowMapper);
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A PAObject with id " + paoID + " cannot be found.");
@@ -220,7 +218,7 @@ public final class PaoDaoImpl implements PaoDao {
         SqlUtil.buildInClause("and", "p", "pointtype", pointTypesStr, sql);
         SqlUtil.buildInClause("and", "pu", "uomid", uOfMId, sql);
 
-        List<LiteYukonPAObject> paos = jdbcOps.query(sql.toString(), litePaoRowMapper);
+        List<LiteYukonPAObject> paos = jdbcTemplate.query(sql.toString(), litePaoRowMapper);
         return paos;
     }
 
@@ -247,13 +245,16 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public String getYukonPAOName(int paoID) {
+    public String getYukonPAOName(int paoId) {        
         try {
-            String sql = "select paoname from yukonpaobject where paobjectid=?";
-            String name = jdbcOps.queryForObject(sql, new Object[] { paoID }, String.class);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("select PAOName");
+            sql.append("from YukonPAObject");
+            sql.append("where PAObjectID").eq(paoId);
+            String name = jdbcTemplate.queryForObject(sql, RowMapper.STRING);
             return name;
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("A PAObject with id " + paoID + "cannot be found.");
+            throw new NotFoundException("A PAObject with id " + paoId + "cannot be found.");
         }
     }
 
@@ -339,7 +340,7 @@ public final class PaoDaoImpl implements PaoDao {
             name += "%";
         }
 
-        List<LiteYukonPAObject> paos = jdbcOps.query(sqlBuilder.getSql(), new Object[] { name }, litePaoRowMapper);
+        List<LiteYukonPAObject> paos = jdbcTemplate.query(sqlBuilder.getSql(), new Object[] { name }, litePaoRowMapper);
         return paos;
     }
 
@@ -359,7 +360,7 @@ public final class PaoDaoImpl implements PaoDao {
                     + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid " + " where address = ? "
                     + " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
 
-            liteYukonPaobects = jdbcOps.query(sqlString, new Object[] { new Integer(address) }, litePaoRowMapper);
+            liteYukonPaobects = jdbcTemplate.query(sqlString, new Object[] { new Integer(address) }, litePaoRowMapper);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("No liteYukonPaobjects found with (carrier) address(" + address + ")");
         }
@@ -467,10 +468,6 @@ public final class PaoDaoImpl implements PaoDao {
         
         List<LiteYukonPAObject> paoList = jdbcTemplate.query(sql, litePaoRowMapper);
         return paoList;
-    }
-
-    public void setJdbcOps(JdbcOperations jdbcOps) {
-        this.jdbcOps = jdbcOps;
     }
 
     public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user) {

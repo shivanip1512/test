@@ -410,9 +410,6 @@
                 </bean>
            </set>
         </property>
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="pointDao" ref="pointDao"/>
-        <property name="paoDao" ref="paoDao"/>
     </bean>
 
     <bean id="profileWidget"

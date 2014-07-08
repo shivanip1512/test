@@ -43,14 +43,12 @@
         <property name="dataSource" ref="yukonDataSource" />
     </bean>
  
-    <bean id="jdbcTemplate" class="com.cannontech.spring.LoggingJdbcTemplate"
-        scope="prototype">
-        <property name="dataSource" ref="yukonDataSource" />
-    </bean>
-
-    <bean id="simpleJdbcTemplate" class="com.cannontech.database.YukonJdbcTemplate"
-        scope="prototype">
-        <constructor-arg ref="jdbcTemplate"/>
+    <bean class="com.cannontech.database.YukonJdbcTemplate">
+        <constructor-arg>
+            <bean class="com.cannontech.spring.LoggingJdbcTemplate">
+                <property name="dataSource" ref="yukonDataSource" />
+            </bean>
+        </constructor-arg>
     </bean>
     
     <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>

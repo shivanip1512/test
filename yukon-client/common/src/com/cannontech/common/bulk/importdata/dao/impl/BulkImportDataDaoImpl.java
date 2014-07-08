@@ -5,14 +5,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.bulk.importdata.dao.BulkImportDataDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.importer.FailType;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
@@ -21,9 +20,10 @@ import com.cannontech.user.YukonUserContext;
 
 public class BulkImportDataDaoImpl implements BulkImportDataDao {
 
-    private SimpleJdbcOperations jdbcTemplate;
-    private DateFormattingService dateFormattingService;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired  private DateFormattingService dateFormattingService;
     
+    @Override
     public int getImportDataCount() {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -35,6 +35,7 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
     }
     
     // GETS
+    @Override
     public List<ImportFail> getAllDataFailures() {
               
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -50,6 +51,7 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
     }
     
     
+    @Override
     public List<ImportPendingComm> getAllPending() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -63,6 +65,7 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
     }
     
     
+    @Override
     public List<ImportFail> getAllCommunicationFailures() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -79,6 +82,7 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
     
     
     // DELETES
+    @Override
     public boolean deleteAllDataFailures() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -90,6 +94,7 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
         return true;
     }
     
+    @Override
     public boolean deleteAllPending() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -99,6 +104,7 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
         return true;
     }
     
+    @Override
     public boolean deleteAllCommunicationFailures()  {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -109,6 +115,7 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
         return true;
     }
     
+    @Override
     public String getLastImportTime() {
         
         String lastImportTime = jdbcTemplate.queryForObject("SELECT LASTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'", 
@@ -116,17 +123,20 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
         return lastImportTime;
     }
     
+    @Override
     public String getNextImportTime() {
         String nextImportTime = jdbcTemplate.queryForObject("SELECT NEXTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'", 
                                                                String.class);
         return nextImportTime;
     }
 
+    @Override
     public String getFormattedLastImportTime(YukonUserContext userContext, DateFormatEnum dateFormatEnum) {
         String lastImportTime = getLastImportTime();
         return getFormattedImportTime(lastImportTime, userContext, dateFormatEnum);
     }
 
+    @Override
     public String getFormattedNextImportTime(YukonUserContext userContext, DateFormatEnum dateFormatEnum) {
         String nextImportTime = getNextImportTime();
         return getFormattedImportTime(nextImportTime, userContext, dateFormatEnum);
@@ -143,16 +153,5 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
             // as a string in the database.  Other possibilities are "-----", "Currently Running...", for example.
         }
         return importTimeStr;
-    }
-
-    @Required
-    public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-    
-    @Autowired
-    public void setDateFormattingService(
-            DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
     }
 }
