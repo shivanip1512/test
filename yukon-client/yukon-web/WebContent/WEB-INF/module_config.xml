@@ -1433,6 +1433,7 @@
               <page name="rfnTest.viewDataSimulator" type="BASIC"/>
             </pages>
           </page>
+          <page name="ecobee.mockTest" type="BASIC"/>
           <page name="i18nDemo" type="BASIC"/>
           <page name="i18nDemo.scopes" type="BASIC"/>
           <page name="jsTesting" type="BASIC"/>
