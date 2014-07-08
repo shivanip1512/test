@@ -884,7 +884,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		}
 		
 		@Override
-		public Object extractData(ResultSet rs) throws SQLException,
+		public List<OptOutEventDto> extractData(ResultSet rs) throws SQLException,
 				DataAccessException {
 
 			List<OptOutEventDto> eventList = new ArrayList<OptOutEventDto>();
