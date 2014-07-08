@@ -143,7 +143,8 @@ public class ExportField implements Displayable {
     public MessageSourceResolvable getMessage() {
         MessageSourceResolvable  messageSourceResolvable = null;
         if (field.getType() != null) {
-            if (field.getType() == FieldType.ATTRIBUTE && field.getAttribute()!=null && field.getAttribute().getAttribute() !=null) {
+            if (field.getType() == FieldType.ATTRIBUTE && field.getAttribute()!=null 
+                    && field.getAttribute().getAttribute() !=null) {
                 messageSourceResolvable = field.getAttribute().getAttribute().getMessage();
             } else {
                 messageSourceResolvable = field.getType().getMessage();
