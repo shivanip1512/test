@@ -409,27 +409,6 @@ table.nowrap td {
     margin-right:0;
 }
 
-.sortable-table thead th a {
-    color: @font-color;
-    
-    &:hover {
-        color: @primary-color;
-        cursor: pointer;
-    }
-    
-    .icon {
-        margin: 0;
-        visibility: hidden;
-    }
-    
-    &.sorted .icon,
-    &:hover .icon {
-        visibility: visible;
-    }
-    &.sorted.asc .icon { background-position: -208px -48px; }
-    &.sorted.desc .icon { background-position: -176px -48px; }
-}
-
 .sortable {
     color: @font-color;
     

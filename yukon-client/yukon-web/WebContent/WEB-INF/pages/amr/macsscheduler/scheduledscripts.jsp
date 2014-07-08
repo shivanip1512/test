@@ -9,7 +9,7 @@
         <cti:param name="sortBy" value="${param.sortBy}" />
         <cti:param name="descending" value="${param.descending}" />
     </cti:url>
-    <div data-reloadable data-url="${baseUrl}">
+    <div id="scripts-container" data-url="${baseUrl}">
         <jsp:include page="${url}"/>
     </div>
 </cti:standardPage>

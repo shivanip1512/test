@@ -176,14 +176,6 @@ public class ScheduleController {
         return "schedule/schedules.jsp";
     }
     
-    @RequestMapping("schedulesTable")
-    public String schedulesTable(HttpServletRequest request, LiteYukonUser user, ModelMap map) {
-        
-        setupSchedulesTabModel(request, user, map);
-        
-        return "schedule/schedulesTable.jsp";
-    }
-    
     private boolean executeScheduleCommand(PaoScheduleAssignment assignment, LiteYukonUser user) {
         boolean isCommandValid = true;
         ScheduleCommand schedCommand = null;

@@ -24,7 +24,7 @@
                 <a href="javascript:void(0);" popup="#${popupId}">
                     <cti:pointValue pointId="${pointId}" format="DATE" cssClass="fl"/>
                 </a>
-                <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" data-reloadable></div>
+                <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}"></div>
             </c:if>
         </span>
     </c:otherwise>

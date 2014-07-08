@@ -137,7 +137,7 @@
     <c:set var="baseUrl" value="/capcontrol/schedule/scheduleAssignments"/>
     <cti:url var="showAllUrl" value="/capcontrol/schedule/scheduleAssignments"/>
 
-    <div id="schedule-assignments-table" data-reloadable>
+    <div id="schedule-assignments-table">
         <%@include file="scheduleassignmentTable.jsp" %>
     </div>
     

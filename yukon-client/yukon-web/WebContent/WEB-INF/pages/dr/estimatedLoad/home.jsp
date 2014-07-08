@@ -10,9 +10,7 @@
     <cti:tabbedContentSelector mode="section">
         <cti:msg2 var="formulasTab" key='.formulas'/>
         <cti:tabbedContentSelectorContent selectorName="${formulasTab}">
-            <div data-reloadable>
-               <%@ include file="_formulasTable.jsp" %>
-            </div>
+           <%@ include file="_formulasTable.jsp" %>
             <div class="action-area">
                <cti:button icon="icon-plus-green" nameKey="newFormula" href="formula/create"/>
             </div>
@@ -21,14 +19,10 @@
         <cti:msg2 var="assignmentsTab" key='.assignments'/>
         <cti:tabbedContentSelectorContent selectorName="${assignmentsTab}">
            <tags:sectionContainer2 nameKey="applianceCategories">
-                <div data-reloadable>
-                   <%@ include file="_appCatAssignmentsTable.jsp" %>
-                </div>
+               <%@ include file="_appCatAssignmentsTable.jsp" %>
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="gears">
-                <div data-reloadable>
-                   <%@ include file="_gearAssignmentsTable.jsp" %>
-                </div>
+               <%@ include file="_gearAssignmentsTable.jsp" %>
             </tags:sectionContainer2>
         </cti:tabbedContentSelectorContent>
     </cti:tabbedContentSelector>

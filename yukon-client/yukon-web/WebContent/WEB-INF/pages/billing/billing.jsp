@@ -24,7 +24,7 @@
             <jsp:include page="_settings.jsp"></jsp:include>
         </div>
         <tags:sectionContainer2 nameKey="billing.jobs">
-            <div id="billing_schedules_jobs" data-reloadable>
+            <div id="billing_schedules_jobs">
                 <jsp:include page="../amr/scheduledBilling/_jobs.jsp"></jsp:include>
             </div>
         </tags:sectionContainer2>

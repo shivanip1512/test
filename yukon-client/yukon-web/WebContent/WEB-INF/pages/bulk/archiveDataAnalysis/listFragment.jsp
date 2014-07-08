@@ -8,7 +8,6 @@
 
 <cti:msgScope paths="yukon.web.modules.tools.bulk.analysis.list">
 
-<div data-url="<cti:url value="page"/>">
 <table class="compact-results-table">
     <thead>
         <tr>
@@ -121,5 +120,4 @@
     </tbody>
 </table>
 <tags:pagingResultsControls adjustPageCount="true" result="${result}"/>
-</div>
 </cti:msgScope>

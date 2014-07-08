@@ -289,27 +289,6 @@ yukon.ui = (function () {
             /** Add placeholder functionality if needed */
             if (!Modernizr.input.placeholder) $('input, textarea').placeholder();
             
-            /** Reload or page a container */
-            $(document).on('click', '[data-reload]', function (ev) {
-                
-                var elem = $(this),
-                    url = elem.data('reload'),
-                    target = elem.closest('[data-reloadable]'),
-                    completeEvent = target.data('reloadable');
-                
-                if (target.length > 0) {
-                    target.load(url, function () {
-                        if (completeEvent) {
-                            target.trigger(completeEvent);
-                        }
-                    });
-                } else {
-                    window.location = url;
-                }
-                
-                return false;
-            });
-            
             /** Sorting Handler: Sort a table by column. */
             $(document).on('click', '.sortable', function (ev) {
                 

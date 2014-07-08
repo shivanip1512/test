@@ -12,7 +12,7 @@ yukon.ami.macs = (function () {
 	
 	/** Refreshes the list of scheduled scripts after every 5 seconds. */
     var _autoUpdatePageContent = function () {
-        var tableContainer = $('[data-reloadable]'),
+        var tableContainer = $('#scripts-container'),
             reloadUrl = tableContainer.attr('data-url');
         tableContainer.load(reloadUrl, function () {
             setTimeout(_autoUpdatePageContent, 5000);
@@ -21,7 +21,7 @@ yukon.ami.macs = (function () {
     },
         mod = {
             init: function () {
-                var tableContainer = $('[data-reloadable]');
+                var tableContainer = $('#scripts-container');
                 if (tableContainer.length === 1) {
                     _autoUpdatePageContent();
                 }
