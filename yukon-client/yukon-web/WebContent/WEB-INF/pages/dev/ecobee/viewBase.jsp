@@ -6,105 +6,59 @@
 
 <cti:standardPage module="dev" page="ecobee.mockTest">
 	<script type="text/javascript">
-	function registerDeviceChecked() {
-	    var checked = $('#registerDevice').prop('checked');
+	function enabledSelectedOption(checkBoxId,selectId) {
+	    var checked = $(checkBoxId).prop('checked');
 	    if (checked) {
-	        $('#regDevice').prop('disabled', false);
+	        $(selectId).prop('disabled', false);
 	    } else {
-	        $('#regDevice').prop('disabled', true);
+	        $(selectId).prop('disabled', true);
 	    }
 	}	
 	
-	function moveDeviceChecked() {
-	    var checked = $('#moveDevice').prop('checked');
-	    if (checked) {
-	        $('#movDevice').prop('disabled', false);
-	    } else {
-	        $('#movDevice').prop('disabled', true);
-	    }
-	}	
-	
-	function createSetChecked() {
-	    var checked = $('#createSet').prop('checked');
-	    if (checked) {
-	        $('#creatSet').prop('disabled', false);
-	    } else {
-	        $('#creatSet').prop('disabled', true);
-	    }
-	}	
-	
-	function moveSetChecked() {
-	    var checked = $('#moveSet').prop('checked');
-	    if (checked) {
-	        $('#movSet').prop('disabled', false);
-	    } else {
-	        $('#movSet').prop('disabled', true);
-	    }
-	}	
-	
-	function removeSetChecked() {
-	    var checked = $('#removeSet').prop('checked');
-	    if (checked) {
-	        $('#remSet').prop('disabled', false);
-	    } else {
-	        $('#remSet').prop('disabled', true);
-	    }
-	}	
-	
-	function sendDRChecked() {
-	    var checked = $('#sendDR').prop('checked');
-	    if (checked) {
-	        $('#drSend').prop('disabled', false);
-	    } else {
-	        $('#drSend').prop('disabled', true);
-	    }
-	}	
-	
-	function sendRestoreChecked() {
-	    var checked = $('#sendRestore').prop('checked');
-	    if (checked) {
-	        $('#restoreSend').prop('disabled', false);
-	    } else {
-	        $('#restoreSend').prop('disabled', true);
-	    }
-	}	
-	
-	function getHierarchyChecked() {
-	    var checked = $('#getHierarchy').prop('checked');
-	    if (checked) {
-	        $('#listHierarchy').prop('disabled', false);
-	    } else {
-	        $('#listHierarchy').prop('disabled', true);
-	    }
-	}	
-	
-	function authenticateChecked() {
-	    var checked = $('#authenticate').prop('checked');
-	    if (checked) {
-	        $('#authenticateOp').prop('disabled', false);
-	    } else {
-	        $('#authenticateOp').prop('disabled', true);
-	    }
-	}	
-	
-	function runtimeReportChecked() {
-	    var checked = $('#runtimeReport').prop('checked');
-	    if (checked) {
-	        $('#runtimeReportOp').prop('disabled', false);
-	    } else {
-	        $('#runtimeReportOp').prop('disabled', true);
-	    }
-	}	
-	
-	function assignThermostatChecked() {
-	    var checked = $('#assignThermostat').prop('checked');
-	    if (checked) {
-	        $('#assignThermostatOp').prop('disabled', false);
-	    } else {
-	        $('#assignThermostatOp').prop('disabled', true);
-	    }
-	}	
-	
+	 $(function() {
+         $('#registerDevice,#moveDevice,#createSet,#moveSet,#removeSet,#sendDR,#sendRestore,#getHierarchy,#authenticate,#runtimeReport,#assignThermostat').click(function () {
+        	 switch(this.name){
+             case 'registerDevice' : {
+            	 enabledSelectedOption(registerDevice,regDevice);
+             }break;
+             case 'moveDevice' : {
+            	 enabledSelectedOption(moveDevice,movDevice);
+             } break;
+             case 'createSet' : {
+            	 enabledSelectedOption(createSet,creatSet);
+             } break;
+             case 'moveSet' : {
+            	 enabledSelectedOption(moveSet,movSet);
+             } break;
+             case 'removeSet' : {
+            	 enabledSelectedOption(removeSet,remSet);
+             } break;
+             case 'sendDR' : {
+            	 enabledSelectedOption(sendDR,drSend);
+             } break;
+             case 'sendRestore' : {
+            	 enabledSelectedOption(sendRestore,restoreSend);
+             } break;
+             case 'getHierarchy' : {
+            	 enabledSelectedOption(getHierarchy,listHierarchy);
+             } break;
+             case 'authenticate' : {
+            	 enabledSelectedOption(authenticate,authenticateOp);
+             } break;
+             case 'runtimeReport' : {
+            	 enabledSelectedOption(runtimeReport,runtimeReportOp);
+             } break;
+             case 'assignThermostat' : {
+            	 enabledSelectedOption(assignThermostat,assignThermostatOp);
+             } break;
+         }
+        	 
+         });
+     });
+	 
+	 
+	 
+
 	</script>
 	<cti:url var="updateRequestUrl" value="update" />
 	<form id="ecobeeForm" action="${updateRequestUrl}" method="post">
@@ -113,56 +67,56 @@
 				<tags:sectionContainer title="Endpoint">
 					<ul class="simple-list">
 						<li>
-						<label><input type="checkbox" id="registerDevice" name="registerDevice" onclick="registerDeviceChecked()"><i:inline
+						<label><input type="checkbox" id="registerDevice" name="registerDevice"><i:inline
 									key=".registerDevice" /></label>
 						</li>
 						<li>
-							<label> <input id="moveDevice" type="checkbox" name="moveDevice" onclick="moveDeviceChecked()"> <i:inline
+							<label> <input id="moveDevice" type="checkbox" name="moveDevice"> <i:inline
 									key=".moveDevice" />
 							</label>
 						</li>
 						<li>
-							<label> <input id="createSet" type="checkbox" name="createSet" onclick="createSetChecked()"> <i:inline
+							<label> <input id="createSet" type="checkbox" name="createSet"> <i:inline
 									key=".createSet" />
 							</label>
 						</li>
 						<li>
-							<label> <input id="moveSet"	type="checkbox" name="moveSet" onclick="moveSetChecked()"> <i:inline
+							<label> <input id="moveSet"	type="checkbox" name="moveSet"> <i:inline
 									key=".moveSet" />
 							</label>
 						</li>
 						<li>
-							<label> <input id="removeSet" type="checkbox" name="removeSet" onclick="removeSetChecked()"> <i:inline
+							<label> <input id="removeSet" type="checkbox" name="removeSet"> <i:inline
 									key=".removeSet" />
 							</label>
 						</li>
 						<li>
-							<label> <input id="sendDR" type="checkbox" name="sendDR" onclick="sendDRChecked()"> <i:inline
+							<label> <input id="sendDR" type="checkbox" name="sendDR"> <i:inline
 									key=".sendDR" />
 							</label>
 						</li>
 						<li>
-							<label> <input id="sendRestore"	type="checkbox" name="sendRestore" onclick="sendRestoreChecked()"> <i:inline
+							<label> <input id="sendRestore"	type="checkbox" name="sendRestore"> <i:inline
 									key=".sendRestore" />
 							</label>
 						</li>
 						<li>
-							<label> <input id="getHierarchy" type="checkbox" name="getHierarchy" onclick="getHierarchyChecked()"> <i:inline
+							<label> <input id="getHierarchy" type="checkbox" name="getHierarchy"> <i:inline
 									key=".getHierarchy" />
 							</label>
 						</li>
 						<li>
-							<label> <input id="authenticate" type="checkbox" name="authenticate" onclick="authenticateChecked()"> <i:inline
+							<label> <input id="authenticate" type="checkbox" name="authenticate"> <i:inline
 									key=".authenticate" />
 							</label>
 						</li>
 						<li>
-							<label> <input id="runtimeReport" type="checkbox" name="runtimeReport" onclick="runtimeReportChecked()"> <i:inline
+							<label> <input id="runtimeReport" type="checkbox" name="runtimeReport"> <i:inline
 									key=".runtimeReport" />
 							</label>
 						</li>
 						<li>
-							<label> <input id="assignThermostat" type="checkbox" name="assignThermostat" onclick="assignThermostatChecked()"> <i:inline
+							<label> <input id="assignThermostat" type="checkbox" name="assignThermostat"> <i:inline
 									key=".assignThermostat" />
 							</label>
 						</li>
