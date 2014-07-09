@@ -24,6 +24,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.TitleBorder;
@@ -299,6 +301,17 @@ public class AdvancedRouteSetupDialog extends JDialog implements ActionListener,
         }
     }
 
+    /**
+     * Called when an input loses focus and isInputValid() returns false;
+     */
+    private void fixInvalidInputs() {
+        for (int i = 0; i < route.getRepeaters().size(); i++) {
+            if (StringUtils.isBlank(repeaterTextFieldArray[i].getText())) {
+                repeaterTextFieldArray[i].setText("0");
+            }
+        }
+    }
+    
     private void findDuplicates() {
         int fixed = new Integer(getCCUFixedTextField().getText()).intValue();
         int variable = new Integer(getCCUVariableTextField().getText()).intValue();
@@ -1479,6 +1492,8 @@ public class AdvancedRouteSetupDialog extends JDialog implements ActionListener,
             if (isInputValid()) {
                 findDuplicates();
                 validate();
+            } else {
+                fixInvalidInputs();
             }
         }
     }
