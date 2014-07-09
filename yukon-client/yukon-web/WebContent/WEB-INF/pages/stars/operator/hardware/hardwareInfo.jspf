@@ -81,15 +81,16 @@ $(function() { updateServiceCompanyInfo();});
             <c:choose>
                 <c:when test="${showSerialNumber}">
                     <c:choose>
-                    
                         <c:when test="${serialNumberEditable}">
                             <tags:inputNameValue nameKey=".serialNumber" path="serialNumber" inputClass="f-focus"></tags:inputNameValue>
                         </c:when>
                         
                         <c:otherwise>
                             <tags:nameValue2 nameKey=".serialNumber">
-                                <form:hidden path="serialNumber"/>
-                                ${fn:escapeXml(hardware.serialNumber)}
+                                <tags:bind path="serialNumber">
+                                    <form:hidden path="serialNumber"/>
+                                    ${fn:escapeXml(hardware.serialNumber)}
+                                </tags:bind>
                             </tags:nameValue2>
                         </c:otherwise>
                         

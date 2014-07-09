@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -120,6 +122,8 @@ import com.google.common.collect.Sets;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 public class OperatorHardwareController {
+    private final Logger log = YukonLogManager.getLogger(OperatorHardwareController.class);
+    
     @Autowired private AddressDao addressDao;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private ContactDao contactDao;
@@ -396,10 +400,9 @@ public class OperatorHardwareController {
         
         try {
             statusChange = hardwareUiService.updateHardware(user, hardware);
-        } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
+        } catch (ObjectInOtherEnergyCompanyException | StarsDeviceSerialNumberAlreadyExistsException e) {
             bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
-        } catch (ObjectInOtherEnergyCompanyException e) {
-            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
+            log.error("Unable to update hardware. ", e);
         } catch (Lcr3102YukonDeviceCreationException e) {
             switch (e.getType()) {
             case UNKNOWN:
@@ -415,6 +418,7 @@ public class OperatorHardwareController {
                 bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
                 break;
             }
+            log.error("Unable to update hardware. ", e);
         }
         if (bindingResult.hasErrors()) {
             return returnToEditWithErrors(userContext, model, accountInfoFragment, flashScope, hardware, bindingResult);
