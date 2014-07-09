@@ -95,6 +95,7 @@ public class AttributeServiceImplTest extends TestCase {
         String path = (AttributeServiceImplTest.class.getProtectionDomain().getCodeSource().getLocation()).toString();
 
         path = path.replace("/bin/", "/");
+        path = path.substring(0, path.indexOf("common")+6);
         path = path.replace("file:/", "");
         try {
             FileInputStream fis = new FileInputStream(path + 
