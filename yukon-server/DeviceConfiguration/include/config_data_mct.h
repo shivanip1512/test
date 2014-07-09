@@ -168,7 +168,7 @@ public:
     static const std::string DisconnectLoadLimitConnectDelay;
     static const std::string DisconnectMinutes;
     static const std::string ConnectMinutes;
-    static const std::string ReconnectButton;
+    static const std::string ReconnectParameter;
 
     static const std::string DemandFreezeDay;
 };

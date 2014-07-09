@@ -2464,7 +2464,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         config.insertValue("disconnectLoadLimitConnectDelay", "4");
         config.insertValue("disconnectMinutes", "7");
         config.insertValue("connectMinutes", "17");
-        config.insertValue("reconnectButton", "true");
+        config.insertValue("reconnectParam", "ARM");
         config.insertValue("demandFreezeDay", "12");
 
         CtiCommandParser parse("putconfig install all");
@@ -2571,7 +2571,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         config.insertValue("disconnectLoadLimitConnectDelay", "3");
         config.insertValue("disconnectMinutes", "6");
         config.insertValue("connectMinutes", "18");
-        config.insertValue("reconnectButton", "false");
+        config.insertValue("reconnectParam", "IMMEDIATE");
         config.insertValue("demandFreezeDay", "21");
 
         CtiCommandParser parse("putconfig install all");

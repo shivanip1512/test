@@ -168,7 +168,7 @@ const string MCTStrings::DisconnectDemandThreshold = "disconnectDemandThreshold"
 const string MCTStrings::DisconnectLoadLimitConnectDelay = "disconnectLoadLimitConnectDelay";
 const string MCTStrings::DisconnectMinutes = "disconnectMinutes";
 const string MCTStrings::ConnectMinutes = "connectMinutes";
-const string MCTStrings::ReconnectButton = "reconnectButton";
+const string MCTStrings::ReconnectParameter = "reconnectParam";
 
 const string MCTStrings::DemandFreezeDay    = "demandFreezeDay";
 

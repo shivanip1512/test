@@ -37,6 +37,10 @@ const Mct410Device::FunctionReadValueMappings Mct410Device::_functionReadValueMa
 
 namespace {
 
+const std::map<std::string, bool> ReconnectButtonLookup = boost::assign::map_list_of
+    ( "ARM",       true )
+    ( "IMMEDIATE", false );
+
 typedef Commands::Mct410DisconnectConfigurationCommand Disc;
 
 const std::map<std::string, Disc::DisconnectMode> DisconnectModeLookup = boost::assign::map_list_of
@@ -1600,7 +1604,11 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
         try
         {
             const std::string disconnectModeStr = getConfigData<std::string>(deviceConfig, MCTStrings::DisconnectMode);
-            const Commands::Mct410DisconnectConfigurationCommand::DisconnectMode disconnectMode = resolveConfigData( DisconnectModeLookup, disconnectModeStr, MCTStrings::DisconnectMode);
+            const Commands::Mct410DisconnectConfigurationCommand::DisconnectMode disconnectMode =
+                    resolveConfigData(
+                            DisconnectModeLookup,
+                            disconnectModeStr,
+                            MCTStrings::DisconnectMode);
 
             const float disconnectDemandThreshold = getConfigData<double>(deviceConfig, MCTStrings::DisconnectDemandThreshold);
 
@@ -1622,7 +1630,13 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
                 throw InvalidConfigDataException(MCTStrings::ConnectMinutes, "connectMinutes < 0");
             }
 
-            const bool reconnectButtonRequired = getConfigData<bool>(deviceConfig, MCTStrings::ReconnectButton);
+            const bool reconnectButtonRequired =
+                    resolveConfigData(
+                            ReconnectButtonLookup,
+                            getConfigData<std::string>(
+                                    deviceConfig,
+                                    MCTStrings::ReconnectParameter),
+                            MCTStrings::ReconnectParameter);
 
             std::string dpi_disconnectModeStr;
             double dpi_demandThreshold;
