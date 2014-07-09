@@ -1,6 +1,7 @@
 package com.cannontech.common.pao.attribute.service;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,29 +33,23 @@ public class AttributeServiceImplTest extends TestCase {
     protected void setUp() throws Exception {
 
         service = new AttributeServiceImpl();
-
-        paoDefinitionDao =
-            PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new MockEmptyDeviceDefinitionDao());
+        paoDefinitionDao =  PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new MockEmptyDeviceDefinitionDao());
         ReflectionTestUtils.setField(service, "paoDefinitionDao", paoDefinitionDao);
-
         PointServiceImpl pointService = new PointServiceImpl();
-
         pointDao = new MockPointDao();
         ReflectionTestUtils.setField(pointService, "pointDao", pointDao);
         ReflectionTestUtils.setField(service, "pointService", pointService);
-
         device = new SimpleDevice(1, 1019);
     }
 
     /**
      * Test getPointForAttribute()
      */
-    public void testGetPointForAttribute() {
+    public void test_GetPointForAttribute() {
 
         // Test for existing device / attribute
         LitePoint expectedPoint = pointDao.getLitePoint(1);
         LitePoint actualPoint = service.getPointForAttribute(device, BuiltInAttribute.USAGE);
-
         assertEquals("Attribute point isn't as expected", expectedPoint, actualPoint);
 
     }
@@ -62,14 +57,13 @@ public class AttributeServiceImplTest extends TestCase {
     /**
      * Test getAllExistingAtributes()
      */
-    public void testGetAllExistingAtributes() {
+    public void test_GetAllExistingAtributes() {
 
         // Test for existing device with existing attributes
         Set<Attribute> expectedAtributes = new HashSet<Attribute>();
         expectedAtributes.add(BuiltInAttribute.USAGE);
         expectedAtributes.add(BuiltInAttribute.DEMAND);
         expectedAtributes.add(BuiltInAttribute.LOAD_PROFILE);
-
         Set<Attribute> actualAtributes = service.getExistingAttributes(device, expectedAtributes);
 
         assertEquals("Existing attributes aren't as expected", expectedAtributes, actualAtributes);
@@ -98,15 +92,13 @@ public class AttributeServiceImplTest extends TestCase {
 
         Properties prop = new Properties();
         List<String> missingKeyList = new ArrayList<String>();
-        String path =
-            (AttributeServiceImplTest.class.getProtectionDomain().getCodeSource().getLocation()).toString();
+        String path = (AttributeServiceImplTest.class.getProtectionDomain().getCodeSource().getLocation()).toString();
 
         path = path.replace("/bin/", "/");
         path = path.replace("file:/", "");
         try {
-            FileInputStream fis =
-                new FileInputStream(path
-                                    + "\\i18n\\en_US\\com\\cannontech\\yukon\\common\\point.xml");
+            FileInputStream fis = new FileInputStream(path + 
+                                                      "\\i18n\\en_US\\com\\cannontech\\yukon\\common\\point.xml");
             prop.loadFromXML(fis);
             for (BuiltInAttribute key : BuiltInAttribute.values())
             {
@@ -115,8 +107,10 @@ public class AttributeServiceImplTest extends TestCase {
                     missingKeyList.add(key.name());
                 }
             }
+        } catch (IOException io) {
+            fail("caught exception in test_ValidateAllPointMessages"+io.getMessage());
         } catch (Exception e) {
-            fail("caught exception in test_ValidateAllPointMessages");
+            fail("caught exception in test_ValidateAllPointMessages"+e.getMessage());
         }
         assertFalse(" Message missing for keys -" + missingKeyList, missingKeyList.size() > 0);
     }
