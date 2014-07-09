@@ -49,9 +49,10 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.model.ContactNotificationOption;
 import com.cannontech.web.stars.dr.consumer.model.LiteContactValidator;
 
-@CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONTACTS_ACCESS)
 @Controller
+@CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONTACTS_ACCESS)
 public class ContactController extends AbstractConsumerController {
+    
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private CustomerDao customerDao;
@@ -68,10 +69,10 @@ public class ContactController extends AbstractConsumerController {
 
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String index(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    		YukonUserContext yukonUserContext,
+            YukonUserContext yukonUserContext,
             ModelMap map) {
 
-    	// Get the primary contact
+        // Get the primary contact
         int customerAccountId = customerAccount.getAccountId();
         LiteContact contact = contactDao.getPrimaryContactForAccount(customerAccountId);
         map.addAttribute("primaryContact", contact);
@@ -108,7 +109,7 @@ public class ContactController extends AbstractConsumerController {
     public String viewContact(int contactId, YukonUserContext user, ModelMap map) {
         
         setupPageMode(user, map, PageEditMode.VIEW, contactId, true);
-    	return "consumer/contacts/edit.jsp";
+        return "consumer/contacts/edit.jsp";
     }
     
     /**
@@ -117,8 +118,8 @@ public class ContactController extends AbstractConsumerController {
     @RequestMapping(value="/consumer/contacts/new", method = RequestMethod.GET)
     public String newContact(YukonUserContext user, ModelMap map) {
 
-    	setupPageMode(user, map, PageEditMode.CREATE, null, true);
-    	return "consumer/contacts/edit.jsp";
+        setupPageMode(user, map, PageEditMode.CREATE, null, true);
+        return "consumer/contacts/edit.jsp";
     }
     
     /**
@@ -126,25 +127,25 @@ public class ContactController extends AbstractConsumerController {
      */
     @RequestMapping(value="/consumer/contacts/create", method = RequestMethod.POST)
     public String createContact(@ModelAttribute("contact") LiteContact contact,
-    							BindingResult bindingResult,
-    							YukonUserContext user,
-    							FlashScope flashScope,
-    							ModelMap map) {
+                                BindingResult bindingResult,
+                                YukonUserContext user,
+                                FlashScope flashScope,
+                                ModelMap map) {
         
-    	int userId = user.getYukonUser().getUserID();
+        int userId = user.getYukonUser().getUserID();
         LiteCustomer customer = customerDao.getCustomerForUser(userId);
         
         //check the new contact for errors
         liteContactValidator.validate(contact, bindingResult);
         if(bindingResult.hasErrors()) {
-        	flashScope.setError(YukonValidationUtils.errorsForBindingResult(bindingResult));
-        	setupPageMode(user, map, PageEditMode.CREATE, contact.getContactID(), false);
-        	map.addAttribute("actionUrl", "/stars/consumer/contacts/create");
-        	return "consumer/contacts/edit.jsp";
+            flashScope.setError(YukonValidationUtils.errorsForBindingResult(bindingResult));
+            setupPageMode(user, map, PageEditMode.CREATE, contact.getContactID(), false);
+            map.addAttribute("actionUrl", "/stars/consumer/contacts/create");
+            return "consumer/contacts/edit.jsp";
         } else {
-        	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactCreated"));
-        	contactDao.addAdditionalContact(contact, customer);
-			return "redirect:/stars/consumer/contacts";
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactCreated"));
+            contactDao.addAdditionalContact(contact, customer);
+            return "redirect:/stars/consumer/contacts";
         }
     }
     
@@ -153,48 +154,48 @@ public class ContactController extends AbstractConsumerController {
      */
     @RequestMapping(value="/consumer/contacts/edit", method=RequestMethod.GET)
     public String editContact(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    						  int contactId,
-    						  YukonUserContext user,
-    						  ModelMap map) {
+                              int contactId,
+                              YukonUserContext user,
+                              ModelMap map) {
         
-    	if(checkPrimaryContact(customerAccount, contactId)){
-    		map.put("primaryContact", true);
-    	}
-    	//check permissions for this user and contact
-    	accountCheckerService.checkContact(user.getYukonUser(), Integer.valueOf(contactId));
+        if(checkPrimaryContact(customerAccount, contactId)){
+            map.put("primaryContact", true);
+        }
+        //check permissions for this user and contact
+        accountCheckerService.checkContact(user.getYukonUser(), Integer.valueOf(contactId));
         setupPageMode(user, map, PageEditMode.EDIT, Integer.valueOf(contactId), true);
         promptForEmail(map, user.getYukonUser(), customerAccount.getAccountId());
-    	return "consumer/contacts/edit.jsp";
+        return "consumer/contacts/edit.jsp";
     }
 
     @RequestMapping(value = "/consumer/contacts/updateContact", method = RequestMethod.POST)
     public String updateContact(@ModelAttribute("contact")LiteContact contact,
-    							BindingResult bindingResult, 
-    							YukonUserContext user, 
-    							FlashScope flashScope, 
-    							ModelMap map) {
+                                BindingResult bindingResult, 
+                                YukonUserContext user, 
+                                FlashScope flashScope, 
+                                ModelMap map) {
         
-    	//check permissions for this user and contact
-    	accountCheckerService.checkContact(user.getYukonUser(), contact.getContactID());
+        //check permissions for this user and contact
+        accountCheckerService.checkContact(user.getYukonUser(), contact.getContactID());
         
-    	CustomerAccount account = customerAccountDao.getAccountByContactId(contact.getContactID());
+        CustomerAccount account = customerAccountDao.getAccountByContactId(contact.getContactID());
         
-    	//validate contact and notifications
-    	liteContactValidator.validate(contact, bindingResult);
-    	if(bindingResult.hasErrors()){
-    		if(checkPrimaryContact(account, contact.getContactID())){
-        		map.put("primaryContact", true);
-        	}
-    		setupPageMode(user, map, PageEditMode.EDIT, contact.getContactID(), false);
-    		promptForEmail(map, user.getYukonUser(), account.getAccountId());
-    		List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+        //validate contact and notifications
+        liteContactValidator.validate(contact, bindingResult);
+        if(bindingResult.hasErrors()){
+            if(checkPrimaryContact(account, contact.getContactID())){
+                map.put("primaryContact", true);
+            }
+            setupPageMode(user, map, PageEditMode.EDIT, contact.getContactID(), false);
+            promptForEmail(map, user.getYukonUser(), account.getAccountId());
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-    		return "consumer/contacts/edit.jsp";
-    	}
+            return "consumer/contacts/edit.jsp";
+        }
 
-    	// If Auto Create Login is true AND this is not the primary contact AND there is no login for this contact, create one.
-    	YukonEnergyCompany energyCompany =  ecDao.getEnergyCompanyByAccountId(account.getAccountId());
-    	boolean autoCreateLogin = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany.getEnergyCompanyId());
+        // If Auto Create Login is true AND this is not the primary contact AND there is no login for this contact, create one.
+        YukonEnergyCompany energyCompany =  ecDao.getEnergyCompanyByAccountId(account.getAccountId());
+        boolean autoCreateLogin = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany.getEnergyCompanyId());
         
         if (autoCreateLogin && !contactDao.isPrimaryContact(contact.getContactID())
                 && contact.getLoginID() == UserUtils.USER_NONE_ID) {
@@ -206,32 +207,32 @@ public class ContactController extends AbstractConsumerController {
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.contacts.contactSaved"));
         contactDao.saveContact(contact);
         
-    	return "redirect:/stars/consumer/contacts";
+        return "redirect:/stars/consumer/contacts";
     }
     
     @RequestMapping(value="/consumer/contacts/delete", method=RequestMethod.POST)
     public String deleteContact(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    							@ModelAttribute("contact")LiteContact contact,
-    							BindingResult bindingResult,
-    							YukonUserContext user,
-    							FlashScope flashScope,
-    							ModelMap map) {
-    	//check permissions for this user and contact
-    	accountCheckerService.checkContact(user.getYukonUser(), contact.getContactID());
+                                @ModelAttribute("contact")LiteContact contact,
+                                BindingResult bindingResult,
+                                YukonUserContext user,
+                                FlashScope flashScope,
+                                ModelMap map) {
+        //check permissions for this user and contact
+        accountCheckerService.checkContact(user.getYukonUser(), contact.getContactID());
         
-    	//check that they are not trying to delete the primary contact
+        //check that they are not trying to delete the primary contact
         if(checkPrimaryContact(customerAccount, contact.getContactID())) {
-        	flashScope.setError(new YukonMessageSourceResolvable("yukon.dr.consumer.contacts.cannotDeletePrimaryContact"));
-        	return "redirect:/stars/consumer/contacts";
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.dr.consumer.contacts.cannotDeletePrimaryContact"));
+            return "redirect:/stars/consumer/contacts";
         }
         
-    	contactDao.deleteContact(contact);
+        contactDao.deleteContact(contact);
         //clean-up user login, if exists
         if (contact.getLoginID() > 0) {
             yukonUserDao.deleteUser(contact.getLoginID());
         }
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactDeleted"));
-    	return "redirect:/stars/consumer/contacts";
+        return "redirect:/stars/consumer/contacts";
     }
     
     /**
@@ -239,8 +240,8 @@ public class ContactController extends AbstractConsumerController {
      * @return
      */
     private boolean checkPrimaryContact(CustomerAccount account, int contactId) {
-    	//check that they are not trying to delete the primary contact
-    	// Get the primary contact
+        //check that they are not trying to delete the primary contact
+        // Get the primary contact
         int customerAccountId = account.getAccountId();
         LiteContact primaryContact = contactDao.getPrimaryContactForAccount(customerAccountId);
         
@@ -249,68 +250,68 @@ public class ContactController extends AbstractConsumerController {
     
     private void setupPageMode(YukonUserContext user, ModelMap map, PageEditMode mode, Integer contactId, Boolean fetchContact) {
         
-    	//set the page mode
-    	map.addAttribute("mode", mode);
+        //set the page mode
+        map.addAttribute("mode", mode);
         
-    	if(fetchContact) {
-	    	if(contactId != null) {
-	    		map.addAttribute("contact", contactDao.getContact(contactId));
-	    	}else{
-	    		LiteContact contact = new LiteContact(-1);
-	    		contact.setLoginID(UserUtils.USER_NONE_ID);
-	    		map.addAttribute("contact", contact);
-	    		contactId = contact.getContactID();
-	    	}
-    	}
+        if(fetchContact) {
+            if(contactId != null) {
+                map.addAttribute("contact", contactDao.getContact(contactId));
+            }else{
+                LiteContact contact = new LiteContact(-1);
+                contact.setLoginID(UserUtils.USER_NONE_ID);
+                map.addAttribute("contact", contact);
+                contactId = contact.getContactID();
+            }
+        }
         
-    	switch(mode) {
-    	case VIEW:
-    		break;
-    	case CREATE:
-    		map.put("actionUrl", "/stars/consumer/contacts/create");
-    		break;
-    	case EDIT:
-    		map.put("actionUrl", "/stars/consumer/contacts/updateContact");
-    		break;
-		default: break;
-    	}
-    	
-    	//add notification template
-    	LiteContactNotification notification = new LiteContactNotification(-1,
-    			contactId,
-    			ContactNotificationType.HOME_PHONE.getDefinitionId(),
-    			"N",
-    			"");
-    	map.addAttribute("notificationTemplate", notification);
+        switch(mode) {
+        case VIEW:
+            break;
+        case CREATE:
+            map.put("actionUrl", "/stars/consumer/contacts/create");
+            break;
+        case EDIT:
+            map.put("actionUrl", "/stars/consumer/contacts/updateContact");
+            break;
+        default: break;
+        }
         
-    	// add the notification types for select fields
-    	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(user);
-    	Map<Integer,String> referenceData = new HashMap<Integer, String>();
-    	for (ContactNotificationType contactNotificationType : ContactNotificationType.values()) {
-    		referenceData.put(contactNotificationType.getDefinitionId(), messageSourceAccessor.getMessage(contactNotificationType.getFormatKey()));
-    	}
-    	map.addAttribute("notificationOptionList", referenceData);
+        //add notification template
+        LiteContactNotification notification = new LiteContactNotification(-1,
+                contactId,
+                ContactNotificationType.HOME_PHONE.getDefinitionId(),
+                "N",
+                "");
+        map.addAttribute("notificationTemplate", notification);
+        
+        // add the notification types for select fields
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(user);
+        Map<Integer,String> referenceData = new HashMap<Integer, String>();
+        for (ContactNotificationType contactNotificationType : ContactNotificationType.values()) {
+            referenceData.put(contactNotificationType.getDefinitionId(), messageSourceAccessor.getMessage(contactNotificationType.getFormatKey()));
+        }
+        map.addAttribute("notificationOptionList", referenceData);
     }
     
     private void promptForEmail(ModelMap map, LiteYukonUser user, int accountId){
-    	boolean promptForEmail = false;
-    	//See if we need to prompt for an email address. step 1: Can we recover passwords?
+        boolean promptForEmail = false;
+        //See if we need to prompt for an email address. step 1: Can we recover passwords?
         if(globalSettingsDao.getBoolean(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
-        	//Step 2: Can this user edit their password and access the contacts page?
-        	if(rolePropertyDao.checkAllProperties(user, 
-        											YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, 
-        											YukonRoleProperty.RESIDENTIAL_CONTACTS_ACCESS)){
-        		//This user should be prompted unless they have a valid email address
-        		promptForEmail = true;
+            //Step 2: Can this user edit their password and access the contacts page?
+            if(rolePropertyDao.checkAllProperties(user, 
+                                                    YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, 
+                                                    YukonRoleProperty.RESIDENTIAL_CONTACTS_ACCESS)){
+                //This user should be prompted unless they have a valid email address
+                promptForEmail = true;
                 
-        		//Step 3: Does this user have an email address?
-        		LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
+                //Step 3: Does this user have an email address?
+                LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
                 LiteContactNotification emailNotification = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
                 
                 if(emailNotification != null){
-                	promptForEmail = false;
+                    promptForEmail = false;
                 }
-        	}
+            }
         }
 
         map.addAttribute("promptForEmail", promptForEmail);
