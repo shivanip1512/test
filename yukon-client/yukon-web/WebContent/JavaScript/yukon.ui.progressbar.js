@@ -138,7 +138,7 @@ yukon.ui.progressbar = (function () {
                     progressContainer = _getProgressBarContainer(pbarId);
 
                     // Check if we are a normal progress bar or success / fail progress bar
-                    if (progressContainer.find('.progress-bar-danger').length < 0) {
+                    if (progressContainer.find('.progress-bar-danger').length <= 0) {
                         progressContainer.find('.progress-bar').addClass('progress-bar-danger');
                         progressContainer.find('.progress-bar').css('width', '100%');
                     } else {
