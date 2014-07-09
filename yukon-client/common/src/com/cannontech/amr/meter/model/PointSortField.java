@@ -13,7 +13,7 @@ public enum PointSortField implements DisplayableEnum {
     QUALITY("quality"),
     ;
     
-    private String keyPart;
+    private final String keyPart;
     
     private PointSortField(String keyPart) {
         this.keyPart = keyPart;
