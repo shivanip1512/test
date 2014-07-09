@@ -1,6 +1,10 @@
 package com.cannontech.common.pao.attribute.service;
 
+import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -29,7 +33,8 @@ public class AttributeServiceImplTest extends TestCase {
 
         service = new AttributeServiceImpl();
 
-        paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new MockEmptyDeviceDefinitionDao());
+        paoDefinitionDao =
+            PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new MockEmptyDeviceDefinitionDao());
         ReflectionTestUtils.setField(service, "paoDefinitionDao", paoDefinitionDao);
 
         PointServiceImpl pointService = new PointServiceImpl();
@@ -84,5 +89,35 @@ public class AttributeServiceImplTest extends TestCase {
         } catch (Exception e) {
             // expected an exception
         }
+    }
+
+    /**
+     * Test BuiltInAttribute Enum values if matched with points.xml
+     */
+    public void test_ValidateAllPointMessages() {
+
+        Properties prop = new Properties();
+        List<String> missingKeyList = new ArrayList<String>();
+        String path =
+            (AttributeServiceImplTest.class.getProtectionDomain().getCodeSource().getLocation()).toString();
+
+        path = path.replace("/bin/", "/");
+        path = path.replace("file:/", "");
+        try {
+            FileInputStream fis =
+                new FileInputStream(path
+                                    + "\\i18n\\en_US\\com\\cannontech\\yukon\\common\\point.xml");
+            prop.loadFromXML(fis);
+            for (BuiltInAttribute key : BuiltInAttribute.values())
+            {
+                String keyStr = "yukon.common.attribute.builtInAttribute." + key.name();
+                if (!prop.containsKey(keyStr)) {
+                    missingKeyList.add(key.name());
+                }
+            }
+        } catch (Exception e) {
+            fail("caught exception in test_ValidateAllPointMessages");
+        }
+        assertFalse(" Message missing for keys -" + missingKeyList, missingKeyList.size() > 0);
     }
 }

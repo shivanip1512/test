@@ -139,7 +139,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.ZERO_USAGE_FLAG">Zero Usage Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZIGBEE_LINK_STATUS">ZigBee Link Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TERMINAL_BLOCK_COVER_REMOVAL_FLAG">Terminal Block Cover Removal</entry>
-
     <entry key="yukon.common.attribute.builtInAttribute.IED_DEMAND_RESET_COUNT">IED Demand Reset Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RF_DEMAND_RESET_STATUS">RF Demand Reset Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ALTERNATE_MODE_ENTRY">Alternate Mode Entry</entry>
@@ -226,7 +225,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_B_OUT">Voltage Phase B Out</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_C_OUT">Voltage Phase C Out</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_ERROR">Voltage Phase Error</entry>
-    
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KWH">Delivered kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH">Received kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_RATE_A">Received kWh Rate A</entry>
@@ -272,15 +270,13 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KW_LOAD_PROFILE">Sum kW Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KW_LOAD_PROFILE">Net kW Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVA_LOAD_PROFILE">Sum kVA Load Profile</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAR_LOAD_PROFILE">Sum kVAr Load Profile</entry>
-    
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAR_LOAD_PROFILE">Sum kVAr Load Profile</entry> 
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH">Forward Inductive kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH">Reverse Inductive kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH_PER_INTERVAL">Forward Inductive kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_CAPACITIVE_KVARH_PER_INTERVAL">Forward Capacitive kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH_PER_INTERVAL">Reverse Inductive kVArh per Interval</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">Reverse Capacitive kVArh per Interval</entry>
-    
+    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">Reverse Capacitive kVArh per Interval</entry> 
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH">Net Delivered kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_A">Net Delivered kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_B">Net Delivered kVArh Rate B</entry>
@@ -296,7 +292,14 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_A">Net Received kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_B">Net Received kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_C">Net Received kVArh Rate C</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate D</entry>
+    
+	<entry key="yukon.common.attribute.builtInAttribute.INDOOR_TEMPERATURE">Indoor Temperature</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.OUTDOOR_TEMPERATURE">Outdoor Temperature</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.COOL_SET_TEMPERATURE">Cool set Temperature</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.HEAT_SET_TEMPERATURE">Heat set Temperature</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH">Recieved KVAH</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_E">Net KWH Rate E</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Recieved KVARH Rate E</entry>
 
     <!-- BuiltInAttribute see note above about changing values-->
 </properties>
