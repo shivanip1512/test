@@ -88,7 +88,7 @@ $(function(){
                                 thermostatIds="${thermostatIds}"
                                 accountId="${accountId}"
                                 temperatureUnit="${temperatureUnit}"
-                                actionPath="/stars/operator/thermostat/schedule"
+                                actionPath="/stars/operator/thermostatSchedule/"
                                 thermostatType="${thermostatType}"
                                 styleClass="vh"/>
                         </div>
