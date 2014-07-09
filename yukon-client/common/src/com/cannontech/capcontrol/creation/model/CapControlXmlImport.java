@@ -43,12 +43,17 @@ public enum CapControlXmlImport {
 	}
 	
 	public static CapControlXmlImport getForXmlString(String xmlString) {
-		CapControlXmlImport value = lookupByXmlString.get(xmlString.toLowerCase());
-		Validate.notNull(value, xmlString);
+		CapControlXmlImport value = null;
+		try {
+			value = lookupByXmlString.get(xmlString.toLowerCase());
+			Validate.notNull(value, xmlString);
+		} catch(NullPointerException np) {
+			throw new IllegalArgumentException();
+		}
 		return value;
 	}
 	
-	public static PaoType getPaoTypeForXmlString(String xmlString) {
+	public static PaoType getPaoTypeForXmlString(String xmlString) throws IllegalArgumentException {
 		CapControlXmlImport value = getForXmlString(xmlString);
 		return value.paoType;
 	}

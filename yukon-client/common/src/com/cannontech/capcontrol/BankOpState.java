@@ -26,8 +26,13 @@ public enum BankOpState implements DisplayableEnum, DatabaseRepresentationSource
     }
     
     public static BankOpState getStateByName(String name) {
-        BankOpState state = lookupByString.get(name);
-        Validate.notNull(state, name);
+    	BankOpState state = null;
+    	try {
+    		state = lookupByString.get(name);
+            Validate.notNull(state, name);
+    	} catch(NullPointerException np) {
+    		throw new IllegalArgumentException();
+    	}
         return state;
     }
     
