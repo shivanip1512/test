@@ -1568,6 +1568,11 @@
     </bean>
 
     <bean id="hardwareModelHelper" class="com.cannontech.web.stars.dr.operator.HardwareModelHelper"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EcobeeStrategy"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.PlcStrategy"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.RfStrategy"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigBeeStrategy"/>
 
     <bean id="inventoryTaskResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean id="inventoryTaskBackingService" class="com.cannontech.web.updater.dr.InventoryTaskBackingService">

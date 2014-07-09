@@ -13,17 +13,10 @@
     <c:set var="configurable" value="false"/>
 </cti:checkRolesAndProperties>
 
-<c:if test="${hardware.hardwareType.rf}">
-    <c:set var="readPath" value="rf"/>
-</c:if>
-<c:if test="${hardware.hardwareType.zigbee}">
-    <c:set var="readPath" value="zb"/>
-</c:if>
-
 <script type="text/javascript">
 $(function() {
     $(document).on('click', '#rf-read-now', function(event) {
-        var url = '<cti:url value="/stars/operator/hardware/${readPath}/readNow"/>';
+        var url = '<cti:url value="/stars/operator/hardware/readNow"/>';
         
         $.ajax({
             url: url,
