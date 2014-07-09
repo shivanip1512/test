@@ -165,7 +165,7 @@ yukon.dr.ecobee = (function () {
                     yukon.ui.busy(elem);
                 });
 
-                $.get(yukon.url('dr/ecobee/fix-all'), {reportId: ecobeeReportId})
+                $.get(yukon.url('/dr/ecobee/fix-all'), {reportId: ecobeeReportId})
                 .done(function (data, textStatus, jqXHR) {
                     var errorIds = [],
                         fixFailures = [],
@@ -201,7 +201,7 @@ yukon.dr.ecobee = (function () {
                             issueHtml,
                             issueTd,
                             FADE = 1000;
-                        errorId = + $(row).find('button').data('errorId');
+                        errorId = + $(row).find('button').closest('tr').data('errorId');
                         if (isInList(errorIds, errorId, foundAtIndex)) {
                             yukon.ui.busy($(row).find('button'));
                             $(row).css('opacity', 0);
@@ -298,7 +298,7 @@ yukon.dr.ecobee = (function () {
             }
             
             row.find('.js-percent-done').html(status.percentDone);
-        }
+        } 
     };
     return mod;
 })();
