@@ -431,15 +431,22 @@ table.nowrap td {
 }
 
 /* PROGRESS BARS */
-.progressbar {display: inline-block;margin-right: 5px;height: 16px;position: relative;}
-.progressbar-border {display: inline-block;height: 16px;width: 100px;border: 1px solid #555;background-color: #efefef;}
-.progressbar-inner, div.progressbar-inner-success, div.progressbar-inner-fail {display: inline-block;float: left;height:14px;width: 0px;}
-.progressbar-inner, div.progressbar-inner-success {background: @green;}
-.progressbar-inner-fail {background: @red;}
+.progress-bar-container {
+    display: inline-block;
+    margin-right: 5px;
+}
+.progressbar-percent-complete, 
+.progressbar-completed-count, 
+.progressbar-total {
+    display: inline-block;
+}
 
-.progressbar-percent-complete, .progressbar-completed-count, .progressbar-total {font-size: 11px; display: inline-block;}
-.progressbar .scheduled-request {width: 62px;}
-.action-area .progressbar .progressbar-border, .page-action-area .progressbar .progressbar-border {margin-top:2px;}
+.progress-bar-container.scheduled-request .progress { width: 62px; }
+
+.action-area .progress-bar-container .progress, 
+.page-action-area .progress-bar-container .progress {
+    margin-top:2px;
+}
 
 .result-bar {height: 14px;border: 1px solid #bbb;overflow: hidden;box-sizing: content-box;-moz-box-sizing: content-box;}
 .result-bar > .result {display: inline-block;position: relative;float: left;height: 100%;}

@@ -25,7 +25,7 @@
     <c:set var="disable_group">'disable_group': '${disableGroup}',</c:set>
 </c:if>
 <script type="text/javascript">
-$(function(){
+$(function() {
     yukon.dialogConfirm.add({
         'on': '${on}',
         ${disable_group}

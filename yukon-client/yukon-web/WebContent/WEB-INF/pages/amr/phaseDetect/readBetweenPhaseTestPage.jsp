@@ -1,8 +1,8 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="phaseDetect.readBetweenPhaseTest">
 <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
@@ -23,7 +23,7 @@
         $('#spinner').show();
 
         $.ajax({
-            url: '/amr/phaseDetect/startTest',
+            url: yukon.url('/amr/phaseDetect/startTest'),
             data: params,
             type: 'POST',
             dataType: 'json'
@@ -98,7 +98,7 @@
         var params = {'phase': $('#phase').val()};
         $('#actionResultDiv').show();
         $.ajax({
-            url: '/amr/phaseDetect/readPhase',
+            url: yukon.url('/amr/phaseDetect/readPhase'),
             type: 'POST',
             data: params
         }).done( function (data, textStatus, jqXHR) {
@@ -125,7 +125,7 @@
         $('#spinner').show();
         $('#actionResultDiv').html('');
         $.ajax({
-            url: '/amr/phaseDetect/sendClearFromTestPage',
+            url: yukon.url('/amr/phaseDetect/sendClearFromTestPage'),
             type: 'GET'
         }).done( function (data, textStatus, jqXHR) {
             var json = yukon.ui.util.getHeaderJSON(jqXHR);
@@ -157,10 +157,10 @@
         <table>
             <tr>
                 <td valign="top" class="strong-label-small"><i:inline key=".noteLabel"/></td>
-                 <td style="font-size:11px;"><i:inline key=".noteText"/></td>
+                <td style="font-size:11px;"><i:inline key=".noteText"/></td>
             </tr>
         </table>
-        <tags:nameValueContainer2 tableClass="with-form-controls">
+        <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
             <tags:nameValue2 nameKey=".substation">${fn:escapeXml(data.substationName)}</tags:nameValue2>
             <tags:nameValue2 nameKey=".intervalLength">${data.intervalLength}</tags:nameValue2>
             <tags:nameValue2 nameKey=".deltaVoltage">${data.deltaVoltage}</tags:nameValue2>
@@ -204,11 +204,11 @@
                     <span id="detectTimerNote" style="display: none;"><i:inline key=".voltDetectNote"/></span>
                 </b>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".nextAction">
+            <tags:nameValue2 nameKey=".nextAction" valueClass="full-width">
                 <cti:msg2 var="clearPhaseData" key=".clearPhaseData"/>
                 <c:set var="testStep" value="${state.testStep}"/>
             
-                <div id="magicButtonDiv" style="float: left;padding-right: 10px;">
+                <div id="magicButtonDiv" class="clearfix">
                     <input type="hidden" name="complete" id="complete" value="${state.phaseDetectComplete}">
                     <c:choose>
                         <c:when test="${testStep != 'send'}"><cti:button id="sendDetectButton" nameKey="send" onclick="sendDetect();" classes="dn"/></c:when>
@@ -225,7 +225,7 @@
                     <cti:button id="resetButton" classes="dn" nameKey="reset" onclick="reset();"/>
                     <img style="display: none;" id="spinner" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                 </div>
-                <div id="actionResultDiv"  style="float: left;">
+                <div id="actionResultDiv" class="clearfix buffered">
                     <c:if test="${showReadProgress}">
                         <jsp:include page="readPhaseResults.jsp"></jsp:include>
                     </c:if>
@@ -235,7 +235,7 @@
     </tags:sectionContainer2>
     
     <div class="page-action-area">
-        <form action="/amr/phaseDetect/phaseDetectResults" method="get">
+        <form action="<cti:url value="/amr/phaseDetect/phaseDetectResults"/>" method="get">
             <cti:button nameKey="resultsButton" id="resultsButton" disabled="${testStep != 'results'}" type="submit" classes="primary action"/>
             <cti:button nameKey="cancelTest" name="cancel" type="submit"/>
         </form>

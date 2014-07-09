@@ -27,8 +27,8 @@
         <table>
             <tr>
                 <td>
-                    <div id="progressBorder_${requestId}" class="progressbar-border" align="left">
-                        <div id="progressInner_${requestId}" class="progressbar-inner" style="width: ${percentDone}px;">
+                    <div id="progressBorder_${requestId}" class="progress" align="left">
+                        <div id="progressInner_${requestId}" class="progress-bar" style="width: ${percentDone}%;">
                         </div>
                     </div>
                 </td>

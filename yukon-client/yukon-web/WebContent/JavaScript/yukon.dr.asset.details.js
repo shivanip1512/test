@@ -37,7 +37,7 @@ yukon.dr.assetDetails = (function() {
     _pingDevices = function(event) {
         $('#pingResults').show();
         $('.progressbar-percent-complete').text("0%");
-        $('.progressbar-inner-fail,.progressbar-inner-success').width(0);
+        $('.progress-bar').width(0);
         var url = "pingDevices?assetId=" + _assetId;
         $.ajax({
             url: url,

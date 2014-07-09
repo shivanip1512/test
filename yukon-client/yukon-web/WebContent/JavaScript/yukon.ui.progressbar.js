@@ -1,21 +1,25 @@
 
-yukon.namespace('yukon.ui.');
+//'trys' used to hide initial errors when updater run before page is fully loaded
+// because updater are contained in tags used throughout page instead of usual place at
+// bottom of page, this occurs sometimes =\
+
 yukon.namespace('yukon.ui.progressbar');
 
 yukon.ui.progressbar = (function () {
-    var  setupProgressBar = function (pbarId, completedCount, totalCount, completionCallback) {
+    
+    var _setupProgressBar = function (pbarId, completedCount, totalCount, completionCallback) {
         var percentDone = 100,
-            innerWidth,
+            width,
             progressContainer;
         if (totalCount > 0) {
-            percentDone = Math.floor((completedCount / totalCount) * 100);
+            percentDone = yukon.percent(completedCount, totalCount, 2);
         }
 
         try {
-            innerWidth = getBarWidth(pbarId, completedCount, totalCount);
-            progressContainer = getProgressBarContainer(pbarId);
-            progressContainer.find('.progressbar-inner').css('width', innerWidth + 'px');
-            progressContainer.find('.progressbar-percent-complete').html(percentDone + '%');
+            width = yukon.percent(completedCount, totalCount, 2);
+            progressContainer = _getProgressBarContainer(pbarId);
+            progressContainer.find('.progress-bar').css('width', width);
+            progressContainer.find('.progressbar-percent-complete').html(percentDone);
             progressContainer.find('.progressbar-completed-count').html(completedCount);
         } catch (e) {};
 
@@ -23,83 +27,62 @@ yukon.ui.progressbar = (function () {
             completionCallback();
         }
     },
-    setupSuccessFailureProgressBar = function (pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback) {
-        var progressContainer = getProgressBarContainer(pbarId),
+    _setupSuccessFailureProgressBar = function (pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback) {
+        var progressContainer = _getProgressBarContainer(pbarId),
             totalCompletedCount,
             percentDone,
             successWidth,
             failureWidth;
-        if (progressContainer.length === 0) {
-            return;
-        }
+        
+        if (progressContainer.length === 0) return;
+        
         totalCompletedCount = parseInt(successCompletedCount, 10) + parseInt(failureCompletedCount, 10);
-
-        percentDone = 100;
-        if (totalCount > 0) {
-            percentDone = Math.floor((totalCompletedCount / totalCount) * 100);
-        }
-
+        percentDone = totalCount > 0 ? percentDone = yukon.percent(totalCompletedCount, totalCount, 2) : '100%';
+        
         try {
-            successWidth = getBarWidth(pbarId, successCompletedCount, totalCount);
-            failureWidth = getBarWidth(pbarId, failureCompletedCount, totalCount);
+            successWidth = yukon.percent(successCompletedCount, totalCount, 2);
+            failureWidth = yukon.percent(failureCompletedCount, totalCount, 2);
 
-            progressContainer.find('.progressbar-inner-success').css('width', successWidth + 'px');
-            progressContainer.find('.progressbar-inner-fail').css('width', failureWidth + 'px');
+            progressContainer.find('.progress-bar-success').css('width', successWidth);
+            progressContainer.find('.progress-bar-danger').css('width', failureWidth);
             progressContainer.find('.progressbar-completed-count').html(totalCompletedCount);
-            progressContainer.find('.progressbar-percent-complete').html(percentDone + '%');
+            progressContainer.find('.progressbar-percent-complete').html(percentDone);
         } catch (e) {};
 
         // completionCallback
-        if (completionCallback != null && percentDone == 100) {
+        if (typeof completionCallback === 'function' && totalCompletedCount === totalCount) {
             completionCallback();
         }
     },
-    updateTotalCount = function (pbarId, totalCount) {
-        var progressContainer = getProgressBarContainer(pbarId);
+    
+    _updateTotalCount = function (pbarId, totalCount) {
+        var progressContainer = _getProgressBarContainer(pbarId);
         if (progressContainer.length === 0) {
             return;
         }
         progressContainer.find('.progressbar-total').html(totalCount);
     },
-    getBarWidth = function (pbarId, completed, total) {
-        var progressContainer,
-            progressBorder,
-            width,
-            percentDecimal,
-            length;
-        if (completed == 0 || total == 0) {
-            return 0;
-        }
-        progressContainer = getProgressBarContainer(pbarId);
-        progressBorder = progressContainer.find('.progressbar-border');
-        width = progressBorder.width(); // subtract 1 px for each border
-        percentDecimal = parseFloat(completed / total);
-        length = Math.floor(percentDecimal * width);
-        return length;
+    
+    _getProgressBarContainer = function (pbarId) {
+        return $('#' + pbarId);
     },
-    getProgressBarContainer = function (pbarId) {
-        return $('#progressContainer_' + pbarId);
-    },
-    barMod;
-    // 'trys' used to hide initial errors when updater run before page is fully loaded
-    // because updater are contained in tags used throughout page instead of usual place at
-    // bottom of page, this occurs sometimes =\
+    mod;
 
-    barMod = {
+    mod = {
         updateProgressBar : function (pbarId, totalCount, completionCallback) {
             return function (data) {
-                var progressContainer = getProgressBarContainer(pbarId),
+                var progressContainer = _getProgressBarContainer(pbarId),
                     completedCount;
                 if (progressContainer.length === 0) {
                     return;
                 }
                 completedCount = data.completedCount;
-                setupProgressBar(pbarId, completedCount, totalCount, completionCallback);
+                _setupProgressBar(pbarId, completedCount, totalCount, completionCallback);
             };
         },
         updateProgressBarWithDynamicTotal : function (pbarId, completionCallback) {
             return function (data) {
-                var progressContainer = getProgressBarContainer(pbarId),
+                var progressContainer = _getProgressBarContainer(pbarId),
                     completedCount,
                     totalCount;
                 if (progressContainer.length === 0) {
@@ -108,15 +91,15 @@ yukon.ui.progressbar = (function () {
 
                 completedCount = data.completedCount;
                 totalCount = data.totalCount;
-                updateTotalCount(pbarId, totalCount);
-                setupProgressBar(pbarId, completedCount, totalCount, completionCallback);
+                _updateTotalCount(pbarId, totalCount);
+                _setupProgressBar(pbarId, completedCount, totalCount, completionCallback);
             };
         },
         updateSuccessFailureProgressBar : function (pbarId, totalCount, completionCallback) {
             return function (data) {
                 var successCompletedCount = data.successCompletedCount,
                     failureCompletedCount = data.failureCompletedCount;
-                setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
+                _setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
             };
         },
         updateProgressStatus : function (pDescId) {
@@ -144,26 +127,28 @@ yukon.ui.progressbar = (function () {
                 var successCompletedCount = data.successCompletedCount,
                     failureCompletedCount = data.failureCompletedCount,
                     totalCount = data.totalCount;
-                updateTotalCount(pbarId, totalCount);
-                setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
+                _updateTotalCount(pbarId, totalCount);
+                _setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
             };
         },
         abortProgressBar : function (pbarId) {
             return function (data) {
-            var progressContainer;
+                var progressContainer;
                 if (data.isAborted === 'true') {
-                    progressContainer = getProgressBarContainer(pbarId);
+                    progressContainer = _getProgressBarContainer(pbarId);
 
                     // Check if we are a normal progress bar or success / fail progress bar
-                    if (progressContainer.find('.progressbar-inner').length < 0) {
-                        progressContainer.find('.progressbar-inner').addClass('progressbar-inner-fail');
-                        progressContainer.find('.progressbar-inner').css('width', '100%');
+                    if (progressContainer.find('.progress-bar-danger').length < 0) {
+                        progressContainer.find('.progress-bar').addClass('progress-bar-danger');
+                        progressContainer.find('.progress-bar').css('width', '100%');
                     } else {
-                        progressContainer.find('.progressbar-inner-fail').css('width', '100%');
+                        progressContainer.find('.progress-bar').css('width', '0%');
+                        progressContainer.find('.progress-bar-danger').css('width', '100%');
                     }
                 }
             };
         }
     };
-    return barMod;
+    
+    return mod;
 })();

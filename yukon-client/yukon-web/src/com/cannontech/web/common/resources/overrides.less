@@ -10,68 +10,93 @@
 @form-control-height: 26px;
 
 /* Functional Overrides */
-.box {overflow: hidden;display: block;position: relative;zoom: 1;}
+.box { 
+    overflow: hidden;
+    display: block;
+    position: relative;
+    zoom: 1;
+}
+.pull-down-4 { margin-bottom: -4px !important; }
+.push-down-4 { margin-top: 4px !important; }
 
-.B0 {bottom: 0;}
-.bn {border: none; border-style: none;}
-.cl {clear: left;}
-.clear {clear: both;}
-.cp {cursor: pointer;}
-.cr {clear: right;}
-.db {display: block;}
-.di {display: inline;}
-.dib {display: inline-block;}
-.dn {display: none;}
-.fl {float: left !important;}
-.fn {float: none !important;}
-.fr {float: right !important;}
-.fwb {font-weight: bold;}
-.fwn {font-weight: normal;}
-.L0 {left: 0;}
-.lhn {line-height: normal;}
-.M0 {margin: 0 !important;}
-.ma {margin: auto;}
-.o0 {opacity: 0;}
-.oa {overflow: auto;}
-.oh {overflow: hidden;}
-.ov {overflow: visible;}
-.P0 {padding: 0;}
-.pa {position: absolute;}
-.pf {position: fixed;}
-.pr {position: relative;}
-.R0 {right: 0;}
-.scroll_x {overflow-x: auto;}
-.scroll_y {overflow-y: auto;}
-.T0 {top: 0px;}
-.tac {text-align: center;}
-.tal {text-align: left;}
-.tar {text-align: right;}
-.usn {-webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
-.vab {vertical-align: bottom;}
-.vam {vertical-align: middle;}
-.vat {vertical-align: top !important;}
-.vatt {vertical-align: text-top;}
-.vatb {vertical-align: text-bottom;}
-.vh {visibility: hidden;}
-.vv {visibility: visible;}
-.wbba {word-break: break-all;}
-.wrbw {word-wrap: break-word;}
-.wrn {word-wrap: normal;}
-.wsn {white-space: normal;}
-.wsnw {white-space: nowrap;}
-.wsp {white-space: pre;}
-.z1 {zoom: 1;}
-.zN {zoom: normal;}
+.bcs { border-collapse: separate; }
+.B0 { bottom: 0; }
+.bn { border: none; border-style: none; }
+.cl { clear: left; }
+.clear { clear: both; }
+.cp { cursor: pointer; }
+.cr { clear: right; }
+.db { display: block; }
+.di { display: inline; }
+.dib { display: inline-block; }
+.dn { display: none; }
+.fl { float: left !important; }
+.fn { float: none !important; }
+.fr { float: right !important; }
+.fwb { font-weight: bold; }
+.fwn { font-weight: normal; }
+.L0 { left: 0; }
+.lhn { line-height: normal; }
+.M0 { margin: 0 !important; }
+.ma { margin: auto; }
+.o0 { opacity: 0; }
+.oa { overflow: auto; }
+.oh { overflow: hidden; }
+.ov { overflow: visible; }
+.P0 { padding: 0; }
+.pa { position: absolute; }
+.pf { position: fixed; }
+.pr { position: relative; }
+.R0 { right: 0; }
+.scroll_x { overflow-x: auto; }
+.scroll_y { overflow-y: auto; }
+.T0 { top: 0px; }
+.tac { text-align: center; }
+.tal { text-align: left; }
+.tar { text-align: right; }
+.usn { 
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+ }
+.vab { vertical-align: bottom; }
+.vam { vertical-align: middle; }
+.vat { vertical-align: top !important; }
+.vatt { vertical-align: text-top; }
+.vatb { vertical-align: text-bottom; }
+.vh { visibility: hidden; }
+.vv { visibility: visible; }
+.wbba { word-break: break-all; }
+.wrbw { word-wrap: break-word; }
+.wrn { word-wrap: normal; }
+.wsn { white-space: normal; }
+.wsnw { white-space: nowrap; }
+.wsp { white-space: pre; }
+.z1 { zoom: 1; }
+.zN { zoom: normal; }
 
 /* Tipsy Overrides */
-.tipsy-inner {background-color: #FFF; color: #000; max-width: 600px; padding: 5px 8px 4px 8px; text-align: left;}
-.tipsy-inner {box-shadow: 0 0 5px #000000; -webkit-box-shadow: 0 0 5px #000000; -moz-box-shadow: 0 0 5px #000000;}
-.tipsy-inner {border-radius: 2px;}
-.tipsy {font-size: 14px;}
-.tipsy-arrow-n {border-bottom-color: #665;}
-.tipsy-arrow-s {border-top-color: #665;}
-.tipsy-arrow-e {border-left-color: #665;}
-.tipsy-arrow-w {border-right-color: #665;}
+.tipsy-inner {
+    background-color: #fff; 
+    color: #000; 
+    max-width: 600px; 
+    padding: 5px 8px 4px 8px; 
+    text-align: left;
+}
+.tipsy-inner {
+    -webkit-box-shadow: 0 0 5px #000; 
+       -moz-box-shadow: 0 0 5px #000;
+            box-shadow: 0 0 5px #000; 
+}
+.tipsy-inner { border-radius: 2px; }
+.tipsy { font-size: 14px; }
+.tipsy-arrow-n { border-bottom-color: #665; }
+.tipsy-arrow-s { border-top-color: #665; }
+.tipsy-arrow-e { border-left-color: #665; }
+.tipsy-arrow-w { border-right-color: #665; }
 
 /* DynaTree Overrides */
 ul.dynatree-container {
@@ -80,7 +105,10 @@ ul.dynatree-container {
     font-size: 13px;
     border: none;
     
-    .dynatree-title {border-radius: 2px;border: 1px solid white;}
+    .dynatree-title { 
+        border-radius: 2px;
+        border: 1px solid white;
+    }
 }
 span.dynatree-icon {
     background-image:url("../../../resources/js/lib/dynatree/skin/tree/folder.gif");
@@ -172,6 +200,7 @@ span.dynatree-folder a {
     button {
         font: inherit;
     }
+    
     button, 
     .button, 
     input[type=submit], 
@@ -205,9 +234,7 @@ span.dynatree-folder a {
 .ui-widget-content {
     background: #fff;
     
-    .ui-state-focus, .ui-state-hover {
-        background: #f3f3f3;
-    }
+    .ui-state-focus, .ui-state-hover { background: #f3f3f3; }
 } /* need this since outside the one above */
 
 .ui-dialog {
@@ -243,7 +270,8 @@ span.dynatree-folder a {
     }
     
     .ui-dialog-content {
-        box-sizing: content-box;-moz-box-sizing: content-box;
+        -moz-box-sizing: content-box;
+             box-sizing: content-box;
     }
     
     .ui-dialog-buttonpane {
@@ -293,9 +321,7 @@ span.dynatree-folder a {
     }
 }
 
-.ui-widget-overlay {
-    background: #fff;
-}
+.ui-widget-overlay { background: #fff; }
 
 .ui-tabs {
     
@@ -312,9 +338,7 @@ span.dynatree-folder a {
             border-radius: 2px 2px 0 0;
             margin: 0 -1px 0 0;
             
-            &.ui-tabs-active {
-                background: #fff;
-            }
+            &.ui-tabs-active { background: #fff; }
             
             &:not(.ui-tabs-active):hover {
                 background: #fff;
@@ -329,28 +353,37 @@ span.dynatree-folder a {
             }
         }
     }
+    
     .ui-tabs-active > .ui-tabs-anchor {
         font-weight: bold !important;
     }
 }
-.link-tabbed-container .ui-tabs-nav {border-bottom: 1px solid #ccc;}
+.link-tabbed-container .ui-tabs-nav { border-bottom: 1px solid #ccc; }
 
-.ui-tooltip {border-radius: 2px;}
+.ui-tooltip { border-radius: 2px; }
 .ui-menu .ui-menu-item a.ui-state-focus,
-.ui-menu .ui-menu-item a.ui-state-active {background-color: #eee;}
-.ui-progressbar {max-height: 26px; padding: 2px;}
-.ui-progressbar .ui-progressbar-value {background-color: #ddd;margin: 0;}
+.ui-menu .ui-menu-item a.ui-state-active { background-color: #eee; }
+.ui-progressbar {
+    max-height: 26px;
+    padding: 2px;
+}
+.ui-progressbar .ui-progressbar-value {
+    background-color: #ddd;
+    margin: 0;
+}
 
 .ui-slider {
     border: 1px solid #bbb;
     border-radius: 3px;
+    
     .ui-slider-handle {
         border: 1px solid #bbb;
         background-color: #f3f3f3;
-        &:focus {box-shadow: 0 0 3px @primary-color;}
+        
+        &:focus { box-shadow: 0 0 3px @primary-color; }
     }
 }
-.ui-datepicker {z-index: 1001 !important;}
+.ui-datepicker { z-index: 1001 !important; }
 
 /** Bootstrap Overrides */
 .progress { 
@@ -358,6 +391,7 @@ span.dynatree-folder a {
     border-radius: 3px;
     height: 18px;
     margin-bottom: 0px;
+    min-width: 60px;
 }
 .progress-bar-default { background-color: #999999; }
 .progress-bar-info { background-color: #428bca; }
@@ -365,14 +399,14 @@ span.dynatree-folder a {
     background-color: white;
     margin: 0;
     padding: 5px 0;
-    .active {color: @font-color;}
+    .active { color: @font-color; }
 }
 .breadcrumb > li + li:before { padding: 0 2px 0 6px; }
 .label-info { background-color: #428bca; }
 
 /** Chosen Plugin Overrides */
 .chosen-container-single a.chosen-single {
-    box-shadow: 0px 0px 0px #fff inset,0px 0px 1px #fff;
+    box-shadow: 0px 0px 0px #fff inset, 0px 0px 1px #fff;
     color: #555;
     height: 26px;
     line-height: 24px;

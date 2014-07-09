@@ -93,7 +93,12 @@ var yukon = (function () {
             return JSON.parse($(selector).text());
         },
         /** Convenient 'do nothing' function that doesn't require an argument like void(0); */
-        nothing: function () {}
+        nothing: function () {},
+        
+        percent: function (count, total, decimals) {
+            return (parseFloat(count / total, 10) * 100).toFixed(decimals) + '%';
+        }
+        
     };
     return mod;
 })();
@@ -180,7 +185,7 @@ yukon.ui = (function () {
             if (busyText && label.length > 0) {
                 originalText = label.html(); 
                 label.html(busyText);
-                btn.data('data-original-text', originalText);
+                btn.data('originalText', originalText);
             }
             
             return btn;
@@ -198,7 +203,7 @@ yukon.ui = (function () {
             btn.children('.icon.busy').hide();
         
             label = btn.children('.b-label');
-            originalText = btn.data('data-original-text');
+            originalText = btn.data('originalText');
             if (originalText && label.length > 0) {
                 label.html(originalText);
             }

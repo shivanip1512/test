@@ -1,8 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<%--  updateCallback is the name of  js function that will be passed the values of --%>
-<%--  completedItems and totalItems as parameters after they have been used to update the bar --%>
 <%--  abortedKey should a boolean updater key, if true, the progress bar will be filled in red for remaining percentage --%>
 <%@ attribute name="countKey" required="true" %>
 <%@ attribute name="failureCountKey" description="If supplied, then this progress bar is treated as a two part success-failure progress bar. The countKey is treated as the successes and the failureCountKey as the failures." %>
@@ -12,16 +10,12 @@
 <%@ attribute name="hidePercent" type="java.lang.Boolean" %>
 <%@ attribute name="hideCount" type="java.lang.Boolean" %>
 <%@ attribute name="completionCallback" description="Name of a javascript function to call when progress reaches 100%. The function will be called each iteration of the data updater, so the function must manage being called multiple times if needed." %>
-<%@ attribute name="borderClasses" description="Use this to override the progress bar border styles." %>
-<%@ attribute name="barClasses" description="Use this to override the inner progress bar styles. If this is a two part success / failure progress bar these styles will be applied to both success and failure divs." %>
-<%@ attribute name="barSuccessClasses" description="Use this to override the inner success progress bar styles. Only applicable for success / failure progress bar." %>
-<%@ attribute name="barFailureClasses" description="Use this to override the inner failure progress bar styles. Only applicable for success / failure progress bar." %>
-<%@ attribute name="percentClasses" description="Use this to override the percent styles." %>
-<%@ attribute name="countClasses" description="Use this to override the count styles." %>
-<%@ attribute name="containerClasses" description="Classes on the container" %>
+
+<%@ attribute name="containerClasses" description="Class names applied to the container element." %>
+<%@ attribute name="barClasses" description="Class names applied to the progress bar." %>
 
 <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
-<cti:uniqueIdentifier var="pbarId" prefix="pbar_"/>
+<cti:uniqueIdentifier var="pbarId" prefix="progress-bar-"/>
 
 <c:if test="${empty pageScope.hidePercent}">
     <c:set var="hidePercent" value="false" />
@@ -31,30 +25,26 @@
 	<c:set var="hideCount" value="false"/>
 </c:if>
 
-<div id="progressContainer_${pbarId}" class="progressbar ${pageScope.containerClasses}">
-    <div class="progressbar-border ${pageScope.borderClasses}">
+<div id="${pbarId}" class="progress-bar-container clearfix ${pageScope.containerClasses}">
+    <div class="progress dib fl ${pageScope.barClasses}">
         <c:choose>
             <c:when test="${empty pageScope.failureCountKey}">
-                <div class="progressbar-inner ${pageScope.barClasses}"></div>
+                <div class="progress-bar"></div>
             </c:when>
             <c:otherwise>
-                <div class="progressbar-inner-fail ${pageScope.barClasses} ${pageScope.barSuccessClasses}"></div>
-                <div class="progressbar-inner-success ${pageScope.barClasses} ${pageScope.barFailureClasses}"></div>
+                <div class="progress-bar progress-bar-danger"></div>
+                <div class="progress-bar progress-bar-success"></div>
             </c:otherwise>
         </c:choose>
     </div>
     <c:if test="${!hidePercent}">
-        <div class="progressbar-percent-complete ${pageScope.percentClasses}">0%</div>
+        <span class="progressbar-percent-complete dib fl" style="margin-left: 10px;">0%</span>
     </c:if>
     <c:if test="${!hideCount}">
-        <span class="${pageScope.countClasses}">
+        <span class="dib fl" style="margin-left: 10px;">
             <span class="progressbar-completed-count"></span>
             <span>/</span>
-            <span class="progressbar-total">
-                <c:if test="${empty totalCountKey}">
-                    ${totalCount}
-                </c:if>
-            </span>
+            <span class="progressbar-total"><c:if test="${empty totalCountKey}">${totalCount}</c:if></span>
         </span>
     </c:if>
 </div>

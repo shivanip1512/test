@@ -92,7 +92,7 @@
                 <cti:param name="typeFilterAsString" value="${filter.typeFilterAsString}"/>
             </cti:url>
             <div data-url="${url}" data-static>
-                <table class="compact-results-table">
+                <table id="jobs-table" class="compact-results-table">
                     <thead>
                         <tags:sort column="${NAME}"/>
                         <tags:sort column="${DEVICE_GROUP}"/>
@@ -106,11 +106,12 @@
                     </tfoot>
                     <tbody>
                         <c:forEach var="jobWrapper" items="${filterResult.resultList}">
-                            <cti:msg2 var="rowTitle" key=".jobID" argument="${jobWrapper.job.id}"/>
-                            <tr id="tr_${jobWrapper.job.id}" title="${rowTitle}">
+                            <c:set var="jobId" value="${jobWrapper.job.id}"/>
+                            <cti:msg2 var="rowTitle" key=".jobID" argument="${jobId}"/>
+                            <tr id="tr_${jobId}" title="${rowTitle}" data-job-id="${jobId}">
                                 <td>
                                     <cti:url var="jobDetailUrl" value="/group/scheduledGroupRequestExecutionResults/detail">
-                                        <cti:param name="jobId" value="${jobWrapper.job.id}"/>
+                                        <cti:param name="jobId" value="${jobId}"/>
                                     </cti:url>
                                     <a href="${jobDetailUrl}">${fn:escapeXml(jobWrapper.name)}</a>
                                 </td>
@@ -136,48 +137,47 @@
                                 </td>
                                 <td class="runSchedule">${jobWrapper.scheduleDescription}</td>
                                 <td class="nextRunDate">
-                                    <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/NEXT_RUN_DATE"/>
+                                    <cti:dataUpdaterValue type="JOB" identifier="${jobId}/NEXT_RUN_DATE"/>
                                 </td>
-                                <td id="status_${jobWrapper.job.id}">
+                                <td id="status_${jobId}">
                                     <%-- status --%>
-                                    <span id="jobNotRunningSpan_${jobWrapper.job.id}"
+                                    <span id="jobNotRunningSpan_${jobId}"
                                         <c:if test="${jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                                        <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
+                                        <cti:dataUpdaterValue type="JOB" identifier="${jobId}/STATE_TEXT"/>
                                     </span>
-                                    <div id="jobRunningSpan_${jobWrapper.job.id}"
+                                    <div id="jobRunningSpan_${jobId}"
                                         <c:if test="${not (jobWrapper.jobStatus eq 'RUNNING')}">style="display:none;"</c:if> class="wsnw">
-                                        <tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"
-                                            countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
-                                            failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
-                                            borderClasses="scheduled-request" hideCount="true" hidePercent="true"/>
-                                        <cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" classes="stopButton fn M0"
-                                            renderMode="image" arguments="${jobWrapper.name}" icon="icon-cross"/>
-                                        <d:confirm on="#cancel_${jobWrapper.job.id}" nameKey="cancelConfirm" argument="${jobWrapper.name}"/>
+                                        <tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_REQUEST_COUNT_FOR_JOB"
+                                            countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
+                                            failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
+                                            containerClasses="scheduled-request" hideCount="true" hidePercent="true"/>
+                                        <cti:button id="cancel-job-btn-${jobId}" nameKey="cancel" data-job-id="${jobId}" 
+                                            classes="js-cancel-job fn M0" renderMode="image" arguments="${jobWrapper.name}" 
+                                            icon="icon-cross" data-ok-event="yukon.job.cancel"/>
+                                        <d:confirm on="#cancel-job-btn-${jobId}" nameKey="cancelConfirm" argument="${jobWrapper.name}"/>
                                     </div>
                                 </td>
                                 <cti:checkRolesAndProperties value="MANAGE_SCHEDULES">
                                     <td class="tar">
-                                        <span id="disableSpan_${jobWrapper.job.id}" 
+                                        <span id="disableSpan_${jobId}" 
                                             <c:if test="${jobWrapper.jobStatus eq 'DISABLED'
                                                     || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                                                <cti:button nameKey="disable" id="toggle_${jobWrapper.job.id}"
-                                                    classes="toggleEnabled fr" renderMode="image" arguments="${jobWrapper.name}"
-                                                    icon="icon-disabled"/>
+                                                <cti:button nameKey="disable" classes="js-toggle-job fr" renderMode="image" 
+                                                    arguments="${jobWrapper.name}" icon="icon-disabled"/>
                                         </span>
-                                        <span id="enableSpan_${jobWrapper.job.id}" 
+                                        <span id="enableSpan_${jobId}" 
                                             <c:if test="${jobWrapper.jobStatus eq 'ENABLED'
                                                     || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                                                <cti:button nameKey="enable" id="toggle_${jobWrapper.job.id}"
-                                                    classes="toggleEnabled fr" renderMode="image" arguments="${jobWrapper.name}"
-                                                    icon="icon-enabled"/>
+                                                <cti:button nameKey="enable" classes="js-toggle-job fr" renderMode="image" 
+                                                    arguments="${jobWrapper.name}" icon="icon-enabled"/>
                                         </span>
                                     </td>
                                 </cti:checkRolesAndProperties>
                             </tr>
-                            <cti:dataUpdaterCallback function="buildTooltipText('status_${jobWrapper.job.id}')" initialize="true"
-                                tooltip="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_TOOLTIP_TEXT_FOR_JOB"/>
-                            <cti:dataUpdaterCallback function="setTrClassByJobState(${jobWrapper.job.id})"
-                                initialize="true" state="JOB/${jobWrapper.job.id}/STATE"/>
+                            <cti:dataUpdaterCallback function="yukon.jobs.buildTooltipText('status_${jobId}')" initialize="true"
+                                tooltip="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_TOOLTIP_TEXT_FOR_JOB"/>
+                            <cti:dataUpdaterCallback function="yukon.jobs.setTrClassByJobState(${jobId})"
+                                initialize="true" state="JOB/${jobId}/STATE"/>
                         </c:forEach>
                         
                     </tbody>

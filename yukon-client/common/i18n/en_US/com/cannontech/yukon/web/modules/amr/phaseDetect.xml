@@ -16,7 +16,7 @@
     <entry key="yukon.web.modules.amr.phaseDetect.clearSuccess">Clear Command Sent Successfully</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.errorRead">Error Sending Read Command:</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.cancelRead">Cancel Read</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.readCanceled">Read Canceled:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.readCanceled">Read Canceled</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.errorSending">Error Sending Clear Command: {0}</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.noRouteSelected">You must select at least one route.</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.subWithNoRoutesSelected">Select a substation with at least one route or assign routes to this substation using the Substation To Route Mappings feature in the MultiSpeak Setup section.</entry>
