@@ -47,7 +47,7 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::decodeCommand(CtiTime now, cons
     }
 }
 
-DlcCommand::request_ptr Lcr3102ThreePartCommand::error(const CtiTime now, const int error_code, std::string &description)
+DlcCommand::request_ptr Lcr3102ThreePartCommand::error(const CtiTime now, const YukonError_t error_code, std::string &description)
 {
     if( description.empty() )
     {

@@ -122,7 +122,7 @@ DlcCommand::request_ptr Mct440HolidaysCommand::decodeCommand(const CtiTime now, 
 }
 
 //  throws CommandException
-DlcCommand::request_ptr Mct440HolidaysCommand::error(const CtiTime now, const int error_code, std::string &description)
+DlcCommand::request_ptr Mct440HolidaysCommand::error(const CtiTime now, const YukonError_t error_code, std::string &description)
 {
     //  This should probably be the default for all commands unless otherwise specified.
     throw CommandException(error_code, GetErrorString(error_code));

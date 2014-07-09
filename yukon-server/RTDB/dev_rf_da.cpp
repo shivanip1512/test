@@ -9,7 +9,7 @@
 namespace Cti {
 namespace Devices {
 
-int RfDaDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfDaDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     if( parse.isKeyValid("dnp address") )
     {

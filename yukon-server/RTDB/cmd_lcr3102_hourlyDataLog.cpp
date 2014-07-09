@@ -159,7 +159,7 @@ void Lcr3102HourlyDataLogCommand::getDescription(std::vector<unsigned> data, std
 }
 
 //  throws CommandException
-DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::error(const CtiTime now, const int error_code, string &description)
+DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::error(const CtiTime now, const YukonError_t error_code, string &description)
 {
     if( description.empty() )
     {

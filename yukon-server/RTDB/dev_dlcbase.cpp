@@ -233,7 +233,7 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
         for( CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); )
         {
             CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(*itr);
-            
+
             // Set expectMore on all CtiReturnMsgs but the last, unless there was a command sent, in which case set expectMore on all of them.
             if( ++itr != retList.end() || outMessagesGenerated )
             {
@@ -444,7 +444,7 @@ int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow
 
         if( InMessage.EventCode )
         {
-            ptr = command.error(TimeNow, InMessage.EventCode, description);
+            ptr = command.error(TimeNow, static_cast<YukonError_t>(InMessage.EventCode), description);
         }
         else
         {

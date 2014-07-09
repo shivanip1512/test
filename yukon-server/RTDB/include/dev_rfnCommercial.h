@@ -16,9 +16,9 @@ class IM_EX_DEVDB RfnCommercialDevice
 {
 protected:
 
-    int executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    int executeReadDemandFreezeInfo (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executeReadDemandFreezeInfo (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 };
 
 typedef RfnCommercialDevice Rfn430a3dDevice;

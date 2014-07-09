@@ -21,7 +21,7 @@ class Condition
 {
 public:
 
-    Condition( bool valid_, int errorCode_  )
+    Condition( bool valid_, YukonError_t errorCode_  )
         :   valid(valid_),
             errorCode(errorCode_)
     {
@@ -54,7 +54,7 @@ public:
         return valid;
     }
 
-    int getErrorCode() const
+    YukonError_t getErrorCode() const
     {
         return errorCode;
     }
@@ -72,7 +72,7 @@ public:
 private:
 
     const bool valid;
-    const int  errorCode;
+    const YukonError_t errorCode;
 
     boost::scoped_ptr<std::ostringstream> description;
 

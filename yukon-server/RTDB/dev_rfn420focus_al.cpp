@@ -83,7 +83,7 @@ RfnMeterDevice::ConfigMap Rfn420FocusAlDevice::getConfigMethods(bool readOnly)
     return m;
 }
 
-int Rfn420FocusAlDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t Rfn420FocusAlDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     rfnRequests.push_back(
             boost::make_shared<Commands::RfnFocusAlLcdConfigurationReadCommand>());
@@ -91,7 +91,7 @@ int Rfn420FocusAlDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommand
     return NoError;
 }
 
-int Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     try
     {

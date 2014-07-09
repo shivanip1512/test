@@ -19,10 +19,10 @@
 namespace Cti {
 namespace Devices {
 
-int RfnCommercialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
-                                                       CtiCommandParser  & parse,
-                                                       ReturnMsgList     & returnMsgs,
-                                                       RfnCommandList    & rfnRequests )
+YukonError_t RfnCommercialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
+                                                                CtiCommandParser  & parse,
+                                                                ReturnMsgList     & returnMsgs,
+                                                                RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnImmediateDemandFreezeCommand>() );
 
@@ -30,10 +30,10 @@ int RfnCommercialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
 }
 
 
-int RfnCommercialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
-                                                      CtiCommandParser  & parse,
-                                                      ReturnMsgList     & returnMsgs,
-                                                      RfnCommandList    & rfnRequests )
+YukonError_t RfnCommercialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
+                                                               CtiCommandParser  & parse,
+                                                               ReturnMsgList     & returnMsgs,
+                                                               RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnGetDemandFreezeInfoCommand>() );
 

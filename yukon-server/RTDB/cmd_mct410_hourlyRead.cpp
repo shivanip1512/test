@@ -332,7 +332,7 @@ int Mct410HourlyReadCommand::convertDelta(unsigned delta)
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct410HourlyReadCommand::error(const CtiTime now, const int error_code, std::string &description)
+DlcCommand::request_ptr Mct410HourlyReadCommand::error(const CtiTime now, const YukonError_t error_code, std::string &description)
 {
     if( description.empty() )
     {

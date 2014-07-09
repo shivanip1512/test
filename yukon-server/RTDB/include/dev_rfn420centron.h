@@ -11,8 +11,8 @@ class IM_EX_DEVDB Rfn420CentronDevice :
 {
     virtual ConfigMap getConfigMethods(bool readOnly);
 
-    int executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    int executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
     void handleCommandResult(const Commands::RfnCentronSetLcdConfigurationCommand &cmd);
     void handleCommandResult(const Commands::RfnCentronGetLcdConfigurationCommand &cmd);

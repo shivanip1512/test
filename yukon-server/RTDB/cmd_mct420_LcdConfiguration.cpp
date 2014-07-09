@@ -108,7 +108,7 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::decodeCommand(const CtiTi
 }
 
 //  throws CommandException
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::error(const CtiTime now, const int error_code, std::string &description)
+DlcCommand::request_ptr Mct420LcdConfigurationCommand::error(const CtiTime now, const YukonError_t error_code, std::string &description)
 {
     //  This should probably be the default for all commands unless otherwise specified.
     throw CommandException(error_code, GetErrorString(error_code));

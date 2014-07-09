@@ -9,7 +9,7 @@ class IM_EX_DEVDB RfDaDevice : public RfnDevice
 {
     typedef RfnDevice Inherited;
 
-    virtual int executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    virtual YukonError_t executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
     virtual void handleCommandResult(const Commands::RfDaReadDnpSlaveAddressCommand &);
 };

@@ -142,10 +142,10 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
     return m;
 }
 
-int RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pReq,
-                                                          CtiCommandParser  & parse,
-                                                          ReturnMsgList     & returnMsgs,
-                                                          RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pReq,
+                                                                   CtiCommandParser  & parse,
+                                                                   ReturnMsgList     & returnMsgs,
+                                                                   RfnCommandList    & rfnRequests )
 {
     // putconfig voltage profile demandinterval 1234 lpinterval 123
     // putconfig voltage profile enable|disable
@@ -201,10 +201,10 @@ int RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pR
     return NoError;
 }
 
-int RfnResidentialDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pReq,
-                                                          CtiCommandParser  & parse,
-                                                          ReturnMsgList     & returnMsgs,
-                                                          RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pReq,
+                                                                   CtiCommandParser  & parse,
+                                                                   ReturnMsgList     & returnMsgs,
+                                                                   RfnCommandList    & rfnRequests )
 {
     // getconfig voltage profile
     // getconfig voltage profile state
@@ -225,10 +225,10 @@ int RfnResidentialDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pR
 }
 
 
-int RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pReq,
-                                                         CtiCommandParser  & parse,
-                                                         ReturnMsgList     & returnMsgs,
-                                                         RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pReq,
+                                                                  CtiCommandParser  & parse,
+                                                                  ReturnMsgList     & returnMsgs,
+                                                                  RfnCommandList    & rfnRequests )
 {
     // getvalue voltage profile 12/13/2005 12/15/2005
 
@@ -288,7 +288,7 @@ int RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pRe
 }
 
 
-int RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     rfnRequests.push_back(
             boost::make_shared<Commands::RfnTouResetCommand>());
@@ -296,7 +296,7 @@ int RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiComman
     return NoError;
 }
 
-int RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     rfnRequests.push_back(
             boost::make_shared<Commands::RfnTouResetZeroCommand>());
@@ -305,10 +305,10 @@ int RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCo
 }
 
 
-int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
-                                                                    CtiCommandParser  & parse,
-                                                                    ReturnMsgList     & returnMsgs,
-                                                                    RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
+                                                                             CtiCommandParser  & parse,
+                                                                             ReturnMsgList     & returnMsgs,
+                                                                             RfnCommandList    & rfnRequests )
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -408,10 +408,10 @@ int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMs
 }
 
 
-int RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
-                                                                 CtiCommandParser  & parse,
-                                                                 ReturnMsgList     & returnMsgs,
-                                                                 RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
+                                                                             CtiCommandParser  & parse,
+                                                                             ReturnMsgList     & returnMsgs,
+                                                                             RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileGetConfigurationCommand>() );
 
@@ -419,10 +419,10 @@ int RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMs
 }
 
 
-//int RfnResidentialDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
-//                                                       CtiCommandParser  & parse,
-//                                                       ReturnMsgList     & returnMsgs,
-//                                                       RfnCommandList    & rfnRequests )
+//YukonError_t RfnResidentialDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
+//                                                                CtiCommandParser  & parse,
+//                                                                ReturnMsgList     & returnMsgs,
+//                                                                RfnCommandList    & rfnRequests )
 //{
 //    // TBD
 //
@@ -442,10 +442,10 @@ int RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMs
 //}
 
 
-int RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
-                                                        CtiCommandParser  & parse,
-                                                        ReturnMsgList     & returnMsgs,
-                                                        RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
+                                                                    CtiCommandParser  & parse,
+                                                                    ReturnMsgList     & returnMsgs,
+                                                                    RfnCommandList    & rfnRequests )
 {
     try
     {
@@ -492,10 +492,10 @@ int RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * p
 }
 
 
-int RfnResidentialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
-                                                     CtiCommandParser  & parse,
-                                                     ReturnMsgList     & returnMsgs,
-                                                     RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
+                                                                 CtiCommandParser  & parse,
+                                                                 ReturnMsgList     & returnMsgs,
+                                                                 RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnImmediateDemandFreezeCommand>() );
 
@@ -503,10 +503,10 @@ int RfnResidentialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq
 }
 
 
-int RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
-                                                    CtiCommandParser  & parse,
-                                                    ReturnMsgList     & returnMsgs,
-                                                    RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
+                                                                CtiCommandParser  & parse,
+                                                                ReturnMsgList     & returnMsgs,
+                                                                RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnGetDemandFreezeInfoCommand>() );
 
@@ -514,10 +514,10 @@ int RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
 }
 
 
-int RfnResidentialDevice::executeGetStatusTou( CtiRequestMsg    * pReq,
-                                               CtiCommandParser & parse,
-                                               ReturnMsgList    & returnMsgs,
-                                               RfnCommandList   & rfnRequests)
+YukonError_t RfnResidentialDevice::executeGetStatusTou( CtiRequestMsg    * pReq,
+                                                        CtiCommandParser & parse,
+                                                        ReturnMsgList    & returnMsgs,
+                                                        RfnCommandList   & rfnRequests)
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouStateConfigurationCommand>());
 
@@ -525,10 +525,10 @@ int RfnResidentialDevice::executeGetStatusTou( CtiRequestMsg    * pReq,
 }
 
 
-int RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
-                                               CtiCommandParser  & parse,
-                                               ReturnMsgList     & returnMsgs,
-                                               RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
+                                                           CtiCommandParser  & parse,
+                                                           ReturnMsgList     & returnMsgs,
+                                                           RfnCommandList    & rfnRequests )
 {
 
     if( parse.isKeyValid("tou_critical_peak_cancel") )
@@ -569,10 +569,10 @@ int RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
 /**
  * Execute putconfig tou schedule
  */
-int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
-                                            CtiCommandParser  & parse,
-                                            ReturnMsgList     & returnMsgs,
-                                            RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
+                                                        CtiCommandParser  & parse,
+                                                        ReturnMsgList     & returnMsgs,
+                                                        RfnCommandList    & rfnRequests )
 {
     using Commands::RfnTouConfigurationCommand;
     using Commands::RfnTouStateConfigurationCommand;
@@ -681,10 +681,10 @@ int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
 /**
  * Execute getconfig schedule
  */
-int RfnResidentialDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
-                                            CtiCommandParser  & parse,
-                                            ReturnMsgList     & returnMsgs,
-                                            RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
+                                                        CtiCommandParser  & parse,
+                                                        ReturnMsgList     & returnMsgs,
+                                                        RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleGetConfigurationCommand>());
 
@@ -694,10 +694,10 @@ int RfnResidentialDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
 /**
  * Execute putconfig holiday
  */
-int RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
-                                                CtiCommandParser  & parse,
-                                                ReturnMsgList     & returnMsgs,
-                                                RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
+                                                            CtiCommandParser  & parse,
+                                                            ReturnMsgList     & returnMsgs,
+                                                            RfnCommandList    & rfnRequests )
 {
     using Commands::RfnTouHolidayConfigurationCommand;
     using Commands::RfnTouSetHolidayActiveCommand;
@@ -752,10 +752,10 @@ int RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
 /**
  * Execute putconfig install tou
  */
-int RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
-                                                   CtiCommandParser  & parse,
-                                                   ReturnMsgList     & returnMsgs,
-                                                   RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
+                                                               CtiCommandParser  & parse,
+                                                               ReturnMsgList     & returnMsgs,
+                                                               RfnCommandList    & rfnRequests )
 {
     using Commands::RfnTouScheduleConfigurationCommand;
     using Commands::RfnTouScheduleSetConfigurationCommand;
@@ -1014,10 +1014,10 @@ bool RfnResidentialDevice::isTouConfigCurrent( const Config::DeviceConfigSPtr &d
     return bConfigCurrent;
 }
 
-int RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
-                                                   CtiCommandParser  & parse,
-                                                   ReturnMsgList     & returnMsgs,
-                                                   RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
+                                                               CtiCommandParser  & parse,
+                                                               ReturnMsgList     & returnMsgs,
+                                                               RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleGetConfigurationCommand>());
 
@@ -1028,20 +1028,20 @@ int RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
 /**
  * Execute getconfig holiday
  */
-int RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
-                                                CtiCommandParser  & parse,
-                                                ReturnMsgList     & returnMsgs,
-                                                RfnCommandList    & rfnRequests )
+YukonError_t RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
+                                                            CtiCommandParser  & parse,
+                                                            ReturnMsgList     & returnMsgs,
+                                                            RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouHolidayConfigurationCommand>());
 
     return NoError;
 }
 
-int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
-                                                CtiCommandParser & parse,
-                                                ReturnMsgList    & returnMsgs,
-                                                RfnCommandList   & rfnRequests )
+YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
+                                                         CtiCommandParser & parse,
+                                                         ReturnMsgList    & returnMsgs,
+                                                         RfnCommandList   & rfnRequests )
 {
     using Commands::RfnOvUvConfigurationCommand;
     using Commands::RfnSetOvUvAlarmProcessingStateCommand;
@@ -1180,10 +1180,10 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
     }
 }
 
-int RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
-                                                CtiCommandParser & parse,
-                                                ReturnMsgList     & returnMsgs,
-                                                RfnCommandList   & rfnRequests )
+YukonError_t RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
+                                                         CtiCommandParser & parse,
+                                                         ReturnMsgList     & returnMsgs,
+                                                         RfnCommandList   & rfnRequests )
 {
     // get the meter ID
 
@@ -1195,10 +1195,10 @@ int RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
     return NoError;
 }
 
-int RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    * pReq,
-                                                      CtiCommandParser & parse,
-                                                      ReturnMsgList    & returnMsgs,
-                                                      RfnCommandList   & rfnRequests )
+YukonError_t RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    * pReq,
+                                                               CtiCommandParser & parse,
+                                                               ReturnMsgList    & returnMsgs,
+                                                               RfnCommandList   & rfnRequests )
 {
     if( ! disconnectConfigSupported() )
     {
@@ -1210,10 +1210,10 @@ int RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    * pReq,
     return NoError;
 }
 
-int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
-                                                      CtiCommandParser & parse,
-                                                      ReturnMsgList    & returnMsgs,
-                                                      RfnCommandList   & rfnRequests )
+YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
+                                                               CtiCommandParser & parse,
+                                                               ReturnMsgList    & returnMsgs,
+                                                               RfnCommandList   & rfnRequests )
 {
     try
     {

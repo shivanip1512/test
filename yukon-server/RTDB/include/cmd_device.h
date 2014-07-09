@@ -24,14 +24,14 @@ public:
 
     struct CommandException : std::exception
     {
-        CommandException(int code, std::string description) :
+        CommandException(YukonError_t code, std::string description) :
             error_code(code),
             error_description(description)
         {
         }
 
         std::string error_description;
-        int error_code;
+        YukonError_t error_code;
 
         virtual const char *what() const
         {

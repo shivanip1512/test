@@ -122,7 +122,7 @@ boost::optional<float> Mct410DisconnectConfigurationCommand::getDisconnectDemand
     return _returnedDisconnectDemandThreshold;
 }
 
-DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::error(const CtiTime now, const int error_code, std::string &description)
+DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::error(const CtiTime now, const YukonError_t error_code, std::string &description)
 {
     throw CommandException(error_code, GetErrorString(error_code));
 }

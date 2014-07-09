@@ -92,7 +92,7 @@ RfnMeterDevice::ConfigMap Rfn420CentronDevice::getConfigMethods(bool readOnly)
     return m;
 }
 
-int Rfn420CentronDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t Rfn420CentronDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     rfnRequests.push_back(
             boost::make_shared<Commands::RfnCentronGetLcdConfigurationCommand>());
@@ -100,7 +100,7 @@ int Rfn420CentronDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommand
     return NoError;
 }
 
-int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     try
     {
