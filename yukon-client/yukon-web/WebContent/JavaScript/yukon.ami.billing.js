@@ -136,10 +136,7 @@ yukon.ami.billing = (function() {
          * @param {function} [after_function] - A callback function to fire when the refresh finishes.
          */
         _do_refresh_schedules_jobs_list = function(after_function) {
-            $.ajax({
-                url: _url_list_schedule_jobs,
-                type: 'get'
-            }).done( function(html) {
+            $.ajax(_url_list_schedule_jobs).done(function (html) {
                 $('#billing_tab_container').tabs('option','active',2); // THIRD tab
                 $('#billing_schedules_jobs').html(html);
                 if (after_function != null && after_function != undefined) {
