@@ -1,15 +1,17 @@
 package com.cannontech.notif.voice;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -73,12 +75,15 @@ public class UrlDialerFactory implements DialerFactory {
                 SimpleTemplateProcessor templateProcessor = new SimpleTemplateProcessor();
                 String urlStr = templateProcessor.process(urlTemplate, callParameters);
                 log.debug("Initiating call: " + urlStr);
+
+                CloseableHttpClient httpClient = null;
                 try {
+                	
+                	httpClient = HttpClients.custom().build();                 
+                	HttpGet method = new HttpGet(urlStr);
+                	HttpResponse httpResponse =  httpClient.execute(method);
                     
-                    HttpClient httpClient = new HttpClient();
-                    HttpMethod method = new GetMethod(urlStr);
-                    httpClient.executeMethod(method);
-                    InputStream inputStream = method.getResponseBodyAsStream();
+                	InputStream inputStream = httpResponse.getEntity().getContent();
                     byte[] inputBuffer = new byte[2000];
                     int bytesRead = inputStream.read(inputBuffer);
                     String response;
@@ -91,7 +96,7 @@ public class UrlDialerFactory implements DialerFactory {
                     
                     
                     log.debug("URL response: " + StringUtils.left(response, 200));
-                    log.trace(method.getResponseHeaders());
+                    log.trace(httpResponse.getAllHeaders());
                     log.trace(response);
 
                     method.releaseConnection();
@@ -111,6 +116,13 @@ public class UrlDialerFactory implements DialerFactory {
                 } catch (Exception e) {
                     log.debug("Unable to initiate call", e);
                     call.handleConnectionFailed("unknown dialing exception: " + e.getMessage());
+                }
+                finally{
+                	try {
+						httpClient.close();
+					} catch (IOException e) {
+					    log.error(e.getMessage());
+					}
                 }
             }
 

@@ -2,7 +2,7 @@ package com.cannontech.web.cayenta.service.impl;
 
 import java.io.IOException;
 
-import org.apache.commons.httpclient.HttpException;
+
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -211,9 +211,6 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 			String resp = postService.postValue(postElementName, value);
 			log.debug("Recieved response: " + resp);
 			return resp;
-		} catch (HttpException e) {
-			log.debug("Unable to communicate with Cayenta API server due to HttpException.", e);
-			throw new CayentaRequestException("Unable to communicate with Cayenta API server.", e);
 		} catch (IOException e) {
 			log.debug("Unable to communicate with Cayenta API server due to IOException.", e);
 			throw new CayentaRequestException("Unable to communicate with Cayenta API server.", e);

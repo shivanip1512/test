@@ -3,7 +3,7 @@ package unit.cayenta;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import org.apache.commons.httpclient.HttpException;
+
 import org.apache.commons.io.IOUtils;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -29,7 +29,7 @@ class MockSimpleHttpPostService implements SimpleHttpPostService {
 	// Receive a request, parse out the request type and send an example response back.
 	// In some cases, the meter number in the request is used to indicate that some special response should be returned.
 	@Override
-	public String postValue(String name, String value) throws IOException, HttpException {
+	public String postValue(String name, String value) throws IOException {
 		
 		String response = "";
 		String meterNumber = "";
@@ -76,10 +76,7 @@ class MockSimpleHttpPostService implements SimpleHttpPostService {
 		} catch (CayentaRequestException e) {
 		}
 		
-		// mock http errors
-		if (HTTP_FAILURE.equals(meterNumber)) {
-			throw new HttpException("");
-		} else if (HTTP_IO_FAILURE.equals(meterNumber)) {
+		if (HTTP_IO_FAILURE.equals(meterNumber) || HTTP_FAILURE.equals(meterNumber)) {
 			throw new IOException("");
 		}
 		
