@@ -46,7 +46,7 @@ yukon.ami.meterEventsReport = (function () {
         for (var i = 0; i < _titlesToIgnore.length; i++) {
             if (title === _titlesToIgnore[i]) {
                 return true;
-            };
+            }
         }
         return false;
     },
