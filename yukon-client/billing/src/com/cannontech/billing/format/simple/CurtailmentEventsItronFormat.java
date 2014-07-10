@@ -44,7 +44,7 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
  * General Formatting Rules
  * Each line or record should end with a CR/LF (carriage return / line feed)
  * Files should end with an EOF (End-of-File) character [ASCII(0) or NULL] or with a single blank line (two consecutive CR/LF characters)
- * “Empty” files should contain a header record with a Detail Record Count of zero
+ * "Empty" files should contain a header record with a Detail Record Count of zero
  * 
  * ***Detail Records Information
  * Example:

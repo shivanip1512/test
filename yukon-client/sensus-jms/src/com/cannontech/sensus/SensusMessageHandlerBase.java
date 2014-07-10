@@ -1,4 +1,4 @@
-package com.cannontech.sensus;
+﻿package com.cannontech.sensus;
 
 import java.text.DateFormat;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ public abstract class SensusMessageHandlerBase implements SensusMessageHandler, 
 		txMode.put(0, "Normal Mode");
 		txMode.put(1, "Message Pass");
 		txMode.put(2, "Boost Mode");
-		txMode.put(3, "Normal, � Baud Rate");
+		txMode.put(3, "Normal, ½ Baud Rate");
 		txMode.put(4, "mPass / Normal Mix (1:1)");
 		txMode.put(5, "mPass / Normal Mix (1:2)");
 		txMode.put(6, "mPass / Normal Mix (1:3)");
@@ -119,7 +119,8 @@ public abstract class SensusMessageHandlerBase implements SensusMessageHandler, 
 	
 	protected boolean newSequence;  // This variable is set if the sequence in process has NOT been processed before. 
 
-	public void processMessage(int repId, int appCode, boolean isSequenceNew, char[] message) {
+	@Override
+    public void processMessage(int repId, int appCode, boolean isSequenceNew, char[] message) {
 		newSequence = isSequenceNew;  // Store it at this level, so other methods can make decisions on it. 
 		
 		if (appCode == 0x22) {
@@ -145,6 +146,7 @@ public abstract class SensusMessageHandlerBase implements SensusMessageHandler, 
         }
 	}
 
+    @Override
     public void processMessageObject(DataMessage message) {
         if (message instanceof AppMessageType5) {
 			processBindingMessage((AppMessageType5) message);

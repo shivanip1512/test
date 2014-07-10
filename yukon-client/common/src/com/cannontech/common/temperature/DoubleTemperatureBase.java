@@ -62,8 +62,8 @@ public abstract class DoubleTemperatureBase extends Temperature {
      * for the unit.
      * 
      * Examples:
-     *    45.6°F
-     *    100.4°C
+     *    45.6Â°F
+     *    100.4Â°C
      */
     @Override
     public String toString() {

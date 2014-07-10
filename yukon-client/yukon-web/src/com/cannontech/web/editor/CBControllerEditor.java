@@ -95,7 +95,7 @@ public class CBControllerEditor implements ICBControllerModel {
                 if (deviceCBC instanceof CapBankController) {
                     setSerialNumber(((CapBankController) deviceCBC).getDeviceCBC().getSerialNumber().longValue());
                 }
-                this.deviceType = deviceCBC.getPaoType().getDeviceTypeId();
+                deviceType = deviceCBC.getPaoType().getDeviceTypeId();
             }
         }
     }
@@ -230,7 +230,7 @@ public class CBControllerEditor implements ICBControllerModel {
 
     @Override
     public void setCbcControllerStatusMessage(String msgStr) {
-        this.cbcControllerStatusMessage = msgStr;
+        cbcControllerStatusMessage = msgStr;
     }
 
     public HtmlTree getPointTree() {
@@ -261,7 +261,7 @@ public class CBControllerEditor implements ICBControllerModel {
         }
     	
     	/*
-    	 * A.  Show an error and don’t save the update if the user tries to put 
+    	 * A.  Show an error and don't save the update if the user tries to put 
          *      the same master/slave address combination for a different device on the same communication port
          * B.  Show a warning if the user uses the same master/slave address for a 
          *      device on a different communication port
@@ -490,8 +490,9 @@ public class CBControllerEditor implements ICBControllerModel {
 	private void restoreState (HtmlTree tree) {
         if (tree != null) {
     		CCSessionInfo ccSession = (CCSessionInfo) JSFParamUtil.getJSFVar("ccSession");    		
-			if (ccSession.getTreeState(pointTreeName) != null )
-				this.pointTree.restoreState(FacesContext.getCurrentInstance(), ccSession.getTreeState(pointTreeName));
+			if (ccSession.getTreeState(pointTreeName) != null ) {
+                pointTree.restoreState(FacesContext.getCurrentInstance(), ccSession.getTreeState(pointTreeName));
+            }
         }
 	}
 

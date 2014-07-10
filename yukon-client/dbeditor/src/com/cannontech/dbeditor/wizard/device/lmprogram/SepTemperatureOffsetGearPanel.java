@@ -289,7 +289,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         if (temperatureUnitsButton == null) {
             temperatureUnitsButton = new JButton();
             temperatureUnitsButton.setName("JButtonTemperatureUnits");
-            temperatureUnitsButton.setText("�F / �C");
+            temperatureUnitsButton.setText("°F / °C");
             temperatureUnitsButton.setFont(new Font("dialog", 0, 12));
             temperatureUnitsButton.setSize(42, 16);
             temperatureUnitsButton.setAlignmentY(TOP_ALIGNMENT);
