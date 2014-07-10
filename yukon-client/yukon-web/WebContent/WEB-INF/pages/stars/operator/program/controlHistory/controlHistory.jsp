@@ -8,12 +8,12 @@
     <cti:includeScript link="/JavaScript/yukon.assets.controlhistory.js"/>
     <div data-account-id="${accountId}">
         <tags:sectionContainer2 nameKey="currentEnrollmentControlHistory">
-            <div class="clearfix stacked f-block-this js-current-enrollment-history" style="min-height: 50px">
+            <div class="clearfix stacked js-block-this js-current-enrollment-history" style="min-height: 50px">
                 <i:inline key="yukon.common.loading"/>
             </div>
         </tags:sectionContainer2>
         <tags:sectionContainer2 nameKey="previousEnrollmentControlHistory">
-            <div class="clearfix stacked f-block-this js-past-enrollment-history" style="min-height: 50px">
+            <div class="clearfix stacked js-block-this js-past-enrollment-history" style="min-height: 50px">
                 <i:inline key="yukon.common.loading"/>
             </div>
         </tags:sectionContainer2>

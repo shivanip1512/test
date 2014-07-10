@@ -14,7 +14,7 @@ yukon.ui.passwords = (function () {
     mod = {
         init: function (args) {
             $.extend(this, args);
-            $('.f-check_password').keyup(function(event){
+            $('.js-check_password').keyup(function(event){
                 $('button.unlock').attr('disabled', 'true');
                 $('#loginBackingBean').ajaxSubmit({
                     url: yukon.url('/login/checkPassword'),
@@ -32,7 +32,7 @@ yukon.ui.passwords = (function () {
                 return false;
             });
 
-            $('input:password:not(.f-current)').keyup(function(e){
+            $('input:password:not(.js-current)').keyup(function(e){
                 var confirm = $('input.confirm[type=password]').val(),
                     password = $('input.new[type=password]').val(),
                     meetsRequirements = $('.description ul:first > li > .icon-cross');

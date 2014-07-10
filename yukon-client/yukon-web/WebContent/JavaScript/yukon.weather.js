@@ -74,9 +74,9 @@ yukon.weather = (function() {
 
             if (metaDataObj.dispatchError) {
                 $("#dispatchError").show();
-                $(".f-drFormula-temperature-field").removeClass("error").addClass("disabled");
-                $(".f-drFormula-humidity-field").removeClass("error").addClass("disabled");
-                $(".f-drFormula-timestamp-field").removeClass("error").addClass("disabled");
+                $(".js-drFormula-temperature-field").removeClass("error").addClass("disabled");
+                $(".js-drFormula-humidity-field").removeClass("error").addClass("disabled");
+                $(".js-drFormula-timestamp-field").removeClass("error").addClass("disabled");
             } else {
                 $("#dispatchError").hide();
             }

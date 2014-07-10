@@ -18,14 +18,14 @@
             <cti:csrfToken/>
             <input type="hidden" name="accountId" value="${accountId}">
         </form>
-        <d:confirm on=".f-delete" nameKey="delete" argument="${accountGeneral.accountDto.accountNumber}"/>
+        <d:confirm on=".js-delete" nameKey="delete" argument="${accountGeneral.accountDto.accountNumber}"/>
         
         <form id="deleteUserForm" action="deleteLogin" method="post">
           <cti:csrfToken/>
           <input type="hidden" name="accountId" value="${accountId}">
           <input type="hidden" name="loginMode" value="${loginMode}">
         </form>
-        <d:confirm on=".f-delete-user" nameKey="delete.user" argument="${accountGeneral.accountDto.accountNumber}"/>
+        <d:confirm on=".js-delete-user" nameKey="delete.user" argument="${accountGeneral.accountDto.accountNumber}"/>
     
         <cti:url var="generatedPasswordUrl" value="generatePassword" />
     
@@ -51,9 +51,9 @@
                 }
                 
                 $(document).on('e_updatePassword', '#passwordDialog', updatePassword);
-                $(document).on('click', 'a.f-resetPasswordDialog', resetPasswordDialog);
-                $(document).on('click', '.f-prepPasswordFields', prepPasswordFields);
-                $(document).on('click', '.f-generatePassword', generatePassword);
+                $(document).on('click', 'a.js-resetPasswordDialog', resetPasswordDialog);
+                $(document).on('click', '.js-prepPasswordFields', prepPasswordFields);
+                $(document).on('click', '.js-generatePassword', generatePassword);
             });
     
             function toggleCommercialInputs(isCommercial) {
@@ -328,7 +328,7 @@
                                     <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
                                         <c:if test="${supportsPasswordSet and not empty passwordBean}">
                                             <tags:nameValue2 nameKey=".password">
-                                                <small><a href="javascript:void(0);" class="f-editPassword f-resetPasswordDialog"><i:inline key=".changePassword" /></a></small>
+                                                <small><a href="javascript:void(0);" class="js-editPassword js-resetPasswordDialog"><i:inline key=".changePassword" /></a></small>
                                             </tags:nameValue2>
                                         </c:if>
                                     </cti:checkRolesAndProperties>
@@ -360,7 +360,7 @@
                                         <div class="action-area">
                                             <label><input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/><i:inline key=".showPassword"/></label>
                                             <cti:msg2 key=".generatePassword" var="generatePword"/>
-                                            <cti:button classes="f-generatePassword" label="${generatePword}"/>
+                                            <cti:button classes="js-generatePassword" label="${generatePword}"/>
                                         </div>
                                     </c:if>
                                 </cti:checkRolesAndProperties>
@@ -369,7 +369,7 @@
                             <cti:displayForPageEditModes modes="EDIT">
                                 <c:if test="${loginMode eq 'EDIT'}">
                                     <div class="action-area">
-                                        <cti:button nameKey="delete.user" data-form="#deleteUserForm" classes="f-delete-user delete"/>
+                                        <cti:button nameKey="delete.user" data-form="#deleteUserForm" classes="js-delete-user delete"/>
                                     </div>
                                 </c:if>
                             </cti:displayForPageEditModes>
@@ -386,9 +386,9 @@
                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                         <cti:displayForPageEditModes modes="EDIT">
-                            <cti:button nameKey="save" type="submit" classes="f-blocker f-prepPasswordFields primary action"/>
+                            <cti:button nameKey="save" type="submit" classes="js-blocker js-prepPasswordFields primary action"/>
                             
-                            <cti:button nameKey="delete" classes="f-delete delete" data-form="#deleteAccountForm"/>
+                            <cti:button nameKey="delete" classes="js-delete delete" data-form="#deleteAccountForm"/>
                             
                              <cti:url value="/stars/operator/account/view" var="viewUrl">
                                 <cti:param name="accountId" value="${accountId}"/>
@@ -398,7 +398,7 @@
                     </cti:checkRolesAndProperties>
                     
                     <cti:displayForPageEditModes modes="CREATE">
-                        <cti:button nameKey="create" type="submit" classes="f-blocker f-prepPasswordFields primary action"/>
+                        <cti:button nameKey="create" type="submit" classes="js-blocker js-prepPasswordFields primary action"/>
                         <cti:url value="/stars/operator/inventory/home" var="homeUrl"/>
                         <cti:button nameKey="cancel" href="${homeUrl}"/>
                     </cti:displayForPageEditModes>
@@ -420,7 +420,7 @@
         <cti:displayForPageEditModes modes="EDIT">
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
                 <c:if test="${supportsPasswordSet and not empty passwordBean}">
-                    <d:inline id="passwordDialog" okEvent="e_updatePassword" on="a.f-editPassword" nameKey="passwordDialog">
+                    <d:inline id="passwordDialog" okEvent="e_updatePassword" on="a.js-editPassword" nameKey="passwordDialog">
                         <form:form id="updatePasswordForm" commandName="passwordBean" action="/stars/operator/account/updatePassword">
                             <cti:csrfToken/>
                             <input type="hidden" name="accountId" value="${accountId}">
@@ -444,7 +444,7 @@
                             <div class="action-area">
                                 <label><input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/><i:inline key=".showPassword"/></label>
                                 <cti:msg2 key=".generatePassword" var="generatePword"/>
-                                <cti:button classes="f-generatePassword" label="${generatePword}"/>
+                                <cti:button classes="js-generatePassword" label="${generatePword}"/>
                             </div>
                         </form:form>
                     </d:inline>

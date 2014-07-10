@@ -179,7 +179,7 @@ $(function () {
         <cti:url var="editPageUrl" value="/amr/porterResponseMonitor/editPage"/>
         <form id="editMonitorForm" action="${editPageUrl}" method="get">
             <input type="hidden" name="monitorId" value="${monitorDto.monitorId}">
-            <cti:button nameKey="edit" icon="icon-pencil" type="submit" classes="f-blocker"/>
+            <cti:button nameKey="edit" icon="icon-pencil" type="submit" classes="js-blocker"/>
         </form>
     </div>
 

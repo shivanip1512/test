@@ -124,7 +124,7 @@
     }
     
 $(function(){
-    $(document).on('change', 'select.f-loadCommanderCommand', loadCommanderCommand);
+    $(document).on('change', 'select.js-loadCommanderCommand', loadCommanderCommand);
 });
 </script>
 

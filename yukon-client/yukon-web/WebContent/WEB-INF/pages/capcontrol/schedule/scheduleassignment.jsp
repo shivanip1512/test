@@ -51,7 +51,7 @@
     <div id="page-buttons" class="dn">
          <cti:button nameKey="filter" classes="js-show-filter" icon="icon-filter" popup="#filter-popup"/>
     </div>
-    <div class="dn f-page-additional-actions">
+    <div class="dn js-page-additional-actions">
         <li class="divider"></li>
         <c:choose>
             <c:when test="${hasActionRoles == true}">

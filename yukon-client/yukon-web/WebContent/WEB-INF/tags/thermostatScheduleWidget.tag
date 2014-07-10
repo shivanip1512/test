@@ -96,9 +96,9 @@
             </c:when>
             <c:otherwise>
                 <div class="actions page-action-area">
-                    <cti:button nameKey="edit" icon="icon-pencil" classes="f-edit edit_${schedule.accountThermostatScheduleId}" />
-                    <cti:button nameKey="sendNow" classes="f-send" icon="icon-date-go" data-form="#send_${schedule.accountThermostatScheduleId}"/>
-                    <cti:button nameKey="copy" classes="f-copy copy_${schedule.accountThermostatScheduleId}" icon="icon-page-copy"/>
+                    <cti:button nameKey="edit" icon="icon-pencil" classes="js-edit edit_${schedule.accountThermostatScheduleId}" />
+                    <cti:button nameKey="sendNow" classes="js-send" icon="icon-date-go" data-form="#send_${schedule.accountThermostatScheduleId}"/>
+                    <cti:button nameKey="copy" classes="js-copy copy_${schedule.accountThermostatScheduleId}" icon="icon-page-copy"/>
                 </div>
             </c:otherwise>
         </c:choose>
@@ -110,7 +110,7 @@
         <input type="hidden" name="thermostatIds" value="${thermostatIds}">
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
-        <d:confirm on=".f-send" nameKey="sendConfirm" argument="${fn:escapeXml(schedule.scheduleName)}"/>
+        <d:confirm on=".js-send" nameKey="sendConfirm" argument="${fn:escapeXml(schedule.scheduleName)}"/>
     </form>
     <c:if test="${empty pageScope.omitEditor or not pageScope.omitEditor}">
         <i:simplePopup titleKey=".editSchedule.title" 
@@ -134,7 +134,7 @@
                                         styleClass="${pageScope.styleClass}"/>
             </div>
             <div class="action-area">
-                <cti:button nameKey="save" classes="f-blocker primary action f-save"/>
+                <cti:button nameKey="save" classes="js-blocker primary action js-save"/>
                 <cti:url var="deleteUrl" value="${actionPath}/delete"/>
                 <form action="${deleteUrl}" method="POST">
                     <cti:csrfToken/>
@@ -142,11 +142,11 @@
                     <input type="hidden" name="thermostatId" value="${thermostatId}">
                     <input type="hidden" name="thermostatIds" value="${thermostatIds}">
                     <input type="hidden" name="accountId" value="${accountId}">
-                    <cti:button nameKey="delete" classes="f-delete delete" name="delete" type="submit"/>
-                    <d:confirm on=".f-delete" nameKey="deleteConfirm" argument="${fn:escapeXml(schedule.scheduleName)}"/>
+                    <cti:button nameKey="delete" classes="js-delete delete" name="delete" type="submit"/>
+                    <d:confirm on=".js-delete" nameKey="deleteConfirm" argument="${fn:escapeXml(schedule.scheduleName)}"/>
                 </form>
-                <cti:button nameKey="cancel" classes="f-cancel"/>
-                <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="fl f-default" icon="icon-wrench"/>
+                <cti:button nameKey="cancel" classes="js-cancel"/>
+                <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="fl js-default" icon="icon-wrench"/>
             </div>
         </i:simplePopup>
     </c:if>

@@ -42,12 +42,12 @@ function refreshResults(kind, container) {
     }
 }
 $(function() {
-    $('.f-view-success').click(function(e) {
+    $('.js-view-success').click(function(e) {
         var container = $('#successResultsDiv${resultKey}');
         container.toggle();
         refreshResults('successList', container);
     });
-    $('.f-view-failed').click(function(e) {
+    $('.js-view-failed').click(function(e) {
         var container = $('#errorsResultsDiv${resultKey}');
         container.toggle();
         refreshResults('errorsList', container);
@@ -110,7 +110,7 @@ $(function() {
                     <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.successCollection}"/>
                 </div>
                 <div>
-                    <a href="javascript:void(0);" class="f-view-success"><i:inline key=".section.success.view"/></a>
+                    <a href="javascript:void(0);" class="js-view-success"><i:inline key=".section.success.view"/></a>
                 </div>
                 <div id="successResultsDiv${resultKey}" class="dn"></div>
             </div>
@@ -128,7 +128,7 @@ $(function() {
                     <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.failureCollection}"/>
                 </div>
                 <div>
-                    <a href="javascript:void(0);" class="f-view-failed">View Failure Reasons</a>
+                    <a href="javascript:void(0);" class="js-view-failed">View Failure Reasons</a>
                 </div>
                 <div id="errorsResultsDiv${resultKey}" class="dn"></div>
             </div> 

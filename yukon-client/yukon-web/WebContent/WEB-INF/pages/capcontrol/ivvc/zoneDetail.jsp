@@ -33,7 +33,7 @@
 </script>
 
 
-<div class="f-page-additional-actions dn">
+<div class="js-page-additional-actions dn">
     <cti:url var="zoneVoltageDeltasUrl" value="/capcontrol/ivvc/zone/voltageDeltas">
        <cti:param name="zoneId" value="${zoneId}"/>
     </cti:url>
@@ -63,7 +63,7 @@
                                 <cti:url var="zoneEditorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
                                     <cti:param name="zoneId" value="${zoneId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0);" class="f-zone-editor" data-editor-url="${zoneEditorUrl}" data-editor-title="${zoneWizardTitle}">
+                                <a href="javascript:void(0);" class="js-zone-editor" data-editor-url="${zoneEditorUrl}" data-editor-title="${zoneWizardTitle}">
                             </c:if>
                                 ${fn:escapeXml(zoneName)}
                             <c:if test="${hasEditingRole}">

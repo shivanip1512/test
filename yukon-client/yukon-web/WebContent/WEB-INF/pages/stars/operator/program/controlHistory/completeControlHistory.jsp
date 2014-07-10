@@ -22,7 +22,7 @@
     </c:set>
     
     <tags:sectionContainer2 nameKey="controlEventsTitle" controls="${controls}" styleClass="form-controls">
-        <div class="f-block-this js-control-events" style="min-height: 50px;"><i:inline key=".loading"/></div>
+        <div class="js-block-this js-control-events" style="min-height: 50px;"><i:inline key=".loading"/></div>
     </tags:sectionContainer2>
 
 </cti:standardPage>

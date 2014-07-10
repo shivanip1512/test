@@ -65,7 +65,7 @@ yukon.da.ivvc = (function () {
                 _zoneId = +params.zoneId;
                 _subBusId = +params.subBusId;
 
-                $('.f-zone-editor').click(function () {
+                $('.js-zone-editor').click(function () {
                     var link = $(this),
                         url = link.closest('[data-editor-url]').attr('data-editor-url'),
                         title = link.closest('[data-editor-title]').attr('data-editor-title');

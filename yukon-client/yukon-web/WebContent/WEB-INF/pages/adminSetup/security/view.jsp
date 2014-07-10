@@ -51,7 +51,7 @@
     </d:inline>
     
     <d:inline nameKey="viewPublicKeyDialog" okEvent="none" 
-        on="#viewPublicKeyBtn" options="{width: 600, 'buttons': [{text: 'Generate New Key', 'class': 'f-blocker2', click: function() { loadPublicKey(true);}},
+        on="#viewPublicKeyBtn" options="{width: 600, 'buttons': [{text: 'Generate New Key', 'class': 'js-blocker2', click: function() { loadPublicKey(true);}},
                                         {text: 'Cancel', click: function() { $(this).dialog('close'); } }]}">
         <div id="publicKeyStatus"></div>
         <div id="publicKeyExpiration"></div>
@@ -194,7 +194,7 @@
                 <div class="page-action-area">
                     <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" />
                     <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" />
-                    <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="f-blocker2" />
+                    <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="js-blocker2" />
                 </div>
             </tags:boxContainer2>
         </div>

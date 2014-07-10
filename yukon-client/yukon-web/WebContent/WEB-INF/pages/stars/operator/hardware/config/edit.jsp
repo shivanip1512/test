@@ -42,12 +42,12 @@ $(function() {
 });
 updateSub = function (data) {
     if (data.value == -1) {
-        $('.f-non-readable-value').show();
-        $('.f-readable-value').hide();
+        $('.js-non-readable-value').show();
+        $('.js-readable-value').hide();
     } else {
-        $('.f-readable-value').html(data.value);
-        $('.f-readable-value').show();
-        $('.f-non-readable-value').hide();
+        $('.js-readable-value').html(data.value);
+        $('.js-readable-value').show();
+        $('.js-non-readable-value').hide();
     }
 } 
 </script>

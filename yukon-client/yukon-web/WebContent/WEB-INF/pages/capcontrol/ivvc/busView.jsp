@@ -64,7 +64,7 @@
      </script>
     
     <c:if test="${hasEditingRole}">
-        <div class="f-page-additional-actions dn">
+        <div class="js-page-additional-actions dn">
             <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                 <cti:param name="type" value="2"/>
                 <cti:param name="itemid" value="${subBusId}"/>
@@ -191,12 +191,12 @@
                     </c:forEach>
                 </table>
                     <div class="action-area">
-                    <a href="javascript:void(0);" class="f-show-strategy-details">Strategy Details</a>
+                    <a href="javascript:void(0);" class="js-show-strategy-details">Strategy Details</a>
                 </div>
             </tags:boxContainer2>
             
             <cti:msg2 key=".strategyDetails.title" arguments="${strategyName}" var="strategyTitle"/>
-            <tags:simplePopup id="strategyDetails" title="${strategyTitle}" on=".f-show-strategy-details">
+            <tags:simplePopup id="strategyDetails" title="${strategyTitle}" on=".js-show-strategy-details">
                 <table class="compact-results-table" >
                     <thead>
                         <tr>

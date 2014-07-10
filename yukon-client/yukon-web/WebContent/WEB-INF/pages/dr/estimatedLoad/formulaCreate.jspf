@@ -8,12 +8,12 @@
                     <tags:hidden path="formulaId"/>
                     <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="32"/>
                     <tags:selectNameValue
-                        inputClass="f-disable-change"
+                        inputClass="js-disable-change"
                         items="${formulaTypes}"
                         nameKey=".formulaType"
                         path="formulaType"/>
                     <tags:selectNameValue
-                        inputClass="f-disable-change"
+                        inputClass="js-disable-change"
                         items="${calculationTypes}"
                         nameKey=".calculationType"
                         path="calculationType"/>

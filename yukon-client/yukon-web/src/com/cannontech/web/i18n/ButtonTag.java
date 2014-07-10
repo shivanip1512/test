@@ -185,7 +185,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                 classes.append(" " + this.classes);
             }
             if (busy) {
-                classes.append(" f-disable-after-click");
+                classes.append(" js-disable-after-click");
             }
             
             id = StringUtils.isBlank(id) ? UniqueIdentifierTag.generateIdentifier(getJspContext(), "button") : id;

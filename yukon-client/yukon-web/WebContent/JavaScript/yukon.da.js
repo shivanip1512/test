@@ -60,7 +60,7 @@ yukon.da = (function () {
             });
 
             /* creation menu popup */
-            $('.f-cc-create').click(function() {
+            $('.js-cc-create').click(function() {
                 var content = $('#contentPopup');
                 content.load(yukon.url('/capcontrol/menu/create'), function() {
                     var title = content.find('input.title').val();
@@ -80,11 +80,11 @@ yukon.da = (function () {
                     cbcInfoTitle = row.attr('data-cbc-info-title'),
                     bankInfoTitle = row.attr('data-bank-info-title'),
                     menu = row.find('.dropdown-trigger .dropdown-menu'),
-                    moveBankOpener = menu.find('.f-move-bank'),
-                    bankCommandOpener = menu.find('.f-bank-command'),
-                    stateMenuOpener = menu.find('.f-bank-state'),
-                    bankInfoOpener = menu.find('.f-bank-info'),
-                    cbcInfoOpener = menu.find('.f-cbc-info');
+                    moveBankOpener = menu.find('.js-move-bank'),
+                    bankCommandOpener = menu.find('.js-bank-command'),
+                    stateMenuOpener = menu.find('.js-bank-state'),
+                    bankInfoOpener = menu.find('.js-bank-info'),
+                    cbcInfoOpener = menu.find('.js-cbc-info');
 
                 if( moveBankOpener.is('.warning') ){
                     moveBankOpener.click( function(event) {
@@ -118,8 +118,8 @@ yukon.da = (function () {
         },
 
         initSubstation: function() {
-            var feederFilter = $('.f-feeder-filter').eq(0),
-                busFilter = $('.f-bus-filter').eq(0);
+            var feederFilter = $('.js-feeder-filter').eq(0),
+                busFilter = $('.js-bus-filter').eq(0);
 
 
             busFilter.change( function(event) {

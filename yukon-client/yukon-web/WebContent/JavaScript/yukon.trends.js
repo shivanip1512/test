@@ -94,27 +94,27 @@ yukon.trends = (function() {
             });
             
             $('.trend-list').scrollTo($('.trend-list li.selected'));
-            $(document).on('click', '.f-print', function(e) {
+            $(document).on('click', '.js-print', function(e) {
                 var chart = $('[data-trend]').highcharts();
                 chart.print();
             });
-            $(document).on('click', '.f-dl-png', function(e) {
+            $(document).on('click', '.js-dl-png', function(e) {
                 var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'image/png'});
             });
-            $(document).on('click', '.f-dl-jpg', function(e) {
+            $(document).on('click', '.js-dl-jpg', function(e) {
                 var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'image/jpeg'});
             });
-            $(document).on('click', '.f-dl-pdf', function(e) {
+            $(document).on('click', '.js-dl-pdf', function(e) {
                 var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'application/pdf'});
             });
-            $(document).on('click', '.f-dl-svg', function(e) {
+            $(document).on('click', '.js-dl-svg', function(e) {
                 var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'image/svg+xml'});
             });
-            $(document).on('click', '.f-dl-csv', function(e) {
+            $(document).on('click', '.js-dl-csv', function(e) {
                 var chart = $('[data-trend]').highcharts(),
                     ex = chart.series[0].xAxis.getExtremes(),
                     trendId = $(this).closest('li').data('trendId');

@@ -16,10 +16,10 @@ yukon.StatusPointMonitor = (function () {
          */
         reindex: function(row, index) {
             row.data('row', index);
-            row.find('.f-row-prev-state').attr('name', 'processors[' + index + '].prevState');
-            row.find('.f-row-next-state').attr('name', 'processors[' + index + '].nextState');
-            row.find('.f-row-action-type').attr('name', 'processors[' + index + '].actionType');
-            row.find('.f-remove').removeAttr('id');
+            row.find('.js-row-prev-state').attr('name', 'processors[' + index + '].prevState');
+            row.find('.js-row-next-state').attr('name', 'processors[' + index + '].nextState');
+            row.find('.js-row-action-type').attr('name', 'processors[' + index + '].actionType');
+            row.find('.js-remove').removeAttr('id');
         },
         
         /** 
@@ -46,18 +46,18 @@ $(function() {
     
     
     /** ADD RULE */
-    $('.f-add').click(function(event) {
+    $('.js-add').click(function(event) {
         
-        var row = $('.f-template-row').clone();
+        var row = $('.js-template-row').clone();
         
-        row.removeClass('f-template-row');
+        row.removeClass('js-template-row');
         row.appendTo('#processors-table tbody');
         
         yukon.StatusPointMonitor.reindexAll();
     });
     
     /** REMOVE RULE */
-    $(document).on('click','.f-remove', function(event) {
+    $(document).on('click','.js-remove', function(event) {
         $(this).closest('tr').remove();
         yukon.StatusPointMonitor.reindexAll();
     });

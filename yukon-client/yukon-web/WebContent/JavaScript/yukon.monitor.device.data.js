@@ -16,37 +16,37 @@ yukon.DeviceDataMonitor = (function () {
 
         _deviceViolationEnum_point = "POINT",
 
-        _monitor_update_btn = ".f-update_monitor",
+        _monitor_update_btn = ".js-update_monitor",
         _monitor_btns_to_disable = ".page-action-area button, .ui-dialog-buttonset button",
-        _monitor_delete_form = ".f-delete_form",
+        _monitor_delete_form = ".js-delete_form",
         _undo_row_links = ".undoRemoveBtn, .removeBtn",
-        _supported_count_details = ".f-details",
-        _device_group_count = ".f-device_group_count",
-        _supported_count = ".f-supported_counts",
-        _supported_count_details_list = ".f-missing_list",
-        _monitor_toggle_form = ".f-toggle_enabled_form",
-        _monitor_toggle_btn = ".f-toggle_enabled",
-        _processors_table_selector = ".f-processors_table",
-        _processors_table_body = ".f-processors_table tbody",
-        _processors_table_new_row_model = ".f-processors_table .f-new_row_model",
+        _supported_count_details = ".js-details",
+        _device_group_count = ".js-device_group_count",
+        _supported_count = ".js-supported_counts",
+        _supported_count_details_list = ".js-missing_list",
+        _monitor_toggle_form = ".js-toggle_enabled_form",
+        _monitor_toggle_btn = ".js-toggle_enabled",
+        _processors_table_selector = ".js-processors_table",
+        _processors_table_body = ".js-processors_table tbody",
+        _processors_table_new_row_model = ".js-processors_table .js-new_row_model",
         _monitor_form = "#monitor",
-        _attribute_selector = ".f-attribute",
+        _attribute_selector = ".js-attribute",
         _device_group_selector = "#groupName",
-        _state_group_selector = ".f-state_group",
-        _processor_add_btn_selector = ".f-add_processor",
-        _violations_loading_selector = ".f-violations_loading",
-        _violations_links_selector = ".f-violation_report_links",
-        _new_row_model_class = "f-new_row_model",
-        _supported_details_trigger_class = "f-details_trigger",
+        _state_group_selector = ".js-state_group",
+        _processor_add_btn_selector = ".js-add_processor",
+        _violations_loading_selector = ".js-violations_loading",
+        _violations_links_selector = ".js-violation_report_links",
+        _new_row_model_class = "js-new_row_model",
+        _supported_details_trigger_class = "js-details_trigger",
         _processor_class = "processor",
         _processor_selector = ".processor",
         _add_point_selector = ".add",
         _refresh_violations_selector = "#refreshViolationsAfterAddingPoint",
 
-        _missing_field_selector = ".f-showProblem",
-        _missing_field_help_selector = ".f-showViolationHelp",
+        _missing_field_selector = ".js-showProblem",
+        _missing_field_help_selector = ".js-showViolationHelp",
 
-        _btn_create_update = ".page-action-area button.f-update_monitor",
+        _btn_create_update = ".page-action-area button.js-update_monitor",
 
         // "are you sure" update dialog
         _update_dialog_ids = "#update_loading_dialog, #update_missing_dialog",
@@ -117,7 +117,7 @@ yukon.DeviceDataMonitor = (function () {
             _hide_counts_and_show_loading();
 
             if (typeof params === 'undefined' || typeof params.initial_load === 'undefined' || !params.initial_load) {
-                $('.f-supported_devices_count').closest('td').flashColor({
+                $('.js-supported_devices_count').closest('td').flashColor({
                     color    : "#DAE2FF",
                     duration : 3000
                 });
@@ -147,7 +147,7 @@ yukon.DeviceDataMonitor = (function () {
                 url: url,
                 data: data
             }).done(function (data, textStatus, jqXHR) {
-                    _get_supported_counts_success(data, '.f-supported_devices_count');
+                    _get_supported_counts_success(data, '.js-supported_devices_count');
                     if(doValidate)
                     	_validate_processors();
             });
@@ -172,11 +172,11 @@ yukon.DeviceDataMonitor = (function () {
             $(counts_selector + ' '
                     + _supported_count_details + ' '
                     + _supported_count_details_list).empty();
-            $('.f-loading').hide();
+            $('.js-loading').hide();
 
             var helpDivId = 'totalSupportedHelpId';
             $(countSel).html("<div>"+ data.totalSupportedCountMessage 
-                    +"<a href='javascript:void(0);' class='f-showViolationHelp violation_help_link' target-id='"+ helpDivId +"' target-title='"+ data.totalSupportedCountHelpTitle +"'><i class='icon icon-help'>&nbsp;</i></a>"
+                    +"<a href='javascript:void(0);' class='js-showViolationHelp violation_help_link' target-id='"+ helpDivId +"' target-title='"+ data.totalSupportedCountHelpTitle +"'><i class='icon icon-help'>&nbsp;</i></a>"
                     +"<div class='dn' id='"+ helpDivId +"'>"+ data.totalSupportedCountHelp +"</div></div>" );
 
             if (data.totalMissingCount === 0) {
@@ -221,16 +221,16 @@ yukon.DeviceDataMonitor = (function () {
                 if(missingPointViolation.useLimitedQuery && _str_equal(""+ missingPointViolation.useLimitedQuery, "true")) {
                     countText = '';
                     var pt_help_title = $("#pointUnknownNumberHelp").attr('target-title');
-                    postHref = '<a class="f-showTooManyDevicesForPointHelp" href="javascript:void(0);"'
+                    postHref = '<a class="js-showTooManyDevicesForPointHelp" href="javascript:void(0);"'
                         + ' target-id="pointUnknownNumberHelp" target-title="'+ pt_help_title +'">'
                         + '<i class="icon icon-warning">&nbsp;</i></span>';
                 }
-                output += "<td><a class='fl error f-showProblem' href='javascript:void(0);' data-url='" 
+                output += "<td><a class='fl error js-showProblem' href='javascript:void(0);' data-url='" 
                     + the_list_url + "' target-id='"+ popupListId +"' target-title='"+ missingPointViolation.listTitle 
                     + "'><i class='icon icon-magnifier'></i>" 
-                    + countText + "</a><span class='fl f-loading dn'><i class='icon icon-spinner'>"
+                    + countText + "</a><span class='fl js-loading dn'><i class='icon icon-spinner'>"
                     + "</i><span class='b-label'>"+ countText +"</span></span>"
-                    + postHref +"<div class='f-problems_container problem_device_list dn' id='"+ popupListId
+                    + postHref +"<div class='js-problems_container problem_device_list dn' id='"+ popupListId
                     + "'/></td>";
                 output += "<td>"+ missingPointViolation.missingText +"</td><td>"+ missingPointViolation.fieldDisplayName
                 +"</td>\n";
@@ -247,7 +247,7 @@ yukon.DeviceDataMonitor = (function () {
                     output += "<td>&nbsp;</td>\n";
                 }
                 anyTrs = $(newTable).find('tr');
-                someHtml = output +"<td><a href='javascript:void(0);' class='f-showViolationHelp violation_help_link'"
+                someHtml = output +"<td><a href='javascript:void(0);' class='js-showViolationHelp violation_help_link'"
                 + " target-id='" + popupHelpId +"' target-title='"+ missingPointViolation.helpTitle +"'>"
                 + "<i class='icon icon-help'>&nbsp;</i></a><div class='dn' id='"+ popupHelpId +"'>"
                 + missingPointViolation.helpText +"</div></td></td></tr>";
@@ -301,14 +301,14 @@ yukon.DeviceDataMonitor = (function () {
         },
 
         _hide_counts_and_show_loading = function () {
-            $('.f-supported_devices_count ' + _supported_count_details).hide();
-            $('.f-supported_devices_count ' + _supported_count).hide();
-            $('.f-supported_devices_count .f-loading').show();
+            $('.js-supported_devices_count ' + _supported_count_details).hide();
+            $('.js-supported_devices_count ' + _supported_count).hide();
+            $('.js-supported_devices_count .js-loading').show();
         },
         
         _hide_loading_and_show_counts = function () {
-            $('.f-supported_devices_count .f-loading').hide();
-            $('.f-supported_devices_count ' + _supported_count).show();
+            $('.js-supported_devices_count .js-loading').hide();
+            $('.js-supported_devices_count ' + _supported_count).show();
         },
         
         _monitor_update_or_create = function () {
@@ -348,11 +348,11 @@ yukon.DeviceDataMonitor = (function () {
             new_row.addClass(_processor_class);
 
             var last_index;
-            if ($('.f-processors_table tbody tr').length === 2) {
+            if ($('.js-processors_table tbody tr').length === 2) {
                 last_index = 0;
                 $('.noItemsMessage').remove();
             } else {
-                last_index  = 1+ _get_proc_row_id_from_elem_name($('.f-processors_table tbody tr select:last'));
+                last_index  = 1+ _get_proc_row_id_from_elem_name($('.js-processors_table tbody tr select:last'));
             }
 
             new_row.find('[data-name]').each(function () {
@@ -402,11 +402,11 @@ yukon.DeviceDataMonitor = (function () {
                 url: _url_states,
                 data: {'stateGroupId': state_group_id}
             }).done(function (data, textStatus, jqXHR) {
-                var DOM_states = row.find('.f-states');	// Div or control?
+                var DOM_states = row.find('.js-states');	// Div or control?
                 var ctrl_name = DOM_states.attr('name') != undefined ? DOM_states.attr('name') : DOM_states.find(':input').attr('name'); 
                 if (data.states.length > 1) {
-                    DOM_states.replaceWith('<select class="f-states" name="'+ ctrl_name +'"></select>');
-                    var state_select = row.find('.f-states');
+                    DOM_states.replaceWith('<select class="js-states" name="'+ ctrl_name +'"></select>');
+                    var state_select = row.find('.js-states');
                     for (var ii=0; ii < data.states.length; ii++) {
                         state_select.append('<option value="'+state_group_id+':'+data.states[ii].id+'">'+data.states[ii].text+'</option>');
                     }
@@ -414,7 +414,7 @@ yukon.DeviceDataMonitor = (function () {
                     if (data.states.length == 0) {
                         _blankout_states(row);
                     } else if (data.states.length == 1) {
-                        DOM_states.replaceWith('<div class="f-states"><input type="hidden" name="'+ ctrl_name +'" value="'+ state_group_id+':'+data.states[0].id+'">'+ data.states[0].text +'</div>');
+                        DOM_states.replaceWith('<div class="js-states"><input type="hidden" name="'+ ctrl_name +'" value="'+ state_group_id+':'+data.states[0].id+'">'+ data.states[0].text +'</div>');
                     }
                 }
             }).always( function (data, textStatus, jqXHR) {
@@ -423,11 +423,11 @@ yukon.DeviceDataMonitor = (function () {
         }, // ENDS _state_group_changed_worker
 
         _blankout_states = function ( containingRow ) {
-            var select_state    = containingRow.find('select.f-states');
-            var input_state     = containingRow.find('.f-states input');
+            var select_state    = containingRow.find('select.js-states');
+            var input_state     = containingRow.find('.js-states input');
             var ctrl_name       = select_state.length > 0 ? select_state.attr("name") : input_state.attr("name");
-            var str             = '<div class="f-states"><input type="hidden" name="'+ ctrl_name +'" value="'+ _DEFAULT_NO_STATE_VALUE +'">'+ $('#str_na').text() +'</div>';
-            containingRow.find('.f-states').replaceWith(str);
+            var str             = '<div class="js-states"><input type="hidden" name="'+ ctrl_name +'" value="'+ _DEFAULT_NO_STATE_VALUE +'">'+ $('#str_na').text() +'</div>';
+            containingRow.find('.js-states').replaceWith(str);
         },
 
         _attribute_changed = function (event) {
@@ -443,17 +443,17 @@ yukon.DeviceDataMonitor = (function () {
          */
         _update_state_groups_worker = function (event) {
             var row         = $(event.target).closest('tr');
-            var attr_val    = row.find('select.f-attribute').find(":selected").val();
-            var DOM_stategroups= row.find('.f-state_group');
-            var select_sg   = row.find('select.f-state_group');
-            var input_sg    = row.find('.f-state_group input');
+            var attr_val    = row.find('select.js-attribute').find(":selected").val();
+            var DOM_stategroups= row.find('.js-state_group');
+            var select_sg   = row.find('select.js-state_group');
+            var input_sg    = row.find('.js-state_group input');
             var ctrl_name   = select_sg.length > 0 ? select_sg.attr("name") : input_sg.attr("name");
             var foundOpt;
             var selectEl;
             var selectParent;
             var savedSelect;
             DOM_stategroups.hide();
-            row.find('.f-states').hide();
+            row.find('.js-states').hide();
             var DOM_feedback = $("#canonicalCalculatingSpan").clone();
             DOM_feedback.removeAttr('id');
             $(DOM_stategroups.closest('td')).append(DOM_feedback);
@@ -462,7 +462,7 @@ yukon.DeviceDataMonitor = (function () {
                 duration : 3000
             });
 
-            var row_id	= _get_proc_row_id_from_elem_name(row.find('select.f-attribute'));
+            var row_id	= _get_proc_row_id_from_elem_name(row.find('select.js-attribute'));
             if (_supported_counts_xhr && _supported_counts_xhr[row_id] && _supported_counts_xhr[row_id] !== 'undefined') {
                 _supported_counts_xhr[row_id].abort();
             }
@@ -472,20 +472,20 @@ yukon.DeviceDataMonitor = (function () {
             }).done(function (data, textStatus, jqXHR) {
                 DOM_feedback.remove();
                 if (data.stateGroups.length > 1) {
-                    DOM_stategroups.replaceWith('<select class="f-state_group" name="'+ ctrl_name +'"></select>');
-                    DOM_stategroups = row.find('select.f-state_group');
+                    DOM_stategroups.replaceWith('<select class="js-state_group" name="'+ ctrl_name +'"></select>');
+                    DOM_stategroups = row.find('select.js-state_group');
                     for (var ii=0; ii < data.stateGroups.length; ii++) {
                         DOM_stategroups.append('<option value="'+data.stateGroups[ii].id+'">'+data.stateGroups[ii].name+'</option>');
                     }
                 } else {
-                    var str = '<div class="f-state_group"><input type="hidden" name="'+ ctrl_name +'"';
+                    var str = '<div class="js-state_group"><input type="hidden" name="'+ ctrl_name +'"';
                     if (data.stateGroups.length == 0) {
                         DOM_stategroups.replaceWith(str +' value="">'+ $('#str_na').text() +'</div>');
                     } else if (data.stateGroups.length == 1) {
                         var fullString = str +' value="'+ data.stateGroups[0].id +'">'+ data.stateGroups[0].name +'</div>';
                         DOM_stategroups.replaceWith(fullString);
                     }
-                	DOM_stategroups = row.find('.f-state_group input');
+                	DOM_stategroups = row.find('.js-state_group input');
                 }
                 DOM_stategroups.trigger('change');
                 if (data.stateGroups.length == 0)
@@ -494,14 +494,14 @@ yukon.DeviceDataMonitor = (function () {
             
             var attributeIsUNSELECTED = attr_val == '-1';
             if( ! attributeIsUNSELECTED ) {
-                foundOpt = row.find('.f-attribute option[value="-1"]');
+                foundOpt = row.find('.js-attribute option[value="-1"]');
                 if (0 !== foundOpt.length) {
                     foundOpt.remove();
                     // there is a bug in IE9 that causes the option visible to the user to be one
                     // off from the option that is actually selected after a previous option has
                     // been removed. MS and SO describe a similar bug that is fixed by removing
                     // and adding the options to and from the DOM. The following seems to work.
-                    selectEl = row.find('select.f-attribute');
+                    selectEl = row.find('select.js-attribute');
                     selectParent = selectEl.parent();
                     savedSelect = selectEl.detach();
                     savedSelect.appendTo(selectParent);
@@ -510,8 +510,8 @@ yukon.DeviceDataMonitor = (function () {
         }, // ENDS _update_state_groups_worker
 
         _get_state_group_value = function (row) {
-            var state_group_select  = row.find('select.f-state_group');
-            var state_group_input   = row.find('.f-state_group input:hidden');
+            var state_group_select  = row.find('select.js-state_group');
+            var state_group_input   = row.find('.js-state_group input:hidden');
             var state_group_id      = state_group_select.length > 0 ? state_group_select.val() : state_group_input.val();
             return state_group_id;
         },
@@ -539,7 +539,7 @@ yukon.DeviceDataMonitor = (function () {
             $(_monitor_form).on("change", _device_group_selector, _update_state_groups);
             $(_monitor_form).on("click", _missing_field_selector, _display_violation_device_list);
             $(document).on("click", _missing_field_help_selector, _display_local_help);
-            $(document).on("click", '.f-showTooManyDevicesForPointHelp', _display_local_help);
+            $(document).on("click", '.js-showTooManyDevicesForPointHelp', _display_local_help);
             $(_monitor_form).on("click", _add_point_selector, _display_violation_refresh);
             $(_monitor_form).on("click", _refresh_violations_selector, _do_violation_refresh);
 
@@ -560,8 +560,8 @@ yukon.DeviceDataMonitor = (function () {
             }
 
             // add our help icons next to the two column titles (Settings and Processors)
-            $('.f-settings_section .title-bar').append('<i class="icon icon-help f-open_settings_help cp"></i>');
-            $('.f-processors_section .title-bar').append('<i class="icon icon-help f-open_processors_help cp"></i>');
+            $('.js-settings_section .title-bar').append('<i class="icon icon-help js-open_settings_help cp"></i>');
+            $('.js-processors_section .title-bar').append('<i class="icon icon-help js-open_processors_help cp"></i>');
 
             _initialized = true;
         },
@@ -584,12 +584,12 @@ yukon.DeviceDataMonitor = (function () {
                 $(_device_group_count).prev().hide();
                 $(_device_group_count).show();
                 if( data.count > 0 )
-                    $('#monitor .f-add_processor').removeAttr("disabled");
+                    $('#monitor .js-add_processor').removeAttr("disabled");
                 else
-                    $('#monitor .f-add_processor').attr("disabled", "disabled");
+                    $('#monitor .js-add_processor').attr("disabled", "disabled");
             });
 
-            var procs = $('tr.processor .f-attribute');
+            var procs = $('tr.processor .js-attribute');
             if(procs.length == 0)                       // if no processors:
                 _get_supported_counts();
             else {                                      // else: refresh ALL state groups

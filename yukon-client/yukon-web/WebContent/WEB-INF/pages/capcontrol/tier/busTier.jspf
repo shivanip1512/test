@@ -91,8 +91,8 @@
                         <c:when test="${viewableSubBus.subBus.controlMethod.busControlled}">
                             <c:set var="hasTooltip" value=""/>
                             <c:if test="${viewableSubBus.showTargetTooltip}">
-                                <c:set var="hasTooltip" value="f-has-tooltip"/>
-                                <div class="f-tooltip dn">
+                                <c:set var="hasTooltip" value="js-has-tooltip"/>
+                                <div class="js-tooltip dn">
                                     <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_MESSAGE"/>
                                 </div>
                             </c:if>
@@ -123,8 +123,8 @@
                 <td>
                     <c:set var="hasTooltip" value=""/>
                     <c:if test="${viewableSubBus.subBus.usePhaseData}">
-                        <c:set var="hasTooltip" value="f-has-tooltip"/>
-                        <div class="f-tooltip dn" id="subVarLoadPopup_${subbusId}" > 
+                        <c:set var="hasTooltip" value="js-has-tooltip"/>
+                        <div class="js-tooltip dn" id="subVarLoadPopup_${subbusId}" > 
                             <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE"/>
                         </div>
                     </c:if>
@@ -187,7 +187,7 @@
 <c:if test="${fn:length(subBusList) > 1}">
     <tags:boxContainerFooter>
         <cti:icon icon="icon-filter" classes="fn vatt"/>
-        <select id='subBusFilter' class="f-bus-filter">
+        <select id='subBusFilter' class="js-bus-filter">
             <option value="0"><cti:msg2 key=".allBuses"/></option>
             <c:forEach var="sub" items="${subBusList}" >
                <option value="${sub.subBus.ccId}"><spring:escapeBody htmlEscape="true">${sub.subBus.ccName}</spring:escapeBody></option>

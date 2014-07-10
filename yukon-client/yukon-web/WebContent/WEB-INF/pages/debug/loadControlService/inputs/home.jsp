@@ -48,7 +48,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -64,7 +64,7 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".run" >
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -102,7 +102,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -143,7 +143,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -175,7 +175,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -207,7 +207,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -226,7 +226,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -267,7 +267,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -306,7 +306,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -341,7 +341,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -376,7 +376,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -405,7 +405,7 @@
                         </tags:nameValue2>                        
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="js-blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>

@@ -48,7 +48,7 @@
                                         <cm:dropdownOption key="components.button.delete.label"
                                             data-job-id="${job.id}"
                                             id="deleteScheduleItem_${job.id}"
-                                            classes="f-delete-schedule-item"
+                                            classes="js-delete-schedule-item"
                                             icon="icon-cross"/>
                                     </cm:dropdown>
                                 </td>

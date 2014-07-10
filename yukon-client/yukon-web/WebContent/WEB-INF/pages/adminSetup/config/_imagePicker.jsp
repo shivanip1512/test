@@ -32,9 +32,9 @@
                             <div><strong><em><i:inline key=".currentlySelected"/></em></strong></div>
                         </c:if>
                         <tags:nameValueContainer2 naturalWidth="false">
-                            <tags:nameValue2 nameKey=".name" valueClass="f-name-value wbba">${fn:escapeXml(pickerImage.image.imageName)}</tags:nameValue2>
-                            <tags:nameValue2 nameKey=".category" valueClass="f-category-value">${fn:escapeXml(pickerImage.image.imageCategory)}</tags:nameValue2>
-                            <tags:nameValue2 nameKey=".size" valueClass="f-size-value">
+                            <tags:nameValue2 nameKey=".name" valueClass="js-name-value wbba">${fn:escapeXml(pickerImage.image.imageName)}</tags:nameValue2>
+                            <tags:nameValue2 nameKey=".category" valueClass="js-category-value">${fn:escapeXml(pickerImage.image.imageCategory)}</tags:nameValue2>
+                            <tags:nameValue2 nameKey=".size" valueClass="js-size-value">
                                 <i:inline key="yukon.common.prefixedByteValue.kibi" arguments="${fn:length(pickerImage.image.imageValue) * .001}"/>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
@@ -49,10 +49,10 @@
                 <c:if test="${pickerImage.deletable and pickerImage.image.imageID != selected}">
                     <div class="page-action-area">
                         <cti:button icon="icon-cross" nameKey="delete" classes="show-on-hover delete-image"/>
-                        <div class="dn dib fr f-delete-confirm">
-                            <span class="fl f-confirm-message"><i:inline key=".delete"/></span>
+                        <div class="dn dib fr js-delete-confirm">
+                            <span class="fl js-confirm-message"><i:inline key=".delete"/></span>
                             <cti:button nameKey="cancel" classes="cancel"/>
-                            <cti:button nameKey="ok" classes="action primary f-delete-ok"/>
+                            <cti:button nameKey="ok" classes="action primary js-delete-ok"/>
                         </div>
                     </div>
                 </c:if>

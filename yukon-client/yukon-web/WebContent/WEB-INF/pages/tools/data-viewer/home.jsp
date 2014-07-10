@@ -75,10 +75,10 @@
     <div id="page-buttons" class="dn">
         <tags:dynamicChoose updaterString="TDC/ALARM" suffix="${display.displayId}">
             <tags:dynamicChooseOption optionId="MULT_ALARMS">
-                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="f-ack-all" />
+                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="js-ack-all" />
             </tags:dynamicChooseOption>
             <tags:dynamicChooseOption optionId="NONE">
-                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="f-ack-all dn" />
+                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="js-ack-all dn" />
             </tags:dynamicChooseOption>
         </tags:dynamicChoose>
    

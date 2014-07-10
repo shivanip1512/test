@@ -73,7 +73,7 @@
                     <form:input id="${id}" 
                         path="${path}"
                         value="${dateValue}"
-                        cssClass="f-datePicker f-datePickerUI datePicker ${pageScope.cssClass}"
+                        cssClass="js-datePicker js-datePickerUI datePicker ${pageScope.cssClass}"
                         disabled="${pageScope.disabled}"
                         data-date-time-format="${jsDateTimeFormat}"
                         data-max-date="${maxFormattedDate}"
@@ -97,7 +97,7 @@
                 <input id="${id}"
                     <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                     value="${dateValue}"
-                    class="f-datePicker f-datePickerUI datePicker ${cssClass}"
+                    class="js-datePicker js-datePickerUI datePicker ${cssClass}"
                     <c:if test="${disabled}">disabled="disabled"</c:if>
                     data-max-date="${maxFormattedDate}"
                     data-min-date="${minFormattedDate}"

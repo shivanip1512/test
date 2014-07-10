@@ -12,29 +12,29 @@ yukon.dr.ecobee = (function () {
     
     /** 
      * Setup a slider.
-     * @param {String} containingDivSelector. div containing the .f-time-slider and .f-time-label
+     * @param {String} containingDivSelector. div containing the .js-time-slider and .js-time-label
      * @param {String} inputSelector. - the actual hidden input that holds the current value of this slider
      */
     _setupSlider = function (containingDivSelector, inputSelector) {
         
         var value = $(inputSelector).val();
         
-        $(containingDivSelector +' .f-time-slider').slider({
+        $(containingDivSelector +' .js-time-slider').slider({
             max: 24 * 60 - 15,
             min: 0,
             value: value,
             step: 15,
             slide: function (ev, ui) {
-                $(containingDivSelector + ' .f-time-label').text(_timeFormatter.formatTime(ui.value, 0));
+                $(containingDivSelector + ' .js-time-label').text(_timeFormatter.formatTime(ui.value, 0));
                 $(inputSelector).val(ui.value);
             },
             change: function (ev, ui) {
-                $(containingDivSelector + ' .f-time-label').text(_timeFormatter.formatTime(ui.value, 0));
+                $(containingDivSelector + ' .js-time-label').text(_timeFormatter.formatTime(ui.value, 0));
                 $(inputSelector).val(ui.value);
             }
         });
         
-        $(containingDivSelector + ' .f-time-label').text(_timeFormatter.formatTime(value, 0));
+        $(containingDivSelector + ' .js-time-label').text(_timeFormatter.formatTime(value, 0));
     },
     mod = null;
 

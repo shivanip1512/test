@@ -18,7 +18,7 @@
         <c:set var="editKey" value="info"/>
     </c:if>
 
-    <div class="dn f-page-additional-actions">
+    <div class="dn js-page-additional-actions">
         <li class="divider" />
         <cti:url var="editUrl" value="/editor/cbcBase.jsf">
             <cti:param name="type" value="2" />

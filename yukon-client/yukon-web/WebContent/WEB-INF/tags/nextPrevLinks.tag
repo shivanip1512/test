@@ -7,13 +7,13 @@
 
 <span class="paging-area clearfix" data-current-page="${currentPage}">
     <cti:url var="previousUrl" value="${previousUrl}"/>
-    <a href="${previousUrl}" class="previous-page f-enabled-action">
+    <a href="${previousUrl}" class="previous-page js-enabled-action">
         <cti:icon icon="icon-resultset-previous-gray"/>
         <span class="fl"><cti:msg2 key="yukon.common.paging.previous"/></span>
     </a>
     <span class="page-num-text"></span>
     <cti:url var="nextUrl" value="${nextUrl}"/>
-    <a href="${nextUrl}" class="next-page f-enabled-action">
+    <a href="${nextUrl}" class="next-page js-enabled-action">
         <span class="fl"><cti:msg2 key="yukon.common.paging.next"/></span>
         <cti:icon icon="icon-resultset-next-gray"/>
     </a>

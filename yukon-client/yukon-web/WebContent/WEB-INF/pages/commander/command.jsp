@@ -98,7 +98,7 @@
                     <c:if test="${not empty availableCommands}">
                         <tags:nameValue2 nameKey=".availableCommands">
                             <tags:commanderPrompter/>
-                            <select name="commonCommand" class="f-loadCommanderCommand" data-cmdfield="command" style="max-width: 300px;">
+                            <select name="commonCommand" class="js-loadCommanderCommand" data-cmdfield="command" style="max-width: 300px;">
                                 <option value=""><cti:msg2 key=".availableCommands.select"/></option>
                                 <c:forEach var="command" items="${availableCommands}">
                                     <option value="${command.key}">${command.value}</option>

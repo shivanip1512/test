@@ -86,8 +86,8 @@
                         <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled}">
                             <c:set var="hasTooltip" value=""/>
                             <c:if test="${viewfeeder.showTargetTooltip}">
-                                <c:set var="hasTooltip" value="f-has-tooltip"/>
-                                <div class="f-tooltip dn">
+                                <c:set var="hasTooltip" value="js-has-tooltip"/>
+                                <div class="js-tooltip dn">
                                     <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
                                 </div>
                             </c:if>
@@ -117,10 +117,10 @@
                 <td class="wsnw">
                     <c:choose>
                         <c:when test="${viewfeeder.feeder.usePhaseData}">
-                            <div class="f-tooltip dn">
+                            <div class="js-tooltip dn">
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
                             </div>
-                            <span class="f-has-tooltip">
+                            <span class="js-has-tooltip">
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
                                     <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
@@ -187,7 +187,7 @@
 <c:if test="${fn:length(feederList) > 1}">
     <tags:boxContainerFooter>
         <cti:icon icon="icon-filter" classes="fn vatt"/>
-        <select id='feederFilter' class="f-feeder-filter">
+        <select id='feederFilter' class="js-feeder-filter">
             <option value="0"><cti:msg2 key=".allFeeders"/></option>
             <c:forEach var="feeder" items="${feederList}">
                 <option value="${feeder.feeder.ccId}"><spring:escapeBody htmlEscape="true">${feeder.feeder.ccName}</spring:escapeBody></option>

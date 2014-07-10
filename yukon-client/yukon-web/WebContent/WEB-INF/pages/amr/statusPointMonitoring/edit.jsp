@@ -13,9 +13,9 @@
     <cti:msg2 var="deviceGroupTitle" key=".popupInfo.deviceGroup.title"/>
     
     <table class="dn">
-        <tr class="f-template-row" data-row="0">
+        <tr class="js-template-row" data-row="0">
             <td>
-                <select name="processors[?].prevState" class="f-row-prev-state">
+                <select name="processors[?].prevState" class="js-row-prev-state">
                     <c:forEach items="${statusPointMonitor.stateGroup.statesList}" var="state">
                         <option value="${state.liteID}">${fn:escapeXml(state.stateText)}</option>
                     </c:forEach>
@@ -24,7 +24,7 @@
                 </select>
             </td>
             <td>
-                <select name="processors[?].nextState" class="f-row-next-state">
+                <select name="processors[?].nextState" class="js-row-next-state">
                     <c:forEach items="${statusPointMonitor.stateGroup.statesList}" var="state">
                         <option value="${state.liteID}">${fn:escapeXml(state.stateText)}</option>
                     </c:forEach>
@@ -33,12 +33,12 @@
                 </select>
             </td>
             <td>
-                <select name="processors[?].actionType" class="f-row-action-type">
+                <select name="processors[?].actionType" class="js-row-action-type">
                     <c:forEach items="${eventTypes}" var="eventType">
                         <option value="${eventType}">${eventType}</option>
                     </c:forEach>
                 </select>
-                <cti:button nameKey="delete" renderMode="buttonImage" icon="icon-cross" classes="f-remove fr"/>
+                <cti:button nameKey="delete" renderMode="buttonImage" icon="icon-cross" classes="js-remove fr"/>
             </td>
         </tr>
     </table>
@@ -130,7 +130,7 @@
                     <c:forEach var="row" items="${statusPointMonitor.processors}" varStatus="status">
                         <tr data-row="${status.index}">
                             <td>
-                                <form:select path="processors[${status.index}].prevState" cssClass="f-row-prev-state">
+                                <form:select path="processors[${status.index}].prevState" cssClass="js-row-prev-state">
                                     <c:forEach items="${statusPointMonitor.stateGroup.statesList}" var="state">
                                         <form:option value="${state.liteID}">${fn:escapeXml(state.stateText)}</form:option>
                                     </c:forEach>
@@ -139,7 +139,7 @@
                                 </form:select>
                             </td>
                             <td>
-                                <form:select path="processors[${status.index}].nextState" cssClass="f-row-next-state">
+                                <form:select path="processors[${status.index}].nextState" cssClass="js-row-next-state">
                                     <c:forEach items="${statusPointMonitor.stateGroup.statesList}" var="state">
                                         <form:option value="${state.liteID}">${fn:escapeXml(state.stateText)}</form:option>
                                     </c:forEach>
@@ -148,19 +148,19 @@
                                 </form:select>
                             </td>
                             <td>
-                                <form:select path="processors[${status.index}].actionType" cssClass="f-row-action-type">
+                                <form:select path="processors[${status.index}].actionType" cssClass="js-row-action-type">
                                     <c:forEach items="${eventTypes}" var="eventType">
                                         <form:option value="${eventType}">${eventType}</form:option>
                                     </c:forEach>
                                 </form:select>
-                                <cti:button nameKey="delete" renderMode="buttonImage" icon="icon-cross" classes="f-remove fr"/>
+                                <cti:button nameKey="delete" renderMode="buttonImage" icon="icon-cross" classes="js-remove fr"/>
                             </td>
                         </tr>
                     </c:forEach>
                 </tbody>
             </table>
             <div class="action-area">
-                <cti:button nameKey="addAction" icon="icon-add" classes="f-add"/>
+                <cti:button nameKey="addAction" icon="icon-add" classes="js-add"/>
             </div>
         </tags:sectionContainer2>
         

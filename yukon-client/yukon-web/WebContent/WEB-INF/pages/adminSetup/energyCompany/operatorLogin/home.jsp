@@ -13,7 +13,7 @@
             $('#operatorLoginAddForm').submit();
         }
     
-        $(document).on('click', '.f-remove', function() {                
+        $(document).on('click', '.js-remove', function() {                
              var userId = $(this).attr("userId");
              var ecId = $(this).attr("ecId");
              var data = {};
@@ -95,7 +95,7 @@
                                         <c:set var="disabled" value="false" />
                                     </c:otherwise>
                                 </c:choose>
-                                <cti:button id="remove_${login.userID}" name="remove" ecId="${ecId}" userId="${login.userID}" renderMode="buttonImage" icon="icon-cross" classes="fr f-remove" disabled="${disabled}" />
+                                <cti:button id="remove_${login.userID}" name="remove" ecId="${ecId}" userId="${login.userID}" renderMode="buttonImage" icon="icon-cross" classes="fr js-remove" disabled="${disabled}" />
                             </td>
                         </tr>
                     </c:forEach>

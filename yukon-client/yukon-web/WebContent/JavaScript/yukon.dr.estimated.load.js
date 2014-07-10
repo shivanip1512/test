@@ -15,9 +15,9 @@ yukon.dr.estimatedLoad = (function() {
                     row.attr("title", data.tooltip);
                     row.find('.icon-error').show();
                     row.find('.icon-spinner').hide();
-                    row.find('.f-connected-load').html(data.value);
-                    row.find('.f-diversified-load').html(data.value);
-                    row.find('.f-kw-savings').html(data.value);
+                    row.find('.js-connected-load').html(data.value);
+                    row.find('.js-diversified-load').html(data.value);
+                    row.find('.js-kw-savings').html(data.value);
                 } else if (status == 'calc') {
                     row.attr("title", data.tooltip);
                     row.find('.icon-error').hide();
@@ -26,9 +26,9 @@ yukon.dr.estimatedLoad = (function() {
                     row.removeAttr("title");
                     row.find('.icon-error').hide();
                     row.find('.icon-spinner').hide();
-                    row.find('.f-connected-load').html(data.connected);
-                    row.find('.f-diversified-load').html(data.diversified);
-                    row.find('.f-kw-savings').html(data.kwSavings);
+                    row.find('.js-connected-load').html(data.connected);
+                    row.find('.js-diversified-load').html(data.diversified);
+                    row.find('.js-kw-savings').html(data.kwSavings);
                 }
             },
     
@@ -37,9 +37,9 @@ yukon.dr.estimatedLoad = (function() {
                 var status = data.status;
                 var row = $('[data-pao=' + data.paoId +']');
                 
-                row.find('.f-connected-load').html(data.connected);
-                row.find('.f-diversified-load').html(data.diversified);
-                row.find('.f-kw-savings').html(data.kwSavings);
+                row.find('.js-connected-load').html(data.connected);
+                row.find('.js-diversified-load').html(data.diversified);
+                row.find('.js-kw-savings').html(data.kwSavings);
                 if (status == 'error') {
                     row.attr("title", data.tooltip);
                     row.find('.icon-error').show();

@@ -306,7 +306,7 @@ yukon.ami.billing = (function() {
             doc.on('submit', '#MForm', mod.do_generate_billing_file);
 
             doc.on('submit', '#scheduleForm', mod.do_schedule_billing_file_export);
-            doc.on('click', '#billing_generation_schedule .f-cancel', mod.reset_generation_tab);
+            doc.on('click', '#billing_generation_schedule .js-cancel', mod.reset_generation_tab);
             $('#billing_tab_container').tabs({
                 activate: mod.on_tab_change });
 

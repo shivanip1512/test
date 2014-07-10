@@ -12,10 +12,10 @@
     
 <script type="text/javascript">
 $(function() {
-    $(".f-edit-grp-name").click(function(event) {
+    $(".js-edit-grp-name").click(function(event) {
         $("#editGroupNamePopup").dialog({width: 500});
     });
-    $(".f-add-sub-grp").click(function(event) {
+    $(".js-add-sub-grp").click(function(event) {
         $("#addSubGroupPopup").dialog({width: 500});
     });
 });
@@ -149,7 +149,7 @@ function confirmRemoveAllDevices(confirmText) {
                                     <cti:msg2 var="editGroupNameText" key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameText" />
                                     <cti:msg2 var="newGroupNameText" key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameText" />
                                     <cti:msg2 var="changeNameButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText" />
-                                    <a title="Click to edit group name" href="javascript:void(0);" class="f-edit-grp-name">${editGroupNameText}</a>
+                                    <a title="Click to edit group name" href="javascript:void(0);" class="js-edit-grp-name">${editGroupNameText}</a>
                                     <div id="editGroupNamePopup" title="${editGroupNameText}" class="groupEditorPopup dn">
                                         <form id="editGroupNameForm" method="post" action="<cti:url value="/group/editor/updateGroupName"/>" >
                                             <cti:csrfToken/>    
@@ -241,7 +241,7 @@ function confirmRemoveAllDevices(confirmText) {
                                             <cti:msg2 var="subgroupComposedGroupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.subgroup.composedGroupTitle" />
                                             <cti:msg2 var="subgroupNameSaveText" key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameSaveText" />
                                             
-                                            <a title="${addSubgroupLinkTitle}" class="f-add-sub-grp" href="javascript:void(0);">${addSubgroupText}</a>
+                                            <a title="${addSubgroupLinkTitle}" class="js-add-sub-grp" href="javascript:void(0);">${addSubgroupText}</a>
                                             <div id="addSubGroupPopup" title="${addSubgroupText}" class="groupEditorPopup dn">
                                                 <form id="addSubGroupForm" method="post" action="<cti:url value="/group/editor/addChild"/>">
                                                     <cti:csrfToken/>

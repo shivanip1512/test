@@ -8,8 +8,8 @@
 
 <cti:msgScope paths="modules.amr.billing.schedule">
 
-<div class="error dn f-errors"></div>
-<div class="success dn f-success"></div>
+<div class="error dn js-errors"></div>
+<div class="success dn js-success"></div>
 
 	<form:form id="scheduleForm" commandName="exportData" action="/scheduledBilling/scheduleExport" cssClass="stacked">
         <cti:csrfToken/>
@@ -63,7 +63,7 @@
     			<c:set var="nameKey" value="save"/>
     		</c:if>
             <cti:button type="submit" nameKey="${nameKey}" classes="action primary"/>
-    		<cti:button classes="f-cancel" nameKey="cancelButton"/>
+    		<cti:button classes="js-cancel" nameKey="cancelButton"/>
         </div>
 	</form:form>
 </cti:msgScope>

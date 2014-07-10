@@ -54,5 +54,5 @@ $(document).on('click', '#recentEventsView', function (event) {
 </tags:sectionContainer2>
 
 <div class="action-area">
-    <cti:button nameKey="recentEvents.view" id="recentEventsView" classes="f-blocker"/>
+    <cti:button nameKey="recentEvents.view" id="recentEventsView" classes="js-blocker"/>
 </div>

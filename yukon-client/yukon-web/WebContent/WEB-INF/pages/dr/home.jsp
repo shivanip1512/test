@@ -104,11 +104,11 @@
                                 <tags:nameValue2 nameKey=".rfPerformance.configure.dailyTestCommand" valueClass="full-width" nameClass="wsnw">
                                     <div class="column-6-18 clearfix stacked">
                                         <div class="column one">
-                                            <span class="f-time-label fwb">&nbsp;</span>
+                                            <span class="js-time-label fwb">&nbsp;</span>
                                             <tags:hidden path="time" id="rf-performance-command-time"/>
                                         </div>
                                         <div class="column two nogutter">
-                                            <div class="f-time-slider" style="margin-top: 7px;"></div>
+                                            <div class="js-time-slider" style="margin-top: 7px;"></div>
                                         </div>
                                     </div>
                                 </tags:nameValue2>
@@ -119,18 +119,18 @@
                                         <cti:button nameKey="off" classes="no M0"/>
                                     </div>
                                 </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".rfPerformance.configure.dailyEmail" rowClass="f-email-schedule">
+                                <tags:nameValue2 nameKey=".rfPerformance.configure.dailyEmail" rowClass="js-email-schedule">
                                     <div class="column-6-18 clearfix stacked">
                                         <div class="column one">
-                                            <span class="f-email-time-label fwb">&nbsp;</span>
+                                            <span class="js-email-time-label fwb">&nbsp;</span>
                                             <tags:hidden path="emailTime" id="rf-performance-email-time"/>
                                         </div>
                                         <div class="column two nogutter">
-                                            <div class="f-email-time-slider" style="margin-top: 7px;"></div>
+                                            <div class="js-email-time-slider" style="margin-top: 7px;"></div>
                                         </div>
                                     </div>
                                 </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".rfPerformance.configure.notifGroups" rowClass="f-notif-group">
+                                <tags:nameValue2 nameKey=".rfPerformance.configure.notifGroups" rowClass="js-notif-group">
                                     <tags:hidden path="notifGroupIds" id="rf-performance-notif-group-ids"/>
                                     <tags:pickerDialog type="notificationGroupPicker" 
                                                        id="notificationGroupPicker"

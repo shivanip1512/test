@@ -25,7 +25,7 @@
     
     <c:otherwise>
         <tags:commanderPrompter/>
-        <select id="${uniqueId}" name="${selectName}" class="f-loadCommanderCommand" data-cmdfield="${fieldName}">
+        <select id="${uniqueId}" name="${selectName}" class="js-loadCommanderCommand" data-cmdfield="${fieldName}">
         
         	<c:if test="${pageScope.includeDummyOption}">
 				<cti:msg var="selectOneLabel" key="yukon.common.device.commander.selector.selectOne"/>

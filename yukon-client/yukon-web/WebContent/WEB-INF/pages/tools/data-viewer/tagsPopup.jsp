@@ -11,7 +11,7 @@
     <cti:flashScopeMessages/>
 
 
-    <form:form id="tagsForm" cssClass="f-preventSubmitViaEnterKey" commandName="backingBean">
+    <form:form id="tagsForm" cssClass="js-preventSubmitViaEnterKey" commandName="backingBean">
         <cti:csrfToken/> 
         <form:hidden path="deviceId" /> 
         <form:hidden path="pointId" /> 
@@ -47,20 +47,20 @@
                             </td>
                             <td><form:input path="tags[${row.index}].descriptionStr" maxlength="120" cssClass="fl" /></td>
                             <td><cti:formatDate value="${tags.tagTime}" type="BOTH" /></td>
-                            <td>${fn:escapeXml(tags.username)}&nbsp;<cti:button nameKey="tags.deleteTagButton" icon="icon-cross" rowIndex="${row.index}" renderMode="image" classes="fr show-on-hover f-tags-remove" /></td>
+                            <td>${fn:escapeXml(tags.username)}&nbsp;<cti:button nameKey="tags.deleteTagButton" icon="icon-cross" rowIndex="${row.index}" renderMode="image" classes="fr show-on-hover js-tags-remove" /></td>
                         </tr>
                     </c:forEach>
                 </tbody>
             </table>
         </div>
         <div class="action-area">
-            <cti:button id="newTag" nameKey="tags.newTagButton" icon="icon-add" classes="f-tags-add" var="tagsPopupTitle"/>
+            <cti:button id="newTag" nameKey="tags.newTagButton" icon="icon-add" classes="js-tags-add" var="tagsPopupTitle"/>
         </div>
         <div class="action-area">
             <form:checkbox path="deviceControlInhibited" />&nbsp;<i:inline key=".tags.cntrDisabledOnDevice"/>
         </div>
         <div class="action-area">
-            <cti:button id="save"  nameKey="save" classes="primary action f-tags-save"/>
+            <cti:button id="save"  nameKey="save" classes="primary action js-tags-save"/>
             <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');" />
         </div>
           </form:form>

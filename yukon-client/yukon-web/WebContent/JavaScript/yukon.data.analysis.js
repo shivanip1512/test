@@ -7,8 +7,8 @@ yukon.dataAnalysis = (function() {
             var data = $.parseJSON(msg.value),
                 status = data.status.trim(),
                 row = $('[data-analysis=' + data.analysisId + ']'),
-                viewButton = row.find('.f-results-button'),
-                statusDiv = row.find('.f-analysis-status');
+                viewButton = row.find('.js-results-button'),
+                statusDiv = row.find('.js-analysis-status');
             
             if (row.data('status') === status) {
                 //do nothing, status is unchanged

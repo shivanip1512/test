@@ -38,7 +38,7 @@
 <!-- Page Dropdown Actions -->
 <div id="page-actions" class="dn">
 
-    <cm:dropdownOption classes="f-cc-create" icon="icon-plus-green" key="yukon.web.components.button.create.label"/>
+    <cm:dropdownOption classes="js-cc-create" icon="icon-plus-green" key="yukon.web.components.button.create.label"/>
 
     <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">

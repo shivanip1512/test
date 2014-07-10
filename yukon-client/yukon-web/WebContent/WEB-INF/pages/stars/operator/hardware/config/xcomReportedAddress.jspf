@@ -7,8 +7,8 @@
             <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/GEO"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".substation" rowClass="middle">
-            <span class="dn f-non-readable-value"><i:inline key=".notReadable"/></span>
-            <span class="dn f-readable-value"><cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/SUB"/></span>
+            <span class="dn js-non-readable-value"><i:inline key=".notReadable"/></span>
+            <span class="dn js-readable-value"><cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/SUB"/></span>
             <cti:dataUpdaterCallback function="updateSub" initialize="true" value="LM_REPORTED_ADDRESS/${deviceId}/SUB"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".feeder" rowClass="middle">

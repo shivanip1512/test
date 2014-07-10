@@ -36,18 +36,18 @@
             <div class="fl">
                 <input type="text" name="liteContactNotifications[0].notification" maxlength="120"/>
             </div>
-            <span class="f-removeNotification"><i class="icon icon-cross"></i></span>
+            <span class="js-removeNotification"><i class="icon icon-cross"></i></span>
         </div>
     </div>
     
     <script>
     $(function(){
-        $(document).on('click', '.f-removeNotification', function(event){
+        $(document).on('click', '.js-removeNotification', function(event){
             $(this).closest(".notification").remove();
             updateIndicies();
         });
         
-        $(document).on('click', '.f-addNotification', function(event){
+        $(document).on('click', '.js-addNotification', function(event){
             $("#notifications").append($("#notification_template > div").clone());
             updateIndicies();
         });
@@ -93,7 +93,7 @@
                                     <div class="fl">
                                         <p>
                                             <form:input path="liteContactNotifications[${row.index}].notification" maxlength="120" cssClass="fl" cssErrorClass="error fl"/>
-                                            <cti:button classes="f-removeNotification" icon="icon-cross" renderMode="buttonImage"/>
+                                            <cti:button classes="js-removeNotification" icon="icon-cross" renderMode="buttonImage"/>
                                         </p>
                                         <p>
                                             <form:errors path="liteContactNotifications[${row.index}].notification" cssClass="error fl"/>
@@ -103,7 +103,7 @@
                             </c:forEach>
                         </div>
                         
-                        <cti:button nameKey="addNotification" classes="f-addNotification" icon="icon-add"/>
+                        <cti:button nameKey="addNotification" classes="js-addNotification" icon="icon-add"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>

@@ -7,7 +7,7 @@
     <form:form commandName="inventorySearch" action="search" method="get" >
         <tags:nameValueContainer2 id="inventorySearch" >
             <tags:nameValue2 nameKey=".serialNumber">
-                <form:input path="serialNumber" class="full-width f-focus"/>
+                <form:input path="serialNumber" class="full-width js-focus"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".meterNumber">
                 <form:input path="meterNumber" class="full-width"/>

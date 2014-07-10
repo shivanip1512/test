@@ -21,7 +21,7 @@
     }
 
     $(function() {
-        $('.f-showDisconnectInfo').click(function(event) {
+        $('.js-showDisconnectInfo').click(function(event) {
             var params = {'deviceId': ${device.deviceId},
                           'shortName': '${shortName}'};
             $('#disconnectInfo').load('/widget/disconnectMeterWidget/helpInfo', params, function() {
@@ -45,7 +45,7 @@
 
 <div class="action-area">
 
-    <a href="javascript:void(0);" class="f-showDisconnectInfo fl"><i:inline key=".infoLink"/></a>
+    <a href="javascript:void(0);" class="js-showDisconnectInfo fl"><i:inline key=".infoLink"/></a>
 
     <tags:widgetActionRefresh hide="${!readable}" method="read" nameKey="read" icon="icon-read"/>
     

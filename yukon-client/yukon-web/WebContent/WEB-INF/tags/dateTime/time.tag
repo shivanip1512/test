@@ -75,7 +75,7 @@
                     <form:input id="${id}" 
                         path="${path}"
                         value="${timeValue}"
-                        cssClass="f-timePicker f-timePickerUI timePicker ${cssClass}"
+                        cssClass="js-timePicker js-timePickerUI timePicker ${cssClass}"
                         disabled="${pageScope.disabled}"
                         data-date-time-format="${jsDateTimeFormat}"
                         data-max-date="${maxFormattedDate}"
@@ -103,7 +103,7 @@
                     <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${timeValue}"
-                        class="f-timePicker f-timePickerUI timePicker ${cssClass}"
+                        class="js-timePicker js-timePickerUI timePicker ${cssClass}"
                         <c:if test="${disabled}">disabled="true"</c:if>
                         data-max-date="${maxFormattedDate}"
                         data-min-date="${minFormattedDate}"

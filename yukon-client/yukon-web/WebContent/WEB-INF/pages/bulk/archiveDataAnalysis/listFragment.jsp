@@ -53,7 +53,7 @@
                     </td>
                     
                     <td>
-                        <div class="f-analysis-status">
+                        <div class="js-analysis-status">
                             <c:choose>
                                 <c:when test="${analysis.running}">
                                     <cti:url var="analysisProgressUrl" value="/bulk/archiveDataAnalysis/home/processing">
@@ -79,24 +79,24 @@
                         <cti:url var="viewUrl" value="/bulk/archiveDataAnalysis/results/view">
                             <cti:param name="analysisId" value="${analysis.analysisId}"/>
                         </cti:url>
-                        <div class="f-analysis-actions">
+                        <div class="js-analysis-actions">
                             <c:choose>
                                 <c:when test="${analysis.running}">
-                                    <cti:button classes="f-results-button" nameKey="viewButtonAnalyzing" renderMode="image" 
+                                    <cti:button classes="js-results-button" nameKey="viewButtonAnalyzing" renderMode="image" 
                                             href="${viewUrl}" disabled="true" icon="icon-application-view-columns"/>
                                 </c:when>
                                 <c:when test="${analysis.reading}">
-                                    <cti:button classes="f-results-button" nameKey="viewButton" renderMode="image" 
+                                    <cti:button classes="js-results-button" nameKey="viewButton" renderMode="image" 
                                             href="${viewUrl}" icon="icon-application-view-columns"/>
                                 </c:when>
                                 <c:when test="${analysis.done}">
                                     <c:choose>
                                         <c:when test="${analysis.deviceCount == 0}">
-                                            <cti:button classes="f-results-button" nameKey="viewButtonNoDevices" 
+                                            <cti:button classes="js-results-button" nameKey="viewButtonNoDevices" 
                                                     renderMode="image" disabled="true" icon="icon-application-view-columns"/>
                                         </c:when>
                                         <c:otherwise>
-                                            <cti:button classes="f-results-button" nameKey="viewButton" renderMode="image" 
+                                            <cti:button classes="js-results-button" nameKey="viewButton" renderMode="image" 
                                                     href="${viewUrl}" icon="icon-application-view-columns"/>
                                         </c:otherwise>
                                     </c:choose>

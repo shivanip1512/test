@@ -51,7 +51,7 @@ $(function () {
     }
     
     $("#overrideAllConstraints").click(overideAllChecked);
-    $(".f-singleOverrideChecked").click(singleOverrideChecked);
+    $(".js-singleOverrideChecked").click(singleOverrideChecked);
     updateAllOverridesChecked();
 });
 </script>
@@ -107,7 +107,7 @@ $(function () {
                                             <form:checkbox
                                                id="programStopInfoOverride${index}"
                                                path="programStopInfo[${status.index}].overrideConstraints"
-                                               cssClass="f-singleOverrideChecked" />
+                                               cssClass="js-singleOverrideChecked" />
                                         </c:if>
                                         <label for="programStopInfoOverride${index}">${fn:escapeXml(program.name)}</label>
                                     </td>

@@ -55,8 +55,8 @@
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:icon icon="icon-spinner" classes="f-spinner"/>
-                                <span class="f-connected-load">
+                                <cti:icon icon="icon-spinner" classes="js-spinner"/>
+                                <span class="js-connected-load">
                                     <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                 </span>
                             </div>
@@ -64,8 +64,8 @@
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:icon icon="icon-spinner" classes="f-spinner"/>
-                                <span class="f-diversified-load">
+                                <cti:icon icon="icon-spinner" classes="js-spinner"/>
+                                <span class="js-diversified-load">
                                     <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                 </span>
                             </div>
@@ -73,8 +73,8 @@
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:icon icon="icon-spinner" classes="f-spinner"/>
-                                <span class="f-kw-savings">
+                                <cti:icon icon="icon-spinner" classes="js-spinner"/>
+                                <span class="js-kw-savings">
                                     <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                 </span>
                             </div>
@@ -113,7 +113,7 @@
             <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
                 <tags:sectionContainer2 nameKey="assetAvailability">
                     <%-- Display the Asset Availability Info --%>
-                    <div class="f-asset-availability f-block-this">
+                    <div class="js-asset-availability js-block-this">
                         <i:inline key="yukon.common.loading"/>
                     </div>
                 </tags:sectionContainer2>

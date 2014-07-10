@@ -59,7 +59,7 @@
                 <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
                     <%-- Display the Asset Availability Info --%>
                     <tags:sectionContainer2 nameKey="assetAvailability">
-                        <div class="f-asset-availability f-block-this">
+                        <div class="js-asset-availability js-block-this">
                             <i:inline key="yukon.common.loading"/>
                         </div>
                     </tags:sectionContainer2>

@@ -27,7 +27,7 @@
                                 ${fn:escapeXml(loginBackingBean.username)}
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".newPassword">
-                                <tags:password path="password1" cssClass="password_editor_field new f-check_password" autocomplete="false" maxlength="64" />
+                                <tags:password path="password1" cssClass="password_editor_field new js-check_password" autocomplete="false" maxlength="64" />
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".confirmPassword">
                                 <tags:password path="password2" cssClass="password_editor_field confirm" autocomplete="false" maxlength="64" />

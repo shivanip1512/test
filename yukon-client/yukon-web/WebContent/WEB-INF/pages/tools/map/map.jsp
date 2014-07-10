@@ -127,7 +127,7 @@
             </div>
         </div>
     </div>
-    <div id="map" class="map clearfix f-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
+    <div id="map" class="map clearfix js-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
     <div class="buffered">
         <div id="mouse-position" class="fl detail"></div>
         <div id="scale-line" class="fl"></div>

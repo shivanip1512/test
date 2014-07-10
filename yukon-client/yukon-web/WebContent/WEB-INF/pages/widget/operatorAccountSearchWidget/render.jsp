@@ -23,7 +23,7 @@
             </tr>
         </table>
     	<div class="action-area">
-            <cti:button nameKey="search" type="submit" classes="f-blocker fr"/>
+            <cti:button nameKey="search" type="submit" classes="js-blocker fr"/>
     	</div>
     	
     </form>

@@ -148,7 +148,7 @@ $(function() {
 
         <div class="page-action-area">
             <cti:msg2 var="submitRequest" key=".submitRequest"/>
-            <cti:button classes="f-blocker" type="submit" label="${submitRequest}"/>
+            <cti:button classes="js-blocker" type="submit" label="${submitRequest}"/>
             <label>
                 <input id="formatResponse" type="checkbox" checked="checked">
                 <i:inline key=".formatResponse"/>

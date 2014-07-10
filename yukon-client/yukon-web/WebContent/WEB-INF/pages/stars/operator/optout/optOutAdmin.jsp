@@ -230,7 +230,7 @@
                                 </div>
                                 <br>
     
-                                <cti:button nameKey="cancelOptOuts.cancelAllOptOutsButton" type="submit" classes="f-blocker"/>
+                                <cti:button nameKey="cancelOptOuts.cancelAllOptOutsButton" type="submit" classes="js-blocker"/>
                             </form>    
                         </tags:boxContainer2>
                     </cti:checkRolesAndProperties>      

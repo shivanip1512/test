@@ -254,19 +254,19 @@ yukon.ui = (function () {
             
                 
             /** Add fancy tooltip support (tipsy)
-             *  To give an item a custom tooltip, give it a class of 'f-has-tooltip'
-             *  and precede it, in the markup, with an item of class f-tooltip that
+             *  To give an item a custom tooltip, give it a class of 'js-has-tooltip'
+             *  and precede it, in the markup, with an item of class js-tooltip that
              *  has the content in HTML. The code below searches backward in the
-             *  document for the element with class f-tooltip
+             *  document for the element with class js-tooltip
              * 
              *  tipsy initialization:
-             *    attaches tooltip handlers to all elements with a class of f-has-tooltip
+             *    attaches tooltip handlers to all elements with a class of js-has-tooltip
              *    or a title attribute
              */
             // some pages do not include the tipsy libary
             if ('undefined' !== typeof $.fn.tipsy) {
                 // use browser-native tooltips for all but the fancy HTML ones
-                $('.f-has-tooltip').each(function (index, element) {
+                $('.js-has-tooltip').each(function (index, element) {
                     $(element).tipsy({
                         html: true,
                         // some tooltips actually are around 175 px in height
@@ -275,10 +275,10 @@ yukon.ui = (function () {
                         title: function () {
                             var elem = $(this),
                             tip,
-                            toolTipped = elem.closest('.f-has-tooltip');
+                            toolTipped = elem.closest('.js-has-tooltip');
                             if ( 0 < toolTipped.length ) {
-                                tip = toolTipped.prevAll('.f-tooltip').first();
-                                if (0 < tip.length) { // if a .f-tooltip was found...
+                                tip = toolTipped.prevAll('.js-tooltip').first();
+                                if (0 < tip.length) { // if a .js-tooltip was found...
                                     // voodoo so inner div has full height of its container
                                     setTimeout(function () { $('.tipsy-inner').addClass('clearfix'); }, 100);
                                     return tip.html();
@@ -394,14 +394,14 @@ yukon.ui = (function () {
             $(document).on('click', '[data-href]', function (ev) { window.location = $(this).attr('data-href'); });
         
             /** Page blockers */
-            $(document).on('click', '.f-blocker', mod.block);
+            $(document).on('click', '.js-blocker', mod.block);
             $(document).on('resize', '#modal-glass', mod.blockPage);
         
             /** Clear page blocker */
-            $(document).on('click', '.f-clearBlocker', mod.unblockPage);
+            $(document).on('click', '.js-clearBlocker', mod.unblockPage);
     
             /** Disable a form element after clicked */
-            $(document).on('click', '.f-disable-after-click', function (ev) {
+            $(document).on('click', '.js-disable-after-click', function (ev) {
                 
                 var button = $(this), group, form;
                 
@@ -434,9 +434,9 @@ yukon.ui = (function () {
             });
     
             /** Prevent forms from submitting via enter key */
-            $(document).on('keydown', 'form.f-preventSubmitViaEnterKey', function (e) {
+            $(document).on('keydown', 'form.js-preventSubmitViaEnterKey', function (e) {
                 // allow override submission elements
-                if ($(e.target).hasClass('f-allowSubmitViaEnterKey')) {
+                if ($(e.target).hasClass('js-allowSubmitViaEnterKey')) {
                     return true;
                 }
                 if (e.keyCode == 13) {
@@ -444,8 +444,8 @@ yukon.ui = (function () {
                 }
             });
     
-            /** Close dialogs when clicking .f-close elements or the yukon.dialog.ok event fires. */
-            $(document).on('click', '.f-close', function (ev) {
+            /** Close dialogs when clicking .js-close elements or the yukon.dialog.ok event fires. */
+            $(document).on('click', '.js-close', function (ev) {
                 $(ev.target).closest('.ui-dialog-content').dialog('close');
             });
             $(document).on('yukon.dialog.ok', function (ev) {
@@ -453,15 +453,15 @@ yukon.ui = (function () {
             });
 
             /** Format phone numbers initially and on input blur */
-            $('input.f-format-phone').each(function (idx, elem) {
+            $('input.js-format-phone').each(function (idx, elem) {
                 mod.formatPhone(elem);
             });
-            $(document).on('blur', 'input.f-format-phone', function (event) {
+            $(document).on('blur', 'input.js-format-phone', function (event) {
                 mod.formatPhone(event.target);
             });
 
             /** Disable or enable all form controls */
-            $('input.f-toggle:checkbox').each(function (idx, elem) {
+            $('input.js-toggle:checkbox').each(function (idx, elem) {
                 $(elem).on('change', function (e) {
                     mod.toggleInputs(e.target);
                 });
@@ -472,7 +472,7 @@ yukon.ui = (function () {
             });
 
             /** Select all ? */
-            $("input.f-select-all").each(function (index, input) {
+            $("input.js-select-all").each(function (index, input) {
                 $(input).on('focus', function (elem) {
                     elem.target.select();
                 });
@@ -501,13 +501,13 @@ yukon.ui = (function () {
             }
         
             /** Add additional options to page 'Actions' button */
-            $('.f-page-additional-actions').each(function (index, elem) {
+            $('.js-page-additional-actions').each(function (index, elem) {
                 $('#b-page-actions .dropdown-menu').append(elem.innerHTML);
                 $(elem).remove();
             });
         
             /** Initialize any tabbed containers */
-            $('.tabbed-container.f-init').tabs().show();
+            $('.tabbed-container.js-init').tabs().show();
         
             /** 
              * Show a popup when a popup trigger (element with a [popup] attribute) is clicked.
@@ -584,7 +584,7 @@ yukon.ui = (function () {
                 popup.load(url, function () {
                     // if no title provided, try to find one hidden in the popup contents
                     if (!options.title) {
-                        var title = popup.find('.f-popup-title');
+                        var title = popup.find('.js-popup-title');
                         if (title[0]) options.title = title[0].value;
                     }
                     if (popup.is('[data-load-event]')) {
@@ -603,7 +603,7 @@ yukon.ui = (function () {
         AUTOFOCUS_TRIES: 0,
 
         autofocus: function () {
-            var focusElement = $('[autofocus], .f-focus:first')[0];
+            var focusElement = $('[autofocus], .js-focus:first')[0];
         
             if (focusElement) {
                 try { //Play nice with IE
@@ -624,18 +624,18 @@ yukon.ui = (function () {
             mod.autofocus();
         },
 
-        /** Applies the "f-focus" class to the first input/textarea element having a class of "error" */
+        /** Applies the "js-focus" class to the first input/textarea element having a class of "error" */
         setFocusFirstError: function () {
             var error_field = $('input.error, textarea.error').first();
             if (error_field.length === 1) {
-                $('.f-focus').removeClass('f-focus');
-                error_field.addClass('f-focus');
+                $('.js-focus').removeClass('js-focus');
+                error_field.addClass('js-focus');
             }
         },
 
         /** Block out the closest valid container to the event's target, or the page */
         block: function (event) {
-            var blockElement = $(event.target).closest('.f-block-this')[0];
+            var blockElement = $(event.target).closest('.js-block-this')[0];
            if (blockElement) {
                mod.elementGlass.show(blockElement);
            } else {
@@ -645,7 +645,7 @@ yukon.ui = (function () {
 
         /** Unblock the closest valid container to the event's target, or the page */
         unblock: function (event) {
-            var blockElement = $(event.target).closest('.f-block-this')[0];
+            var blockElement = $(event.target).closest('.js-block-this')[0];
             if (blockElement) {
                 mod.elementGlass.hide(blockElement);
             } else {
@@ -698,7 +698,7 @@ yukon.ui = (function () {
         toggleInputs: function (input) {
             // find matching inputs. Note: jQuery next gets the immediately following
             // sibling, so we have to use nextAll here.
-            var container = $($(input).nextAll('div.f-toggle')[0]),
+            var container = $($(input).nextAll('div.js-toggle')[0]),
                 enable = input.checked,
                 inputList = ['input', 'select', 'textarea', 'button'],
                 inputInd;
@@ -742,18 +742,18 @@ yukon.ui = (function () {
                 });
                 
                 // fix up the move up/down buttons if there are any
-                if (row.has('.f-up, .f-down').length) {
+                if (row.has('.js-up, .js-down').length) {
                     if (rows.length === 1) { // only one row
-                        row.find('.f-up, .f-down').prop('disabled', true); 
+                        row.find('.js-up, .js-down').prop('disabled', true); 
                     } else if (idx === 0) { // first row
-                        row.find('.f-up').prop('disabled', true);
-                        row.find('.f-down').prop('disabled', false);
+                        row.find('.js-up').prop('disabled', true);
+                        row.find('.js-down').prop('disabled', false);
                     } else if (idx === rows.length -1) { // last row
-                        row.find('.f-up').prop('disabled', false);
-                        row.find('.f-down').prop('disabled', true);
+                        row.find('.js-up').prop('disabled', false);
+                        row.find('.js-down').prop('disabled', true);
                     } else { // middle row
-                        row.find('.f-up').prop('disabled', false);
-                        row.find('.f-down').prop('disabled', false);
+                        row.find('.js-up').prop('disabled', false);
+                        row.find('.js-down').prop('disabled', false);
                     }
                 }
                 
@@ -777,18 +777,18 @@ yukon.ui = (function () {
                 row = $(row);
                 
                 // fix up the move up/down buttons
-                if (row.has('.f-up, .f-down').length) {
+                if (row.has('.js-up, .js-down').length) {
                     if (rows.length === 1) { // only one row
-                        row.find('.f-up, .f-down').prop('disabled', true); 
+                        row.find('.js-up, .js-down').prop('disabled', true); 
                     } else if (idx === 0) { // first row
-                        row.find('.f-up').prop('disabled', true);
-                        row.find('.f-down').prop('disabled', false);
+                        row.find('.js-up').prop('disabled', true);
+                        row.find('.js-down').prop('disabled', false);
                     } else if (idx === rows.length -1) { // last row
-                        row.find('.f-up').prop('disabled', false);
-                        row.find('.f-down').prop('disabled', true);
+                        row.find('.js-up').prop('disabled', false);
+                        row.find('.js-down').prop('disabled', true);
                     } else { // middle row
-                        row.find('.f-up').prop('disabled', false);
-                        row.find('.f-down').prop('disabled', false);
+                        row.find('.js-up').prop('disabled', false);
+                        row.find('.js-down').prop('disabled', false);
                     }
                 }
                 
@@ -857,20 +857,20 @@ yukon.ui = (function () {
             _initialized: false,
 
             init: function () {
-                $('.f-wizard').each(function (idx, elem) {
-                    $(elem).find('.f-next').each(function (index, nextButton) {
+                $('.js-wizard').each(function (idx, elem) {
+                    $(elem).find('.js-next').each(function (index, nextButton) {
                         $(nextButton).on('click', function (event) {
-                                mod.wizard.nextPage($(event.target).closest('.f-page'));
+                                mod.wizard.nextPage($(event.target).closest('.js-page'));
                         });
                     });
 
-                    $(elem).find('.f-prev').each(function (index, prevButton) {
+                    $(elem).find('.js-prev').each(function (index, prevButton) {
                         $(prevButton).on('click', function (event) {
-                                mod.wizard.prevPage($(event.target).closest('.f-page'));
+                                mod.wizard.prevPage($(event.target).closest('.js-page'));
                         });
                     });
 
-                    $(elem).find('.f-page').each(function (index, elem) {
+                    $(elem).find('.js-page').each(function (index, elem) {
                         if (idx > 0) {
                             $(elem).hide();
                         } else {
@@ -887,7 +887,7 @@ yukon.ui = (function () {
                     page = $(page);
                     
                 if (typeof page !== 'undefined') {
-                    nextPage = page.nextAll('.f-page')[0];
+                    nextPage = page.nextAll('.js-page')[0];
                     if (typeof nextPage !== 'undefined') {
                         page.hide();
                         $(nextPage).show();
@@ -899,7 +899,7 @@ yukon.ui = (function () {
                 var prevPage;
                 
                 if (typeof page !== 'undefined') {
-                        prevPage = page.prevAll('.f-page')[0];
+                        prevPage = page.prevAll('.js-page')[0];
                     if (typeof prevPage !== 'undefined') {
                         $(page).hide();
                         $(prevPage).show();
@@ -911,19 +911,19 @@ yukon.ui = (function () {
              * Resets the page of the wizard to the first/initial page. Does NOT do
              * anything with the contents
              * 
-             * wizard: can be any element in the DOM. * If it is the f-wizard
+             * wizard: can be any element in the DOM. * If it is the js-wizard
              * container itself, it will reset the page * If it is an arbitrary
-             * node, it will search for and reset ALL f-wizard containers within
+             * node, it will search for and reset ALL js-wizard containers within
              * 
              */
             reset: function (wizard) {
                 wizard = $(wizard);
-                if (wizard.hasClass('f-wizard')) {
-                    $('.f-page', wizard).hide();
-                    $('.f-page:first', wizard).show();
+                if (wizard.hasClass('js-wizard')) {
+                    $('.js-page', wizard).hide();
+                    $('.js-page:first', wizard).show();
                 } else {
-                    $('.f-wizard .f-page').hide();
-                    $('.f-wizard .f-page:first').show();
+                    $('.js-wizard .js-page').hide();
+                    $('.js-wizard .js-page:first').show();
                 }
             }
         },
@@ -952,7 +952,7 @@ yukon.ui = (function () {
             },
     
             redraw: function (glass) {
-                    var container = glass.closest('.f-block-this');
+                    var container = glass.closest('.js-block-this');
                 // resize the glass
                 glass.css('width', container.outerWidth()).css('height', container.outerHeight()).fadeIn(200);
             },

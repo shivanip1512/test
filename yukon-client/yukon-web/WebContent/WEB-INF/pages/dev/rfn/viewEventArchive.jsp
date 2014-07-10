@@ -9,7 +9,7 @@
 
     <script>
         $(document).ready(function() {
-            $('.f-sendEventArchive').click(function() {
+            $('.js-sendEventArchive').click(function() {
                 $('#eventForm').submit();
             });
         });
@@ -112,7 +112,7 @@
             </ul>
 
             <div class="page-action-area">
-                <cti:button nameKey="send" classes="f-blocker f-sendEventArchive"/>
+                <cti:button nameKey="send" classes="js-blocker js-sendEventArchive"/>
             </div>
         </form:form>
     </tags:sectionContainer2>

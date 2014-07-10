@@ -68,8 +68,8 @@ $(function(){
             </div>
             <br>
             <br>
-            <cti:button nameKey="help" icon="icon-help" classes="f-help fl"/>
-            <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
+            <cti:button nameKey="help" icon="icon-help" classes="js-help fl"/>
+            <cti:button nameKey="create" icon="icon-plus-green" classes="js-create fl"/>
             <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
                 <cti:param name="accountId" value="${accountId}" />
                 <cti:param name="thermostatIds" value="${thermostatIds}"/>
@@ -96,8 +96,8 @@ $(function(){
                 </c:if>
                 <div class="box clear">
                     <div class="fr button-container">
-                        <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
-                        <cti:button nameKey="help" icon="icon-help" classes="f-help fl"/>
+                        <cti:button nameKey="create" icon="icon-plus-green" classes="js-create fl"/>
+                        <cti:button nameKey="help" icon="icon-help" classes="js-help fl"/>
                         <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
                             <cti:param name="accountId" value="${accountId}" />
                             <cti:param name="thermostatIds" value="${thermostatIds}"/>
@@ -135,9 +135,9 @@ $(function(){
 
 <!-- Create Schedule Wizard -->
 <div class="schedule">
-    <i:simplePopup titleKey=".createSchedule.title" id="createSchedule" on=".f-create" >
-        <div class="f-wizard">
-            <div class="f-page page_0">
+    <i:simplePopup titleKey=".createSchedule.title" id="createSchedule" on=".js-create" >
+        <div class="js-wizard">
+            <div class="js-page page_0">
                 <div class="box">
                     <div class="helper box">
                         <i:inline key=".modeHint" />
@@ -152,12 +152,12 @@ $(function(){
             
                 <div class="action-area">
                     <div class="fr">
-                        <cti:button nameKey="next" classes="f-next"/>
+                        <cti:button nameKey="next" classes="js-next"/>
                     </div>
                 </div>
             </div>
             
-            <div class="f-page page_1">
+            <div class="js-page page_1">
                 <div class="createSchedule box small">
                     <c:forEach var="schedule" items="${defaultSchedules}">
                         <tags:thermostatScheduleEditor schedule="${schedule}"
@@ -172,12 +172,12 @@ $(function(){
             
                 <div class="actions">
                     <div class="fr">
-                        <cti:button nameKey="cancel" classes="f-cancel" />
-                        <cti:button nameKey="previous" classes="f-prev"/>
-                        <cti:button nameKey="save" classes="f-save f-blocker primary action" />
+                        <cti:button nameKey="cancel" classes="js-cancel" />
+                        <cti:button nameKey="previous" classes="js-prev"/>
+                        <cti:button nameKey="save" classes="js-save js-blocker primary action" />
                     </div>
                     <div class="fl">
-                        <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="f-createDefault" icon="icon-wrench"/>
+                        <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="js-createDefault" icon="icon-wrench"/>
                     </div>
                 </div>
             </div>
@@ -185,7 +185,7 @@ $(function(){
     </i:simplePopup>
 </div>
 
-<i:simplePopup titleKey=".help.title" id="help" on=".f-help" options="{width:600}">
+<i:simplePopup titleKey=".help.title" id="help" on=".js-help" options="{width:600}">
 <div class="help pad">
         <cti:msg2 key="yukon.web.modules.consumer.savedSchedules.hint"/>
     </div>

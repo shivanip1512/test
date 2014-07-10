@@ -89,9 +89,9 @@
                         <ul class="editable-list">
                             <c:forEach var="type" items="${deviceConfigTypes.supportedTypes}">
                                 <c:if test="${not empty type.value}">
-                                    <li class="f-categories" data-device-type="${type.key}">
+                                    <li class="js-categories" data-device-type="${type.key}">
                                         <a href="javascript:void(0);" class="pipe-selector ">
-                                            <span data-device-type="${type.key}" class="pipe f-categories">&nbsp;</span>
+                                            <span data-device-type="${type.key}" class="pipe js-categories">&nbsp;</span>
                                             <span>${type.key.dbString}</span>
                                         </a>
                                         <cti:checkRolesAndProperties value="${editingRoleProperty}">

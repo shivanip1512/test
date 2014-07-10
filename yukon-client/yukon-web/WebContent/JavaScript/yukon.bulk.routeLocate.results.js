@@ -5,7 +5,7 @@ yukon.bulk.routeLocate.results = (function () {
         complete: function (data) {
             var isComplete = data.isComplete,
                 isCanceled = data.isCanceled,
-                routesButton = $('.f-routes-button'),
+                routesButton = $('.js-routes-button'),
                 cancelDiv = $('#cancelLocateDiv');
 
             if (isComplete === 'true') {

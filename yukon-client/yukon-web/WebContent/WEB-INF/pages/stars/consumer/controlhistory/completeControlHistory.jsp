@@ -21,7 +21,7 @@
 
     <cti:msg key="${program.displayName}" htmlEscape="true" var="controlEventsTitle"/>
     <tags:sectionContainer title="${controlEventsTitle}" escapeTitle="true" controls="${controls}" styleClass="form-controls">
-        <div id="controlEventsDiv" class="f-block-this" data-program-id="${program.programId}">
+        <div id="controlEventsDiv" class="js-block-this" data-program-id="${program.programId}">
             <cti:msg key="yukon.dr.consumer.completecontrolhistory.loading"/>
         </div>
     </tags:sectionContainer>

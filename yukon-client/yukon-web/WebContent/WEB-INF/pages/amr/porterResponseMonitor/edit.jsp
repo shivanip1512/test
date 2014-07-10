@@ -36,37 +36,37 @@
     </i:simplePopup>
 
     <table class="dn">
-        <tr class="f-template-row" data-row="0">
+        <tr class="js-template-row" data-row="0">
             <td>
-                <input type="hidden" name="rules[?].ruleId" class="f-row-id"/>
-                <input type="hidden" name="rules[?].ruleOrder" class="f-row-order"/>
-                <span class="f-row-order-text"></span>
+                <input type="hidden" name="rules[?].ruleId" class="js-row-id"/>
+                <input type="hidden" name="rules[?].ruleOrder" class="js-row-order"/>
+                <span class="js-row-order-text"></span>
             </td>
             <td>
                 <label>
-                    <input type="checkbox" name="rules[?].success" class="f-row-success"/>
+                    <input type="checkbox" name="rules[?].success" class="js-row-success"/>
                     <i:inline key=".rule.success"/>
                 </label>
             </td>
             <td>
-                <input type="text" name="rules[?].errorCodes" size="40" class="f-row-error-codes"/>
+                <input type="text" name="rules[?].errorCodes" size="40" class="js-row-error-codes"/>
             </td>
             <td>
-                <select name="rules[?].matchStyle" class="f-row-match-style">
+                <select name="rules[?].matchStyle" class="js-row-match-style">
                     <c:forEach var="style" items="${matchStyleChoices}">
                         <option value="${style}" ><cti:msg2 key="${style}"/></option>
                     </c:forEach>
                 </select>
             </td>
             <td>
-                <select name="rules[?].state" class="f-row-state">
+                <select name="rules[?].state" class="js-row-state">
                     <c:forEach var="state" items="${monitorDto.stateGroup.statesList}">
                         <option value="${state.liteID}">${fn:escapeXml(state.stateText)}</option>
                     </c:forEach>
                 </select>
-                <cti:button classes="f-remove fr" icon="icon-cross" renderMode="buttonImage"/>
-                <cti:button classes="f-up right fr" icon="icon-bullet-go-up" renderMode="buttonImage"/>
-                <cti:button classes="f-down left fr" icon="icon-bullet-go-down" renderMode="buttonImage" disabled="true"/>
+                <cti:button classes="js-remove fr" icon="icon-cross" renderMode="buttonImage"/>
+                <cti:button classes="js-up right fr" icon="icon-bullet-go-up" renderMode="buttonImage"/>
+                <cti:button classes="js-down left fr" icon="icon-bullet-go-down" renderMode="buttonImage" disabled="true"/>
             </td>
         </tr>
     </table>
@@ -122,21 +122,21 @@
                     <c:forEach var="ruleEntry" items="${monitorDto.rules}" varStatus="status">
                         <tr data-row="${status.index}">
                             <td>
-                                <form:hidden path="rules[${status.index}].ruleId" cssClass="f-row-id"/>
-                                <form:hidden path="rules[${status.index}].ruleOrder" cssClass="f-row-order"/>
-                                <span class="f-row-order-text">${status.index + 1}</span>
+                                <form:hidden path="rules[${status.index}].ruleId" cssClass="js-row-id"/>
+                                <form:hidden path="rules[${status.index}].ruleOrder" cssClass="js-row-order"/>
+                                <span class="js-row-order-text">${status.index + 1}</span>
                             </td>
                             <td>
                                 <label>
-                                    <form:checkbox path="rules[${status.index}].success" cssClass="f-row-success"/>
+                                    <form:checkbox path="rules[${status.index}].success" cssClass="js-row-success"/>
                                     <i:inline key=".rule.success"/>
                                 </label>
                             </td>
                             <td>
-                                <tags:input path="rules[${status.index}].errorCodes" size="40" inputClass="f-row-error-codes"/>
+                                <tags:input path="rules[${status.index}].errorCodes" size="40" inputClass="js-row-error-codes"/>
                             </td>
                             <td>
-                                <form:select path="rules[${status.index}].matchStyle" cssClass="f-row-match-style">
+                                <form:select path="rules[${status.index}].matchStyle" cssClass="js-row-match-style">
                                     <c:forEach var="style" items="${matchStyleChoices}">
                                         <form:option value="${style}">
                                             <i:inline key="${style.formatKey}" />
@@ -145,14 +145,14 @@
                                 </form:select>
                             </td>
                             <td>
-                                <form:select path="rules[${status.index}].state" cssClass="f-row-state">
+                                <form:select path="rules[${status.index}].state" cssClass="js-row-state">
                                     <c:forEach var="state" items="${monitorDto.stateGroup.statesList}">
                                         <form:option value="${state.liteID}">${fn:escapeXml(state.stateText)}</form:option>
                                     </c:forEach>
                                 </form:select>
-                                <cti:button classes="f-remove fr" icon="icon-cross" renderMode="buttonImage"/>
-                                <cti:button classes="f-up right fr" icon="icon-bullet-go-up" renderMode="buttonImage"/>
-                                <cti:button classes="f-down left fr" icon="icon-bullet-go-down" renderMode="buttonImage"/>
+                                <cti:button classes="js-remove fr" icon="icon-cross" renderMode="buttonImage"/>
+                                <cti:button classes="js-up right fr" icon="icon-bullet-go-up" renderMode="buttonImage"/>
+                                <cti:button classes="js-down left fr" icon="icon-bullet-go-down" renderMode="buttonImage"/>
                             </td>
                         </tr>
                     </c:forEach>
@@ -160,7 +160,7 @@
             </table>
             </div>
             <div class="action-area">
-                <cti:button nameKey="rulesTable.add" classes="f-add-rule" icon="icon-add"/>
+                <cti:button nameKey="rulesTable.add" classes="js-add-rule" icon="icon-add"/>
             </div>
         </tags:sectionContainer2>
 

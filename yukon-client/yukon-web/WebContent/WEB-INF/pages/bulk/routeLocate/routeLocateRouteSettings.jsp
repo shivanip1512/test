@@ -82,7 +82,7 @@
                         </c:when>
                         <c:otherwise>
                             <div id="${d.id}">
-                                <cti:button nameKey="updateButtonText" classes="f-disable-after-click" onclick="setRoute(${d.device.deviceId}, ${d.routeId}, '${resultId}', ${d.id}, '${d.id}', this);"/>
+                                <cti:button nameKey="updateButtonText" classes="js-disable-after-click" onclick="setRoute(${d.device.deviceId}, ${d.routeId}, '${resultId}', ${d.id}, '${d.id}', this);"/>
                             </div>
                         </c:otherwise>
                     </c:choose>

@@ -118,7 +118,7 @@
         </c:choose>
     </a>
     <c:if test="${canManage}">
-        <cti:button nameKey="create" type="submit" classes="f-blocker fr" icon="icon-plus-green"/>
+        <cti:button nameKey="create" type="submit" classes="js-blocker fr" icon="icon-plus-green"/>
     </c:if>
 </div>
 

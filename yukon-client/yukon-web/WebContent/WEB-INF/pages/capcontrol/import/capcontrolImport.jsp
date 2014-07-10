@@ -50,7 +50,7 @@
                     </tags:nameValueContainer>
                     
                     <div class="action-area">
-                        <cti:button type="submit" nameKey="importSubmitButton" id="importSubmitButton" classes="f-blocker primary action" />
+                        <cti:button type="submit" nameKey="importSubmitButton" id="importSubmitButton" classes="js-blocker primary action" />
                     </div>
                 </form>
             </tags:sectionContainer2>

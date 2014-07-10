@@ -49,11 +49,11 @@
                         <tags:nameValue2 nameKey=".ecobee.configure.dailyErrorCheck" rowId="ecobee-error-check-schedule" valueClass="full-width">
                             <div class="column-6-18 clearfix stacked">
                                 <div class="column one">
-                                    <span class="f-time-label fwb">&nbsp;</span>
+                                    <span class="js-time-label fwb">&nbsp;</span>
                                     <tags:hidden path="checkErrorsTime" id="ecobee-error-check-time"/>
                                 </div>
                                 <div class="column two nogutter">
-                                    <div class="f-time-slider" style="margin-top: 7px;"></div>
+                                    <div class="js-time-slider" style="margin-top: 7px;"></div>
                                 </div>
                             </div>
                         </tags:nameValue2>
@@ -67,11 +67,11 @@
                         <tags:nameValue2 nameKey=".ecobee.configure.dailyDataCollection" rowId="ecobee-data-collection-schedule" valueClass="full-width">
                             <div class="column-6-18 clearfix stacked">
                                 <div class="column one">
-                                    <span class="f-time-label fwb">&nbsp;</span>
+                                    <span class="js-time-label fwb">&nbsp;</span>
                                     <tags:hidden path="dataCollectionTime" id="ecobee-data-collection-time"/>
                                 </div>
                                 <div class="column two nogutter">
-                                    <div class="f-time-slider" style="margin-top: 7px;"></div>
+                                    <div class="js-time-slider" style="margin-top: 7px;"></div>
                                 </div>
                             </div>
                         </tags:nameValue2>

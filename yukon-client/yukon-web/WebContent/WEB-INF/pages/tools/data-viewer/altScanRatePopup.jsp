@@ -23,7 +23,7 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
         <div class="action-area">
-            <cti:button nameKey="ok" classes="primary f-altScanRate-send" />
+            <cti:button nameKey="ok" classes="primary js-altScanRate-send" />
             <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');" />
         </div>
     </form:form>

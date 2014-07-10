@@ -30,7 +30,7 @@
                     <cti:msg2 var="catPopupTitle" key=".categoryInfoTitle" argument="${i18nCatType}"/>
                     <i:inline key=".${catType}.title"/>
                     <a href="javascript:void(0);" 
-                       class="f-category-type-info dib" 
+                       class="js-category-type-info dib" 
                        title="click for more details" 
                        data-category-type="${catType}" 
                        data-config-id="${configCategories.configId}"
@@ -97,7 +97,7 @@
                                 <cti:button nameKey="create" 
                                     data-config-id="${configCategories.configId}" 
                                     data-category-type="${catType}" 
-                                    classes="f-create-category" 
+                                    classes="js-create-category" 
                                     busy="true" 
                                     icon="icon-plus-green" 
                                     title="${createBtnTitle}"/>
@@ -106,7 +106,7 @@
                                     <cti:button nameKey="edit" 
                                         data-config-id="${configCategories.configId}" 
                                         data-category-type="${catType}" 
-                                        classes="f-edit-category" 
+                                        classes="js-edit-category" 
                                         busy="true" 
                                         icon="icon-pencil" 
                                         title="${editBtnTitle}"/>

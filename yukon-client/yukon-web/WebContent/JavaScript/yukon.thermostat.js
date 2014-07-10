@@ -82,7 +82,7 @@ yukon.ThermostatScheduleEditor = {
             yukon.ThermostatScheduleEditor[this.value]();
         });
         
-        $(".f-cancel").click(function(e){
+        $(".js-cancel").click(function(e){
             var dialog = $(this).closest("[id^=editSchedule], #createSchedule");
             dialog.dialog('close');
             dialog.find('form input[initialValue]').each(function(index, input){
@@ -92,23 +92,23 @@ yukon.ThermostatScheduleEditor = {
             yukon.ThermostatScheduleEditor[yukon.ThermostatScheduleEditor.thermostat.COOL.temperature.unit]();
         });
         
-        $(".f-copy").click(function(e){
+        $(".js-copy").click(function(e){
             var form = $("#editSchedule_"+ $(this).closest("form").find("input[name=scheduleId]").val());
             $("input[name=scheduleId]", form).val(-1);
             $("input[name=scheduleName]", form).val(form.find('input[name=copyName]').val());
-            $("button.f-delete", form).hide();
+            $("button.js-delete", form).hide();
             
             //change title
             $('.title-bar .title', form).html($('input[name=copyTitle]', form).val());
         });
         
-        $(".f-edit").click(function(e){
+        $(".js-edit").click(function(e){
             var scheduleId = $(this).closest("form").find("input[name=scheduleId]").val();
             var form = $("editSchedule_" + scheduleId);
             $("input[name=scheduleId]", form).val(scheduleId);
             $("input[name=scheduleName]", form).val($("input[name=scheduleName]", form).val());
             
-            $("button.f-delete", form).show();
+            $("button.js-delete", form).show();
             
             //clear error messages
             yukon.ThermostatScheduleEditor.clearErrors(form);
@@ -126,7 +126,7 @@ yukon.ThermostatScheduleEditor = {
             var mode = $("input[name=thermostatScheduleMode]", form).val();
             var page = $(".page_0:first"); 
             $("input[value="+ mode +"]", page).attr('checked', 'checked');
-            $("button.f-next", page).removeAttr('disabled');
+            $("button.js-next", page).removeAttr('disabled');
             
             //select the second page page.
             $(".schedule.editor", page.parent()).hide();
@@ -140,10 +140,10 @@ yukon.ThermostatScheduleEditor = {
             $("input[name=scheduleId]", editForm).val(id);
             $("input[name=scheduleName]", editForm).val(name);
             
-            $("button.f-delete", editForm).hide();
+            $("button.js-delete", editForm).hide();
         });
         
-        $(document).on('click', '.f-save', function(e){
+        $(document).on('click', '.js-save', function(e){
             var form = null;
             if($(e.target).closest("#createSchedule")[0]){
                 var mode = $("#createSchedule input[name=defaultScheduleMode]:checked").val();
@@ -184,17 +184,17 @@ yukon.ThermostatScheduleEditor = {
         });
         
         $(".page_0 input:radio").click(function(e){
-                $(this).closest('.f-page').find('.f-next').removeAttr('disabled');
+                $(this).closest('.js-page').find('.js-next').removeAttr('disabled');
         });
         
-        $(document).on('click', '.f-create', function(e){
+        $(document).on('click', '.js-create', function(e){
             //show type picker
             yukon.ThermostatScheduleEditor.clearErrors($("#createSchedule"));
             yukon.ui.wizard.reset($("#createSchedule"));
             return false;
         });
         
-        $(".page_0 .f-next").click(function(e){
+        $(".page_0 .js-next").click(function(e){
             var input = $("#createSchedule input[name=defaultScheduleMode]:checked");
             $("#createSchedule .schedule.editor").each(function(index, elem){
                 elem = $(elem);
@@ -208,7 +208,7 @@ yukon.ThermostatScheduleEditor = {
             });
         });
         
-        $(document).on('click', '.f-default', function(e){
+        $(document).on('click', '.js-default', function(e){
             //find 'recommended schedule in the create popup
             var ourForm = $(this).closest("[id^=editSchedule], #createSchedule").find('form');
             var mode = $("input[name=thermostatScheduleMode]", ourForm).val();
@@ -218,7 +218,7 @@ yukon.ThermostatScheduleEditor = {
             
         });
         
-        $(document).on('click', '.f-createDefault', function(e){
+        $(document).on('click', '.js-createDefault', function(e){
             //find 'recommended schedule in the create popup
             var ourForm = $("#createSchedule .schedule.editor.active");
             var mode = $("input[name=thermostatScheduleMode]", ourForm).val();

@@ -32,13 +32,13 @@ margin: 0px;
                 <th><i:inline key=".cbcName"/></th>
                 <th class="wsnw">
                     <i:inline key=".cbName"/>
-                    <div class="dn f-tooltip"><cti:msg2 key=".cbOrderInfo.tooltip"/></div>
-                    <cti:icon icon="icon-information" classes="M0 vatt fn f-has-tooltip"/>
+                    <div class="dn js-tooltip"><cti:msg2 key=".cbOrderInfo.tooltip"/></div>
+                    <cti:icon icon="icon-information" classes="M0 vatt fn js-has-tooltip"/>
                 </th>
                 <th class="wsnw">
                     <i:inline key=".state"/>
-                    <div class="dn f-tooltip"><cti:msg2 key=".stateInfoToolTip"/></div>
-                    <cti:icon nameKey="stateInfo" icon="icon-information" classes="M0 vatt fn f-has-tooltip"/>
+                    <div class="dn js-tooltip"><cti:msg2 key=".stateInfoToolTip"/></div>
+                    <cti:icon nameKey="stateInfo" icon="icon-information" classes="M0 vatt fn js-has-tooltip"/>
                 </th>
                 <th><i:inline key=".timestamp"/></th>
                 <th class="tar"><i:inline key=".bankSize"/></th>
@@ -104,7 +104,7 @@ margin: 0px;
 
                 <%-- Timestamp --%>
                 <td>
-                    <div class="f-tooltip dn">
+                    <div class="js-tooltip dn">
                         <table class='compact-results-table'>
                             <tr>
                                 <th><i:inline key=".kvar"/></th>
@@ -136,7 +136,7 @@ margin: 0px;
                             </tr>
                         </table>
                     </div>
-                    <span class="f-has-tooltip">
+                    <span class="js-has-tooltip">
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DATE_TIME"/> 
                     </span>
                 </td>
@@ -161,24 +161,24 @@ margin: 0px;
                     </cti:url>
                     <cm:dropdown icon="icon-cog" triggerClasses="fr">
                         <c:if test="${hasCapbankControl}">
-                            <cm:dropdownOption key=".capBank.actions" icon="icon-cog" href="javascript:void(0);" classes="f-bank-command" />
-                            <cm:dropdownOption key=".capBank.state" icon="icon-pencil" href="javascript:void(0);" classes="f-bank-state" />
+                            <cm:dropdownOption key=".capBank.actions" icon="icon-cog" href="javascript:void(0);" classes="js-bank-command" />
+                            <cm:dropdownOption key=".capBank.state" icon="icon-pencil" href="javascript:void(0);" classes="js-bank-state" />
                         </c:if>
                          <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
                             <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
-                            <cm:dropdownOption key=".capBank.info" icon="icon-magnifier" classes="f-bank-info"
+                            <cm:dropdownOption key=".capBank.info" icon="icon-magnifier" classes="js-bank-info"
                                 href="javascript:void(0);" />
                         </cti:checkRolesAndProperties>
                         <c:if test="${viewableCapBank.twoWayCbc}">
                                 <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}" javaScriptEscape="true"/>
-                                <cm:dropdownOption key=".cbc.info" icon="icon-magnifier" classes="f-cbc-info" href="javascript:void(0);" />
+                                <cm:dropdownOption key=".cbc.info" icon="icon-magnifier" classes="js-cbc-info" href="javascript:void(0);" />
                         </c:if>
                         <c:if test="${hasCapbankControl}">
                             <c:set var="warning" value=""/>
                             <c:if test="${viewableCapBank.capBankDevice.bankMoved}">
                                 <c:set var="warning" value="warning"/>
                             </c:if>
-                            <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="f-move-bank ${warning}" href="javascript:void(0);" />
+                            <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="js-move-bank ${warning}" href="javascript:void(0);" />
                         </c:if>
                     </cm:dropdown>
                 </td>

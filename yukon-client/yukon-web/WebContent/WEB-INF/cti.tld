@@ -1648,7 +1648,7 @@
             <description>
                 Sets the 'data-busy' attribute of the button when set to 'true'.
                 If the .labelBusy key exists, it is used for button text after clicked.
-                This attribute requires the f-disable-after-click class. 
+                This attribute requires the js-disable-after-click class. 
             </description>
         </attribute>
     </tag>

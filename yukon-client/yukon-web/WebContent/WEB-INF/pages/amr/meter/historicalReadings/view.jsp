@@ -8,7 +8,7 @@
 
 <cti:msgScope paths="modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings">
 
-<input class="f-popup-title" type="hidden" value="${fn:escapeXml(title)}"> 
+<input class="js-popup-title" type="hidden" value="${fn:escapeXml(title)}"> 
 
 <div class="form-control clearfix">
     <c:if test="${points.size() > 0}">

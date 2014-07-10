@@ -115,7 +115,7 @@ yukon.admin.ec.ac = (function () {
             });
             
             /** Load edit popup for program and setup field behavior before showing. */
-            $(document).on('click', '.f-edit', function (ev) {
+            $(document).on('click', '.js-edit', function (ev) {
                 var row = $(this).closest('tr'),
                     container = $('#assigned-programs');
                 
@@ -135,7 +135,7 @@ yukon.admin.ec.ac = (function () {
             });
             
             /** Load unassign popup for program and setup field behavior before showing. */
-            $(document).on('click', '.f-remove', function (ev) {
+            $(document).on('click', '.js-remove', function (ev) {
                 var row = $(this).closest('tr'),
                     container = $('#assigned-programs');
                 
@@ -188,11 +188,11 @@ yukon.admin.ec.ac = (function () {
             
 
             /** Handle move up and move down clicks for programs. */
-            $(document).on('click', '.f-up, .f-down', function (ev) {
+            $(document).on('click', '.js-up, .js-down', function (ev) {
                 
                 var row = $(this).closest('tr'),
                     container = $('#assigned-programs'),
-                    direction = $(this).is('.f-up') ? 'up' : 'down';
+                    direction = $(this).is('.js-up') ? 'up' : 'down';
                 
                 $.ajax('moveProgram', { 
                     data: {

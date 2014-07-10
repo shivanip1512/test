@@ -6,9 +6,9 @@
 
 <cti:url var="jreUrl" value="${jreInstaller != null ? '/static/JRE/'.concat(jreInstaller) : 'http://www.java.com/getjava/'}"/>
 
-<div class="stacked f-close">
+<div class="stacked js-close">
     <c:set var="installJreLink">
-        <a class="f-close" href="${jreUrl}" target="_blank">
+        <a class="js-close" href="${jreUrl}" target="_blank">
             <i:inline key=".applications.installJava"/>
         </a>
     </c:set>
@@ -19,7 +19,7 @@
 
 <div  style="display:inline-block; float:left; width:50%;">
 <cti:checkRolesAndProperties value="DATABASE_EDITOR">
-    <div class="stacked f-close clearfix">
+    <div class="stacked js-close clearfix">
         <a href="<cti:url value="/jws/dbeditor.jnlp"/>">
             <i class="icon icon-32 icon-32-database-editor"></i>Database Editor
         </a>
@@ -27,7 +27,7 @@
 </cti:checkRolesAndProperties>
 
 <cti:checkRolesAndProperties value="TABULAR_DISPLAY_CONSOLE">
-    <div class="stacked f-close clearfix">
+    <div class="stacked js-close clearfix">
         <a href="<cti:url value="/jws/tdc.jnlp"/>" target-title="Tabular TDC">
             <i class="icon icon-32 icon-32-tdc"></i>Tabular Data Console
         </a>
@@ -35,7 +35,7 @@
 </cti:checkRolesAndProperties>
 
 <cti:checkRolesAndProperties value="TRENDING">
-    <div class="stacked f-close clearfix">
+    <div class="stacked js-close clearfix">
         <a href="<cti:url value="/jws/trending.jnlp"/>">
             <i class="icon icon-32 icon-32-trending"></i>Trending
         </a>
@@ -45,7 +45,7 @@
 
 <div style="display:inline-block; float:left; width:50%;">
 <cti:checkRolesAndProperties value="APPLICATION_ESUBSTATION_EDITOR">
-    <div class="stacked f-close clearfix">
+    <div class="stacked js-close clearfix">
         <a href="<cti:url value="/jws/esub.jnlp"/>">
             <i class="icon icon-32 icon-32-esub"></i>eSubstation Editor
         </a>
@@ -53,7 +53,7 @@
 </cti:checkRolesAndProperties>
 
 <cti:checkRolesAndProperties value="ENABLE_CLIENT_COMMANDER">
-    <div class="stacked f-close clearfix">
+    <div class="stacked js-close clearfix">
         <a href="<cti:url value="/jws/commander.jnlp"/>">
             <i class="icon icon-32 icon-32-commander"></i>Commander
         </a>

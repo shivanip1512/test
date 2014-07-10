@@ -82,7 +82,7 @@ $(function() { updateServiceCompanyInfo();});
                 <c:when test="${showSerialNumber}">
                     <c:choose>
                         <c:when test="${serialNumberEditable}">
-                            <tags:inputNameValue nameKey=".serialNumber" path="serialNumber" inputClass="f-focus"></tags:inputNameValue>
+                            <tags:inputNameValue nameKey=".serialNumber" path="serialNumber" inputClass="js-focus"></tags:inputNameValue>
                         </c:when>
                         
                         <c:otherwise>
@@ -294,7 +294,7 @@ $(function() { updateServiceCompanyInfo();});
     
     <cti:displayForPageEditModes modes="EDIT,CREATE">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
-            <cti:button nameKey="save" type="submit" name="save" classes="f-disable-after-click primary action"/>
+            <cti:button nameKey="save" type="submit" name="save" classes="js-disable-after-click primary action"/>
             <cti:displayForPageEditModes modes="EDIT">
                 <c:choose>
                     <c:when test="${not empty accountId}">

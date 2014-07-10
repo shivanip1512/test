@@ -54,7 +54,7 @@ yukon.dr.assetDetails = (function() {
 
             _assetId = $("#assetId").val();
             _itemsPerPage = $("#itemsPerPage").val();
-            _aaDiv = $('.f-asset-availability');
+            _aaDiv = $('.js-asset-availability');
 
             $(document).on('click', '[data-filter]', _doFilterTable);
             $(document).on('click', '#dd-download', _downloadToCsv);

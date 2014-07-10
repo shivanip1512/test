@@ -52,7 +52,7 @@
             <c:forEach begin="1" end="4" var="status">
                 <div class="stacked dn" id="showNextDivSchedule${status}">
                     <cti:msg2 var="title" key=".addScheduleItem" argument="${status}"/>
-                    <cti:button nameKey="addSchedule" icon="icon-add" id="showNextSchedule${status}TimeBtn" data-add-schedule="${status}" title="${title}" classes="fr f-addScheduleBtn"/>
+                    <cti:button nameKey="addSchedule" icon="icon-add" id="showNextSchedule${status}TimeBtn" data-add-schedule="${status}" title="${title}" classes="fr js-addScheduleBtn"/>
                 </div>
             </c:forEach>
         </c:if>

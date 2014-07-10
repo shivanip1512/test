@@ -10,7 +10,7 @@
 <cti:standardPage module="operator" page="abr.setup">
 
 <script type="text/javascript">
-$(document).on('click', 'a.f-failed-items', function() {
+$(document).on('click', 'a.js-failed-items', function() {
     $.ajax({
         url: 'viewFailed',
         data: {"taskId": '${task.taskId}'}
@@ -40,7 +40,7 @@ function taskFinished() {
                             <c:set var="inputClass" value="error"/>
                         </c:if>
                         <cti:displayForPageEditModes modes="CREATE">
-                            <form:input path="from" cssClass="${inputClass} f-focus"/>
+                            <form:input path="from" cssClass="${inputClass} js-focus"/>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">${abr.from}</cti:displayForPageEditModes>
                     </spring:bind>
@@ -104,7 +104,7 @@ function taskFinished() {
                         <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="error fwb"/>
                         
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_FAILED">
-                            <a href="javascript:void(0);" class="f-failed-items"><i:inline key=".viewFailureReasons"/></a>
+                            <a href="javascript:void(0);" class="js-failed-items"><i:inline key=".viewFailureReasons"/></a>
                         </cti:classUpdater>
                     </tags:nameValue2>
                     

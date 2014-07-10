@@ -22,7 +22,7 @@ function addMeter() {
     $('#addMeterForm').submit();
     return true;
 }
-$('.f-create-hardware').click(function(event) {
+$('.js-create-hardware').click(function(event) {
     $('#add-hardware-dialog').dialog();
 });
 
@@ -44,12 +44,12 @@ function showFileUpload() {
             <cm:dropdownOption href="${createAccountUrl}" icon="icon-plus-green" key=".create.account"/>
         </c:if>
         <c:if test="${showHardwareCreate}">
-            <cm:dropdownOption classes="f-create-hardware" icon="icon-plus-green" key=".create.device"/>
+            <cm:dropdownOption classes="js-create-hardware" icon="icon-plus-green" key=".create.device"/>
         </c:if>
     </div>
 </c:if>
 
-<i:simplePopup titleKey=".create.device" id="add-hardware-dialog" on=".f-create-hardware">
+<i:simplePopup titleKey=".create.device" id="add-hardware-dialog" on=".js-create-hardware">
     <div class="stacked clearfix">
         <form action="creationPage" method="post">
             <cti:csrfToken/>

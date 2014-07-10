@@ -42,7 +42,7 @@
                                 <div class="value-description">
                                     <div class="value">
                                         <c:if test="${setting.extra.usesEnabledField}">
-                                            <form:select cssClass="f-setUnsetSelect" path="settings['${setting.extra}'].enabled">
+                                            <form:select cssClass="js-setUnsetSelect" path="settings['${setting.extra}'].enabled">
                                                 <form:option value="true"><cti:msg2 key="yukon.common.enabled"/></form:option>
                                                 <form:option value="false"><cti:msg2 key="yukon.common.disabled"/></form:option>
                                             </form:select>

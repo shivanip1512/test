@@ -33,16 +33,16 @@
                 <td>
                     <c:if test="${isEditable}">
                         <div class="button-group fr">
-                            <cti:button classes="f-edit" icon="icon-pencil" renderMode="buttonImage"/>
-                            <cti:button classes="f-remove" icon="icon-cross" renderMode="buttonImage"/>
+                            <cti:button classes="js-edit" icon="icon-pencil" renderMode="buttonImage"/>
+                            <cti:button classes="js-remove" icon="icon-cross" renderMode="buttonImage"/>
                         </div>
                     </c:if>
                     <c:if test="${isEditable && applianceCategory.consumerSelectable}">
                         <div class="button-group fr">
                             <c:set var="upDisabled" value="${status.first ? 'true' : 'false'}"/>
                             <c:set var="downDisabled" value="${status.last ? 'true' : 'false'}"/>
-                            <cti:button classes="f-up" icon="icon-bullet-go-up" renderMode="buttonImage" disabled="${upDisabled}"/>
-                            <cti:button classes="f-down" icon="icon-bullet-go-down" renderMode="buttonImage" disabled="${downDisabled}"/>
+                            <cti:button classes="js-up" icon="icon-bullet-go-up" renderMode="buttonImage" disabled="${upDisabled}"/>
+                            <cti:button classes="js-down" icon="icon-bullet-go-down" renderMode="buttonImage" disabled="${downDisabled}"/>
                         </div>
                     </c:if>
                 </td>

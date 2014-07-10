@@ -122,7 +122,7 @@ $(document).on('click', '.bulkInject', function(event) {
         </tags:nameValue2>
     </tags:nameValueContainer2>
     <div class="page-action-area">
-        <cti:button nameKey="send" type="submit" classes="bulkInject f-blocker" />
+        <cti:button nameKey="send" type="submit" classes="bulkInject js-blocker" />
     </div>
 </form:form>
 </cti:standardPage>

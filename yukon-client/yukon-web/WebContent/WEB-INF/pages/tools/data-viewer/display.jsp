@@ -18,10 +18,10 @@
         <c:if test="${display.acknowledgable}">
             <tags:dynamicChoose updaterString="TDC/ALARM_DISPLAY/${display.displayId}" suffix="${display.displayId}">
                 <tags:dynamicChooseOption optionId="MULT_ALARMS">
-                    <cti:button nameKey="tdc.alarm.acknowledgeAll" displayId="${display.displayId}" icon="icon-tick" classes="f-display-alarm-ack" />
+                    <cti:button nameKey="tdc.alarm.acknowledgeAll" displayId="${display.displayId}" icon="icon-tick" classes="js-display-alarm-ack" />
                 </tags:dynamicChooseOption>
                 <tags:dynamicChooseOption optionId="NO_ALARMS">
-                    <cti:button nameKey="tdc.alarm.acknowledgeAll" displayId="${display.displayId}" icon="icon-tick" classes="f-display-alarm-ack dn" />
+                    <cti:button nameKey="tdc.alarm.acknowledgeAll" displayId="${display.displayId}" icon="icon-tick" classes="js-display-alarm-ack dn" />
                 </tags:dynamicChooseOption>
             </tags:dynamicChoose>
         </c:if>
@@ -136,7 +136,7 @@
                                     <td>
                                         <tags:dynamicChoose updaterString="TDC/ALARM_POINT_CONDITION/${row.pointId}/${row.condition}" suffix="${row.pointId}">
                                             <tags:dynamicChooseOption optionId="ONE_ALARM">
-                                                <cti:button nameKey="alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="f-one-alarm-ack-b fr" renderMode="buttonImage" />
+                                                <cti:button nameKey="alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="js-one-alarm-ack-b fr" renderMode="buttonImage" />
                                             </tags:dynamicChooseOption>
                                         </tags:dynamicChoose>
                                     </td>
@@ -146,7 +146,7 @@
                                         <cm:dropdown id="dropdown_${row.pointId}" triggerClasses="fr vh">
                                             <tags:dynamicChoose updaterString="TDC/ALARM_COUNT_POINT/${row.pointId}" suffix="${row.pointId}">
                                                 <tags:dynamicChooseOption optionId="ONE_ALARM">
-                                                    <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="clearfix f-one-alarm-ack"/>
+                                                    <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="clearfix js-one-alarm-ack"/>
                                                     <li class="divider"></li>
                                                 </tags:dynamicChooseOption>
                                                 <tags:dynamicChooseOption optionId="MULT_ALARMS">
@@ -157,7 +157,7 @@
                                                         <cti:item value="${row.pointName}"/>
                                                     </cti:list>
                                                     <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
-                                                    <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix f-mult-alarm-ack" id="acknowledge-${row.pointId}"></cm:dropdownOption>
+                                                    <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix js-mult-alarm-ack" id="acknowledge-${row.pointId}"></cm:dropdownOption>
                                                     <li class="divider"></li>
                                                 </tags:dynamicChooseOption>
                                             </tags:dynamicChoose>
@@ -170,7 +170,7 @@
                                                 </cti:list>
                                                 <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
                                                 <tags:dynamicChooseOption optionId="TRUE">
-                                                    <cm:dropdownOption key=".manualEntry.title" icon="icon-pencil" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix f-manualEntry" id="manualEntry-${row.pointId}"></cm:dropdownOption>
+                                                    <cm:dropdownOption key=".manualEntry.title" icon="icon-pencil" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix js-manualEntry" id="manualEntry-${row.pointId}"></cm:dropdownOption>
                                                     <li class="divider"></li>
                                                 </tags:dynamicChooseOption>
                                             </tags:dynamicChoose>
@@ -183,7 +183,7 @@
                                                 </cti:list>
                                                 <cti:msg2 key=".tdc.popupTitle" arguments="${arguments}" var="popupTitle" />
                                                 <tags:dynamicChooseOption optionId="TRUE">
-                                                    <cm:dropdownOption key=".manualControl.title" icon="icon-wrench" pointId="${row.pointId}" popupTitle="${popupTitle}" deviceId="${row.device.deviceId}" classes="clearfix f-manualControl" id="manualControl-${row.pointId}"></cm:dropdownOption>
+                                                    <cm:dropdownOption key=".manualControl.title" icon="icon-wrench" pointId="${row.pointId}" popupTitle="${popupTitle}" deviceId="${row.device.deviceId}" classes="clearfix js-manualControl" id="manualControl-${row.pointId}"></cm:dropdownOption>
                                                 </tags:dynamicChooseOption>
                                             </tags:dynamicChoose>
                                             <c:if test="${row.cog.tags}">
@@ -194,7 +194,7 @@
                                                     <cti:item value="${row.pointName}"/>
                                                 </cti:list>
                                                 <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
-                                                <cm:dropdownOption key=".tags.title" icon="icon-tag-blue" pointId="${row.pointId}" deviceId="${row.device.deviceId}" popupTitle="${popupTitle}" classes="clearfix f-tags" id="tagsDialog-${row.pointId}"></cm:dropdownOption>
+                                                <cm:dropdownOption key=".tags.title" icon="icon-tag-blue" pointId="${row.pointId}" deviceId="${row.device.deviceId}" popupTitle="${popupTitle}" classes="clearfix js-tags" id="tagsDialog-${row.pointId}"></cm:dropdownOption>
                                             </c:if>
                                             <c:if test="${row.cog.enableDisable}">
                                                 <cti:msg2 key=".enableDisable.title" var="title" />
@@ -204,7 +204,7 @@
                                                     <cti:item value="${row.pointName}"/>
                                                 </cti:list>
                                                 <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
-                                                <cm:dropdownOption key=".enableDisable.title" icon="icon-accept" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix f-enableDisable" id="enableDisable-${row.pointId}"></cm:dropdownOption>
+                                                <cm:dropdownOption key=".enableDisable.title" icon="icon-accept" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix js-enableDisable" id="enableDisable-${row.pointId}"></cm:dropdownOption>
                                             </c:if>
                                             <c:if test="${row.cog.trend}">
                                                 <cti:msg2 key=".trend.title" var="title" />
@@ -214,7 +214,7 @@
                                                     <cti:item value="${row.pointName}"/>
                                                 </cti:list>
                                                 <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
-                                                <cm:dropdownOption key=".trend.title" icon="icon-chart-line" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix f-trend" id="trendDialog-${row.pointId}"></cm:dropdownOption>
+                                                <cm:dropdownOption key=".trend.title" icon="icon-chart-line" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix js-trend" id="trendDialog-${row.pointId}"></cm:dropdownOption>
                                             </c:if>
                                             <c:if test="${row.cog.altScan}">
                                                 <cti:msg2 key=".altScan.title" var="title" />
@@ -224,7 +224,7 @@
                                                     <cti:item value="${row.pointName}"/>
                                                 </cti:list>
                                                 <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
-                                                <cm:dropdownOption key=".altScan.title" icon="icon-transmit-blue" popupTitle="${popupTitle}" deviceId="${row.device.deviceId}" deviceName="${row.deviceName}" classes="clearfix f-altScan" id="altScan-${row.pointId}"></cm:dropdownOption>
+                                                <cm:dropdownOption key=".altScan.title" icon="icon-transmit-blue" popupTitle="${popupTitle}" deviceId="${row.device.deviceId}" deviceName="${row.deviceName}" classes="clearfix js-altScan" id="altScan-${row.pointId}"></cm:dropdownOption>
                                             </c:if>
                                         </cm:dropdown></td>
                                 </c:if>

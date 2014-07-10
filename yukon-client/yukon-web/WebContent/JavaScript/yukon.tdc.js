@@ -61,13 +61,13 @@ yukon.tdc = (function () {
                 $('#alarm-audio')[0].mute = false;
             });
             
-            $('.f-ack-all').click(function () {
+            $('.js-ack-all').click(function () {
                 $.post(yukon.url('/tools/data-viewer/acknowledgeAll'), {}).done(function (data) {
                     yukon.ui.flashSuccess(data.success);
                 });
             });    
             
-            $(document).on('click', '.f-ack', function () {
+            $(document).on('click', '.js-ack', function () {
                 var pointId = $(this).attr("pointId");
                 var condition = $(this).attr("condition");
                 var args = {};
@@ -77,7 +77,7 @@ yukon.tdc = (function () {
                     $('#latestData').load(yukon.url('/tools/data-viewer/refresh'));
                 });
             });
-            $('.f-trend').click(function (event) {
+            $('.js-trend').click(function (event) {
                 var popupTitle = $(this).parent().attr("popupTitle");
                 var pointId = $(this).parent().attr("pointId");
                 var url = yukon.url("/tools/data-viewer/trend");
@@ -92,7 +92,7 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.f-tags').click(function () {
+            $('.js-tags').click(function () {
                 var popupTitle = $(this).parent().attr("popupTitle");
                 var pointId = $(this).parent().attr("pointId");
                 var deviceId = $(this).parent().attr("deviceId");
@@ -109,7 +109,7 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.f-enableDisable').click(function (event) {
+            $('.js-enableDisable').click(function (event) {
                 var pointId = $(this).parent().attr("pointId");
                 var popupTitle = $(this).parent().attr("popupTitle");
                 var url = yukon.url("/tools/data-viewer/enableDisable");
@@ -124,7 +124,7 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.f-manualEntry').click(function (event) {
+            $('.js-manualEntry').click(function (event) {
                 var pointId = $(this).parent().attr("pointId");
                 var url = yukon.url("/tools/data-viewer/manualEntry");
                 var popupTitle = $(this).parent().attr("popupTitle");
@@ -139,7 +139,7 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.f-manualControl').click(function (event) {
+            $('.js-manualControl').click(function (event) {
                 var pointId = $(this).parent().attr("pointId");
                 var deviceId = $(this).parent().attr("deviceId");
                 var url = yukon.url("/tools/data-viewer/manualControl");
@@ -156,7 +156,7 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.f-altScan').click(function (event) {
+            $('.js-altScan').click(function (event) {
                 var popupTitle = $(this).parent().attr("popupTitle");
                 var deviceId = $(this).parent().attr("deviceId");
                 var deviceName = $(this).parent().attr("deviceName");
@@ -173,7 +173,7 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.f-display-alarm-ack').click(
+            $('.js-display-alarm-ack').click(
 				function () {
 	   			 var displayId = $(this).attr("displayId");
 	   			 var data = {
@@ -184,7 +184,7 @@ yukon.tdc = (function () {
 	            	yukon.ui.flashSuccess(data.success);
 	        	});
 			});
-           $('.f-one-alarm-ack').click(function (event) {
+           $('.js-one-alarm-ack').click(function (event) {
 				var pointId = $(this).parent().attr( "pointId");
 				var condition = $(this).parent().attr("condition");
                    var data = {
@@ -196,7 +196,7 @@ yukon.tdc = (function () {
                    $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data).done(function (data) {});
                });
             
-            $(document).on('click', '.f-one-alarm-ack-b', function () {
+            $(document).on('click', '.js-one-alarm-ack-b', function () {
                 var pointId = $(this).attr("pointId");
                 var condition = $(this).attr("condition");
                         var data = {
@@ -207,7 +207,7 @@ yukon.tdc = (function () {
                                 function (data) {
                                 });
                     });
-            $('.f-mult-alarm-ack').click(function (event) {
+            $('.js-mult-alarm-ack').click(function (event) {
                 var pointId = $(this).parent().attr("pointId");
                 var popupTitle = $(this).parent().attr("popupTitle");
                 var url = yukon.url("/tools/data-viewer/unacknowledged");
@@ -222,7 +222,7 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $(document).on('click', '.f-altScanRate-send', function () {
+            $(document).on('click', '.js-altScanRate-send', function () {
                 $.ajax({
                     url : $("#altScanRateForm").attr("action"),
                     data : $("#altScanRateForm").serialize(),
@@ -231,11 +231,11 @@ yukon.tdc = (function () {
                     $('#tdc-popup').dialog('close');
                 });
             });
-            $(document).on('click', '.f-manualEntry-send', function() {
+            $(document).on('click', '.js-manualEntry-send', function() {
                 submitFormViaAjax('tdc-popup', 'manualEntryForm');
             });
             
-            $(document).on('click', '.f-enableDisable-send', function() {
+            $(document).on('click', '.js-enableDisable-send', function() {
                 $.ajax({
                     url : $("#enableDisableForm").attr("action"),
                     data : $("#enableDisableForm").serialize(),
@@ -246,11 +246,11 @@ yukon.tdc = (function () {
 
             });
             
-            $(document).on('click', '.f-manualControl-send', function() {
+            $(document).on('click', '.js-manualControl-send', function() {
                 submitFormViaAjax('tdc-popup', 'manualControlForm');
             });
             
-            $(document).on('click', '.f-tags-save', function() {
+            $(document).on('click', '.js-tags-save', function() {
                 $.ajax({
                     url: yukon.url('/tools/data-viewer/tagsSave'),
                     data: $("#tagsForm").serialize(),
@@ -260,11 +260,11 @@ yukon.tdc = (function () {
                 });
             });
             
-            $(document).on('click', '.f-tags-add', function() {
+            $(document).on('click', '.js-tags-add', function() {
                 submitFormViaAjax('tdc-popup', 'tagsForm', yukon.url('/tools/data-viewer/tagAdd'));
             });
             
-            $(document).on('click', '.f-tags-remove', function() {
+            $(document).on('click', '.js-tags-remove', function() {
                 var rowIndex = $(this).attr("rowIndex");
                 console.info(rowIndex);
                 
@@ -272,18 +272,18 @@ yukon.tdc = (function () {
                 submitFormViaAjax('tdc-popup', 'tagsForm', yukon.url('/tools/data-viewer/tagRemove'));
             });
             
-            $(document).on('click', '.f-ack-alarm', function() {
+            $(document).on('click', '.js-ack-alarm', function() {
                 var data = {};
                 data.pointId = $(this).attr("pointId");
                 data.condition = $(this).attr("condition");
                 $("#"+data.condition).hide();
-                $("#"+data.condition).removeClass("f-ack-alarm");
+                $("#"+data.condition).removeClass("js-ack-alarm");
                 $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data).done(function(json) {
-                    if ($('.f-ack-alarm').length === 0) $('.f-ack-alarms-for-point').hide();
+                    if ($('.js-ack-alarm').length === 0) $('.js-ack-alarms-for-point').hide();
                 });
             });
             
-            $(document).on('click', '.f-ack-alarms-for-point', function() {                
+            $(document).on('click', '.js-ack-alarms-for-point', function() {                
                 var pointId = $(this).attr("pointId");
                 var data = {};
                 data.pointId = pointId;

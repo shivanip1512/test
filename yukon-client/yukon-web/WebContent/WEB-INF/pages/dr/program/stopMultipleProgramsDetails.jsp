@@ -36,7 +36,7 @@ $(function(){
         var stopAll = true,
             allDisabled = true;
         
-        $(".f-singleProgramChecked").each(function(index,element) {
+        $(".js-singleProgramChecked").each(function(index,element) {
             // Stopall should be checked if all the valid checkboxes are checked
             stopAll = stopAll && ($(element).is(":disabled") || $(element).is(":checked"));
             allDisabled = (allDisabled && $(element).is(":disabled"));
@@ -58,9 +58,9 @@ $(function(){
     
     useStopGearChecked = function(event) {
         if ($(event.target).is(':checked')) {
-            $(event.target).siblings(".f-useStopGearCheckedTarget").removeAttr("disabled");
+            $(event.target).siblings(".js-useStopGearCheckedTarget").removeAttr("disabled");
         } else {
-            $(event.target).siblings(".f-useStopGearCheckedTarget").attr("disabled","disabled");
+            $(event.target).siblings(".js-useStopGearCheckedTarget").attr("disabled","disabled");
         }
         updateComponents();
     }
@@ -76,7 +76,7 @@ $(function(){
         } else {
             $("#allProgramsUseStopGearsCheckbox").removeAttr("disabled");
 
-            $(".f-useStopGearChecked").each(function(index,element) {
+            $(".js-useStopGearChecked").each(function(index,element) {
                 stopAll = stopAll && ($(element).is(":disabled") || $(element).is(":checked"));
                 allDisabled = (allDisabled && $(element).is(":disabled"));
             });
@@ -154,7 +154,7 @@ $(function(){
     updateActionButtons = function() {
         var atLeastOneGearChange = false;
 
-        $(".f-useStopGearChecked").each(function(index,element) {
+        $(".js-useStopGearChecked").each(function(index,element) {
             atLeastOneGearChange = (atLeastOneGearChange || 
                     (!$(element).is(":disabled") && $(element).is(":checked")));
         });
@@ -178,8 +178,8 @@ $(function(){
     
     updateComponents();
     
-    $(".f-singleProgramChecked").click(stopProgramChecked);
-    $(".f-useStopGearChecked").click(useStopGearChecked);
+    $(".js-singleProgramChecked").click(stopProgramChecked);
+    $(".js-useStopGearChecked").click(useStopGearChecked);
     $("#allProgramsUseStopGearsCheckbox").click(allUseStopGearChecked);
     $("#allProgramsCheckbox").click(allStopProgramChecked);
     $("#stopNowCheckbox").click(stopNowChecked);
@@ -266,14 +266,14 @@ $( function () {
                     <tr>
                         <td>
                             <form:hidden path="programStopInfo[${status.index}].programId"/>
-                            <form:checkbox path="programStopInfo[${status.index}].stopProgram" id="stopProgramCheckbox${status.index}" cssClass="f-singleProgramChecked"/>
+                            <form:checkbox path="programStopInfo[${status.index}].stopProgram" id="stopProgramCheckbox${status.index}" cssClass="js-singleProgramChecked"/>
                             <label for="stopProgramCheckbox${status.index}">${fn:escapeXml(program.name)}</label>
                         </td>
                         <c:if test="${stopGearAllowed}">
                             <td>
                                 <c:if test="${fn:length(gears) > 1}">
-                                    <form:checkbox path="programStopInfo[${status.index}].useStopGear" id="useStopGear${status.index}" cssClass="f-useStopGearChecked"/>
-                                    <form:select path="programStopInfo[${status.index}].gearNumber" id="programGear${status.index}" cssClass="f-useStopGearCheckedTarget">
+                                    <form:checkbox path="programStopInfo[${status.index}].useStopGear" id="useStopGear${status.index}" cssClass="js-useStopGearChecked"/>
+                                    <form:select path="programStopInfo[${status.index}].gearNumber" id="programGear${status.index}" cssClass="js-useStopGearCheckedTarget">
                                         <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
                                             <c:if test="${currentGear.gearNumber != gear.gearNumber}">
                                                 <form:option value="${gearStatus.index + 1}">

@@ -12,10 +12,10 @@
     <span id="warning_${paoId}_ok" style="display: none;">
     </span>
 
-    <span class="f-tooltip" id="warningPopup_${paoId}" style="display: none;">
+    <span class="js-tooltip" id="warningPopup_${paoId}" style="display: none;">
         <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE"/> 
     </span>
-    <span id="warning_${paoId}_alert" style="display: none;" class="f-has-tooltip">
+    <span id="warning_${paoId}_alert" style="display: none;" class="js-has-tooltip">
         <cti:icon classes="row-icon" icon="icon-error"/>
     </span>
 </c:if>

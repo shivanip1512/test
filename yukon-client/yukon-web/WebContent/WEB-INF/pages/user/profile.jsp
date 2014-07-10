@@ -33,7 +33,7 @@
                 </tags:nameValueContainer2>
                 <div>
                     <h4><i:inline key="yukon.web.modules.user.additionContactInfo.title"/></h4>
-                    <div style="margin-left:3px;" class="f-display_empty<c:if test="${not empty userProfile.contact.otherNotifications}"> dn</c:if>"><i:inline key="yukon.web.defaults.na"/></div>
+                    <div style="margin-left:3px;" class="js-display_empty<c:if test="${not empty userProfile.contact.otherNotifications}"> dn</c:if>"><i:inline key="yukon.web.defaults.na"/></div>
                     <tags:nameValueContainer2 id="contactNotifs">
                         <c:forEach var="contactNotif" items="${userProfile.contact.otherNotifications}" varStatus="row">
                             <c:set var="notifType" value="${contactNotif.contactNotificationType}"/>
@@ -41,13 +41,13 @@
                             <cti:displayForPageEditModes modes="EDIT">
                                 <tr class="contactNotif">
                                     <td class="name">
-                                        <tags:selectWithItems items="${notificationTypes}" path="contact.otherNotifications[${row.index}].contactNotificationType" inputClass="f-contactNotif-type"/>
+                                        <tags:selectWithItems items="${notificationTypes}" path="contact.otherNotifications[${row.index}].contactNotificationType" inputClass="js-contactNotif-type"/>
                                     </td>
                                     <td class="value">
-                                        <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='f-contactNotif-val${isPhone ? " f-format-phone" : ""}'></tags:input>
+                                        <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='js-contactNotif-val${isPhone ? " js-format-phone" : ""}'></tags:input>
                                     </td>
                                     <td class="actions">
-                                        <cti:button renderMode="buttonImage" icon="icon-cross" classes="f-remove"/>
+                                        <cti:button renderMode="buttonImage" icon="icon-cross" classes="js-remove"/>
                                     </td>
                                 </tr>
                             </cti:displayForPageEditModes>
@@ -100,11 +100,11 @@
                                 <input type="hidden" name="userGroupName" value="${fn:escapeXml(userGroupName)}">
                                 <tags:nameValueContainer2>
                                     <tr><td class="name"><i:inline key="yukon.web.changelogin.oldPassword"/></td>
-                                        <td class="value"><input maxlength="64" autocomplete="false" type="password" name="oldPassword" value="" class="f-current" placeholder="<cti:msg2 key='yukon.web.changelogin.oldPassword'/>"></input></td>
+                                        <td class="value"><input maxlength="64" autocomplete="false" type="password" name="oldPassword" value="" class="js-current" placeholder="<cti:msg2 key='yukon.web.changelogin.oldPassword'/>"></input></td>
                                     </tr>
                                     <tr>
                                         <td class="name"><i:inline key="yukon.web.changelogin.newPassword"/></td>
-                                        <td class="value"><input maxlength="64" autocomplete="false" type="password" name="password1" value="" class="password_editor_field new f-check_password" placeholder="<cti:msg2 key='yukon.web.changelogin.newPassword'/>"></input></td>
+                                        <td class="value"><input maxlength="64" autocomplete="false" type="password" name="password1" value="" class="password_editor_field new js-check_password" placeholder="<cti:msg2 key='yukon.web.changelogin.newPassword'/>"></input></td>
                                     </tr>
                                     <tr>
                                         <td class="name"><i:inline key="yukon.web.changelogin.confirm"/></td>
@@ -136,7 +136,7 @@
                             <td class="name"><i:inline key=".preferences.default.all"/></td>
                             </td>
                             <td class="value">
-                                <cti:button classes="f-pref-default" id="reset_all_preferences" icon="icon-arrow-swap" nameKey="preferences.default.all.button"/>
+                                <cti:button classes="js-pref-default" id="reset_all_preferences" icon="icon-arrow-swap" nameKey="preferences.default.all.button"/>
                             </td>
                         </tr>
                         
@@ -152,7 +152,7 @@
                                     <c:set var="prefOptions" value="${objPrefName.valueType.optionList}"/>
                                     <c:set var="prefDisplayOptMap" value="${userPreferencesNameToDisplayOptions.get(prefName)}"/>
                                     
-                                    <cti:button classes="f-pref-default" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage"/>
+                                    <cti:button classes="js-pref-default" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage"/>
                                     
                                     <div class="button-group dib fl">
                                         <c:forEach var="prefOption" items="${prefOptions}" varStatus="stat">
@@ -234,13 +234,13 @@
     <tr id="template_contactNotif" class="contactNotif">
         <td class="name">
             <cti:msg2 key="yukon.web.defaults.selector.selectOne" var="txt_selectOne"/>
-            <tags:simpleSelect name="contact.otherNotifications" items="${notificationTypes}" itemLabelKey="formatKey" defaultItemValue="-1" defaultItemLabel="${txt_selectOne}" cssClass="f-contactNotif-type"/>
+            <tags:simpleSelect name="contact.otherNotifications" items="${notificationTypes}" itemLabelKey="formatKey" defaultItemValue="-1" defaultItemLabel="${txt_selectOne}" cssClass="js-contactNotif-type"/>
         </td>
         <td class="value">
-            <input type="text" name="contact.otherNotifications" class="f-contactNotif-val">
+            <input type="text" name="contact.otherNotifications" class="js-contactNotif-val">
         </td>
         <td class="actions">
-            <cti:button renderMode="buttonImage" icon="icon-cross" classes="f-remove"/>
+            <cti:button renderMode="buttonImage" icon="icon-cross" classes="js-remove"/>
         </td>
     </tr>
 </tbody></table>

@@ -28,7 +28,7 @@
     
                         <span id="editName" style="display: none;">
                             <form:input path="deviceLabel" maxlength="60" />
-                            <cti:button nameKey="save" type="submit" classes="f-blocker"/>
+                            <cti:button nameKey="save" type="submit" classes="js-blocker"/>
                             <cti:button nameKey="cancel" classes="cancelLabelEdit"/>
                         </span> 
                         <span id="thermostatName">
@@ -182,7 +182,7 @@
         </tags:nameValueContainer2>
         
         <div class="action-area">
-            <cti:button nameKey="ok" type="submit" classes="f-blocker"/> 
+            <cti:button nameKey="ok" type="submit" classes="js-blocker"/> 
             <cti:button nameKey="cancel" id="confirmCancel" onclick="$('#confirmPopup_${event.eventId}').dialog('close')"/>
         </div>
     </form>

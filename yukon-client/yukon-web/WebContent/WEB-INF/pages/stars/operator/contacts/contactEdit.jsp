@@ -10,7 +10,7 @@
 
 <script type="text/javascript">
 $(function() {
-    $(document).on('click', '.f-delete', function(e) {
+    $(document).on('click', '.js-delete', function(e) {
         $(e.currentTarget).closest('tr').remove();
     });
 });
@@ -71,7 +71,7 @@ $(function() {
                             <td class="value">
                                 <tags:input path="otherNotifications[${notifRow.index}].notificationValue" inputClass="fl"/>
                                 <c:if test="${mode == 'EDIT' && !newNotification}">
-                                    <cti:button nameKey="delete" icon="icon-cross" renderMode="buttonImage" classes="f-delete fn"/>
+                                    <cti:button nameKey="delete" icon="icon-cross" renderMode="buttonImage" classes="js-delete fn"/>
                                 </c:if>
                             </td>
                     </c:forEach>

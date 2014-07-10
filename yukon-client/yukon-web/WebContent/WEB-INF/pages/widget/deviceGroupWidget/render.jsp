@@ -31,7 +31,7 @@
     
 </script>
 
-<div id="currentGroups" class="f-block-this">
+<div id="currentGroups" class="js-block-this">
 
     <div class="success">${successMsg}</div>
                     

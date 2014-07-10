@@ -46,7 +46,7 @@ yukon.themes = (function () {
             }
 
             /** Initialize each color picker */ 
-            $('.f-color-input').each(function (idx, item) {
+            $('.js-color-input').each(function (idx, item) {
                 var item = $(item),
                     color = item.val();
                 item.spectrum({
@@ -172,12 +172,12 @@ yukon.themes = (function () {
                     okcancel;
 
                 e.preventDefault();
-                okcancel = button.closest('.page-action-area').find('.f-delete-confirm');
+                okcancel = button.closest('.page-action-area').find('.js-delete-confirm');
                 okcancel.removeClass('dn');
             });
 
             /** Delete image button confirm handler, attempt to delete the image */
-            $(document).on('click', '.f-delete-ok', function (e) {
+            $(document).on('click', '.js-delete-ok', function (e) {
                 var button = $(e.currentTarget),
                     imageParent = button.closest('.section'),
                     imageUrl = imageParent.find('a img').attr('src'),
@@ -193,7 +193,7 @@ yukon.themes = (function () {
                       // _method is needed by the HiddenHttpMethodFilter which allows us to use other methods like DELETE and PUT
                       data: { _method: 'DELETE'}
                     }).done(function (data, textStatus, jqXHR) {
-                        var deleteConfirm = $('.f-delete-confirm');
+                        var deleteConfirm = $('.js-delete-confirm');
                         if (data.success === true) {
                             imageParent.toggle('fade', function() {
                                 imageParent.remove();
@@ -211,7 +211,7 @@ yukon.themes = (function () {
             $(document).on('click', '.cancel', function (e) {
                 var button = $(e.currentTarget);
                 e.preventDefault();
-                button.closest('.f-delete-confirm').addClass('dn');
+                button.closest('.js-delete-confirm').addClass('dn');
             });
             initialized = true;
         },
@@ -242,9 +242,9 @@ yukon.themes = (function () {
 
                         uploadArea.closest('.image-picker').find('.image.selected').removeClass('selected');
                         copy.find('.image').addClass('selected').attr('data-image-id', data.result.image.id);
-                        copy.find('.f-name-value').text(data.result.image.name);
-                        copy.find('.f-category-value').text(data.result.image.category);
-                        copy.find('.f-size-value').text(data.result.image.size);
+                        copy.find('.js-name-value').text(data.result.image.name);
+                        copy.find('.js-category-value').text(data.result.image.category);
+                        copy.find('.js-size-value').text(data.result.image.size);
                         copy.find('.simple-input-image img').attr('alt', data.result.image.name);
                         copy.find('.simple-input-image img').attr('src', yukon.url('/common/images/') + data.result.image.id + '/thumb');
 

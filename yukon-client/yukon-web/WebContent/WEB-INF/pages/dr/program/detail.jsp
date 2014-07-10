@@ -70,21 +70,21 @@
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
                                     <cti:icon icon="icon-spinner"/>
-                                    <span class="f-connected-load"><i:inline key=".calculating"/></span>
+                                    <span class="js-connected-load"><i:inline key=".calculating"/></span>
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".info.diversifiedLoad">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
                                     <cti:icon icon="icon-spinner"/>
-                                    <span class="f-diversified-load"><i:inline key=".calculating"/></span>
+                                    <span class="js-diversified-load"><i:inline key=".calculating"/></span>
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".info.kwSavings">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
                                     <cti:icon icon="icon-spinner"/>
-                                    <span class="f-kw-savings"><i:inline key=".calculating"/></span>
+                                    <span class="js-kw-savings"><i:inline key=".calculating"/></span>
                                 </div>
                             </tags:nameValue2>
                         </cti:msgScope>
@@ -96,7 +96,7 @@
             <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
                 <%-- Display the Asset Availability Info --%>
                 <tags:sectionContainer2 nameKey="assetAvailability">
-                    <div class="f-asset-availability f-block-this">
+                    <div class="js-asset-availability js-block-this">
                         <i:inline key="yukon.common.loading"/>
                     </div>
                 </tags:sectionContainer2>

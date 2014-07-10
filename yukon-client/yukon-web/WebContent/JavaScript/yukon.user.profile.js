@@ -18,7 +18,7 @@ yukon.userProfile = (function () {
         _urlChangeAllPreferences = yukon.url('/user/updatePreferences/all/default.json'),
         _urlUpdatePassword = yukon.url('/user/updatePassword.json'),
         _getPrefButtonWithSameOption = function(jqueryElement, event) {
-            var btnSameOption = jqueryElement.closest('td').find('button:not(.f-pref-default)[data-value='+ $(event.currentTarget).attr('data-value') +']');
+            var btnSameOption = jqueryElement.closest('td').find('button:not(.js-pref-default)[data-value='+ $(event.currentTarget).attr('data-value') +']');
             return btnSameOption;
         },
 
@@ -111,11 +111,11 @@ yukon.userProfile = (function () {
 
             mod.disablePasswordUserInput();
 
-            $(document).on('click', '#tbl_preferences .selection_group button:not(.on):not(.f-pref-default)', this.setEnumPreference);
-            $(document).on('click', '#tbl_preferences .selection_group .f-pref-default', this.setEnumPreferenceDefault);
-            $(document).on('click', '#tbl_preferences form.f-pref-form .save-preference', this.setStringPreferenceFromSave);
-            $(document).on('keypress', '#tbl_preferences form.f-pref-form input', this.setStringPreferenceOnReturn);
-            $(document).on('click', '#tbl_preferences form.f-pref-form .f-pref-default', this.setStringPreferenceFromDefault);
+            $(document).on('click', '#tbl_preferences .selection_group button:not(.on):not(.js-pref-default)', this.setEnumPreference);
+            $(document).on('click', '#tbl_preferences .selection_group .js-pref-default', this.setEnumPreferenceDefault);
+            $(document).on('click', '#tbl_preferences form.js-pref-form .save-preference', this.setStringPreferenceFromSave);
+            $(document).on('keypress', '#tbl_preferences form.js-pref-form input', this.setStringPreferenceOnReturn);
+            $(document).on('click', '#tbl_preferences form.js-pref-form .js-pref-default', this.setStringPreferenceFromDefault);
             $(document).on('keyup', '#tbl_preferences input[type="text"]', this.togglePreferenceSaveButton);
             $(document).on('change', '#tbl_preferences input[type="text"]', this.togglePreferenceSaveButton);
             $(document).on('type', '#tbl_preferences input', this._setStringPreference);
@@ -125,10 +125,10 @@ yukon.userProfile = (function () {
 
             $(document).on('keyup', 'input[type="text"]', this.updateInputTitle);
             $(document).on('click', '#btn_addContactInfo', this.addContactNotifRow);
-            $(document).on('change', '.f-has_selectOne', this.selectRemoveSelectOne);
+            $(document).on('change', '.js-has_selectOne', this.selectRemoveSelectOne);
 
-            $(document).on('click', '#contactNotifs td .f-remove', this.removeContactNotifRow);
-            $(document).on('change', 'select.f-contactNotif-type', this.updateContactNotifInputFormatting);
+            $(document).on('click', '#contactNotifs td .js-remove', this.removeContactNotifRow);
+            $(document).on('change', 'select.js-contactNotif-type', this.updateContactNotifInputFormatting);
 
             $(document).on('yukon.dialog.confirm.ok', '#yukon_dialog_confirm', this.resetAllPreferences);
 
@@ -215,12 +215,12 @@ yukon.userProfile = (function () {
         updateContactNotifInputFormatting: function(event) {
             var ctrlSelect = $(event.currentTarget);
             var selectedOptionValue = ctrlSelect.find(':selected').val();
-            var input = ctrlSelect.closest('tr').find('input.f-contactNotif-val');
+            var input = ctrlSelect.closest('tr').find('input.js-contactNotif-val');
 
             var isPhone = selectedOptionValue == 'CALL_BACK_PHONE' || selectedOptionValue == 'CELL_PHONE' || selectedOptionValue == 'FAX' || selectedOptionValue == 'HOME_PHONE' || selectedOptionValue == 'PHONE' || selectedOptionValue == 'WORK_PHONE';
-            input.removeClass('f-format-phone');
+            input.removeClass('js-format-phone');
             if (isPhone) {
-                input.addClass('f-format-phone');
+                input.addClass('js-format-phone');
                 for (var ii=0; ii < input.length; ii++) {
                     yukon.ui.formatPhone(input[ii]);
                 }
@@ -241,7 +241,7 @@ yukon.userProfile = (function () {
                 json.preferences.forEach(function(preference, index, fullarray) {
                     var row = table.find('tr[data-type='+ preference.name +']');
                     row.find('button').removeClass('on');
-                    row.find('button[data-value='+ preference.defaultVal +']:not(.f-pref-default)').addClass('on');
+                    row.find('button[data-value='+ preference.defaultVal +']:not(.js-pref-default)').addClass('on');
                 });
             });
         },
@@ -295,7 +295,7 @@ yukon.userProfile = (function () {
             }
             newRow.removeAttr('id');
             var ctrlType = newRow.find('select');
-            ctrlType.addClass('f-has_selectOne');
+            ctrlType.addClass('js-has_selectOne');
 
             // calculate the nextIndex so we can set the controls names.
             var lastExistingRow = $('#contactNotifs').find('tr:not(#template_contactNotif):last');
@@ -307,7 +307,7 @@ yukon.userProfile = (function () {
 
             $('#contactNotifs tbody').append(newRow);
             newRow.show();
-            $('#contactNotifs').siblings('.f-display_empty').hide();
+            $('#contactNotifs').siblings('.js-display_empty').hide();
             ctrlType.focus();
         },
 
@@ -332,7 +332,7 @@ yukon.userProfile = (function () {
             var selectedOptionValue = ctrlSelect.find(':selected').val();
             if(selectedOptionValue != '-1') {
                 ctrlSelect.find('option[value="-1"]').remove();
-                ctrlSelect.removeClass('f-has_selectOne');
+                ctrlSelect.removeClass('js-has_selectOne');
             }
         }
     };

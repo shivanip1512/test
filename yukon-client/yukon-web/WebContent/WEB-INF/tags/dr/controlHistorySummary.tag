@@ -20,7 +20,7 @@
         
             <!-- Info Popup -->
             <cti:uniqueIdentifier var="uniqueId" prefix="info-popup-"/>
-            <i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle" on=".f-help-${uniqueId}" options="{width:600}">
+            <i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle" on=".js-help-${uniqueId}" options="{width:600}">
                  <tags:nameValueContainer2>
                      <tags:nameValue2 nameKey=".helpInfoText.programBasedControlHistory">
                          <i:inline key=".helpInfoText.programBasedControlHistoryText" />
@@ -36,7 +36,7 @@
                     <c:if test="${showControlHistorySummary}">
                         <tr>
                             <th colspan="3">
-                                <cti:icon icon="icon-help" classes="cp fn f-help-${uniqueId}"/>
+                                <cti:icon icon="icon-help" classes="cp fn js-help-${uniqueId}"/>
                             </th>
                             <th><i:inline key=".day"/></th>
                             <th><i:inline key=".month"/></th>

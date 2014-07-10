@@ -200,7 +200,7 @@ yukon.ami.meterEventsReport = (function () {
 
         init: function() {
             
-            $(document).on('click', '.f-delete-schedule-item', function (event) {
+            $(document).on('click', '.js-delete-schedule-item', function (event) {
                 event.preventDefault();
                 var jobId = $(this).closest('[data-job-id]').data('job-id');
                 $('#scheduledJobsConfirmDeleteDialog').dialog({

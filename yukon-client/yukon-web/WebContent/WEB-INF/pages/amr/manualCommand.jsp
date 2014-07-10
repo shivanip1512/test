@@ -34,7 +34,7 @@ function loadCommand() {
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".commonCommands">
                     <tags:commanderPrompter/>
-                    <select name="commonCommand" class="f-loadCommanderCommand" data-cmdfield="command">
+                    <select name="commonCommand" class="js-loadCommanderCommand" data-cmdfield="command">
                         <option value=""><i:inline key=".selectCommand"/></option>
                         
                         <c:forEach var="command" items="${commandList}">
@@ -47,7 +47,7 @@ function loadCommand() {
                 </tags:nameValue2>
             </tags:nameValueContainer2>
             <div class="page-action-area">
-                <cti:button nameKey="execute" name="execute" type="submit" classes="primary action f-disable-after-click"/>
+                <cti:button nameKey="execute" name="execute" type="submit" classes="primary action js-disable-after-click"/>
                 <cti:button nameKey="clear" name="clearText" type="submit"/>
                 <cti:button nameKey="refresh" name="refresh" onclick="window.location.reload()"/>
             </div>

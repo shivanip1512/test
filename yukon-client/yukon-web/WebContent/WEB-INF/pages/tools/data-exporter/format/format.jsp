@@ -20,8 +20,8 @@
                 <td></td>
                 <td></td>
                 <td>
-                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="f-remove fr M0"/>
-                    <cti:button icon="icon-pencil" renderMode="buttonImage" classes="f-edit fr"/>
+                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove fr M0"/>
+                    <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit fr"/>
                 </td>
             </tr>
         </table>
@@ -39,10 +39,10 @@
                 <td></td>
                 <td></td>
                 <td>
-                    <cti:button icon="icon-cross" classes="f-remove fr M0" renderMode="buttonImage"/>
-                    <cti:button icon="icon-pencil" classes="f-edit fr" renderMode="buttonImage"/>
-                    <cti:button icon="icon-bullet-go-up" classes="f-up right fr M0" renderMode="buttonImage"/>
-                    <cti:button icon="icon-bullet-go-down" classes="f-down left fr M0" renderMode="buttonImage"/>
+                    <cti:button icon="icon-cross" classes="js-remove fr M0" renderMode="buttonImage"/>
+                    <cti:button icon="icon-pencil" classes="js-edit fr" renderMode="buttonImage"/>
+                    <cti:button icon="icon-bullet-go-up" classes="js-up right fr M0" renderMode="buttonImage"/>
+                    <cti:button icon="icon-bullet-go-down" classes="js-down left fr M0" renderMode="buttonImage"/>
                 </td>
             </tr>
         </table>
@@ -60,7 +60,7 @@
         
             <tags:nameValueContainer2 tableClass="with-form-controls">
             
-                <tags:inputNameValue inputClass="f-focus" nameKey=".nameOfFormat" path="formatName" size="50" maxlength="100"/>
+                <tags:inputNameValue inputClass="js-focus" nameKey=".nameOfFormat" path="formatName" size="50" maxlength="100"/>
                 
                 <tags:nameValue2 nameKey=".delimiter">
                     <select name="delimiterSelect" id="delimiters">
@@ -79,8 +79,8 @@
                     <tags:input id="delimiter" path="delimiter" size="2" maxlength="1"/>
                 </tags:nameValue2>
                 
-                <tags:inputNameValue nameKey=".header" path="header" size="100" maxlength="255" inputClass="f-header"/>
-                <tags:inputNameValue nameKey=".footer" path="footer" size="100" maxlength="255" inputClass="f-footer"/>
+                <tags:inputNameValue nameKey=".header" path="header" size="100" maxlength="255" inputClass="js-header"/>
+                <tags:inputNameValue nameKey=".footer" path="footer" size="100" maxlength="255" inputClass="js-footer"/>
 
                 <tags:nameValue2 nameKey=".timeZoneFormat">
                     <form:select id="date-timezone-format" path="dateTimeZoneFormat">
@@ -123,8 +123,8 @@
                                 <td><span><cti:msg2 key="${attribute.dataSelection}"/></span></td>
                                 <td><span>${fn:escapeXml(attribute.daysPrevious)}</span></td>
                                 <td>
-                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="f-remove fr M0"/>
-                                    <cti:button icon="icon-pencil" renderMode="buttonImage" classes="f-edit fr"/>
+                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove fr M0"/>
+                                    <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit fr"/>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -194,12 +194,12 @@
                                 <span><cti:msg2 key="${exportField.padSide}"/>&nbsp;&nbsp;${exportField.padChar}</span>
                             </td>
                             <td>
-                                <cti:button icon="icon-cross" classes="f-remove fr M0" renderMode="buttonImage"/>
-                                <cti:button icon="icon-pencil" classes="f-edit fr" renderMode="buttonImage"/>
+                                <cti:button icon="icon-cross" classes="js-remove fr M0" renderMode="buttonImage"/>
+                                <cti:button icon="icon-pencil" classes="js-edit fr" renderMode="buttonImage"/>
                                 <c:set var="disableUp" value="${row.first}"/>
                                 <c:set var="disableDown" value="${row.last}"/>
-                                <cti:button icon="icon-bullet-go-up" classes="f-up right fr M0" renderMode="buttonImage" disabled="${disableUp}"/>
-                                <cti:button icon="icon-bullet-go-down" classes="f-down left fr M0" renderMode="buttonImage" disabled="${disableDown}"/>
+                                <cti:button icon="icon-bullet-go-up" classes="js-up right fr M0" renderMode="buttonImage" disabled="${disableUp}"/>
+                                <cti:button icon="icon-bullet-go-down" classes="js-down left fr M0" renderMode="buttonImage" disabled="${disableDown}"/>
                             </td>
                         </tr>
                     </c:forEach>

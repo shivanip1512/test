@@ -14,7 +14,7 @@
 
     //INIT
     $(function(){
-        $(document).on('change', '.f-thermostatSelectionChanged', thermostatSelectionChanged);
+        $(document).on('change', '.js-thermostatSelectionChanged', thermostatSelectionChanged);
         thermostatSelect($("input[data-thermostat-type]:checked")[0]);
     });
     
@@ -68,7 +68,7 @@
                 <c:forEach var="thermostat" items="${thermostats}">
                     <tr>
                         <td>
-                            <input type="checkbox" data-thermostat-type="${thermostat.type}" value="${thermostat.id}" class="f-thermostatSelectionChanged" ${(fn:contains(param.thermostatIds, thermostat.id))? 'checked':''}>
+                            <input type="checkbox" data-thermostat-type="${thermostat.type}" value="${thermostat.id}" class="js-thermostatSelectionChanged" ${(fn:contains(param.thermostatIds, thermostat.id))? 'checked':''}>
                         </td>
                         <td style="text-align: left; padding-left: 10px;">
                             <spring:escapeBody htmlEscape="true">${thermostat.label}</spring:escapeBody>

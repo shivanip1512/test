@@ -76,8 +76,8 @@ yukon.dataExporterFormat = (function () {
             var delimiters = $('#delimiters'),
                 delimiter = $('#delimiter'),
                 showField = delimiters.find('option:selected').is('[type=CUSTOM]'),
-                lastHeaderValue = $('.f-header').val(),
-                lastFooterValue = $('.f-footer').val();
+                lastHeaderValue = $('.js-header').val(),
+                lastFooterValue = $('.js-footer').val();
             
             /** Hide delimiter text field initially if it's not custom. */
             if (showField) delimiter.show(); else delimiter.hide();
@@ -208,7 +208,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Edit attribute button clicked, show edit attribute popup. */
-            $(document).on('click', '#attributes-table .f-edit', function(ev) {
+            $(document).on('click', '#attributes-table .js-edit', function(ev) {
                 
                 var row = $(this).closest('tr'),
                     attribute = JSON.parse(row.find('td:first-child input').val()),
@@ -227,7 +227,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Edit field button clicked, show edit field popup. */
-            $(document).on('click', '#fields-table .f-edit', function(ev) {
+            $(document).on('click', '#fields-table .js-edit', function(ev) {
                 
                 var 
                 row = $(this).closest('tr'),
@@ -495,7 +495,7 @@ yukon.dataExporterFormat = (function () {
             $(document).on('input', '#timestamp-pattern-input, #reading-pattern-input, #plain-text-input', function(ev) { $('#pattern').val($(this).val()); });
             
             /** Move row up. */
-            $(document).on('click','.f-up', function(ev) {
+            $(document).on('click','.js-up', function(ev) {
                 var row = $(this).closest('tr'),
                     prevRow = row.prev();
                 
@@ -505,7 +505,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Move row down. */
-            $(document).on('click','.f-down', function(ev) {
+            $(document).on('click','.js-down', function(ev) {
                 var row = $(this).closest('tr'),
                     nextRow = row.next();
                 
@@ -515,7 +515,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Remove attribute button clicked, remove row and re-index the rest. Update any fields necessary */
-            $(document).on('click', '#attributes-table .f-remove', function(ev) {
+            $(document).on('click', '#attributes-table .js-remove', function(ev) {
                 var row = $(this).closest('tr'),
                     table = row.closest('table'),
                     attribute = row.find('td:first-child'),
@@ -530,7 +530,7 @@ yukon.dataExporterFormat = (function () {
                     
                     if (JSON.stringify(fieldAttribute) == JSON.stringify(originalValue)) {
                         // trigger remove on any field rows using the attribute we just removed
-                        td.closest('tr').find('.f-remove').trigger('click');
+                        td.closest('tr').find('.js-remove').trigger('click');
                     }
                 });
                 
@@ -539,7 +539,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Remove field button clicked, remove row and re-index the rest. */
-            $(document).on('click', '#fields-table .f-remove', function(ev) {
+            $(document).on('click', '#fields-table .js-remove', function(ev) {
                 var row = $(this).closest('tr'),
                 table = row.closest('table');
                 row.remove();
@@ -548,13 +548,13 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Update the preview when changing the header and footer fields. */
-            $(".f-header").on('input', function() {
+            $(".js-header").on('input', function() {
                 if ($(this).val() != lastHeaderValue) {
                     lastHeaderValue = $(this).val();
                     $('[preview-header]').text(lastHeaderValue);
                 }
             });
-            $(".f-footer").on('input', function() {
+            $(".js-footer").on('input', function() {
                 if ($(this).val() != lastFooterValue) {
                     lastFooterValue = $(this).val();
                     $('[preview-footer]').text(lastFooterValue);

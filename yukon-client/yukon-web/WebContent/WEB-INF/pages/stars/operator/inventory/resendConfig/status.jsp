@@ -10,7 +10,7 @@
 <cti:standardPage module="operator" page="resendConfig">
 
 <script type="text/javascript">
-$(document).on('click', 'a.f-failed-items', function() {
+$(document).on('click', 'a.js-failed-items', function() {
     $.ajax({
         url: 'viewFailed',
         data: {"taskId": '${task.taskId}'}
@@ -82,7 +82,7 @@ function taskFinished() {
                         <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="error fwb"/>
                         
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_FAILED">
-                            <a href="javascript:void(0);" class="f-failed-items stacked"><i:inline key=".viewFailureReasons"/></a><br>
+                            <a href="javascript:void(0);" class="js-failed-items stacked"><i:inline key=".viewFailureReasons"/></a><br>
                             <a href="${newOperationFailed}"><i:inline key=".newOperation"/></a>
                         </cti:classUpdater>
                     </tags:nameValue2>

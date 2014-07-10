@@ -80,7 +80,7 @@ yukon.deviceConfig = (function () {
         },
 
         _registerScheduleButtons = function () {
-            $(".f-addScheduleBtn").click(function () {
+            $(".js-addScheduleBtn").click(function () {
                 var button = $(this),
                     num = button.attr('data-add-schedule'),
                     hiddenElems = $("tr").filter(function () {
@@ -191,7 +191,7 @@ yukon.deviceConfig = (function () {
                 }
 
                 /** Edit button clicked for category, show category edit popup. */
-                $('.f-edit-category').click(function (ev) {
+                $('.js-edit-category').click(function (ev) {
 
                     var btn = $(this),
                         categoryId = $('#categoryId_' + btn.data('categoryType')).val(),
@@ -220,7 +220,7 @@ yukon.deviceConfig = (function () {
                 });
 
                 /** Create button clicked for category, show category create popup. */
-                $(".f-create-category").click(function (ev) {
+                $(".js-create-category").click(function (ev) {
                     var btn = $(this),
                         type = btn.data('categoryType'),
                         configId = btn.data('configId'),
@@ -244,7 +244,7 @@ yukon.deviceConfig = (function () {
                     _determineDisplayItemAddButtonVisibility();
                 });
 
-                $(".f-categories").click(function () {
+                $(".js-categories").click(function () {
                     var deviceType = $(this).attr('data-device-type');
                     $(".pipe").css('visibility', 'hidden');
                     $(".pipe[data-device-type-" + deviceType + "]").css('visibility', 'visible');

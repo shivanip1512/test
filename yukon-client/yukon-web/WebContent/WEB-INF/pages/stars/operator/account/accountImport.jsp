@@ -28,7 +28,7 @@
                     
                     <div class="action-area stacked">
                         <a href="imports" class="fl"><i:inline key=".recent"/></a>
-                        <cti:button nameKey="prescan" type="submit" classes="f-blocker action primary"/>
+                        <cti:button nameKey="prescan" type="submit" classes="js-blocker action primary"/>
                     </div>
                 </form:form>
                 

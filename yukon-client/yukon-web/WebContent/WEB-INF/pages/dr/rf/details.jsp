@@ -49,13 +49,13 @@
                         <dr:rfPerformanceStats test="${test.eventStats}"/>
                         <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
                             <c:if test="${test.numUnknowns > 0}">
-                                <cm:dropdownOption key=".showUnknown" classes="f-unknown" data-test="${test.messageId}"/>
+                                <cm:dropdownOption key=".showUnknown" classes="js-unknown" data-test="${test.messageId}"/>
                             </c:if>
                             <c:if test="${test.numFailures > 0}">
-                                <cm:dropdownOption key=".showFailed" classes="f-failed" data-test="${test.messageId}"/>
+                                <cm:dropdownOption key=".showFailed" classes="js-failed" data-test="${test.messageId}"/>
                             </c:if>
                             <c:if test="${test.numSuccesses > 0}">
-                                <cm:dropdownOption key=".showSuccess" classes="f-success" data-test="${test.messageId}"/>
+                                <cm:dropdownOption key=".showSuccess" classes="js-success" data-test="${test.messageId}"/>
                             </c:if>
                         </cm:dropdown>
                     </td>

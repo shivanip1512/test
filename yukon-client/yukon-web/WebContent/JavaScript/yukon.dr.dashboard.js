@@ -50,9 +50,9 @@ yukon.dr.dashboard = (function() {
                 sliderInitOptions = [
                     // max, min, value, step, htmlSelector, timeSelector
                     /** Setup the command time slider */
-                    ['#broadcast-config .f-time-slider', 24 * 60 - 15, 0, $('#rf-performance-command-time').val(), 15, '#broadcast-config .f-time-label', '#rf-performance-command-time'],
+                    ['#broadcast-config .js-time-slider', 24 * 60 - 15, 0, $('#rf-performance-command-time').val(), 15, '#broadcast-config .js-time-label', '#rf-performance-command-time'],
                     /** Setup the email time slider */
-                    ['#broadcast-config .f-email-time-slider', 24 * 60 - 15, 0, $('#rf-performance-email-time').val(), 15, '#broadcast-config .f-email-time-label', '#rf-performance-email-time']
+                    ['#broadcast-config .js-email-time-slider', 24 * 60 - 15, 0, $('#rf-performance-email-time').val(), 15, '#broadcast-config .js-email-time-label', '#rf-performance-email-time']
                 ],
                 _io,
                 _initOpt,
@@ -76,19 +76,19 @@ yukon.dr.dashboard = (function() {
             _initSliders();
 
             /** Setup the time label */
-            $('#broadcast-config .f-time-label').html(timeFormatter.formatTime($('#rf-performance-command-time').val(), 0));
-            $('#broadcast-config .f-email-time-label').html(timeFormatter.formatTime($('#rf-performance-email-time').val(), 0));
+            $('#broadcast-config .js-time-label').html(timeFormatter.formatTime($('#rf-performance-command-time').val(), 0));
+            $('#broadcast-config .js-email-time-label').html(timeFormatter.formatTime($('#rf-performance-email-time').val(), 0));
 
             $(document).on('click', '#broadcast-config .toggle-btns .button', function() {
                 
                 if ($('#broadcast-config .toggle-btns .yes').hasClass('on')) {
                     $('#rf-performance-email').val('true');
-                    $('.f-notif-group').show('fade');
-                    $('.f-email-schedule').show('fade');
+                    $('.js-notif-group').show('fade');
+                    $('.js-email-schedule').show('fade');
                 } else {
                     $('#rf-performance-email').val('false');
-                    $('.f-notif-group').hide('fade');
-                    $('.f-email-schedule').hide('fade');
+                    $('.js-notif-group').hide('fade');
+                    $('.js-email-schedule').hide('fade');
                 }
                 
             });
@@ -96,13 +96,13 @@ yukon.dr.dashboard = (function() {
             if ($('#rf-performance-email').val() === 'true') {
                 $('#broadcast-config .toggle-btns .yes').addClass('on');
                 $('#broadcast-config .toggle-btns .no').removeClass('on');
-                $('.f-notif-group').show();
-                $('.f-email-schedule').show();
+                $('.js-notif-group').show();
+                $('.js-email-schedule').show();
             } else {
                 $('#broadcast-config .toggle-btns .no').addClass('on');
                 $('#broadcast-config .toggle-btns .yes').removeClass('on');
-                $('.f-notif-group').hide();
-                $('.f-email-schedule').hide();
+                $('.js-notif-group').hide();
+                $('.js-email-schedule').hide();
             }
 
             $(document).on('yukon.dr.rf.config.load', function (ev) {

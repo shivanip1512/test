@@ -14,12 +14,12 @@
 
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
-<div class="f-dateRange oh ${wrapperClasses}">
+<div class="js-dateRange oh ${wrapperClasses}">
     <dt:date path="${pageScope.startPath}"
              name="${pageScope.startName}"
              value="${pageScope.startValue}"
              disabled="${pageScope.disabled}"
-             cssClass="${pageScope.cssClass} f-dateStart"
+             cssClass="${pageScope.cssClass} js-dateStart"
              cssDialogClass="${pageScope.cssDialogClass}"
              maxDate="${pageScope.endValue}"/>
     <jsp:doBody/>
@@ -28,7 +28,7 @@
              name="${pageScope.endName}"
              value="${pageScope.endValue}"
              disabled="${pageScope.disabled}"
-             cssClass="${pageScope.cssClass} f-dateEnd"
+             cssClass="${pageScope.cssClass} js-dateEnd"
              cssDialogClass="${pageScope.cssDialogClass}"
              minDate="${pageScope.startValue}" 
              maxDate="${pageScope.maxDate}" />

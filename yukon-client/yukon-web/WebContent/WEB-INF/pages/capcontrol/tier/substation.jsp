@@ -46,7 +46,7 @@ $(function() {
     </c:otherwise>
 </c:choose>
 
-<div class="f-page-additional-actions dn">
+<div class="js-page-additional-actions dn">
     <li class="divider" />
     <cti:url var="locationsUrl" value="/capcontrol/capbank/capBankLocations">
         <cti:param name="value" value="${substationId}" />

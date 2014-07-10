@@ -28,7 +28,7 @@
     <tags:simpleDialog id="addRuleDialog"/>
 
     <cti:url var="applyFilterUrl" value="/stars/operator/inventory/applyFilter"/>
-    <form:form id="selectionForm" cssClass="f-preventSubmitViaEnterKey" commandName="filterModel" action="${applyFilterUrl}" method="post">
+    <form:form id="selectionForm" cssClass="js-preventSubmitViaEnterKey" commandName="filterModel" action="${applyFilterUrl}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="removeRule" id="removeRule">
         <div class="stacked">
@@ -209,8 +209,8 @@
                 </c:otherwise>
             </c:choose>
             <div class="action-area">
-                <cti:button nameKey="add" type="submit" name="addButton" classes="f-allowSubmitViaEnterKey" icon="icon-add"/>
-                <select name="ruleType" class="f-allowSubmitViaEnterKey fr">
+                <cti:button nameKey="add" type="submit" name="addButton" classes="js-allowSubmitViaEnterKey" icon="icon-add"/>
+                <select name="ruleType" class="js-allowSubmitViaEnterKey fr">
                     <c:forEach items="${ruleTypes}" var="ruleType">
                         <option value="${ruleType}"><cti:formatObject value="${ruleType}"/></option>
                     </c:forEach>

@@ -79,6 +79,6 @@
 <div class="action-area">
     <%-- CREATE NEW MONITOR FORM --%>
     <form action="/amr/porterResponseMonitor/createPage" method="get">
-        <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker fr"/>
+        <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="js-blocker fr"/>
     </form>
 </div>

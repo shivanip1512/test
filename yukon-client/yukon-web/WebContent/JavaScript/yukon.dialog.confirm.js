@@ -107,7 +107,7 @@ yukon.dialogConfirm = (function () {
             if (args.disable_group) {
                 $('#yukon_dialog_confirm').closest('.ui-dialog').find('.ui-dialog-buttonset button').each(function (idx, button) {
                     var b = $(button);
-                    b.addClass('f-disable-after-click');
+                    b.addClass('js-disable-after-click');
                     b.attr('data-disable-group', args.disable_group);
                     
                 });

@@ -265,7 +265,7 @@ function validateAddressRange() {
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     <div class="action-area">
-                        <cti:button nameKey="select" classes="primary action f-blocker"/>
+                        <cti:button nameKey="select" classes="primary action js-blocker"/>
                     </div>
                     <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
                 </form>

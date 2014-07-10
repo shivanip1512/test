@@ -87,7 +87,7 @@
 <div class="action-area">
     <%-- CREATE NEW STATUS POINT MONITOR FORM --%>
     <form action="/amr/statusPointMonitoring/creationPage" method="get">
-        <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker fr"/>
+        <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="js-blocker fr"/>
         <input type="hidden" value="0" name="statusPointMonitorId">
     </form>
 </div>

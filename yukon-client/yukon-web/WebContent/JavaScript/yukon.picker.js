@@ -77,11 +77,11 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
     },
 
     block = function () {
-        yukon.ui.elementGlass.show(document.getElementById(this.pickerId + ' .f-block-this'));
+        yukon.ui.elementGlass.show(document.getElementById(this.pickerId + ' .js-block-this'));
     },
 
     unblock = function () {
-        yukon.ui.elementGlass.hide(document.getElementById(this.pickerId + ' .f-block-this'));
+        yukon.ui.elementGlass.hide(document.getElementById(this.pickerId + ' .js-block-this'));
     },
 
     updateSelectAllCheckbox = function () {
@@ -259,19 +259,19 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
         if (json && json.hits.startIndex > 0) {
             this.previousIndex = json.hits.previousStartIndex;
-            $('.previous-page.f-enabled-action', $(pickerDiv)).show();
-            $('.previous-page.f-disabled-action', $(pickerDiv)).hide();
+            $('.previous-page.js-enabled-action', $(pickerDiv)).show();
+            $('.previous-page.js-disabled-action', $(pickerDiv)).hide();
         } else {
-            $('.previous-page.f-enabled-action', $(pickerDiv)).hide();
-            $('.previous-page.f-disabled-action', $(pickerDiv)).show();
+            $('.previous-page.js-enabled-action', $(pickerDiv)).hide();
+            $('.previous-page.js-disabled-action', $(pickerDiv)).show();
         }
         if (json && json.hits.endIndex < json.hits.hitCount) {
             this.nextIndex = json.hits.endIndex;
-            $('.next-page.f-enabled-action', $(pickerDiv)).show();
-            $('.next-page.f-disabled-action', $(pickerDiv)).hide();
+            $('.next-page.js-enabled-action', $(pickerDiv)).show();
+            $('.next-page.js-disabled-action', $(pickerDiv)).hide();
         } else {
-            $('.next-page.f-enabled-action', $(pickerDiv)).hide();
-            $('.next-page.f-disabled-action', $(pickerDiv)).show();
+            $('.next-page.js-enabled-action', $(pickerDiv)).hide();
+            $('.next-page.js-disabled-action', $(pickerDiv)).show();
         }
         $('.page-num-text', $(pickerDiv))[0].innerHTML = json ? json.pages : '';
     },

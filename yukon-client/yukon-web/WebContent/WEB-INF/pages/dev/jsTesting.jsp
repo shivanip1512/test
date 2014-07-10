@@ -150,9 +150,9 @@ $(document).tooltip({
   items: '*',
   content: function() {
     var element = $(this), tip, toolTipped;
-    toolTipped = element.closest('.f-has-tooltip');
+    toolTipped = element.closest('.js-has-tooltip');
     if ( toolTipped.length ) {
-      tip = toolTipped.nextAll('.f-tooltip').first();
+      tip = toolTipped.nextAll('.js-tooltip').first();
       console.log("returning tip.html()");
       return tip.html();
     } else {

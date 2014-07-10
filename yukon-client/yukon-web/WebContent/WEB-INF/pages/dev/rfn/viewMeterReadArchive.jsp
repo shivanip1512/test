@@ -128,7 +128,7 @@ function useRandom() {
                 </tags:nameValue>
                 
             </tags:nameValueContainer>
-            <div class="action-area"><cti:button nameKey="send" type="submit" classes="f-blocker"/></div>
+            <div class="action-area"><cti:button nameKey="send" type="submit" classes="js-blocker"/></div>
         </form>
     </tags:sectionContainer>
 </cti:standardPage>

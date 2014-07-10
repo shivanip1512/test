@@ -23,6 +23,6 @@
 <%-- CREATE/EDIT MODE --%>
 <cti:displayForPageEditModes modes="CREATE,EDIT">
     <tags:nameValue2 nameKey="${nameKey}" labelForId="${path}">
-        <tags:input path="${path}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" disabled="${pageScope.disabled}" inputClass="${pageScope.inputClass} f-format-phone"/>
+        <tags:input path="${path}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" disabled="${pageScope.disabled}" inputClass="${pageScope.inputClass} js-format-phone"/>
     </tags:nameValue2>
 </cti:displayForPageEditModes>

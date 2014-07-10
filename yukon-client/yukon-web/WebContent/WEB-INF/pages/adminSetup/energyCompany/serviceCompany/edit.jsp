@@ -18,11 +18,11 @@
                 var designationCode =  $('#newDesignationCode').val();
 
                 var str = [];
-                str.push('<div class="f-designation-code f-removable-designation-code">');
-                str.push('<span class="f-remove-designation-code fr"><a href="#"><i class="icon icon-cross"></i></a></span>');
+                str.push('<div class="js-designation-code js-removable-designation-code">');
+                str.push('<span class="js-remove-designation-code fr"><a href="#"><i class="icon icon-cross"></i></a></span>');
                 str.push(designationCode);
                 str.push('<input type="hidden" value="0" name="designationCodes[].id"/>');
-                str.push('<input type="hidden" value="'+ designationCode +'" name="designationCodes[].value" class="f-designation-code-value"/>');
+                str.push('<input type="hidden" value="'+ designationCode +'" name="designationCodes[].value" class="js-designation-code-value"/>');
                 str.push('<input type="hidden" value="${serviceCompany.companyId}" name="designationCodes[].serviceCompanyId"/>');
                 str.push('</div>');
 
@@ -33,7 +33,7 @@
 
             // adjust indexes to be sequential for java List
             function adjustIndexes() {
-                $('#designationCodes').children(".f-designation-code").each(function (index) {
+                $('#designationCodes').children(".js-designation-code").each(function (index) {
                     $(this).find(":input").each(function() {
                         var name = $(this).attr("name").replace(/\[.*?\]/, "["+index+"]");
                         $(this).attr("name", name);
@@ -73,16 +73,16 @@
                     var found = false;
                     
                     if (zipCodeToFind.length > 0) {
-                        $('#designationCodes').children('.f-designation-code')
-                            .find('.f-designation-code-value').each(function () {
+                        $('#designationCodes').children('.js-designation-code')
+                            .find('.js-designation-code-value').each(function () {
                                 var thisCode = this.value;
                                 if(0 === thisCode.indexOf(zipCodeToFind, 0)) {
                                     found = true;
-                                    $(this).parents('.f-designation-code')
+                                    $(this).parents('.js-designation-code')
                                         .addClass('success fwb')
                                         .removeClass('disabled');
                                 } else {
-                                    $(this).parents('.f-designation-code')
+                                    $(this).parents('.js-designation-code')
                                         .addClass('disabled')
                                         .removeClass('success fwb');
                                 }
@@ -96,7 +96,7 @@
 
                     } else {
                         $('#findDesignationCode').removeClass('error success');
-                        $('.f-designation-code').removeClass('disabled error success fwb');
+                        $('.js-designation-code').removeClass('disabled error success fwb');
                     }
                      });
 
@@ -108,8 +108,8 @@
                 };
 
                 $('#findDesignationCode').on('keydown', preventSubmitForEnter);
-                $('#serviceCompanyForm').on('click', '.f-remove-designation-code', function() {
-                    $(this).parent('.f-removable-designation-code').slideUp(150)
+                $('#serviceCompanyForm').on('click', '.js-remove-designation-code', function() {
+                    $(this).parent('.js-removable-designation-code').slideUp(150)
                         .promise().done(function () {
                             this.remove();
                             adjustIndexes();
@@ -135,8 +135,8 @@
                 <tags:sectionContainer2 nameKey="generalInfoSection">
                     <tags:nameValueContainer2 id="generalInfoTable">
                         <tags:inputNameValue nameKey=".name" path="companyName" inputClass="string" size="45" maxlength="60"/>
-                        <tags:inputPhone nameKey=".mainPhone" path="mainPhoneNumber" inputClass="f-format-phone" maxlength="16"/>
-                        <tags:inputPhone nameKey=".mainFax" path="mainFaxNumber" inputClass="f-format-phone"  maxlength="16"/>
+                        <tags:inputPhone nameKey=".mainPhone" path="mainPhoneNumber" inputClass="js-format-phone" maxlength="16"/>
+                        <tags:inputPhone nameKey=".mainFax" path="mainFaxNumber" inputClass="js-format-phone"  maxlength="16"/>
                         <tags:inputNameValue nameKey=".email" path="emailContactNotification" inputClass="String" maxlength="130"/>
                         <tags:inputNameValue nameKey=".HIType" path="hiType" size="35" maxlength="40"/>
                     </tags:nameValueContainer2>
@@ -156,17 +156,17 @@
                                         <%-- If we are editing and error any designation codes pending deletion will exist in the list
                                              this ensures that we do not have a visual representation of that --%>
                                         <c:if test="${not empty serviceCompany.designationCodes[row.index].value}">
-                                            <div class="f-designation-code f-removable-designation-code">
+                                            <div class="js-designation-code js-removable-designation-code">
                                                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                                                     <c:if test="${canEditDesignationCodes}">
-                                                        <span class="f-remove-designation-code fr"><a href="#"><i class="icon icon-cross"></i></a></span>
+                                                        <span class="js-remove-designation-code fr"><a href="#"><i class="icon icon-cross"></i></a></span>
                                                     </c:if>
                                                     ${fn:escapeXml(serviceCompany.designationCodes[row.index].value)}
                                                     <input type="hidden" name="designationCodes[${row.index}].id" 
                                                         value="${serviceCompany.designationCodes[row.index].id}"/>
                                                     <input type="hidden"
                                                         name="designationCodes[${row.index}].value"
-                                                        class="f-designation-code-value"
+                                                        class="js-designation-code-value"
                                                         value="${serviceCompany.designationCodes[row.index].value}"/>
                                                     <input type="hidden" name="designationCodes[${row.index}].serviceCompanyId"
                                                         value="${serviceCompany.designationCodes[row.index].serviceCompanyId}"/>
@@ -175,7 +175,7 @@
                                                     ${fn:escapeXml(serviceCompany.designationCodes[row.index].value)}
                                                     <input type="hidden"
                                                         name="designationCodes[${row.index}].value"
-                                                        class="f-designation-code-value"
+                                                        class="js-designation-code-value"
                                                         value="${serviceCompany.designationCodes[row.index].value}"/>
                                                 </cti:displayForPageEditModes>
                                             </div>

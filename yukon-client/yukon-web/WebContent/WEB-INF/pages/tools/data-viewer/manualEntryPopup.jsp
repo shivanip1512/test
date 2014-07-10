@@ -8,7 +8,7 @@
 <cti:msgScope paths="modules.tools.tdc">
     <cti:flashScopeMessages/>
     <cti:url var="saveUrl" value="/tools/data-viewer/manualEntrySend"/>
-    <form:form id="manualEntryForm" cssClass="f-preventSubmitViaEnterKey" commandName="backingBean" action="${saveUrl}">
+    <form:form id="manualEntryForm" cssClass="js-preventSubmitViaEnterKey" commandName="backingBean" action="${saveUrl}">
         <cti:csrfToken/>
         <form:hidden path="pointId" />
         <tags:nameValueContainer2>
@@ -22,7 +22,7 @@
             </c:if>
         </tags:nameValueContainer2>
         <div class="action-area">
-            <cti:button nameKey="ok" classes="primary f-manualEntry-send" />
+            <cti:button nameKey="ok" classes="primary js-manualEntry-send" />
             <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');" />
         </div>
     </form:form>
