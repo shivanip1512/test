@@ -62,7 +62,6 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.DeviceUpdateService;
@@ -162,7 +161,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceUpdateService deviceUpdateService;
     @Autowired private MeterDao meterDao;
     @Autowired private MeterReadProcessingService meterReadProcessingService;
@@ -234,7 +232,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     /**
-     * generate a unique mesageid, don't let it be negative
+     * generate a unique messageId, don't let it be negative
      */
     private synchronized long generateMessageID() {
         if (++messageID == Long.MAX_VALUE) {
@@ -252,13 +250,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
             if (event != null) {
 
-                final Logger eLogger = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
                 Runnable eventRunner = new Runnable() {
 
                     @Override
                     public void run() {
 
-                        eLogger.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
+                        log.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
                                      " DevID:" + returnMsg.getDeviceID() + 
                                      " Command:" + returnMsg.getCommandString() +
                                      " Result:" + returnMsg.getResultString() + 
@@ -267,7 +264,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
                         if (returnMsg.getExpectMore() == 0) {
 
-                            eLogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+                            log.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
 
                             boolean doneProcessing = event.messageReceived(returnMsg);
                             if (doneProcessing) {
@@ -1058,26 +1055,15 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         try {
             if (templateMeter.getPaoType().isRfn()) {
 
-                String serialNumberOrAddress = mspMeterToAdd.getNameplate().getTransponderID().trim();
-
-                // CREATE DEVICE - new device is automatically added to
-                // template's device groups
-                // TODO create new method here that takes a loaded
-                // template...since we already have one!
-                RfnIdentifier newMeterRfnIdentifier = new RfnIdentifier(serialNumberOrAddress,
-                                                                        ((RfnMeter) templateMeter).getRfnIdentifier()
-                                                                                                  .getSensorManufacturer(),
-                                                                        ((RfnMeter) templateMeter).getRfnIdentifier()
-                                                                                                  .getSensorModel());
+                String serialNumber = mspMeterToAdd.getNameplate().getTransponderID().trim();
+                RfnIdentifier newMeterRfnIdentifier = buildNewMeterRfnIdentifier((RfnMeter)templateMeter, serialNumber);
 
                 // Use Model and Manufacturer from template
                 newDevice = deviceCreationService.createRfnDeviceByTemplate(templateMeter.getName(),
                                                                             newPaoName,
-                                                                            ((RfnMeter) templateMeter).getRfnIdentifier()
-                                                                                                      .getSensorModel(),
-                                                                            ((RfnMeter) templateMeter).getRfnIdentifier()
-                                                                                                      .getSensorManufacturer(),
-                                                                            serialNumberOrAddress,
+                                                                            newMeterRfnIdentifier.getSensorModel(),
+                                                                            newMeterRfnIdentifier.getSensorManufacturer(),
+                                                                            newMeterRfnIdentifier.getSensorSerialNumber(),
                                                                             true);
 
             } else if (templateMeter.getPaoType().isPlc()) {
@@ -1113,6 +1099,40 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         // update default values of newMeter
         updateExistingMeter(mspMeterToAdd, newMeter, templateMeter, mspVendor, true);
         return newMeter;
+    }
+    
+    /**
+     * Returns an rfnIdentifier representing the serialNumber and manufacturer/model from templateMeter.
+     * If templateMeter has blank values, then we will attempt to parse the manufacturer/model values from the template name.
+     *  This is useful if the templateName matches the "standard" *RfnTemplate_manufacturer_model naming convention
+     * @param templateMeter
+     * @param serialNumber
+     * @return
+     */
+    private RfnIdentifier buildNewMeterRfnIdentifier(RfnMeter templateMeter, String serialNumber) {
+
+        String manufacturer = templateMeter.getRfnIdentifier().getSensorManufacturer();
+        String model = templateMeter.getRfnIdentifier().getSensorModel();
+        
+        if (StringUtils.isEmpty(manufacturer) || StringUtils.isEmpty(model)) {
+            // if either is empty, attempt to parse from the templateMeter.paoName
+            String templatePrefix = configurationSource.getString("RFN_METER_TEMPLATE_PREFIX", "*RfnTemplate_");
+            
+            // Format is *RfnTemplate_manufacturer_model
+            String nameToStripRfnIdentifierFrom = templateMeter.getName();
+            String rfnIdentifierPart = StringUtils.removeStart(nameToStripRfnIdentifierFrom, templatePrefix);
+            String[] manufacturerModel = StringUtils.split(rfnIdentifierPart, "_");
+            
+            if (manufacturerModel.length == 2) {
+                manufacturer= manufacturerModel[0];
+                model = manufacturerModel[1];
+            } else {
+                // TODO - make better error object
+                throw new MspErrorObjectException(new ErrorObject());
+            }
+        }
+        
+        return new RfnIdentifier(serialNumber, manufacturer, model);
     }
     
     /**
@@ -1204,9 +1224,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             if (existingMeter.isDisabled()) {
                 deviceDao.enableDevice(existingMeter);
             } else {
-                mspObjectDao.logMSPActivity(METER_ADD_STRING,
-                                            "Meter (" + existingMeter.toString() + ") - currently enabled, processing anyways.",
-                                            mspVendor.getCompanyName());
+                log.info("Meter (" + existingMeter.toString() + ") - currently enabled, continuing with processing...");
             }
         }
 
@@ -1426,7 +1444,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     /**
      * Helper method to return a Meter object for Meter Number
      */
-    private YukonMeter getMeterByMeterNumber(Meter mspMeter) {
+    private YukonMeter getMeterByMeterNumber(Meter mspMeter) throws NotFoundException {
         String mspMeterNo = mspMeter.getMeterNo().trim();
         return meterDao.getForMeterNumber(mspMeterNo);
     }
@@ -1831,7 +1849,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
         deviceGroupMemberEditorDao.removeDevices((StoredDeviceGroup) deviceGroup, Collections.singletonList(meter));
-        String basePath = deviceGroupService.getFullPath(systemGroup);
+        String basePath = deviceGroupEditorDao.getFullPath(systemGroup);
         mspObjectDao.logMSPActivity(logActionStr,
                                     "MeterNumber(" + meter.getMeterNumber() + ") - Removed from " + basePath,
                                     mspVendor.getCompanyName());
@@ -1845,7 +1863,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
         deviceGroupMemberEditorDao.addDevices((StoredDeviceGroup) deviceGroup, Collections.singletonList(meter));
-        String basePath = deviceGroupService.getFullPath(systemGroup);
+        String basePath = deviceGroupEditorDao.getFullPath(systemGroup);
         mspObjectDao.logMSPActivity(logActionStr,
                                     "MeterNumber(" + meter.getMeterNumber() + ") - Added to " + basePath,
                                     mspVendor.getCompanyName());

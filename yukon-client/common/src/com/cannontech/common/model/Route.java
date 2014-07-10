@@ -9,8 +9,6 @@ public class Route implements DisplayablePao {
     private String name;
     private int order;
     
-    public Route() { }
-    
     public Route(final int id, final String name, final int order, PaoType paoType) {
         paoIdentifier = new PaoIdentifier(id,  paoType);
         this.name = name;
@@ -42,22 +40,38 @@ public class Route implements DisplayablePao {
     public String toString() {
         return name;
     }
-    
+
     @Override
-    public boolean equals(Object o) {
-        if (o == null || !(o instanceof Route)) return false;
-        Route obj = (Route) o;
-        return ((this.paoIdentifier == obj.paoIdentifier) &&
-                (this.name.equals(obj.name)) &&
-                (this.order == obj.order));
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Route other = (Route) obj;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (order != other.order)
+            return false;
+        if (paoIdentifier == null) {
+            if (other.paoIdentifier != null)
+                return false;
+        } else if (!paoIdentifier.equals(other.paoIdentifier))
+            return false;
+        return true;
     }
     
     @Override
     public int hashCode() {
-        int result = 17;
-        result = result * 37 + paoIdentifier.getPaoId();
-        result = result * 37 + name.length();
-        result = result * 37 + order;
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + order;
+        result = prime * result + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
         return result;
     }
 
