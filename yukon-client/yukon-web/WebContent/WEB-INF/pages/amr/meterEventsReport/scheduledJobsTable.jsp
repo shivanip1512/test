@@ -19,7 +19,7 @@
         </c:when>
         <c:otherwise>
             <div id="scheduledJobsTableFlashScope"></div>
-            <div class="scroll-large">
+            <div class="scroll-lg">
                 <table class="compact-results-table dashed has-actions">
                     <thead>
                         <th><i:inline key=".nameHeader"/></th>

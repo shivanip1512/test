@@ -184,7 +184,7 @@
                     <div class="column two nogutter"><i:inline key=".output"/></div>
                 </div>
                 <div class="lite-container">
-                    <div class="scroll-medium">
+                    <div class="scroll-md">
                         <div id="tableEntries_${dummyRow ? '' : tableIndex}"
                             class="clearfix separated-sections no-lines f-drFormula-tableEntries f-drFormula-appendTableId">
                             <c:if test="${not dummyRow}">

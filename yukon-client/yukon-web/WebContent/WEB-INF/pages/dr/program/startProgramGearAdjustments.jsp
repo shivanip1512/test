@@ -51,7 +51,7 @@
 
     <cti:msg2 var="boxTitle" key=".gearAdjustments"/>
     <tags:sectionContainer title="${boxTitle}">
-        <div class="scroll-medium">
+        <div class="scroll-md">
             <table class="compact-results-table dashed">
                 <thead>
                     <tr>

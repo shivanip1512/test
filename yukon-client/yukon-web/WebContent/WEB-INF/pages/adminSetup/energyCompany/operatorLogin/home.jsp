@@ -49,7 +49,7 @@
         });
 </script>
     <div style="min-width: 400px;" class="fl">
-            <div id="operatorLoginList" class="scroll-large">
+            <div id="operatorLoginList" class="scroll-lg">
                 <table class="compact-results-table row-highlighting with-form-controls clearfix">
                     <thead>
                     <th><i:inline key=".username" /></th>

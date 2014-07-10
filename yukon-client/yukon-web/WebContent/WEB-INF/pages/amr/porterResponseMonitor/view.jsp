@@ -48,7 +48,7 @@ $(function () {
     </i:simplePopup>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
-        <div class="scroll-large">
+        <div class="scroll-lg">
             <table id="errorCodes" class="compact-results-table stacked">
                 <thead>
                     <tr>

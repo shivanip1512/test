@@ -9,7 +9,7 @@
             <span class="empty-list"><i:inline key=".noFormulas"/></span>
         </c:when>
         <c:otherwise>
-            <div class="scroll-large">
+            <div class="scroll-lg">
                 <table class="compact-results-table">
                     <thead>
                         <th><i:inline key=".name"/></th>

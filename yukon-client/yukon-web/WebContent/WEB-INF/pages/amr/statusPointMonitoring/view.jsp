@@ -61,7 +61,7 @@
     
     <c:if test="${not empty statusPointMonitor.processors}">
         <tags:sectionContainer2 nameKey="stateActionsTable" id="resTable">
-            <div class="scroll-large">
+            <div class="scroll-lg">
                 <table class="compact-results-table dashed">
                     <thead>
                         <tr>

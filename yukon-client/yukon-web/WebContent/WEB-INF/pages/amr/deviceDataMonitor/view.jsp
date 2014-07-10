@@ -76,7 +76,7 @@
                 <span class="empty-list"><i:inline key=".noProcessors" /></span>
             </c:when>
             <c:otherwise>
-                <div class="scroll-small">
+                <div class="scroll-sm">
                     <table class="compact-results-table dashed with-form-controls">
                         <thead>
                             <tr>

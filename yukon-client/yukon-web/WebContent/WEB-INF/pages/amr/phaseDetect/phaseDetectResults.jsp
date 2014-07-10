@@ -18,7 +18,7 @@
             <div class="column one">
             
                 <tags:boxContainer2 nameKey="metersDetectedA" arguments="${phaseAMetersSize}" hideEnabled="true" showInitially="${phaseAMetersSize > 0}">
-                    <div class="scroll-large">
+                    <div class="scroll-lg">
                         <table class="compact-results-table clearfix">
                             <thead>
                                 <tr>
@@ -66,7 +66,7 @@
                 </tags:boxContainer2>
                 
                 <tags:boxContainer2 nameKey="metersDetectedB" arguments="${phaseBMetersSize}" hideEnabled="true" showInitially="${phaseBMetersSize > 0}">
-                    <div class="scroll-large">
+                    <div class="scroll-lg">
                         <table class="compact-results-table clearfix">
                             <thead>
                                 <tr>
@@ -114,7 +114,7 @@
                 </tags:boxContainer2>
                     
                 <tags:boxContainer2 nameKey="metersDetectedC" arguments="${phaseCMetersSize}" hideEnabled="true" showInitially="${phaseCMetersSize > 0}">
-                    <div class="scroll-large">
+                    <div class="scroll-lg">
                         <table class="compact-results-table clearfix">
                             <thead>
                                 <tr>
@@ -163,7 +163,7 @@
                 
                 <c:if test="${!data.readAfterAll}">
                     <tags:boxContainer2 nameKey="metersDetectedAB" arguments="${phaseABMetersSize}" hideEnabled="true" showInitially="${phaseABMetersSize > 0}">
-                        <div class="scroll-large">
+                        <div class="scroll-lg">
                             <table class="compact-results-table clearfix">
                                 <thead>
                                     <tr>
@@ -233,7 +233,7 @@
                     
                     <%-- AC --%>
                     <tags:boxContainer2 nameKey="metersDetectedAC" arguments="${phaseACMetersSize}" hideEnabled="true" showInitially="${phaseACMetersSize > 0}">
-                        <div class="scroll-large">
+                        <div class="scroll-lg">
                             <table class="compact-results-table clearfix">
                                 <thead>
                                     <tr>
@@ -297,7 +297,7 @@
                 
                     <%-- BC --%>
                     <tags:boxContainer2 nameKey="metersDetectedBC" arguments="${phaseBCMetersSize}" hideEnabled="true" showInitially="${phaseBCMetersSize > 0}">
-                        <div class="scroll-large">
+                        <div class="scroll-lg">
                             <table class="compact-results-table clearfix">
                                 <thead>
                                     <tr>
@@ -361,7 +361,7 @@
                     
                     <%-- ABC --%>
                     <tags:boxContainer2 nameKey="metersDetectedABC" arguments="${phaseBCMetersSize}" hideEnabled="true" showInitially="${phaseABCMetersSize > 0}">
-                        <div class="scroll-large">
+                        <div class="scroll-lg">
                             <table class="compact-results-table clearfix">
                                 <thead>
                                     <tr>
@@ -441,7 +441,7 @@
                 </c:if>
 
                 <tags:boxContainer2 nameKey="metersUndefined" arguments="${undefinedMetersSize}" hideEnabled="true" showInitially="${undefinedMetersSize > 0}">
-                    <div class="scroll-large">
+                    <div class="scroll-lg">
                         <ul class="simple-list striped-list">
                             <c:forEach var="meter" items="${undefinedMeters}">
                                 <li>${fn:escapeXml(meter.name)}</li>
@@ -460,7 +460,7 @@
                 </tags:boxContainer2>
                 
                 <tags:boxContainer2 nameKey="failureGroup" arguments="${failureMetersSize}" hideEnabled="true" showInitially="${failureMetersSize > 0}">
-                    <div class="scroll-large">
+                    <div class="scroll-lg">
                         <table class="compact-results-table clearfix">
                             <thead>
                                 <tr>

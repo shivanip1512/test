@@ -151,7 +151,7 @@
                             autocomplete="off"/>
                         <div class="column-10-14 clearfix">
                             <div class="column one">
-                                <div id="designationCodes" class="scroll-small">
+                                <div id="designationCodes" class="scroll-sm">
                                     <c:forEach items="${serviceCompany.designationCodes}" varStatus="row">
                                         <%-- If we are editing and error any designation codes pending deletion will exist in the list
                                              this ensures that we do not have a visual representation of that --%>

@@ -9,7 +9,7 @@
 <%@ attribute name="successMsg" %>
 
 <c:if test="${result.anyErrorOrException}">
-    <div class="scroll-medium">
+    <div class="scroll-md">
         <c:if test="${not empty pageScope.errorMsg}">
             <div class="error stacked">${pageScope.errorMsg}</div>
         </c:if>

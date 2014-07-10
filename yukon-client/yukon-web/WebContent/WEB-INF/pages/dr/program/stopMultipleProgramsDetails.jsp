@@ -243,7 +243,7 @@ $( function () {
 
     <cti:msg2 var="boxTitle" key=".programs"/>
     <tags:sectionContainer title="${boxTitle}">
-        <div class="scroll-medium">
+        <div class="scroll-md">
             <table class="compact-results-table dashed">
                 <tr>
                     <th><cti:msg2 key=".stopProgramName"/></th>

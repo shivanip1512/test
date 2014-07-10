@@ -44,7 +44,7 @@ $(function() {
 <form id="disableProgramsForm" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'disableProgramsForm');">
     <input type="hidden" name="enable" value="${enable}">
     <tags:sectionContainer title="${boxTitle}">
-        <div class="scroll-medium">
+        <div class="scroll-md">
             <table class="compact-results-table dashed">
                 <thead>
                     <tr>

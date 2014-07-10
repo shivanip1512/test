@@ -62,7 +62,7 @@
             <tags:sectionContainer2 nameKey="issues" arguments="${fn:length(report.errors)}">
                 <c:choose>
                     <c:when test="${fn:length(report.errors) > 0}">
-                        <div class="scroll-large">
+                        <div class="scroll-lg">
                             <table class="compact-results-table with-form-controls separated no-stripes"
                                 id="issues-list">
                                 <thead></thead>

@@ -20,7 +20,7 @@
         </div>
         <div class="column two nogutter">
             <tags:sectionContainer2 nameKey="assignments">
-                <div id="assignments" class="scroll-medium" style="${empty formulaBean.assignments ? 'display:none':''}">
+                <div id="assignments" class="scroll-md" style="${empty formulaBean.assignments ? 'display:none':''}">
                     <c:if test="${formulaBean.appCatFormula}">
                         <div class="column-8-8-8">
                             <div class="column one"><h4><i:inline key=".name"/></h4></div>

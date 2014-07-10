@@ -9,7 +9,7 @@
             <span class="empty-list"><i:inline key=".noGears"/></span>
         </c:when>
         <c:otherwise>
-            <div class="scroll-large">
+            <div class="scroll-lg">
                 <table class="four-column-table compact-results-table">
                     <thead>
                         <tr>
