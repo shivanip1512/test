@@ -2130,9 +2130,9 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             readSspec(*OutMessage, outList);
         }
 
-        //  parseDateValue will return CtiDate::neg_infin if the parse is invalid
-        const CtiDate date_begin = parseDateValue(parse.getsValue("hourly_read_date_begin"));
-        const CtiDate date_end   = parseDateValue(parse.getsValue("hourly_read_date_end"));
+        //  parseDateString will return CtiDate::neg_infin if the parse is invalid
+        const CtiDate date_begin = parseDateString(parse.getsValue("hourly_read_date_begin"));
+        const CtiDate date_end   = parseDateString(parse.getsValue("hourly_read_date_end"));
         const unsigned channel   = parse.getiValue("channel", 1);
 
         DlcCommandSPtr hourlyRead = makeHourlyReadCommand(date_begin, date_end, channel);
@@ -2199,7 +2199,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             //  grab the beginning date
             if( parse.isKeyValid("daily_read_date_begin") )
             {
-                date_begin = parseDateValue(parse.getsValue("daily_read_date_begin"));
+                date_begin = parseDateString(parse.getsValue("daily_read_date_begin"));
             }
 
             if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision)
@@ -2266,7 +2266,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
                 if( parse.isKeyValid("daily_read_date_end") )
                 {
-                    date_end = parseDateValue(parse.getsValue("daily_read_date_end"));
+                    date_end = parseDateString(parse.getsValue("daily_read_date_end"));
                 }
                 else
                 {

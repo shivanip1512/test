@@ -3,29 +3,81 @@
 #include "date_utility.h"
 #include "ctitokenizer.h"
 
+#include <boost/optional.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
 namespace Cti {
 
-CtiDate parseDateValue(std::string date_str)
+CtiDate parseDateString(std::string date_str)
 {
-    CtiTokenizer date_tokenizer(date_str);
+    std::vector<std::string> dateParts;
 
-    int month = atoi(date_tokenizer("-/").data());
-    int day   = atoi(date_tokenizer("-/").data());
-    int year  = atoi(date_tokenizer("-/").data());
+    boost::split(dateParts, date_str, boost::is_any_of("-/"));
 
-    if( !year || !month || !day )
+    if( dateParts.size() == 3 )
     {
-        return CtiDate::neg_infin;
+        try
+        {
+            int month = boost::lexical_cast<unsigned>(dateParts[0]);
+            int day   = boost::lexical_cast<unsigned>(dateParts[1]);
+            int year  = boost::lexical_cast<unsigned>(dateParts[2]);
+
+            if( year < 100 )
+            {
+                year += 2000;  //  this will need to change around 2050
+            }
+
+            //  naive date construction - no range checking, so we count
+            //    on CtiDate() resetting itself to 1/1/1970
+            return CtiDate(day, month, year);
+        }
+        catch( boost::bad_lexical_cast &ex )
+        {
+        }
     }
 
-    if( year < 100 )
+    return CtiDate::neg_infin;
+}
+
+boost::optional<TimeParts> parseTimeString(std::string time_str)
+{
+    std::vector<std::string> timeParts;
+    boost::split(timeParts, time_str, boost::is_any_of(":"));
+
+    //  make sure none of the strings are empty
+    if( ! std::count_if(timeParts.begin(), timeParts.end(), boost::bind(&std::string::empty, _1)) )
     {
-        year += 2000;  //  this will need to change in 2100
+        try
+        {
+            TimeParts result = {0, 0, 0};
+
+            switch( timeParts.size() )
+            {
+                case 3:
+                {
+                    result.second = boost::lexical_cast<unsigned>(timeParts[2]);
+                }   //  fall through
+                case 2:
+                {
+                    result.minute = boost::lexical_cast<unsigned>(timeParts[1]);
+                    result.hour   = boost::lexical_cast<unsigned>(timeParts[0]);
+
+                    if( result.second < 60 &&
+                        result.minute < 60 &&
+                        result.hour   < 24 )
+                    {
+                        return result;
+                    }
+                }
+            }
+        }
+        catch( boost::bad_lexical_cast &ex )
+        {
+        }
     }
 
-    //  naive date construction - no range checking, so we count
-    //    on CtiDate() resetting itself to 1/1/1970
-    return CtiDate(day, month, year);
+    return boost::none;
 }
 
 }

@@ -624,7 +624,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
             //  grab the beginning date
             if( parse.isKeyValid("daily_read_date_begin") )
             {
-                date_begin = parseDateValue(parse.getsValue("daily_read_date_begin"));
+                date_begin = parseDateString(parse.getsValue("daily_read_date_begin"));
             }
 
             if( channel < 1 || channel > 3 )

@@ -145,7 +145,7 @@ INT Lcr3102Device::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiM
         }
     }
 
-    if ( status == NoError ) 
+    if ( status == NoError )
     {
         updateLastCommsTime( InMessage->Sequence, TimeNow );
     }
@@ -466,8 +466,8 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS *InMessage, CtiTim
         //      since timestamps are computed in reverse order the latest one comes first
         //      quality should be NormalQuality, invalid data is non-zero but marked with InvalidQuality
         if ( point_base == PointOffset_RuntimeBase &&
-             pi.value != 0 && 
-             pi.quality == NormalQuality && 
+             pi.value != 0 &&
+             pi.quality == NormalQuality &&
              ! latestRuntimeTimestamp )
         {
             latestRuntimeTimestamp = pointTime;
@@ -481,7 +481,7 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS *InMessage, CtiTim
         _dynamicComms.updateRelayRuntime( relay, *latestRuntimeTimestamp );
     }
 
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection); 
+    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
@@ -1220,7 +1220,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
     else if(parse.getFlags() & CMD_FLAG_GV_HOURLY_LOG)
     {
         // Grab the info from the parser!
-        CtiDate date = parseDateValue(parse.getsValue("hourly_log_date"));
+        CtiDate date = parseDateString(parse.getsValue("hourly_log_date"));
 
         CtiTokenizer time_tokenizer(parse.getsValue("hourly_log_time"));
         int startHour = atoi(time_tokenizer(":").data());
@@ -1709,7 +1709,7 @@ LONG Lcr3102Device::getSerial() const
 
 std::string Lcr3102Device::getSQLCoreStatement() const
 {
-    static const std::string sql = 
+    static const std::string sql =
         "SELECT "
             "YP.paobjectid, "
             "YP.category, "
