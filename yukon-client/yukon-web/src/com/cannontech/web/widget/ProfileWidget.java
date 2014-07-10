@@ -95,8 +95,15 @@ public class ProfileWidget extends WidgetControllerBase {
      */
 
     private String calcIntervalStr(int secs, YukonUserContext userContext) {
-        Duration duration = Duration.standardSeconds(secs);
-        String iStr = durationFormattingService.formatDuration(duration, DurationFormat.DHMS_REDUCED, userContext);
+        String iStr=null;
+        if(secs == -1) {
+            iStr = "Unknown";
+        } else if(secs == 0) {
+            iStr = "0";
+        } else {    
+            Duration duration = Duration.standardSeconds(secs);
+            iStr = durationFormattingService.formatDuration(duration, DurationFormat.DHMS_REDUCED, userContext);
+        }
         return iStr;
     }
 

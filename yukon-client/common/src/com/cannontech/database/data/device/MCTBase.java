@@ -16,9 +16,11 @@ public abstract class MCTBase extends CarrierBase implements IDeviceMeterGroup {
     private DeviceLoadProfile deviceLoadProfile = null;
     private boolean hasConfig = false;
     private MCTConfigMapping configMapping = null;
+    private PaoType paoType = null;
 
     public MCTBase(PaoType paoType) {
         super(paoType);
+        this.paoType = paoType;
     }
 
     @Override
@@ -120,6 +122,7 @@ public abstract class MCTBase extends CarrierBase implements IDeviceMeterGroup {
         super.setDeviceID(deviceID);
         getDeviceMeterGroup().setDeviceID(deviceID);
         getDeviceLoadProfile().setDeviceID(deviceID);
+        getDeviceLoadProfile().setDeviceType(paoType);
     }
 
     public void setHasConfig(boolean yesno) {

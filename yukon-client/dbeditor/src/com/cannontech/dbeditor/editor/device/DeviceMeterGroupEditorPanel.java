@@ -1084,6 +1084,10 @@ public void setValue(Object val)
                 getJLabelVoltIntervalDmdRate().setVisible(false);
                 getJComboBoxlVoltInterval().setEnabled(false);
                 getJComboBoxlVoltInterval().setVisible(false);
+                
+                if(DeviceTypesFuncs.isMCT430(deviceType)) {
+                    getLoadProfileDemandRateComboBox().setEnabled(false);
+                }
 			}
 			else{
 				getJLabelVoltDmdRate().setText("Voltage Profile Demand Rate: ");
@@ -1115,11 +1119,15 @@ public void setValue(Object val)
 			SwingUtil.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
 		}
 		
-        SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxlVoltRate(), dlp.getVoltageDmdRate().intValue());
-
-        SwingUtil.setIntervalComboBoxSelectedItem(getLoadProfileDemandRateComboBox(), dlp
+		if(dlp.getVoltageDmdRate().intValue() != -1){
+		    SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxlVoltRate(), dlp.getVoltageDmdRate().intValue());
+		}
+		
+		if(dlp.getVoltageDmdRate().intValue() != -1) {
+		    SwingUtil.setIntervalComboBoxSelectedItem(getLoadProfileDemandRateComboBox(), dlp
             .getLoadProfileDemandRate().intValue());
-
+		}
+		
 		if( DeviceTypesFuncs.isLoadProfile1Channel(deviceType))
 		{
 			SwingUtil.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
@@ -1139,7 +1147,8 @@ public void setValue(Object val)
           SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
           SwingUtil.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
           SwingUtil.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
-		
+              
+          
           try {
               LightDeviceConfiguration config = deviceConfigDao.findConfigurationForDevice(device);
               if (config != null) {
