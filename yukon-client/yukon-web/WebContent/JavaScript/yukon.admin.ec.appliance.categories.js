@@ -188,7 +188,7 @@ yukon.admin.ec.ac = (function () {
             
 
             /** Handle move up and move down clicks for programs. */
-            $(document).on('click', '.f-up, f.down', function (ev) {
+            $(document).on('click', '.f-up, .f-down', function (ev) {
                 
                 var row = $(this).closest('tr'),
                     container = $('#assigned-programs'),
