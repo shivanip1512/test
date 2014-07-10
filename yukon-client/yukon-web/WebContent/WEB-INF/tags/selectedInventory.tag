@@ -31,7 +31,7 @@
     <c:if test="${count > 0}">
         <div class="dib">
             <cti:msg2 var="magTitle" key="yukon.common.collection.inventory.selectedInventoryPopup.magnifierTitle"/>
-            <a href="javascript:void(0);" title="${magTitle}" class="dib" popup="#${id}"><i class="icon icon-magnifier"></i></a>
+            <a href="javascript:void(0);" title="${magTitle}" class="dib" data-popup="#${id}"><i class="icon icon-magnifier"></i></a>
         </div>
     </c:if>
 </span>

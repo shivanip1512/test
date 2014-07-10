@@ -28,7 +28,7 @@
         </div>
         <div class="action-area">
             <a href="<cti:url value="/dr/ecobee"/>"><i:inline key=".details"/></a>
-            <cti:button nameKey="configure" popup="#ecobee-config" icon="icon-cog-edit"/>
+            <cti:button nameKey="configure" data-popup="#ecobee-config" icon="icon-cog-edit"/>
             <div data-dialog
                 data-form
                 id="ecobee-config"

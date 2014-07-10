@@ -45,7 +45,7 @@
                                                     <c:param name="groupName" value="${fullName}"/>
                                                 </c:url>
                                                 <cti:uniqueIdentifier var="deviceGroupPopupId" prefix="device-group-popup-"/>
-                                                <cti:icon icon="icon-magnifier" classes="cp show-on-hover" popup="#${deviceGroupPopupId}"/>
+                                                <cti:icon icon="icon-magnifier" classes="cp show-on-hover" data-popup="#${deviceGroupPopupId}"/>
                                                 <%-- Device Group popup --%> 
                                                 <div id="${deviceGroupPopupId}" data-title="${popupTitle}" data-url="${deviceGroupPopupUrl}" data-width="450" data-height="300" class="dn"></div>
                                             </c:if>

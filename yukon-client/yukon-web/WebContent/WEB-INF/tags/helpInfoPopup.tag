@@ -14,7 +14,7 @@
 <cti:default var="width" value="auto"/>
 
 <cti:uniqueIdentifier var="id" prefix="help-popup-"/>
-<cti:icon icon="icon-help" classes="cp fn ${pageScope.classes}" popup="#${id}"/>
+<cti:icon icon="icon-help" classes="cp fn ${pageScope.classes}" data-popup="#${id}"/>
 <c:if test="${not empty pageScope.nameKey}"><c:set var="title"><cti:msg2 key="${nameKey}.title"/></c:set></c:if>
 <div id="${id}" class="dn" data-width="${width}" data-title="${fn:escapeXml(title)}">
     <c:if test="${not empty pageScope.nameKey}"><i:inline key="${nameKey}"/></c:if>

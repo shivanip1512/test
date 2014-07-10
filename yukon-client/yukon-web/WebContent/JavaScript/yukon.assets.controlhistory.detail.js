@@ -26,14 +26,14 @@ yukon.assets.controlHistory.detail = (function () {
              * where the historical gear names are retrieved up and returned via AJAX to be displayed in a dialog.*/
             $(document).on('click', '.js-show-details', function (ev) {
                 var link = $(this),
-                    popup = link.data('popup'),
+                    popup = link.data('detailsPopup'),
                     programId, 
                     startDates = [],
                     endDates = [];
                 
                 if (typeof popup === 'undefined') {
                     popup = link.prev();
-                    link.data('popup', popup);
+                    link.data('detailsPopup', popup);
                 }
                 
                 programId = popup.find('[data-program-id]').data('programId');

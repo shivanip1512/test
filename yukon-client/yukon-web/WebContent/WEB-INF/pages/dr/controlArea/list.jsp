@@ -54,7 +54,7 @@
     
     <cti:msg2 var="controlAreaTitle" key=".controlAreas"/>
     <c:set var="controls">
-        <a href="javascript:void(0);" popup="#filter-popup" data-popup-toggle>
+        <a href="javascript:void(0);" data-popup="#filter-popup" data-popup-toggle>
             <cti:icon icon="icon-filter"/>&nbsp;
             <i:inline key="yukon.common.filter"/>
         </a>

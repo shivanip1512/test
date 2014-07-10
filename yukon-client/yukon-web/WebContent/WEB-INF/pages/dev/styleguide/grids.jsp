@@ -13,7 +13,7 @@
 .grid-example .column .label {margin: 2px 0;display: inline-block;line-height: 14px;}
 </style>
 
-<p>
+<p style="line-height: 22px;">
 The grid system in Yukon uses a 24 column grid. The column widths and gutters are percent based. That means grids can be nested.
 Grids are made with a container element and child elements.  The container element uses one of the column classes 
 that defines the number and width of the columns, and a clearfix.

@@ -72,7 +72,7 @@
                             <input type="checkbox" name="onlyLatestEvent" class="fl" id="filter_onlyLatestEvent">
                             <i:inline key=".filter.onlyLatestEvent"/>
                         </label>
-                        <cti:icon icon="icon-help" classes="fn cp vatb" popup=".js-only-lastest-help" data-popup-toggle=""/>
+                        <cti:icon icon="icon-help" classes="fn cp vatb" data-popup=".js-only-lastest-help" data-popup-toggle=""/>
                         <div class="dn js-only-lastest-help" data-width="500" data-title="<cti:msg2 key=".filter.onlyLatestEvent"/>">
                             <i:inline key=".filter.onlyLatestEvents.help.text"/>
                         </div>
@@ -83,7 +83,7 @@
                             <input type="checkbox" name="onlyAbnormalEvents" class="fl">
                             <i:inline key=".filter.onlyAbnormalEvents"/>
                         </label>
-                        <cti:icon icon="icon-help" classes="fn cp vatb" popup=".js-only-abnormal-help" data-popup-toggle=""/>
+                        <cti:icon icon="icon-help" classes="fn cp vatb" data-popup=".js-only-abnormal-help" data-popup-toggle=""/>
                         <div class="dn js-only-abnormal-help" data-width="500" data-title="<cti:msg2 key=".filter.onlyAbnormalEvents"/>">
                             <i:inline key=".filter.onlyAbnormalEvents.help.text"/>
                         </div>
@@ -92,7 +92,7 @@
                     <tags:nameValue2 nameKey=".filter.eventTypesRow">
                         <div id="eventTypeInputs"></div>
                         <cti:msg2 key=".filter.cog.title" var="cogTitle"/>
-                        <a href="javascript:void(0);" title="${cogTitle}" popup="#filter-events-popup">
+                        <a href="javascript:void(0);" title="${cogTitle}" data-popup="#filter-events-popup">
                             <cti:icon icon="icon-filter"/>
                             <span class="numEventTypes">
                                 <span id="numEventTypes">${numSelectedEventTypes}</span>

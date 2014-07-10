@@ -49,13 +49,13 @@
         data-width="500" class="dn"></div>
     
     <div id="page-buttons" class="dn">
-         <cti:button nameKey="filter" classes="js-show-filter" icon="icon-filter" popup="#filter-popup"/>
+         <cti:button nameKey="filter" classes="js-show-filter" icon="icon-filter" data-popup="#filter-popup"/>
     </div>
     <div class="dn js-page-additional-actions">
         <li class="divider"></li>
         <c:choose>
             <c:when test="${hasActionRoles == true}">
-                <cm:dropdownOption id="systemStartScheduleAssignments" popup="#start-assignments" icon="icon-control-play-blue" key=".play.label"/>
+                <cm:dropdownOption id="systemStartScheduleAssignments" data-popup="#start-assignments" icon="icon-control-play-blue" key=".play.label"/>
             </c:when>
             <c:otherwise>
                 <cm:dropdownOption id="systemStartScheduleAssignments" icon="icon-control-play-blue" key=".playDisabled.label"/>
@@ -63,7 +63,7 @@
         </c:choose>
         <c:choose>
             <c:when test="${hasActionRoles == true}">
-                <cm:dropdownOption id="systemStopScheduleAssignments" popup="#stop-assignments" icon="icon-control-stop-blue" key=".stop.label"/>
+                <cm:dropdownOption id="systemStopScheduleAssignments" data-popup="#stop-assignments" icon="icon-control-stop-blue" key=".stop.label"/>
             </c:when>
             <c:otherwise>
                 <cm:dropdownOption id="systemStopScheduleAssignments" icon="icon-control-stop-blue" key=".stopDisabled.label"/>
@@ -72,7 +72,7 @@
         
         <c:choose>
             <c:when test="${hasEditingRole == true}">
-                <cm:dropdownOption id="systemAddScheduleAssignments" popup="#add-assignments" icon="icon-add" key=".add.label"/>
+                <cm:dropdownOption id="systemAddScheduleAssignments" data-popup="#add-assignments" icon="icon-add" key=".add.label"/>
             </c:when>
             <c:otherwise>
                 <cm:dropdownOption id="systemAddScheduleAssignments" icon="icon-add" key=".addDisabled.label"/>

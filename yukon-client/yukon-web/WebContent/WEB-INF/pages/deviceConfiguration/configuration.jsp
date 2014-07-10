@@ -119,7 +119,7 @@
                             <c:if test="${! empty deviceConfigTypes.availableTypes}">
                                 <div class="action-area">
                                     <cti:button nameKey="addTypes" icon="icon-add" renderMode="button"
-                                    data-config-id="${deviceConfig.configId}" popup="#supportedTypePopup"
+                                    data-config-id="${deviceConfig.configId}" data-popup="#supportedTypePopup"
                                     data-show-device-types="${showTypesPopupOnLoad}" />
                                 </div>
                             </c:if>

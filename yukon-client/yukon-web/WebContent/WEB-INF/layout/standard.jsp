@@ -198,7 +198,7 @@
                             <li><a href="<cti:url value="/sitemap"/>"><i:inline key=".siteMap"/></a></li>
                             <cti:checkRolesAndProperties value="JAVA_WEB_START_LAUNCHER_ENABLED">
                                 <li>
-                                    <a href="javascript:void(0);" popup="#yukon-apps-popup">
+                                    <a href="javascript:void(0);" data-popup="#yukon-apps-popup">
                                         <i:inline key=".applications"/>
                                     </a>
                                     <div id="yukon-apps-popup" 

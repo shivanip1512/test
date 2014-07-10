@@ -18,7 +18,7 @@
     <div class="action-area">
         <cti:url var="sampleXmlUrl" value="sampleXml"/>
         <cti:button nameKey="sampleXml" href="${sampleXmlUrl}" icon="icon-page-white-code"/>
-        <cti:button nameKey="add" icon="icon-add" popup="#add-survey-popup"/>
+        <cti:button nameKey="add" icon="icon-add" data-popup="#add-survey-popup"/>
         <div data-dialog id="add-survey-popup" data-url="editDetails" 
             data-title="<cti:msg2 key=".addTitle"/>" data-event="yukon.survey.details.edit"></div>
     </div>

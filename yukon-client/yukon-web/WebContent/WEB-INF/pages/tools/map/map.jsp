@@ -74,7 +74,7 @@
     
     <c:if test="${empty dynamic}">
         <div id="page-buttons">
-            <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" popup="#map-popup"/>
+            <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" data-popup="#map-popup"/>
             <cti:button id="no-filter-btn" icon="icon-cross disabled cp" classes="right dn" renderMode="buttonImage"/>
         </div>
     

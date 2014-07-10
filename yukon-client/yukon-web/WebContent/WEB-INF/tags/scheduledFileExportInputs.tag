@@ -25,7 +25,7 @@
         <div id="export-file-name-info" class="dn" data-title="<cti:msg2 key=".exportFileName"/>" data-width="500">
             <i:inline key=".exportFileNameInfo"/>
         </div>
-        <cti:icon icon="icon-information" classes="fn cp" popup="#export-file-name-info" data-popup-toggle=""/>
+        <cti:icon icon="icon-information" classes="fn cp" data-popup="#export-file-name-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
     <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
@@ -40,7 +40,7 @@
         <div id="export-timestamp-info" class="dn" data-title="<cti:msg2 key=".appendDateToFileName"/>" data-width="500">
             <i:inline key=".exportTimestampInfo"/>
         </div>
-        <cti:icon icon="icon-information" classes="fn cp" popup="#export-timestamp-info" data-popup-toggle=""/>
+        <cti:icon icon="icon-information" classes="fn cp" data-popup="#export-timestamp-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
     <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
@@ -57,7 +57,7 @@
         <div id="export-file-extension-info" class="dn" data-title="<cti:msg2 key=".exportFileExtension"/>" data-width="500">
             <i:inline key=".exportFileExtensionInfo"/>
         </div>
-        <cti:icon icon="icon-information" classes="fn cp" popup="#export-file-extension-info" data-popup-toggle=""/>
+        <cti:icon icon="icon-information" classes="fn cp" data-popup="#export-file-extension-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
 
@@ -75,7 +75,7 @@
         <div id="export-path-info" class="dn" data-title="<cti:msg2 key=".exportPath"/>" data-width="500">
             <i:inline key=".exportPathInfo"/>
         </div>
-        <cti:icon icon="icon-information" classes="fn cp" popup="#export-path-info" data-popup-toggle=""/>
+        <cti:icon icon="icon-information" classes="fn cp" data-popup="#export-path-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
     <tags:nameValue2 nameKey=".scheduleCronString" nameClass="vat">

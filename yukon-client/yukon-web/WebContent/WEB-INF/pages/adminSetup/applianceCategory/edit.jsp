@@ -195,7 +195,7 @@
                 <c:if test="${!applianceCategory.consumerSelectable}">
                     <c:set var ="filtered" value="${empty filterBy ? false : true}"/>
                     <div class="button-group fr clearfix">
-                        <cti:button nameKey="filter" icon="icon-filter" popup=".js-filter-popup" classes="js-filter fl ${filtered ? 'left' : ''}"/>
+                        <cti:button nameKey="filter" icon="icon-filter" data-popup=".js-filter-popup" classes="js-filter fl ${filtered ? 'left' : ''}"/>
                         <cti:button renderMode="buttonImage" classes="js-clear-filter fr right ${filtered ? '' : 'dn'}" icon="icon-cross"/>
                     </div>
                     <div class="dn js-filter-popup" data-dialog data-title="<cti:msg2 key=".assignedPrograms.filterBy.title"/>" 

@@ -510,14 +510,14 @@ yukon.ui = (function () {
             $('.tabbed-container.js-init').tabs().show();
         
             /** 
-             * Show a popup when a popup trigger (element with a [popup] attribute) is clicked.
+             * Show a popup when a popup trigger (element with a [data-popup] attribute) is clicked.
              * If the trigger element has a [data-popup-toggle] attribute and the popup is currently open,
              * the popup will be closed instead and the event propigated normally...otherwise yukon.ui.dialog is 
              * called passing the popup element.
              */
-            $(document).on('click', '[popup]', function (ev) {
+            $(document).on('click', '[data-popup]', function (ev) {
                 var trigger = $(this),
-                    popup = $(trigger.attr('popup'));
+                    popup = $(trigger.data('popup'));
                 
                 try { /* Close popup if the trigger is a toggle and the popup is open */
                     if (trigger.is('[data-popup-toggle]') && popup.dialog('isOpen')) {

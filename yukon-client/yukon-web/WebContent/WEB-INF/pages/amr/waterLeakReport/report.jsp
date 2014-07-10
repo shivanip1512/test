@@ -72,7 +72,7 @@
                     <div id="threshold-help-popup" class="dn" data-title="<cti:msg2 key=".filter.threshold"/>">
                         <i:inline key=".filter.threshold.helpText"/>
                     </div>
-                    <cti:icon icon="icon-help" classes="cp fn vatb" popup="#threshold-help-popup" data-popup-toggle=""/>
+                    <cti:icon icon="icon-help" classes="cp fn vatb" data-popup="#threshold-help-popup" data-popup-toggle=""/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
             
@@ -87,7 +87,7 @@
                     <cti:param name="threshold" value="${filter.threshold}"/>
                 </cti:url>
                 <cti:button id="update-report-btn" nameKey="search" classes="primary action" busy="true" type="submit"/>
-                <cti:button id="schedule-report-btn" nameKey="schedule" icon="icon-calendar-view-day" popup="#schedule-report-popup"/>
+                <cti:button id="schedule-report-btn" nameKey="schedule" icon="icon-calendar-view-day" data-popup="#schedule-report-popup"/>
                 <cti:button nameKey="download" icon="icon-page-white-excel" href="${downloadUrl}"/>
                 <cti:button id="intervals-btn" nameKey="intervals" classes="dn"/>
             </div>
@@ -95,7 +95,7 @@
     </tags:sectionContainer2>
     
     <c:set var="controls">
-        <a href="javascript:void(0);" popup="#algorithm-popup" data-popup-toggle><i:inline key=".algorithm"/></a>
+        <a href="javascript:void(0);" data-popup="#algorithm-popup" data-popup-toggle><i:inline key=".algorithm"/></a>
     </c:set>
     <tags:sectionContainer2 nameKey="leaks" controls="${controls}">
         <c:choose>

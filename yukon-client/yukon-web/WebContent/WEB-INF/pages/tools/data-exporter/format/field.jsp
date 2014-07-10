@@ -55,7 +55,7 @@
                             <form:option value="${roundingMode}"><cti:msg2 key="${roundingMode}"/></form:option>
                         </c:forEach>
                     </form:select>
-                    <cti:icon icon="icon-help" popup="#rounding-help" classes="cp fn"/>
+                    <cti:icon icon="icon-help" data-popup="#rounding-help" classes="cp fn"/>
                 </tags:nameValue2>
                 
                 <c:set var="classes" value="${exportField.value ? '' : 'dn'}"/>
@@ -72,7 +72,7 @@
                     <c:set var="patternValue" value="${exportField.readingPattern.custom ? exportField.pattern : ''}"/>
                     <input id="reading-pattern-input" type="text" size="10" maxlength="30" class="${classes}" value="${patternValue}">
                     <c:if test="${not empty readingPatternError}"><span class="error">${fn:escapeXml(readingPatternError)}</span></c:if>
-                    <cti:icon icon="icon-help" popup="#value-help" classes="cp fn"/>
+                    <cti:icon icon="icon-help" data-popup="#value-help" classes="cp fn"/>
                 </tags:nameValue2>
                 
                 <c:set var="classes" value="${exportField.timestamp ? '' : 'dn'}"/>
@@ -89,7 +89,7 @@
                     <c:set var="patternValue" value="${exportField.timestampPattern.custom ? exportField.pattern : ''}"/>
                     <input id="timestamp-pattern-input" type="text" size="10" maxlength="30" class="${classes}" value="${patternValue}">
                     <c:if test="${not empty timestampPatternError}"><span class="error">${fn:escapeXml(timestampPatternError)}</span></c:if>
-                    <cti:icon icon="icon-help" popup="#timestamp-help" classes="cp fn"/>
+                    <cti:icon icon="icon-help" data-popup="#timestamp-help" classes="cp fn"/>
                 </tags:nameValue2>
                 
                 <tags:nameValue2 rowId="field-size" nameKey=".fieldSize">

@@ -89,7 +89,7 @@
                     </div>
                     <div class="action-area">
                         <a href="<cti:url value="/dr/rf/details"/>"><i:inline key=".details"/></a>
-                        <cti:button nameKey="configure" icon="icon-cog-edit" popup="#broadcast-config"/>
+                        <cti:button nameKey="configure" icon="icon-cog-edit" data-popup="#broadcast-config"/>
                     </div>
                     <div data-dialog
                         id="broadcast-config"

@@ -35,7 +35,7 @@
                        data-category-type="${catType}" 
                        data-config-id="${configCategories.configId}"
                        data-popup-title="${catPopupTitle}">
-                        <cti:icon icon="icon-help" popup="#section-container-info-popup-${catType}"/>
+                        <cti:icon icon="icon-help" data-popup="#section-container-info-popup-${catType}"/>
                     </a>
                     <div id="section-container-info-popup-${catType}" title="${catPopupTitle}" data-width="500" class="dn">
                         <c:set var="supportedTypes" value=""/>

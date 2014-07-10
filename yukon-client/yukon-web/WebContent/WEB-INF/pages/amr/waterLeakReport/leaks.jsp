@@ -42,7 +42,7 @@
                             <cti:param name="paoId" value="${paoId}"/>
                         </cti:url>
                         <cti:msg2 var="accountTitle" key=".accountInfo.title"/> 
-                        <a href="javascript:void(0);" popup="#account-${paoId}"><i:inline key=".viewCISDetails"/></a>
+                        <a href="javascript:void(0);" data-popup="#account-${paoId}"><i:inline key=".viewCISDetails"/></a>
                         <div class="dn" id="account-${paoId}" data-url="${accountUrl}" data-title="${accountTitle}"></div>
                     </td>
                 </c:if>

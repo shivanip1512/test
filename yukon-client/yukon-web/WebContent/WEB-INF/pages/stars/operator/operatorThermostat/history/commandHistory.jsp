@@ -112,7 +112,7 @@ $(function(){
                                             <cti:param name="scheduleId" value="${historyItem.scheduleId}"/>
                                             <cti:param name="accountNumber" value="${accountNumber}"/>
                                         </cti:url>
-                                        <a href="javascript:void(0);" popup="#command-details-${status.index}">${fn:escapeXml(historyItem.scheduleName)} [<i:inline key=".scheduleDetailsMode"/> <i:inline key=".${historyItem.scheduleMode}"/>]</a>
+                                        <a href="javascript:void(0);" data-popup="#command-details-${status.index}">${fn:escapeXml(historyItem.scheduleName)} [<i:inline key=".scheduleDetailsMode"/> <i:inline key=".${historyItem.scheduleMode}"/>]</a>
                                         <cti:msg2 var="title" key="modules.operator.thermostatHistory.details.title"/>
                                         <div id="command-details-${status.index}" data-url="${viewArchivedScheduleUrl}" data-title="${title}"></div>
                                     </c:otherwise>

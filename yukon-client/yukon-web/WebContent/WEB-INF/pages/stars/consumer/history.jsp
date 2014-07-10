@@ -105,7 +105,7 @@ $(function() {
                                                         <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                                         <cti:param name="scheduleId" value="${historyItem.scheduleId}"/>
                                                     </cti:url>
-                                                    <a href="javascript:void(0);" popup="#command-details-${status.index}">${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
+                                                    <a href="javascript:void(0);" data-popup="#command-details-${status.index}">${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
                                                     <cti:msg2 var="title" key="modules.operator.thermostatHistory.details.title"/>
                                                     <div id="command-details-${status.index}" data-url="${viewArchivedScheduleUrl}" data-title="${title}"></div>
                                                 </c:otherwise>

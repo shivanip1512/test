@@ -24,7 +24,7 @@
                         <cti:param name="pointId" value="${pointId}"/>
                         <cti:param name="attribute" value="${attribute}"/>
                     </cti:url>
-                    <a href="javascript:void(0);" popup="#${popupId}"><cti:pointValue pointId="${pointId}"/></a>
+                    <a href="javascript:void(0);" data-popup="#${popupId}"><cti:pointValue pointId="${pointId}"/></a>
                     <div id="${popupId}" data-width="500" data-height="400" data-url="${valuesUrl}"></div>
                 </c:when>
                 <c:otherwise><cti:pointValue pointId="${pointId}"/></c:otherwise>
