@@ -1,15 +1,15 @@
 package com.cannontech.web.multispeak;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -19,121 +19,105 @@ import com.cannontech.multispeak.db.MspLMInterfaceMappingStrategyNameComparator;
 import com.cannontech.multispeak.db.MspLmInterfaceMappingColumnEnum;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
-import com.cannontech.web.util.JsonView;
 
 @CheckGlobalSetting(GlobalSettingType.MSP_LM_MAPPING_SETUP)
-public class LMMappingsController extends  MultiActionController {
+@Controller
+@RequestMapping("setup/lmMappings/*")
+public class LMMappingsController {
 
-	private PaoDao paoDao;
-	private MspLMInterfaceMappingDao mspLMInterfaceMappingDao;
-	
-	private static final MspLmInterfaceMappingColumnEnum defaultOrderedColumn = MspLmInterfaceMappingColumnEnum.STRATEGY;
-	private static final boolean defaultAscending = true;
-	
-	// HOME
-    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
-       
-    	ModelAndView mav = new ModelAndView();
-        mav.setViewName("setup/lmMappings/home.jsp");
-        
-        // add all mappings
-    	addAllMapppingToMav(mav, defaultOrderedColumn, defaultAscending);
-        
-        return mav;
+    @Autowired private PaoDao paoDao;
+    @Autowired private MspLMInterfaceMappingDao mspLMInterfaceMappingDao;
+
+    private static final MspLmInterfaceMappingColumnEnum defaultOrderedColumn = MspLmInterfaceMappingColumnEnum.STRATEGY;
+    private static final boolean defaultAscending = true;
+
+    @RequestMapping("home")
+    public String home(ModelMap model) {
+
+        addAllMapppingToModel(model, defaultOrderedColumn, defaultAscending);
+
+        return "setup/lmMappings/home.jsp";
     }
-    
-    // FIND MAPPING
-    public ModelAndView findMapping(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-    	ModelAndView mav = new ModelAndView(new JsonView());
-        
-        String strategyName = ServletRequestUtils.getStringParameter(request, "strategyName", "");
-        String substationName = ServletRequestUtils.getStringParameter(request, "substationName", "");
-        
+
+    @RequestMapping("findMapping")
+    public @ResponseBody Map<String, String> findMapping(ModelMap model, String strategyName, String substationName) {
+
+        Map<String,String> result = new HashMap<>();
+
         String mappedName = findMappedName(strategyName, substationName);
-        mav.addObject("mappedName", mappedName);
-        
-        return mav;
+
+        result.put("mappedName", mappedName);
+
+        return result;
     }
-    
-    // ADD MAPPING
-    public void addOrUpdateMapping(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        String strategyName = ServletRequestUtils.getStringParameter(request, "strategyName", "");
-        String substationName = ServletRequestUtils.getStringParameter(request, "substationName", "");
-        int mappedNameId = ServletRequestUtils.getIntParameter(request, "mappedNameId", -1);
-        
+
+    @RequestMapping("addOrUpdateMapping")
+    public @ResponseBody Map<String,Object> addOrUpdateMapping(String strategyName, String substationName, Integer mappedNameId) {
+
+        Map<String,Object> response = new HashMap<>();
+
         Integer existingMspLmInterfaceid = mspLMInterfaceMappingDao.findIdForStrategyAndSubstation(strategyName, substationName);
-        
-        if (mappedNameId > 0) {
-        	if (existingMspLmInterfaceid == null) {
-        		mspLMInterfaceMappingDao.add(strategyName, substationName, mappedNameId);
-        	} else {
-        		mspLMInterfaceMappingDao.updatePaoIdForStrategyAndSubstation(strategyName, substationName, mappedNameId);
-        	}
+
+        if (mappedNameId == null) {
+            response.put("error", "mappedNameId not found");
+        } else if (mappedNameId <= 0) {
+            response.put("error", "mappedNameId must be positive");
+        } else {
+            if (existingMspLmInterfaceid == null) {
+                response.put("action", "add");
+                boolean added = mspLMInterfaceMappingDao.add(strategyName, substationName, mappedNameId);
+                response.put("success", added);
+            } else {
+                response.put("action", "update");
+                boolean updated = mspLMInterfaceMappingDao.updatePaoIdForStrategyAndSubstation(strategyName, substationName, mappedNameId);
+                response.put("success", updated);
+            }
         }
+        return response;
     }
-    
-    // RELOAD ALL MAPPINGS TABLE
-    public ModelAndView reloadAllMappingsTable(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	
-    	ModelAndView mav = new ModelAndView();
-        mav.setViewName("setup/lmMappings/allMappingsTable.jsp");
-        
-        String col = ServletRequestUtils.getStringParameter(request, "col", MspLmInterfaceMappingColumnEnum.STRATEGY.toString());
-    	boolean ascending = ServletRequestUtils.getBooleanParameter(request, "ascending", true);
-    	
-    	// add all mappings
-    	addAllMapppingToMav(mav, MspLmInterfaceMappingColumnEnum.valueOf(col), ascending);
-    	
-        return mav;
+
+    @RequestMapping("reloadAllMappingsTable")
+    public String reloadAllMappingsTable(ModelMap model, MspLmInterfaceMappingColumnEnum col, Boolean ascending) {
+
+        if (col == null) col = defaultOrderedColumn;
+        if (ascending == null) ascending = defaultAscending;
+
+        addAllMapppingToModel(model, col, ascending);
+
+        return "setup/lmMappings/allMappingsTable.jsp";
     }
-    
-    // REMOVE MAPPING
-    public void removeMapping(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	
-    	int mspLMInterfaceMappingId = ServletRequestUtils.getRequiredIntParameter(request, "mspLMInterfaceMappingId");
-    	mspLMInterfaceMappingDao.remove(mspLMInterfaceMappingId);
+
+    @RequestMapping("removeMapping")
+    public @ResponseBody Map<String,Object> removeMapping(int mspLMInterfaceMappingId) {
+
+        Map<String,Object> result = new HashMap<>();
+
+        boolean successful = mspLMInterfaceMappingDao.remove(mspLMInterfaceMappingId);
+
+        result.put("success", successful);
+        return result;
     }
-    
-    // HELPERS
+
     // returns null if mapping is not found or mapped paoId is not found
     private String findMappedName(String strategyName, String substationName) {
-    	
-    	String mappedName = null;
+
+        String mappedName = null;
         try{
-        	MspLMInterfaceMapping mapping = mspLMInterfaceMappingDao.getForStrategyAndSubstation(strategyName, substationName);
-        	int paoId = mapping.getPaobjectId();
-        	try {
-        		mappedName = paoDao.getYukonPAOName(paoId);
-        	} catch (NotFoundException e) {
-        	}
+            MspLMInterfaceMapping mapping = mspLMInterfaceMappingDao.getForStrategyAndSubstation(strategyName, substationName);
+            int paoId = mapping.getPaobjectId();
+            mappedName = paoDao.getYukonPAOName(paoId);
         } catch (NotFoundException e) {
         }
-        
         return mappedName;
     }
-    
-    private void addAllMapppingToMav(ModelAndView mav, MspLmInterfaceMappingColumnEnum col, boolean ascending) {
-    	
-    	List<MspLMInterfaceMapping> allMappings = mspLMInterfaceMappingDao.getAllMappings();
-        Collections.sort(allMappings, new MspLMInterfaceMappingStrategyNameComparator(col, ascending));
-        
-        mav.addObject("orderedColumnName", col.toString());
-        mav.addObject("ascending", ascending);
-        mav.addObject("allMappings", allMappings);
-    }
 
-    
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
-	}
-    
-    @Autowired
-    public void setMspLMInterfaceMappingDao(
-			MspLMInterfaceMappingDao mspLMInterfaceMappingDao) {
-		this.mspLMInterfaceMappingDao = mspLMInterfaceMappingDao;
-	}
+    private void addAllMapppingToModel(ModelMap model, MspLmInterfaceMappingColumnEnum col, boolean ascending) {
+
+        List<MspLMInterfaceMapping> allMappings = mspLMInterfaceMappingDao.getAllMappings();
+        Collections.sort(allMappings, new MspLMInterfaceMappingStrategyNameComparator(col, ascending));
+
+        model.addAttribute("orderedColumnName", col.toString());
+        model.addAttribute("ascending", ascending);
+        model.addAttribute("allMappings", allMappings);
+    }
 }

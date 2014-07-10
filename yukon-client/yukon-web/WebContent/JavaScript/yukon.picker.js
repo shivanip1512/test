@@ -513,7 +513,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         that = this;
         doSearch.call(this, false, false, null, function () {
             var buttons;
-            if (!this.container) {
+            if (!that.container) {
                 buttons = [{'text' : that.cancelText, 'click' : function () {cancel.call(that);}},
                            {'text' : that.okText, 'click' : function () {okPressed.call(that);}, 'class': 'primary action'}];
                 if (!that.inline) {

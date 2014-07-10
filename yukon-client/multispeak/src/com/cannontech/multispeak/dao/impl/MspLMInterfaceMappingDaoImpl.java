@@ -24,7 +24,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
 	private final String TABLENAME = "MspLMInterfaceMapping";
 	@Autowired private YukonJdbcTemplate jdbcTemplate;
 	@Autowired private NextValueHelper nextValueHelper;
-    private PaoDao paoDao;
+    @Autowired private PaoDao paoDao;
 
     private final ParameterizedRowMapper<MspLMInterfaceMapping> mspLMInterfaceMappingRowMapper = new ParameterizedRowMapper<MspLMInterfaceMapping>() {
         @Override
