@@ -7,7 +7,7 @@
 <cti:msgScope paths="yukon.web.modules.capcontrol.comments">
     <cti:url var="commentsURL" value="/capcontrol/comments/"/>
 
-    <div id="comment_editor" class="scroll-large stacked">
+    <div id="comment_editor" class="scroll-lg stacked">
         <form id="commentForm" action="/capcontrol/comments/" method="POST" data-submit-normal="${submit-normal}" data-comments-url="${commentsURL}">
             <cti:csrfToken/>
             <input type="hidden" name="paoId" value="${paoId}">

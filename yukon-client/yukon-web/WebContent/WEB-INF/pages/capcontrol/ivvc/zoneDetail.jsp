@@ -337,7 +337,7 @@
                 </cti:tabbedContentSelectorContent>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
                 <cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
-                    <div class="scroll-large">
+                    <div class="scroll-lg">
                         <cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
                            <cti:param name="zoneId" value="${zoneId}"/>
                        </cti:url>
@@ -347,7 +347,7 @@
             </cti:tabbedContentSelector>
             <tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
                 <input type="hidden" value="${mostRecentDateTime}" id="mostRecentDateTime">
-                <div class="scroll-large">
+                <div class="scroll-lg">
                     <c:if test="${empty events}">
                         <span class="empty-list"> <i:inline key=".ivvcEvents.none"/> </span>
                         <c:set var="tableClass" value="dn" />

@@ -60,7 +60,7 @@
 
     <div id="additionalInfo_DROP_DOWN" class="additionalInfo">
         <tags:sectionContainer2 id="answersBox" nameKey="answers">
-            <div class="scroll-medium">
+            <div class="scroll-md">
                 <table id="answerTable" class="compact-results-table dashed">
                     <thead>
                         <tr>

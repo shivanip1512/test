@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
@@ -50,8 +51,8 @@ public class TablesController {
         model.addAttribute("signup", new Signup());
         model.addAttribute("signupTypes", SignupType.values());
         
-        SortableColumn c1 = new SortableColumn(Direction.desc, false, "City", "city");
-        SortableColumn c2 = new SortableColumn(Direction.desc, false, "Population", "pop");
+        SortableColumn c1 = SortableColumn.of(Direction.desc, false, "City", "city");
+        SortableColumn c2 = SortableColumn.of(Direction.desc, false, "Population", "pop");
         List<SortableColumn> columns = ImmutableList.of(c1, c2);
         
         ArrayList<Population> copy = Lists.newArrayList(cities);
@@ -60,39 +61,33 @@ public class TablesController {
         
         model.addAttribute("columns", columns);
         model.addAttribute("pops", paged);
+        model.addAttribute("allPops", copy);
         
         return "styleguide/tables.jsp";
     }
     
     @RequestMapping("/styleguide/tables/sort-example")
-    public String tables(ModelMap model, SortingParameters sorting, @DefaultItemsPerPage(10) PagingParameters paging) {
+    public String tables(ModelMap model, 
+            @DefaultSort(dir=Direction.asc, sort="city") SortingParameters sorting, 
+            @DefaultItemsPerPage(10) PagingParameters paging) {
         
         ArrayList<Population> copy = Lists.newArrayList(cities);
         
         // sort the list
-        if (sorting != null) {
-            Comparator<Population> comparator = compares.get(sorting.getSort());
-            if (sorting.getDirection() == Direction.desc) {
-                comparator = Collections.reverseOrder(comparator);
-            }
-            Collections.sort(copy, comparator);
-            
-            boolean sortByCity = sorting.getSort().equalsIgnoreCase("city");
-            boolean sortByPop = sorting.getSort().equalsIgnoreCase("pop");
-            SortableColumn c1 = new SortableColumn(sorting.getDirection(), sortByCity, "City", "city");
-            SortableColumn c2 = new SortableColumn(sorting.getDirection(), sortByPop, "Population", "pop");
-            model.addAttribute("columns", ImmutableList.of(c1, c2));
-        } else {
-            SortableColumn c1 = new SortableColumn(Direction.desc, false, "City", "city");
-            SortableColumn c2 = new SortableColumn(Direction.desc, false, "Population", "pop");
-            model.addAttribute("columns", ImmutableList.of(c1, c2));
+        Comparator<Population> comparator = compares.get(sorting.getSort());
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
         }
+        Collections.sort(copy, comparator);
         
         // page the list
-        int page = paging.getPage();
-        int size = paging.getItemsPerPage();
-        SearchResults<Population> paged = SearchResults.pageBasedForWholeList(page, size, copy);
+        SearchResults<Population> paged = SearchResults.pageBasedForWholeList(paging, copy);
         model.addAttribute("pops", paged);
+        
+        // add columns
+        SortableColumn c1 = SortableColumn.of(sorting, "City", "city");
+        SortableColumn c2 = SortableColumn.of(sorting, "Population", "pop");
+        model.addAttribute("columns", ImmutableList.of(c1, c2));
         
         return "styleguide/sort-example.jsp";
     }

@@ -138,12 +138,12 @@ public class HistoricalReadingsController {
         model.addAttribute("points", points);
         
         String timestampHeader = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");
-        SortableColumn timestamp = new SortableColumn(order == Order.FORWARD ? Direction.desc : Direction.asc, 
+        SortableColumn timestamp = SortableColumn.of(order == Order.FORWARD ? Direction.desc : Direction.asc, 
                 orderBy == OrderBy.TIMESTAMP, timestampHeader, "timestamp");
         model.addAttribute("timestamp", timestamp);
         
         String valueHeader = accessor.getMessage(baseKey + "tableHeader.value.linkText");
-        SortableColumn value = new SortableColumn(order == Order.FORWARD ? Direction.desc : Direction.asc, 
+        SortableColumn value = SortableColumn.of(order == Order.FORWARD ? Direction.desc : Direction.asc, 
                 orderBy != OrderBy.TIMESTAMP, valueHeader, "value");
         model.addAttribute("value", value);
     }

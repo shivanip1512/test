@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="yukon.common.events">
-    <div class="scroll-large" id="divActivityStream">
+    <div class="scroll-lg" id="divActivityStream">
         <c:if test="${empty userEvents.resultList}">
             <span class="empty-list"><i:inline key=".noResults"/></span>
         </c:if>

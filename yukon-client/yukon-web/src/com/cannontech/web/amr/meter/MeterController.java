@@ -150,15 +150,15 @@ public class MeterController {
         Direction dir = desc ? Direction.desc : Direction.asc;
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String nameText = accessor.getMessage(baseKey + ".columnHeader.deviceName.linkText");
-        SortableColumn name = new SortableColumn(dir, sort == MeterSearchField.PAONAME, nameText, "PAONAME");
+        SortableColumn name = SortableColumn.of(dir, sort == MeterSearchField.PAONAME, nameText, "PAONAME");
         String numberText = accessor.getMessage(baseKey + ".columnHeader.meterNumber.linkText");
-        SortableColumn meterNumber = new SortableColumn(dir, sort == MeterSearchField.METERNUMBER, numberText, "METERNUMBER");
+        SortableColumn meterNumber = SortableColumn.of(dir, sort == MeterSearchField.METERNUMBER, numberText, "METERNUMBER");
         String typeText = accessor.getMessage(baseKey + ".columnHeader.deviceType.linkText");
-        SortableColumn type = new SortableColumn(dir, sort == MeterSearchField.TYPE, typeText, "TYPE");
+        SortableColumn type = SortableColumn.of(dir, sort == MeterSearchField.TYPE, typeText, "TYPE");
         String addressText = accessor.getMessage(baseKey + ".columnHeader.address.linkText");
-        SortableColumn address = new SortableColumn(dir, sort == MeterSearchField.ADDRESS, addressText, "ADDRESS");
+        SortableColumn address = SortableColumn.of(dir, sort == MeterSearchField.ADDRESS, addressText, "ADDRESS");
         String routeText = accessor.getMessage(baseKey + ".columnHeader.route.linkText");
-        SortableColumn route = new SortableColumn(dir, sort == MeterSearchField.ROUTE, routeText, "ROUTE");
+        SortableColumn route = SortableColumn.of(dir, sort == MeterSearchField.ROUTE, routeText, "ROUTE");
         
         model.addAttribute("nameColumn", name);
         model.addAttribute("meterNumberColumn", meterNumber);

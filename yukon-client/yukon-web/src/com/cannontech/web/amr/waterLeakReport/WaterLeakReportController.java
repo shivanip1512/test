@@ -355,12 +355,12 @@ public class WaterLeakReportController {
         setupFilterResults(filter, userContext, model, waterLeaks, paging, sorting);
         
         String usageText = accessor.getMessage(SortBy.USAGE);
-        SortableColumn usageColumn = new SortableColumn(sorting.getDirection(), 
+        SortableColumn usageColumn = SortableColumn.of(sorting.getDirection(), 
                 SortBy.valueOf(sorting.getSort()) == SortBy.USAGE, usageText, SortBy.USAGE.name());
         model.addAttribute("usageColumn", usageColumn);
         
         String dateText = accessor.getMessage(SortBy.DATE);
-        SortableColumn dateColumn = new SortableColumn(sorting.getDirection(), 
+        SortableColumn dateColumn = SortableColumn.of(sorting.getDirection(), 
                 SortBy.valueOf(sorting.getSort()) == SortBy.DATE, dateText, SortBy.DATE.name());
         model.addAttribute("dateColumn", dateColumn);
         
@@ -591,19 +591,19 @@ public class WaterLeakReportController {
     private void addColumns(MessageSourceAccessor accessor, Direction dir, SortBy sort, ModelMap model) {
         
         String nameText = accessor.getMessage(SortBy.DEVICE_NAME);
-        SortableColumn nameColumn = new SortableColumn(dir, sort == SortBy.DEVICE_NAME, nameText, SortBy.DEVICE_NAME.name());
+        SortableColumn nameColumn = SortableColumn.of(dir, sort == SortBy.DEVICE_NAME, nameText, SortBy.DEVICE_NAME.name());
         model.addAttribute("nameColumn", nameColumn);
         
         String numberText = accessor.getMessage(SortBy.METER_NUMBER);
-        SortableColumn numberColumn = new SortableColumn(dir, sort == SortBy.METER_NUMBER, numberText, SortBy.METER_NUMBER.name());
+        SortableColumn numberColumn = SortableColumn.of(dir, sort == SortBy.METER_NUMBER, numberText, SortBy.METER_NUMBER.name());
         model.addAttribute("numberColumn", numberColumn);
         
         String typeText = accessor.getMessage(SortBy.PAO_TYPE);
-        SortableColumn typeColumn = new SortableColumn(dir, sort == SortBy.PAO_TYPE, typeText, SortBy.PAO_TYPE.name());
+        SortableColumn typeColumn = SortableColumn.of(dir, sort == SortBy.PAO_TYPE, typeText, SortBy.PAO_TYPE.name());
         model.addAttribute("typeColumn", typeColumn);
         
         String rateText = accessor.getMessage(SortBy.LEAK_RATE);
-        SortableColumn rateColumn = new SortableColumn(dir, sort == SortBy.LEAK_RATE, rateText, SortBy.LEAK_RATE.name());
+        SortableColumn rateColumn = SortableColumn.of(dir, sort == SortBy.LEAK_RATE, rateText, SortBy.LEAK_RATE.name());
         model.addAttribute("rateColumn", rateColumn);
     }
 

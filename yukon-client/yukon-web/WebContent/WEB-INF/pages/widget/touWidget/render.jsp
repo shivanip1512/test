@@ -7,7 +7,7 @@
 
 <c:if test="${touAttributesAvailable}">
 <cti:url var="touSpecificsUrl" value="/meter/touPreviousReadings"><cti:param name="deviceId" value="${meter.deviceId}"/></cti:url>
-<div id="touDialog" title="<cti:msg2 key=".title"/>" class="scroll-large dn"></div>
+<div id="touDialog" title="<cti:msg2 key=".title"/>" class="scroll-lg dn"></div>
 <script type="text/javascript">
 $(function() {
     $('#touPopupLink').click(function(event) {

@@ -296,27 +296,27 @@ public class MeterEventsReportController {
         
         // Add sortable table headers
         String nameText = accessor.getMessage(baseKey + ".report.tableHeader.deviceName.linkText");
-        SortableColumn nameColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.NAME, nameText, SortBy.NAME.name());
+        SortableColumn nameColumn = SortableColumn.of(sorting.getDirection(), sort == SortBy.NAME, nameText, SortBy.NAME.name());
         model.addAttribute("nameColumn", nameColumn);
         
         String numberText = accessor.getMessage(baseKey + ".report.tableHeader.meterNumber.linkText");
-        SortableColumn numberColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.METER_NUMBER, numberText, SortBy.METER_NUMBER.name());
+        SortableColumn numberColumn = SortableColumn.of(sorting.getDirection(), sort == SortBy.METER_NUMBER, numberText, SortBy.METER_NUMBER.name());
         model.addAttribute("numberColumn", numberColumn);
         
         String typeText = accessor.getMessage(baseKey + ".report.tableHeader.deviceType.linkText");
-        SortableColumn typeColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.TYPE, typeText, SortBy.TYPE.name());
+        SortableColumn typeColumn = SortableColumn.of(sorting.getDirection(), sort == SortBy.TYPE, typeText, SortBy.TYPE.name());
         model.addAttribute("typeColumn", typeColumn);
         
         String dateText = accessor.getMessage(baseKey + ".report.tableHeader.date.linkText");
-        SortableColumn dateColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.DATE, dateText, SortBy.DATE.name());
+        SortableColumn dateColumn = SortableColumn.of(sorting.getDirection(), sort == SortBy.DATE, dateText, SortBy.DATE.name());
         model.addAttribute("dateColumn", dateColumn);
         
         String eventText = accessor.getMessage(baseKey + ".report.tableHeader.event.linkText");
-        SortableColumn eventColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.EVENT, eventText, SortBy.EVENT.name());
+        SortableColumn eventColumn = SortableColumn.of(sorting.getDirection(), sort == SortBy.EVENT, eventText, SortBy.EVENT.name());
         model.addAttribute("eventColumn", eventColumn);
         
         String valueText = accessor.getMessage(baseKey + ".report.tableHeader.value.linkText");
-        SortableColumn valueColumn = new SortableColumn(sorting.getDirection(), sort == SortBy.VALUE, valueText, SortBy.VALUE.name());
+        SortableColumn valueColumn = SortableColumn.of(sorting.getDirection(), sort == SortBy.VALUE, valueText, SortBy.VALUE.name());
         model.addAttribute("valueColumn", valueColumn);
         
         return "meterEventsReport/meterEventsTable.jsp";

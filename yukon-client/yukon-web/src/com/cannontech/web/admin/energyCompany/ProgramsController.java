@@ -75,8 +75,8 @@ public class ProgramsController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String programHeader = accessor.getMessage(baseKey + ".programNameHeader.linkText");
         String categoryHeader = accessor.getMessage(baseKey + ".programNameHeader.linkText");
-        model.addAttribute("program", new SortableColumn(Direction.asc, true, programHeader, "program"));
-        model.addAttribute("category", new SortableColumn(Direction.asc, false, categoryHeader, "category"));
+        model.addAttribute("program", SortableColumn.of(Direction.asc, true, programHeader, "program"));
+        model.addAttribute("category", SortableColumn.of(Direction.asc, false, categoryHeader, "category"));
 
         return "applianceCategory/programs.jsp";
     }
@@ -118,8 +118,8 @@ public class ProgramsController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String programHeader = accessor.getMessage(baseKey + ".programNameHeader.linkText");
         String categoryHeader = accessor.getMessage(baseKey + ".programNameHeader.linkText");
-        model.addAttribute("program", new SortableColumn(dir, sortBy == SortBy.PROGRAM_NAME, programHeader, "program"));
-        model.addAttribute("category", new SortableColumn(dir, sortBy != SortBy.PROGRAM_NAME, categoryHeader, "category"));
+        model.addAttribute("program", SortableColumn.of(dir, sortBy == SortBy.PROGRAM_NAME, programHeader, "program"));
+        model.addAttribute("category", SortableColumn.of(dir, sortBy != SortBy.PROGRAM_NAME, categoryHeader, "category"));
         
         return "applianceCategory/programs.list.jsp";
     }

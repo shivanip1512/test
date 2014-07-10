@@ -38,7 +38,7 @@ $(function() {
                 <cti:msg key="yukon.web.modules.operator.thermostatManual.noItems"/>
             </c:when>
             <c:otherwise>
-                <div class="scroll-large">
+                <div class="scroll-lg">
                     <table class="compact-results-table smallPadding">
                         <thead>
                             <tr>

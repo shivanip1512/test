@@ -23,7 +23,7 @@
                     <li><a href="#custom_displays"><i:inline key=".display.custom" /></a></li>
                     <li><a href="#events_displays"><i:inline key=".display.event" /></a></li>
                 </ul>
-                <div id="events_displays" class="clearfix scroll-large lite-container">
+                <div id="events_displays" class="clearfix scroll-lg lite-container">
                     <ul class="simple-list display-list">
                         <c:forEach var="topEvent" items="${topEvents}">
                             <cti:url var="view" value="/tools/data-viewer/${topEvent.displayId}" />
@@ -53,7 +53,7 @@
                     </ul>
                 </div>
 
-                <div id="custom_displays" class="clearfix scroll-large">
+                <div id="custom_displays" class="clearfix scroll-lg">
                     <ul class="display-list simple-list">
                         <c:forEach var="customEvent" items="${customEvents}">
                             <cti:url var="view" value="/tools/data-viewer/${customEvent.displayId}" />

@@ -189,7 +189,7 @@ public class ScheduledGroupRequestExecutionResultsController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         for (Column column : Column.values()) {
             String text = accessor.getMessage(column);
-            SortableColumn col = new SortableColumn(dir, column == sortBy, text, column.name());
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
     }

@@ -419,7 +419,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 
                 <c:if test="${showAssignedDevices}">
                     <tags:sectionContainer2 nameKey="assignedDevices" id="assignedDevices" styleClass="f-block-this stacked">
-                        <div class="scroll-small">
+                        <div class="scroll-sm">
                             <c:choose>
                                 <c:when test="${not empty assignedDevices}">
                                     <table class="compact-results-table dashed">

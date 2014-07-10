@@ -10,14 +10,14 @@
 <tags:styleguide page="tables">
 
 <style>
-.description { line-height: 20px; }
+.description { line-height: 22px; }
 </style>
 
 <p>
     Tables are meant for organizing data, <strong>NOT</strong> for page or component layout.  Yukon has 4 css classes to
-    define the type of tables we use: <span class="label label-info">.results-table</span>
-    <span class="label label-info">.compact-results-table</span> <span class="label label-info">.name-value-table</span>
-    <span class="label label-info">.links-table</span>
+    define the type of tables we use: <span class="label label-attr">.results-table</span>
+    <span class="label label-attr">.compact-results-table</span> <span class="label label-attr">.name-value-table</span>
+    <span class="label label-attr">.links-table</span>
 </p>
 
 <h2>Table Data</h2>
@@ -92,8 +92,8 @@
 
 <h2>Results Table</h2>
 <div class="table-example clearfix stacked">
-    <p class="description"><span class="label label-info">.results-table</span> is used to display data when a bordered around the table is desired.
-    We usually do not want border tables so <span class="label label-info">.compact-results-table</span> are preferred.
+    <p class="description"><span class="label label-attr">.results-table</span> is used to display data when a bordered around the table is desired.
+    We usually do not want border tables so <span class="label label-attr">.compact-results-table</span> are preferred.
     </p>
     <h4 class="subtle">Example:</h4>
     <table class="results-table">
@@ -157,7 +157,7 @@
 
 <h2>Compact Results Table</h2>
 <div class="table-example clearfix stacked">
-    <p class="description"><span class="label label-info">.compact-results-table</span> is the preffered table to use when
+    <p class="description"><span class="label label-attr">.compact-results-table</span> is the preffered table to use when
     tabling data.  It has a .9em font size meaning the font-size will be 90% of the parent's font size. Be careful not to 
     nest these tables since the inner table will be have the 90% applied once for every level of nesting.</p>
     <h4 class="subtle">Example:</h4>
@@ -222,8 +222,8 @@
 <h3 class="subtle">Dashed Headers and Rows</h3>
 <div class="table-example clearfix stacked">
     <p class="description">
-        Adding <span class="label label-info">.dashed</span> to a 
-        <span class="label label-info">.compact-results-table</span> will change the header border to a dashed line.  Use 
+        Adding <span class="label label-attr">.dashed</span> to a 
+        <span class="label label-attr">.compact-results-table</span> will change the header border to a dashed line.  Use 
         this when the table is inside a section container.
     </p>
     <h4 class="subtle">Example:</h4>
@@ -259,8 +259,8 @@
     <hr>
     
     <p class="description">
-        Adding <span class="label label-info">.separated</span> to a 
-        <span class="label label-info">.compact-results-table</span> will add dashed borders between rows.
+        Adding <span class="label label-attr">.separated</span> to a 
+        <span class="label label-attr">.compact-results-table</span> will add dashed borders between rows.
     </p>
     <h4 class="subtle">Example:</h4>
     <table class="compact-results-table separated">
@@ -300,7 +300,7 @@
 
 <h2>Name Value Table</h2>
 <div class="table-example clearfix stacked">
-    <p class="description"><span class="label label-info">.name-value-table</span> is a two column table used to display 
+    <p class="description"><span class="label label-attr">.name-value-table</span> is a two column table used to display 
     data that fits in pairs.  This table is often used in a form to label form fields.</p>
     <h4 class="subtle">Example:</h4>
     <table class="name-value-table natural-width">
@@ -338,8 +338,8 @@
     <hr>
 
     <p class="description">Instead of hardcoding this table there are tags that will build it for you. 
-        <span class="label label-info">&lt;tags:nameValueContainer2/&gt;</span> will create the table element and 
-        <span class="label label-info">&lt;tags:nameValue2&gt;</span> will create the tr and both td elements. These tags 
+        <span class="label label-attr">&lt;tags:nameValueContainer2/&gt;</span> will create the table element and 
+        <span class="label label-attr">&lt;tags:nameValue2&gt;</span> will create the tr and both td elements. These tags 
         provide the localizing of the name text. Use these tags instead of the raw html
     </p>
     <h4 class="subtle">Example:</h4>
@@ -360,9 +360,9 @@
     <hr>
     
     <p class="description">
-        <span class="label label-info">.name-value-table</span> tables have a min width for the name column
+        <span class="label label-attr">.name-value-table</span> tables have a min width for the name column
         of 140px by default.  This can be overriden to allow the name column to shrink all the way by adding 
-        <span class="label label-info">.name-collapse</span>
+        <span class="label label-attr">.name-collapse</span>
     </p>
     <h4 class="subtle">Example:</h4>
     <tags:nameValueContainer2 tableClass="name-collapse">
@@ -410,7 +410,7 @@
 
 <h2>Link Table</h2>
 <div class="table-example clearfix stacked">
-    <p class="description"><span class="label label-info">.link-table</span> is used to hold of list a links and thier
+    <p class="description"><span class="label label-attr">.link-table</span> is used to hold of list a links and thier
         descriptions.
     </p>
     <h4 class="subtle">Example:</h4>
@@ -447,14 +447,13 @@
 </pre>
 </div>
 
-<h2>Table Helpers</h2>
-<h3 class="subtle">Striping</h3>
+<h2>Striping</h2>
 <div class="table-example clearfix stacked">
     <p class="description">
-        <span class="label label-info">.compact-results-table</span> and
-        <span class="label label-info">.results-table</span> are striped by default.  Striping means every even row
+        <span class="label label-attr">.compact-results-table</span> and
+        <span class="label label-attr">.results-table</span> are striped by default.  Striping means every even row
         has a slightly gray background.  You can add striping to other tables by adding the class 
-        <span class="label label-info">.striped</span>.
+        <span class="label label-attr">.striped</span>.
     </p>
     <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
@@ -468,10 +467,10 @@
     <hr>
     
     <p class="description">
-        You can turn striping off for <span class="label label-info">.compact-results-table</span> and
-        <span class="label label-info">.results-table</span> tables by using 
-        <span class="label label-info">.manual-striping</span> or <span class="label label-info">.no-stipes</span>.  
-        You can then add the striping back by using <span class="label label-info">.alt-row</span> on rows you want 
+        You can turn striping off for <span class="label label-attr">.compact-results-table</span> and
+        <span class="label label-attr">.results-table</span> tables by using 
+        <span class="label label-attr">.manual-striping</span> or <span class="label label-attr">.no-stipes</span>.  
+        You can then add the striping back by using <span class="label label-attr">.alt-row</span> on rows you want 
         striped.  This is useful when there are hidden rows that throw off the even/odd counting.
     </p>
     <h4 class="subtle">Example:</h4>
@@ -498,10 +497,62 @@
 </pre>
 </div>
 
-<h3 class="subtle">Sizing</h3>
+<h2 id="scrolling-example">Scrolling</h2>
 <div class="table-example clearfix stacked">
     <p class="description">
-        <span class="label label-info">.natural-width</span> will change a table's width from the
+        Scrolling is done by wrapping the table in a container with one of three classnames:
+        <span class="label label-attr">.scroll-lg</span>, <span class="label label-attr">.scroll-md</span>,
+        <span class="label label-attr">.scroll-sm</span>.  Scrolling should be preffered over paging unless your
+        table will usually have more than 1000 items in it.
+    </p>
+    <h4 class="subtle">Example:</h4>
+    <div class="scroll-md">
+        <table class="compact-results-table">
+            <thead>
+                <tr>
+                    <th>City</th>
+                    <th>Population</th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="pop" items="${allPops}">
+                    <tr>
+                        <td>${pop.city}</td>
+                        <td>${pop.population}</td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </div>
+    <h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;scroll-md&quot;&gt;
+    &lt;table class=&quot;compact-results-table&quot;&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;City&lt;/th&gt;
+                &lt;th&gt;Population&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tfoot&gt;&lt;/tfoot&gt;
+        &lt;tbody&gt;
+            &lt;c:forEach var=&quot;pop&quot; items=&quot;&#36;{allPops}&quot;&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;&#36;{pop.city}&lt;/td&gt;
+                    &lt;td&gt;&#36;{pop.population}&lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;/c:forEach&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/div&gt;
+</pre>
+</div>
+
+<h2>Sizing</h2>
+<div class="table-example clearfix stacked">
+    <p class="description">
+        <span class="label label-attr">.natural-width</span> will change a table's width from the
         default <em>100%</em> to <em>auto</em>.
     </p>
     <h4 class="subtle">Example:</h4>
@@ -524,9 +575,9 @@
     <hr>
     
     <p class="description">
-        <span class="label label-info">.two-column-table</span> will produce a table that has a width of 100% and 
+        <span class="label label-attr">.two-column-table</span> will produce a table that has a width of 100% and 
         td's are 50%.  Do <strong>NOT</strong> use this for page layout, only data. See <a href="grids">grids</a> for page layout.
-        <span class="label label-info">.three-column-table</span> is similar with three 33% columns.
+        <span class="label label-attr">.three-column-table</span> is similar with three 33% columns.
     </p>
     <h4 class="subtle">Example:</h4>
     <table class="compact-results-table two-column-table">
@@ -558,48 +609,51 @@
 </pre>
 </div>
 
-<h3 class="subtle">Sorting</h3>
+<h2>Sorting and Paging</h2>
 <div class="table-example clearfix stacked">
     <p class="description">
-        Sorting can be done using the <span class="label label-info">SortableColumn</span> Java class, the 
-        <span class="label label-info">tags:sort</span> tag and the 
-        <span class="label label-info">data-url</span> attribute. Click the headers in the table below.
+        Sorting can be done using the <span class="label label-attr">SortableColumn</span> Java class, the 
+        <span class="label label-attr">tags:sort</span> tag and the 
+        <span class="label label-attr">data-url</span> attribute which is used in an ajax request when a column 
+        header or a paging control is hit.  The sorting and paging request params are added to the request automatically. 
+    </p>
+    <p class="description">
+        Paging is done using the <span class="label label-attr">tags:pagingCompactResults</span> tag and the 
+        <span class="label label-attr">SearchResults</span> Java class.  Do not use paging unless you expect 
+        the table to have more than 1000 itmes usually.  Prefer <a href="#scrolling-example">scrolling</a> instead.
+    </p>
+    <p class="description">
+        If you do not want the sorting or paging to be done with ajax but instead be a full page load, add the 
+        <span class="label label-attr">data-static</span> attribute to the container element. 
     </p>
     <h4 class="subtle">Example:</h4>
     <div data-url="tables/sort-example">
         <%@ include file="sort-example.jsp" %>
     </div>
-    <h4 class="subtle">Sort Request Mapping:</h4>
+    <h4 class="subtle">Table Request Mapping:</h4>
 <pre class="code prettyprint">
 @RequestMapping(&quot;/styleguide/tables/sort-example&quot;)
-public String tables(ModelMap model, SortingParameters sorting, PagingParameters paging) {
+public String tables(ModelMap model, 
+        @DefaultSort(dir=Direction.asc, sort=&quot;city&quot;) SortingParameters sorting, 
+        @DefaultItemsPerPage(10) PagingParameters paging) {
     
     ArrayList&lt;Population&gt; copy = Lists.newArrayList(cities);
     
     // sort the list
-    if (sorting != null) {
-        Comparator&lt;Population&gt; comparator = compares.get(sorting.getSort());
-        if (sorting.getDirection() == Direction.desc) {
-            comparator = Collections.reverseOrder(comparator);
-        }
-        Collections.sort(copy, comparator);
-        
-        boolean sortByCity = sorting.getSort().equalsIgnoreCase(&quot;city&quot;);
-        boolean sortByPop = sorting.getSort().equalsIgnoreCase(&quot;pop&quot;);
-        SortableColumn c1 = new SortableColumn(sorting.getDirection(), sortByCity, &quot;City&quot;, &quot;city&quot;);
-        SortableColumn c2 = new SortableColumn(sorting.getDirection(), sortByPop, &quot;Population&quot;, &quot;pop&quot;);
-        model.addAttribute(&quot;columns&quot;, ImmutableList.of(c1, c2));
-    } else {
-        SortableColumn c1 = new SortableColumn(Direction.desc, false, &quot;City&quot;, &quot;city&quot;);
-        SortableColumn c2 = new SortableColumn(Direction.desc, false, &quot;Population&quot;, &quot;pop&quot;);
-        model.addAttribute(&quot;columns&quot;, ImmutableList.of(c1, c2));
+    Comparator&lt;Population&gt; comparator = compares.get(sorting.getSort());
+    if (sorting.getDirection() == Direction.desc) {
+        comparator = Collections.reverseOrder(comparator);
     }
+    Collections.sort(copy, comparator);
     
     // page the list
-    int page = paging.getPage();
-    int size = paging.getItemsPerPage();
-    SearchResults&lt;Population&gt; paged = SearchResults.pageBasedForWholeList(page, size, copy);
+    SearchResults&lt;Population&gt; paged = SearchResults.pageBasedForWholeList(paging, copy);
     model.addAttribute(&quot;pops&quot;, paged);
+    
+    // add columns
+    SortableColumn c1 = SortableColumn.of(sorting, &quot;City&quot;, &quot;city&quot;);
+    SortableColumn c2 = SortableColumn.of(sorting, &quot;Population&quot;, &quot;pop&quot;);
+    model.addAttribute(&quot;columns&quot;, ImmutableList.of(c1, c2));
     
     return &quot;styleguide/sort-example.jsp&quot;;
 }
@@ -620,14 +674,14 @@ public String tables(ModelMap model, SortingParameters sorting, PagingParameters
 &lt;table class=&quot;compact-results-table&quot;&gt;
     &lt;thead&gt;
         &lt;tr&gt;
-            &lt;c:forEach var=&quot;column&quot; items=&quot;&#36;{pops.columns}&quot;&gt;
+            &lt;c:forEach var=&quot;column&quot; items=&quot;&#36;{columns}&quot;&gt;
                 &lt;tags:sort column=&quot;&#36;{column}&quot;/&gt;
             &lt;/c:forEach&gt;
         &lt;/tr&gt;
     &lt;/thead&gt;
     &lt;tfoot&gt;&lt;/tfoot&gt;
     &lt;tbody&gt;
-        &lt;c:forEach var=&quot;pop&quot; items=&quot;&#36;{pops.data}&quot;&gt;
+        &lt;c:forEach var=&quot;pop&quot; items=&quot;&#36;{pops.resultList}&quot;&gt;
             &lt;tr&gt;
                 &lt;td&gt;&#36;{pop.city}&lt;/td&gt;
                 &lt;td&gt;&#36;{pop.population}&lt;/td&gt;
@@ -635,21 +689,22 @@ public String tables(ModelMap model, SortingParameters sorting, PagingParameters
         &lt;/c:forEach&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
+&lt;tags:pagingResultsControls result=&quot;&#36;{pops}&quot; adjustPageCount=&quot;true&quot;/&gt;
 </pre>
 </div>
 
-<h3 class="subtle">Misc</h3>
+<h2>Misc</h2>
 <div class="table-example clearfix stacked">
 
     <p class="description">
-        <span class="label label-info">.with-form-controls</span> is used on tables that will have buttons or text-fields
+        <span class="label label-attr">.with-form-controls</span> is used on tables that will have buttons or text-fields
         or other similar form controls. Those components have a height of 26px so adding this class will change the 
         line-height to 26px which centers any text vertically to match the form control. Use
-        <span class="label label-info">.form-control</span> to get the same behavior for non-table elements. Note that if 
-        you are using <span class="label label-info">&lt;label&gt;</span> html elements they will vertically center text on what 
+        <span class="label label-attr">.form-control</span> to get the same behavior for non-table elements. Note that if 
+        you are using <span class="label label-attr">&lt;label&gt;</span> html elements they will vertically center text on what 
         they are labeling so this class is not necessary.  The easiest way to use 
-        <span class="label label-info">&lt;label&gt;</span> is to wrap the text and the form control inside a 
-        <span class="label label-info">&lt;label&gt;</span> element. 
+        <span class="label label-attr">&lt;label&gt;</span> is to wrap the text and the form control inside a 
+        <span class="label label-attr">&lt;label&gt;</span> element. 
     </p>
     <h4 class="subtle">Example:</h4>
     <tags:nameValueContainer2 tableClass="with-form-controls">
@@ -667,7 +722,7 @@ public String tables(ModelMap model, SortingParameters sorting, PagingParameters
     <hr>
     
     <p class="description">
-        <span class="label label-info">.row-highlighting</span> will produce row highlighting when hovering. 
+        <span class="label label-attr">.row-highlighting</span> will produce row highlighting when hovering. 
         Do <strong>NOT</strong> use this unless instructed to.  The built in row striping is usually enough to help users
         horizontally scan long rows.
     </p>
@@ -691,11 +746,11 @@ public String tables(ModelMap model, SortingParameters sorting, PagingParameters
     <hr id="has-actions-example">
     
     <p class="description">
-        <span class="label label-info">.has-actions</span> is used in conjunction with 
+        <span class="label label-attr">.has-actions</span> is used in conjunction with 
         <a href="buttons#drop-down-example">drop downs</a>.  It will hide the drop down button until the row is hovered.  It is
         also used to register right-click events on the row to display the drop down menu.  Do <strong>NOT</strong> use 
-        <span class="label label-info">.row-highlighting</span> with 
-        <span class="label label-info">.has-actions</span> because it makes it very hard to notice that a drop down
+        <span class="label label-attr">.row-highlighting</span> with 
+        <span class="label label-attr">.has-actions</span> because it makes it very hard to notice that a drop down
         button appeared. 
     </p>
     <h4 class="subtle">Example:</h4>
@@ -754,7 +809,7 @@ public String tables(ModelMap model, SortingParameters sorting, PagingParameters
     <hr>
     
     <p class="description">
-        <span class="label label-info">.has-alerts</span> is used when each row in a table is expected to have the first
+        <span class="label label-attr">.has-alerts</span> is used when each row in a table is expected to have the first
         column be an icon describing the row.  It will ensure the first column only takes up enough space to show the icon. See
         <a href="icons">icons</a> to learn more about using icons.
     </p>

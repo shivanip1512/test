@@ -12,7 +12,7 @@
                 <span class="empty-list"><i:inline key=".deviceStatusHistory.none"/></span>
             </c:when>
             <c:otherwise>
-                <div class="scroll-small">
+                <div class="scroll-sm">
                     <table class="compact-results-table dashed">
                         <thead>
                             <tr>
@@ -44,7 +44,7 @@
                     <span class="empty-list"><i:inline key=".hardwareHistory.none"/></span>
                 </c:when>
                 <c:otherwise>
-                    <div class="scroll-small">
+                    <div class="scroll-sm">
                         <table class="compact-results-table dashed">
                             <thead>
                                 <tr>

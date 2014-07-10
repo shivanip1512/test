@@ -264,7 +264,7 @@ public class ProgramsHelper {
         
         String text = accessor.getMessage(field);
         boolean active = sort == field;
-        SortableColumn col = new SortableColumn(dir, active, text, field.name());
+        SortableColumn col = SortableColumn.of(dir, active, text, field.name());
         model.addAttribute(field.name(), col);
     }
     

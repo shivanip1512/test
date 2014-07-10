@@ -13,7 +13,7 @@
                 <span class="empty-list"><i:inline key=".noJobs"/></span>
             </c:when>
             <c:otherwise>
-                <div class="scroll-large">
+                <div class="scroll-lg">
                     <table class="compact-results-table has-actions dashed">
                         <thead>
                             <th><i:inline key=".nameHeader"/></th>

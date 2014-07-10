@@ -23,7 +23,7 @@
             <span class="empty-list"><i:inline key=".noJobs"/></span>
         </c:when>
         <c:otherwise>
-            <div class="scroll-large">
+            <div class="scroll-lg">
                 <table class="compact-results-table dashed has-actions" <c:if test="${!empty pageScope.id}">id="${id}"</c:if>>
                     <thead>
                         <th><i:inline key=".nameHeader"/></th>

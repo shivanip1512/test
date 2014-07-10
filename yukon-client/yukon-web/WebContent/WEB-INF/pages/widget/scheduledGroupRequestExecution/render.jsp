@@ -19,7 +19,7 @@
 
 <c:choose>
     <c:when test="${fn:length(jobWrappers) > 0}">
-        <div class="scroll-large">
+        <div class="scroll-lg">
         
             <table class="compact-results-table">
                 <thead>

@@ -249,7 +249,7 @@
                 </cti:tabbedContentSelectorContent>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
                 <cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
-                    <div class="scroll-large">
+                    <div class="scroll-lg">
                         <c:forEach items="${zoneVoltagePointsHolders}" var="zoneVoltagePointsHolder">
                             <c:set var="zoneName" value="${zoneVoltagePointsHolder.zoneName}"/>
                             <cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">

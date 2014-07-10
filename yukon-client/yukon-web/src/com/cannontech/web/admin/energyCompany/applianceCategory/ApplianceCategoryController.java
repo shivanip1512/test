@@ -189,12 +189,12 @@ public class ApplianceCategoryController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         String programName = accessor.getMessage(baseKey + ".programName");
-        SortableColumn nameColumn = new SortableColumn(com.cannontech.common.model.Direction.desc, 
+        SortableColumn nameColumn = SortableColumn.of(com.cannontech.common.model.Direction.desc, 
                 sortBy == SortBy.PROGRAM_NAME, programName, "name");
         model.addAttribute("nameColumn", nameColumn);
         
         String displayOrder = accessor.getMessage(baseKey + ".displayOrder");
-        SortableColumn orderColumn = new SortableColumn(com.cannontech.common.model.Direction.desc, 
+        SortableColumn orderColumn = SortableColumn.of(com.cannontech.common.model.Direction.desc, 
                 sortBy == SortBy.PROGRAM_ORDER, displayOrder, "order");
         model.addAttribute("orderColumn", orderColumn);
 
@@ -243,11 +243,11 @@ public class ApplianceCategoryController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         String programName = accessor.getMessage(baseKey + ".programName");
-        SortableColumn nameColumn = new SortableColumn(desc ? com.cannontech.common.model.Direction.desc : com.cannontech.common.model.Direction.asc, 
+        SortableColumn nameColumn = SortableColumn.of(desc ? com.cannontech.common.model.Direction.desc : com.cannontech.common.model.Direction.asc, 
                 sortBy == SortBy.PROGRAM_NAME, programName, "name");
         
         String displayOrder = accessor.getMessage(baseKey + ".displayOrder");
-        SortableColumn orderColumn = new SortableColumn(desc ? com.cannontech.common.model.Direction.desc : com.cannontech.common.model.Direction.asc, 
+        SortableColumn orderColumn = SortableColumn.of(desc ? com.cannontech.common.model.Direction.desc : com.cannontech.common.model.Direction.asc, 
                 sortBy == SortBy.PROGRAM_ORDER, displayOrder, "order");
         
         model.addAttribute("applianceCategory", category);

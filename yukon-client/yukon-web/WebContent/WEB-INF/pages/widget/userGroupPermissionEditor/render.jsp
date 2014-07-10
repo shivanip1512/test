@@ -27,7 +27,7 @@ ${pageScope.addPao} = function() {
             No Existing Permissions
         </c:when>
         <c:otherwise>
-            <div class="scroll-large">
+            <div class="scroll-lg">
                 <table class="compact-results-table row-highlighting">
                     <thead>
                         <tr>

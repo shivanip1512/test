@@ -10,7 +10,7 @@ $(document).ready(flashYellow($('#reloadedAt')[0], 2));
 <cti:msgScope paths="widgets.rfnOutagesWidget">
 
 <tags:sectionContainer2 nameKey="outageLog">
-    <div class="scroll-small">
+    <div class="scroll-sm">
         <c:choose>
             <c:when test="${empty logs}"><i><i:inline key=".noLogs"/></i></c:when>
             <c:otherwise>

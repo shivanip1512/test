@@ -8,14 +8,14 @@
 <tags:styleguide page="icons">
 
 <style>
-.description { line-height: 20px; }
+.description { line-height: 22px; }
 </style>
 
 <div class="description">
     Yukon uses 16 and 32 pixel icons based on the <a href="https://github.com/webarto/famfamfam" target="_blank">famfam</a> 
     and <a href="http://www.designshock.com/google-plus-interface-icons/" target="_blank">google plus</a> libraries. Yukon 
-    has a <span class="label label-info">&lt;cti:icon&gt;</span> tag to creat icons. You only need to set the icon attribute 
-    to the icon class name desired.  For 32px icons add a clas of <span class="label label-info">.icon-32</span>.  Most 
+    has a <span class="label label-attr">&lt;cti:icon&gt;</span> tag to creat icons. You only need to set the icon attribute 
+    to the icon class name desired.  For 32px icons add a clas of <span class="label label-attr">.icon-32</span>.  Most 
     components that would use icons already have them built in. See <a href="buttons#icon-example">buttons</a>, and 
     <a href="buttons#drop-down-example">drop-downs</a>.
 <h4 class="subtle">Example:</h4>

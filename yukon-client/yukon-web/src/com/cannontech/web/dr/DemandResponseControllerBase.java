@@ -94,7 +94,7 @@ public abstract class DemandResponseControllerBase {
             AssetDetailsColumn sort = AssetDetailsColumn.valueOf(sorting.getSort());
             String text = accessor.getMessage(col);
             boolean active = sort == col;
-            SortableColumn sortable = new SortableColumn(dir, active, text, col.name());
+            SortableColumn sortable = SortableColumn.of(dir, active, text, col.name());
             model.addAttribute(col.name(), sortable);
         }
     }

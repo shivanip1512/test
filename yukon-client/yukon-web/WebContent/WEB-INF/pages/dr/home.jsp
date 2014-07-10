@@ -26,7 +26,7 @@
                     <span class="empty-list"><i:inline key=".noFavorites"/></span>
                 </c:if>
                 <c:if test="${!empty favorites}">
-                    <div class="scroll-large">
+                    <div class="scroll-lg">
                         <table class="compact-results-table row-highlighting has-actions dashed">
                             <thead>
                                 <tr>
@@ -173,7 +173,7 @@
                     <span class="empty-list"><i:inline key=".noRecents" /></span>
                 </c:if>
                 <c:if test="${!empty recents}">
-                    <div class="scroll-large">
+                    <div class="scroll-lg">
                         <table class="compact-results-table row-highlighting has-actions dashed">
                             <thead>
                             <tr>

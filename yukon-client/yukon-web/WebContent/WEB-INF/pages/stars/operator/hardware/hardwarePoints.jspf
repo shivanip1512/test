@@ -36,7 +36,7 @@ $(function() {
     <c:forEach var="entry" items="${points}">
         <c:if test="${fn:length(entry.value) > 0}">
             <span><i:inline key="${entry.key}" /></span>
-            <div class="scroll-small lite-container stacked dashed">
+            <div class="scroll-sm lite-container stacked dashed">
                 <table class="compact-results-table">
                     <c:forEach var="point" items="${entry.value}">
                         <tr>

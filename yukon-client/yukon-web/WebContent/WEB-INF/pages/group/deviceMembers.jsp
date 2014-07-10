@@ -24,7 +24,7 @@
                 <div class="warning stacked"><i:inline key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText" arguments="${maxGetDevicesSize}"/></div>
             </c:if>
         </div>
-        <div class="scroll-small">
+        <div class="scroll-sm">
             <table class="compact-results-table row-highlighting">
                 <thead></thead>
                 <tfoot></tfoot>

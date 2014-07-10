@@ -23,7 +23,7 @@
                 </div>
                 <%-- file errors --%>
                 <c:if test="${not empty fileErrorKeysList}">
-                    <div class="stacked scroll-medium">
+                    <div class="stacked scroll-md">
                         <c:forEach var="fileErrorKey" items="${fileErrorKeysList}">
                             <div class="error"><cti:msg key="${fileErrorKey}"/></div>
                         </c:forEach>
@@ -31,7 +31,7 @@
                 </c:if>
                 <%-- header errors --%>
                 <c:if test="${not empty headersErrorResolverList}">
-                    <div class="stacked lite-container scroll-medium">
+                    <div class="stacked lite-container scroll-md">
                         <c:forEach var="headersErrorResolver" items="${headersErrorResolverList}">
                             <div class="error"><cti:msg key="${headersErrorResolver}"/></div>
                         </c:forEach>

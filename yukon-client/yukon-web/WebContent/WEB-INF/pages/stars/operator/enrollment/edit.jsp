@@ -80,7 +80,7 @@
     </cti:checkEnergyCompanySetting>
 
     <tags:sectionContainer2 nameKey="hardwareAssigned">
-        <div class="scroll-medium">
+        <div class="scroll-md">
         <table id="hardwareAssignedTable" class="compact-results-table with-form-controls clearfix">
             <thead>
                 <tr>

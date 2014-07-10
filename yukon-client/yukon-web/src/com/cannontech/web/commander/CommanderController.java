@@ -93,7 +93,7 @@ public class CommanderController {
                 DeviceSearchField field = (DeviceSearchField) searchField;
                 boolean active = field == deviceSearchField;
                 String text = accessor.getMessage(field);
-                SortableColumn col = new SortableColumn(dir, active, text, field.name());
+                SortableColumn col = SortableColumn.of(dir, active, text, field.name());
                 columns.add(col);
             }
         }

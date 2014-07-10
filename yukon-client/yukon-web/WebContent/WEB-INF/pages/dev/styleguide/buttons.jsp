@@ -9,27 +9,22 @@
 
 <style>
 .button-example .one { line-height: 26px; }
-.description { line-height: 20px; }
-.label-attr { 
-    border: 1px solid #ccc;
-    background-color: #efefef;
-    color: inherit;
-}
+.description { line-height: 22px; }
 </style>
 
 <p class="description">
-    All buttons in Yukon need to be created using the <span class="label label-info">&lt;cti:button&gt;</span> tag. Never
+    All buttons in Yukon need to be created using the <span class="label label-attr">&lt;cti:button&gt;</span> tag. Never
     use any of the button or input html elements to create a button.  The 
-    <span class="label label-info">&lt;cti:button&gt;</span> tag can handle any type of button needed.  
+    <span class="label label-attr">&lt;cti:button&gt;</span> tag can handle any type of button needed.  
     <strong>Hint</strong>: This tag ALWAYS produces a button html element with a class name of 
-    <span class="label label-info">.button</span>. Inside the button, the text will always be wrapped in span with a class
-    name of <span class="label label-info">.b-label</span>.
+    <span class="label label-attr">.button</span>. Inside the button, the text will always be wrapped in span with a class
+    name of <span class="label label-attr">.b-label</span>.
 </p>
 
 <h2>Button Text</h2>
 
 <p class="description">
-    The <span class="label label-info">&lt;cti:button&gt;</span> tag's <span class="label label-attr">nameKey</span> 
+    The <span class="label label-attr">&lt;cti:button&gt;</span> tag's <span class="label label-attr">nameKey</span> 
     attribute is used to build the button text. The current scope plus the <span class="label label-attr">nameKey</span> 
     value will be added as a scope.  The <em>components.button</em> scope will also be added.  The key for the button's text 
     must always end in <em>.label</em>.  So if the current scope at the location of the button is 
@@ -77,9 +72,9 @@
 
 <h2>Button Type</h2>
 
-<p class="description">The <span class="label label-info">&lt;cti:button&gt;</span> tag has a 
+<p class="description">The <span class="label label-attr">&lt;cti:button&gt;</span> tag has a 
     <span class="label label-attr">type</span> attribute that is equivalent to the <span class="label label-attr">type</span> 
-    attribute on an html <span class="label label-info">button</span> element and supports the same values: <em>button</em> 
+    attribute on an html <span class="label label-attr">button</span> element and supports the same values: <em>button</em> 
     (the default if not specified), <em>submit</em>, and <em>reset</em>.
 </p>
 <div class="column-4-20 clearfix button-example">
@@ -106,7 +101,7 @@
 <h2 id="icon-example">Using Icons with Buttons</h2>
 
 <p class="description">
-    The <span class="label label-info">&lt;cti:button&gt;</span> tag has built in support for icons. Simply set the 
+    The <span class="label label-attr">&lt;cti:button&gt;</span> tag has built in support for icons. Simply set the 
     <span class="label label-attr">icon</span> attribute to the icon class name you need. See <a href="icons">icons</a> for
     a full list of available icons.  Setting the <span class="label label-attr">disabled</span> attribute to true will 
     automatically gray out the icon as well.  <strong>Note</strong>: Do not put icons on buttons unless instructed to do so.
@@ -127,7 +122,7 @@
 <h2>Render Mode</h2>
 
 <p class="description">
-    The <span class="label label-info">&lt;cti:button&gt;</span> tag has a <span class="label label-attr">renderMode</span>
+    The <span class="label label-attr">&lt;cti:button&gt;</span> tag has a <span class="label label-attr">renderMode</span>
     that will change the way the button looks.  Values are:
 </p>
 <ul>
@@ -156,9 +151,9 @@
 <h2>Button Groups</h2>
 
 <p class="description">
-    Buttons can be grouped together by using a container class <span class="label label-info">.button-group</span> or 
-    individual classes <span class="label label-info">.left</span>, <span class="label label-info">.middle</span> and
-    <span class="label label-info">.right</span>.
+    Buttons can be grouped together by using a container class <span class="label label-attr">.button-group</span> or 
+    individual classes <span class="label label-attr">.left</span>, <span class="label label-attr">.middle</span> and
+    <span class="label label-attr">.right</span>.
 </p>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
@@ -214,9 +209,9 @@
 <h3 class="subtle">Toggle Buttons</h3>
 
 <p class="description">
-    Button groups can be made to act like toggle or radio buttons by add the <span class="label label-info">.toggle-btns</span>
+    Button groups can be made to act like toggle or radio buttons by add the <span class="label label-attr">.toggle-btns</span>
     class the container element.  Yukon's js library will automatically make one of the buttons look punched in when clicked
-    by simply added the <span class="label label-info">.on</span> class to the button.
+    by simply added the <span class="label label-attr">.on</span> class to the button.
 </p>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
@@ -239,9 +234,9 @@
 &lt;/div&gt;
 </pre>
 <p class="description">
-    Toggle buttons can show a little more visual state using the <span class="label label-info">.toggle-btns</span> class
-    on the container element and adding the <span class="label label-info">.yes</span> or 
-    <span class="label label-info">.no</span> classes to the buttons.  Yukon's js library handles this automatically as well.
+    Toggle buttons can show a little more visual state using the <span class="label label-attr">.toggle-btns</span> class
+    on the container element and adding the <span class="label label-attr">.yes</span> or 
+    <span class="label label-attr">.no</span> classes to the buttons.  Yukon's js library handles this automatically as well.
 </p>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
@@ -273,20 +268,20 @@
 
 <p class="description">
     Primary buttons are buttons that usually are part of a group.  They represent the primary action a user is probably
-    looking for.  To make one add two classes <span class="label label-info">.action</span> and 
-    <span class="label label-info">.primary</span> to it your button.  
+    looking for.  To make one add two classes <span class="label label-attr">.action</span> and 
+    <span class="label label-attr">.primary</span> to it your button.  
 </p>
 <p class="description">
     Dialogs should always have a primary button.  Traditional forms
     or pages that are in edit mode should have a primary button.  Delete buttons on these type of pages are also special,
-    they should have the <span class="label label-info">.delete</span> class.  
+    they should have the <span class="label label-attr">.delete</span> class.  
 </p>
 <h3 class="subtle">Button Containers</h4>
 <p class="description">
-    Buttons on these type of pages should also be contained in a <span class="label label-info">.page-action-area</span> 
+    Buttons on these type of pages should also be contained in a <span class="label label-attr">.page-action-area</span> 
     element.  This will float the buttons left and add margin above the buttons.  When using 
-    <span class="label label-info">.page-action-area</span> the most significant buttons should be first from left to right.  
-    Use the <span class="label label-info">.action-area</span> class when containing buttons in a widget, a dialog or a 
+    <span class="label label-attr">.page-action-area</span> the most significant buttons should be first from left to right.  
+    Use the <span class="label label-attr">.action-area</span> class when containing buttons in a widget, a dialog or a 
     container that does not use the whole page width.  This class will float the buttons right and therefore the most 
     significant buttons should be from right to left.
 </p>
@@ -326,7 +321,7 @@
 <h2>Busy Buttons and Group Disabling</h2>
 
 <p class="description">
-    The <span class="label label-info">&lt;cti:button&gt;</span> tag has the ability disable itself and show an internal 
+    The <span class="label label-attr">&lt;cti:button&gt;</span> tag has the ability disable itself and show an internal 
     spinner icon when clicked by setting the <span class="label label-attr">busy</span> attribute to <em>true</em>.  You can 
     change the button text when in the busy state by defining a <em>.labelBusy</em> i18n key. You can programatically busy 
     and un-busy a button using the <span class="label label-attr">yukon.ui.busy</span> and 
@@ -372,8 +367,8 @@ yukon.ui.unbusy('#busy-test-3');
 <h2 id="drop-down-example">Drop Downs</h2>
 
 <p class="description">
-    You can create drop down menu buttons using two tags: <span class="label label-info">&lt;tags:dropdown&gt;</span> and
-    <span class="label label-info">&lt;tags:dropdownOption&gt;</span>.  See <a href="tables#has-actions-example">tables</a>
+    You can create drop down menu buttons using two tags: <span class="label label-attr">&lt;tags:dropdown&gt;</span> and
+    <span class="label label-attr">&lt;tags:dropdownOption&gt;</span>.  See <a href="tables#has-actions-example">tables</a>
     to learn about using drop down menus in tables.
 </p>
 <div class="column-4-20 clearfix button-example">
@@ -433,8 +428,8 @@ yukon.ui.unbusy('#busy-test-3');
 
 <p class="description">
     Criteria buttons are a specialized type of drop down button that is meant for choosing multiple grouped options.  It has
-    similar attributes to <span class="label label-info">dropdown</span> and 
-    <span class="label label-info">dropdownOption</span> for button and option text.
+    similar attributes to <span class="label label-attr">dropdown</span> and 
+    <span class="label label-attr">dropdownOption</span> for button and option text.
 </p>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>

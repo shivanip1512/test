@@ -22,7 +22,7 @@
     </div>
     
     <tags:boxContainer2 nameKey="importLogBox">
-      <div id="logDiv" class="scroll-large"></div>
+      <div id="logDiv" class="scroll-lg"></div>
     </tags:boxContainer2>
     
     <div id="downloadFailedSection" class="dn">

@@ -382,7 +382,7 @@ function confirmRemoveAllDevices(confirmText) {
                         <%-- SUBGROUPS --%>
                         <cti:msg2 var="subGroupsTitle" key="yukon.web.deviceGroups.editor.memberContainer.subGroups"/>
                         <tags:sectionContainer title="${subGroupsTitle}" styleClass="groupEditorContentDetail">
-                            <div class="scroll-small">
+                            <div class="scroll-sm">
                                 <c:choose>
                                     <c:when test="${fn:length(subGroupMap) > 0}">
                                         <%-- User must have DEVICE_GROUP_EDIT to delete groups. Set once for use in loop. --%>

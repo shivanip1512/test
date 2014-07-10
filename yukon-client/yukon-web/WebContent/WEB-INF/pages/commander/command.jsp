@@ -115,7 +115,7 @@
                     <cti:button nameKey="clear" type="submit" name="clearText"/>
                     <cti:button nameKey="refresh" name="refresh" onclick="window.location.reload()"/>
                 </div>
-                <div id="command_results" class="lite-container stacked code scroll-large" style="min-height: 200px;">
+                <div id="command_results" class="lite-container stacked code scroll-lg" style="min-height: 200px;">
                     <div class="console"><h4><i:inline key="yukon.common.console"/></h4></div>
                     <c:out value="${resultText}" escapeXml="false"/>
                 </div>

@@ -20,7 +20,7 @@
         <tags:nameValue2 nameKey="yukon.common.device">${fn:escapeXml(deviceName)}</tags:nameValue2>
         <tags:nameValue2 nameKey="yukon.common.point">${fn:escapeXml(pointName)}</tags:nameValue2>
         </tags:nameValueContainer2>
-        <div class="scroll-large">
+        <div class="scroll-lg">
             <table id="tagList" class="compact-results-table row-highlighting with-form-controls clearfix">
                 <thead>
                     <tr>

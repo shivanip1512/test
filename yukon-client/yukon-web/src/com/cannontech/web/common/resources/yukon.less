@@ -684,10 +684,10 @@ input.error {
 .focused-field-description {display:none;}
 
 /* SCROLLING */
-.scroll-large, .scroll-medium, .scroll-small {overflow-y: auto;}
-.scroll-large {max-height:350px;}
-.scroll-medium {max-height:200px;}
-.scroll-small {max-height:160px;}
+.scroll-lg, .scroll-md, .scroll-sm {overflow-y: auto;}
+.scroll-lg {max-height:350px;}
+.scroll-md {max-height:200px;}
+.scroll-sm {max-height:160px;}
 
 /* CATEGORIES AND SETTINGS  */
 .dashboard .category {width: 440px; margin: 0 30px 10px 0; float:left; overflow:hidden;}
@@ -867,6 +867,12 @@ hr.dashed,
 /* Pulls icon down towards middle of the container/tr instead of the top */
 .pull-icon-down { margin-bottom: -3px; }
 
+/* Custom bootstrap label */
+.label-attr { 
+    border: 1px solid #ccc;
+    background-color: #efefef;
+    color: inherit;
+}
 /* COLOR PICKER */
 .color-picker {
     &.sp-container, &.sp-replacer {

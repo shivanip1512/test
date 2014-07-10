@@ -34,7 +34,7 @@
 	                            <div><i:inline key=".noRoutes"/></div>
 	                        </c:when>
 	                        <c:otherwise>
-	                            <div class="membersContainer scroll-large">
+	                            <div class="membersContainer scroll-lg">
 	                                <table class="compact-results-table">
 	                                    <thead>
 	                                        <tr>
