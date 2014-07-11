@@ -61,6 +61,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_B">kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_C">kVArh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_D">kVArh Rate D</entry>
+	
     <entry key="yukon.common.attribute.builtInAttribute.LM_GROUP_STATUS">LM Group Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_PROFILE">Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE">Maximum Voltage</entry>
@@ -239,6 +240,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_B">Net kWh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_C">Net kWh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_D">Net kWh Rate D</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_E">Net kWh Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH">Sum kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_A">Sum kWh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_B">Sum kWh Rate B</entry>
@@ -292,14 +294,12 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_A">Net Received kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_B">Net Received kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_C">Net Received kVArh Rate C</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate E</entry>
     
 	<entry key="yukon.common.attribute.builtInAttribute.INDOOR_TEMPERATURE">Indoor Temperature</entry>
 	<entry key="yukon.common.attribute.builtInAttribute.OUTDOOR_TEMPERATURE">Outdoor Temperature</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.COOL_SET_TEMPERATURE">Cool set Temperature</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.HEAT_SET_TEMPERATURE">Heat set Temperature</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH">Recieved KVAH</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_E">Net KWH Rate E</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Recieved KVARH Rate E</entry>
-
-    <!-- BuiltInAttribute see note above about changing values-->
+	<entry key="yukon.common.attribute.builtInAttribute.COOL_SET_TEMPERATURE">Cool Set Temperature</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.HEAT_SET_TEMPERATURE">Heat Set Temperature</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH">Received kVAh</entry>
+	<!-- BuiltInAttribute see note above about changing values-->
 </properties>
