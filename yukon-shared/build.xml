@@ -13,7 +13,7 @@
                 <attribute name="Yukon-Details" value="${yukon.build.details}"/>
                 <attribute name="Permissions" value="all-permissions"/>
             </manifest>
-            <fileset dir="resources" excludes="messages/"/>
+            <fileset dir="src/main/resources" excludes="messages/"/>
         </jar>
     </target>
 
