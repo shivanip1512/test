@@ -392,7 +392,6 @@ Database::id_set DynamicPaoInfoManager::writeInfo( void )
         {
             if( DynInfoSPtr dirtyInfo = dirtyItr->lock() )
             {
-
                 bool written = false;
 
                 if( dirtyInfo->isFromDb() )
@@ -476,10 +475,10 @@ Database::id_set DynamicPaoInfoManager::writeInfo( void )
                     continue;
                 }
 
-                instance->dirtyInfoIndexed.erase(dirtyItr++);
-
                 paoIdsWritten.insert(dirtyInfo->getPaoID());
             }
+
+            instance->dirtyInfoIndexed.erase(dirtyItr++);
         }
     }
 
