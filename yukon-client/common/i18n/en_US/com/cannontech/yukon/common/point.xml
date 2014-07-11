@@ -294,7 +294,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_A">Net Received kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_B">Net Received kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_C">Net Received kVArh Rate C</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate E</entry>
+	<entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate D</entry>
     
 	<entry key="yukon.common.attribute.builtInAttribute.INDOOR_TEMPERATURE">Indoor Temperature</entry>
 	<entry key="yukon.common.attribute.builtInAttribute.OUTDOOR_TEMPERATURE">Outdoor Temperature</entry>
