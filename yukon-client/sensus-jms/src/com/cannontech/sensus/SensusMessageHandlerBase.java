@@ -1,4 +1,4 @@
-﻿package com.cannontech.sensus;
+package com.cannontech.sensus;
 
 import java.text.DateFormat;
 import java.util.HashMap;
