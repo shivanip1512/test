@@ -2,7 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-	<!-- Point Types -->
+    <!-- Point Types -->
     <entry key="yukon.common.point.pointType.Status">Status</entry>
     <entry key="yukon.common.point.pointType.Analog">Analog</entry>
     <entry key="yukon.common.point.pointType.PulseAccumulator">Pulse Accumulator</entry>
@@ -42,7 +42,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.COMM_STATUS">Communication Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONNECTION_STATUS">Connection Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONTROL_POINT">Control Point</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT">Current (Neutral)</entry> 
+    <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT">Current (Neutral)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT">Current</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_PHASE_A">Current (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_PHASE_B">Current (Phase B)</entry>
@@ -61,7 +61,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_B">kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_C">kVArh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_D">kVArh Rate D</entry>
-	
+
     <entry key="yukon.common.attribute.builtInAttribute.LM_GROUP_STATUS">LM Group Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_PROFILE">Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE">Maximum Voltage</entry>
@@ -119,7 +119,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_THRESHOLD">Under Voltage Threshold</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE">Usage Reading</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_FROZEN">Usage Frozen</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.USAGE_RATE_A">Usage Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.USAGE_RATE_A">Usage Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_RATE_B">Usage Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_RATE_C">Usage Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_RATE_D">Usage Rate D</entry>
@@ -154,8 +154,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.DEMAND_OVERLOAD">Demand Overload</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DEMAND_READS_AND_RESET">Demand Reads And Reset</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DEMAND_THRESHOLD_EXCEEDED_WARNING">Demand Threshold Exceeded Warning</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.DISPLAY_LOCKED_BY_WARNING">Display Locked By Warning</entry>  
-    <entry key="yukon.common.attribute.builtInAttribute.DNP3_ADDRESS_CHANGED">DNP3 Address Changed</entry>  
+    <entry key="yukon.common.attribute.builtInAttribute.DISPLAY_LOCKED_BY_WARNING">Display Locked By Warning</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DNP3_ADDRESS_CHANGED">DNP3 Address Changed</entry>
     <entry key="yukon.common.attribute.builtInAttribute.EEPROM_ACCESS_ERROR">Eeprom Access Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ENCRYPTION_KEY_TABLE_CRC_ERROR">Encryption Key Table Crc Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.END_OF_CALENDAR_WARNING">End Of Calendar Warning</entry>
@@ -178,16 +178,16 @@
     <entry key="yukon.common.attribute.builtInAttribute.MEASUREMENT_ERROR">Measurement Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.METROLOGY_COMM_FAILURE">Metrology Communication Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.METER_RECONFIGURE">Meter Reconfigure</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.NON_VOLATILE_MEM_FAILURE">Non Volatile Mem Failure</entry>  
+    <entry key="yukon.common.attribute.builtInAttribute.NON_VOLATILE_MEM_FAILURE">Non Volatile Mem Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTSTATION_DNP3_SERCOMM_LOCKED">Outstation DNP3 SerComm Locked</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PASSWORD_TABLE_CRC_ERROR">Password Table Crc Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PHASE_ANGLE_DISPLACEMENT">Phase Angle Displacment</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PHASE_LOSS">Phase Loss</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC">Polarity, Cross-phase and Energy Flow Diagnostic</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.POTENTIAL_INDICATOR_WARNING">Potential Indicator Warning</entry>    
+    <entry key="yukon.common.attribute.builtInAttribute.POTENTIAL_INDICATOR_WARNING">Potential Indicator Warning</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FAIL_DATA_SAVE_ERROR">Power Fail Data Save Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FAILURE">Power Failure</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.PQM_TEST_FAILURE_WARNING">Pqm Test Failure Warning</entry>  
+    <entry key="yukon.common.attribute.builtInAttribute.PQM_TEST_FAILURE_WARNING">Pqm Test Failure Warning</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RAM_ERROR">Ram Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REGISTER_FULL_SCALE_EXCEEDED">Register Full-scale Exceeded</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_ROTATION">Reverse Rotation</entry>
@@ -201,9 +201,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.ROM_ERROR">Rom Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SEASON_CHANGE">Season Change</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SECURITY_CONFIGURATION_ERROR">Security Configuration Error</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.SELF_CHECK_ERROR">Self Check Error</entry>    
+    <entry key="yukon.common.attribute.builtInAttribute.SELF_CHECK_ERROR">Self Check Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_CURRENT_TEST_FAILURE_WARNING">Service Current Test Failure Warning</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.SERVICE_DISCONNECT_SWITCH_ERROR">Service Disconnect Switch Error</entry>  
+    <entry key="yukon.common.attribute.builtInAttribute.SERVICE_DISCONNECT_SWITCH_ERROR">Service Disconnect Switch Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_DISCONNECT_SWITCH_OPEN">Service Disconnect Switch Open</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR">Service Disconnect Switch Sensor Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_STATUS">Service Status</entry>
@@ -240,7 +240,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_B">Net kWh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_C">Net kWh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_D">Net kWh Rate D</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_E">Net kWh Rate E</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_E">Net kWh Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH">Sum kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_A">Sum kWh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_B">Sum kWh Rate B</entry>
@@ -272,20 +272,21 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KW_LOAD_PROFILE">Sum kW Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KW_LOAD_PROFILE">Net kW Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVA_LOAD_PROFILE">Sum kVA Load Profile</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAR_LOAD_PROFILE">Sum kVAr Load Profile</entry> 
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAR_LOAD_PROFILE">Sum kVAr Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH">Forward Inductive kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH">Reverse Inductive kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH_PER_INTERVAL">Forward Inductive kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_CAPACITIVE_KVARH_PER_INTERVAL">Forward Capacitive kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH_PER_INTERVAL">Reverse Inductive kVArh per Interval</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">Reverse Capacitive kVArh per Interval</entry> 
+    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">Reverse Capacitive kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH">Net Delivered kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_A">Net Delivered kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_B">Net Delivered kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_C">Net Delivered kVArh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_D">Net Delivered kVArh Rate D</entry>
-	
-	<entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH">Received kVArh</entry>
+
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH">Received kVAh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH">Received kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_A">Received kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_B">Received kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_C">Received kVArh Rate C</entry>
@@ -294,12 +295,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_A">Net Received kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_B">Net Received kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_C">Net Received kVArh Rate C</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate D</entry>
-    
-	<entry key="yukon.common.attribute.builtInAttribute.INDOOR_TEMPERATURE">Indoor Temperature</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.OUTDOOR_TEMPERATURE">Outdoor Temperature</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.COOL_SET_TEMPERATURE">Cool Set Temperature</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.HEAT_SET_TEMPERATURE">Heat Set Temperature</entry>
-	<entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH">Received kVAh</entry>
-	<!-- BuiltInAttribute see note above about changing values-->
+    <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate D</entry>
+
+    <entry key="yukon.common.attribute.builtInAttribute.INDOOR_TEMPERATURE">Indoor Temperature</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.OUTDOOR_TEMPERATURE">Outdoor Temperature</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.COOL_SET_TEMPERATURE">Cool Set Temperature</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.HEAT_SET_TEMPERATURE">Heat Set Temperature</entry>
+    <!-- BuiltInAttribute see note above about changing values -->
 </properties>
