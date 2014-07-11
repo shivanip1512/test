@@ -19,13 +19,13 @@ yukon.dataExporterFormat = (function () {
     _previewUrl = yukon.url('/tools/data-exporter/format/preview'), /** @constant {string} URL that returns the preview for the format in JSON. */
     
     /** Retrieves a preview of the format */
-    _updatePreview = function() {
+    _updatePreview = function () {
         $('#format-form').ajaxSubmit({
             url: _previewUrl, 
             type: 'post',
-            success: function(data, status, xhr, $form) {
+            success: function (data, status, xhr, $form) {
                 $('[preview-body]').empty();
-                $.each(data.body, function(idx, el) {
+                $.each(data.body, function (idx, el) {
                     $('[preview-body]').append(el + '<br>');
                 });
             }
@@ -33,14 +33,14 @@ yukon.dataExporterFormat = (function () {
     },
     
     /** Gets the timestamp pattern selected or the custom timestamp pattern if defined. */
-    _getTimestampPattern = function() {
+    _getTimestampPattern = function () {
         var pattern = $('#timestamp-pattern-select option:selected').data('pattern');
         if (pattern === 'CUSTOM') pattern = $('#timestamp-pattern-input').val();
         return pattern;
     },
     
     /** Gets the reading pattern selected or the custom reading pattern if defined. */
-    _getReadingPattern = function() {
+    _getReadingPattern = function () {
         var pattern = $('#reading-pattern-select option:selected').data('pattern');
         if (pattern === 'CUSTOM') pattern = $('#reading-pattern-input').val();
         return pattern;
@@ -50,11 +50,11 @@ yukon.dataExporterFormat = (function () {
      * Returns an object of extra post data needed to post a field 
      * using the ajaxSubmit method on the jquery.form plugin. 
      */
-    _getExtraFieldRequestData = function() {
+    _getExtraFieldRequestData = function () {
         
         var data = {formatType: $('#format-type').val()};
         // The current attributes will be needed in the response if validation fails.
-        $('#attributes-table tbody :input').each(function() {
+        $('#attributes-table tbody :input').each(function () {
             data[$(this).attr('name')] = $(this).val();
         });
         
@@ -67,7 +67,7 @@ yukon.dataExporterFormat = (function () {
          * Initializes the module, hooking up event handlers to components.
          * Depends on localized text in the jsp, so only run after DOM is ready.
          */
-        init: function() {
+        init: function () {
             
             if (_initialized) return;
             
@@ -83,7 +83,7 @@ yukon.dataExporterFormat = (function () {
             if (showField) delimiter.show(); else delimiter.hide();
             
             /** Show the delimiter text field if they choose custom, otherwise hide. */
-            $('#delimiters').change(function(ev) {
+            $('#delimiters').change(function (ev) {
                 
                 var showField = delimiters.find('option:selected').is('[type=CUSTOM]');
                 delimiter.val(delimiters.val());
@@ -91,17 +91,17 @@ yukon.dataExporterFormat = (function () {
                 _updatePreview();
             });
             /** Update preview if they change the delimiter */
-            delimiter.on('input', function(ev) { _updatePreview(); });
+            delimiter.on('input', function (ev) { _updatePreview(); });
             
             /** Update preview if they change the timezone */
-            $('#date-timezone-format').on('change', function(ev) { _updatePreview(); });
+            $('#date-timezone-format').on('change', function (ev) { _updatePreview(); });
             
             /** Add attribute button clicked, shows add attribute popup. */
-            $('#b-add-attribute').click(function(ev) {
+            $('#b-add-attribute').click(function (ev) {
                 
                 var popup = $('#format-popup');
                 
-                popup.load(_attributeUrl, function() {
+                popup.load(_attributeUrl, function () {
                     popup.dialog({
                         title: _config.text.addAttribute,
                         width: 'auto',
@@ -111,11 +111,11 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Add field button clicked, shows add field popup. */
-            $('#b-add-field').click(function(ev) {
+            $('#b-add-field').click(function (ev) {
                 
                 var popup = $('#format-popup');
                 
-                $.get(_fieldUrl, _getExtraFieldRequestData()).done(function(data) {
+                $.get(_fieldUrl, _getExtraFieldRequestData()).done(function (data) {
                     popup.html(data);
                     popup.dialog({
                         title: _config.text.addField,
@@ -131,12 +131,12 @@ yukon.dataExporterFormat = (function () {
              * Submits form via ajax and shows validated form if validation failed
              * or closes popup and updates row if validation succeded. 
              */
-            $('#format-popup').on('yukon.data.export.format.attribute.add', function(ev) {
+            $('#format-popup').on('yukon.data.export.format.attribute.add', function (ev) {
                 
                 $('#attribute-form').ajaxSubmit({
                     url: _attributeUrl, 
                     type: 'post',
-                    success: function(data, status, xhr, $form) {
+                    success: function (data, status, xhr, $form) {
                         
                         $('#format-popup').dialog('close');
                         
@@ -153,7 +153,7 @@ yukon.dataExporterFormat = (function () {
                         $('#attributes-table tbody').append(row);
                         yukon.ui.reindexInputs(row.closest('table'));
                     },
-                    error: function(xhr, status, error, $form) {
+                    error: function (xhr, status, error, $form) {
                         $('#format-popup').html(xhr.responseText);
                     }
                 });
@@ -164,13 +164,13 @@ yukon.dataExporterFormat = (function () {
              * Submits form via ajax and shows validated form if validation failed
              * or closes popup and updates row if validation succeded. 
              */
-            $('#format-popup').on('yukon.data.export.format.field.add', function(ev) {
+            $('#format-popup').on('yukon.data.export.format.field.add', function (ev) {
 
                 $('#field-form').ajaxSubmit({
                     url: _fieldUrl, 
                     type: 'post',
                     data: _getExtraFieldRequestData(),
-                    success: function(data, status, xhr, $form) {
+                    success: function (data, status, xhr, $form) {
                         
                         $('#format-popup').dialog('close');
                         
@@ -200,7 +200,7 @@ yukon.dataExporterFormat = (function () {
                         yukon.ui.reindexInputs(row.closest('table'));
                         _updatePreview();
                     },
-                    error: function(xhr, status, error, $form) {
+                    error: function (xhr, status, error, $form) {
                         $('#format-popup').html(xhr.responseText);
                         
                     }
@@ -208,13 +208,13 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Edit attribute button clicked, show edit attribute popup. */
-            $(document).on('click', '#attributes-table .js-edit', function(ev) {
+            $(document).on('click', '#attributes-table .js-edit', function (ev) {
                 
                 var row = $(this).closest('tr'),
                     attribute = JSON.parse(row.find('td:first-child input').val()),
                     popup = $('#format-popup');
                 
-                popup.load('attribute', function() {
+                popup.load('attribute', function () {
                     popup.find('select[name=attribute]').val(attribute.attribute);
                     popup.find('select[name=dataSelection]').val(attribute.dataSelection);
                     popup.find('input[name=daysPrevious]').val(attribute.daysPrevious);
@@ -227,7 +227,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Edit field button clicked, show edit field popup. */
-            $(document).on('click', '#fields-table .js-edit', function(ev) {
+            $(document).on('click', '#fields-table .js-edit', function (ev) {
                 
                 var 
                 row = $(this).closest('tr'),
@@ -238,7 +238,7 @@ yukon.dataExporterFormat = (function () {
             
                 // send attributes and format type in request
                 $.get('field', data)
-                .done(function(data) {
+                .done(function (data) {
                     
                     popup.html(data);
                     popup.dialog({
@@ -255,7 +255,7 @@ yukon.dataExporterFormat = (function () {
              * Submits form via ajax and shows validated form if validation failed
              * or closes popup and updates row if validation succeded. 
              */
-            $(document).on('yukon.data.export.format.attribute.edit', function(ev) {
+            $(document).on('yukon.data.export.format.attribute.edit', function (ev) {
                 
                 var row = $(ev.target);
                     attribute = row.find('td:first-child'),
@@ -266,7 +266,7 @@ yukon.dataExporterFormat = (function () {
                 $('#attribute-form').ajaxSubmit({
                     url: _attributeUrl, 
                     type: 'post',
-                    success: function(data, status, xhr, $form) {
+                    success: function (data, status, xhr, $form) {
                         
                         $('#format-popup').dialog('close');
                         
@@ -277,7 +277,7 @@ yukon.dataExporterFormat = (function () {
                         daysPrevious.find('span').text(data.text.daysPrevious);
                         
                         // update any fields using this attribute
-                        $('#fields-table tbody td:first-child').each(function(idx, el) {
+                        $('#fields-table tbody td:first-child').each(function (idx, el) {
                             var td = $(el),
                                 field = JSON.parse(td.find('input').val()), 
                                 fieldAttribute = field.field.attribute;
@@ -291,7 +291,7 @@ yukon.dataExporterFormat = (function () {
                             }
                         });
                     },
-                    error: function(xhr, status, error, $form) {
+                    error: function (xhr, status, error, $form) {
                         // show the validated form
                         $('#format-popup').html(xhr.responseText);
                     }
@@ -303,7 +303,7 @@ yukon.dataExporterFormat = (function () {
              * Submits form via ajax and shows validated form if validation failed
              * or closes popup and updates row if validation succeded.
              */
-            $(document).on('yukon.data.export.format.field.edit', function(ev) {
+            $(document).on('yukon.data.export.format.field.edit', function (ev) {
                 
                 var row = $(ev.target);
                 field = row.find('td:first-child'),
@@ -320,7 +320,7 @@ yukon.dataExporterFormat = (function () {
                     url: _fieldUrl, 
                     type: 'post',
                     data: _getExtraFieldRequestData(),
-                    success: function(data, status, xhr, $form) {
+                    success: function (data, status, xhr, $form) {
                         
                         $('#format-popup').dialog('close');
                         
@@ -338,7 +338,7 @@ yukon.dataExporterFormat = (function () {
                         
                         _updatePreview();
                     },
-                    error: function(xhr, status, error, $form) {
+                    error: function (xhr, status, error, $form) {
                         // show the validated form
                         $('#format-popup').html(xhr.responseText);
                     }
@@ -350,7 +350,7 @@ yukon.dataExporterFormat = (function () {
              * When field select in add/edit field popup changes, adjust other elements visibility. 
              * Set pattern input value if field is 'attribute' type; either timestamp or value pattern.
              */
-            $(document).on('change', '#field-select', function(ev) {
+            $(document).on('change', '#field-select', function (ev) {
                 
                 var
                 field = JSON.parse($(this).val()),
@@ -415,7 +415,7 @@ yukon.dataExporterFormat = (function () {
              * Attribute value changed, show timestamp or value fields or hide both
              * if selection is not timestamp or value.
              */
-            $(document).on('change', '#attribute-field', function(ev) {
+            $(document).on('change', '#attribute-field', function (ev) {
                 var val = $(this).val(),
                     pattern = $('#pattern'),
                     timestampPattern = $('#timestamp-pattern'),
@@ -440,7 +440,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Show custom textfield if they choose custom, hide otherwise for timestamp and value. */
-            $(document).on('change', '#timestamp-pattern-select, #reading-pattern-select', function(ev) {
+            $(document).on('change', '#timestamp-pattern-select, #reading-pattern-select', function (ev) {
                 var val = $(this).val(),
                     customField = $(this).next(),
                     pattern = $('#pattern');
@@ -455,7 +455,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Show padding fields when padding option is not 'None'. */
-            $(document).on('change', '#pad-side-select', function(ev) {
+            $(document).on('change', '#pad-side-select', function (ev) {
                 var notNone = $(this).val() !== 'NONE',
                     padCharSelect = $('#pad-char-select'),
                     padCharInput = padCharSelect.next(),
@@ -472,7 +472,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Show custom padding field when padding field is 'Custom'. */
-            $(document).on('change', '#pad-char-select', function(ev) {
+            $(document).on('change', '#pad-char-select', function (ev) {
                 var val = $(this).val(),
                     isCustom = val === 'CUSTOM',
                     padChar = $('#pad-char-input');
@@ -487,15 +487,15 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Show fixed value field when 'Fixed Value' is selected for 'Unsupported Field'. */
-            $(document).on('change', '#unsupported-field-select', function(ev) {
+            $(document).on('change', '#unsupported-field-select', function (ev) {
                 $('#fixed-value').toggle($(this).val() === 'FIXED_VALUE');
             });
             
             /** Update pattern field when custom timestamp pattern, custom reading pattern or plain text changes. */
-            $(document).on('input', '#timestamp-pattern-input, #reading-pattern-input, #plain-text-input', function(ev) { $('#pattern').val($(this).val()); });
+            $(document).on('input', '#timestamp-pattern-input, #reading-pattern-input, #plain-text-input', function (ev) { $('#pattern').val($(this).val()); });
             
             /** Move row up. */
-            $(document).on('click','.js-up', function(ev) {
+            $(document).on('click','.js-up', function (ev) {
                 var row = $(this).closest('tr'),
                     prevRow = row.prev();
                 
@@ -505,7 +505,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Move row down. */
-            $(document).on('click','.js-down', function(ev) {
+            $(document).on('click','.js-down', function (ev) {
                 var row = $(this).closest('tr'),
                     nextRow = row.next();
                 
@@ -515,7 +515,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Remove attribute button clicked, remove row and re-index the rest. Update any fields necessary */
-            $(document).on('click', '#attributes-table .js-remove', function(ev) {
+            $(document).on('click', '#attributes-table .js-remove', function (ev) {
                 var row = $(this).closest('tr'),
                     table = row.closest('table'),
                     attribute = row.find('td:first-child'),
@@ -523,7 +523,7 @@ yukon.dataExporterFormat = (function () {
                 row.remove();
                 
                 // update any fields using this attribute
-                $('#fields-table tbody td:first-child').each(function(idx, el) {
+                $('#fields-table tbody td:first-child').each(function (idx, el) {
                     var td = $(el),
                         field = JSON.parse(td.find('input').val()), 
                         fieldAttribute = field.field.attribute;
@@ -539,7 +539,7 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Remove field button clicked, remove row and re-index the rest. */
-            $(document).on('click', '#fields-table .js-remove', function(ev) {
+            $(document).on('click', '#fields-table .js-remove', function (ev) {
                 var row = $(this).closest('tr'),
                 table = row.closest('table');
                 row.remove();
@@ -548,13 +548,13 @@ yukon.dataExporterFormat = (function () {
             });
             
             /** Update the preview when changing the header and footer fields. */
-            $(".js-header").on('input', function() {
+            $(".js-header").on('input', function () {
                 if ($(this).val() != lastHeaderValue) {
                     lastHeaderValue = $(this).val();
                     $('[preview-header]').text(lastHeaderValue);
                 }
             });
-            $(".js-footer").on('input', function() {
+            $(".js-footer").on('input', function () {
                 if ($(this).val() != lastFooterValue) {
                     lastFooterValue = $(this).val();
                     $('[preview-footer]').text(lastFooterValue);
@@ -568,4 +568,4 @@ yukon.dataExporterFormat = (function () {
     return mod;
 }());
 
-$(function() { yukon.dataExporterFormat.init(); });
+$(function () { yukon.dataExporterFormat.init(); });

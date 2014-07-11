@@ -1,8 +1,6 @@
 package com.cannontech.web.stars.survey;
 
 import java.beans.PropertyEditor;
-import java.io.IOException;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -21,18 +20,19 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Survey;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
@@ -44,7 +44,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -52,7 +51,6 @@ import com.google.common.collect.Sets;
 @RequestMapping("/optOutSurvey/*")
 public class OptOutSurveyController {
     
-
     @Autowired private OptOutSurveyDao optOutSurveyDao;
     @Autowired private OptOutSurveyService optOutSurveyService;
     @Autowired private SurveyDao surveyDao;
@@ -79,15 +77,14 @@ public class OptOutSurveyController {
         }};
 
     @RequestMapping("list")
-    public String list(ModelMap model,
-            @ModelAttribute("backingBean") ListBackingBean backingBean,
-            YukonUserContext userContext) {
-        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
+    public String list(ModelMap model, @DefaultItemsPerPage(10) PagingParameters paging, LiteYukonUser user) {
         
-        SearchResults<OptOutSurvey> optOutSurveys =
-            optOutSurveyService.findSurveys(energyCompany.getId(),
-                                 backingBean.getStartIndex(),
-                                 backingBean.getItemsPerPage());
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
+        
+        int ecId = energyCompany.getId();
+        int start = paging.getStartIndex();
+        int size = paging.getItemsPerPage();
+        SearchResults<OptOutSurvey> optOutSurveys = optOutSurveyService.findSurveys(ecId, start, size);
         model.addAttribute("optOutSurveys", optOutSurveys);
 
         Set<Integer> programIds = Sets.newHashSet();
@@ -98,17 +95,16 @@ public class OptOutSurveyController {
         Map<Integer, String> programNamesById = paoDao.getYukonPAONames(programIds);
         model.addAttribute("programNamesById", programNamesById);
 
-        model.addAttribute("energyCompanyId", energyCompany.getId());
+        model.addAttribute("energyCompanyId", ecId);
 
         return "optOutSurvey/list.jsp";
     }
 
     @RequestMapping("programList")
-    public String programList(ModelMap model, int optOutSurveyId,
-            YukonUserContext userContext) {
-        OptOutSurvey optOutSurvey =
-            optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
-        verifyEditable(optOutSurvey.getEnergyCompanyId(), userContext);
+    public String programList(ModelMap model, int optOutSurveyId, LiteYukonUser user) {
+        
+        OptOutSurvey optOutSurvey = optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
+        verifyEditable(optOutSurvey.getEnergyCompanyId(), user);
         model.addAttribute("optOutSurvey", optOutSurvey);
 
         Map<Integer, String> programNamesById =
@@ -122,58 +118,56 @@ public class OptOutSurveyController {
     }
 
     @RequestMapping("confirmDelete")
-    public String confirmDelete(ModelMap model, int optOutSurveyId,
-            YukonUserContext userContext) {
-        OptOutSurvey optOutSurvey =
-            optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
-        verifyEditable(optOutSurvey.getEnergyCompanyId(), userContext);
+    public String confirmDelete(ModelMap model, int optOutSurveyId, LiteYukonUser user) {
+        
+        OptOutSurvey optOutSurvey = optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
+        verifyEditable(optOutSurvey.getEnergyCompanyId(), user);
         model.addAttribute("optOutSurvey", optOutSurvey);
+        
         return "optOutSurvey/confirmDelete.jsp";
     }
 
     @RequestMapping("delete")
-    public @ResponseBody Map<String, String> delete(int optOutSurveyId, FlashScope flashScope, YukonUserContext userContext) {
+    public void delete(HttpServletResponse resp, int optOutSurveyId, FlashScope flashScope, LiteYukonUser user) {
+        
         OptOutSurvey optOutSurvey = optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
-        verifyEditable(optOutSurvey.getEnergyCompanyId(), userContext);
+        verifyEditable(optOutSurvey.getEnergyCompanyId(), user);
+        
         optOutSurveyDao.deleteOptOutSurvey(optOutSurveyId);
         Survey survey = surveyDao.getSurveyById(optOutSurvey.getSurveyId());
-        MessageSourceResolvable confirmMsg =
-            new YukonMessageSourceResolvable(baseKey + ".optOutSurveyDeleted", survey.getSurveyName());
-        flashScope.setConfirm(confirmMsg);
-
-        return Collections.singletonMap("action", "reload");
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".optOutSurveyDeleted", survey.getSurveyName()));
+        
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
 
     @RequestMapping("edit")
     public String edit(ModelMap model, Integer optOutSurveyId,
             Integer surveyId, Integer[] programIds,
-            YukonUserContext userContext) {
+            LiteYukonUser user) {
+        
         OptOutSurveyDto optOutSurveyDto = null;
         if (optOutSurveyId == null || optOutSurveyId == 0) {
             optOutSurveyDto = new OptOutSurveyDto();
             optOutSurveyDto.setStartDate(new Date());
-            EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
+            EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
             optOutSurveyDto.setEnergyCompanyId(energyCompany.getId());
         } else {
-            OptOutSurvey optOutSurvey =
-                optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
+            OptOutSurvey optOutSurvey = optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
             optOutSurveyDto = new OptOutSurveyDto(optOutSurvey);
-            verifyEditable(optOutSurvey.getEnergyCompanyId(), userContext);
+            verifyEditable(optOutSurvey.getEnergyCompanyId(), user);
         }
-        return edit(model, optOutSurveyDto);
-    }
-
-    private String edit(ModelMap model, OptOutSurveyDto optOutSurveyDto) {
         model.addAttribute("optOutSurveyDto", optOutSurveyDto);
+        
         return "optOutSurvey/edit.jsp";
     }
 
     @RequestMapping("save")
     public String save(HttpServletResponse resp, ModelMap model,
             @ModelAttribute OptOutSurveyDto optOutSurveyDto,
-            BindingResult bindingResult, YukonUserContext userContext,
-            FlashScope flashScope) throws IOException {
-        verifyEditable(optOutSurveyDto.getEnergyCompanyId(), userContext);
+            BindingResult bindingResult, LiteYukonUser user,
+            FlashScope flashScope) {
+        
+        verifyEditable(optOutSurveyDto.getEnergyCompanyId(), user);
 
         validator.validate(optOutSurveyDto, bindingResult);
         if (!bindingResult.hasErrors()) {
@@ -184,17 +178,14 @@ public class OptOutSurveyController {
             List<MessageSourceResolvable> messages =
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return edit(model, optOutSurveyDto);
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            
+            return "optOutSurvey/edit.jsp";
         }
 
         Survey survey = surveyDao.getSurveyById(optOutSurveyDto.getSurveyId());
-        MessageSourceResolvable confirmMsg =
-            new YukonMessageSourceResolvable(baseKey + ".optOutSurveySaved", survey.getSurveyName());
-        flashScope.setConfirm(confirmMsg);
-
-        resp.setContentType("application/json");
-        resp.getWriter().print(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
-        resp.getWriter().close();
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".optOutSurveySaved", survey.getSurveyName()));
+        
         return null;
     }
 
@@ -205,9 +196,8 @@ public class OptOutSurveyController {
         binder.registerCustomEditor(Date.class, fullDateTimeEditor);
     }
 
-    private void verifyEditable(int energyCompanyId,
-            YukonUserContext userContext) {
-        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
+    private void verifyEditable(int energyCompanyId, LiteYukonUser user) {
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
         if (energyCompany.getId() != energyCompanyId) {
             throw new NotAuthorizedException("energy company mismatch");
         }

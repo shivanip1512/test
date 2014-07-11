@@ -6,6 +6,7 @@ import java.util.Date;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 
 public class OptOutSurveyDto {
+    
     private int optOutSurveyId;
     private Integer[] programIds;
     private int surveyId;
@@ -14,8 +15,7 @@ public class OptOutSurveyDto {
     private boolean specifyStopDate;
     private int energyCompanyId;
 
-    public OptOutSurveyDto() {
-    }
+    public OptOutSurveyDto() {}
 
     public OptOutSurveyDto(OptOutSurvey optOutSurvey) {
         optOutSurveyId = optOutSurvey.getOptOutSurveyId();

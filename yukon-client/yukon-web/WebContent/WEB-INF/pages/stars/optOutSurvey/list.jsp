@@ -1,44 +1,44 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="surveyList">
 
-    <dt:pickerIncludes/>
-    <cti:includeScript link="/JavaScript/yukon.picker.js"/>
-    <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
-    <cti:includeScript link="/JavaScript/yukon.tables.js"/>
-    <cti:includeScript link="/JavaScript/yukon.surveys.optOut.js"/>
+<dt:pickerIncludes/>
+<cti:includeScript link="/JavaScript/yukon.picker.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.tables.js"/>
+<cti:includeScript link="/JavaScript/yukon.surveys.optOut.js"/>
 
-    <tags:simpleDialog id="ajaxDialog"/>
+<cti:msg2 var="addTitle" key=".addSurveyTitle"/>
+<cti:msg2 var="editTitle" key=".edit.title"/>
+<cti:msg2 var="deleteTitle" key=".delete.title"/>
+<cti:msg2 var="programsTitle" key=".programListTitle"/>
+<div id="survey-popup" class="dn" data-add-title="${addTitle}" data-edit-title="${editTitle}" data-delete-title="${deleteTitle}"></div>
+<div id="more-programs-popup" title="${programsTitle}" class="dn"></div>
     
-    <cti:msg2 var="addSurveyTitle" key=".addSurveyTitle" javaScriptEscape="true"/>
-
-    <c:if test="${optOutSurveys.hitCount == 0}">
-        <span class="empty-list"><i:inline key=".noResults"/></span>
-    </c:if>
-    <div data-url="<cti:url value="/stars/optOutSurvey/list"/>" data-static>
-        <c:if test="${optOutSurveys.hitCount > 0}">
-            <cti:msg2 var="programListTitle" key=".programListTitle" javaScriptEscape="true"/>
-            <cti:msg2 var="okText" key="yukon.common.okButton" javaScriptEscape="true"/>
+<c:if test="${optOutSurveys.hitCount == 0}">
+    <span class="empty-list"><i:inline key=".noResults"/></span>
+</c:if>
+<div data-url="<cti:url value="/stars/optOutSurvey/list"/>" data-static>
+    <c:if test="${optOutSurveys.hitCount > 0}">
+        <table class="compact-results-table has-actions">
+            <thead>
+                <tr>
+                    <th><i:inline key=".surveyName"/></th>
+                    <th><i:inline key=".programs"/></th>
+                    <th><i:inline key=".startDate"/></th>
+                    <th><i:inline key=".stopDate"/></th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
             
-            <table id="optOutSurveyList" class="compact-results-table row-highlighting" data-ok-text="${okText}" data-dialog-title="${programListTitle}">
-                <thead>
-                    <tr>
-                        <th><i:inline key=".surveyName"/></th>
-                        <th><i:inline key=".programs"/></th>
-                        <th><i:inline key=".startDate"/></th>
-                        <th><i:inline key=".stopDate"/></th>
-                        <th><i:inline key=".actions"/></th>
-                    </tr>
-                </thead>
-                <tfoot></tfoot>
                 <cti:msg2 var="noStopDate" key=".noStopDate"/>
-                <tbody>
-                
                 <cti:checkRolesAndProperties value="OPERATOR_SURVEY_EDIT">
                     <c:set var="surveyEditPermission" value="true" />
                 </cti:checkRolesAndProperties>
@@ -47,65 +47,48 @@
                     <c:set var="optOutSurveyId" value="${optOutSurvey.optOutSurveyId}"/>
                     <tr>
                         <td>
-                            <c:if test="${not empty surveyEditPermission}">
-                                <cti:url var="surveyUrl" value="/stars/survey/edit">
-                                    <cti:param name="surveyId" value="${optOutSurvey.surveyId}"/>
-                                </cti:url>
-                                <a href="${surveyUrl}">
-                            </c:if>
-                                ${fn:escapeXml(optOutSurvey.surveyName)}
-                            <c:if test="${not empty surveyEditPermission}">
-                                </a>
-                            </c:if>
+                            <c:choose>
+                                <c:when test="${not empty surveyEditPermission}">
+                                    <cti:url var="surveyUrl" value="/stars/survey/edit">
+                                        <cti:param name="surveyId" value="${optOutSurvey.surveyId}"/>
+                                    </cti:url>
+                                    <a href="${surveyUrl}">${fn:escapeXml(optOutSurvey.surveyName)}</a>
+                                </c:when>
+                                <c:otherwise>${fn:escapeXml(optOutSurvey.surveyName)}</c:otherwise>
+                            </c:choose>
                         </td>
                         <td>
                             <c:forEach var="programId" items="${optOutSurvey.programIds}" end="2">
-                                ${fn:escapeXml(programNamesById[programId])}
-                                <br />
+                                ${fn:escapeXml(programNamesById[programId])}<br>
                             </c:forEach>
                             <c:if test="${fn:length(optOutSurvey.programIds) > 3}">
-                                <cti:url var="programListUrl" value="/stars/optOutSurvey/programList">
-                                    <cti:param name="optOutSurveyId" value="${optOutSurveyId}"/>
-                                </cti:url>
-                                <a class="more-programs" data-list-url="${programListUrl}" href="javascript:void(0)"><i:inline key=".morePrograms"/></a>
+                                <a class="js-more-programs" data-survey-id="${optOutSurveyId}" href="javascript:void(0)">
+                                    <span><i:inline key=".morePrograms"/></span>
+                                </a>
                             </c:if>
                         </td>
+                        <td><cti:formatDate type="BOTH" value="${optOutSurvey.startDate}"/></td>
                         <td>
-                            <cti:formatDate type="BOTH" value="${optOutSurvey.startDate}"/>
-                        </td>
-                        <td>
-                            <cti:formatDate type="BOTH" value="${optOutSurvey.stopDate}"
-                                nullText="${noStopDate}"/>
-                        </td>
-                        <td>
-                            <cti:url var="editUrl" value="/stars/optOutSurvey/edit">
-                                <cti:param name="optOutSurveyId"
-                                    value="${optOutSurvey.optOutSurveyId}"/>
-                            </cti:url>
-                            <tags:simpleDialogLink2 dialogId="ajaxDialog"
-                                nameKey="edit" skipLabel="true" 
-                                actionUrl="${editUrl}" icon="icon-pencil"/>
-                            <cti:url var="deleteUrl" value="/stars/optOutSurvey/confirmDelete">
-                                <cti:param name="optOutSurveyId" value="${optOutSurveyId}"/>
-                            </cti:url>
-                            <tags:simpleDialogLink2 dialogId="ajaxDialog"
-                                nameKey="delete" actionUrl="${deleteUrl}"
-                                skipLabel="true" icon="icon-cross"/>
+                            <cti:formatDate type="BOTH" value="${optOutSurvey.stopDate}" nullText="${noStopDate}"/>
+                            <cm:dropdown triggerClasses="fr">
+                                <cm:dropdownOption classes="js-edit-survey" icon="icon-pencil" 
+                                    data-survey-id="${optOutSurveyId}"
+                                    key="components.button.edit.label"/>
+                                <cm:dropdownOption classes="js-delete-survey" icon="icon-cross" 
+                                    data-survey-id="${optOutSurveyId}"
+                                    key="components.button.delete.label"/>
+                            </cm:dropdown>
                         </td>
                     </tr>
                 </c:forEach>
-                </tbody>
-            </table>
-        </c:if>
-        <tags:pagingResultsControls result="${optOutSurveys}" adjustPageCount="true"/>
-    </div>
+            </tbody>
+        </table>
+    </c:if>
+    <tags:pagingResultsControls result="${optOutSurveys}" adjustPageCount="true"/>
+</div>
 
-    <cti:url var="addUrl" value="/stars/optOutSurvey/edit"/>
-    <form id="addForm" action="${addUrl}">
-        <div class="action-area">
-            <cti:url var="addUrl" value="/stars/optOutSurvey/edit"/>
-            <cti:button icon="icon-plus-green" classes="add-survey" nameKey="add" data-dialog-title="${addSurveyTitle}" data-add-url="${addUrl}"/>
-        </div>
-    </form>
+<div class="action-area">
+    <cti:button icon="icon-plus-green" classes="js-add-survey" nameKey="add"/>
+</div>
 
 </cti:standardPage>

@@ -1,18 +1,20 @@
 package com.cannontech.web.stars.dr.operator.enrollment;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -21,6 +23,7 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -60,32 +63,38 @@ public class OperatorEnrollmentController {
     
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private DisplayableEnrollmentDao displayableEnrollmentDao;
-    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+    @Autowired private LMHardwareControlGroupDao controlGroupDao;
     @Autowired private PaoDao paoDao;
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
     @Autowired private AssignedProgramDao assignedProgramDao;
-    @Autowired private EnergyCompanyDao ecDao; 
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnrollmentDao enrollmentDao;
-    @Autowired private EnrollmentHelperService enrollmentHelperService;
+    @Autowired private EnrollmentHelperService enrollmentHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
 
     /**
      * The main operator "enrollment" page. Lists all current enrollments and
      * has icons for adding, removing and editing these enrollments.
      */
     @RequestMapping("list")
-    public String list(ModelMap model, AccountInfoFragment accountInfoFragment) {
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+    public String list(ModelMap model, AccountInfoFragment account) {
 
-        int accountId = accountInfoFragment.getAccountId();
-        List<DisplayableEnrollmentProgram> enrollmentPrograms =
-            displayableEnrollmentDao.findEnrolledPrograms(accountId);
-
+        AccountInfoFragmentHelper.setupModelMapBasics(account, model);
+        
+        int accountId = account.getAccountId();
+        List<DisplayableEnrollmentProgram> enrollmentPrograms = displayableEnrollmentDao.findEnrolledPrograms(accountId);
         model.addAttribute("enrollmentPrograms", enrollmentPrograms);
+        
+        List<Integer> alreadyEnrolled = new ArrayList<>();
+        for (DisplayableEnrollmentProgram enrollment : enrollmentPrograms) {
+            alreadyEnrolled.add(enrollment.getProgram().getProgramId());
+        }
+        model.addAttribute("alreadyEnrolled", alreadyEnrolled);
+        
         Set<Integer> loadGroupIds = Sets.newHashSet();
         for (DisplayableEnrollmentProgram enrollmentProgram : enrollmentPrograms) {
             loadGroupIds.add(enrollmentProgram.getLoadGroupId());
@@ -93,21 +102,21 @@ public class OperatorEnrollmentController {
         Map<Integer, String> loadGroupNames = paoDao.getYukonPAONames(loadGroupIds);
         model.addAttribute("loadGroupNames", loadGroupNames);
 
-        List<HardwareConfigAction> hardwareConfigActions =
-            lmHardwareControlGroupDao.getHardwareConfigActions(accountId);
+        List<HardwareConfigAction> hardwareConfigActions = controlGroupDao.getHardwareConfigActions(accountId);
         model.addAttribute("hardwareConfigActions", hardwareConfigActions);
-        model.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
+        model.addAttribute("energyCompanyId", account.getEnergyCompanyId());
 
         return "operator/enrollment/list.jsp";
     }
 
     @RequestMapping("history")
     public String history(ModelMap model, AccountInfoFragment accountInfoFragment) {
+        
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         int accountId = accountInfoFragment.getAccountId();
-        List<HardwareConfigAction> hardwareConfigActions =
-            lmHardwareControlGroupDao.getHardwareConfigActions(accountId);
+        List<HardwareConfigAction> hardwareConfigActions = controlGroupDao.getHardwareConfigActions(accountId);
         model.addAttribute("hardwareConfigActions", hardwareConfigActions);
+        
         return "operator/enrollment/history.jsp";
     }
 
@@ -117,9 +126,8 @@ public class OperatorEnrollmentController {
      * different wording ("Add Enrollment" instead of "Edit Enrollment").
      */
     @RequestMapping("add")
-    public String add(ModelMap model, int assignedProgramId, YukonUserContext userContext,
-                      AccountInfoFragment accountInfoFragment) {
-        return edit(model, assignedProgramId, userContext, accountInfoFragment, true);
+    public String add(ModelMap model, int assignedProgramId, LiteYukonUser user, AccountInfoFragment account) {
+        return edit(model, assignedProgramId, user, account, true);
     }
 
     /**
@@ -127,33 +135,33 @@ public class OperatorEnrollmentController {
      * to change load group used and hardware used for the selected program.
      */
     @RequestMapping("edit")
-    public String edit(ModelMap model, int assignedProgramId, YukonUserContext userContext,
-                       AccountInfoFragment accountInfoFragment) {
-        return edit(model, assignedProgramId, userContext, accountInfoFragment, false);
+    public String edit(ModelMap model, int assignedProgramId, LiteYukonUser user, AccountInfoFragment account) {
+        return edit(model, assignedProgramId, user, account, false);
     }
 
-    private String edit(ModelMap model, int assignedProgramId,
-            YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, boolean isAdd) {
+    private String edit(ModelMap model, 
+            int assignedProgramId,
+            LiteYukonUser user,
+            AccountInfoFragment account, 
+            boolean isAdd) {
 
-        validateAccountEditing(userContext);
+        validateAccountEditing(user);
 
-        DisplayableEnrollmentProgram displayableEnrollmentProgram = 
-            displayableEnrollmentDao.getProgram(accountInfoFragment.getAccountId(), assignedProgramId);
+        DisplayableEnrollmentProgram displayable = 
+            displayableEnrollmentDao.getProgram(account.getAccountId(), assignedProgramId);
         
-        ProgramEnrollment programEnrollment = new ProgramEnrollment(displayableEnrollmentProgram);
-        model.addAttribute("programEnrollment", programEnrollment);
+        model.addAttribute("programEnrollment", new ProgramEnrollment(displayable));
 
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+        AccountInfoFragmentHelper.setupModelMapBasics(account, model);
 
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         model.addAttribute("assignedProgram", assignedProgram);
         List<LoadGroup> loadGroups = null;
         
-        EnergyCompany ec = ecDao.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
+        EnergyCompany ec = ecDao.getEnergyCompanyByAccountId(account.getAccountId());
         model.addAttribute("energyCompanyId", ec.getId());
         boolean trackHardwareAddressingEnabled =
-                energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ec.getId());
+                ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ec.getId());
 
         String batchedSwitchCommandToggle =
             globalSettingDao.getString(GlobalSettingType.BATCHED_SWITCH_COMMAND_TOGGLE);
@@ -170,7 +178,7 @@ public class OperatorEnrollmentController {
         model.addAttribute("loadGroups", loadGroups);
 
         Map<Integer, DisplayableEnrollmentInventory> inventoryById = Maps.newHashMap();
-        for (DisplayableEnrollmentInventory item : displayableEnrollmentProgram.getInventory()) {
+        for (DisplayableEnrollmentInventory item : displayable.getInventory()) {
             inventoryById.put(item.getInventoryId(), item);
         }
         model.addAttribute("inventoryById", inventoryById);
@@ -180,18 +188,20 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping("confirmSave")
-    public String confirmSave(ModelMap model, int assignedProgramId,
-            boolean isAdd, @ModelAttribute ProgramEnrollment programEnrollment,
-            YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
+    public String confirmSave(ModelMap model, 
+            int assignedProgramId,
+            boolean isAdd, 
+            @ModelAttribute ProgramEnrollment programEnrollment,
+            LiteYukonUser user,
+            AccountInfoFragment account) {
 
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-        validateAccountEditing(userContext);
+        AccountInfoFragmentHelper.setupModelMapBasics(account, model);
+        validateAccountEditing(user);
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         model.addAttribute("assignedProgram", assignedProgram);
 
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments =
-            getConflictingEnrollments(accountInfoFragment.getAccountId(), assignedProgramId, userContext);
+            getConflictingEnrollments(account.getAccountId(), assignedProgramId, user);
 
         // For confirmation, we just need a list of conflicting programs.
         Set<Integer> conflictingAssignedProgramIds = Sets.newHashSet();
@@ -207,18 +217,22 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping("save")
-    public @ResponseBody Map<String, String> save(int assignedProgramId, boolean isAdd,
+    public void save(HttpServletResponse resp,
+            int assignedProgramId, 
+            boolean isAdd,
             @ModelAttribute ProgramEnrollment programEnrollment,
             YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
+            AccountInfoFragment accountInfoFragment, 
+            FlashScope flashScope) {
         
-        return save(assignedProgramId, programEnrollment,
-                    isAdd ? "enrollCompleted" : "enrollmentUpdated",
-                            userContext, accountInfoFragment, flashScope);
+        String saveTypeKey = isAdd ? "enrollCompleted" : "enrollmentUpdated";
+        save(assignedProgramId, programEnrollment, saveTypeKey, userContext, accountInfoFragment, flashScope);
+        
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
 
-    private @ResponseBody Map<String, String> save(int assignedProgramId,
-            @ModelAttribute ProgramEnrollment programEnrollment,
+    private void save(int assignedProgramId,
+            ProgramEnrollment programEnrollment,
             String saveTypeKey,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment,
@@ -228,15 +242,16 @@ public class OperatorEnrollmentController {
         accountEventLogService.enrollmentModificationAttempted(userContext.getYukonUser(), 
                                                                accountInfoFragment.getAccountNumber(),
                                                                EventSource.OPERATOR);
+        LiteYukonUser user = userContext.getYukonUser();
+        validateAccountEditing(user);
         
-        validateAccountEditing(userContext);
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> programEnrollments = Lists.newArrayList();
         programEnrollments.addAll(programEnrollment.makeProgramEnrollments(assignedProgram.getApplianceCategoryId(), assignedProgramId));
         programEnrollments.addAll(getConflictingEnrollments(accountInfoFragment.getAccountId(),
-                                                            assignedProgramId, userContext));
+                                                            assignedProgramId, user));
         try {
-            enrollmentHelperService.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
+            enrollmentHelper.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
             
             String msgKey = "yukon.web.modules.operator.enrollmentList." + saveTypeKey;
             MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName());
@@ -245,7 +260,7 @@ public class OperatorEnrollmentController {
             //This error will happen if the communication medium was not setup in Yukon.
             //The device will have been enrolled in Yukon, just not communicated with.
             //As far as I know it is only possible in Zigbee integrations
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
             String reason = messageSourceAccessor.getMessage(e.getKey());
             
             String msgKey = "yukon.web.modules.operator.enrollmentList.withError." + saveTypeKey;
@@ -253,18 +268,17 @@ public class OperatorEnrollmentController {
             flashScope.setWarning(message);
         } catch (EnrollmentException e2) {
             String msgKey = "yukon.web.modules.operator.enrollmentList.failed";
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(), accessor.getMessage(e2.getKey()));
             flashScope.setError(message);
         }
 
-        return Collections.singletonMap("action", "reload");
     }
 
     @RequestMapping("confirmUnenroll")
-    public String confirmUnenroll(ModelMap model, int assignedProgramId,
-            YukonUserContext userContext) {
-        validateAccountEditing(userContext);
+    public String confirmUnenroll(ModelMap model, int assignedProgramId, LiteYukonUser user) {
+        
+        validateAccountEditing(user);
 
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         model.addAttribute("assignedProgram", assignedProgram);
@@ -273,27 +287,34 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping("unenroll")
-    public @ResponseBody Map<String, String> unenroll(ModelMap model, int assignedProgramId,
+    public void unenroll(HttpServletResponse resp,
+            ModelMap model, 
+            int assignedProgramId,
             YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
-        DisplayableEnrollmentProgram displayableEnrollmentProgram =
-            displayableEnrollmentDao.getProgram(accountInfoFragment.getAccountId(), assignedProgramId);
-        ProgramEnrollment programEnrollment = new ProgramEnrollment(displayableEnrollmentProgram);
-        model.addAttribute("programEnrollment", programEnrollment);
+            AccountInfoFragment account, 
+            FlashScope flashScope) {
+        
+        DisplayableEnrollmentProgram displayable =
+            displayableEnrollmentDao.getProgram(account.getAccountId(), assignedProgramId);
+        ProgramEnrollment pe = new ProgramEnrollment(displayable);
+        model.addAttribute("programEnrollment", pe);
 
-        for (ProgramEnrollment.InventoryEnrollment enrollment : programEnrollment.getInventoryEnrollments()) {
+        for (ProgramEnrollment.InventoryEnrollment enrollment : pe.getInventoryEnrollments()) {
             enrollment.setEnrolled(false);
         }
 
-        return save(assignedProgramId, programEnrollment, "unenrollCompleted", userContext, 
-                    accountInfoFragment, flashScope);
+        save(assignedProgramId, pe, "unenrollCompleted", userContext, account, flashScope);
+        
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
 
-    private List<com.cannontech.stars.dr.program.service.ProgramEnrollment> getConflictingEnrollments(int accountId, 
-                int assignedProgramId, YukonUserContext userContext) {
+    private List<com.cannontech.stars.dr.program.service.ProgramEnrollment> getConflictingEnrollments(
+            int accountId, 
+            int assignedProgramId, 
+            LiteYukonUser user) {
+        
         boolean multiplePerCategory =
-            rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY,
-                                          userContext.getYukonUser());
+            rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, user);
 
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments = Lists.newArrayList();
         if (!multiplePerCategory) {
@@ -306,9 +327,8 @@ public class OperatorEnrollmentController {
         return conflictingEnrollments;
     }
 
-    private void validateAccountEditing(YukonUserContext userContext) {
-        Validate.isTrue(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                                      userContext.getYukonUser()),
-                                                      "Account editing not allowed by this user.");
+    private void validateAccountEditing(LiteYukonUser user) {
+        boolean allowEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
+        Validate.isTrue(allowEditing, "Account editing not allowed by this user.");
     } 
 }
