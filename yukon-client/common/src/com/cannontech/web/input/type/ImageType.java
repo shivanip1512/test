@@ -35,6 +35,6 @@ public class ImageType extends DefaultValidatedType<String> {
 
     @Override
     public PropertyEditor getPropertyEditor() {
-        return new StringTrimmerEditor(true);
+        return new StringTrimmerEditor(false);
     }
 }
