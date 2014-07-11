@@ -1,5 +1,6 @@
 package com.cannontech.dr.rfn.service.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.concurrent.ScheduledFuture;
@@ -45,7 +46,6 @@ import com.cannontech.dr.rfn.model.jaxb.DRReport.Relays.Relay.IntervalData.Inter
 import com.cannontech.dr.rfn.model.jaxb.ObjectFactory;
 import com.cannontech.dr.rfn.service.ExiParsingService;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorService {
     private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
@@ -159,7 +159,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         try {
             readArchiveRequest = createReadArchiveRequest(simulatorSettings, deviceParameters);
             sendArchiveRequest(lcrReadingArchiveRequestQueueName, readArchiveRequest);
-        } catch (RfnLcrSimulatorException e) {
+        } catch (RfnLcrSimulatorException | IOException e) {
             log.warn("There was a problem creating an RFN LCR archive read request for device: "
                     + deviceParameters.getRfnIdentifier().getSensorManufacturer()
                     + "/" + deviceParameters.getRfnIdentifier().getSensorModel()
@@ -190,9 +190,10 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      * @param deviceParameters Specifies the device that is generating the request.
      * @return The simulated request object.
      * @throws RfnLcrSimulatorException Thrown if there is a problem generating the XML or encoded EXI data.
+     * @throws IOException 
      */
     private RfnLcrReadingArchiveRequest createReadArchiveRequest(SimulatorSettings simulatorSettings,
-            RfnLcrReadSimulatorDeviceParameters deviceParameters) throws RfnLcrSimulatorException {
+            RfnLcrReadSimulatorDeviceParameters deviceParameters) throws RfnLcrSimulatorException, IOException {
         // Generate raw XML for archive reading.
         String xmlData = null;
         try {
@@ -308,13 +309,14 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      * @param deviceParameters Specifies the device that is generating the request.
      * @param encodedXml The EXI encoded XML data.
      * @return The complete payload as a byte array.
+     * @throws IOException 
      */
-    private byte[] createPayload(RfnLcrReadSimulatorDeviceParameters deviceParameters, byte[] encodedXml) {
+    private byte[] createPayload(RfnLcrReadSimulatorDeviceParameters deviceParameters, byte[] encodedXml) throws IOException {
         int length = encodedXml.length + 4;
-        ByteOutputStream output = new ByteOutputStream(length);
+        ByteArrayOutputStream output = new ByteArrayOutputStream(length);
         writeRequestHeader(deviceParameters, length, output);
         output.write(encodedXml);
-        return output.getBytes();
+        return output.toByteArray();
     }
 
     /**
@@ -327,7 +329,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      * @param output The output stream the header is written to.
      */
     private void writeRequestHeader(RfnLcrReadSimulatorDeviceParameters deviceParameters, int length,
-            ByteOutputStream output) {
+            ByteArrayOutputStream output) {
         output.write((byte) 0xE2); // Identifying byte of the ExpressCom header for schema version 0.0.3.
         output.write((byte) (length & 0xFF00) >>> 8);
         output.write((byte) length & 0xFF);

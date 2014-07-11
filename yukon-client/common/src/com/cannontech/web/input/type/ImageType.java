@@ -2,7 +2,7 @@ package com.cannontech.web.input.type;
 
 import java.beans.PropertyEditor;
 
-import com.sun.beans.editors.StringEditor;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 /**
  * Implementation of input type which represents the url of and image on the server.
@@ -18,8 +18,8 @@ public class ImageType extends DefaultValidatedType<String> {
     public ImageType(String category) {
         this.category = category;
     }
-    
 
+    @Override
     public String getRenderer() {
         return renderer;
     }
@@ -28,12 +28,13 @@ public class ImageType extends DefaultValidatedType<String> {
         return category;
     }
 
+    @Override
     public Class<String> getTypeClass() {
         return String.class;
     }
 
+    @Override
     public PropertyEditor getPropertyEditor() {
-        return new StringEditor();
+        return new StringTrimmerEditor(true);
     }
-
 }

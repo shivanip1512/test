@@ -1,6 +1,7 @@
 package com.cannontech.dr.rfn.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -35,7 +36,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.rfn.service.ExiParsingService;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class ExiParsingServiceImpl implements ExiParsingService {
     
@@ -181,12 +181,13 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         Transmogrifier transmogrifier = new Transmogrifier();
         transmogrifier.setEXISchema(grammarCache);
         byte[] output;
-        try (ByteOutputStream outputStream = new ByteOutputStream(); 
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); 
                 StringReader input = new StringReader(xmlPayload)) {
             transmogrifier.setOutputStream(outputStream);
             InputSource inputSource = new InputSource(input);
             transmogrifier.encode(inputSource);
-            output = Arrays.copyOf(outputStream.getBytes(), outputStream.getCount());
+            byte[] byteArray = outputStream.toByteArray();
+            output = Arrays.copyOf(byteArray, byteArray.length);
         }
         return output;
     }
