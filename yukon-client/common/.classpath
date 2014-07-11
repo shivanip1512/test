@@ -475,12 +475,12 @@
 	</classpathentry>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/yukon-shared"/>
 	<classpathentry kind="lib" path="/third-party/h2-1.4.178.jar" sourcepath="/third-party/linked-sources/h2-1.4.178-sources.jar"/>
-	<classpathentry kind="lib" path="/third-party/httpclient-4.3.4.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/httpclient-4.3.4.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/httpcore-4.3.2.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/httpcore-4.3.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
