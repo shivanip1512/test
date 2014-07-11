@@ -258,7 +258,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             
             // Don't know the responseURL as it's not provided in this method (by definition!) Using default for SEDC.
             String responseUrl = multispeakFuncs.getResponseUrl(vendor, null, MultispeakDefines.CB_Server_STR);
-        	return multispeakMeterService.getLatestReadingInterrogate(vendor, meter, null, responseUrl);
+        	return multispeakMeterService.getLatestReadingInterrogate(vendor, meter, responseUrl);
         } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
                 MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);

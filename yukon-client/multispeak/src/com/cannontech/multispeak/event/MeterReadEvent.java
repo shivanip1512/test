@@ -47,8 +47,8 @@ public class MeterReadEvent extends MultispeakEvent{
      * @param returnMessages_
      */
     public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, YukonMeter meter, 
-            int returnMessages_, String transactionID_, String responseUrl) {
-        super(mspVendor_, pilMessageID_, returnMessages_, transactionID_, responseUrl);
+            int returnMessages_, String responseUrl) {
+        super(mspVendor_, pilMessageID_, returnMessages_, null, responseUrl);
         setDevice(MeterReadFactory.createMeterReadObject(meter));
     }
     
@@ -56,9 +56,8 @@ public class MeterReadEvent extends MultispeakEvent{
      * @param mspVendor_
      * @param pilMessageID_
      */
-    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, YukonMeter meter,
-            String transactionID_, String responseUrl) {
-        this(mspVendor_, pilMessageID_, meter, 1, transactionID_, responseUrl);
+    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, YukonMeter meter, String responseUrl) {
+        this(mspVendor_, pilMessageID_, meter, 1, responseUrl);
     }
     
     /**
@@ -93,7 +92,7 @@ public class MeterReadEvent extends MultispeakEvent{
             if (port != null) {
                 ErrorObject[] errObjects = port.readingChangedNotification(meterReads, getTransactionID());
                 if( errObjects != null)
-                    ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(getResponseUrl(), "ReadingChangedNotification", errObjects);
+                    YukonSpringHook.getBean(MultispeakFuncs.class).logErrorObjects(getResponseUrl(), "ReadingChangedNotification", errObjects);
             } else {
                 CTILogger.error("Port not found for CB_MR (" + getMspVendor().getCompanyName() + ")");
             }

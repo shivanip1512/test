@@ -18,12 +18,6 @@ import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 
-/**
- * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public interface MultispeakMeterService {
 	
     /** 
@@ -40,15 +34,13 @@ public interface MultispeakMeterService {
      * the collected reading if message received within 2 minutes.
      * @throws RemoteException
      */
-    public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, 
-            YukonMeter meter,
-            String transactionID, String responseUrl);
+    public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, YukonMeter meter, String responseUrl);
 
 	/**
 	 * Send a ping command to pil connection for each meter in meterNumbers.
 	 * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
 	 */
-	public ErrorObject[] odEvent(MultispeakVendor vendor, 
+	public ErrorObject[] odEvent(MultispeakVendor mspVendor, 
 	        String[] meterNumbers,
 	        String transactionID, String responseUrl) throws RemoteException;
 	
@@ -57,7 +49,7 @@ public interface MultispeakMeterService {
      * Callback fires for each completed read, may have multiple per meterNumber.
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public ErrorObject[] meterReadEvent(MultispeakVendor vendor, 
+    public ErrorObject[] meterReadEvent(MultispeakVendor mspVendor, 
             String[] meterNumbers,
             String transactionID, String responseUrl);
 
@@ -66,7 +58,7 @@ public interface MultispeakMeterService {
      * Callback fires for all completed reads, will have only one for meterNumber. 
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public ErrorObject[] blockMeterReadEvent(MultispeakVendor vendor,
+    public ErrorObject[] blockMeterReadEvent(MultispeakVendor mspVendor,
                                              String meterNumber,
                                              FormattedBlockProcessingService<Block> blockProcessingService,
                                              String transactionId, String responseUrl);
@@ -75,7 +67,7 @@ public interface MultispeakMeterService {
      * Send a disconnect/connect request to Porter (PLC) or submit to queue (RFN) for each meter in meterNumbers.
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public ErrorObject[] cdEvent(MultispeakVendor vendor, 
+    public ErrorObject[] cdEvent(MultispeakVendor mspVendor, 
             ConnectDisconnectEvent [] cdEvents,
             String transactionID, String responseURL) throws RemoteException;
 
@@ -147,7 +139,7 @@ public interface MultispeakMeterService {
      * exist, then a new Billing sub group is created. 
      * @return true if added to a new billing cycle group.  
      */
-    public boolean updateBillingCyle(String newBilling, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor);
+    public boolean updateBillingCyle(String newBilling, String meterNumber, YukonDevice yukonDevice, String mspMethod, MultispeakVendor mspVendor);
     
     /**
      * Removes the Meter from all ALternate group memberships (all children under Alternate).
@@ -157,7 +149,7 @@ public interface MultispeakMeterService {
      * If the alt group does not already exist, then a new Alternate sub group is created. 
      * @return true if added to a new alternate cycle group.  
      */
-    public boolean updateAltGroup(ServiceLocation mspServiceLocation, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor);
+    public boolean updateAltGroup(ServiceLocation mspServiceLocation, String meterNumber, YukonDevice yukonDevice, String mspMethod, MultispeakVendor mspVendor);
         
     /**
      * Removes the Meter from all Substation group memberships (all children under Substation).
@@ -165,7 +157,7 @@ public interface MultispeakMeterService {
      * exist, then a new Substation sub group is created.
      * @return true if added to a new substation group.  
      */
-    public boolean updateSubstationGroup(String substationName, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor);
+    public boolean updateSubstationGroup(String substationName, String meterNumber, YukonDevice yukonDevice, String mspMethod, MultispeakVendor mspVendor);
 
     /**
      * Returns an ImmutableSet of supported OutageEventTypes. Currently these are being initialized
