@@ -28,7 +28,7 @@ import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;

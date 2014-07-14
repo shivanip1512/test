@@ -5,8 +5,8 @@ import java.util.Date;
 import org.apache.commons.lang3.Validate;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.enums.CurtailmentEventAction;
-import com.cannontech.enums.EconomicEventAction;
+import com.cannontech.cc.service.CurtailmentEventAction;
+import com.cannontech.cc.service.EconomicEventAction;
 import com.cannontech.message.notif.CurtailmentEventDeleteMsg;
 import com.cannontech.message.notif.CurtailmentEventMsg;
 import com.cannontech.message.notif.EconomicEventDeleteMsg;

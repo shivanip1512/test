@@ -13,7 +13,7 @@ import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 
 public interface ZoneService {
     

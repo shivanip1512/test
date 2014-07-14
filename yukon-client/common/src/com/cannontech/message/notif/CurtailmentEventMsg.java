@@ -1,6 +1,6 @@
 package com.cannontech.message.notif;
 
-import com.cannontech.enums.CurtailmentEventAction;
+import com.cannontech.cc.service.CurtailmentEventAction;
 import com.cannontech.message.util.Message;
 
 public class CurtailmentEventMsg extends Message {

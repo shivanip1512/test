@@ -23,7 +23,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 
 public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDao {
     

@@ -17,7 +17,7 @@ import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.service.PaoLoadingService;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 import com.cannontech.user.YukonUserContext;
 
 public class PhaseDetectModel extends BareReportModelBase<PhaseDetectModel.ModelRow> implements ReportModelMetaInfo {

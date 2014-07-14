@@ -14,7 +14,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 

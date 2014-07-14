@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.util.LazyLinkedHashMap;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 import com.google.common.collect.Lists;
 
 public abstract class AbstractZoneThreePhase extends AbstractZone {

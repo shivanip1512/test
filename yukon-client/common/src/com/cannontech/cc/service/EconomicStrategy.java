@@ -12,7 +12,7 @@ import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.builder.EconomicBuilder;
-import com.cannontech.cc.service.enums.NotificationStatus;
+import com.cannontech.cc.service.NotificationStatus;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.database.data.lite.LiteYukonUser;

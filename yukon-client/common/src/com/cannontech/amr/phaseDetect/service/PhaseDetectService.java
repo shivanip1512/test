@@ -6,7 +6,7 @@ import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectState;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 
 public interface PhaseDetectService {
 

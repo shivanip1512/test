@@ -1,7 +1,7 @@
 package com.cannontech.capcontrol.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 
 public class VoltageLimitedDeviceInfo {
     private PaoIdentifier parentPaoIdentifier;

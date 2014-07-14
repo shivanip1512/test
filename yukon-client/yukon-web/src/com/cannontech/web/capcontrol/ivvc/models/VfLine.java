@@ -2,7 +2,7 @@ package com.cannontech.web.capcontrol.ivvc.models;
 
 import java.util.List;
 
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 
 public class VfLine {
     

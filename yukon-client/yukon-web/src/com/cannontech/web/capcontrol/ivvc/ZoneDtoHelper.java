@@ -20,7 +20,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.google.common.collect.Lists;
 

@@ -12,8 +12,8 @@ import com.cannontech.cc.service.EconomicStrategy;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
-import com.cannontech.enums.NotificationReason;
-import com.cannontech.enums.NotificationState;
+import com.cannontech.cc.service.NotificationReason;
+import com.cannontech.cc.service.NotificationState;
 import com.cannontech.notif.outputs.*;
 
 public class EconomicEventScheduler extends EventScheduler {

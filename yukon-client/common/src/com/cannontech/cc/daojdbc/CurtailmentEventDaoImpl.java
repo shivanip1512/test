@@ -15,7 +15,7 @@ import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.Program;
-import com.cannontech.cc.service.enums.CurtailmentEventState;
+import com.cannontech.cc.service.CurtailmentEventState;
 import com.cannontech.common.util.CachingDaoWrapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;

@@ -26,7 +26,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.google.common.collect.Lists;
 
 public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMappingImportService {

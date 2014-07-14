@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.pao.ImportPaoType;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.google.common.collect.Lists;
 
 public enum RegulatorPointMappingImportField {

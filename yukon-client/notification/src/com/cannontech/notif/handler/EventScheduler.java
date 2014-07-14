@@ -13,7 +13,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteCICustomer;
-import com.cannontech.enums.NotificationState;
+import com.cannontech.cc.service.NotificationState;
 import com.cannontech.notif.outputs.*;
 import com.cannontech.spring.YukonSpringHook;
 

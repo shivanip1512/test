@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.CurtailmentEventNotif;
 import com.cannontech.cc.model.CurtailmentEventParticipant;
-import com.cannontech.enums.NotificationReason;
+import com.cannontech.cc.service.NotificationReason;
 
 public interface CurtailmentEventNotifDao {
     public List<CurtailmentEventNotif> getForEvent(CurtailmentEvent event);

@@ -1,7 +1,7 @@
 package com.cannontech.web.capcontrol.ivvc.service;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 

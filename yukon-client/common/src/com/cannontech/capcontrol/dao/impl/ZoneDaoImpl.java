@@ -39,8 +39,8 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.enums.Phase;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.common.model.Phase;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

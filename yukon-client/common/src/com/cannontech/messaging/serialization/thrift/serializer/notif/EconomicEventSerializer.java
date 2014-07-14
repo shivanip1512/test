@@ -1,6 +1,6 @@
 package com.cannontech.messaging.serialization.thrift.serializer.notif;
 
-import com.cannontech.enums.EconomicEventAction;
+import com.cannontech.cc.service.EconomicEventAction;
 import com.cannontech.message.notif.EconomicEventMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.messaging.serialization.thrift.ThriftInheritanceSerializer;

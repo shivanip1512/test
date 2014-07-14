@@ -2,7 +2,7 @@ package com.cannontech.database.data.capcontrol;
 
 import com.cannontech.common.search.FilterType;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 
 public class VoltageRegulatorPointMapping implements Comparable<VoltageRegulatorPointMapping>{
 

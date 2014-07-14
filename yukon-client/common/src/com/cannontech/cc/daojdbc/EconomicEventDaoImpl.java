@@ -23,7 +23,7 @@ import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
 import com.cannontech.cc.model.Program;
-import com.cannontech.cc.service.enums.EconomicEventState;
+import com.cannontech.cc.service.EconomicEventState;
 import com.cannontech.common.util.CachingDaoWrapper;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;

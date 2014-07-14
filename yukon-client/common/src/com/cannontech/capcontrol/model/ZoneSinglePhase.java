@@ -3,7 +3,7 @@ package com.cannontech.capcontrol.model;
 import java.util.Map;
 
 import com.cannontech.database.data.pao.ZoneType;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 import com.google.common.collect.ImmutableMap;
 
 public class ZoneSinglePhase extends AbstractZoneNotThreePhase {

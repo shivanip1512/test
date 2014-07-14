@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 
 public interface ExtraPaoPointAssignmentDao {
 

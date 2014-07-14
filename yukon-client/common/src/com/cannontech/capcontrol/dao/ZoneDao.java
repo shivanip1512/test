@@ -13,7 +13,7 @@ import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.CymePaoPoint;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 
 public interface ZoneDao {
     

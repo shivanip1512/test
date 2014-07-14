@@ -7,8 +7,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.cannontech.core.dao.support.Identifiable;
 import com.cannontech.database.data.notification.NotifType;
-import com.cannontech.enums.NotificationReason;
-import com.cannontech.enums.NotificationState;
+import com.cannontech.cc.service.NotificationReason;
+import com.cannontech.cc.service.NotificationState;
 
 public class CurtailmentEventNotif implements Identifiable, EventNotif {
     private Integer id;

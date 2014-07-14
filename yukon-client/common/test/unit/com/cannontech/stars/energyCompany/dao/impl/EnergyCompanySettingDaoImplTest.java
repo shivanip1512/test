@@ -20,7 +20,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
+import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;

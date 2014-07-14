@@ -1,6 +1,6 @@
 package com.cannontech.messaging.serialization.thrift.test.messagevalidator.notif;
 
-import com.cannontech.enums.CurtailmentEventAction;
+import com.cannontech.cc.service.CurtailmentEventAction;
 import com.cannontech.message.notif.CurtailmentEventMsg;
 import com.cannontech.messaging.serialization.thrift.test.validator.AutoInitializedClassValidator;
 import com.cannontech.messaging.serialization.thrift.test.validator.RandomGenerator;

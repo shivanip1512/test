@@ -2,8 +2,8 @@ package com.cannontech.yukon;
 
 import java.util.Date;
 
-import com.cannontech.enums.CurtailmentEventAction;
-import com.cannontech.enums.EconomicEventAction;
+import com.cannontech.cc.service.CurtailmentEventAction;
+import com.cannontech.cc.service.EconomicEventAction;
 import com.cannontech.message.notif.NotifCallEvent;
 import com.cannontech.yukon.conns.NotifRequestException;
 

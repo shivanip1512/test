@@ -27,8 +27,8 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.enums.Phase;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.common.model.Phase;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 
 public class CymeSimulationHelper {
 

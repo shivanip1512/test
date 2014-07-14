@@ -1,6 +1,6 @@
 package com.cannontech.capcontrol.model;
 
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 
 public class ZoneAssignmentPointRow extends ZoneAssignmentRow {
     private Phase phase;

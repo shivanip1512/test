@@ -3,7 +3,7 @@ package com.cannontech.common.search.pao.db;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 
 public class AvailableRegulatorFilter implements SqlFilter {
     private Integer zoneId;

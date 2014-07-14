@@ -2,7 +2,7 @@ package com.cannontech.cc.model;
 
 import java.util.Date;
 
-import com.cannontech.cc.service.enums.CurtailmentEventState;
+import com.cannontech.cc.service.CurtailmentEventState;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.support.Identifiable;
 

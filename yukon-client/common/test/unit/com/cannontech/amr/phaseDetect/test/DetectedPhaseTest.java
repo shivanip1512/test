@@ -7,7 +7,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import com.cannontech.amr.phaseDetect.data.DetectedPhase;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 import com.google.common.collect.Sets;
 
 public class DetectedPhaseTest {

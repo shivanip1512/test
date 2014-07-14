@@ -1,6 +1,6 @@
 package com.cannontech.capcontrol;
 
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 
 public class PointToZoneMapping {
 	private int pointId;

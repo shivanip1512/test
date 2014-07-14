@@ -27,13 +27,13 @@ import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.CurtailmentChangeBuilder;
 import com.cannontech.cc.service.builder.CurtailmentRemoveCustomerBuilder;
 import com.cannontech.cc.service.builder.VerifiedPlainCustomer;
-import com.cannontech.cc.service.enums.CurtailmentEventState;
+import com.cannontech.cc.service.CurtailmentEventState;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.enums.CurtailmentEventAction;
+import com.cannontech.cc.service.CurtailmentEventAction;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Sets;
 

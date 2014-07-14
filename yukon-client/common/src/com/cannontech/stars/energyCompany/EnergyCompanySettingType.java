@@ -10,7 +10,7 @@ import static com.cannontech.stars.energyCompany.model.SettingCategory.MISC;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.core.roleproperties.InputTypeFactory;
-import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
+import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.stars.energyCompany.model.SettingCategory;
 import com.cannontech.web.input.type.InputType;
 

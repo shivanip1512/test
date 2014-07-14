@@ -3,7 +3,7 @@ package com.cannontech.capcontrol.dao;
 import java.util.List;
 
 import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 
 public interface CcMonitorBankListDao {
     

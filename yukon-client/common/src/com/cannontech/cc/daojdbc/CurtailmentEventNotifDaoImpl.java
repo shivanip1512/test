@@ -22,8 +22,8 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.enums.NotificationReason;
-import com.cannontech.enums.NotificationState;
+import com.cannontech.cc.service.NotificationReason;
+import com.cannontech.cc.service.NotificationState;
 
 public class CurtailmentEventNotifDaoImpl implements CurtailmentEventNotifDao {
     

@@ -22,7 +22,7 @@ import com.cannontech.cc.service.EconomicService;
 import com.cannontech.cc.service.EconomicStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
-import com.cannontech.cc.service.enums.NotificationStatus;
+import com.cannontech.cc.service.NotificationStatus;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.web.cc.CommercialCurtailmentBean;
 import com.cannontech.web.util.JSFUtil;

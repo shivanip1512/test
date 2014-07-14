@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventNotif;
 import com.cannontech.cc.model.EconomicEventParticipant;
-import com.cannontech.enums.NotificationReason;
+import com.cannontech.cc.service.NotificationReason;
 
 public interface EconomicEventNotifDao {
     public void deleteForEvent(EconomicEvent event);

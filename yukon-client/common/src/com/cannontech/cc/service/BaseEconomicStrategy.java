@@ -35,8 +35,8 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.model.EconomicEventParticipantSelection.SelectionState;
 import com.cannontech.cc.service.builder.EconomicBuilder;
-import com.cannontech.cc.service.enums.EconomicEventState;
-import com.cannontech.cc.service.enums.NotificationStatus;
+import com.cannontech.cc.service.EconomicEventState;
+import com.cannontech.cc.service.NotificationStatus;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.common.exception.PointException;
@@ -46,8 +46,8 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
-import com.cannontech.enums.EconomicEventAction;
-import com.cannontech.enums.NotificationState;
+import com.cannontech.cc.service.EconomicEventAction;
+import com.cannontech.cc.service.NotificationState;
 import com.cannontech.user.YukonUserContext;
 
 public abstract class BaseEconomicStrategy extends StrategyBase implements EconomicStrategy {

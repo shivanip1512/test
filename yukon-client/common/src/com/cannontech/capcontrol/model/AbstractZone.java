@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.cannontech.common.util.LazyList;
 import com.cannontech.database.data.pao.ZoneType;
-import com.cannontech.enums.Phase;
+import com.cannontech.common.model.Phase;
 
 public abstract class AbstractZone {
     

@@ -37,8 +37,8 @@ import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
-import com.cannontech.enums.Phase;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.common.model.Phase;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.google.common.collect.Lists;
 
 public class CymeXMLBuilder {

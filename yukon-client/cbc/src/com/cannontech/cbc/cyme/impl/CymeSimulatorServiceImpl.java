@@ -46,7 +46,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 
 public class CymeSimulatorServiceImpl implements CymeSimulatorService {
     private static final Logger logger = YukonLogManager.getLogger(CymeSimulatorServiceImpl.class);

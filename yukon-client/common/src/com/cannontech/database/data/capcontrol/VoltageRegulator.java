@@ -24,8 +24,8 @@ import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.enums.Phase;
-import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.common.model.Phase;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
