@@ -7,6 +7,10 @@
 @green: #093;
 @orange: #FB8521;
 
+@primary-button-color: #777;
+@primary-button-color-border: #666;
+@primary-button-color-hover: #888;
+
 @form-control-height: 26px;
 
 /* Functional Overrides */
@@ -424,4 +428,152 @@ span.dynatree-folder a {
 }
 .chosen-container-active.chosen-with-drop .chosen-single {
     background-image: none;
+}
+
+/* Date Pickers */
+.ui-datepicker {
+    border: 1px solid #ccc;
+    -webkit-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+       -moz-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+
+    .ui-datepicker-next,
+    .ui-datepicker-prev,
+    .ui-datepicker-buttonpane button {
+        background: #F3F3F3;
+        border: solid 1px #bbb;
+        border-radius: 2px;
+        box-shadow: inset 0px 0px 0px #fff,0 1px 0 rgba(0,0,0,0.07);
+        color: #444;
+        font: bold 12px Helvetica, Arial, sans-serif;
+        font-smoothing: antialiased;
+        height: 26px;
+        line-height: 16px;
+        margin: 0 5px;
+        padding: 4px 8px;
+        transition: border-color .20s;
+        cursor: pointer;
+        &:focus {outline: none;}
+
+        &.ui-state-hover {
+            background-color: #F4F4F4;
+            border-color: #aaa;
+            box-shadow:0 0 10px #D4D4D4;
+            color: #333;
+        }
+    }
+
+    .ui-datepicker-header {
+        padding: 5px 0;
+        border-bottom: 1px solid #ccc;
+
+        /* Position the titlebar buttons */
+        .ui-datepicker-next,
+        .ui-datepicker-prev {
+            top: 4px;
+            width: auto;
+        }
+        .ui-datepicker-prev {
+            left: 5px;
+        }
+        .ui-datepicker-next {
+            right: 5px;
+        }
+
+        /* Remove jQuery UI properties from 'icons' and apply our own. */
+       .ui-datepicker-prev span,
+       .ui-datepicker-next span {
+            position: relative;
+            left:auto;
+            top:auto;
+            margin:auto;
+
+            background-image: url(../Icons/icons.png);
+            background-repeat: no-repeat;
+            display: inline-block;
+            height: 16px;
+            line-height: 16px;
+            max-width: 16px;
+            overflow: hidden;
+            text-indent: -9999px;
+            width: 16px;
+
+            /* icon-resultset-previous-gray */
+            &.ui-icon-circle-triangle-w {
+                background-position: -144px -416px;
+            }
+            /* .icon-resultset-next-gray */
+            &.ui-icon-circle-triangle-e {
+                background-position: -128px -416px;
+            }
+        }
+    }
+
+    .ui-datepicker-calendar {
+        width: 95%;
+        margin-right: auto;
+        margin-left: auto;
+
+        th {
+            padding-bottom: 0;
+        }
+        td {
+            width: 14.2857142857%;
+        }
+
+        /* days */
+        .ui-state-default {
+            border-radius: 2px;
+            border: 1px solid rgba(0,0,0,0);
+            color: @font-color;
+            background: white;
+        }
+
+        /* today */
+        .ui-state-highlight {
+            background: #dedede;
+        }
+
+        /* selected */
+        .ui-state-active,
+        /* hover */
+        .ui-state-hover,
+        .ui-state-focus {
+            border: 1px solid fade(@primary-button-color-border, 50);
+            background: fade(@primary-button-color, 20);
+            color: @primary-color;
+        }
+    }
+
+    .ui-datepicker-buttonpane {
+        /* Clearfix the buttonpane */
+        &:before, 
+        &:after {
+            content: " ";
+            display: table;
+        }
+        &:after { clear: both; }
+
+        .ui-datepicker-close {
+            float: left;
+        }
+
+        button.ui-datepicker-current {
+            float: right;
+            opacity: 1;
+
+            /* make today button primary */
+            background: @primary-button-color;
+            border: 1px solid @primary-button-color-border !important;
+            transition: border .20s;
+            color: #FFF !important;
+            text-shadow: 0 1px 0 @primary-button-color !important;
+
+            &.ui-state-hover {
+                background-color: @primary-button-color-hover !important;
+                border: 1px solid @primary-button-color-border !important;
+                box-shadow:0 0 10px #bbb;
+            }
+        }
+    }
 }
