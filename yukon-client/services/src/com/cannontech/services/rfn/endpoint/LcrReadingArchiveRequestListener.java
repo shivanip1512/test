@@ -119,7 +119,9 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                     // parsed.
                     sendAcknowledgement(archiveRequest);
                     log.error(
-                        "Can't parse incoming RF LCR payload data.  Payload may be corrupt or not schema compliant.", e);
+                        "Can't parse incoming RF LCR payload data for " + rfnDevice + 
+                        ". Payload: 0x" + DatatypeConverter.printHexBinary(payload) + 
+                        ". Payload may be corrupt or not schema compliant.");
                     throw new RuntimeException("Error parsing RF LCR payload.", e);
                 }
 

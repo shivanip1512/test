@@ -99,7 +99,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         // Parse the incoming data
         try {
             reader.parse(new InputSource(bis));
-        } catch (IOException | SAXException e) {
+        } catch (IOException | SAXException | ArrayIndexOutOfBoundsException e) {
             throw new ParseExiException("Error while parsing the RF LCR payload.", e);
         }
        
