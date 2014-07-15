@@ -5,15 +5,23 @@ yukon.namespace('yukon.analytics');
  * when the public method "setTrackingIds" is first called. This is also when event listeners 
  * are registered (currently this only includes listening for all non-dataupdater ajax calls).
  * 
+ * @module yukon.analytics
  * @class Manages [Google] analytics for Yukon
- * @requires jQuery 1.6+
+ * @requires JQUERY
+ * @requires yukon
  */
 yukon.analytics = (function() {
     
     var 
     _initialized = false,
+    
+    /** @type {string} - Cooper google analytics tracking ID. */
     _cooper_tracking_id = null,
+    
+    /** @type Array.<string> - array containing tracking ID's. */
     _additional_tracking_ids = [],
+    
+    /** @type {Object.<string,{integer}>} - URLS that need to be ignored  */
     _skipped_urls = {
         '/updater/update': 1, 
         '/addToHistory': 1, 
@@ -25,7 +33,6 @@ yukon.analytics = (function() {
         '/picker/search': 1
     },
 
-    /* 'PRIVATE' functions */
     _init = function() {
         if(_initialized) return;
         if (typeof _gaq === "undefined" || _gaq === null) {
@@ -42,6 +49,11 @@ yukon.analytics = (function() {
         _initialized = true;
     },
 
+    /**
+     * Add additional id tracking.
+     * @param {Object} [args] - Contains options for additional tracking.
+     * @param {string} [args.url] - url of page to be tracked.
+     */
     _setAdditionalTrackingIds = function(args) {
         var trackPageview = ['a._trackPageview'];
         if (typeof args !== 'undefined' && typeof args.url === "string" && args.url !== "") {
@@ -56,13 +68,11 @@ yukon.analytics = (function() {
 
     _mod = {
         
-        /* 'PUBLIC' functions */
-
         /**
          * Sets the google analytics tracking Id's
-         * @param {Object} args TrackingId arguments
-         * @param {String} args.cooper_tracking_id The Cooper Google Analytics Tracking Id
-         * @param {String} args.additional_tracking_ids The additional Google Analytics Tracking Ids (comma separated string)
+         * @param {Object} args - TrackingId arguments
+         * @param {String} args.cooper_tracking_id - The Cooper Google Analytics Tracking Id
+         * @param {String} args.additional_tracking_ids - The additional Google Analytics Tracking Ids (comma separated string)
          */
         setTrackingIds: function(args) {
             _init();
