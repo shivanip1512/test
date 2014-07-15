@@ -16,10 +16,10 @@
                     <tr>
                         <th><i:inline key=".command"/></th>
                         <th><i:inline key=".devices"/></th>
-                        <th><i:inline key=".successCount"/></th>
-                        <th><i:inline key=".failureCount"/></th>
+                        <th><i:inline key=".resultCount"/></th>
                         <th><i:inline key=".detail"/></th>
                         <th><i:inline key=".status"/></th>
+                        <th><i:inline key=".startTime"/></th>
                     </tr>
                 </thead>
             </cti:msgScope>
@@ -34,8 +34,10 @@
                     <tr>
                         <td>${result.command}</td>
                         <td><cti:msg key="${result.deviceCollection.description}"/></td>
-                        <td class="success"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></td>
-                        <td class="error"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></td>
+                        <td title="<cti:msg2 key=".tableTooltip"/>">
+                            <span class="success"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span> /
+                            <span class="error"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></span>
+                        </td>
                         <td><a href="${resultDetailUrl}"><i:inline key="yukon.common.view"/></a></td>
                         <td>
                             <div id="statusDiv_${result.key}">
@@ -44,6 +46,8 @@
                                 </cti:classUpdater>
                             </div>
                         </td>
+
+                        <td><span><cti:formatDate type="DATEHM" value="${result.startTime}"/></span></td>
                     </tr>
                 </c:forEach>
             </tbody>

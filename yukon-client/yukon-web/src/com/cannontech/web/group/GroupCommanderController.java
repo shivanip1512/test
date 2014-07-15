@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +62,8 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.simplereport.SimpleReportOutputter;
 import com.cannontech.simplereport.SimpleYukonReportDefinition;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailAttachmentMessage;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -289,12 +291,23 @@ public class GroupCommanderController {
         List<GroupCommandResult> completed = groupCommandExecutor.getCompleted();
         List<GroupCommandResult> pending = groupCommandExecutor.getPending();
         
-        ArrayList<GroupCommandResult> allResults = new ArrayList<GroupCommandResult>(completed.size() + pending.size());
-        allResults.addAll(completed);
+        List<GroupCommandResult> allResults = new ArrayList<GroupCommandResult>(completed.size() + pending.size());
         allResults.addAll(pending);
+        allResults.addAll(completed);
+        
+        //sorting by date
+        Comparator<GroupCommandResult> comparator = resultsCompare;
+        Collections.sort(allResults, comparator);
         
         map.addAttribute("resultList", allResults);
     }
+    
+    private Comparator<GroupCommandResult> resultsCompare = new Comparator<GroupCommandResult>() {
+        @Override
+        public int compare(GroupCommandResult o1, GroupCommandResult o2) {
+            return o2.getStartTime().compareTo(o1.getStartTime());
+        }
+    };
     
     @RequestMapping("resultDetail")
     public void resultDetail(String resultKey, ModelMap map) throws ResultResultExpiredException {
