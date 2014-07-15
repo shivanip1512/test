@@ -237,9 +237,9 @@ yukon.dataUpdater = (function () {
                 if (xhr.status === 409) {
                     warnStaleData();
                 }
-                if(xhr.getAllResponseHeaders() || !isWindowUnloading){
+                if(xhr.getAllResponseHeaders() || !isWindowUnloading) {
                     failureCallback();   
-                }else{
+                } else {
                     failureCount=0;
                 }
                 isWindowUnloading = false;
