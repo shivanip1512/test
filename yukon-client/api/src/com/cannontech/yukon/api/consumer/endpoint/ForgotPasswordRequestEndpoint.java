@@ -8,6 +8,8 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -28,6 +30,7 @@ public class ForgotPasswordRequestEndpoint {
     private final Namespace ns = YukonXml.getYukonNamespace();
     private final Logger log = YukonLogManager.getLogger(RunThermostatProgramEndpoint.class);
 
+    @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private StarsSearchService starsSearchService;
@@ -56,6 +59,7 @@ public class ForgotPasswordRequestEndpoint {
             String notes = requestTemplate.evaluateAsString("//y:notes");
             String energyComp = requestTemplate.evaluateAsString("//y:energyProvider");
 
+            systemEventLogService.passwordRequestAttempted(userName, email, accNum, EventSource.API);
             //try to recover the password
             StarsRequestPword reqPword = new StarsRequestPword(userName, email, fName, lName, accNum, 
                                                                starsCustAccountInformationDao,

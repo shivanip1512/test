@@ -40,6 +40,7 @@ public enum ArgEnum {
     taskName,
     thermostatLabel,
     username, 
+    email,
     warehouseName,
     workOrderNumber,
     inventoryId,

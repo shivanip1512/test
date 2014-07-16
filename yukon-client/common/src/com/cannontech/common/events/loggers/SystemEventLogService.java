@@ -28,6 +28,12 @@ public interface SystemEventLogService {
                                        @Arg(ArgEnum.username) String username, 
                                        @Arg(ArgEnum.eventSource) EventSource eventSource);
     
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
+    public void passwordRequestAttempted(@Arg(ArgEnum.username) String username,
+                                         @Arg(ArgEnum.email) String email,
+                                         @Arg(ArgEnum.accountNumber) String accountNumber,
+                                         @Arg(ArgEnum.eventSource) EventSource eventSource);
+    
     
     // Username service level
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
@@ -47,6 +53,14 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
     public void loginOutboundVoice(@Arg(ArgEnum.username) LiteYukonUser user,
                                    @Arg(ArgEnum.remoteAddress) String remoteAddress);    
+        
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
+    public void loginConsumerAttempted(@Arg(ArgEnum.username) String username,
+                                       @Arg(ArgEnum.eventSource) EventSource eventSource);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
+    public void loginConsumer(@Arg(ArgEnum.username) LiteYukonUser user,
+                              @Arg(ArgEnum.eventSource) EventSource eventSource);
     
     /* System Admin */
     /* Maintenance */

@@ -9,6 +9,8 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -27,6 +29,7 @@ public class UserLoginRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(RunThermostatProgramEndpoint.class);
     
+    @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private AuthenticationService authenticationService;
     @Autowired private RolePropertyDao rolePropertyDao;
     
@@ -44,12 +47,14 @@ public class UserLoginRequestEndpoint {
             String username = requestTemplate.evaluateAsString("//y:username");
             String password = requestTemplate.evaluateAsString("//y:password");
             
+            systemEventLogService.loginConsumerAttempted(username, EventSource.API);
             LiteYukonUser user = authenticationService.login(username, password);
             //let the callee know how long a session should last
             response.addContent(XmlUtils.createIntegerElement("sessionTimeoutLength", ns, rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.SESSION_TIMEOUT, user)));
 
             //success!
             response.addContent(new Element("success", ns));
+            systemEventLogService.loginConsumer(user, EventSource.API);
         } catch (PasswordExpiredException e) {
             Element fe = XMLFailureGenerator.generateFailure(userLoginRequest, e, "PasswordExpired", e.getMessage());
             response.addContent(fe);
