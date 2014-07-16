@@ -58,7 +58,7 @@
                 </div>
             </tags:sectionContainer2>
         </div>
-        <div class="column two nogutter" id="sync-issues" data-report-id="${report.reportId}">
+        <div class="column two nogutter" id="sync-issues" data-report-id="${report.reportId}" data-empty-key="<i:inline key=".issues.none"/>">
             <tags:sectionContainer2 nameKey="issues" arguments="${fn:length(report.errors)}">
                 <c:choose>
                     <c:when test="${fn:length(report.errors) > 0}">
@@ -75,7 +75,7 @@
                                             <td><i:inline key="${issue.errorType.formatKey}" arguments="${issue.arguments}"/></td>
                                             <td>
                                                 <c:if test="${issue.errorType.fixable}">
-                                                    <cti:button renderMode="buttonImage" classes="fr M0 js-fixable-issue" 
+                                                    <cti:button renderMode="buttonImage" data-popup="#ecobee-fixable" classes="fr M0 js-fixable-issue" 
                                                         icon="icon-wrench"/>
                                                 </c:if>
                                                 <c:if test="${not issue.errorType.fixable}">
@@ -91,13 +91,15 @@
                         <div class="action-area">
                             <cti:button nameKey="issues.fixAll" icon="icon-wrench" id="fix-all-btn"/>
                         </div>
-                        <div id="ecobee-fixable" title="<cti:msg2 key=".issues.fix.title"/>" class="dn">
-                            <form action="ecobee/fixIssue" method="POST">
-                                <cti:csrfToken/>
-                                <p id="ecobee-issue-explanation"></p>
-                                <input type="hidden" name="reportId" id="ecobee-report-id">
-                                <input type="hidden" name="errorId" id="ecobee-error-id">
-                            </form>
+                        <div data-dialog 
+                            id="ecobee-fixable"
+                            data-event="yukon.dr.ecobee.fix.start" 
+                            data-width="600" 
+                            data-title="<cti:msg2 key=".issues.fix.title"/>" 
+                            class="dn">
+                            <input type="hidden" name="reportId" id="ecobee-report-id">
+                            <input type="hidden" name="errorId" id="ecobee-error-id">
+                            <p id="ecobee-issue-explanation"></p>
                         </div>
                         <div id="ecobee-unfixable" title="<cti:msg2 key=".issues.unfixable.title"/>" class="dn">
                             <p id="ecobee-unfixable-explanation"></p>

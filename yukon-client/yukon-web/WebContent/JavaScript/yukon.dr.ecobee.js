@@ -45,10 +45,28 @@ yukon.dr.ecobee = (function () {
         init: function () {
 
             var _originalErrorCheckTime = $('#ecobee-error-check-time').val(),
-                _originalCollectionTime = $('#ecobee-data-collection-time').val();
+                _originalCollectionTime = $('#ecobee-data-collection-time').val(),
+                appendEmptyList = function (listCont) {
+                    listCont.append('<span class="empty-list">' +
+                        $('#sync-issues').data('emptyKey') + '</span>');
+                },
+                insertErrorMsg = function (errorOpts) {
+                    var issueTd = errorOpts.row.find('td')[0],
+                        previousErrorMsg = $(issueTd).find('.error'),
+                        issueHtml;
+                    if (0 !== previousErrorMsg.length) {
+                        previousErrorMsg.remove();
+                    }
+                    issueHtml = $(issueTd).html();
+                    $(issueTd).html(issueHtml + '<div class="error">' + errorOpts.errorMsg + '</div>');
+                };
 
             _setupSlider('#ecobee-data-collection-schedule', '#ecobee-data-collection-time');
             _setupSlider('#ecobee-error-check-schedule', '#ecobee-error-check-time');
+            
+            if (0 === $('.js-fixable-issue').length) {
+                $('#fix-all-btn').closest('.action-area').addClass('dn');
+            }
 
             $(document).on('yukon.dr.ecobee.download.settings.load', function (ev) {
                 // initialize the date/time pickers
@@ -93,6 +111,50 @@ yukon.dr.ecobee = (function () {
                 });
             });
 
+            // OK pressed for fix issue
+            $(document).on('yukon.dr.ecobee.fix.start', function (ev) {
+                var row = ev.target,
+                    errorId = $(row).find('[id="ecobee-error-id"]').val(),
+                    reportId = $(row).find('[id="ecobee-report-id"]').val(),
+                    clickedButton = $('[data-error-id="' + errorId + '"]').find('button');
+
+                yukon.ui.busy(clickedButton);
+                $('#ecobee-fixable').ajaxSubmit({
+                    url: 'ecobee/fixIssue',
+                    type: 'post',
+                    data: { reportId: reportId, errorId: errorId },
+                    success: function (data, status, xhr, $form) {
+                        var row = $('[data-error-id="' + errorId + '"]'),
+                            syncIssuesTitle = $('#sync-issues .title-bar h3'),
+                            syncIssuesStr = syncIssuesTitle.html(),
+                            numberSyncIssues = parseInt(syncIssuesStr.match(/\d+/)[0], 10),
+                            syncIssuesCont = $('#sync-issues').find('div[id^="section-container"]');
+
+                        $('#ecobee-fixable').dialog('close');
+                        $(row).remove();
+                        if (0 < numberSyncIssues) {
+                            numberSyncIssues -= 1;
+                        }
+                        syncIssuesStr = syncIssuesStr.replace(/\d+/, numberSyncIssues);
+                        syncIssuesTitle.html(syncIssuesStr);
+                        if (0 === numberSyncIssues || (0 === $('.js-fixable-issue').length)) {
+                            $('#fix-all-btn').fadeTo('slow', 0);
+                            if (0 === $('.js-unfixable-issue').length) {
+                                syncIssuesCont.children('*').remove();
+                                appendEmptyList(syncIssuesCont);
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error, $form) {
+                        var row = $('[data-error-id="' + errorId + '"]'),
+                            errorMsg = JSON.parse(xhr.responseText);
+                        $('#ecobee-fixable').dialog('close');
+                        insertErrorMsg({row: row, errorMsg: errorMsg[0].message});
+                        yukon.ui.unbusy(clickedButton);
+                    }
+                });
+            });
+
             $(document).on('click', '.js-fixable-issue, .js-unfixable-issue', function (ev) {
                 var btn = $(this),
                     isFixable = btn.is('.js-fixable-issue'),
@@ -106,7 +168,7 @@ yukon.dr.ecobee = (function () {
                     $('#ecobee-error-id').val(errorId);
                     $('#ecobee-issue-explanation').html(issueExplanation);
                     
-                    popup.dialog({width: 400, buttons: yukon.ui.buttons({form: ''})});
+                    popup.dialog({width: 400, buttons: yukon.ui.buttons({event: 'yukon.dr.ecobee.fix.start'})});
                     
                 } else {
                     $('#ecobee-unfixable-explanation').html(issueExplanation);
@@ -157,13 +219,21 @@ yukon.dr.ecobee = (function () {
                 $('#ecobee-data-collection-schedule').hide();
             }
             
+            // fix all button pressed
             $(document).on('click', '#fix-all-btn', function (ev) {
-                var ecobeeReportId = $('#sync-issues').data('reportId');
+                var ecobeeReportId = $('#sync-issues').data('reportId'),
+                    numFixables = $('#sync-issues table tr').find('.js-fixable-issue').length,
+                    numUnfixables = $('#sync-issues table tr').find('.js-unfixable-issue').length,
+                    syncIssuesTitle,
+                    fixAllButton = $(ev.target).closest('button');
                 
                 // busy all fixable buttons
                 $('#sync-issues table tr').find('.js-fixable-issue').each(function (index, elem) {
                     yukon.ui.busy(elem);
                 });
+
+                // busy fix all button
+                yukon.ui.busy(fixAllButton);
 
                 $.get(yukon.url('/dr/ecobee/fix-all'), {reportId: ecobeeReportId})
                 .done(function (data, textStatus, jqXHR) {
@@ -173,13 +243,14 @@ yukon.dr.ecobee = (function () {
                     for (i = 0; i < data.length; i += 1) {
                         if (true === data[i].success) {
                             errorIds.push(data[i]);
+                            numFixables -= 1;
                         } else {
                             fixFailures.push(data[i]);
                         }
                     }
 
-                    // check the error id of each issue in table against the ids
-                    // of the successfullly fixed issues reported by the server
+                    // check the error id of each issue in table against the ids of the successfullly fixed issues reported
+                    // by the server and process accordingly
                     $('#sync-issues table tr').each(function (index, row) {
                         var errorId,
                             // TODO: I know, not the most efficient algorithm
@@ -198,28 +269,39 @@ yukon.dr.ecobee = (function () {
                             },
                             foundAtIndex = {ind: -1},
                             fixFailure = '',
-                            issueHtml,
-                            issueTd,
-                            FADE = 1000;
+                            FADE_TIMEOUT = 1000,
+                            totalIssues;
                         errorId = + $(row).find('button').closest('tr').data('errorId');
                         if (isInList(errorIds, errorId, foundAtIndex)) {
                             yukon.ui.busy($(row).find('button'));
                             $(row).css('opacity', 0);
                             setTimeout (function () {
                                 $(row).remove();
-                            }, FADE);
+                            }, FADE_TIMEOUT);
                         } else if (isInList(fixFailures, errorId, foundAtIndex)) {
                             if (-1 !== foundAtIndex.ind) {
                                 fixFailure = fixFailures[foundAtIndex.ind].fixErrorString;
-                                issueTd = $(row).find('td')[0];
-                                issueHtml = $(issueTd).html();
-                                $(issueTd).html(issueHtml + '<div class="error">' + fixFailure + '</div>');
+                                insertErrorMsg({row: $(row), errorMsg: fixFailure});
                             }
                             yukon.ui.unbusy($(row).find('button'));
                         }
+                        // fix up possibly changed number of sync issues
+                        totalIssues = (numFixables + numUnfixables).toString(10);
+                        syncIssuesTitle = $('#sync-issues .title-bar h3');
+                        syncIssuesTitle.html(syncIssuesTitle.html().replace(/\d+/, totalIssues));
                     });
+                    // if no more fixable issues exist hide fix all button
+                    if (0 >= numFixables) {
+                        $('#fix-all-btn').fadeTo('slow', 0);
+                        if (0 === fixFailures.length && 0 === numUnfixables) {
+                            $('#sync-issues').find('div[id^="section-container"]').children('*').remove();
+                            appendEmptyList($('#sync-issues').find('div[id^="section-container"]'));
+                        }
+                    }
+                    yukon.ui.unbusy(fixAllButton);
                 })
                 .fail(function(jqXHR, textStatus, errorThrown) {
+                    yukon.ui.unbusy(fixAllButton);
                 });
             });
             

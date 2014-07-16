@@ -331,29 +331,45 @@ public class EcobeeController {
         return "dr/ecobee/details.jsp";
     }
     
+    @RequestMapping(value="/ecobee/runReport")
+    public String runReport() {
+        ecobeeReconciliation.runReconciliationReport();
+        return "";
+    }
+
     @RequestMapping(value="/ecobee/fixIssue", method=RequestMethod.POST)
-    public String fixIssue(
+    public @ResponseBody List<Map<String, String>> fixIssue(
+            HttpServletResponse response,
             YukonUserContext userContext,
             Integer reportId,
-            Integer errorId,
-            FlashScope flash
+            Integer errorId
             ) throws IllegalArgumentException {
         
         EcobeeReconciliationResult result = null;
+        List<Map<String, String>> resp = new ArrayList<>();
+        Map<String, String> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
             result = ecobeeReconciliation.fixDiscrepancy(reportId, errorId);
             ecobeeEventLogService.syncIssueFixed(userContext.getYukonUser(), 
                                                  result.getOriginalDiscrepancy().getErrorType().toString(), 
                                                  EventSource.OPERATOR);
             if (result.isSuccess()) {
-                flash.setConfirm(new YukonMessageSourceResolvable(fixIssueKey + "fixSucceeded"));
+                json.put("success", "true");
             } else {
-                flash.setError(new YukonMessageSourceResolvable(result.getErrorType().getFormatKey()));
+                json.put("success", "false");
+                String message = accessor.getMessage(result.getErrorType());
+                json.put("message", message);
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
         } catch (IllegalArgumentException e) {
-            flash.setError(new YukonMessageSourceResolvable(fixIssueKey + "fixFailed"));
+            json.put("success", "false");
+            String message = accessor.getMessage(result.getErrorType());
+            json.put("message", message);
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
-        return "redirect:/dr/ecobee";
+        resp.add(json);
+        return resp;
     }
 
     @RequestMapping(value="/ecobee/fix-all", method=RequestMethod.GET)
