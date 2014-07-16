@@ -12,8 +12,12 @@ public final class CreateSetRequest extends SetRequest{
     
     @JsonCreator
     public CreateSetRequest(@JsonProperty("setName") String setName) {
-        super("add");
-        this.setName = setName;
+    	super("add");
+    	if (setName.indexOf("/") == 0) {
+    	    this.setName = setName.substring(1);
+    	} else {
+    	    this.setName = setName;
+    	}
     }
     
     public String getSetName() {
