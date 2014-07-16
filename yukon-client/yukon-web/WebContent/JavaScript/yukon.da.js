@@ -15,7 +15,7 @@ yukon.da = (function () {
                 $('input.stdButton').each(function() {
                     // jsf puts colons in id names, but colons are invalid in id names so we must clean this up here
                     var sanitizeSelector = function (dirtyId) {
-                        return dirtyId.replace(':', '\\\:');
+                        return dirtyId.replace(/:/g, '\\\:');
                     },
                     elseCallBack = function() {
                         el_id = sanitizeSelector (el_id);
