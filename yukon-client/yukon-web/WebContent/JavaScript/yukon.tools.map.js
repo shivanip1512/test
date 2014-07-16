@@ -91,7 +91,6 @@ yukon.tools.map = (function() {
     /** 
      * Gets pao locations for the device collection in geojson format and adds
      * an icon feature for each to a new vector layer for the map.
-     * @param {string} dest_projection - The project that the icon vector layer will be in. 
      */
     _loadIcons = function() {
         $('.js-status-loading').show();
@@ -221,6 +220,15 @@ yukon.tools.map = (function() {
                     });
                 } else {
                     $('#marker-info').hide();
+                }
+            });
+            
+            /** Add class to fix height when fullscreen */
+            _map.on('propertychange', function(ev) {
+                var isFullscreen = $('.ol-full-screen-true').length === 1;
+                
+                if (ev.key === 'size') {
+                    $('#map').toggleClass('fullscreen', isFullscreen);
                 }
             });
             

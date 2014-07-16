@@ -53,6 +53,7 @@
     <entry key="yukon.web.components.button.actions.label">Actions</entry>
     <entry key="yukon.web.components.button.accept.label">Accept</entry>
     <entry key="yukon.web.components.button.add.label">Add</entry>
+    <entry key="yukon.web.components.button.apply.label">Apply</entry>
     <entry key="yukon.web.components.button.back.label">Back</entry>
     <entry key="yukon.web.components.button.cancel.label">Cancel</entry>
     <entry key="yukon.web.components.button.chooseMode.label">Choose Mode</entry>
@@ -79,6 +80,7 @@
     <entry key="yukon.web.components.button.generate.label">Generate</entry>
     <entry key="yukon.web.components.button.help.label">Help</entry>
     <entry key="yukon.web.components.button.home.label">Home</entry>
+    <entry key="yukon.web.components.button.hybrid.label">Hybrid</entry>
     <entry key="yukon.web.components.button.ignore.label">Ignore</entry>
     <entry key="yukon.web.components.button.import.label">Import</entry>
     <entry key="yukon.web.components.button.info.label">Info</entry>
@@ -104,10 +106,13 @@
     <entry key="yukon.web.components.button.readNow.label">Read Now</entry>
     <entry key="yukon.web.components.button.readNow.labelBusy">Sending</entry>
     <entry key="yukon.web.components.button.refresh.label">Refresh</entry>
+    <entry key="yukon.web.components.button.reload.label">Reload</entry>
+    <entry key="yukon.web.components.button.reload.labelBusy">Reloading...</entry>
     <entry key="yukon.web.components.button.remove.label">Remove</entry>
     <entry key="yukon.web.components.button.reset.label">Reset</entry>
     <entry key="yukon.web.components.button.save.label">Save</entry>
     <entry key="yukon.web.components.button.save.labelBusy">Saving</entry>
+    <entry key="yukon.web.components.button.satellite.label">Satellite</entry>
     <entry key="yukon.web.components.button.schedule.label">Schedule</entry>
     <entry key="yukon.web.components.button.search.label">Search</entry>
     <entry key="yukon.web.components.button.searchResults.hoverText">Back to Search Results</entry>
@@ -128,10 +133,7 @@
     <entry key="yukon.web.components.button.upload.label">Upload</entry>
     <entry key="yukon.web.components.button.verify.label">Verify</entry>
     <entry key="yukon.web.components.button.view.label">View</entry>
-    <entry key="yukon.web.components.button.apply.label">Apply</entry>
-    <entry key="yukon.web.components.button.reload.label">Reload</entry>
-    <entry key="yukon.web.components.button.reload.labelBusy">Reloading...</entry>
-
+    
     <entry key="yukon.web.components.cronPicker.daily">Daily</entry>
     <entry key="yukon.web.components.cronPicker.weekly">Weekly</entry>
     <entry key="yukon.web.components.cronPicker.monthly">Monthly</entry>

@@ -15,6 +15,9 @@
   box-shadow: 0px 0px 5px #ddd;
   outline: none;
 }
+.map.fullscreen {
+  height: 100%;
+}
 .ol-scale-line,.ol-mouse-position {
   background: rgba(0, 60, 136, 0.3);
   border-radius: 2px;

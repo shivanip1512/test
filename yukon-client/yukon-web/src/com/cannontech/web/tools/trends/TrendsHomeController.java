@@ -34,7 +34,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class TrendsHomeController {
     
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired GraphDao graphDao;
+    @Autowired private GraphDao graphDao;
     
     @RequestMapping({"/trends", "/trends/"})
     public String trends(HttpSession session, ModelMap model, YukonUserContext userContext) throws JsonProcessingException {

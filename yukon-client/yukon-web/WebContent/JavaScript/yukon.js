@@ -517,7 +517,8 @@ yukon.ui = (function () {
              */
             $(document).on('click', '[data-popup]', function (ev) {
                 var trigger = $(this),
-                    popup = $(trigger.data('popup'));
+                    popup = $(trigger.data('popup')),
+                    focus;
                 
                 try { /* Close popup if the trigger is a toggle and the popup is open */
                     if (trigger.is('[data-popup-toggle]') && popup.dialog('isOpen')) {
@@ -529,6 +530,10 @@ yukon.ui = (function () {
                 
                 // show the popup
                 mod.dialog(popup);
+                
+                // check for focus
+                focus = popup.find('js-focus');
+                if (focus.length) focus.focus();
             });
         },
         

@@ -12,4 +12,63 @@
     <entry key="yukon.web.modules.operator.create.account">Create Account</entry>
     <entry key="yukon.web.modules.operator.create.device">Create Device</entry>
     
+    <!-- Gateway Dashboard -->
+    <entry key="yukon.web.modules.operator.gateways.dashboard.pageName">Gateways</entry>
+    
+    <!-- Gateway Details -->
+    <entry key="yukon.web.modules.operator.gateways.detail.pageName">Gateway</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.info.title">Info</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.comms.title">Communication</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.location.title">Location</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.users.title">Users</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.dataCollection.title">Data Collection</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.testConnection.label">Test Connection</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.dataCompleteness">Data Completeness</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.collectionSchedule">Collection Schedule</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.sequencing">Sequencing</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.dataType">Data Type</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.sequenceStart">Sequence Start</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.sequenceEnd">Sequence End</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.completeness">Completeness</entry>
+    
+    <!-- Gateway Common Words -->
+    <entry key="yukon.web.modules.operator.gateways.connect">Connect</entry>
+    <entry key="yukon.web.modules.operator.gateways.disconnect">Disconnect</entry>
+    <entry key="yukon.web.modules.operator.gateways.collectData">Collect Data</entry>
+    <entry key="yukon.web.modules.operator.gateways.name">Name</entry>
+    <entry key="yukon.web.modules.operator.gateways.type">Type</entry>
+    <entry key="yukon.web.modules.operator.gateways.maxNodes">Max Nodes</entry>
+    <entry key="yukon.web.modules.operator.gateways.productNo">Product No</entry>
+    <entry key="yukon.web.modules.operator.gateways.hardwareVersion">Hardware Version</entry>
+    <entry key="yukon.web.modules.operator.gateways.softwareVersion">Software Version</entry>
+    <entry key="yukon.web.modules.operator.gateways.upperStackVersion">Upper Stack Version</entry>
+    <entry key="yukon.web.modules.operator.gateways.radioVersion">Radio Version</entry>
+    <entry key="yukon.web.modules.operator.gateways.releaseVersion">Release Version</entry>
+    <entry key="yukon.web.modules.operator.gateways.versionConflicts">Version Conflicts</entry>
+    <entry key="yukon.web.modules.operator.gateways.appMode">Application Mode</entry>
+    <entry key="yukon.web.modules.operator.gateways.appMode.normal">Normal</entry>
+    <entry key="yukon.web.modules.operator.gateways.appMode.failsafe">Failsafe</entry>
+    <entry key="yukon.web.modules.operator.gateways.connectionType">Connection Type</entry>
+    <entry key="yukon.web.modules.operator.gateways.ipaddress">IP Address</entry>
+    <entry key="yukon.web.modules.operator.gateways.connectionStatus">Connection Status</entry>
+    <entry key="yukon.web.modules.operator.gateways.lastComms">Last Communication</entry>
+    <entry key="yukon.web.modules.operator.gateways.radios">Radios</entry>
+    <entry key="yukon.web.modules.operator.gateways.superAdmin">Super Admin</entry>
+    <entry key="yukon.web.modules.operator.gateways.admin">Admin</entry>
+    <entry key="yukon.web.modules.operator.gateways.user">User</entry>
+    <entry key="yukon.web.modules.operator.gateways.defaultUser">Default User</entry>
+    <entry key="yukon.web.modules.operator.gateways.username.placeholder">username</entry>
+    <entry key="yukon.web.modules.operator.gateways.password.placeholder">password</entry>
+    <entry key="yukon.web.modules.operator.gateways.optional">(optional)</entry>
+    <entry key="yukon.web.modules.operator.gateways.latitude">Latitude</entry>
+    <entry key="yukon.web.modules.operator.gateways.longitude">Longitude</entry>
+    
+    <entry key="yukon.common.gateways.lastComm.SUCCESS">Success</entry>
+    <entry key="yukon.common.gateways.lastComm.FAILURE">Failure</entry>
+    <entry key="yukon.common.gateways.lastComm.MISSED">Missed</entry>
+    <entry key="yukon.common.gateways.lastComm.UNKNOWN">Unknown</entry>
+    <entry key="yukon.common.gateways.connectStatus.CONNECTED">Connected</entry>
+    <entry key="yukon.common.gateways.connectStatus.DISCONNECTED">Disconnected</entry>
+    
 </properties>

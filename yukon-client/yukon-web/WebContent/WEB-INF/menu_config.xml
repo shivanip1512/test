@@ -147,6 +147,12 @@
         </permissions>
         <link>/stars/operator/inventory/home</link>
       </option>
+      <option name="gateways">
+        <permissions>
+          <role name="INVENTORY" />
+        </permissions>
+        <link>/stars/gateways</link>
+      </option>
       <option name="optouts">
         <permissions>
           <or>
@@ -184,12 +190,12 @@
       <option name="bulkOperations">
         <permissions>
             <or>
-	          <roleProperty name="BULK_IMPORT_OPERATION" />
-	          <roleProperty name="ADD_REMOVE_POINTS" />
-	          <roleProperty name="FDR_TRANSLATION_MANAGER" />
-	          <roleProperty name="IMPORTER_ENABLED" />
-	          <roleProperty name="CAP_CONTROL_IMPORTER" />
-	          <roleProperty name="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
+              <roleProperty name="BULK_IMPORT_OPERATION" />
+              <roleProperty name="ADD_REMOVE_POINTS" />
+              <roleProperty name="FDR_TRANSLATION_MANAGER" />
+              <roleProperty name="IMPORTER_ENABLED" />
+              <roleProperty name="CAP_CONTROL_IMPORTER" />
+              <roleProperty name="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
             </or>
         </permissions>
         <link>/bulk/bulkHome</link>
