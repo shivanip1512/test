@@ -2,7 +2,7 @@ package com.cannontech.web.cayenta.service.impl;
 
 import java.io.IOException;
 
-
+import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -35,7 +35,8 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 	private static String postElementName = "XMLREQUEST";
 	
 	// GET LOCATION
-	public CayentaLocationInfo getLocationInfoForMeterName(String meterName) throws CayentaRequestException {
+	@Override
+    public CayentaLocationInfo getLocationInfoForMeterName(String meterName) throws CayentaRequestException {
 		
 		CayentaLocationInfo info = new CayentaLocationInfo();
 		String getLocationReply = "";
@@ -59,7 +60,8 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 	}
 	
 	// GET METER
-	public CayentaMeterInfo getMeterInfoForMeterName(String meterName) throws CayentaRequestException {
+	@Override
+    public CayentaMeterInfo getMeterInfoForMeterName(String meterName) throws CayentaRequestException {
 		
 		CayentaMeterInfo info = new CayentaMeterInfo();
 		String getMeterReply = "";
@@ -83,7 +85,8 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 	}
 	
 	// GET PHONE
-	public CayentaPhoneInfo getPhoneInfoForAccountNumber(String accountNumber) throws CayentaRequestException {
+	@Override
+    public CayentaPhoneInfo getPhoneInfoForAccountNumber(String accountNumber) throws CayentaRequestException {
 		
 		CayentaPhoneInfo info = new CayentaPhoneInfo();
 		String getAccountPhoneReply = "";
@@ -107,7 +110,8 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 	}
 	
 	// BUILD POST
-	private String doRequestWithMeterNameAsLocationNumber(String methodName, String meterName) throws CayentaRequestException {
+	private String doRequestWithMeterNameAsLocationNumber(String methodName, String meterName) 
+	        throws CayentaRequestException {
 		
 		// build account request
 		Element requestElement = new Element("Request");
@@ -143,7 +147,8 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 		return resp;
 	}
 	
-	private SimpleXPathTemplate getReplyTemplate(String reply) throws JDOMException, IOException, CayentaRequestException {
+	private SimpleXPathTemplate getReplyTemplate(String reply) throws JDOMException, 
+	IOException, CayentaRequestException {
 			
 		Element currentReplyElement = CayentaXmlUtils.getElementForXmlString(reply);
 		String currentReplyTypeName = CayentaXmlUtils.getMethodName(currentReplyElement);
@@ -160,9 +165,11 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 		if (replyStatus != 0) {
 			String statusDescriptionPrefix = "System failure. STATUS = " + replyStatus + ". ";
 			String statusDescription = CayentaXmlUtils.getReplyStatusDescription(replyTypeName, replyElement);
-			statusDescription = (statusDescription == null ? statusDescriptionPrefix : statusDescriptionPrefix + statusDescription + ".");
+			statusDescription = (statusDescription == null ? statusDescriptionPrefix : statusDescriptionPrefix 
+			    + statusDescription + ".");
 			
-			log.debug("Reply contains system error status: " + statusDescription + ": " + xmlOutputter.outputString(replyElement));
+			log.debug("Reply contains system error status: " + statusDescription + ": " 
+			+ xmlOutputter.outputString(replyElement));
 			throw new CayentaRequestException("Reply contains system error status.");
 		}
 		
@@ -188,16 +195,17 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 			
 			String statusDescriptionPrefix = "Function failure. STATUS = " + replyFunctionStatus + ". ";
 			String statusDescription = CayentaXmlUtils.getReplyFunctionStatusDescription(replyTypeName, replyElement);
-			statusDescription = (statusDescription == null ? statusDescriptionPrefix : statusDescriptionPrefix + statusDescription + ".");
+			statusDescription = (statusDescription == null ? statusDescriptionPrefix : statusDescriptionPrefix 
+			    + statusDescription + ".");
 
-			log.debug("Reply contains function error status: " + statusDescription + ": " + xmlOutputter.outputString(replyElement));
+			log.debug("Reply contains function error status: " + statusDescription + ": " 
+			+ xmlOutputter.outputString(replyElement));
 			throw new CayentaRequestException("Reply contains function error status.");
 		}
 	}
 	
 	// DO POST
 	private String doRequestPost(Element requestElement) throws CayentaRequestException {
-		
 		try {
 			log.debug("Sending request: " + xmlOutputter.outputString(requestElement));
 			String value = xmlOutputter.outputString(requestElement);
@@ -206,11 +214,15 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 			int port = configurationSource.getRequiredInteger("CAYENTA_API_SERVER_PORT");
 			String userName = configurationSource.getRequiredString("CAYENTA_API_SERVER_USERNAME");
 			String password = configurationSource.getRequiredString("CAYENTA_API_SERVER_PASSWORD");
-			SimpleHttpPostService postService = simpleHttpPostServiceFactory.getSimpleHttpPostService(url, port, userName, password);
+			SimpleHttpPostService postService = 
+			        simpleHttpPostServiceFactory.getSimpleHttpPostService(url, port, userName, password);
 			
 			String resp = postService.postValue(postElementName, value);
 			log.debug("Recieved response: " + resp);
 			return resp;
+		} catch (HttpException e) {
+			log.debug("Unable to communicate with Cayenta API server due to HttpException.", e);
+			throw new CayentaRequestException("Unable to communicate with Cayenta API server.", e);
 		} catch (IOException e) {
 			log.debug("Unable to communicate with Cayenta API server due to IOException.", e);
 			throw new CayentaRequestException("Unable to communicate with Cayenta API server.", e);

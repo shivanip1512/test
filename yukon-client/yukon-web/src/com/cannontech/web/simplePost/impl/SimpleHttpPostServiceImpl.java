@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
@@ -19,6 +21,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+
 import com.cannontech.web.simplePost.SimpleHttpPostService;
 
 public class SimpleHttpPostServiceImpl implements SimpleHttpPostService {
@@ -37,7 +40,8 @@ public class SimpleHttpPostServiceImpl implements SimpleHttpPostService {
 		this.password = password;
 	}
 
-	public String postValue(String name, String value) throws IOException {
+	@Override
+    public String postValue(String name, String value) throws IOException,HttpException {
 		HttpPost post = null;
 		String response = "";
 		CloseableHttpClient httpClient = null;

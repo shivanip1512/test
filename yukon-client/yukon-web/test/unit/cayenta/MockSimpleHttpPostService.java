@@ -3,8 +3,8 @@ package unit.cayenta;
 import java.io.IOException;
 import java.io.StringWriter;
 
-
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpException;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.springframework.core.io.ByteArrayResource;
@@ -29,7 +29,7 @@ class MockSimpleHttpPostService implements SimpleHttpPostService {
 	// Receive a request, parse out the request type and send an example response back.
 	// In some cases, the meter number in the request is used to indicate that some special response should be returned.
 	@Override
-	public String postValue(String name, String value) throws IOException {
+	public String postValue(String name, String value) throws IOException, HttpException {
 		
 		String response = "";
 		String meterNumber = "";
@@ -69,14 +69,17 @@ class MockSimpleHttpPostService implements SimpleHttpPostService {
 				}
 			}
 			
-		// these exceptions are not part of test, they are just to cover the operations performed to parse the request and send a mock response back
-		// code within this try should be kept error-free ;)
+		// these exceptions are not part of test, they are just to cover the operations performed to parse 
+		// the request and send a mock response back code within this try should be kept error-free ;)
 		} catch (IOException e) {
 		} catch (JDOMException e) {
 		} catch (CayentaRequestException e) {
 		}
 		
-		if (HTTP_IO_FAILURE.equals(meterNumber) || HTTP_FAILURE.equals(meterNumber)) {
+		// mock http errors
+		if (HTTP_FAILURE.equals(meterNumber)) {
+			throw new HttpException("");
+		} else if(HTTP_IO_FAILURE.equals(meterNumber)) {
 			throw new IOException("");
 		}
 		

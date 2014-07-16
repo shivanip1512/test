@@ -26,7 +26,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.Maps;
 
-
 public class UrlDialerFactory implements DialerFactory {
     private static final Logger log = YukonLogManager.getLogger(UrlDialerFactory.class);
 
@@ -41,23 +40,25 @@ public class UrlDialerFactory implements DialerFactory {
         int retryCount = configurationSource.getInteger("IVR_URL_DIALER_RETRY_COUNT", 3);
         int retryDelayMs = configurationSource.getInteger("IVR_URL_DIALER_RETRY_DELAY_MS", 4000);
         int postCallSleepMs = configurationSource.getInteger("IVR_URL_DIALER_POST_CALL_SLEEP_MS", 4000);
-        
+
         // increment retryCount by one to get the "try" count
-        return new Dialer(retryDelayMs, retryCount+1, postCallSleepMs) {
+        return new Dialer(retryDelayMs, retryCount + 1, postCallSleepMs) {
 
             @Override
             protected void dialCall(Call call) {
                 // get configuration from role properties
-                final String urlTemplate = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.IVR_URL_DIALER_TEMPLATE, ecUser);
+                final String urlTemplate =
+                    rolePropertyDao.getPropertyStringValue(YukonRoleProperty.IVR_URL_DIALER_TEMPLATE, ecUser);
                 log.debug("template: " + urlTemplate);
-                
+
                 final int callTimeoutSeconds = globalSettingDao.getInteger(GlobalSettingType.CALL_RESPONSE_TIMEOUT);
                 log.debug("callTimeoutSeconds: " + callTimeoutSeconds);
-                
+
                 final String dialPrefix = globalSettingDao.getString(GlobalSettingType.CALL_PREFIX);
                 log.debug("dialPrefix: " + dialPrefix);
-                
-                final String successMatcherStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.IVR_URL_DIALER_SUCCESS_MATCHER, ecUser);
+
+                final String successMatcherStr =
+                    rolePropertyDao.getPropertyStringValue(YukonRoleProperty.IVR_URL_DIALER_SUCCESS_MATCHER, ecUser);
                 Pattern successPattern;
                 try {
                     successPattern = Pattern.compile(successMatcherStr);
@@ -67,23 +68,27 @@ public class UrlDialerFactory implements DialerFactory {
                 log.debug("success pattern: " + successPattern);
 
                 call.newAttempt();
-                Map<String,String> callParameters = Maps.newHashMap();
+                Map<String, String> callParameters = Maps.newHashMap();
                 callParameters.putAll(call.getCallParameters());
                 String phoneNumber = dialPrefix + call.getNumber().getPhoneNumber();
                 callParameters.put("PHONE_NUMBER", phoneNumber);
-                
+
                 SimpleTemplateProcessor templateProcessor = new SimpleTemplateProcessor();
                 String urlStr = templateProcessor.process(urlTemplate, callParameters);
                 log.debug("Initiating call: " + urlStr);
 
                 CloseableHttpClient httpClient = null;
                 try {
-                	
-                	httpClient = HttpClients.custom().build();                 
-                	HttpGet method = new HttpGet(urlStr);
-                	HttpResponse httpResponse =  httpClient.execute(method);
-                    
-                	InputStream inputStream = httpResponse.getEntity().getContent();
+
+                    httpClient = HttpClients.custom().build();
+                    HttpGet method = new HttpGet(urlStr);
+                    HttpResponse httpResponse = httpClient.execute(method);
+                    InputStream inputStream = null;
+                    if (null != httpResponse.getEntity()) {
+                        inputStream = httpResponse.getEntity().getContent();
+                    } else {
+                        log.error("Response is empty.Cannot fetch content");
+                    }
                     byte[] inputBuffer = new byte[2000];
                     int bytesRead = inputStream.read(inputBuffer);
                     String response;
@@ -93,36 +98,34 @@ public class UrlDialerFactory implements DialerFactory {
                     } else {
                         response = new String(inputBuffer, 0, bytesRead, Charset.forName("UTF-8"));
                     }
-                    
-                    
+
                     log.debug("URL response: " + StringUtils.left(response, 200));
                     log.trace(httpResponse.getAllHeaders());
                     log.trace(response);
 
                     method.releaseConnection();
-                    
+
                     Matcher successMatcher = successPattern.matcher(response);
                     if (!successMatcher.matches()) {
                         call.handleConnectionFailed("URL did not match success: " + response);
                         return;
                     }
-                    
+
                     // wait for external signal for line state
                     boolean normalDisconnect = call.waitForLineToClear(callTimeoutSeconds);
                     if (!normalDisconnect) {
                         log.info("call timed out before disconnect: " + this);
                     }
-                    
+
                 } catch (Exception e) {
                     log.debug("Unable to initiate call", e);
                     call.handleConnectionFailed("unknown dialing exception: " + e.getMessage());
-                }
-                finally{
-                	try {
-						httpClient.close();
-					} catch (IOException e) {
-					    log.error(e.getMessage());
-					}
+                } finally {
+                    try {
+                        httpClient.close();
+                    } catch (IOException e) {
+                        log.error(e.getMessage());
+                    }
                 }
             }
 
@@ -130,7 +133,7 @@ public class UrlDialerFactory implements DialerFactory {
             public String toString() {
                 return "UrlDialer";
             }
-            
+
         };
     }
 }
