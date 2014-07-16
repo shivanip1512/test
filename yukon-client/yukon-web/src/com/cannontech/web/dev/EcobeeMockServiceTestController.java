@@ -28,8 +28,7 @@ public class EcobeeMockServiceTestController {
 			"INVALID_SELECTION(9)", "INVALID_PAGE(10)", "FUNCTION_ERROR(11)",
 			"POST_NOT_SUPPORTED(12)", "GET_NOT_SUPPORTED(13)",
 			"AUTHENTICATION_EXPIRED(14)", "DUPLICATE_DATA_VIOLATION(15)");
-	@Autowired
-	private EcobeeDataConfiguration ecobeeDataConfiguration;
+	@Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
 
 	@RequestMapping("/viewBase")
 	public String viewBase(ModelMap model) {
