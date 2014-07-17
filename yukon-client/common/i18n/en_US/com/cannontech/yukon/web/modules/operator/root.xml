@@ -48,7 +48,7 @@
     <entry key="yukon.web.modules.operator.gateways.versionConflicts">Version Conflicts</entry>
     <entry key="yukon.web.modules.operator.gateways.appMode">Application Mode</entry>
     <entry key="yukon.web.modules.operator.gateways.appMode.normal">Normal</entry>
-    <entry key="yukon.web.modules.operator.gateways.appMode.failsafe">Failsafe</entry>
+    <entry key="yukon.web.modules.operator.gateways.appMode.failsafe">Fail-Safe</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType">Connection Type</entry>
     <entry key="yukon.web.modules.operator.gateways.ipaddress">IP Address</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionStatus">Connection Status</entry>
