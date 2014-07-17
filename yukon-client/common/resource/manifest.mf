@@ -85,4 +85,3 @@ Class-Path: ./
  jackson-annotations-2.2.3.jar 
  libthrift-0.9.0.jar 
  yukon-shared.jar 
- 
