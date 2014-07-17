@@ -6,6 +6,7 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -15,11 +16,15 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
+import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 
 public class HardwareValidator extends SimpleValidator<Hardware> {
     
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private HardwareTypeExtensionService hardwareTypeExtensionService;
     
     public HardwareValidator() {
@@ -29,9 +34,15 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
     @Override
     public void doValidation(Hardware hardware, Errors errors) {
         HardwareType hardwareType = hardware.getHardwareType();
+        HardwareConfigType hardwareTypeConfig = hardwareType.getHardwareConfigType();
+        EnergyCompanySetting currentSetting;
+        
 
         /* Set the type for */
         hardware.setHardwareType(hardwareType);
+        int energyCompanyId = hardware.getEnergyCompanyId();
+        currentSetting = ecSettingDao.getSetting(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,energyCompanyId);
+
         
         //This will validate any hardware extensions. Ex. Zigbee devices
         hardwareTypeExtensionService.validateDevice(hardware, errors);
@@ -41,7 +52,7 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
             if (StringUtils.isBlank(hardware.getSerialNumber())) {
                 errors.rejectValue("serialNumber", "yukon.web.error.required");
             } else {
-                validateSN(hardware.getSerialNumber(), errors, hardwareType, "serialNumber");
+                validateSN(hardware.getSerialNumber(), errors, hardwareTypeConfig, "serialNumber",currentSetting);
             }
         } else if (hardwareType == HardwareType.NON_YUKON_METER) {
             /* Meter Number */
@@ -137,28 +148,46 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
         }
     }
     
-    private void validateSN(String sn, Errors errors, HardwareType type, String path) {
-        if (type == HardwareType.LCR_3102) {
-            /* For LCR 3102's the serial number must be a valid integer since it has to match the 
-             * address in DeviceCarrierSettings which is a varchar(18) */
+    private void validateSN(String sn, Errors errors, HardwareConfigType  type, String path, EnergyCompanySetting currentSetting) {
+        
+       String settingValue = currentSetting.getValue().toString();
+
+       /*if the serial number setting for the particular energy company is numeric*/
+       if(settingValue == "NUMERIC")
+       {
+    	   /* For all hardwares with the config type as Expresscom the serial number must be a valid integer since it has to match the 
+            * address in DeviceCarrierSettings which is a varchar(18) * and must be less than  2147483647 */
+        if (type == HardwareConfigType.EXPRESSCOM) {
+           
             if (!StringUtils.isNumeric(sn)) {
                 errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
             } else {
                try {
                    Integer.parseInt(sn);
                } catch(NumberFormatException e) {
-                   errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.tooLong.twoWay");
+                   errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.tooLong.deviceserialNumber");
                }
             }
-        } else {
-            /* Not a LCR 3102 so serial number should only contain alpha numeric characters and
+        } else
+        {   /*For all Non-ExpressCom the serial number length must be less than 30 and has to be numeric*/
+            if (!StringUtils.isNumeric(sn)) {
+                errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
+            }
+            else
+            {
+                YukonValidationUtils.checkExceedsMaxLength(errors, path, sn, 30);  
+            }
+        }
+        /*If the energy company setting is alphanumeric */
+       }else{
+            /* Not an ExpressCom device so serial number should contain  only alpha numeric characters and
              * be less than 30 characters long. */
             if (!StringUtils.isAlphanumeric(sn)) {
                 errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
             } else {
                 YukonValidationUtils.checkExceedsMaxLength(errors, path, sn, 30);
             }
-        }
-    }
+         }
+       } 
+    }  
     
-}

@@ -170,9 +170,10 @@
     <entry key="yukon.web.modules.operator.hardware.error.unavailable.twoWayDeviceName">Yukon device with that name already exists.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.twoWayDeviceName">Yukon device name is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.unknown.twoWayDeviceName">Unable to create new yukon device.</entry>
-    <entry key="yukon.web.modules.operator.hardware.error.nonNumericSerialNumber.serialNumber">Two Way LCR serial number must be numeric.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.nonNumericSerialNumber">The Serial number must for the device must be numeric.</entry>
     
-    <entry key="yukon.web.modules.operator.hardware.error.toolong.serialNumber">The serial number is too long.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.tooLong.deviceserialNumber"> The Serial Number for the device is too Long</entry>
+
     <entry key="yukon.web.modules.operator.hardware.error.unavailable.serialNumber">This serial number is already in use.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.unavailable.rf.serialNumber">Serial number already in use by another RF device.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.invalid.numeric.serialNumber">Serial numbers can only contain numeric characters.</entry>
