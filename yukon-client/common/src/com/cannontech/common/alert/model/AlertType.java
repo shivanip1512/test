@@ -11,11 +11,13 @@ public enum AlertType implements DisplayableEnum {
     GROUP_METER_READ_COMPLETION,
     OUTAGE_PROCESSING_READ_LOGS_COMPLETION,
     TAMPER_FLAG_PROCESSING_READ_INTERNAL_FLAGS_COMPLETION,
-    DISCONNECT_COMPLETION;
+    DISCONNECT_COMPLETION,
+    DEMAND_RESET_COMPLETION;
     ;
     
     private final static String keyPrefix = "yukon.web.alerts.types.";
 
+    @Override
     public String getFormatKey() {
         return keyPrefix + name();
     }

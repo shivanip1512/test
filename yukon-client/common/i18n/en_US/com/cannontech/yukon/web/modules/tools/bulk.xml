@@ -126,7 +126,9 @@
     <entry key="yukon.common.device.bulk.collectionActions.routeLocateLabel">Locate Route</entry>
     <entry key="yukon.common.device.bulk.collectionActions.routeLocateDescription">Find route that devices respond on.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.disconnectLabel">Disconnect</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.disconnectDescription">Disconnect devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.disconnectDescription">Control disconnect of multiple devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.demandResetLabel">Demand Reset</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.demandResetDescription">Send demand reset to multiple devices.</entry>
 
     <entry key="yukon.common.device.bulk.collectionActions.header.reporting">Reporting</entry>
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel">Device Report</entry>
@@ -968,5 +970,44 @@
     <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.failed">Failed</entry>
     <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.startTime">Start Time</entry>
     <entry key="yukon.web.modules.tools.bulk.disconnect.results.recent.notAttempted">Not Attempted</entry>
-        
+    
+    <!-- Demand Reset -->
+    <!-- ******************************************************************************************************************** -->
+    <!-- ******************************************************************************************************************** -->
+    
+    <entry key="yukon.web.modules.tools.bulk.demandReset.CONFIRMED">Confirmed Reset</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.UNCONFIRMED">Unconfirmed Reset</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.UNSUPPORTED">Unsupported</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.FAILED">Failed</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.CANCELED">Canceled</entry>
+    
+    <!-- /bulk/demand/reset/resultDetail.jsp -->
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.pageName">Demand Reset</entry> 
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.note.label">Note:</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.note.text"><![CDATA[
+        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>
+        You may view the progress on <a href="{0}">Recent Demand Reset Results</a> page. The demand will be reset for the selected devices. <br>
+        Verification of reset will start immediately following the demand reset command being sent out. 
+        Verification requires the demand reset point to exist for each device.<br>
+    ]]></entry>  
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.pageName">Recent Demand Reset Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.progressLabel">Progress</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.newOperationAll">Choose New Operation For All Devices</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.newOperation">Choose New Operation For These Devices</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.initiatedResults">View Results Log</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.verificationResults">View Verify Results Log</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.view">View Results:</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.view.failed">View Failure Reasons</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.error">Error: {exceptionReason}</entry>
+    
+    <!-- /bulk/demand/reset/results.jsp -->
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.pageName">Demand Reset Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.crumbTitle">Recent Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.devices">Devices</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.status">Status</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.success">Success</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.failed">Failed</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.notAttempted">Not Attempted</entry>
+      
 </properties>

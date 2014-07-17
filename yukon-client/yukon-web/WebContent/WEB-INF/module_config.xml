@@ -401,6 +401,11 @@
                       <page name="bulk.arm.results.recent" type="BASIC"/>
                     </pages>
                   </page>
+                  <page name="bulk.demandReset.results" type="BASIC">
+                    <pages>
+                      <page name="bulk.demandReset.results.recent" type="BASIC"/>
+                    </pages>
+                  </page>
                 </pages>
               </page>
             </pages>

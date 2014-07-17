@@ -22,6 +22,8 @@
         <cti:msg var="routeLocateDescription" key="yukon.common.device.bulk.collectionActions.routeLocateDescription"/>
         <cti:msg var="disconnectLabel" key="yukon.common.device.bulk.collectionActions.disconnectLabel"/>
         <cti:msg var="disconnectDescription" key="yukon.common.device.bulk.collectionActions.disconnectDescription"/>
+        <cti:msg var="demandResetLabel" key="yukon.common.device.bulk.collectionActions.demandResetLabel"/>
+        <cti:msg var="demandResetDescription" key="yukon.common.device.bulk.collectionActions.demandResetDescription"/>
 
         <cti:msg var="headerReporting" key="yukon.common.device.bulk.collectionActions.header.reporting"/>
         <cti:msg var="deviceCollectionReportLabel" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel"/>
@@ -72,6 +74,7 @@
         <cti:url var="readAttributeUrl" value="/group/groupMeterRead/homeCollection"/>
         <cti:url var="routeLocateUrl" value="/bulk/routeLocate/home"/>
         <cti:url var="disconnectUrl" value="/bulk/disconnect/home"/>
+        <cti:url var="demandResetUrl" value="/bulk/demand-reset/action"/>
         
         <cti:url var="assignConfigUrl" value="/bulk/config/assignConfig"/>
         <cti:url var="unassignConfigUrl" value="/bulk/config/unassignConfig"/>
@@ -160,6 +163,14 @@
                                     description="${disconnectDescription}" action="${disconnectUrl}"
                                     deviceCollection="${deviceCollection}" />
                             </cti:checkRolesAndProperties>
+                            
+                            <%-- DEMAND RESET--%>
+                            <cti:checkRolesAndProperties value="GROUP_DEMAND_RESET">
+                                <tags:collectionActionTr buttonValue="${demandResetLabel}"
+                                    description="${demandResetDescription}" action="${demandResetUrl}"
+                                    deviceCollection="${deviceCollection}" />
+                            </cti:checkRolesAndProperties>
+ 
                         </table>
                     </tags:sectionContainer>
                 </cti:dataGridCell>
