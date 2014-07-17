@@ -30,7 +30,7 @@
                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
                <attribute name="Permissions" value="all-permissions"/>
            </manifest>
-           <fileset dir="src/main/*"/>
+           <fileset dir="src/main/resources"/>
        </jar>
    </target>
 
