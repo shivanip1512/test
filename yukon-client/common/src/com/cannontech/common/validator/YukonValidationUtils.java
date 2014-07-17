@@ -24,6 +24,7 @@ public class YukonValidationUtils extends ValidationUtils {
     public static final String BASIC_URL_PATH_REGEX = "\\A" + BASIC_URL_PATH_FRAGMENT + "\\Z";
     public static final String BASIC_RESTFUL_URL_REGEX = "\\Ahttps?\\://([a-zA-Z0-9_\\-]+\\.)*[a-zA-Z0-9]+(\\:[0-9]+)?"
         + BASIC_URL_PATH_FRAGMENT + "\\Z";
+    public static final Double MAX_PERMITTED_DOUBLE_VALUE = 999999999.99999;
 
     public static boolean isBasicUrl(String input) {
         if (input == null) {
@@ -80,7 +81,7 @@ public class YukonValidationUtils extends ValidationUtils {
     }
    
     public static boolean checkIsValidDouble(Errors errors, String field, Double fieldValue) {
-        if (fieldValue == null || Double.isNaN(fieldValue) || Double.isInfinite(fieldValue)) {
+        if (fieldValue == null || Double.isNaN(fieldValue) || fieldValue > MAX_PERMITTED_DOUBLE_VALUE) {
             errors.rejectValue(field, "yukon.web.error.notValidNumber");
             return false;
         }
