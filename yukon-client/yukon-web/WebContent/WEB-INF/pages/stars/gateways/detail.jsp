@@ -57,6 +57,10 @@
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         
+        <div class="buffered clearfix">
+            <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" classes="fr"/>
+        </div>
+        
         <tags:sectionContainer2 nameKey="comms" styleClass="stacked">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".connectionType">TCP/IP</tags:nameValue2>
@@ -176,10 +180,6 @@
             </table>
         </div>
     </tags:sectionContainer2>
-</div>
-
-<div class="page-action-area">
-    <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup"/>
 </div>
 
 <cti:includeScript link="OPEN_LAYERS"/>
