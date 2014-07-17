@@ -54,7 +54,7 @@ public interface CommandRequestExecutor<T> {
     public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user, boolean updateExecutionStatus);
     
     public CommandRequestExecutionTemplate<T> getExecutionTemplate(DeviceRequestType type, final LiteYukonUser user);
-
+    
     /*
      * This method is used to execute commands. CommandRequestExecution should be created prior to calling this method.
      */
@@ -63,4 +63,10 @@ public interface CommandRequestExecutor<T> {
                                                               CommandRequestExecutionParameterDto parameterDto,
                                                               CommandRequestExecution execution);
 
+ 
+    /**
+     * Creates a template from CommandRequestExecution and executes commands
+     */
+    void createTemplateAndExecute(CommandRequestExecution execution, CommandCompletionCallback<? super T> callback,
+                                  List<T> commands, LiteYukonUser user);
 }

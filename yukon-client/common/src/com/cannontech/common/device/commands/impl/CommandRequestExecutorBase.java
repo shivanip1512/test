@@ -91,16 +91,16 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 
     private Set<Permission> loggableCommandPermissions = new HashSet<>();
 
-    private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new ConcurrentHashMap<>();
+    private final Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new ConcurrentHashMap<>();
 
     // COMMAND RESULT MESSAGE LISTENER
     private final class CommandResultMessageListener implements MessageListener {
         private final CommandCompletionCallback<? super T> callback;
-        private Map<Long, T> pendingUserMessageIds;
-        private int groupMessageId;
+        private final Map<Long, T> pendingUserMessageIds;
+        private final int groupMessageId;
         private volatile boolean canceled = false;
-        private CountDownLatch commandsAreWritingLatch = new CountDownLatch(1);
-        private CommandRequestExecution commandRequestExecution;
+        private final CountDownLatch commandsAreWritingLatch = new CountDownLatch(1);
+        private final CommandRequestExecution commandRequestExecution;
 
         private CommandResultMessageListener(List<RequestHolder> requests,
                 CommandCompletionCallback<? super T> callback,
@@ -530,9 +530,26 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         return new CommandRequestExecutionTemplateImpl(parameterDto);
     }
     
+    @Override
+    public void createTemplateAndExecute(CommandRequestExecution execution,
+                                         CommandCompletionCallback<? super T> callback,
+                                         List<T> commands,
+                                         final LiteYukonUser user) {
+
+        CommandRequestExecutionParameterDto parameterDto =
+            new CommandRequestExecutionParameterDto(new CommandRequestExecutionContextId(execution.getContextId()),
+                                                    execution.getCommandRequestExecutionType(),
+                                                    user);
+        int priority = CommandRequestExecutionDefaults.getPriority(execution.getCommandRequestExecutionType());
+        boolean noqueue = CommandRequestExecutionDefaults.isNoqueue(execution.getCommandRequestExecutionType());
+        parameterDto = parameterDto.withPriority(priority).withNoqueue(noqueue);
+        CommandRequestExecutionTemplate<T> template = new CommandRequestExecutionTemplateImpl(parameterDto);
+        template.execute(commands, callback, execution);
+    }
+    
     private final class CommandRequestExecutionTemplateImpl implements CommandRequestExecutionTemplate<T> {
         
-        private CommandRequestExecutionParameterDto parameterDto;
+        private final CommandRequestExecutionParameterDto parameterDto;
 
         private CommandRequestExecutionTemplateImpl(CommandRequestExecutionParameterDto parameterDto) {
             this.parameterDto = parameterDto;

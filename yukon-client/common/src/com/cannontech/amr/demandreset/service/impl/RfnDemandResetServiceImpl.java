@@ -1,9 +1,15 @@
 package com.cannontech.amr.demandreset.service.impl;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,32 +32,31 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReply;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReplyType;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetRequest;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.RfnDemandResetState;
 import com.google.common.base.Predicate;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -69,46 +74,138 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PointDao pointDao;
+    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
 
     private ScheduledExecutorService executor = null;
     private RequestReplyTemplate<RfnMeterDemandResetReply> qrTemplate;
     private Duration verificationTimeout;
 
-    private static class DeviceVerificationInfo {
+    class DeviceVerificationInfo {
         DemandResetCallback callback;
         Instant whenRequested;
-        SimpleDevice device;
+        CommandRequestExecution verificationExecution;
+        Map<Integer, SimpleDevice> pointToDevice = new ConcurrentHashMap<>();  
 
-        DeviceVerificationInfo(DemandResetCallback callback, Instant whenRequested,
-                                      SimpleDevice device) {
+        DeviceVerificationInfo(DemandResetCallback callback, CommandRequestExecution verificationExecution) {
             this.callback = callback;
-            this.whenRequested = whenRequested;
-            this.device = device;
+            this.whenRequested = new Instant();
+            this.verificationExecution = verificationExecution;
+        }
+        
+        void addDevice(int pointId, SimpleDevice device){
+            pointToDevice.put(pointId, device);
+        }
+        
+        SimpleDevice getDevice(int pointId){
+            return pointToDevice.get(pointId);
+        }
+        
+        void removeDevice(int pointId){
+            pointToDevice.remove(pointId);
+        }
+        
+        // returns true if no devices left to verify
+        boolean isAllVerified() {
+            return pointToDevice.isEmpty();
+        }
+        
+        Set<Integer> getPointIds(){
+            return pointToDevice.keySet();
+        }
+
+        private RfnDemandResetServiceImpl getOuterType() {
+            return RfnDemandResetServiceImpl.this;
+        }
+        
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + ((whenRequested == null) ? 0 : whenRequested.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            DeviceVerificationInfo other = (DeviceVerificationInfo) obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            if (whenRequested == null) {
+                if (other.whenRequested != null)
+                    return false;
+            } else if (!whenRequested.equals(other.whenRequested))
+                return false;
+            return true;
         }
     }
-    // pointId -> DeviceAwaitingVerification
-    private final Map<Integer, DeviceVerificationInfo> devicesAwaitingVerification =
-            Maps.newHashMap();
+    
+    private final Set<DeviceVerificationInfo> devicesAwaitingVerification = Collections
+        .synchronizedSet(new HashSet<DeviceVerificationInfo>());
 
     private class TimeoutChecker implements Runnable {
         @Override
         public void run() {
-            log.debug("checking for timed out responses");
             synchronized (devicesAwaitingVerification) {
                 Instant now = new Instant();
-                for (Map.Entry<Integer, DeviceVerificationInfo> entry : devicesAwaitingVerification.entrySet()) {
-                    DeviceVerificationInfo dvi = entry.getValue();
-                    LogHelper.debug(log, "checking device %s; requested at %s", dvi.device,
-                        dvi.whenRequested);
-                    if (dvi.whenRequested.plus(verificationTimeout).isBefore(now)) {
-                        LogHelper.debug(log, "timed out wating for response for %s", dvi.device);
-                        Integer pointId = entry.getKey();
-                        dvi.callback.cannotVerify(dvi.device,
-                            "timed out waiting for point from Network Manager");
-                        devicesAwaitingVerification.remove(pointId);
-                        asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
-                            ImmutableSet.of(pointId));
+                try {
+                    Iterator<DeviceVerificationInfo> infoIterator= devicesAwaitingVerification.iterator();
+                    while (infoIterator.hasNext()) {
+                        DeviceVerificationInfo verificationInfo = infoIterator.next();
+                        DemandResetCallback callback = verificationInfo.callback;
+                        Instant timeout = verificationInfo.whenRequested.plus(verificationTimeout);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Requested on:" + verificationInfo.whenRequested.toDate() + " Devices:"
+                                      + verificationInfo.pointToDevice.values());
+                            log.debug("Timeout on:" + timeout.toDate() + " Now:" + now.toDate());
+                        }
+                        if (timeout.isBefore(now)) {
+                            Iterator<Entry<Integer, SimpleDevice>> deviceIterator =
+                                verificationInfo.pointToDevice.entrySet().iterator();
+                            while (deviceIterator.hasNext()) {
+                                Entry<Integer, SimpleDevice> entry = deviceIterator.next();
+                                SimpleDevice device = entry.getValue();
+                                int pointId = entry.getKey();
+                                if (log.isDebugEnabled()) {
+                                    log.debug(device + " Timed out waiting for point from Network Manager.");
+                                }
+                                callback.cannotVerify(device, "Timed out waiting for point from Network Manager.");
+                                deviceIterator.remove();
+                                asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
+                                                                              ImmutableSet.of(pointId));
+                                DeviceErrorDescription error =
+                                    deviceErrorTranslatorDao
+                                        .translateErrorCode(RfnMeterDemandResetReplyType.TIMEOUT
+                                            .getErrorCode());
+                                saveCommandRequestExecutionResult(verificationInfo.verificationExecution,
+                                                                  device.getDeviceId(),
+                                                                  error.getErrorCode());
+                            }
+
+                        }
+                        if (verificationInfo.isAllVerified()) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Requested on " + verificationInfo.whenRequested.toDate()
+                                          + " TimeoutChecker: All devices verified");
+                            }
+                            infoIterator.remove();
+                            log.debug("RFN Completed");
+                            callback.complete();
+                        }
                     }
+                } catch (Exception e) {
+                    // Exception in this method with cause the TimeoutChecker to be terminated.
+                    // Example: synchronization problem, if exception is ignored, on the next run the
+                    // devices will timeout and the code will work correctly.
+                    // The exception should not happen. To test: run demand reset on the same group
+                    // of devices multiple times with a couple of seconds between each run
+                    log.error(e);
                 }
             }
         }
@@ -119,8 +216,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         qrTemplate = new RequestReplyTemplate<RfnMeterDemandResetReply>(
                 configurationName, configurationSource, connectionFactory, queueName, false);
         verificationTimeout = configurationSource.getDuration(configurationName
-            + "_VALIDATION_TIMEOUT", Duration.standardHours(26));
-        log.debug("verificationTimeout = " + verificationTimeout);
+            + "_VALIDATION_TIMEOUT", Duration.standardMinutes(1));
     }
 
     @Override
@@ -139,15 +235,37 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
 
         return Sets.filter(devices, predicate);
     }
+        
+    @Override
+    public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> paos){
+        List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
+        BiMap<SimpleDevice, LitePoint> deviceToPoint =
+            attributeService.getPoints(devices, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
+        return deviceToPoint.keySet();
+    }
 
     @Override
-    public void sendDemandReset(Set<? extends YukonPao> devices, final DemandResetCallback callback,
+    public void sendDemandReset(final CommandRequestExecution sendExecution, final CommandRequestExecution verificationExecution,
+                                final Set<? extends YukonPao> paos, final DemandResetCallback callback,
                                 LiteYukonUser user) {
-        LogHelper.debug(log, "sendDemandReset for %d device(s)", devices.size());
         Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao =
-                rfnDeviceDao.getRfnIdentifiersByPao(devices);
+                rfnDeviceDao.getRfnIdentifiersByPao(paos);
         final Map<SimpleDevice, SpecificDeviceErrorDescription> errors = Maps.newHashMap();
         final Map<RfnIdentifier, SimpleDevice> devicesByRfnMeterIdentifier = Maps.newHashMap();
+        List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
+        BiMap<SimpleDevice, LitePoint> deviceToPoint =
+            attributeService.getPoints(devices, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
+        
+        final Set<SimpleDevice> verifiableDevices = deviceToPoint.keySet();
+        Set<SimpleDevice> devicesWithoutPoint = Sets.difference(new HashSet<SimpleDevice>(devices), verifiableDevices);
+        
+        if(log.isDebugEnabled()){
+            log.error("Can't Verify:" + devicesWithoutPoint + " \"RF Demand Reset Status\" point is missing.");
+        }
+        for (YukonPao device : devicesWithoutPoint) {
+            callback.cannotVerify(new SimpleDevice(device), "\"RF Demand Reset Status\" point is missing.");
+        }
+        
         for (Map.Entry<? extends YukonPao, RfnIdentifier> entry : meterIdentifiersByPao.entrySet()) {
             YukonPao pao = entry.getKey();
             RfnIdentifier rfnMeterIdentifier = entry.getValue();
@@ -155,119 +273,187 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         }
 
         JmsReplyHandler<RfnMeterDemandResetReply> handler =
-                new JmsReplyHandler<RfnMeterDemandResetReply>() {
-            @Override
-            public void complete() {
-                callback.initiated(new Results(errors));
-            }
+            new JmsReplyHandler<RfnMeterDemandResetReply>() {
+                @Override
+                public void complete() {
+                    callback.initiated(new Results(paos, errors));
+                }
 
-            @Override
-            public Class<RfnMeterDemandResetReply> getExpectedType() {
-                return RfnMeterDemandResetReply.class;
-            }
+                @Override
+                public Class<RfnMeterDemandResetReply> getExpectedType() {
+                    return RfnMeterDemandResetReply.class;
+                }
 
-            @Override
-            public void handleException(Exception e) {
-                log.error("exception sending demand reset", e);
-            }
+                @Override
+                public void handleException(Exception e) {
+                    callback
+                        .processingExceptionOccured("There was an error sending the command demand reset command for RFN devices.");
 
-            @Override
-            public void handleReply(RfnMeterDemandResetReply statusReply) {
-                Map<RfnIdentifier, RfnMeterDemandResetReplyType> replyTypes = statusReply.getReplyTypes();
-                Collection<RfnIdentifier> rfnMeters = replyTypes.keySet();
-                for (RfnIdentifier rfnMeterIdentifier : rfnMeters) {
-                    RfnMeterDemandResetReplyType replyType = replyTypes.get(rfnMeterIdentifier);
-                    if (replyType != RfnMeterDemandResetReplyType.OK) {
-                        DeviceErrorDescription error =
-                                deviceErrorTranslatorDao.translateErrorCode(replyType.getErrorCode());
-                        SpecificDeviceErrorDescription deviceError =
-                                new SpecificDeviceErrorDescription(error, null);
+                }
+
+                @Override
+                public void handleReply(RfnMeterDemandResetReply statusReply) {
+                    Map<RfnIdentifier, RfnMeterDemandResetReplyType> replyTypes = statusReply.getReplyTypes();
+                    Collection<RfnIdentifier> rfnMeters = replyTypes.keySet();
+                    for (RfnIdentifier rfnMeterIdentifier : rfnMeters) {
+                        RfnMeterDemandResetReplyType replyType = replyTypes.get(rfnMeterIdentifier);
                         SimpleDevice device = devicesByRfnMeterIdentifier.get(rfnMeterIdentifier);
-                        errors.put(device, deviceError);
+                        if(log.isDebugEnabled()){
+                            log.debug(rfnMeterIdentifier+"=RfnMeterDemandResetReply: " + replyType);
+                        }
+                        if (replyType == RfnMeterDemandResetReplyType.OK) {
+                            saveCommandRequestExecutionResult(sendExecution, device.getDeviceId(), 0);
+                        } else {
+                            processError(device, replyType.getErrorCode());
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void handleTimeout() {
-                log.error("timed out waiting for RFN demand reset");
-                throw new RuntimeException("timed out waiting for RFN demand reset");
-            }
-        };
+                @Override
+                public void handleTimeout() {
+                    log.error("Timed out waiting for RFN demand reset");
+                }
 
-        List<PaoMultiPointIdentifier> paoMultipointIds =
-            attributeService.findPaoMultiPointIdentifiersForAttributes(devices,
-                    ImmutableSet.of(BuiltInAttribute.RF_DEMAND_RESET_STATUS)).getDevicesAndPoints();
+                /**
+                 * The demand reset command did not make it out. The first response is not
+                 * received from NM before timing out or ReplyType is not OK.
+                 * 
+                 * This method unregisters for point data, removes the device from the list of
+                 * devices
+                 * waiting for verification and creates an applicable error.
+                 */
+                private void processError(SimpleDevice device, int errorCode) {
 
-        // Add devices to list of ones we need to send out notifications for.
-        Instant now = new Instant();
-        // We can't verify devices which don't have a point.
-        Set<PaoIdentifier> devicesWithoutPoint =
-                Sets.newHashSet(Iterables.transform(devices,
-                        PaoUtils.getYukonPaoToPaoIdentifierFunction()));
-        synchronized (devicesAwaitingVerification) {
-            for (PaoMultiPointIdentifier paoMultiPointId : paoMultipointIds) {
-                YukonPao device = paoMultiPointId.getPao();
-                DeviceVerificationInfo dvi =
-                    new DeviceVerificationInfo(callback, now, new SimpleDevice(device));
-                // Should be a loop of one since we requested only one attribute.
-                for (PaoPointIdentifier paoPointIdentifier : paoMultiPointId.getPaoPointIdentifiers()) {
-                    try {
-                        devicesAwaitingVerification.put(pointDao.getPointId(paoPointIdentifier), dvi);
-                        devicesWithoutPoint.remove(device.getPaoIdentifier());
-                    } catch (NotFoundException e) {
-                        // devices without a point can't be verified
-                        log.trace("failed to find a point for device " + dvi.device, e);
+                    DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(errorCode);
+                    SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(error, null);
+                    saveCommandRequestExecutionResult(sendExecution, device.getDeviceId(), error.getErrorCode());
+                    // check if this device needs to be verified
+                    if (verifiableDevices.contains(device)) {
+                        synchronized (devicesAwaitingVerification) {
+                            Iterator<DeviceVerificationInfo> infoIterator = devicesAwaitingVerification.iterator();
+                            while (infoIterator.hasNext()) {
+                                DeviceVerificationInfo verificationInfo = infoIterator.next();
+                                Iterator<Entry<Integer, SimpleDevice>> deviceIterator =
+                                    verificationInfo.pointToDevice.entrySet().iterator();
+                                while (deviceIterator.hasNext()) {
+                                    Entry<Integer, SimpleDevice> entry = deviceIterator.next();
+                                    if (entry.getValue() == device) {
+                                        int pointId = entry.getKey();
+                                        deviceIterator.remove();
+                                        asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
+                                                                                      ImmutableSet.of(pointId));
+                                        saveCommandRequestExecutionResult(verificationExecution,
+                                                                          device.getDeviceId(),
+                                                                          error.getErrorCode());
+                                        errors.put(device, deviceError);
+                                    }
+
+                                }
+                                if (verificationInfo.isAllVerified()) {
+                                    log.debug("TimeoutChecker: All devices verified.");
+                                    infoIterator.remove();
+                                    log.debug("RFN Completed");
+                                    callback.complete();
+                                }
+                            }
+                        }
                     }
                 }
-            }
-            asyncDynamicDataSource.registerForPointData(this, devicesAwaitingVerification.keySet());
-        }
-
-        for (YukonPao device : devicesWithoutPoint) {
-            callback.cannotVerify(new SimpleDevice(device), "\"RF Demand Reset Status\" point missing");
-        }
-
+            };
+                    
         // The set returned by keySet isn't serializable, so we have to make a copy.
         Set<RfnIdentifier> meterIds = Sets.newHashSet(devicesByRfnMeterIdentifier.keySet());
         qrTemplate.send(new RfnMeterDemandResetRequest(meterIds), handler);
-
-        setupPeriodicCheck();
+        
+        if (!verifiableDevices.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("Devices awaiting verification:" + verifiableDevices);
+            }
+            DeviceVerificationInfo deviceVerificationInfo =
+                new DeviceVerificationInfo(callback, verificationExecution);
+            for (SimpleDevice device : verifiableDevices) {
+                deviceVerificationInfo.addDevice(deviceToPoint.get(device).getLiteID(), device);
+            }
+            devicesAwaitingVerification.add(deviceVerificationInfo);
+            asyncDynamicDataSource.registerForPointData(this, deviceVerificationInfo.getPointIds());
+            setupPeriodicCheck();
+        }
     }
 
     private synchronized void setupPeriodicCheck() {
         // Periodically check for expired devices.
         if (executor == null) {
-            LogHelper.debug(log, "inializing periodic timeout checks; verificationTimeout = %s",
-                verificationTimeout);
             executor = Executors.newSingleThreadScheduledExecutor();
             // Since we're starting the executor when we get our first demand reset request, we
             // can wait the full timeout before we check the first time.  After that, we need to
             // check more often.
-            executor.scheduleWithFixedDelay(new TimeoutChecker(),
-                verificationTimeout.getStandardMinutes(), 5, TimeUnit.MINUTES);
+            executor.scheduleWithFixedDelay(new TimeoutChecker(), 1, 1, TimeUnit.MINUTES);
         }
     }
 
     @Override
     public void pointDataReceived(PointValueQualityHolder pointData) {
         synchronized (devicesAwaitingVerification) {
-            Integer pointId = pointData.getId();
-            DeviceVerificationInfo dvi = devicesAwaitingVerification.get(pointId);
-            if (dvi != null) {
-                LogHelper.debug(log, "pointDataReceived: %s", pointData);
-                Instant pointDataDate = new Instant(pointData.getPointDataTimeStamp());
-                RfnDemandResetState resetState = RfnDemandResetState.values()[(int) pointData.getValue()];
-                if (pointDataDate.isAfter(dvi.whenRequested) && resetState == RfnDemandResetState.SUCCESS) {
-                    dvi.callback.verified(dvi.device);
-                } else {
-                    log.error("failed to reset demand for device " + dvi.device
-                        + "; resetState = " + resetState);
-                    dvi.callback.failed(dvi.device);
+            Iterator<DeviceVerificationInfo> infoIterator = devicesAwaitingVerification.iterator();
+            while (infoIterator.hasNext()) {
+                DeviceVerificationInfo verificationInfo = infoIterator.next();
+                DemandResetCallback callback = verificationInfo.callback;
+                SimpleDevice device = verificationInfo.getDevice(pointData.getId());
+                if (device != null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("pointDataReceived: " + device);
+                    }
+                    if (pointData.getPointDataTimeStamp() == null) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Failed (no point data received): " + device);
+                        }
+                        callback.failed(device, "Demand reset failed, the reset timestamp  was not received.");
+                    } else {
+                        Instant lastResetInstant = new Instant(pointData.getPointDataTimeStamp());
+                        RfnDemandResetState resetState = RfnDemandResetState.values()[(int) pointData.getValue()];
+                        if (log.isDebugEnabled()) {
+                            log.debug("lastResetInstant: " + lastResetInstant.toDate());
+                            log.debug("whenRequested: " + verificationInfo.whenRequested.toDate());
+                            log.debug("resetState: " + resetState);
+                        }
+                        if (lastResetInstant.isAfter(verificationInfo.whenRequested)
+                            && resetState == RfnDemandResetState.SUCCESS) {
+                            callback.verified(device, lastResetInstant);
+                            if (log.isDebugEnabled()) {
+                                log.debug("Verified: " + device);
+                            }
+                        } else {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Failed: " + device);
+                            }
+                            callback
+                                .failed(device,
+                                        "Demand reset failed, the reset timestamp is outside of the expected range.");
+                        }
+                    }
+                    if (verificationInfo.isAllVerified()) {
+                        infoIterator.remove();
+                        log.debug("pointDataReceived: All devices verified");
+                        log.debug("RFN Completed");
+                        callback.complete();
+                    }
+                    verificationInfo.removeDevice(pointData.getId());
+                    asyncDynamicDataSource.unRegisterForPointData(this, ImmutableSet.of(pointData.getId()));
+                    saveCommandRequestExecutionResult(verificationInfo.verificationExecution,
+                                                      device.getDeviceId(),
+                                                      0);
                 }
-                devicesAwaitingVerification.remove(pointId);
-                asyncDynamicDataSource.unRegisterForPointData(this, ImmutableSet.of(pointId));
             }
         }
+    }
+    
+    private void saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode) {
+        CommandRequestExecutionResult result = new CommandRequestExecutionResult();
+        result.setCommandRequestExecutionId(execution.getId());
+        result.setCommand(execution.getCommandRequestExecutionType().getShortName());
+        result.setCompleteTime(new Date());
+        result.setDeviceId(deviceId);
+        result.setErrorCode(errorCode);
+        commandRequestExecutionResultDao.saveOrUpdate(result);
     }
 }

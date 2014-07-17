@@ -17,11 +17,9 @@ import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigIntegerKeysEnum;
-import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -84,9 +82,8 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
         }
         Callback commandCompletionCallback = new Callback(callback, meters);
         result.setCommandCompletionCallback(commandCompletionCallback);
-        CommandRequestExecutionTemplate<CommandRequestDevice> template =
-            commandRequestDeviceExecutor.getExecutionTemplate(DeviceRequestType.GROUP_CONNECT_DISCONNECT, user);
-        template.execute(commands, commandCompletionCallback, execution);
+        commandRequestDeviceExecutor
+            .createTemplateAndExecute(execution, commandCompletionCallback, commands, user);
     }
 
     private class Callback implements CommandCompletionCallback<CommandRequestDevice> {
