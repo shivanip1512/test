@@ -1048,4 +1048,67 @@
             <bean class="com.cannontech.simplereport.reportlayoutdata.DisconnectFailureResultsReportLayoutData"/>
         </property>
      </bean>
+     
+     <!-- Demand Reset Result Reports -->
+    <bean id="demandResetSuccessResultModel" class="com.cannontech.analysis.tablemodel.DemandResetSuccessResultsModel" scope="prototype"/>
+    <bean id="demandResetFailureResultModel" class="com.cannontech.analysis.tablemodel.DemandResetFailureResultsModel" scope="prototype"/>
+    <bean id="demandResetAllResultModel" class="com.cannontech.analysis.tablemodel.DemandResetAllResultsModel" scope="prototype"/>
+   
+    <bean id="demandResetResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" abstract="true">
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="resultKey"/>
+                            <property name="displayName" value="Result Key"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                            <property name="validatorList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.validate.RequiredValidator"/>
+                                </list>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="state"/>
+                            <property name="displayName" value="Current State"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="demandResetAllResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="demandResetResultDefinition">
+        <property name="reportModelName">
+            <idref local="demandResetAllResultModel" />
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.DemandResetAllResultsReportLayoutData"/>
+        </property>
+    </bean>
+    
+    <bean id="demandResetSuccessResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="demandResetResultDefinition">
+        <property name="reportModelName">
+            <idref local="demandResetSuccessResultModel" />
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.DemandResetSuccessResultsReportLayoutData"/>
+        </property>
+    </bean>
+    
+    <bean id="demandResetFailureResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="demandResetResultDefinition">
+        <property name="reportModelName">
+            <idref local="demandResetFailureResultModel"/>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.DemandResetFailureResultsReportLayoutData"/>
+        </property>
+     </bean>
+    
 </beans>

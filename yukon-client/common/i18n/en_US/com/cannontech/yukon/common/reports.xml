@@ -188,4 +188,7 @@
 <entry key="yukon.common.reports.disconnect.failure.title">{0} Failure Results</entry>
 <entry key="yukon.common.reports.disconnect.success.title">{0} Success Results</entry>
 <entry key="yukon.common.reports.disconnect.all.title">Connect/Disconnect Results</entry>
+
+<entry key="yukon.common.reports.demandReset.report.title">Demand Reset {0} Results</entry>
+<entry key="yukon.common.reports.demandReset.all.title">Demand Reset Results</entry>
 </properties>
