@@ -1,5 +1,6 @@
 package com.cannontech.web.multispeak;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -11,13 +12,20 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.multispeak.dao.MspLMInterfaceMappingDao;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.multispeak.dao.MspLMMappingDao;
 import com.cannontech.multispeak.db.MspLMInterfaceMapping;
-import com.cannontech.multispeak.db.MspLMInterfaceMappingStrategyNameComparator;
-import com.cannontech.multispeak.db.MspLmInterfaceMappingColumnEnum;
+import com.cannontech.multispeak.db.MspLMMappingComparator;
+import com.cannontech.multispeak.db.MspLmMappingColumn;
 import com.cannontech.system.GlobalSettingType;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
 
 @CheckGlobalSetting(GlobalSettingType.MSP_LM_MAPPING_SETUP)
@@ -26,15 +34,13 @@ import com.cannontech.web.security.annotation.CheckGlobalSetting;
 public class LMMappingsController {
 
     @Autowired private PaoDao paoDao;
-    @Autowired private MspLMInterfaceMappingDao mspLMInterfaceMappingDao;
-
-    private static final MspLmInterfaceMappingColumnEnum defaultOrderedColumn = MspLmInterfaceMappingColumnEnum.STRATEGY;
-    private static final boolean defaultAscending = true;
+    @Autowired private MspLMMappingDao mspLMMappingDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping("home")
-    public String home(ModelMap model) {
+    public String home(ModelMap model, YukonUserContext userContext) {
 
-        addAllMapppingToModel(model, defaultOrderedColumn, defaultAscending);
+        addAllMapppingToModel(model, SortingParameters.of(MspLmMappingColumn.STRATEGY.name(), Direction.desc), userContext);
 
         return "setup/lmMappings/home.jsp";
     }
@@ -46,7 +52,11 @@ public class LMMappingsController {
 
         String mappedName = findMappedName(strategyName, substationName);
 
-        result.put("mappedName", mappedName);
+        if (mappedName != null) {
+            result.put("mappedName", mappedName);
+        } else {
+            result.put("error", "not found");
+        }
 
         return result;
     }
@@ -56,7 +66,7 @@ public class LMMappingsController {
 
         Map<String,Object> response = new HashMap<>();
 
-        Integer existingMspLmInterfaceid = mspLMInterfaceMappingDao.findIdForStrategyAndSubstation(strategyName, substationName);
+        Integer existingMspLmInterfaceid = mspLMMappingDao.findIdForStrategyAndSubstation(strategyName, substationName);
 
         if (mappedNameId == null) {
             response.put("error", "mappedNameId not found");
@@ -65,11 +75,11 @@ public class LMMappingsController {
         } else {
             if (existingMspLmInterfaceid == null) {
                 response.put("action", "add");
-                boolean added = mspLMInterfaceMappingDao.add(strategyName, substationName, mappedNameId);
+                boolean added = mspLMMappingDao.add(strategyName, substationName, mappedNameId);
                 response.put("success", added);
             } else {
                 response.put("action", "update");
-                boolean updated = mspLMInterfaceMappingDao.updatePaoIdForStrategyAndSubstation(strategyName, substationName, mappedNameId);
+                boolean updated = mspLMMappingDao.updatePaoIdForStrategyAndSubstation(strategyName, substationName, mappedNameId);
                 response.put("success", updated);
             }
         }
@@ -77,12 +87,11 @@ public class LMMappingsController {
     }
 
     @RequestMapping("reloadAllMappingsTable")
-    public String reloadAllMappingsTable(ModelMap model, MspLmInterfaceMappingColumnEnum col, Boolean ascending) {
+    public String reloadAllMappingsTable(ModelMap model, 
+            @DefaultSort(dir=Direction.desc, sort="STRATEGY") SortingParameters sorting,
+            YukonUserContext userContext) {
 
-        if (col == null) col = defaultOrderedColumn;
-        if (ascending == null) ascending = defaultAscending;
-
-        addAllMapppingToModel(model, col, ascending);
+        addAllMapppingToModel(model, sorting, userContext);
 
         return "setup/lmMappings/allMappingsTable.jsp";
     }
@@ -92,7 +101,7 @@ public class LMMappingsController {
 
         Map<String,Object> result = new HashMap<>();
 
-        boolean successful = mspLMInterfaceMappingDao.remove(mspLMInterfaceMappingId);
+        boolean successful = mspLMMappingDao.remove(mspLMInterfaceMappingId);
 
         result.put("success", successful);
         return result;
@@ -103,7 +112,7 @@ public class LMMappingsController {
 
         String mappedName = null;
         try{
-            MspLMInterfaceMapping mapping = mspLMInterfaceMappingDao.getForStrategyAndSubstation(strategyName, substationName);
+            MspLMInterfaceMapping mapping = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
             int paoId = mapping.getPaobjectId();
             mappedName = paoDao.getYukonPAOName(paoId);
         } catch (NotFoundException e) {
@@ -111,13 +120,25 @@ public class LMMappingsController {
         return mappedName;
     }
 
-    private void addAllMapppingToModel(ModelMap model, MspLmInterfaceMappingColumnEnum col, boolean ascending) {
+    private void addAllMapppingToModel(ModelMap model, SortingParameters sorting, YukonUserContext userContext) {
 
-        List<MspLMInterfaceMapping> allMappings = mspLMInterfaceMappingDao.getAllMappings();
-        Collections.sort(allMappings, new MspLMInterfaceMappingStrategyNameComparator(col, ascending));
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
-        model.addAttribute("orderedColumnName", col.toString());
-        model.addAttribute("ascending", ascending);
+        List<SortableColumn> columns = new ArrayList<>();
+
+        for (MspLmMappingColumn column : MspLmMappingColumn.values()) {
+            String resolvedName = accessor.getMessage(column);
+            columns.add( SortableColumn.of(sorting, resolvedName, column.name()));
+        }
+
+        model.addAttribute("columns", columns);
+
+        List<MspLMInterfaceMapping> allMappings = mspLMMappingDao.getAllMappings();
+
+        MspLmMappingColumn column = MspLmMappingColumn.valueOf(sorting.getSort());
+        boolean asc = sorting.getDirection().equals(Direction.asc);
+        Collections.sort(allMappings, new MspLMMappingComparator(column, asc));
+
         model.addAttribute("allMappings", allMappings);
     }
 }

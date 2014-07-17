@@ -46,14 +46,14 @@ import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspLMGroupDao;
-import com.cannontech.multispeak.dao.MspLMInterfaceMappingDao;
+import com.cannontech.multispeak.dao.MspLMMappingDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.db.MspLMGroupCommunications;
 import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMGroupStatus;
 import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMProgramMode;
 import com.cannontech.multispeak.db.MspLMInterfaceMapping;
-import com.cannontech.multispeak.db.MspLMInterfaceMappingStrategyNameComparator;
-import com.cannontech.multispeak.db.MspLmInterfaceMappingColumnEnum;
+import com.cannontech.multispeak.db.MspLMMappingComparator;
+import com.cannontech.multispeak.db.MspLmMappingColumn;
 import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.deploy.service.ControlEventType;
 import com.cannontech.multispeak.deploy.service.ControlItem;
@@ -68,7 +68,7 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 
 public class MultispeakLMServiceImpl implements MultispeakLMService {
 
-    @Autowired private MspLMInterfaceMappingDao mspLMInterfaceMappingDao;
+    @Autowired private MspLMMappingDao mspLMInterfaceMappingDao;
 	@Autowired private PaoDao paoDao;
 	@Autowired private FdrTranslationDao fdrTranslationDao;
 	@Autowired private SimplePointAccessDao simplePointAccessDao;
@@ -291,7 +291,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         
         Map<Integer, Integer> programCounts = enrollmentDao.getActiveEnrollmentExcludeOptOutCount(new Date(), new Date());
         List<MspLMInterfaceMapping> mspLmInterfaceMappingList = mspLMInterfaceMappingDao.getAllMappings();
-        Collections.sort(mspLmInterfaceMappingList, new MspLMInterfaceMappingStrategyNameComparator(MspLmInterfaceMappingColumnEnum.SUBSTATION, true) );
+        Collections.sort(mspLmInterfaceMappingList, new MspLMMappingComparator(MspLmMappingColumn.SUBSTATION, true) );
         
         List<LMProgramBase> lmProgramBases = new ArrayList<LMProgramBase>();
 		Set<MspLMGroupStatus> allStatus = new HashSet<MspLMGroupStatus>();

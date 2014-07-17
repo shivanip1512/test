@@ -4,13 +4,13 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
-public class MspLMInterfaceMappingStrategyNameComparator implements
+public class MspLMMappingComparator implements
 		Comparator<MspLMInterfaceMapping> {
 	
-	private MspLmInterfaceMappingColumnEnum column;
+	private MspLmMappingColumn column;
 	private boolean ascending;
 	
-	public MspLMInterfaceMappingStrategyNameComparator(MspLmInterfaceMappingColumnEnum column, boolean ascending) {
+	public MspLMMappingComparator(MspLmMappingColumn column, boolean ascending) {
 		
 		this.column = column;
 		this.ascending = ascending;
@@ -19,29 +19,26 @@ public class MspLMInterfaceMappingStrategyNameComparator implements
 	@Override
 	public int compare(MspLMInterfaceMapping o1, MspLMInterfaceMapping o2) {
 		
-		MspLMInterfaceMapping obj1 = null;
-		MspLMInterfaceMapping obj2 = null;
-		if (this.ascending) {
-			obj1 = o1;
-			obj2 = o2;
-		} else {
-			obj1 = o2;
+		MspLMInterfaceMapping obj1 = o1;
+		MspLMInterfaceMapping obj2 = o2;
+		if (ascending) {
+		    obj1 = o2;
 			obj2 = o1;
 		}
 		
-		if (this.column.equals(MspLmInterfaceMappingColumnEnum.STRATEGY)) {
+		if (column.equals(MspLmMappingColumn.STRATEGY)) {
 			
 			return new CompareToBuilder()
 		        .append(obj1.getStrategyName().toLowerCase(), obj2.getStrategyName().toLowerCase())
 		        .toComparison();
 			
-		} else if (this.column.equals(MspLmInterfaceMappingColumnEnum.SUBSTATION)) {
+		} else if (column.equals(MspLmMappingColumn.SUBSTATION)) {
 			
 			return new CompareToBuilder()
 		        .append(obj1.getSubstationName().toLowerCase(), obj2.getSubstationName().toLowerCase())
 		        .toComparison();
 			
-		} else if (this.column.equals(MspLmInterfaceMappingColumnEnum.PAO)) {
+		} else if (column.equals(MspLmMappingColumn.PAO)) {
 			
 			return new CompareToBuilder()
 		        .append(obj1.getPaoName().toLowerCase(), obj2.getPaoName().toLowerCase())

@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.db.MspLMInterfaceMapping;
 
-public interface MspLMInterfaceMappingDao {
+public interface MspLMMappingDao {
 
     public boolean add(String strategyName, String substationName, int paobjectId);
     

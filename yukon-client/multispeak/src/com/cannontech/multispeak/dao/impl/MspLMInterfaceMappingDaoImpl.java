@@ -16,10 +16,10 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.multispeak.dao.MspLMInterfaceMappingDao;
+import com.cannontech.multispeak.dao.MspLMMappingDao;
 import com.cannontech.multispeak.db.MspLMInterfaceMapping;
 
-public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
+public class MspLMInterfaceMappingDaoImpl implements MspLMMappingDao {
 
 	private final String TABLENAME = "MspLMInterfaceMapping";
 	@Autowired private YukonJdbcTemplate jdbcTemplate;

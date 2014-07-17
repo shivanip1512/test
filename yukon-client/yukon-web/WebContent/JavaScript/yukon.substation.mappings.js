@@ -1,145 +1,150 @@
-var currentOrderByColum = 'STRATEGY';
-var currentAscendingOrder = true;
+yukon.namespace('yukon.substation.mappings');
 
-var validateAndShow = function () {
-    if ($.trim($('#strategyName').val()) === '' || $.trim($('#substationName').val()) === '') {
-        alert('Strategy and Substation names are required.');
-        return;
-    }
-    paoPicker.show();
-};
+/**
+ * This module handles behavior on the device configuration pages.
+ * @module yukon.deviceConfig
+ */
+yukon.substation.mappings = (function () {
 
-var setMappedNameId = function () {
-    var success = true;
+    var _reloadAllMappingsTable = function () {
+            var sortColumnLink = $('[data-mappings-table]').find('.sortable.desc, .sortable.asc'),
+                dir = sortColumnLink.is('asc') ? 'asc' : 'desc',
+                sort = sortColumnLink.data('sort'),
+                container = sortColumnLink.closest('[data-url]'),
+                url = container.data('url'),
+                params = {'sort': sort, 'dir': dir};
 
-    toggleLmMappingsWaitIndicators(true, $('#addButton')[0]);
-    if ($.trim($('#mappedNameId').val()) === '') {
-        alert('Select a Program/Scenario name.');
-        return;
-    }
-    getMappedName(function (mappedName) {
-        var overwrite = true,
-            url,
-            params;
-
-        if (mappedName != null && mappedName !== $('#mappedName').html()) {
-            overwrite = confirm('Strategy/Substation ' + $('#strategyName').val() + '/' + $('#substationName').val() + ' is already mapped to "' + mappedName + '", are you want to overwrite it with "' + $('#mappedName').html() + '"?');
-            success = overwrite;
-        }
-
-        if (overwrite) {
-            url = yukon.url('/multispeak/setup/lmMappings/addOrUpdateMapping');
-            params = {
-                'strategyName': $('#strategyName').val(),
-                'substationName': $('#substationName').val(),
-                'mappedNameId': $('#mappedNameId').val()
-            };
-
-            $.ajax({
-                url: url,
-                data: params
-            }).done(function (data, textStatus, jqXHR) {
-                $('#mappedNameDisplay').html($('#mappedName').html());
-                toggleLmMappingsWaitIndicators(false, $('#addButton')[0]);
-                flashYellow($('#mappedNameDisplay')[0]);
-                reloadAllMappingsTable(null, false);
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                toggleLmMappingsWaitIndicators(false, $('#addButton')[0]);
-                alert('Error adding mapping: ' + errorThrown);
+            container.load(url, params, function (response, status, jqXhr) {
+                if (status === 'error') {
+                    $('.js-reload-error').show();
+                } else {
+                    $('.js-reload-error').hide();
+                }
             });
-        } else {
-            toggleLmMappingsWaitIndicators(false, $('#addButton')[0]);
-        }
-    });
-    return success;
-};
+        },
 
-function getMappedName (callback) {
+        _getMappedName = function (callback) {
+            $.getJSON(yukon.url('/multispeak/setup/lmMappings/findMapping'),
+                {
+                    'strategyName': $('.js-strategy.js-mapping-input').val(),
+                    'substationName': $('.js-substation.js-mapping-input').val()
+                })
+                .done(function (data, textStatus, jqXHR) {
+                    callback(data);
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    callback({'error': errorThrown});
+                });
+        },
 
-    var url = yukon.url('/multispeak/setup/lmMappings/findMapping');
-    var params = {
-        'strategyName': $('#strategyName').val(),
-        'substationName': $('#substationName').val()
-    };
+        mod = {
+            init : function () {
+                var addBtn = $('.js-add-btn');
 
-    $.ajax({
-        url: url,
-        data: params
-    }).done(function (data, textStatus, jqXHR) {
-        var mappedName = data.mappedName;
-        callback(mappedName);
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert('Error searching for Strategy/Substation: ' + errorThrown);
-    });
-}
-  
+                yukon.dialogConfirm.add(
+                        {
+                            'on': '.js-add-btn',
+                            'eventType': 'yukon_substation_mappings_confirm_add',
+                            'strings' : {
+                                'message': addBtn.data('message'),
+                                'title': addBtn.data('title'),
+                                'ok': yg.text.ok,
+                                'cancel': yg.text.cancel,
+                            }
+                        }
+                    );
+                $(document).on('click', '.js-add-btn', function () {
+                    var btn = $(this),
+                        errors = false,
+                        strategyName = $('.js-strategy.js-mapping-input').val(),
+                        substationName = $('.js-substation.js-mapping-input').val();
 
-function doLmMappingNameSearch () {
-    toggleLmMappingsWaitIndicators(true, $('#searchButton')[0]);
-    getMappedName(function (mappedName) {
-        if (mappedName != null) {
-            $('#mappedNameDisplay').html(mappedName);
-        } else {
-            $('#mappedNameDisplay').html('Not Found');
-        }
-        toggleLmMappingsWaitIndicators(false, $('#searchButton')[0]);
-        flashYellow($('#mappedNameDisplay')[0]);
-    });
-}
+                    $('.js-mapping-errors').hide();
+                    $('.js-mapping-input').removeClass('error');
 
-function reloadAllMappingsTable (col, isReorder) {
-    var url = yukon.url('/multispeak/setup/lmMappings/reloadAllMappingsTable'),
-        params;
-    if (isReorder) {
-        if (col !== currentOrderByColum) {
-            currentAscendingOrder = true;
-        } else {
-            currentAscendingOrder = !currentAscendingOrder;
-        }
-        currentOrderByColum = col;
-    }
-    // call reload
-    params = {
-        'col': currentOrderByColum,
-        'ascending': currentAscendingOrder
-    };
-    $.ajax({
-        url: url,
-        data: params
-    }).done(function (data, textStatus, jqXHR) {
-        $('#allMappingsTableDiv').html(data);
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert('reloadAllMappingsTable: error: ' + errorThrown);
-    });
-}
+                    if (strategyName === '') {
+                        errors = true;
+                        $('.js-strategy').show().addClass('error');
+                    }
+                    if (substationName === '') {
+                        errors = true;
+                        $('.js-substation').show().addClass('error');
+                    }
 
+                    if (errors) {
+                        yukon.ui.unbusy(btn);
+                    } else {
+                        _getMappedName(function (data) {
+                            yukon.ui.unbusy(btn);
+                            if (data.mappedName) {
+                                btn.trigger('yukon_substation_mappings_confirm_add');
+                            } else {
+                                btn.trigger('yukon_substation_mappings_add');
+                            }
+                        });
+                    }
+                });
 
-function removeLmMapping (mspLMInterfaceMappingId) {
-    var url = yukon.url('/multispeak/setup/lmMappings/removeMapping'),
-        params;
-    if (!confirm('Are you sure you want to remove this mappping?')) {
-        return;
-    }
+                $(document).on('input', '.js-mapping-input', function () {
+                    var paoValue = $('.pao-values').find('*');
+                    paoValue.addClass('disabled');
+                    _getMappedName(function (data) {
+                        var container = $('.mapped-pao-name'),
+                            addBtnText = $('.js-add-btn').find('.b-label');
+                        if (data.mappedName) {
+                            container.text(data.mappedName);
+                            addBtnText.text('Change');
+                        } else {
+                            container.text(container.data('emptyText'));
+                            addBtnText.text('Add');
+                        }
+                        paoValue.removeClass('disabled');
+                    });
+                });
 
-    params = {
-        'mspLMInterfaceMappingId': mspLMInterfaceMappingId
-    };
-    $.ajax({
-        url: url,
-        data: params
-    }).done(function (data, textStatus, jqXHR) {
-        reloadAllMappingsTable(null, false);
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert('Error removing mapping: ' + errorThrown);
-    });
-}
+                $(document).on('yukon_substation_mappings_add', function () {
+                    paoPicker.show();
+                });
 
-function toggleLmMappingsWaitIndicators (isWaiting, buttonEl) {
-    if (isWaiting) {
-        $('#waitImg').show();
-        $(buttonEl).prop('disabled', true);
-    } else {
-        $('#waitImg').hide();
-        $(buttonEl).prop('disabled', false);
-    }
-}
+                $(document).on('yukon.substation.mappings.delete', function (ev) {
+                    var mappingId = $(ev.target).data('mappingId');
+
+                    $.getJSON(yukon.url('/multispeak/setup/lmMappings/removeMapping'),
+                        {'mspLMInterfaceMappingId': mappingId}
+                    ).done(function (data, textStatus, jqXHR) {
+                        $('.js-delete-error').hide();
+                        _reloadAllMappingsTable();
+                    }).fail(function (jqXHR, textStatus, errorThrown) {
+                        $('.js-delete-error').show();
+                    });
+                });
+            },
+
+            setMappedNameId : function () {
+                var strategyName = $('.js-strategy.js-mapping-input').val(),
+                    substationName = $('.js-substation.js-mapping-input').val(),
+                    mappedNameId = $('#mappedNameId').val();
+
+                if ($.trim($('#mappedNameId').val()) === '') {
+                    return;
+                }
+
+                $.getJSON(yukon.url('/multispeak/setup/lmMappings/addOrUpdateMapping'),
+                    {
+                        'strategyName': strategyName,
+                        'substationName': substationName,
+                        'mappedNameId': mappedNameId
+                    }
+                ).done(function (data, textStatus, jqXHR) {
+                    $('.js-add-error').hide();
+                    $('.mapped-pao-name').html($('#mappedName').val());
+                    _reloadAllMappingsTable();
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $('.js-add-error').show();
+                });
+            }
+        };
+
+    return mod;
+}());
+
+$(function () { yukon.substation.mappings.init(); });
