@@ -40,18 +40,17 @@ yukon.substation.mappings = (function () {
             init : function () {
                 var addBtn = $('.js-add-btn');
 
-                yukon.dialogConfirm.add(
-                        {
-                            'on': '.js-add-btn',
-                            'eventType': 'yukon_substation_mappings_confirm_add',
-                            'strings' : {
-                                'message': addBtn.data('message'),
-                                'title': addBtn.data('title'),
-                                'ok': yg.text.ok,
-                                'cancel': yg.text.cancel,
-                            }
-                        }
-                    );
+                yukon.dialogConfirm.add({
+                    'on': '.js-add-btn',
+                    'eventType': 'yukon_substation_mappings_confirm_add',
+                    'strings' : {
+                        'message': addBtn.data('message'),
+                        'title': addBtn.data('title'),
+                        'ok': yg.text.ok,
+                        'cancel': yg.text.cancel
+                    }
+                });
+
                 $(document).on('click', '.js-add-btn', function () {
                     var btn = $(this),
                         errors = false,
