@@ -132,8 +132,11 @@
                 </tags:nameValueContainer2>
             </div>
             <div class="column two nogutter">
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".collectionSchedule">0 0 */1 * * ? *</tags:nameValue2>
+                <tags:nameValueContainer2 tableClass="with-form-controls">
+                    <tags:nameValue2 nameKey=".collectionSchedule" valueClass="full-width">
+                        <cti:formatCron value="0 0 */1 * * ? *"/>
+                        <cti:button nameKey="edit" icon="icon-pencil" classes="fr"/>
+                    </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
         </div>
