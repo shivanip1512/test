@@ -45,6 +45,7 @@ public enum DataType {
     ASSET_AVAILABILITY_READ,
     TDC,
     DISCONNECT,
-    ECOBEE_READ
+    ECOBEE_READ,
+    DEMAND_RESET
     ;
 }

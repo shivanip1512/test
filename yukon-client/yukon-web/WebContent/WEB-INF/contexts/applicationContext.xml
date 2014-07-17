@@ -675,6 +675,9 @@
     <bean id="disconnectBackingService" class="com.cannontech.web.updater.disconnect.DisconnectBackingService"/>
     
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>
+    
+    <bean id="demandResetBackingService" class="com.cannontech.web.updater.demandreset.DemandResetBackingService"/>
+    
     <bean class="com.cannontech.web.dr.ecobee.service.impl.DataDownloadServiceImpl"/>
     <bean class="com.cannontech.common.util.RecentResultsCache">
         <qualifier value="ecobeeReads"/>
@@ -815,6 +818,9 @@
                 </entry>
                 <entry key="ECOBEE_READ">
                     <ref local="ecobeeReadBackingService"/>
+                </entry>
+                <entry key="DEMAND_RESET">
+                    <ref local="demandResetBackingService" />
                 </entry>
             </map>
         </property>
