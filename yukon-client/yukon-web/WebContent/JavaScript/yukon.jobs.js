@@ -22,7 +22,7 @@ yukon.jobs = (function () {
             
             $(document).on('yukon.job.cancel', function (ev) {
                 var jobId = $(ev.target).data('jobId');
-                event.preventDefault();
+                ev.preventDefault();
                 //close the dialog
                 yukon.dialogConfirm.cancel();
                 //submit job cancellation request
