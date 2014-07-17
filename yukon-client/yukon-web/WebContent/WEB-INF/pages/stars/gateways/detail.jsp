@@ -116,9 +116,9 @@
     <tags:sectionContainer2 nameKey="dataCollection">
         <div class="column-12-12 clearfix">
             <div class="column one">
-                <tags:nameValueContainer2>
+                <tags:nameValueContainer2 tableClass="with-form-controls">
                     <tags:nameValue2 nameKey=".dataCompleteness">
-                        <div class="dib progress">
+                        <div class="dib vatb progress">
                             <c:set var="clazz" value="progress-bar-success"/>
                             <c:if test="${gateway.dataWarning}">
                                 <c:set var="clazz" value="progress-bar-warning"/>
