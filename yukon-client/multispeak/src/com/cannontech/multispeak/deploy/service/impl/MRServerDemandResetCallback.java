@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 
-import com.cannontech.amr.demandreset.service.DemandResetCallback;
+import com.cannontech.amr.demandreset.service.DemandResetVerificationCallback;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -29,7 +30,7 @@ import com.cannontech.multispeak.deploy.service.MeterEventList;
 import com.cannontech.multispeak.deploy.service.ServiceType;
 import com.google.common.collect.Lists;
 
-public class MRServerDemandResetCallback implements DemandResetCallback {
+public class MRServerDemandResetCallback extends DemandResetVerificationCallback {
     private final static Logger log = YukonLogManager.getLogger(MRServerDemandResetCallback.class);
 
     private final MspObjectDao mspObjectDao;
@@ -81,7 +82,7 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
     }
 
     @Override
-    public void verified(SimpleDevice device) {
+    public void verified(SimpleDevice device, Instant pointDataTimeStamp) {
         log.debug("device " + device + " passed verification");
         if (port == null) {
             return;
@@ -108,8 +109,8 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
     }
 
     @Override
-    public void failed(SimpleDevice device) {
-        log.error("device " + device + " failed verification");
+    public void failed(SimpleDevice device, String reason) {
+        log.error("device " + device + " failed verification because \"" + reason + '"');
     }
 
     @Override

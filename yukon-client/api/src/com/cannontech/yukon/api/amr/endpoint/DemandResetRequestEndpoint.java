@@ -16,8 +16,8 @@ import org.springframework.xml.xpath.XPathException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
-import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.DemandResetService;
+import com.cannontech.amr.demandreset.service.DemandResetVerificationCallback;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -34,26 +34,12 @@ import com.google.common.collect.Sets;
 
 @Endpoint
 public class DemandResetRequestEndpoint {
-    private static class MyDemandResetCallback implements DemandResetCallback {
+    private static class MyDemandResetCallback extends DemandResetVerificationCallback {
         List<Element> errorElems = Collections.emptyList();
-
         @Override
         public void initiated(Results results) {
             Map<SimpleDevice, SpecificDeviceErrorDescription> errors = results.getErrors();
             errorElems = PaoSelectionUtil.makePaoErrorElements(errors);
-        }
-
-        // For now we're not doing verification except in MultiSpeak.
-        @Override
-        public void verified(SimpleDevice device) {
-        }
-
-        @Override
-        public void failed(SimpleDevice device) {
-        }
-
-        @Override
-        public void cannotVerify(SimpleDevice device, String reason) {
         }
     }
 
