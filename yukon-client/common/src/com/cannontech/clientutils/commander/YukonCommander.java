@@ -60,6 +60,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.commander.model.OutputMessage;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
 import com.cannontech.common.gui.util.JTextPanePrintable;
@@ -175,11 +176,11 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     
     private class WriteOutput implements Runnable {
         
-        private YC.OutputMessage message = null; 
+        private OutputMessage message = null; 
         private JTextPane textPane = null;
         private String style;
         
-        public WriteOutput(JTextPane textPane_, YC.OutputMessage message_) {
+        public WriteOutput(JTextPane textPane_, OutputMessage message_) {
             super();
             this.textPane = textPane_;
             this.message = message_;
@@ -261,7 +262,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                     getYC().executeCommand();
                 }
             } catch (PaoAuthorizationException e) {
-                update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " 
+                update(yc, new OutputMessage(OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " 
                         + e.getPermission(), MessageType.ERROR));
             }
         } else if (source == getCommandPanel().getStopButton() 
@@ -333,7 +334,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                         getYC().executeCommand();
                     }
                 } catch (PaoAuthorizationException e) {
-                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, 
+                    update(yc, new OutputMessage(OutputMessage.DEBUG_MESSAGE, 
                             "\n ** You do not have permission to execute command: " + e.getPermission(), 
                             MessageType.ERROR));
                 }
@@ -360,7 +361,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                         getYC().executeCommand();
                     }
                 } catch (PaoAuthorizationException e) {
-                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, 
+                    update(yc, new OutputMessage(OutputMessage.DEBUG_MESSAGE, 
                             "\n ** You do not have permission to execute command: " + e.getPermission(), 
                             MessageType.ERROR));
                 }
@@ -373,7 +374,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                     getYC().executeCommand();
                 }
             } catch (PaoAuthorizationException e) {
-                update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, 
+                update(yc, new OutputMessage(OutputMessage.DEBUG_MESSAGE, 
                         "\n ** You do not have permission to execute command: " + e.getPermission(), 
                         MessageType.ERROR));
             }
@@ -1196,7 +1197,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                         getYC().executeCommand();
                     }
                 } catch (PaoAuthorizationException e) {
-                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, 
+                    update(yc, new OutputMessage(OutputMessage.DEBUG_MESSAGE, 
                             "\n ** You do not have permission to execute command: " + e.getPermission(), 
                             MessageType.ERROR));
                 }
@@ -1699,10 +1700,10 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     
     public void update(Observable o, Object arg) {
         
-        if (o instanceof YC && arg instanceof YC.OutputMessage) {
+        if (o instanceof YC && arg instanceof OutputMessage) {
             
-            YC.OutputMessage outMessage = (YC.OutputMessage)arg;
-            if (outMessage.getDisplayAreaType() == YC.OutputMessage.DEBUG_MESSAGE) {
+            OutputMessage outMessage = (OutputMessage)arg;
+            if (outMessage.getDisplayAreaType() == OutputMessage.DEBUG_MESSAGE) {
                 SwingUtilities.invokeLater(new WriteOutput(getDebugOutputTextPane(), outMessage));
                 /*TODO: HACK TO ELIMINATE TOO MUCH MUMBLE JUMBLE IN DISPLAY (TOP) PANEL 
                  * Parsing for " sent " helps eliminate the communication responses somewhat*/
@@ -1710,7 +1711,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                     //send message to display also?
                     SwingUtilities.invokeLater(new WriteOutput(getDisplayOutputTextPane(), outMessage));
                 }
-            } else if (outMessage.getDisplayAreaType() == YC.OutputMessage.DISPLAY_MESSAGE) {
+            } else if (outMessage.getDisplayAreaType() == OutputMessage.DISPLAY_MESSAGE) {
                 SwingUtilities.invokeLater(new WriteOutput(getDisplayOutputTextPane(), outMessage));
             }
         } else if (arg instanceof String) {

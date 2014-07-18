@@ -9,9 +9,17 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
@@ -22,10 +30,12 @@ import java.util.Vector;
 import javax.swing.Timer;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.log4j.Logger;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.clientutils.commander.model.OutputMessage;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
@@ -42,6 +52,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteBase;
@@ -62,6 +73,7 @@ import com.cannontech.database.db.device.Device;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.NullDBTreeModel;
 import com.cannontech.database.model.TreeModelEnum;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
@@ -75,56 +87,72 @@ import com.cannontech.yukon.BasicServerConnection;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class YC extends Observable implements MessageListener
-{
+public class YC extends Observable implements MessageListener {
+    
+    protected static final IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    protected static final String commandsDir = CtiUtilities.getCommandsDirPath();
+    protected static final Logger log = YukonLogManager.getLogger(YC.class);
+    
     protected PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+    protected PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
+    protected DeviceGroupService deviceGroupService = YukonSpringHook.getBean(DeviceGroupService.class);
+    protected PaoCommandAuthorizationService paoCommandAuthService = YukonSpringHook.getBean(PaoCommandAuthorizationService.class);
+    protected LMCommandAuthorizationService lmCommandAuthService = YukonSpringHook.getBean(LMCommandAuthorizationService.class);
+    protected CommandDao commandDao = YukonSpringHook.getBean(CommandDao.class);
+    protected DeviceErrorTranslatorDao deviceErrorTranslatorDao = YukonSpringHook.getBean(DeviceErrorTranslatorDao.class);
 
-    private final SystemLogHelper _systemLogHelper;
-    private String logUserName = null;
+    private final SystemLogHelper systemLogHelper;
+    private String logUserName;
     
     /** HashSet of userMessageIds for this instance */
-    private java.util.Set requestMessageIDs = new java.util.HashSet(10);
+    private Set<Long> requestMessageIDs = new HashSet<>(10);
 
     /** HashSet of userMessageIds for this instance, we will remove from this list on ExpectMore flag (which is no longer guaranteed
-     *  but very useful for refreshing the custom web interface in a timely fashion */
-    private java.util.Set requestMessageIDs_executing = new java.util.HashSet(10);
+     *  but very useful for refreshing the custom web interface in a timely fashion. */
+    private Set<Long> requestMessageIDs_executing = new HashSet<>(10);
 
-    /** Time in millis (yes I realize this is an int) to wait for command response messages */
+    /** Time in millis (yes I realize this is an int) to wait for command response messages. */
     private int timeOut = 0;
-    /** An action listener for the timer events */
-    private ActionListener timerPerfomer = null;
-    /** A timer which fires an action event after a specified delay in millis */
-    private Timer stopWatch = null;    
     
-    /** Porter Return messages displayable text */
+    /** An action listener for the timer events. */
+    private ActionListener timerPerfomer;
+    
+    /** A timer which fires an action event after a specified delay in millis. */
+    private Timer stopWatch;
+    
+    /** Porter Return messages displayable text. */
     private String resultText = "";
     
-    /** A string to hold error messages for the current command(s) sent */
+    /** A string to hold error messages for the current command(s) sent. */
     private String errorMsg = "";
     
     /** Current command string to execute */
-    private String commandString = "";    //the actual string entered from the command line
-    private Vector<String> executeCmdsVector = null;    // the parsed vector of commands from the command line.
+    private String commandString = ""; // The actual string entered from the command line.
+    private Vector<String> executeCmdsVector; // The parsed vector of commands from the command line.
     
     /** liteYukonPAObject(opt1) or serialNumber(opt2) will be used to send command to.
-    /** Selected liteYukonPAObject */    
-    private LiteYukonPAObject liteYukonPao = null; 
+    /** Selected liteYukonPAObject */
+    private LiteYukonPAObject liteYukonPao;
+    
     /** Selected serial Number */
     private String serialNumber;
-    /** Selected tree item object*/
-    private Object treeItem = null;
-    /** selected routeid, used for serialNumber commands or for some loop commands*/
+    
+    /** Selected tree item object */
+    private Object treeItem;
+    
+    /** Selected route id, used for serialNumber commands or for some loop commands */
     private int routeID = -1;
+    
     /** Selected tree model type. Refer to com.cannontech.database.model.* for valid models. */
     private Class<? extends LiteBaseTreeModel> modelType = NullDBTreeModel.class;
     
     /** Valid send command modes */ 
-    public static int DEFAULT_MODE = 0;    //send commands with YC addt's (loop, queue, route..)
-    public static int CGP_MODE = 1;    //send commands as they are, no parsing done on them
+    public static int DEFAULT_MODE = 0; // Send commands with YC addt's (loop, queue, route..)
+    public static int CGP_MODE = 1; // Send commands as they are, no parsing done on them.
     private int commandMode = DEFAULT_MODE;
     
     /** Store last Porter request message, for use when need to send it again (loop) */
-    private Request porterRequest = null;
+    private Request porterRequest;
     
     /** Singleton incrementor for messageIDs to send to porter connection */
     private static volatile long currentUserMessageID = 1;
@@ -133,211 +161,156 @@ public class YC extends Observable implements MessageListener
     public volatile int sendMore = 0;
 
     /** All LiteYukonPaobject of type route */
-    private Object[] allRoutes = null;
+    private Object[] allRoutes;
 
     /** Valid loop command types */
-    public static int NOLOOP = 0;    //loop not parsed
-    public static int LOOP = 1;    //loop alone parsed
-    public static int LOOPNUM = 2;//loop for some num of times
-    public static int LOOPLOCATE = 3;//loop locate parsed
-    public static int LOOPLOCATE_ROUTE = 4;//loop locate route parsed
+    public static int NOLOOP = 0; // Loop not parsed
+    public static int LOOP = 1; // Loop alone parsed
+    public static int LOOPNUM = 2; // Loop for some num of times
+    public static int LOOPLOCATE = 3; // Loop locate parsed
+    public static int LOOPLOCATE_ROUTE = 4; // Loop locate route parsed
     private int loopType = NOLOOP;
     
-    /** Contains com.cannontech.database.data.lite.LiteDeviceTypeCommand for the deviceType selected */
-    private Vector liteDeviceTypeCommandsVector = new Vector();
-    /** The device Type for the currently selected object in the tree model. Values found in DeviceTypes class**/
-    protected String deviceType = null;
+    /** Contains LiteDeviceTypeCommand for the deviceType selected. */
+    private Vector<LiteDeviceTypeCommand> liteDeviceTypeCommandsVector = new Vector<>();
     
-    /** Default YC properties*/
-    private YCDefaults ycDefaults = null;
+    /** The device Type for the currently selected object in the tree model. Values found in DeviceTypes class. */
+    protected String deviceType;
+    
+    /** Default YC properties */
+    private YCDefaults ycDefaults;
     
     /** Fields used in the MessageReceived(..) method to track last printed data */
     /** dateTime formating string */
-    protected java.text.SimpleDateFormat displayFormat = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");
+    protected SimpleDateFormat displayFormat = new SimpleDateFormat("MMM d HH:mm:ss a z");
+    
     /** Keep track of the last userMessageID from the MessageEvents */
     private long prevUserID = -1;
-    private LiteYukonUser user = null;
     
-    public class OutputMessage{
-        public MessageType messageType = MessageType.INFO;
-        public static final int DISPLAY_MESSAGE = 0;    //YC defined text
-        public static final int DEBUG_MESSAGE = 1;        //Porter defined text
-        private int displayAreaType = DEBUG_MESSAGE;
-        private String text;
-        private boolean isUnderline = false;
-
-        public OutputMessage(int displayAreaType_, String message_, MessageType messageType_)
-        {
-            this(displayAreaType_, message_, messageType_, false);
-        }
-        public OutputMessage(int displayAreaType_, String message_, MessageType messageType_, boolean underline_)
-        {
-            super();
-            displayAreaType = displayAreaType_;
-            text = message_;
-            text = text.replaceAll("\n", "<BR>");
-            text = text.replaceAll("<BR><BR>", "<BR>");
-            messageType = messageType_;
-            isUnderline = underline_;
-        }
-        public boolean isUnderline() { return isUnderline; }
-        public MessageType getMessageType(){ return messageType; }
-        public String getText(){ return text; }
-        public int getDisplayAreaType(){ return displayAreaType; }
+    private LiteYukonUser user;
+    
+    public YC() {
+        this(false); //don't load defaults from file (mainly for web servlet)
     }
+    
     /**
-     * YC constructor comment.
-     */
-    public YC()
-    {
-        this(false);    //don't load defaults from file (mainly for web servlet)
-    }
-    /**
-     * YC constructor.
-     * If loadDefaultsFromFile_ is true, use the saved properties file for class defualts. 
+     * If loadDefaultsFromFile_ is true, use the saved properties file for class defaults. 
      * Gets a connection to porter and adds a message listener to this.
      * @param boolean loadDefaultsFromFile_
      */
-    public YC(boolean loadDefaultsFromFile_) 
-    {
+    public YC(boolean loadDefaultsFromFile_) {
         super();
         loadCustomCommandsFromDatabase();
         ycDefaults = new YCDefaults(loadDefaultsFromFile_);
-        _systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_SYSTEM);
+        systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_SYSTEM);
         getPilConn().addMessageListener(this);
     }
-
-    protected BasicServerConnection getPilConn()
-    {
-        return ConnPool.getInstance().getDefPorterConn();        
+    
+    protected BasicServerConnection getPilConn() {
+        return ConnPool.getInstance().getDefPorterConn();
     }
-
+    
     /**
      * Execute the command, based on commandMode, selected object type, and YC properties.
      */
-    public void executeCommand()
-    {
-        //---------------------------------------------------------------------------------------
-        if ( getCommandMode() == CGP_MODE )
-        {
-            porterRequest = new Request( 0, getExecuteCmdsVector().get(0), currentUserMessageID );
+    public void executeCommand() {
+        
+        if (getCommandMode() == CGP_MODE) {
+            
+            porterRequest = new Request(0, getExecuteCmdsVector().get(0), currentUserMessageID);
             porterRequest.setPriority(getCommandPriority());
             getExecuteCmdsVector().remove(0);    //remove the sent command from the list!
-            writeNewRequestToPorter( porterRequest );
-        }
-
-        else if( getTreeItem() != null )    //must setup the request to send
-        {
+            writeNewRequestToPorter(porterRequest);
+            
+        } else if (getTreeItem() != null) {
+            // Must setup the request to send.
             // Stops the requests from continuing (a.k.a. kills the "loop" command).
             sendMore = 0;
 
             // Device item selected (including other models)
-            if( getTreeItem() instanceof LiteYukonPAObject )
-            {
+            if (getTreeItem() instanceof LiteYukonPAObject) {
                 LiteYukonPAObject liteYukonPao = (LiteYukonPAObject) getTreeItem();
                 setLiteYukonPao(liteYukonPao);
                 handleDevice();
-            }
-            // Meter number item in tree selected.
-            else if( getTreeItem() instanceof LiteDeviceMeterNumber )
-            {
+            } else if (getTreeItem() instanceof LiteDeviceMeterNumber) {
+                // Meter number item in tree selected.
                 LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
                 LiteYukonPAObject liteYukonPao = paoDao.getLiteYukonPAO(ldmn.getLiteID());
                 setLiteYukonPao(liteYukonPao);
                 handleDevice();
-            }        
-            // Serial Number item in tree selected.
-            else if (TreeModelEnum.isEditableSerial(getModelType()))
-            {
+            } else if (TreeModelEnum.isEditableSerial(getModelType())) {
+                // Serial Number item in tree selected.
                 handleSerialNumber();
-            }
-            // TestCollectionGroup is selected.
-            else if ( getModelType() == DeviceGroupTreeFactory.LiteBaseModel.class )
-            {
-                synchronized(YC.this)
-                {
+            } else if (getModelType() == DeviceGroupTreeFactory.LiteBaseModel.class) {
+                // TestCollectionGroup is selected.
+                synchronized (YC.this) {
+                    
                     DeviceGroup deviceGroup = (DeviceGroup) getTreeItem();
-                    DeviceGroupService dgs = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-                    Set<Integer> deviceIds = dgs.getDeviceIds(Collections.singleton(deviceGroup));
-                    //Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
-                    Vector<String> savedVector = (Vector<String>)getExecuteCmdsVector().clone();
+                    
+                    Set<Integer> deviceIds = deviceGroupService.getDeviceIds(Collections.singleton(deviceGroup));
+                    Vector<String> savedVector = new Vector<>();
+                    savedVector.addAll(getExecuteCmdsVector());
                     Vector<String> finishedVector = null;
                     
                     Iterator<Integer> deviceIter = deviceIds.iterator();
-                    while (deviceIter.hasNext())
-                    {
+                    while (deviceIter.hasNext()) {
                         int deviceId = deviceIter.next();
                         LiteYukonPAObject liteYukonPao = paoDao.getLiteYukonPAO(deviceId);
                         setLiteYukonPao(liteYukonPao);
                         handleDevice();
-                        // clone the vector because handleDevice() removed the command but in truth, it
-                        // shouldn't be removed until all of the devices have been looped through.                            
+                        // Clone the vector because handleDevice() removed the command but in truth, it
+                        // shouldn't be removed until all of the devices have been looped through.
                         finishedVector = executeCmdsVector;
-                        executeCmdsVector = (Vector<String>)savedVector.clone();
+                        executeCmdsVector = new Vector<>();
+                        executeCmdsVector.addAll(savedVector);
                     }
                     executeCmdsVector = finishedVector;
                 }
+            } else {
+                log.info(getModelType() + " - New type needs to be handled");
             }
-            else
-            {
-                CTILogger.info(getModelType() + " - New type needs to be handled");
-            }
-        }
-        else    //are we coming from the servlet and have no treeObject? (only deviceID or serial number)
-        {
-            //Send the command out on deviceID/serialNumber
-            if(liteYukonPao != null)
-            {    
+            
+        } else {
+            // Are we coming from the servlet and have no treeObject? (only deviceID or serial number)
+            // Send the command out on deviceID/serialNumber.
+            if (liteYukonPao != null) {
                 handleDevice();
-            }
-            else if( !serialNumber.equalsIgnoreCase(PAOGroups.STRING_INVALID))
-            {
+            } else if (!serialNumber.equalsIgnoreCase(PAOGroups.STRING_INVALID)) {
                 handleSerialNumber();
             }
         }
     }
-
     
-    /**
-     * Returns the allRoutes.
-     * @return Object[]
-     */
-    public Object[] getAllRoutes()
-    {
-        if( allRoutes == null) {
-            allRoutes = YukonSpringHook.getBean(PaoDao.class).getAllLiteRoutes();
+    public Object[] getAllRoutes() {
+        if (allRoutes == null) {
+            allRoutes = paoDao.getAllLiteRoutes();
         }
         return allRoutes;
     }
-    /**
-     * Returns the command.
-     * @return java.lang.String
-     */
-    public String getCommandString()
-    {
+    
+    public String getCommandString() {
         return commandString;
     }
-
-    /** Vector of String commands, parsed from commandString */    
-    public Vector<String> getExecuteCmdsVector()
-    {
-        if( executeCmdsVector == null) {
+    
+    /** Vector of String commands, parsed from commandString */
+    public Vector<String> getExecuteCmdsVector() {
+        if (executeCmdsVector == null) {
             executeCmdsVector = new Vector<String>(2);
         }
         return executeCmdsVector;
     }
-
+    
     /**
      * Retturns the YCDefaults commandPriority (values 1-14)
      * @return int commandPriority 
      */
-    public int getCommandPriority()
-    {
+    public int getCommandPriority() {
         return getYCDefaults().getCommandPriority();
     }
+    
     /**
      * Returns the loop command type
-       * Valid loop types are:
+     * Valid loop types are:
      * NOLOOP=0                - loop not parsed
      * LOOP=1                - loop alone parsed
      * LOOPNUM=2            - loop for some num of times
@@ -345,350 +318,327 @@ public class YC extends Observable implements MessageListener
      * LOOPLOCATE_ROUTE=4    - loop locate route parsed
      * @return int loopType
      */
-    public int getLoopType()
-    {
+    public int getLoopType() {
         return loopType;
     }
+    
     /**
      * Return the model type.
      * Refer to com.cannontech.database.model.* for valid models.
      * @return int modelType
      */
-    public Class<? extends LiteBaseTreeModel> getModelType()
-    {
+    public Class<? extends LiteBaseTreeModel> getModelType() {
         return modelType;
     }
+    
     /**
      * Returns the "queue" command string if queuing is turned on.
-     * @return java.lang.String 
      */
-    public String getQueueCommandString()
-    {
-        if( getYCDefaults().getQueueExecuteCommand()) {
+    public String getQueueCommandString() {
+        if (getYCDefaults().getQueueExecuteCommand()) {
             return "";
         } else {
             return " noqueue";
         }
     }
+    
     /**
      * Return the routeID
-     * TODO - RouteID is only useful for loop commands or 
-     *  those applied to serialNumber.
-     * @return int routeID
+     * TODO - RouteID is only useful for loop commands or those applied to serialNumber.
      */
-    public int getRouteID()
-    {
+    public int getRouteID() {
         return routeID;
     }
-    /**
-     * Return the serialNumber
-     * @return String serialNumber
-     */
-    public String getSerialNumber()
-    {
+    
+    public String getSerialNumber() {
         return serialNumber;
     }
+    
     /**
-     * Return the treeItem.
-     * The current selected tree object
-     * @return java.lang.Object treeItem
+     * Return the treeItem. (the current selected tree object)
      */
-    public Object getTreeItem()
-    {
+    public Object getTreeItem() {
         return treeItem;
     }
     
     /**
      * Return the default properties.
-     * @return com.cannontech.clientutils.commander.YCDefaults ycDefaults
      */
-    public YCDefaults getYCDefaults()
-    {
-        if( ycDefaults == null) {
+    public YCDefaults getYCDefaults() {
+        if (ycDefaults == null) {
             ycDefaults = new YCDefaults();
         }
         return ycDefaults;
     }
     
     /**
-     * Gets the device ID(opt1) of the object, or selected serial number(opt2) if deviceID is <0
+     * Gets the device ID(opt1) of the object, or selected serial number(opt2) if deviceID is < 0.
      * Checks for the command string "loop" to exist.
      * Creates the message.Request to send to porter.
      * Saves the message.Request if "loop" was found in the string so the Request can be resubmitted.
      * Write's the Request to the porter connection.
      */
-    public void handleDevice()
-    {
-        if( liteYukonPao == null)    //no device selected
-        {
+    public void handleDevice() {
+        
+        if (liteYukonPao == null) {
+            // No device selected
             logCommand(" *** Warning: Please select a Device (or Serial Number) ***");
             return;
         }
     
-        setLoopType( parseLoopCommand() );
+        setLoopType(parseLoopCommand());
 
         Vector<String> commandVec = getExecuteCmdsVector();
-        for (int i = 0; i < commandVec.size(); i++)
-        {    
-            String command = getExecuteCmdsVector().get(i);            
+        for (int i = 0; i < commandVec.size(); i++) {
+            String command = getExecuteCmdsVector().get(i);
             if (liteYukonPao.getPaoType().isPlc() || liteYukonPao.getPaoType().isRepeater()) {
-                if( command.indexOf("noqueue") < 0) {
-                    getExecuteCmdsVector().setElementAt( command + getQueueCommandString(), i);    //replace the old command with this one
+                if (command.indexOf("noqueue") < 0) {
+                    // Replace the old command with this one.
+                    getExecuteCmdsVector().setElementAt(command + getQueueCommandString(), i);
                 }
             }
         }
     
-        //send the first command from the vector out!
-        porterRequest = new Request( liteYukonPao.getLiteID(), getExecuteCmdsVector().get(0), currentUserMessageID );
+        // Send the first command from the vector out.
+        porterRequest = new Request(liteYukonPao.getLiteID(), getExecuteCmdsVector().get(0), currentUserMessageID);
         porterRequest.setPriority(getCommandPriority());
-        getExecuteCmdsVector().remove(0);    //remove the sent command from the list!
         
-        if (getLoopType() == LOOPLOCATE)
-         {
-            if( getAllRoutes() != null && getAllRoutes()[sendMore] instanceof LiteYukonPAObject)
-            {
-                LiteYukonPAObject rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
-                while( rt.getPaoType() == PaoType.ROUTE_MACRO && sendMore > 0)
-                {
+        // Remove the sent command from the list.
+        getExecuteCmdsVector().remove(0);
+        
+        if (getLoopType() == LOOPLOCATE) {
+            
+            if (getAllRoutes() != null && getAllRoutes()[sendMore] instanceof LiteYukonPAObject) {
+                
+                LiteYukonPAObject route = (LiteYukonPAObject) getAllRoutes()[sendMore];
+                
+                while (route.getPaoType() == PaoType.ROUTE_MACRO && sendMore > 0) {
                     sendMore--;
-                    rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
+                    route = (LiteYukonPAObject) getAllRoutes()[sendMore];
                 }
     
-                if( rt.getPaoType() == PaoType.ROUTE_MACRO) {
+                if (route.getPaoType() == PaoType.ROUTE_MACRO) {
                     return;
                 }
     
-                porterRequest.setRouteID(rt.getYukonID());
+                porterRequest.setRouteID(route.getYukonID());
             }
-         }
-        else if( getLoopType() == LOOPLOCATE_ROUTE )
-        {
+        } else if (getLoopType() == LOOPLOCATE_ROUTE) {
             porterRequest.setRouteID(getRouteID());
         }
+        
         writeNewRequestToPorter(porterRequest);
     }
+    
     /**
      * Looks for the string "serial" in the command.
-     * If the string is not found, tack it on to the string along with the currentSelectedSerialNumber.
+     * 
+     * If the string is not found, tack it on to the string 
+     * along with the currentSelectedSerialNumber.
+     * 
      * Create a message.Request to send to porter.
      * Set the route selected for the message.Request.
      * Write Request to the connection to porter.
      */
-    public void handleSerialNumber()
-    {
-        for (int i = 0; i < getExecuteCmdsVector().size(); i++)
-        {
+    public void handleSerialNumber() {
+        
+        for (int i = 0; i < getExecuteCmdsVector().size(); i++) {
+            
             String command = getExecuteCmdsVector().get(i);
             int index = command.indexOf("serial");
             
-            if( index < 0 ) {
-                getExecuteCmdsVector().setElementAt( command + " serial " + serialNumber , i);
-            } else {    // set serial as in command string
-                StringTokenizer st = new StringTokenizer( command.substring(index+6) );
-                if (st.hasMoreTokens())
-                {
-                    /** TODO only one serial number can be entered with multiple commands at this time */
+            if (index < 0) {
+                getExecuteCmdsVector().setElementAt(command + " serial " + serialNumber , i);
+            } else {
+                // Set serial as in command string
+                StringTokenizer st = new StringTokenizer(command.substring(index+6));
+                if (st.hasMoreTokens()) {
+                    /** TODO only one serial number can be entered with multiple commands at this time. */
                     String serialNumToken = st.nextToken();
-                    if( i > 0)    //more than one command
-                    {
-                        if( !getSerialNumber().equalsIgnoreCase(serialNumToken) ) {
-                            logCommand(" ** Warning: Different serial numbers are being used in this multiple command, the first serial number will be used for all commands!");
+                    if (i > 0) {
+                        // More than one command
+                        if (!getSerialNumber().equalsIgnoreCase(serialNumToken)) {
+                            logCommand(" ** Warning: Different serial numbers are being used in this multiple command." 
+                                    + " The first serial number will be used for all commands!");
                         }
                     } else {
-                        setSerialNumber( serialNumToken);
+                        setSerialNumber(serialNumToken);
                     }
                 }
             }
         }
         
-        if ( getSerialNumber() == null)    // NO serial Number Selected
-        {
-            logCommand(" *** Warning: Please select a Serial Number (or Device)***");
+        if (getSerialNumber() == null) {
+            // No serial Number Selected
+            logCommand(" *** Warning: Please select a Serial Number (or Device) ***");
             return;
         }
     
-        setLoopType( parseLoopCommand() );
+        setLoopType(parseLoopCommand());
         
-        porterRequest = new Request( com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID, getExecuteCmdsVector().get(0), currentUserMessageID );
+        porterRequest = new Request(Device.SYSTEM_DEVICE_ID, getExecuteCmdsVector().get(0), currentUserMessageID);
         porterRequest.setPriority(getCommandPriority());
-        getExecuteCmdsVector().remove(0);    //remove the sent command from the list!
+        
+        // Remove the sent command from the list.
+        getExecuteCmdsVector().remove(0);
 
-        // Get routeID / set it in the request
-        if( getRouteID() >= 0)
-        {
+        // Get routeID / set it in the request.
+        if (getRouteID() >= 0) {
             porterRequest.setRouteID(getRouteID());
+        } else {
+            log.info("Route cannot be determined. " + getRouteID());
         }
-        else
-        {
-            CTILogger.info("Route cannot be determined. " + getRouteID());
-        }
-        writeNewRequestToPorter( porterRequest );
+        
+        writeNewRequestToPorter(porterRequest);
     }
     
     /**
      * Returns the send command mode.
      * Valid values are:
-     * DEFAULT_MODE = 0;    //send commands with YC addt's (loop, queue, route..)
-     * CGP_MODE = 1;    //send commands as they are, no parsing done on them
-     * @return int commandMode
+     * DEFAULT_MODE = 0; Send commands with YC addt's (loop, queue, route..).
+     * CGP_MODE = 1; Send commands as they are, no parsing done on them.
      */
-    public int getCommandMode() 
-    {
+    public int getCommandMode() {
         return commandMode;
     }
     
     /**
      * Notifies the observers of new logging data.
-     * @param logString_ java.lang.String
      */
-    public void logCommand(String logString_)
-    {
+    public void logCommand(String command) {
         setChanged();
-        this.notifyObservers(logString_);
+        this.notifyObservers(command);
     }
     
     /**
      * Search for the string "loop" in the command.
      * If loop is found, search for any value in the command (following "loop").
      * Set sendMore to the number found after loop (which tells how many times loop wishes to perform).
-     * Return boolean: True if "loop" found, False if not found.
      */
-    public int parseLoopCommand()
-    {
-        for (int i = 0; i < getExecuteCmdsVector().size(); i++)
-        {
+    public int parseLoopCommand() {
+        
+        for (int i = 0; i < getExecuteCmdsVector().size(); i++) {
+            
             String tempCommand = getExecuteCmdsVector().get(i).toLowerCase();
             String valueSubstring = null;
                 
             int loopIndex = tempCommand.indexOf("loop");
         
-            if ( loopIndex >= 0)    //a loop exists
-            {    
-                for (int j = tempCommand.indexOf("loop") + 4; j < tempCommand.length(); j++)
-                {
-                    if ( tempCommand.charAt(j) != ' ' && tempCommand.charAt(j) != '\t')    //skip whitespaces
-                    {
-                        valueSubstring = tempCommand.substring( j );
+            if (loopIndex >= 0) {
+                // A loop exists
+                for (int j = tempCommand.indexOf("loop") + 4; j < tempCommand.length(); j++) {
+                    // Skip whitespaces
+                    if (tempCommand.charAt(j) != ' ' && tempCommand.charAt(j) != '\t') {
+                        valueSubstring = tempCommand.substring(j);
                         break;
                     }
                 }
                 
-                if (valueSubstring != null)
-                {
-                    if( valueSubstring.startsWith("locater"))    //parse out locateroute
-                    {
-                        synchronized(YC.class)
-                        {
+                if (valueSubstring != null) {
+                    if (valueSubstring.startsWith("locater")) {
+                        // Parse out locateroute
+                        synchronized (YC.class) {
                             getExecuteCmdsVector().setElementAt("loop", i);
                         }
+                        
                         return LOOPLOCATE_ROUTE;
-                    }
-                    else if( valueSubstring.startsWith("loc"))    //parse out locate
-                    {
-                        synchronized (YC.class)
-                        {
+                        
+                    } else if (valueSubstring.startsWith("loc")) {
+                        // Parse out locate
+                        synchronized (YC.class) {
                             getExecuteCmdsVector().setElementAt("loop", i);
-                            //loop through each route
+                            // Loop through each route
                             sendMore = getAllRoutes().length - 1;
                         }
-                        return LOOPLOCATE;
-                    }
-                    else
-                    {
-                        Integer value = null;
                         
-                        for (int j = 0; j < valueSubstring.length(); j++)
-                        {
-                            if ( valueSubstring.charAt(j) == ' ' || valueSubstring.charAt(j) == '\t')    //skip whitespaces
-                            {
-                                valueSubstring = valueSubstring.substring(0, j );
+                        return LOOPLOCATE;
+                        
+                    } else {
+                        
+                        for (int j = 0; j < valueSubstring.length(); j++) {
+                            
+                            if (valueSubstring.charAt(j) == ' ' || valueSubstring.charAt(j) == '\t') {
+                                // Skip whitespaces
+                                valueSubstring = valueSubstring.substring(0, j);
                                 break;
                             }
                         }
-                        try
-                        {
-                            value = new Integer(valueSubstring );    //assume it is an integer.
+                        
+                        int value;
+                        try {
+                            // Assume it is an integer.
+                            value = Integer.parseInt(valueSubstring);
+                        } catch(NumberFormatException nfe) {
+                            value = 1;
                         }
-                        catch(NumberFormatException nfe)
-                        {
-                            value = new Integer(1);
-                        }
-                        synchronized (YC.class) 
-                        {
+                        
+                        synchronized (YC.class) {
                             getExecuteCmdsVector().setElementAt("loop", i);
-                            //Subtract one because 0 is the last occurance, not 1.  (Ex. 0-4 not 1-5)
-                            sendMore = value.intValue() - 1;
+                            // Subtract one because 0 is the last occurance, not 1.  (Ex. 0-4 not 1-5)
+                            sendMore = value - 1;
                         }
+                        
                         return LOOPNUM;
+                        
                     }
                 }
+                
                 return LOOP;
             }
         }
+        
         return NOLOOP;
     }
     
-    /**
-     * Sets allRoutes with allRoutesArray Object[]
-     * @param allRoutesVector_ java.util.Vector
-     */
-    public void setAllRoutes(Object[] allRoutesArray_) 
-    {
-        if (allRoutesArray_ == null) {
-            allRoutes = null;
-        } else
-        {
-            allRoutes = new Object[allRoutesArray_.length];
-            for ( int i = 0; i < allRoutesArray_.length; i++)
-            {
-                allRoutes[i] = allRoutesArray_[i];
+    public void setAllRoutes(Object[] allRoutes) {
+        if (allRoutes == null) {
+            this.allRoutes = null;
+        } else {
+            this.allRoutes = new Object[allRoutes.length];
+            for (int i = 0; i < allRoutes.length; i++) {
+                this.allRoutes[i] = allRoutes[i];
             }
         }
     }
+    
     /**
-     * Set the commmand string
-     * @param command_ java.lang.String
+     * Set the commmand string.
      * @throws PaoAuthorizationException 
      */
-    public void setCommandString(String command_) throws PaoAuthorizationException
-    {
-        commandString = command_;
-        setCommands(commandString);
+    public void setCommandString(String command) throws PaoAuthorizationException {
+        this.commandString = command;
+        setCommands(this.commandString);
         
         checkCommandAuthorization();
     }
 
     /**
      * Set the command string without checking command authorization.
-     * @param command java.lang.String
      */
-    public void setCommandStringWithoutPaoAuth(String command)
-    {
+    public void setCommandStringWithoutPaoAuth(String command) {
         setCommands(command);
     }
     
     /**
      * Takes a command string, then parses the string for multiple commands
-     *  separated by the '&' character
+     * separated by the '&' character.
      */
-    private void setCommands(String command_)
-    {
-        //remove everything from the vector, otherwise we could get in a big loop...
+    private void setCommands(String command) {
+        // Remove everything from the vector, otherwise we could get in a big loop...
         getExecuteCmdsVector().removeAllElements();
         
         final char SEPARATOR = '&';
-        String tempCommand = command_;
+        String tempCommand = command;
 
         int begIndex = 0;
         int firstQuote = tempCommand.indexOf("'");
         int secondQuote = tempCommand.indexOf("'", firstQuote+1);
         int sepIndex = tempCommand.indexOf(SEPARATOR);
-        if(sepIndex > firstQuote && sepIndex < secondQuote) {
+        if (sepIndex > firstQuote && sepIndex < secondQuote) {
             sepIndex = tempCommand.indexOf(SEPARATOR, secondQuote);
         }
 
-        while(sepIndex > -1)
-        {
+        while(sepIndex > -1) {
             String begString = tempCommand.substring(0, sepIndex).trim();
             begIndex = sepIndex+1;
             String cmd = getCommandFromLabel(begString) + " update"; 
@@ -696,16 +646,14 @@ public class YC extends Observable implements MessageListener
             tempCommand = tempCommand.substring(begIndex).trim();
             sepIndex = tempCommand.indexOf(SEPARATOR);
         }
-        //add the final (or only) command.
+        // Add the final (or only) command.
         getExecuteCmdsVector().add(getCommandFromLabel(tempCommand) + " update");
     }
     
     public void checkCommandAuthorization() throws PaoAuthorizationException{
-        
-        // Check authorization for each command 
+        // Check authorization for each command. 
         for (String commandObj : getExecuteCmdsVector()) {
-
-            if(!this.isAllowCommand(commandObj)){
+            if (!this.isAllowCommand(commandObj)) {
                 throw new PaoAuthorizationException("Unauthorized command", commandObj);
             }
         }
@@ -716,140 +664,121 @@ public class YC extends Observable implements MessageListener
     }
     
     public boolean isAllowCommand(String command, LiteYukonUser user) {
-
+        
         if (liteYukonPao != null) {
             return this.isAllowCommand(command, user, liteYukonPao);
-
         } else if (getModelType() == DeviceGroupTreeFactory.LiteBaseModel.class) {
-            
-            PaoCommandAuthorizationService service = (PaoCommandAuthorizationService) YukonSpringHook.getBean("paoCommandAuthorizationService");
-                return service.isAuthorized(user, command) || getCommandMode() == YC.CGP_MODE;
-            
+            return paoCommandAuthService.isAuthorized(user, command) || getCommandMode() == YC.CGP_MODE;
         } else if (!PAOGroups.STRING_INVALID.equalsIgnoreCase(serialNumber)) {
-            
             return this.isAllowCommand(command, user, "lmdevice");
         }
-
+        
         return false;
     }
         
     public boolean isAllowCommand(String command, LiteYukonUser user, Object object) {
-
+        
         if (object instanceof LiteYukonPAObject) {
-            PaoCommandAuthorizationService service = (PaoCommandAuthorizationService) YukonSpringHook.getBean("paoCommandAuthorizationService");
-
-            boolean authorized = service.isAuthorized(user, command, (LiteYukonPAObject) object)
+            boolean authorized = paoCommandAuthService.isAuthorized(user, command, (LiteYukonPAObject) object)
                     || getCommandMode() == YC.CGP_MODE;
             return authorized;
-
+            
         } else if (object instanceof String) {
-            LMCommandAuthorizationService service = (LMCommandAuthorizationService) YukonSpringHook.getBean("lmCommandAuthorizationService");
-            boolean authorized = service.isAuthorized(user, command, (String) object)
+            
+            boolean authorized = lmCommandAuthService.isAuthorized(user, command, (String) object)
                     || getCommandMode() == YC.CGP_MODE;
             return authorized;
         }
-
+        
         return false;
     }
-
+    
    /**
-     * Set the commandFileName based on the item instance.
-     * @param litebase LiteBase
-     */
-    public void setDeviceType(LiteBase liteBase)
-    {
-        if (liteBase instanceof LiteYukonPAObject) {    //TreeModelEnum.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
+    * Set the commandFileName based on the item instance.
+    */
+    public void setDeviceType(LiteBase liteBase) {
+        
+        if (liteBase instanceof LiteYukonPAObject) {
+            // TreeModelEnum.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
             setDeviceType(((LiteYukonPAObject)liteBase).getPaoType().getDbString());  
-        } else if(liteBase instanceof LiteDeviceMeterNumber) { //TreeModelEnum.DEVICE_METERNUMBER
+        } else if (liteBase instanceof LiteDeviceMeterNumber) {
+            // TreeModelEnum.DEVICE_METERNUMBER
             setDeviceType(((LiteDeviceMeterNumber)liteBase).getPaoType().getDbString());
         }  else {
             //*TODO - This is a really bad catch all...revise!*/
-            CTILogger.error("Device Type undefined. Item instance of " + (liteBase == null ? null :liteBase.getClass()));
+            log.error("Device Type undefined. Item instance of " + (liteBase == null ? null : liteBase.getClass()));
             setDeviceType("");
         }
     }
-
+    
     /**
      * Set the commandFileName based on the item instance.
-     * @param typeString String
      */
-    public void setDeviceType(String typeString)
-    {
-        deviceType = typeString;
-        CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
-        setLiteDeviceTypeCommandsVector(YukonSpringHook.getBean(CommandDao.class).getAllDevTypeCommands(deviceType));
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+        log.debug(" DEVICE TYPE for command lookup: " + this.deviceType);
+        setLiteDeviceTypeCommandsVector(commandDao.getAllDevTypeCommands(this.deviceType));
     }
     
     /**
-     * Set the commandMode
+     * Set the commandMode.
      * Valid values are:
-     * DEFAULT_MODE = 0;    //send commands with YC addt's (loop, queue, route..)
-     * CGP_MODE = 1;    //send commands as they are, no parsing done on them
-     * @param int mode_
+     * DEFAULT_MODE = 0; Send commands with YC addt's (loop, queue, route..).
+     * CGP_MODE = 1; Send commands as they are, no parsing done on them.
      */
-    public void setCommandMode(int mode_) 
-    {
-        commandMode = mode_;
+    public void setCommandMode(int commandMode) {
+        this.commandMode = commandMode;
     }
+    
     /**
-     * Set the loopType
-      * Valid loop types are:
-     * NOLOOP=0                - loop not parsed
-     * LOOP=1                - loop alone parsed
-     * LOOPNUM=2            - loop for some num of times
-     * LOOPLOCATE=3            - loop locate parsed
-     * LOOPLOCATE_ROUTE=4    - loop locate route parsed
-     * @param loopType_ int
+     * Set the loopType.
+     * Valid loop types are:
+     * NOLOOP=0 - Loop not parsed
+     * LOOP=1 - Loop alone parsed
+     * LOOPNUM=2 - Loop for some num of times
+     * LOOPLOCATE=3 - Loop locate parsed
+     * LOOPLOCATE_ROUTE=4 - Loop locate route parsed
      */
-    public void setLoopType(int loopType_) 
-    {
-        loopType = loopType_;
+    public void setLoopType(int loopType){
+        this.loopType = loopType;
     }
+    
     /**
-     * Set the modelType
+     * Set the modelType.
      * Refer to com.cannontech.database.model.* for valid models. 
-     * @param modelType_ int
      */
-    public void setModelType(Class<? extends LiteBaseTreeModel> modelType_)
-    {
-        modelType = modelType_;    
+    public void setModelType(Class<? extends LiteBaseTreeModel> modelType) {
+        this.modelType = modelType;
     }
-    /**
-     * Set the routeID
-     * @param routeID_ int 
-     */
-    public void setRouteID(int routeID_) 
-    {
-        routeID = routeID_;
+    
+    public void setRouteID(int routeID) {
+        this.routeID = routeID;
     }
+    
     /**
      * Set the serialNumber
      * The serialNumber for the LCR commands
-     * @param serialNumber_ java.lang.String
      */
-    public void setSerialNumber(String serialNumber_)
-    {
-        if( serialNumber_ == null) {
-            serialNumber = null;
+    public void setSerialNumber(String serialNumber) {
+        if (serialNumber == null) {
+            this.serialNumber = null;
         } else {
-            serialNumber = serialNumber_.trim();
+            this.serialNumber = serialNumber.trim();
         }
     }
-
+    
     /**
      * Set the selected treeItem object
-     * @param treeItem_ java.lang.Object
      */
-    public void setTreeItem(Object treeItem_) {
-        treeItem = treeItem_;
+    public void setTreeItem(Object treeItem) {
+        this.treeItem = treeItem;
 
-        // Set device id for tree item
-        if (treeItem instanceof LiteYukonPAObject) {
+        if (this.treeItem instanceof LiteYukonPAObject) {
+            // Set device id for tree item
             LiteYukonPAObject liteYukonPao = (LiteYukonPAObject) getTreeItem();
             setLiteYukonPao(liteYukonPao);
-        }
-        // Meter number item in tree selected.
-        else if (treeItem instanceof LiteDeviceMeterNumber) {
+        } else if (this.treeItem instanceof LiteDeviceMeterNumber) {
+            // Meter number item in tree selected.
             LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
             LiteYukonPAObject liteYukonPao = paoDao.getLiteYukonPAO(ldmn.getLiteID());
             setLiteYukonPao(liteYukonPao);
@@ -857,174 +786,172 @@ public class YC extends Observable implements MessageListener
             setLiteYukonPao(null);
         }
     }
+    
     /**
      * Set the YCDefualts. The default properties for YC setup.
-     * @param defaults_ com.cannontech.clientutils.commander.YCDefaults
      */
-    public void setYCDefaults(YCDefaults defaults_)
-    {
-        ycDefaults = defaults_;
+    public void setYCDefaults(YCDefaults ycDefaults) {
+        this.ycDefaults = ycDefaults;
     }
+    
     /**
      * Reset the sendMore counter to -1.
      * Stops multiple command processing done by YC.
      */
-    public void stop()
-    {
+    public void stop() {
         generateMessageID();
         sendMore = -1;
     }
+    
     /**
      * Assumes command may be a "user-friendly" string instead of a porter accepted command string.
-     * Attempt to substitute a porter accepted command for a "user-friendly" command
-     * (Ex.  User type "Read My Meter" instead of "getvalue kwh").
+     * Attempt to substitute a porter accepted command for a "user-friendly" command:
+     * Ex.  User type "Read My Meter" instead of "getvalue kwh"
      */
-    public String getCommandFromLabel(String command_)
-    {
-        if ( getCommandMode() == DEFAULT_MODE)    //Need to do all checks and setup for DEFAULT_MODE
-        {
-            if( getLiteDeviceTypeCommandsVector() != null)
-            {
-                String friendlyCommand = command_.trim();
-
-                //try to match the entered command string alias to a label in the database, return the actual command.
+    public String getCommandFromLabel(String command) {
+        
+        if (getCommandMode() == DEFAULT_MODE) {
+            // Need to do all checks and setup for DEFAULT_MODE
+            if (getLiteDeviceTypeCommandsVector() != null) {
+                
+                String friendlyCommand = command.trim();
+                // Try to match the entered command string alias to a label in the database, return the actual command.
                 // OR
-                //try to match the entered command string alias to the actual command in the database, return the actual command.
-                for (int i = 0; i < getLiteDeviceTypeCommandsVector().size(); i++)
-                {
-                    LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)getLiteDeviceTypeCommandsVector().get(i);
+                // Try to match the entered command string alias to the actual command in the database, return the actual command.
+                for (int i = 0; i < getLiteDeviceTypeCommandsVector().size(); i++) {
+                    LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand) getLiteDeviceTypeCommandsVector().get(i);
                     if (ldtc.isVisible()) {
-                        LiteCommand lc = YukonSpringHook.getBean(CommandDao.class).getCommand(ldtc.getCommandID());
-                        if (lc.getLabel().trim().equalsIgnoreCase(friendlyCommand) ||
-                            lc.getCommand().trim().equalsIgnoreCase(friendlyCommand)) {
-                            return lc.getCommand();
+                        LiteCommand liteCommand = commandDao.getCommand(ldtc.getCommandID());
+                        if (liteCommand.getLabel().trim().equalsIgnoreCase(friendlyCommand) ||
+                            liteCommand.getCommand().trim().equalsIgnoreCase(friendlyCommand)) {
+                            return liteCommand.getCommand();
                         }
                     }
                 }
-            }                
+            }
         }
-        return command_; //default, return whatever they typed in on the command line, didn't match with anything
+        
+        // Default, return whatever they typed in on the command line, didn't match with anything.
+        return command; 
     }
+    
     /**
      * Write Request message to porter.
-     * @param request com.cannontech.message.porter.message.Request
      */
-    public void writeNewRequestToPorter(Request request_)
-    {
-        java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");                    
+    public void writeNewRequestToPorter(Request request) {
+        
+        SimpleDateFormat format = new SimpleDateFormat("MMM d HH:mm:ss a z");
         long timer = (System.currentTimeMillis());
 
-        String log = "";
-        if( request_.getDeviceID() > 0) {
-            log = " Device \'" + YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(request_.getDeviceID()) + "\'";
+        String message = "";
+        if (request.getDeviceID() > 0) {
+            message = " Device \'" + paoDao.getYukonPAOName(request.getDeviceID()) + "\'";
         } else {
-            log = " Serial # \'" + serialNumber + "\'";
+            message = " Serial # \'" + serialNumber + "\'";
         }
 
-        if( isPilConnValid() )
-        {
+        if (isPilConnValid()) {
+            
             logCommand("[" + format.format(new java.util.Date(timer)) 
-                        + "] - {"+ currentUserMessageID + "} Command Sent to" + log + " -  \'" + request_.getCommandString() + "\'");
+                        + "] - {"+ currentUserMessageID + "} Command Sent to" + message 
+                        + " -  \'" + request.getCommandString() + "\'");
             startStopWatch(getTimeOut());
             addRequestMessage(currentUserMessageID);
             generateMessageID();
-            getPilConn().write( request_ );
-            logSystemEvent(request_.getCommandString(), request_.getDeviceID());
-        }
-        else
-        {
-            String porterError = "Command request not sent - Connection to Yukon Port Control, " +
-                    ((ClientConnection)getPilConn()).getConnectionUri().getRawAuthority() + ", is not valid.";
-            String logOutput= "<BR>["+ displayFormat.format(new java.util.Date()) + "]- " + porterError;
+            getPilConn().write(request);
+            logSystemEvent(request.getCommandString(), request.getDeviceID());
+            
+        } else {
+            ClientConnection connection = (ClientConnection)getPilConn();
+            String porterError = "Command request not sent - Connection to Yukon Port Control, " 
+                    + connection.getConnectionUri().getRawAuthority() + ", is not valid.";
+            String logOutput= "<BR>["+ displayFormat.format(new java.util.Date()) + "] - " + porterError;
+            
             writeOutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput, MessageType.ERROR);
             setErrorMsg(porterError);
-            CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
-        }
             
+            log.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
+        }
+        
     }
-    /**
-     * Returns the porterRequest.
-     * @return com.cannontech.message.porter.message.Request
-     */
-    public Request getPorterRequest()
-    {
+    
+    public Request getPorterRequest() {
         return porterRequest;
     }
+    
     /**
      * A unique count id of Request messages sent to Porter.
-     * @return int currentUserMessageID
      */
-    public long getCurrentUserMessageID()
-    {
+    public long getCurrentUserMessageID() {
         return currentUserMessageID;
     }
-
+    
     /**
-     * Replaces the run() method and allows us to remove the Runnable interface
-     *  by using the MessageListener available to us.
-     * Verifies the messages are of Return type and then uses these messages to create
-     *  readable display/debug messages, OutputMessage.
-     */
-    /* (non-Javadoc)
-     * @see com.cannontech.message.util.MessageListener#messageReceived(com.cannontech.message.util.MessageEvent)
+     * Replaces the run() method and allows us to remove the Runnable interface 
+     * by using the MessageListener available to us. Verifies the messages are 
+     * of Return type and then uses these messages to create readable display/debug messages, OutputMessage.
      */
     @Override
-    public void messageReceived(MessageEvent e)
-    {
-        Message in = e.getMessage();        
-        if(in instanceof Return)
-        {
+    public void messageReceived(MessageEvent e) {
+        
+        Message in = e.getMessage();
+        
+        if (in instanceof Return) {
+            
             Return returnMsg = (Return) in;
-            synchronized(this)
-            {
-                CTILogger.debug("Message Received [ID:"+ returnMsg.getUserMessageID() + 
-                                " DevID:" + returnMsg.getDeviceID() + 
-                                " Command:" + returnMsg.getCommandString() +
-                                " Result:" + returnMsg.getResultString() + 
-                                " Status:" + returnMsg.getStatus() +
-                                " More:" + returnMsg.getExpectMore()+"]");
-                if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
-                {
-                    CTILogger.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
-                    CTILogger.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
+            
+            synchronized(this) {
+                
+                log.debug("Message Received [ID:"+ returnMsg.getUserMessageID() + 
+                          " DevID:" + returnMsg.getDeviceID() + 
+                          " Command:" + returnMsg.getCommandString() +
+                          " Result:" + returnMsg.getResultString() + 
+                          " Status:" + returnMsg.getStatus() +
+                          " More:" + returnMsg.getExpectMore()+"]");
+                
+                if (!getRequestMessageIDs().contains(returnMsg.getUserMessageID())) {
+                    
+                    log.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
+                    log.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
                     return;
-                }
-                else
-                {
-                    //Remove the messageID from the set of Executing ids.
-                    if(sendMore == 0 && returnMsg.getExpectMore() == 0)    //nothing more is coming, remove from list.
-                    {//Do not remove these from the "master" requestMessageIDs anymore, Per Corey 20060501
-                        getRequestMessageIDs_Executing().remove( new Long(returnMsg.getUserMessageID()));
+                    
+                } else {
+                    // Remove the messageID from the set of Executing ids.
+                    if (sendMore == 0 && returnMsg.getExpectMore() == 0) {
+                        // Nothing more is coming, remove from list.
+                        // Do not remove these from the "master" requestMessageIDs anymore, Per Corey 20060501
+                        getRequestMessageIDs_Executing().remove(returnMsg.getUserMessageID());
                     }
                 }
-                CTILogger.debug("Total Messages: " + getRequestMessageIDs().size()+ " | Commands Executing: " + getRequestMessageIDs_Executing().size());
+                
+                log.debug("Total Messages: " + getRequestMessageIDs().size() 
+                        + " | Commands Executing: " + getRequestMessageIDs_Executing().size());
                 String debugOutput = "";
                 String displayOutput = "";
 
-                /** When new (one that is different from the previous) userMessageID occurs, print datetime, command, etc info*/ 
-                if( prevUserID != returnMsg.getUserMessageID())
-                {
-                    //textColor = java.awt.Color.black;
-                    debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() 
-                            +"} {Device: " +  YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceID()) 
-                            + "} Return from '" + StringEscapeUtils.escapeHtml4(returnMsg.getCommandString()) + "'";
+                if (prevUserID != returnMsg.getUserMessageID()) {
+                    // When new (one that is different from the previous) userMessageID occurs, 
+                    // print datetime, command, etc info. 
+                    String command = StringEscapeUtils.escapeHtml4(returnMsg.getCommandString());
+                    debugOutput = "<BR>[" + displayFormat.format(returnMsg.getTimeStamp()) 
+                            + "] - {" + returnMsg.getUserMessageID() 
+                            + "} {Device: " +  paoDao.getYukonPAOName(returnMsg.getDeviceID()) 
+                            + "} Return from '" + command + "'";
                     writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.INFO);
                     debugOutput = "";
                     prevUserID = returnMsg.getUserMessageID();
+                    
                 }
                 
-                /** Add all PointData.getStr() objects to the output */
-                for (int i = 0; i < returnMsg.getVector().size(); i++)
-                {
-                    Object o = returnMsg.getVector().elementAt(i);
-                    if (o instanceof com.cannontech.message.dispatch.message.PointData)
-                    {
-                        com.cannontech.message.dispatch.message.PointData pd = (com.cannontech.message.dispatch.message.PointData) o;
-                        if ( pd.getStr().length() > 0 )
-                        {
-                            int tabCount = (60 - displayOutput.length())/ 24;
-                            for (int x = 0; x <= tabCount; x++)
-                            {
+                // Add all PointData.getStr() objects to the output.
+                for (Object o : returnMsg.getVector()) {
+                    
+                    if (o instanceof PointData) {
+                        
+                        PointData pd = (PointData) o;
+                        if (pd.getStr().length() > 0) {
+                            int tabCount = (60 - displayOutput.length()) / 24;
+                            for (int x = 0; x <= tabCount; x++) {
                                 displayOutput += "\t";
                             }
                             debugOutput += pd.getStr() + "<BR>";
@@ -1032,91 +959,93 @@ public class YC extends Observable implements MessageListener
                     }
                 }
                 
-                if( returnMsg.getExpectMore() == 0) {
+                MessageType messageType = MessageType.getMessageType(returnMsg.getStatus());
+                
+                if (returnMsg.getExpectMore() == 0) {
                     String routeName = null;
                     if (returnMsg.getRouteOffset() > 0) {
-                        routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getRouteOffset());
-                    }                                                                                
+                        routeName = paoDao.getYukonPAOName(returnMsg.getRouteOffset());
+                    }
                     
-                    if( routeName == null) {
-                        routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceID());
+                    if (routeName == null) {
+                        routeName = paoDao.getYukonPAOName(returnMsg.getDeviceID());
                     }
 
                     displayOutput = "Route:   " + routeName;
-                    int tabCount = (60 - displayOutput.length())/ 24;
-                    for (int i = 0; i <= tabCount; i++)
-                    {
+                    int tabCount = (60 - displayOutput.length()) / 24;
+                    for (int i = 0; i <= tabCount; i++) {
                         displayOutput += "\t";
                     }
-
-
-                    if( getLoopType() != YC.NOLOOP)
-                    {
-                        if( returnMsg.getStatus() != 0) {
-                            if( returnMsg.getExpectMore() == 0) {
-                                displayOutput += "Error  " + returnMsg.getStatus() + "\t( " + returnMsg.getResultString()+ " )";
+                    
+                    if (getLoopType() != YC.NOLOOP) {
+                        if (returnMsg.getStatus() != 0) {
+                            if (returnMsg.getExpectMore() == 0) {
+                                displayOutput += "Error  " + returnMsg.getStatus() 
+                                        + "\t(" + returnMsg.getResultString()+ ")";
                             }
-                        } else{    //status == 0 == successfull
-                            if( returnMsg.getExpectMore() == 0) {
+                        } else {
+                            // Status == 0 == successfull
+                            if (returnMsg.getExpectMore() == 0) {
                                 displayOutput += "Valid";
                             }
                         }
-                        writeOutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, MessageType.getMessageType(returnMsg.getStatus()));
+                        writeOutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, messageType);
                     }
                 }
                 
-                if(returnMsg.getResultString().length() > 0) {
+                if (returnMsg.getResultString().length() > 0) {
                     debugOutput += returnMsg.getResultString();
                 }
 
-                if (returnMsg.getStatus() > 1 ) {
-                    DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
-                    DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
-                    writeOutputMessage(OutputMessage.DEBUG_MESSAGE, "<B>"+deviceErrorDesc.getCategory()+"</B> -- " + deviceErrorDesc.getDescription(), MessageType.getMessageType(returnMsg.getStatus()));
-                } //0=success; 1="Not Normal" YUK-10411/TSSL-1230 changed 1 to an "error" (but don't have a good error-code.xml entry for this so still excluding it)
-                writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.getMessageType(returnMsg.getStatus()));
+                if (returnMsg.getStatus() > 1) {
+                    
+                    DeviceErrorDescription deviceErrorDesc = deviceErrorTranslatorDao.translateErrorCode(returnMsg.getStatus());
+                    writeOutputMessage(OutputMessage.DEBUG_MESSAGE, 
+                            "<B>" + deviceErrorDesc.getCategory() + "</B> -- " 
+                            + deviceErrorDesc.getDescription(), messageType);
+                    
+                }
+                
+                // 0=success; 1="Not Normal" YUK-10411/TSSL-1230 changed 1 to an "error",
+                // but don't have a good error-code.xml entry for this so still excluding it.
+                writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, messageType);
 
-                synchronized ( YukonCommander.class )
-                {
-                    if( returnMsg.getExpectMore() == 0)    //Only send next message when ret expects nothing more
-                    {
+                synchronized (YukonCommander.class) {
+                    // Only send next message when ret expects nothing more
+                    if (returnMsg.getExpectMore() == 0) {
+                        
                         //Break out of this outer loop.
                         doneSendMore:
-                        if( sendMore == 0)
-                        {
-                            // command finished, see if there are more commands to send
-                            if( !getExecuteCmdsVector().isEmpty())
-                            {
+                        if (sendMore == 0) {
+                            // Command finished, see if there are more commands to send.
+                            if (!getExecuteCmdsVector().isEmpty()) {
                                 executeCommand();
-                            }                            
-                        }
-                        else if ( sendMore > 0)
-                        {
-                            sendMore--;    //decrement the number of messages to send
-                            if (getLoopType() == YC.LOOPLOCATE)
-                            {
-                                if( getAllRoutes()[sendMore] instanceof LiteYukonPAObject)
-                                {
-                                    LiteYukonPAObject rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
-                                    while( rt.getPaoType() == PaoType.ROUTE_MACRO
-                                        && sendMore > 0)
-                                    {
+                            }
+                        } else if (sendMore > 0) {
+                            // Decrement the number of messages to send
+                            sendMore--;
+                            
+                            if (getLoopType() == YC.LOOPLOCATE) {
+                                if (getAllRoutes()[sendMore] instanceof LiteYukonPAObject) {
+                                    LiteYukonPAObject route = (LiteYukonPAObject) getAllRoutes()[sendMore];
+                                    while(route.getPaoType() == PaoType.ROUTE_MACRO && sendMore > 0) {
                                         sendMore--;
-                                        rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
+                                        route = (LiteYukonPAObject) getAllRoutes()[sendMore];
                                     }
-                                    // Have to check again because last one may be route_ macro
-                                    if(rt.getPaoType() == PaoType.ROUTE_MACRO) {
+                                    // Have to check again because last one may be route_ macro.
+                                    if (route.getPaoType() == PaoType.ROUTE_MACRO) {
                                         break doneSendMore;
                                     }
-
-                                    getPorterRequest().setRouteID(rt.getYukonID());
+                                    
+                                    getPorterRequest().setRouteID(route.getYukonID());
                                 }
                             }
+                            
                             startStopWatch(getTimeOut());
-                            getPilConn().write( getPorterRequest());    //do the saved loop request
-                        }
-                        else
-                        {
+                            // Do the saved loop request
+                            getPilConn().write(getPorterRequest());
+                            
+                        } else {
                             debugOutput = "Command cancelled<BR>";
                             writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.INFO);
                         }
@@ -1130,248 +1059,200 @@ public class YC extends Observable implements MessageListener
         OutputMessage message = new OutputMessage(displayAreaType, outputStr, messageType);
         setChanged();
         this.notifyObservers(message);
-        appendResultText( message);    
-    }
-    /**
-     * Returns result string from Return porter messages.
-     * @return String resultText
-     */
-    public String getResultText()
-    {
-        return resultText;
-    }
-
-    /**
-     * Sets the resultText
-     * @param string String
-     */
-    public void setResultText(String string)
-    {
-        resultText = string;
-    }
-    /**
-     * appends string to the resultText
-     * @param string String
-     */
-    public void appendResultText(OutputMessage message)
-    {
-        Color color = message.getMessageType().getColor();
-
-        resultText = getResultText() + "<BR>" +
-                    (color==null?"":"<span style='color:"+ColorUtil.getHTMLColor(color)+";'>") +
-                    message.getText() +
-                    (color==null?"":"</span>");
+        appendResultText(message);    
     }
     
-    public void clearResultText()
-    {
+    /**
+     * Returns result string from Return porter messages.
+     */
+    public String getResultText() {
+        return resultText;
+    }
+    
+    public void setResultText(String string) {
+        resultText = string;
+    }
+    
+    public void appendResultText(OutputMessage message) {
+        
+        Color color = message.getMessageType().getColor();
+        resultText = getResultText() + "<BR>" +
+                    (color == null ? "" : "<span style='color:" + ColorUtil.getHTMLColor(color) + ";'>") 
+                    + message.getText() + (color == null ? "" : "</span>");
+    }
+    
+    public void clearResultText() {
         setResultText("");
     }
-
+    
     /**
      * Write resultText to out.
-     * @param out OutputStream
      * @throws java.io.IOException
      */
-    public void encodeResults(java.io.OutputStream out) throws java.io.IOException 
-    {
-        do
-        {
-            StringBuffer buf = new StringBuffer("<table><tr><td>"+getResultText()+"</td></tr></table>");
-            
-            out.write(buf.toString().getBytes());    
-        }
-        while (false);
+    public void encodeResults(OutputStream out) throws IOException {
+        StringBuffer buf = new StringBuffer("<table><tr><td>" + getResultText() + "</td></tr></table>");
+        out.write(buf.toString().getBytes());
     }
-
+    
     /**
-     * generate a unique mesageid, don't let it be negative
-     * @return long currentMessageID
+     * Generate a unique mesageid, don't let it be negative.
      */
     private synchronized long generateMessageID() {
-        if(++currentUserMessageID == Integer.MAX_VALUE) {
+        if (++currentUserMessageID == Integer.MAX_VALUE) {
             currentUserMessageID = 1;
         }
         return currentUserMessageID;
     }
-    /**
-     * Returns a vector of com.cannontech.database.data.lite.LiteDeviceTypeCommand values.
-     * @return
-     */
-    public Vector getLiteDeviceTypeCommandsVector ()
-    {
+    
+    public Vector<LiteDeviceTypeCommand> getLiteDeviceTypeCommandsVector () {
         return liteDeviceTypeCommandsVector;
     }
-
+    
     /**
      * Vector of com.cannontech.database.data.lite.LiteDeviceTypeCommand values.
      * @param vector
      */
-    public void setLiteDeviceTypeCommandsVector (Vector vector)
-    {
+    public void setLiteDeviceTypeCommandsVector (Vector<LiteDeviceTypeCommand> vector) {
         liteDeviceTypeCommandsVector = vector;
-        java.util.Collections.sort(this.liteDeviceTypeCommandsVector, LiteComparators.liteDeviceTypeCommandComparator);
+        Collections.sort(this.liteDeviceTypeCommandsVector, LiteComparators.liteDeviceTypeCommandComparator);
     }
 
     /**
      * Returns the currently selected object from the tree model's device type string.
-     * @return String deviceType
      */
-    public String getDeviceType()
-    {
+    public String getDeviceType() {
         return deviceType;
     }
-
-    protected void addRequestMessage(long userMessageID)
-    {
-        getRequestMessageIDs().add(new Long(userMessageID));
-        getRequestMessageIDs_Executing().add(new Long(userMessageID));
+    
+    protected void addRequestMessage(long userMessageId) {
+        getRequestMessageIDs().add(userMessageId);
+        getRequestMessageIDs_Executing().add(userMessageId);
     }
-    public void clearRequestMessage()
-    {
+    
+    public void clearRequestMessage() {
         getRequestMessageIDs().clear();
         getRequestMessageIDs_Executing().clear();
-    }    
-    /**
-     * A set of request messageIDs that have been sent.  This set is NOT effected by the expectMore flag returning.
-     * @return
-     */
-    private java.util.Set getRequestMessageIDs()
-    {
-        return requestMessageIDs;
-    }
-    /**
-     * A set of request messageIDS that are currently executing. This set IS effected by the expectMore flag returning
-     * @return
-     */
-    public java.util.Set getRequestMessageIDs_Executing()
-    {
-        return requestMessageIDs_executing;
     }
     
     /**
-     * @return
+     * A set of request messageIDs that have been sent.
+     * This set is NOT effected by the expectMore flag returning.
      */
-    public void startStopWatch(int timeOutInMillis)
-    {
-        if( stopWatch == null) {
-            stopWatch = new Timer(timeOutInMillis, timerPerfomer);
-        }
-        stopWatch.setInitialDelay(timeOutInMillis);
-        stopWatch.setRepeats(false);
-        stopWatch.start();
+    private Set<Long> getRequestMessageIDs() {
+        return requestMessageIDs;
     }
+    
+    /**
+     * A set of request messageIDS that are currently executing. 
+     * This set IS effected by the expectMore flag returning
+     */
+    public Set<Long> getRequestMessageIDs_Executing() {
+        return requestMessageIDs_executing;
+    }
+
+    public void startStopWatch(int timeOutInMillis) {
+        if (this.stopWatch == null) {
+            this.stopWatch = new Timer(timeOutInMillis, timerPerfomer);
+        }
+        this.stopWatch.setInitialDelay(timeOutInMillis);
+        this.stopWatch.setRepeats(false);
+        this.stopWatch.start();
+    }
+    
     /**
      * Returns true if the timer is running, otherwise return false (timer has stopped).
-     * @return boolean
      */
-    public boolean isWatchRunning()
-    {
-        if( stopWatch != null && stopWatch.isRunning()) {
+    public boolean isWatchRunning() {
+        if (this.stopWatch != null && this.stopWatch.isRunning()) {
             return true;
         }
         return false;
     }
-    /**
-     * @return
-     */
-    public int getTimeOut()
-    {
-        return timeOut;
+    
+    public int getTimeOut() {
+        return this.timeOut;
     }
-
-    /**
-     * @param i
-     */
-    public void setTimeOut(int i)
-    {
-        timeOut = i;
+    
+    public void setTimeOut(int timeOut) {
+        this.timeOut = timeOut;
     }
-
-    /**
-     * @return
-     */
-    public ActionListener getTimerPerfomer()
-    {
-        if (timerPerfomer == null)
-        {
-            timerPerfomer = new ActionListener(){
+    
+    public ActionListener getTimerPerfomer() {
+        if (this.timerPerfomer == null) {
+            this.timerPerfomer = new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent e)
-                {
+                public void actionPerformed(ActionEvent e) {
                     setTimeOut(0);
-                    ((Timer)e.getSource()).stop();
+                    ((Timer) e.getSource()).stop();
                 }
             };
         }
-        return timerPerfomer;
+        return this.timerPerfomer;
     }
     
     /**
      * Load custom command files to be parsed for custom commands.
      */
-    private void loadCustomCommandsFromDatabase()
-    {
-        File f = new File(CtiUtilities.getCommandsDirPath()+"custom/");
+    private void loadCustomCommandsFromDatabase() {
         
-        if (f.exists())
-        {
-            String []fileNames = f.list();
+        File f = new File(commandsDir + "custom/");
+        
+        if (f.exists()) {
+            
+            String[] fileNames = f.list();
+            
             {
-                for (int i = 0; i < fileNames.length; i++)
-                {
-                    System.out.println(fileNames[i]);
-                    int extIndex= fileNames[i].lastIndexOf('.');
-                    if( extIndex > 0 )
-                    {
-                        String fileName = fileNames[i].substring(0, extIndex);
+                for (String fileName : fileNames) {
+                    
+                    log.info("Parsing custom file: " + fileName);
+                    
+                    int extIndex= fileName.lastIndexOf('.');
+                    if (extIndex > 0) {
+                        
+                        fileName = fileName.substring(0, extIndex);
                         String category = null;
                         
-                        if( PaoType.getPaoTypeId(fileName) != PaoType.INVALID)
-                        {
+                        if (PaoType.getPaoTypeId(fileName) != PaoType.INVALID) {
                             category = fileName;
-                        }
-                        else if( fileName.equalsIgnoreCase("alpha-base")) {
+                        } else if (fileName.equalsIgnoreCase("alpha-base")) {
                             category = CommandCategory.STRING_CMD_ALPHA_BASE;
-                        } else if( fileName.equalsIgnoreCase("cbc-base")) {
+                        } else if (fileName.equalsIgnoreCase("cbc-base")) {
                             category = CommandCategory.STRING_CMD_CBC_BASE;
-                        } else if( fileName.equalsIgnoreCase("ccu-base")) {
+                        } else if (fileName.equalsIgnoreCase("ccu-base")) {
                             category = CommandCategory.STRING_CMD_CCU_BASE;
-                        } else if( fileName.equalsIgnoreCase("iedbase")) {
+                        } else if (fileName.equalsIgnoreCase("iedbase")) {
                             category = CommandCategory.STRING_CMD_IED_BASE;
-                        } else if( fileName.equalsIgnoreCase("ion-base")) {
+                        } else if (fileName.equalsIgnoreCase("ion-base")) {
                             category = CommandCategory.STRING_CMD_ION_BASE;
-                        } else if( fileName.equalsIgnoreCase("lcu-base")) {
+                        } else if (fileName.equalsIgnoreCase("lcu-base")) {
                             category = CommandCategory.STRING_CMD_LCU_BASE;
-                        } else if( fileName.equalsIgnoreCase("lsbase")) {
+                        } else if (fileName.equalsIgnoreCase("lsbase")) {
                             category = CommandCategory.STRING_CMD_LP_BASE;
-                        } else if( fileName.equalsIgnoreCase("loadgroup-base")) {
+                        } else if (fileName.equalsIgnoreCase("loadgroup-base")) {
                             category = CommandCategory.STRING_CMD_LOAD_GROUP_BASE;
-                        } else if( fileName.equalsIgnoreCase("mct-base")) {
+                        } else if (fileName.equalsIgnoreCase("mct-base")) {
                             category = CommandCategory.STRING_CMD_MCT_BASE;
-                        } else if( fileName.equalsIgnoreCase("rtu-base")) {
+                        } else if (fileName.equalsIgnoreCase("rtu-base")) {
                             category = CommandCategory.STRING_CMD_RTU_BASE;
-                        } else if( fileName.equalsIgnoreCase("repeater-base")) {
+                        } else if (fileName.equalsIgnoreCase("repeater-base")) {
                             category = CommandCategory.STRING_CMD_REPEATER_BASE;
-                        } else if( fileName.equalsIgnoreCase("tcu-base")) {
+                        } else if (fileName.equalsIgnoreCase("tcu-base")) {
                             category = CommandCategory.STRING_CMD_TCU_BASE;
-                        } else if( fileName.equalsIgnoreCase("lcrserial")) {
+                        } else if (fileName.equalsIgnoreCase("lcrserial")) {
                             category = CommandCategory.STRING_CMD_SERIALNUMBER;
-                        } else
-                        {
-                            CTILogger.info("UNknown filename: " + fileName);
+                        } else {
+                            log.info("Unknown filename: " + fileName);
                         }
-    
-                        if(category != null)
-                        {
-                            parseCommandFile(f.getAbsolutePath()+"/"+fileNames[i], category);
+                        
+                        if (category != null) {
+                            parseCommandFile(f.getAbsolutePath() + "/" + fileName, category);
                         }
-                        writeProcessedFile(fileNames[i]);
+                        
+                        writeProcessedFile(fileName);
                     }
                 }
             }
             //Force a reload of all commands and deviceTypeCommands!
-            IDatabaseCache cache = DefaultDatabaseCache.getInstance();
             cache.releaseAllCommands();
             cache.releaseAllDeviceTypeCommands();
         }
@@ -1379,162 +1260,149 @@ public class YC extends Observable implements MessageListener
     
     /**
      * Parse command file for custom commands.
-     * @param dirFileName
-     * @param category
      */
-    private void parseCommandFile(String dirFileName, String category)
-    {
+    private void parseCommandFile(String dirFileName, String category) {
+        
         KeysAndValuesFile kavFile = new KeysAndValuesFile(dirFileName);
         KeysAndValues keysAndValues = kavFile.getKeysAndValues();
         
-        if( keysAndValues != null )
-        {
+        if (keysAndValues != null) {
+            
             String labels[] = keysAndValues.getKeys();
             String commands[] = keysAndValues.getValues();
 
-            IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-            List allCmds = cache.getAllCommands();
+            List<LiteCommand> allCommands = cache.getAllCommands();
 
-            for (int i = 0; i < labels.length; i++)
-            {
-                Command cmd = new Command();
-                cmd.setLabel(labels[i].trim());
-                cmd.setCommand(commands[i].trim());
-                cmd.setCategory(category);
+            for (int i = 0; i < labels.length; i++) {
+                
+                Command command = new Command();
+                command.setLabel(labels[i].trim());
+                command.setCommand(commands[i].trim());
+                command.setCategory(category);
                 boolean exists = false;
-                for (int j = 0; j < allCmds.size(); j++)
-                {
-                    LiteCommand lc = (LiteCommand)allCmds.get(j);
-                    if( (lc.getCommand().equalsIgnoreCase(cmd.getCommand()) &&
-                            lc.getLabel().equalsIgnoreCase(cmd.getLabel())))
-                    {
+                
+                for (LiteCommand liteCommand : allCommands) {
+                    if ((liteCommand.getCommand().equalsIgnoreCase(command.getCommand()) 
+                            && liteCommand.getLabel().equalsIgnoreCase(command.getLabel()))) {
                         exists = true;
                         break;
                     }
                 }
-                if( !exists)
-                {
-                    insertDBPersistent(cmd, Transaction.INSERT);
+                
+                if (!exists) {
+                    insertDBPersistent(command, Transaction.INSERT);
                     //Lazy man's cache reload! (...we don't have a dispatch connection)
-                    cache.releaseAllCommands();                        
-                    addDeviceTypeCommand(category, cmd);
-                    System.out.println("adding: " + cmd.toString() + " ID:" + cmd.getCommandID().toString());
+                    cache.releaseAllCommands();
+                    addDeviceTypeCommand(category, command);
+                    log.info("Adding: " + command.toString() + " ID:" + command.getCommandID().toString());
                 }
             }
-            
         }
     }
     
     /**
-     * insert item into database.  No DBChange is sent out.
-     * @param item
-     * @param transType
+     * Insert item into database.  No DBChange is sent out.
      */
-    public void insertDBPersistent(DBPersistent item, int transType) 
-    {
-        if( item != null )
-        {
-            try
-            {
+    public void insertDBPersistent(DBPersistent item, int transType) {
+        
+        if (item != null) {
+            try {
                 Transaction t = Transaction.createTransaction(transType, item);
                 item = t.execute();
+            } catch(TransactionException | NullPointerException e) {
+                log.error(e.getMessage(), e);
             }
-            catch( com.cannontech.database.TransactionException e )
-            {
-                CTILogger.error( e.getMessage(), e );
-            }
-            catch( NullPointerException e )
-            {
-                CTILogger.error( e.getMessage(), e );
-            }
-            
         }
-    }    
+    }
+    
     /**
-     * Inserts a deviceTypeCommand into the database for the cmd and devType parameters.
-     * If the devType is a category, then an entry for every deviceType in that category is inserted.
+     * Inserts a deviceTypeCommand into the database for the command and deviceType parameters.
+     * If the deviceType is a category, then an entry for every deviceType in that category is inserted.
      */
-    private void addDeviceTypeCommand(String devType, Command cmd)
-    {
-        if( CommandCategory.isCommandCategory(devType))
-        {
-    //        The deviceType is actually a category, not a deviceType from YukonPaobject.paoType column
-            ArrayList<PaoType> paoTypes = CommandCategory.getAllTypesForCategory(devType);
-            DeviceTypeCommand dbP = null;
+    private void addDeviceTypeCommand(String deviceType, Command command) {
+        
+        int nextId = com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias());
+        
+        if (CommandCategory.isCommandCategory(deviceType)) {
+            // The deviceType is actually a category, not a deviceType from YukonPaobject.paoType column
+            ArrayList<PaoType> paoTypes = CommandCategory.getAllTypesForCategory(deviceType);
+            DeviceTypeCommand deviceTypeCommand = null;
             for (PaoType paoType : paoTypes) {
                 //Add to DeviceTypeCommand table, entries for all deviceTypes! yikes...I know
-                dbP = new DeviceTypeCommand();
-                dbP.getDeviceTypeCommand().setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
-                dbP.getDeviceTypeCommand().setDeviceType(paoType.getDbString());
-                dbP.getDeviceTypeCommand().setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
-                dbP.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
-                dbP.setCommand(cmd);
-                insertDBPersistent(dbP, Transaction.INSERT);
+                deviceTypeCommand = new DeviceTypeCommand();
+                deviceTypeCommand.getDeviceTypeCommand().setDeviceCommandID(nextId);
+                deviceTypeCommand.getDeviceTypeCommand().setDeviceType(paoType.getDbString());
+                
+                // Hey, default it, we're going to update it in a bit anyway right?
+                deviceTypeCommand.getDeviceTypeCommand().setDisplayOrder(new Integer(20));
+                
+                deviceTypeCommand.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
+                deviceTypeCommand.setCommand(command);
+                
+                insertDBPersistent(deviceTypeCommand, Transaction.INSERT);
             }
-        }
-        else
-        {
+            
+        } else {
             //Add to DeviceTypeCommand table, entries for all deviceTypes! yikes...I know
-            DeviceTypeCommand dbP = new DeviceTypeCommand();
-            dbP.getDeviceTypeCommand().setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
-            dbP.getDeviceTypeCommand().setDeviceType(devType);
-            dbP.getDeviceTypeCommand().setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
-            dbP.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
-            dbP.setCommand(cmd);
-            insertDBPersistent(dbP, Transaction.INSERT);
+            DeviceTypeCommand deviceTypeCommand = new DeviceTypeCommand();
+            deviceTypeCommand.getDeviceTypeCommand().setDeviceCommandID(nextId);
+            deviceTypeCommand.getDeviceTypeCommand().setDeviceType(deviceType);
+            
+            // Hey, default it, we're going to update it in a bit anyway right?
+            deviceTypeCommand.getDeviceTypeCommand().setDisplayOrder(new Integer(20));
+            
+            deviceTypeCommand.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
+            deviceTypeCommand.setCommand(command);
+            
+            insertDBPersistent(deviceTypeCommand, Transaction.INSERT);
         }
-    }    
+    }
+    
     /**
-     * Move the procFileName from /command/custom/ to /command/processed/ 
+     * Move the procFileName from /command/custom/ to /command/processed/.
      */
-    public void writeProcessedFile(String procFileName)
-    {
-        File  file = new File(CtiUtilities.getCommandsDirPath()+"custom/" + procFileName);
-        File destFile = new File(CtiUtilities.getCommandsDirPath()+"processed/");
+    public void writeProcessedFile(String procFileName) {
+        
+        File  file = new File(commandsDir + "custom/" + procFileName);
+        File destFile = new File(commandsDir + "processed/");
         destFile.mkdirs();
-        destFile = new File(CtiUtilities.getCommandsDirPath()+"processed/" + procFileName);
+        destFile = new File(commandsDir + "processed/" + procFileName);
         boolean success = file.renameTo(destFile);
-        if( !success)
-        {
-            CTILogger.info("Could not rename file " + procFileName + ".  This file will be deleted.");
+        
+        if (!success) {
+            log.info("Could not rename file " + procFileName + ".  This file will be deleted.");
             file.delete();
         }
-    }        
+    }
 
-    public boolean isPilConnValid()
-    {
+    public boolean isPilConnValid() {
         return getPilConn().isValid();
     }
     
-    /**
-     * @param schedID
-     * @return
-     */
-    public String buildTOUScheduleCommand(int schedID)
-    {
+    public String buildTOUScheduleCommand(int scheduleId) {
+        
         String command = "putconfig tou ";
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        List schedules = cache.getAllTOUSchedules();
-        LiteTOUSchedule lSchedule = null;
-        for (int i = 0; i < schedules.size(); i++)
-        {
-            if(((LiteTOUSchedule)schedules.get(i)).getScheduleID() == schedID) {
-                lSchedule = (LiteTOUSchedule)schedules.get(i);
+        List<LiteTOUSchedule> schedules = cache.getAllTOUSchedules();
+        
+        LiteTOUSchedule liteSchedule = null;
+        for (LiteTOUSchedule schedule : schedules) {
+            if (schedule.getScheduleID() == scheduleId) {
+                liteSchedule = schedule;
             } 
         }
-        if( lSchedule != null)
-        {
+        
+        if (liteSchedule != null) {
             String sqlString = "SELECT d.TOUDayID, d.TOUDayName, dm.TOUDayOffset, switchrate, switchoffset" +
                     " FROM TOUDay d, TOUDayMapping dm, toudayrateswitches trs" +
-                    " where dm.touscheduleid = " + lSchedule.getScheduleID() + 
+                    " where dm.touscheduleid = " + liteSchedule.getScheduleID() + 
                     " and dm.toudayid = d.toudayid" +
                     " and trs.toudayid = dm.toudayid" +
                     " order by toudayoffset, switchoffset";
 
-            java.sql.Connection conn = null;
-            java.sql.Statement stmt = null;
-            java.sql.ResultSet rset = null;
-            int [] days = new int[]{-1,-1,-1,-1};    //at most 4 day mappings are allowed
+            Connection conn = null;
+            Statement stmt = null;
+            ResultSet rset = null;
+            int [] days = new int[] {-1, -1, -1, -1}; // At most 4 day mappings are allowed.
             int currentIndex = 0;
             int numDaysFound = 0;
             int currentDayOffset = -1;
@@ -1542,159 +1410,148 @@ public class YC extends Observable implements MessageListener
             boolean exists = false;
             
             String scheduleStr = "";
-            try
-            {
+            try {
                 conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
                 stmt = conn.createStatement();
                 rset = stmt.executeQuery(sqlString);
 
-                while (rset.next())
-                {
-                    int dayID = rset.getInt(1);
-                    String dayName = rset.getString(2).trim();
+                while (rset.next()) {
+                    
+                    int dayId = rset.getInt(1);
                     int dayOffset = rset.getInt(3);
                     String switchRate = rset.getString(4);
                     int switchOffset = rset.getInt(5);
                
-                    if( currentDayOffset != dayOffset)
-                    {
+                    if (currentDayOffset != dayOffset) {
+                        
                         exists = false;
-                        for (int i = 0; i < numDaysFound && i < days.length; i++)
-                        {
-                            if( days[i] == dayID)
-                            {
+                        
+                        for (int i = 0; i < numDaysFound && i < days.length; i++) {
+                            if (days[i] == dayId) {
                                 currentIndex = i;
                                 exists = true;
                                 break;
                             }
                         }
-                        if (!exists){
+                        
+                        if (!exists) {
                             currentIndex = numDaysFound;
-                            days[numDaysFound++] = dayID;
+                            days[numDaysFound++] = dayId;
                             scheduleStr += " schedule " + (currentIndex+1);
                         }
+                        
                         dayOffsets[dayOffset-1] = currentIndex+1;
                     }
+                    
                     if (!exists) {
                         scheduleStr += " " + switchRate + "/" + convertSecondsToTimeString(switchOffset);
                     }
 
                     currentDayOffset = dayOffset;
                 }
-                for (int i = 0; i < dayOffsets.length; i++ )
-                {
-                    command += dayOffsets[i];
+                
+                for (int offset : dayOffsets) {
+                    command += offset;
                 }
-                command += " " + scheduleStr + " default " + lSchedule.getDefaultRate();
-            }
-            catch (java.sql.SQLException e)
-            {
-                CTILogger.error( e.getMessage(), e );
-            }
-            finally
-            {
-                SqlUtils.close(rset, stmt, conn );
+                
+                command += " " + scheduleStr + " default " + liteSchedule.getDefaultRate();
+                
+            } catch (SQLException e) {
+                log.error(e.getMessage(), e);
+            } finally {
+                SqlUtils.close(rset, stmt, conn);
             }
         }
+        
         return command;
     }
 
-    private static String convertSecondsToTimeString(int seconds)
-    {
+    private static String convertSecondsToTimeString(int seconds) {
+        
         DecimalFormat format = new DecimalFormat("00");
         int hour = seconds / 3600;
         int temp = seconds % 3600;
         int min = temp / 60;
+        
         return hour + ":" + format.format(min);
     }    
     
-    private void logSystemEvent(String command, int deviceID)
-    {
+    private void logSystemEvent(String command, int deviceId) {
+        
         String commandStr = command.toLowerCase();
-        String logDescr = "";        
-        if( commandStr.startsWith("control") || commandStr.startsWith("putconfig") ||
-            commandStr.startsWith("putstatus") || commandStr.startsWith("putvalue") )
-        {
-            int pointID = PointTypes.SYS_PID_SYSTEM;
-            LiteYukonPAObject liteYukonPAObject = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(deviceID);            
-            logDescr = liteYukonPAObject.getPaoType().getPaoClass() + ": " +
-                        liteYukonPAObject.getPaoName() + 
-                        " (ID:" + liteYukonPAObject.getLiteID() + ")";
+        String logDescr = "";
+        
+        if (commandStr.startsWith("control") 
+                || commandStr.startsWith("putconfig") 
+                || commandStr.startsWith("putstatus") 
+                || commandStr.startsWith("putvalue")) {
+            
+            int pointId = PointTypes.SYS_PID_SYSTEM;
+            LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(deviceId);
+            logDescr = liteYukonPAObject.getPaoType().getPaoClass() + ": " 
+                    + liteYukonPAObject.getPaoName() + " (ID:" + liteYukonPAObject.getLiteID() + ")";
                         
-            if( liteYukonPAObject.getPaoType().isCbc() ) {
-                pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Bank Status Point
+            if (liteYukonPAObject.getPaoType().isCbc()) {
+                // The Bank Status Point
+                pointId = getLogPointID(PointTypes.STATUS_POINT, 1);
+                
             } else if (liteYukonPAObject.getPaoType().isLoadGroup()) {
-                pointID = getLogPointID(PointTypes.STATUS_POINT, 0); //the Control Status (Pseudo) Point
+                // The Control Status (Pseudo) Point
+                pointId = getLogPointID(PointTypes.STATUS_POINT, 0);
+                
             } else if (liteYukonPAObject.getPaoType().isMct()) {
-                if( commandStr.indexOf(" connect") > -1 || commandStr.indexOf(" disconnect") > -1) {
-                    pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Disconnect Status Point
+                if (commandStr.indexOf(" connect") > -1 || commandStr.indexOf(" disconnect") > -1) {
+                    // The Disconnect Status Point
+                    pointId = getLogPointID(PointTypes.STATUS_POINT, 1);
+                    
                 }
-            }
-            else if( liteYukonPAObject.getLiteID() == Device.SYSTEM_DEVICE_ID) {
+            } else if (liteYukonPAObject.getLiteID() == Device.SYSTEM_DEVICE_ID) {
                 logDescr = "Serial: " + getSerialNumber();
             }
-
             
-            _systemLogHelper.log(pointID, "Manual: " + command, logDescr, logUserName);
+            systemLogHelper.log(pointId, "Manual: " + command, logDescr, logUserName);
         }
     }
     
-    private int getLogPointID( int pointType, int pointOffset)
-    {
-        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(liteYukonPao.getLiteID());
+    private int getLogPointID(int pointType, int pointOffset) {
+        
+        List<LitePoint> points = pointDao.getLitePointsByPaObjectId(liteYukonPao.getLiteID());
         for (LitePoint point : points) {
-            if(point.getPointType() == pointType && point.getPointOffset() == pointOffset) {
+            if (point.getPointType() == pointType && point.getPointOffset() == pointOffset) {
                 return point.getPointID();
             }
         }
+        
         return PointTypes.SYS_PID_SYSTEM;
     }
     
-    public String getLogUserName()
-    {
-        return logUserName;
+    public String getLogUserName() {
+        return this.logUserName;
     }
-    public void setLiteUser(LiteYukonUser user)
-    {
+    
+    public void setLiteUser(LiteYukonUser user) {
         this.user  = user;
         this.logUserName = user.getUsername();
     }
-
-    /**
-     * @return
-     */
-    public String getErrorMsg()
-    {
-        return errorMsg;
-    }
-
-    /**
-     * @param string
-     */
-    public void setErrorMsg(String string)
-    {
-        errorMsg = string;
+    
+    public String getErrorMsg() {
+        return this.errorMsg;
     }
     
-    /**
-     * @param string
-     */
-    public void clearErrorMsg()
-    {
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+    
+    public void clearErrorMsg() {
         setErrorMsg("");
     }
-    
-    /**
-     * @param liteYukonPao
-     */
-    public void setLiteYukonPao(LiteYukonPAObject liteYukonPao){
+
+    public void setLiteYukonPao(LiteYukonPAObject liteYukonPao) {
         this.liteYukonPao = liteYukonPao;
     }
 
-    /**
-     * @return
-     */
-    public LiteYukonPAObject getLiteYukonPao(){
+    public LiteYukonPAObject getLiteYukonPao() {
         return liteYukonPao;
     }
+    
 }
