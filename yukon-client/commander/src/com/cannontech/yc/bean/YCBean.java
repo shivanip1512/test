@@ -153,7 +153,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     public void valueUnbound(HttpSessionBindingEvent arg0) {
 		CTILogger.info("YCBean value UnBound from session.");
         clearRequestMessage();
-        getPilConn().removeMessageListener(this);
+        connection.removeMessageListener(this);
 	}
 
 	/**

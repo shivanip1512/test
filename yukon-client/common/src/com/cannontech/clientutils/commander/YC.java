@@ -83,13 +83,14 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ColorUtil;
-import com.cannontech.yukon.BasicServerConnection;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
 public class YC extends Observable implements MessageListener {
     
     protected static final IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    protected static final IServerConnection connection = ConnPool.getInstance().getDefPorterConn();
     protected static final String commandsDir = CtiUtilities.getCommandsDirPath();
     protected static final Logger log = YukonLogManager.getLogger(YC.class);
     
@@ -104,66 +105,69 @@ public class YC extends Observable implements MessageListener {
     private final SystemLogHelper systemLogHelper;
     private String logUserName;
     
-    /** HashSet of userMessageIds for this instance */
+    // HashSet of userMessageIds for this instance
     private Set<Long> requestMessageIDs = new HashSet<>(10);
 
-    /** HashSet of userMessageIds for this instance, we will remove from this list on ExpectMore flag (which is no longer guaranteed
-     *  but very useful for refreshing the custom web interface in a timely fashion. */
+    // HashSet of userMessageIds for this instance, we will remove from this list on ExpectMore flag 
+    // which is no longer guaranteed
+    // but very useful for refreshing the custom web interface in a timely fashion.
     private Set<Long> requestMessageIDs_executing = new HashSet<>(10);
 
-    /** Time in millis (yes I realize this is an int) to wait for command response messages. */
+    // Time in millis (yes I realize this is an int) to wait for command response messages. 
     private int timeOut = 0;
     
-    /** An action listener for the timer events. */
+    // An action listener for the timer events.
     private ActionListener timerPerfomer;
     
-    /** A timer which fires an action event after a specified delay in millis. */
+    // A timer which fires an action event after a specified delay in millis.
     private Timer stopWatch;
     
-    /** Porter Return messages displayable text. */
+    // Porter Return messages displayable text.
     private String resultText = "";
     
-    /** A string to hold error messages for the current command(s) sent. */
+    // A string to hold error messages for the current command(s) sent.
     private String errorMsg = "";
     
-    /** Current command string to execute */
-    private String commandString = ""; // The actual string entered from the command line.
-    private Vector<String> executeCmdsVector; // The parsed vector of commands from the command line.
+    // Current command string to execute, the actual string entered from the command line.
+    private String commandString = "";
     
-    /** liteYukonPAObject(opt1) or serialNumber(opt2) will be used to send command to.
-    /** Selected liteYukonPAObject */
+    // The parsed vector of commands from the command line.
+    private Vector<String> executeCmdsVector;
+    
+    // liteYukonPao or serialNumber will be used to send command to.
+    // Selected liteYukonPAObject
     private LiteYukonPAObject liteYukonPao;
     
-    /** Selected serial Number */
+    // Selected serial number
     private String serialNumber;
     
-    /** Selected tree item object */
+    // Selected tree item object
     private Object treeItem;
     
-    /** Selected route id, used for serialNumber commands or for some loop commands */
+    // Selected route id, used for serialNumber commands or for some loop commands.
     private int routeID = -1;
     
-    /** Selected tree model type. Refer to com.cannontech.database.model.* for valid models. */
+    // Selected tree model type. Refer to com.cannontech.database.model.* for valid models.
     private Class<? extends LiteBaseTreeModel> modelType = NullDBTreeModel.class;
     
-    /** Valid send command modes */ 
+    // Valid send command modes 
     public static int DEFAULT_MODE = 0; // Send commands with YC addt's (loop, queue, route..)
     public static int CGP_MODE = 1; // Send commands as they are, no parsing done on them.
     private int commandMode = DEFAULT_MODE;
     
-    /** Store last Porter request message, for use when need to send it again (loop) */
+    // Store last Porter request message, for use when need to send it again (loop).
     private Request porterRequest;
     
-    /** Singleton incrementor for messageIDs to send to porter connection */
+    // Singleton incrementor for messageIDs to send to porter connection.
     private static volatile long currentUserMessageID = 1;
     
-    /** flag indicating more commands to send out (mainly loop commands)*/
+    // Flag indicating more commands to send out (mainly loop commands).
     public volatile int sendMore = 0;
 
-    /** All LiteYukonPaobject of type route */
-    private Object[] allRoutes;
+    // All LiteYukonPaobject of type route.
+    private LiteYukonPAObject[] allRoutes;
 
-    /** Valid loop command types */
+    // Valid loop command types
     public static int NOLOOP = 0; // Loop not parsed
     public static int LOOP = 1; // Loop alone parsed
     public static int LOOPNUM = 2; // Loop for some num of times
@@ -171,43 +175,38 @@ public class YC extends Observable implements MessageListener {
     public static int LOOPLOCATE_ROUTE = 4; // Loop locate route parsed
     private int loopType = NOLOOP;
     
-    /** Contains LiteDeviceTypeCommand for the deviceType selected. */
+    // Contains LiteDeviceTypeCommand for the deviceType selected.
     private Vector<LiteDeviceTypeCommand> liteDeviceTypeCommandsVector = new Vector<>();
     
-    /** The device Type for the currently selected object in the tree model. Values found in DeviceTypes class. */
+    // The device Type for the currently selected object in the tree model. Values found in DeviceTypes class.
     protected String deviceType;
     
-    /** Default YC properties */
+    // Default YC properties
     private YCDefaults ycDefaults;
     
-    /** Fields used in the MessageReceived(..) method to track last printed data */
-    /** dateTime formating string */
+    // Fields used in the MessageReceived(..) method to track last printed data
     protected SimpleDateFormat displayFormat = new SimpleDateFormat("MMM d HH:mm:ss a z");
     
-    /** Keep track of the last userMessageID from the MessageEvents */
+    // Keep track of the last userMessageID from the MessageEvents.
     private long prevUserID = -1;
     
     private LiteYukonUser user;
     
     public YC() {
-        this(false); //don't load defaults from file (mainly for web servlet)
+        // Don't load defaults from file (mainly for web servlet)
+        this(false);
     }
     
     /**
-     * If loadDefaultsFromFile_ is true, use the saved properties file for class defaults. 
+     * If loadDefaultsFromFile is true, use the saved properties file for class defaults. 
      * Gets a connection to porter and adds a message listener to this.
-     * @param boolean loadDefaultsFromFile_
      */
-    public YC(boolean loadDefaultsFromFile_) {
+    public YC(boolean loadDefaultsFromFile) {
         super();
         loadCustomCommandsFromDatabase();
-        ycDefaults = new YCDefaults(loadDefaultsFromFile_);
-        systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_SYSTEM);
-        getPilConn().addMessageListener(this);
-    }
-    
-    protected BasicServerConnection getPilConn() {
-        return ConnPool.getInstance().getDefPorterConn();
+        this.ycDefaults = new YCDefaults(loadDefaultsFromFile);
+        this.systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_SYSTEM);
+        connection.addMessageListener(this);
     }
     
     /**
@@ -281,7 +280,7 @@ public class YC extends Observable implements MessageListener {
         }
     }
     
-    public Object[] getAllRoutes() {
+    public LiteYukonPAObject[] getAllRoutes() {
         if (allRoutes == null) {
             allRoutes = paoDao.getAllLiteRoutes();
         }
@@ -590,11 +589,11 @@ public class YC extends Observable implements MessageListener {
         return NOLOOP;
     }
     
-    public void setAllRoutes(Object[] allRoutes) {
+    public void setAllRoutes(LiteYukonPAObject[] allRoutes) {
         if (allRoutes == null) {
             this.allRoutes = null;
         } else {
-            this.allRoutes = new Object[allRoutes.length];
+            this.allRoutes = new LiteYukonPAObject[allRoutes.length];
             for (int i = 0; i < allRoutes.length; i++) {
                 this.allRoutes[i] = allRoutes[i];
             }
@@ -850,7 +849,7 @@ public class YC extends Observable implements MessageListener {
             message = " Serial # \'" + serialNumber + "\'";
         }
 
-        if (isPilConnValid()) {
+        if (connection.isValid()) {
             
             logCommand("[" + format.format(new java.util.Date(timer)) 
                         + "] - {"+ currentUserMessageID + "} Command Sent to" + message 
@@ -858,13 +857,14 @@ public class YC extends Observable implements MessageListener {
             startStopWatch(getTimeOut());
             addRequestMessage(currentUserMessageID);
             generateMessageID();
-            getPilConn().write(request);
+            connection.write(request);
             logSystemEvent(request.getCommandString(), request.getDeviceID());
             
         } else {
-            ClientConnection connection = (ClientConnection)getPilConn();
+            
+            ClientConnection clientConnection = (ClientConnection)connection;
             String porterError = "Command request not sent - Connection to Yukon Port Control, " 
-                    + connection.getConnectionUri().getRawAuthority() + ", is not valid.";
+                    + clientConnection.getConnectionUri().getRawAuthority() + ", is not valid.";
             String logOutput= "<BR>["+ displayFormat.format(new java.util.Date()) + "] - " + porterError;
             
             writeOutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput, MessageType.ERROR);
@@ -1043,7 +1043,7 @@ public class YC extends Observable implements MessageListener {
                             
                             startStopWatch(getTimeOut());
                             // Do the saved loop request
-                            getPilConn().write(getPorterRequest());
+                            connection.write(getPorterRequest());
                             
                         } else {
                             debugOutput = "Command cancelled<BR>";
@@ -1375,10 +1375,6 @@ public class YC extends Observable implements MessageListener {
         }
     }
 
-    public boolean isPilConnValid() {
-        return getPilConn().isValid();
-    }
-    
     public String buildTOUScheduleCommand(int scheduleId) {
         
         String command = "putconfig tou ";
