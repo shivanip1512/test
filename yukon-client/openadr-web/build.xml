@@ -50,8 +50,8 @@
         <include name="geronimo-jms_1.1_spec-1.1.1.jar"/>
         <include name="guava-13.0.1.jar"/>
         <include name="hawtbuf-1.9.jar"/>
-    	<include name="httpclient-4.3.4"/>
-        <include name="httpcore-4.3.2"/>
+    	<include name="httpclient-4.3.4.jar"/>
+        <include name="httpcore-4.3.2.jar"/>
         <include name="i18n-en_US.jar"/>
         <include name="jasypt-1.9.0.jar"/>
         <include name="jaxen-1.1.1.jar"/>
