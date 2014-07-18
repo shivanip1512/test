@@ -95,16 +95,16 @@ public class ProfileWidget extends WidgetControllerBase {
      */
 
     private String calcIntervalStr(int secs, YukonUserContext userContext) {
-        String iStr=null;
-        if(secs == -1) {
-            iStr = "Unknown";
-        } else if(secs == 0) {
-            iStr = "0";
+        String intervalString = null;
+        if (secs == -1) {
+            intervalString = "Unknown";
+        } else if (secs == 0) {
+            intervalString = "0";
         } else {    
             Duration duration = Duration.standardSeconds(secs);
-            iStr = durationFormattingService.formatDuration(duration, DurationFormat.DHMS_REDUCED, userContext);
+            intervalString = durationFormattingService.formatDuration(duration, DurationFormat.DHMS_REDUCED, userContext);
         }
-        return iStr;
+        return intervalString;
     }
 
     private List<Map<String, Object>> getAvailableChannelInfo(int deviceId,
