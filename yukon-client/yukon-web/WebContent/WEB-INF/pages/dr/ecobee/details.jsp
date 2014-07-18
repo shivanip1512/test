@@ -50,15 +50,15 @@
                     <div data-dialog 
                         id="ecobee-download-popup"
                         data-url="ecobee/download/settings" 
-                        data-load-event="yukon.dr.ecobee.download.settings.load"
-                        data-event="yukon.dr.ecobee.download.start" 
+                        data-load-event="yukon_dr_ecobee_download_settings_load"
+                        data-event="yukon_dr_ecobee_download_start" 
                         data-width="600" 
                         data-title="<cti:msg2 key=".download.title"/>" 
                         class="dn"></div>
                 </div>
             </tags:sectionContainer2>
         </div>
-        <div class="column two nogutter" id="sync-issues" data-report-id="${report.reportId}" data-empty-key="<i:inline key=".issues.none"/>">
+        <div class="column two nogutter" id="sync-issues" data-report-id="${report.reportId}" data-empty-key="<cti:msg2 key=".issues.none"/>">
             <tags:sectionContainer2 nameKey="issues" arguments="${fn:length(report.errors)}">
                 <c:choose>
                     <c:when test="${fn:length(report.errors) > 0}">
@@ -93,7 +93,7 @@
                         </div>
                         <div data-dialog 
                             id="ecobee-fixable"
-                            data-event="yukon.dr.ecobee.fix.start" 
+                            data-event="yukon_dr_ecobee_fix_start" 
                             data-width="600" 
                             data-title="<cti:msg2 key=".issues.fix.title"/>" 
                             class="dn">

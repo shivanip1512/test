@@ -34,7 +34,7 @@
                 id="ecobee-config"
                 data-width="500"
                 data-title="<cti:msg2 key=".ecobee.configure.title"/>"
-                data-load-event="yukon.dr.ecobee.config.load"
+                data-load-event="yukon_dr_ecobee_config_load"
                 class="dn">
                 <form:form action="ecobee/settings" method="POST" commandName="ecobeeSettings">
                     <cti:csrfToken/>

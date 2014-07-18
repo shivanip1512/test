@@ -338,7 +338,7 @@ public class EcobeeController {
     }
 
     @RequestMapping(value="/ecobee/fixIssue", method=RequestMethod.POST)
-    public @ResponseBody List<Map<String, String>> fixIssue(
+    public @ResponseBody Map<String, Object> fixIssue(
             HttpServletResponse response,
             YukonUserContext userContext,
             Integer reportId,
@@ -346,8 +346,7 @@ public class EcobeeController {
             ) throws IllegalArgumentException {
         
         EcobeeReconciliationResult result = null;
-        List<Map<String, String>> resp = new ArrayList<>();
-        Map<String, String> json = new HashMap<>();
+        Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
             result = ecobeeReconciliation.fixDiscrepancy(reportId, errorId);
@@ -368,8 +367,7 @@ public class EcobeeController {
             json.put("message", message);
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
-        resp.add(json);
-        return resp;
+        return json;
     }
 
     @RequestMapping(value="/ecobee/fix-all", method=RequestMethod.GET)
