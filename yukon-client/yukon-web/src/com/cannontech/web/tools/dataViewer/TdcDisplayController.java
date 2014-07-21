@@ -62,6 +62,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.command.service.CommandService;
@@ -297,7 +298,15 @@ public class TdcDisplayController {
         ChartPeriod chartPeriod = ChartPeriod.MONTH;
         ChartInterval chartInterval = chartPeriod.getChartUnit(Range.inclusive(startDate, endDate));
         model.addAttribute("interval", chartInterval);
-        model.addAttribute("converterType", ConverterType.NORMALIZED_DELTA);
+        if (UnitOfMeasure.getForId(litePoint.getUofmID()) == UnitOfMeasure.KWH) {
+            // "Usage" data can be "normalized" delta, since it is an ever increasing number
+            model.addAttribute("converterType", ConverterType.NORMALIZED_DELTA);
+        } else if (UnitOfMeasure.getForId(litePoint.getUofmID()) == UnitOfMeasure.GALLONS) {
+            // water usage can be delta also.
+            model.addAttribute("converterType", ConverterType.DELTA_WATER);
+        } else { // everything is raw
+            model.addAttribute("converterType", ConverterType.RAW);
+        }
         model.addAttribute("graphType", GraphType.LINE);
         model.addAttribute("startDateMillis", startDate.getTime());
         model.addAttribute("endDateMillis", endDate.getTime());
