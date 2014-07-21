@@ -32,6 +32,7 @@ import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.database.model.DeviceTree_CustomPointsModel;
 import com.cannontech.database.model.DummyTreeNode;
 import com.cannontech.database.model.LiteBaseTreeModel;
+import com.cannontech.database.model.TDCDeviceTreeModel;
 import com.cannontech.graph.gds.tablemodel.GDSTableModel;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
@@ -43,6 +44,7 @@ public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPa
 	private int buttonPushed = CANCEL;
 	private DeviceTree_CustomPointsModel graphPointsModel = null;
 	private DeviceTree_CustomPointsModel usagePointsModel = null;
+	private TDCDeviceTreeModel allTypesPointsModel = null;
 	private GraphColors graphColors;
 	private javax.swing.JButton ivjThresholdsButton = null;
 	private GraphDefinition value;
@@ -71,7 +73,8 @@ private javax.swing.JComboBox typeComboBox = null;
 
 	class IvjEventHandler implements javax.swing.event.CaretListener
 	{		
-		public void caretUpdate(javax.swing.event.CaretEvent e)
+		@Override
+        public void caretUpdate(javax.swing.event.CaretEvent e)
 		{
 			if (e.getSource() == CreateGraphPanel.this.getNameTextField()) 
 				connEtoM1(e);
@@ -90,6 +93,7 @@ public CreateGraphPanel()
  * Creation date: (4/24/2001 10:38:52 AM)
  * @param event java.awt.event.ActionListener
  */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent event)
 {
 	if (event.getSource() == getRemoveGDSButton_Graph() )
@@ -147,14 +151,17 @@ public void actionPerformed(java.awt.event.ActionEvent event)
  */
 public void addGDS_ActionPerformed(DefaultMutableTreeNode node)
 {
-	if( node == null)
+	if( node == null || node.isRoot() ||
+	        (node instanceof DummyTreeNode && node.getParent() == node.getRoot())) {
 		return;
+	}
 	LitePoint pt = null;
 	String deviceName = null;
 	
 	//Get the DEVICE Object selected in the tree.
 	Object tempNode = node;
 	while (tempNode instanceof DefaultMutableTreeNode &&
+	        !(((DefaultMutableTreeNode)tempNode).getUserObject() instanceof LiteYukonPAObject) &&
 			((DefaultMutableTreeNode)tempNode).getParent() !=((DefaultMutableTreeNode)tempNode).getRoot())	//root node is instance of TreeNode
 	{
 		tempNode = ((DefaultMutableTreeNode)tempNode).getParent();
@@ -680,6 +687,13 @@ private DeviceTree_CustomPointsModel getGraphPointsModel()
 	}
 	return graphPointsModel;
 }
+
+public TDCDeviceTreeModel getAllTypesPointsModel() {
+    if (allTypesPointsModel == null) {
+        allTypesPointsModel = new TDCDeviceTreeModel();
+    }
+    return allTypesPointsModel;
+}
 /**
  * Return the JPanel1 property value.
  * @return javax.swing.JPanel
@@ -1069,7 +1083,7 @@ public com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 			ivjTreeViewPanel = new com.cannontech.common.gui.util.TreeViewPanel();
 			ivjTreeViewPanel.setName("TreeViewPanel");
 			// user code begin {1}
-			ivjTreeViewPanel.setTreeModels( new LiteBaseTreeModel[] { getGraphPointsModel(), getUsagePointsModel()} );
+			ivjTreeViewPanel.setTreeModels( new LiteBaseTreeModel[] { getGraphPointsModel(), getUsagePointsModel(), getAllTypesPointsModel()} );
 			ivjTreeViewPanel.getTree().setCellRenderer( new CtiTreeCellRenderer() );
 			ivjTreeViewPanel.getTree().setLargeModel(true);
 		} catch (java.lang.Throwable ivjExc) {
@@ -1094,6 +1108,7 @@ private DeviceTree_CustomPointsModel getUsagePointsModel()
  * @return java.lang.Object
  * @param o java.lang.Object
  */
+@Override
 public Object getValue(Object object)
 {
 	GraphDefinition gDef;
@@ -1252,6 +1267,7 @@ private void initialize() {
  * Creation date: (10/27/00 11:46:27 AM)
  * @param event PropertyPanelEvent
  */
+@Override
 public void inputUpdate(PropertyPanelEvent event) 
 {
 	ivjOkButton.setEnabled(isInputValid());
@@ -1261,6 +1277,7 @@ public void inputUpdate(PropertyPanelEvent event)
  * Creation date: (10/27/00 12:24:35 PM)
  * @return boolean
  */
+@Override
 public boolean isInputValid() {
 	return (getNameTextField().getText().length() > 0 );
 }
@@ -1282,7 +1299,8 @@ public static void main(java.lang.String[] args)
 		
 		frame.addWindowListener(new java.awt.event.WindowAdapter()
 		{
-			public void windowClosing(java.awt.event.WindowEvent e)
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e)
 			{
 				System.exit(0);
 			};
@@ -1354,6 +1372,7 @@ private void setGraphDefinitionValue(GraphDefinition newValue)
  * Creation date: (10/24/00 2:35:45 PM)
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) 
 {
 	if( val == null)
@@ -1434,7 +1453,8 @@ public GraphDefinition showCreateGraphPanelDialog(java.awt.Frame parent)
 			dialog = d;
 		}
 		
-		public void actionPerformed(java.awt.event.ActionEvent event )
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent event )
 		{
 			if( event.getSource() == getOkButton() )
 			{

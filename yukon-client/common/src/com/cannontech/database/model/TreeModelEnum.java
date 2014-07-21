@@ -69,6 +69,7 @@ public enum TreeModelEnum
 	RECEIVERS (ReceiverTreeModel.class, "Receivers"),
 	SYSTEM_DEVICE (SystemDeviceModel.class, "System Points"),
 	RFMESH (RFNTreeModel.class, "RF Mesh"),
+	BY_TYPE (TDCDeviceTreeModel.class, "All Types"),
 	;
 
 	private TreeModelEnum(Class<? extends LiteBaseTreeModel> treeModelClass, String treeModelName) {
