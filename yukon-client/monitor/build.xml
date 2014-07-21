@@ -9,7 +9,7 @@
    <target name="build">
        <mkdir dir="build"/>
        
-       <javac srcdir="src"
+       <javac srcdir="src/main/java"
               destdir="build"
               target="${yukon.javac.target}" 
  	          source="${yukon.javac.source}"
@@ -22,19 +22,13 @@
 	      </classpath> 
      	</javac>
 
-       <jar jarfile="${yukon.lib}/monitor.jar" basedir="build/" manifest="resource/manifest.mf">
+       <jar jarfile="${yukon.lib}/monitor.jar" basedir="build/" manifest="src/main/resources/manifest.mf">
             <manifest>
                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
                <attribute name="Permissions" value="all-permissions"/>
            </manifest>
-	 	   <fileset dir="resource/">
-	 		   <include name="**/*.ico"/>
-		   </fileset>
-       	   <fileset dir="src">
-       	       <exclude name="**/*.java"/>
-       	   </fileset>
-
+           <fileset dir="src/main/resources"/>
 		</jar>
 
 	<copy todir="${yukon.lib}">
@@ -45,15 +39,13 @@
    </target>
    
    <target name="install" depends="build">
-   		<jar jarfile="${yukon.client.bin}/monitor.jar" basedir="build/" manifest="resource/manifest.mf">
+   		<jar jarfile="${yukon.client.bin}/monitor.jar" basedir="build/" manifest="src/main/resources/manifest.mf">
             <manifest>
                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
                <attribute name="Permissions" value="all-permissions"/>
            </manifest>
-		    <fileset dir="resource">
-		 		<include name="**/*.ico"/>       	
-			</fileset>   	
+           <fileset dir="src/main/resources"/>
 		</jar>
 
    		<copy todir="${yukon.client.bin}">
