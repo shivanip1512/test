@@ -18,9 +18,9 @@ import com.cannontech.web.stars.dr.operator.hardware.service.DeviceReadStrategy;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareStrategyType;
 import com.google.common.collect.Maps;
 
-public class ZigBeeStrategy implements DeviceReadStrategy{
+public class ZigBeeReadStrategy implements DeviceReadStrategy{
     
-    private static final Logger log = YukonLogManager.getLogger(ZigBeeStrategy.class);
+    private static final Logger log = YukonLogManager.getLogger(ZigBeeReadStrategy.class);
     private static final String keyBase = "yukon.web.modules.operator.hardware.";
     
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;

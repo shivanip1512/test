@@ -2,21 +2,21 @@ package com.cannontech.web.stars.dr.operator.hardware.service.impl;
 
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.service.DeviceReadStrategy;
-import com.cannontech.web.stars.dr.operator.hardware.service.HardwareService;
+import com.cannontech.web.stars.dr.operator.hardware.service.HardwareReadService;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareStrategyType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 
-public class HardwareServiceImpl implements HardwareService{
+public class HardwareReadServiceImpl implements HardwareReadService{
     @Autowired private InventoryDao inventoryDao;
     private ImmutableMap<HardwareStrategyType, DeviceReadStrategy> strategies = ImmutableMap.of();
     
@@ -40,14 +40,14 @@ public class HardwareServiceImpl implements HardwareService{
        
     }
     
-    private HardwareStrategyType getStrategy(HardwareType type) {
+    private HardwareStrategyType getStrategy(HardwareType type) throws IllegalArgumentException {
         for (HardwareStrategyType strategyType : strategies.keySet()) {
             DeviceReadStrategy deviceReadStrategy = strategies.get(strategyType);
             if (deviceReadStrategy.canHandle(type)) {
                 return strategyType;
             }
         }
-        return null;
+        throw new IllegalArgumentException("No device read strategy found for hardware type " +type);
     }
    
 }

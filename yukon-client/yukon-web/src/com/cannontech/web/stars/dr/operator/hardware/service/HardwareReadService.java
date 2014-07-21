@@ -2,10 +2,9 @@ package com.cannontech.web.stars.dr.operator.hardware.service;
 
 import java.util.Map;
 
-import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.user.YukonUserContext;
 
-public interface HardwareService {
+public interface HardwareReadService {
     
     /**
      * Will read the device details.

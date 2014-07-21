@@ -24,8 +24,8 @@ import com.cannontech.web.stars.dr.operator.hardware.service.DeviceReadStrategy;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareStrategyType;
 import com.cannontech.web.widget.AttributeReadingHelper;
 
-public class RfStrategy implements DeviceReadStrategy {
-    private static final Logger log = YukonLogManager.getLogger(RfStrategy.class);
+public class RfReadStrategy implements DeviceReadStrategy {
+    private static final Logger log = YukonLogManager.getLogger(RfReadStrategy.class);
     private static final String keyBase = "yukon.web.modules.operator.hardware.";
 
     @Autowired private RfnDeviceDao rfnDeviceDao;

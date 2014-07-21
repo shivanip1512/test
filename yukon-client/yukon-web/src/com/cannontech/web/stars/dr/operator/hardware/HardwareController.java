@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl;
+import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareReadServiceImpl;
 
 @Controller
 @RequestMapping("/operator/hardware/*")
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 public class HardwareController {
 
-  @Autowired private HardwareServiceImpl hardwareServiceImpl;
+  @Autowired private HardwareReadServiceImpl hardwareServiceImpl;
   
   @RequestMapping("/readNow")
   @ResponseBody
