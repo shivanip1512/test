@@ -1,9 +1,3 @@
-/*
- * Created on Oct 18, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.yc.bean;
 
 import java.util.ArrayList;
@@ -14,14 +8,10 @@ import java.util.Vector;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commander.YC;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
-import com.cannontech.core.dao.CommandDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -33,214 +23,195 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 
-/**
- * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-public class YCBean extends YC implements MessageListener, HttpSessionBindingListener
-{
+public class YCBean extends YC implements MessageListener, HttpSessionBindingListener {
+    
     List<LiteYukonPAObject> deviceHistory = new ArrayList<LiteYukonPAObject>();
     
     //Contains <String>serialType to <Vector<String>> serialNumbers
-    private HashMap<String, Vector<String>> serialTypeToNumberMap = null;
+    private HashMap<String, Vector<String>> serialTypeToNumberMap;
 
-    private int userID = 0;
-    private YukonUserContext userContext = null;
+    private int userID;
+    private YukonUserContext userContext;
     
     /** Valid route types for serial commands to be sent out on */
-    private PaoType [] validRouteTypes = new PaoType[]{
+    private PaoType [] validRouteTypes = new PaoType[] {
         PaoType.ROUTE_CCU,
         PaoType.ROUTE_MACRO
-        };    
+    };
+    
+    YukonUserDao userDao = YukonSpringHook.getBean(YukonUserDao.class);
 
-    public YCBean()
-    {
+    public YCBean() {
         super();
     }
-
-    /**
-     * Set the serialNumber
-     * The serialNumber for the LCR commands
-     * @param serialNumber_ java.lang.String
-     */
-    public void setSerialNumber(String serialType_, String serialNumber_) {
+    
+    public void setSerialNumber(String serialType, String serialNumber) {
         
-        if( serialType_ != null && serialNumber_ != null) {
-            super.setSerialNumber(serialNumber_);
+        if (serialType != null && serialNumber != null) {
+            super.setSerialNumber(serialNumber);
             
-            if( serialNumber_.length() > 0)// && !getSerialNumbers().contains(serialNumber_))
-            {
-                Vector<String> serialNumbers = getSerialNumbers(serialType_);
-                if( serialNumbers == null)
-                    serialNumbers = new Vector<String>();
+            if (serialNumber.length() > 0) {
                 
-                if( !serialNumbers.contains(serialNumber_))
-                    serialNumbers.add(serialNumber_);
+                Vector<String> serialNumbers = getSerialNumbers(serialType);
+                if (serialNumbers == null) {
+                    serialNumbers = new Vector<String>();
+                }
+                
+                if (!serialNumbers.contains(serialNumber)) {
+                    serialNumbers.add(serialNumber);
+                }
                     
-                getSerialTypeToNumberMap().put(serialType_, serialNumbers);
+                getSerialTypeToNumberMap().put(serialType, serialNumbers);
             }
+            
             clearErrorMsg();
         }
     }
-
-    /**
-     * Set the serialNumber
-     * The serialNumber for the LCR commands
-     * @param serialNumber_ java.lang.String
-     */
-    @Override
-    public void setSerialNumber(String serialNumber_) {
-        setSerialNumber(getDeviceType(), serialNumber_);
-    }    
     
-    /* (non-Javadoc)
-     * Load the data maps with the returned pointData 
-     * @see com.cannontech.message.util.MessageListener#messageReceived(com.cannontech.message.util.MessageEvent)
-     */
     @Override
-    public void messageReceived(MessageEvent e)
-    {
+    public void setSerialNumber(String serialNumber) {
+        setSerialNumber(getDeviceType(), serialNumber);
+    }
+    
+    @Override
+    public void messageReceived(MessageEvent e) {
+        
         Message in = e.getMessage();
-        if( in instanceof Return) {
+        if (in instanceof Return) {
             
             Return returnMsg = (Return)in;
-            if ( returnMsg.getStatus() != 0) {    //Error Message!
-
-                if( getErrorMsg().indexOf(returnMsg.getCommandString()) < 0) {    //command string not displayed yet
+            
+            if (returnMsg.getStatus() != 0) {
+                // Error Message!
+                if (getErrorMsg().indexOf(returnMsg.getCommandString()) < 0) {
+                    // Command string not displayed yet.
                     setErrorMsg(getErrorMsg() + "<br>* Command Failed - " + returnMsg.getCommandString());
                 }
-                DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
+                
                 DeviceErrorDescription deviceErrorDesc = null;
-                if(userContext != null){
-                    deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus(), userContext);
+                if (userContext != null) {
+                    deviceErrorDesc = deviceErrorTranslatorDao.translateErrorCode(returnMsg.getStatus(), userContext);
                 }else{
-                    deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
+                    deviceErrorDesc = deviceErrorTranslatorDao.translateErrorCode(returnMsg.getStatus());
                 }
-                setErrorMsg( getErrorMsg() + "<BR><B>"+deviceErrorDesc.getCategory()+"</B> -- " 
+                setErrorMsg(getErrorMsg() + "<BR><B>"+deviceErrorDesc.getCategory()+"</B> -- " 
                         + deviceErrorDesc.getDescription() + "<BR>" + returnMsg.getResultString());
             }
             
-            if(returnMsg.getVector().size() > 0 ) {
+            if (returnMsg.getVector().size() > 0) {
                 
                 for (int i = 0; i < returnMsg.getVector().size(); i++) {
                     
                     Object o = returnMsg.getVector().elementAt(i);
                     
                     if (o instanceof PointData) {
-                        //Clear the Error Message Log, we did eventually read the meter
-                        //This is a request from Jeff W. to only display the error messages when no data is returned.
+                        // Clear the Error Message Log, we did eventually read the meter.
+                        // This is a request from Jeff W. to only display the error messages when no data is returned.
                         clearErrorMsg();
                     }
                 }
             }
         }
-        super.messageReceived(e);        
+        
+        super.messageReceived(e);
     }
-
-    /* (non-Javadoc)
-     * @see javax.servlet.http.HttpSessionBindingListener#valueBound(javax.servlet.http.HttpSessionBindingEvent)
-     */
+    
     @Override
     public void valueBound(HttpSessionBindingEvent arg0) {
-        CTILogger.info("YCBean value bound to session.");
+        log.info("YCBean value bound to session.");
     }
-    /* (non-Javadoc)
-     * @see javax.servlet.http.HttpSessionBindingListener#valueUnbound(javax.servlet.http.HttpSessionBindingEvent)
-     */
+    
     @Override
     public void valueUnbound(HttpSessionBindingEvent arg0) {
-        CTILogger.info("YCBean value UnBound from session.");
+        log.info("YCBean value UnBound from session.");
         clearRequestMessage();
         connection.removeMessageListener(this);
     }
-
+    
     /**
-     * Returns a vector of serialNumbers from the serialTypeToNumbersMap with key value of serialType_
+     * Returns a vector of serialNumbers from the serialTypeToNumbersMap with key value of serialType
      * @return
      */
-    public Vector<String> getSerialNumbers(String serialType_) {
-        return getSerialTypeToNumberMap().get(serialType_);
+    public Vector<String> getSerialNumbers(String serialType) {
+        return getSerialTypeToNumberMap().get(serialType);
     }
-
+    
     private HashMap<String, Vector<String>> getSerialTypeToNumberMap() {
-        if( serialTypeToNumberMap == null)
+        
+        if (serialTypeToNumberMap == null) {
             serialTypeToNumberMap = new HashMap<String, Vector<String>>();
-    
+        }
+        
         return serialTypeToNumberMap;
-    }    
+    }
     
-    public void setDeviceType(int devID) {
-        LiteYukonPAObject lPao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(devID);
+    public void setDeviceType(int deviceId) {
+        LiteYukonPAObject lPao = paoDao.getLiteYukonPAO(deviceId);
         deviceType = lPao.getPaoType().getDbString();
-        CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
-        setLiteDeviceTypeCommandsVector(YukonSpringHook.getBean(CommandDao.class).getAllDevTypeCommands(deviceType));
+        
+        log.debug(" DEVICE TYPE for command lookup: " + deviceType);
+        
+        setLiteDeviceTypeCommandsVector(commandDao.getAllDevTypeCommands(deviceType));
     }
 
     public final LiteYukonPAObject[] getValidRoutes() {
-        return YukonSpringHook.getBean(PaoDao.class).getRoutesByType(validRouteTypes);
+        return paoDao.getRoutesByType(validRouteTypes);
     }
 
     public int getUserID() {
         return userID;
     }
     
-    public void setUserID(int userID) {
-        this.userID = userID;
-        setLiteUser(YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userID));
+    public void setUserID(int userId) {
+        this.userID = userId;
+        setLiteUser(userDao.getLiteYukonUser(userId));
     }
 
-    // Adds an element to the previously viewed devices
-    private void addToDeviceHistory(LiteYukonPAObject liteYukonPao){
-        if(!this.deviceHistory.contains(liteYukonPao)){ 
+    /** Adds an element to the previously viewed devices. */
+    private void addToDeviceHistory(LiteYukonPAObject liteYukonPao) {
+        
+        if (!this.deviceHistory.contains(liteYukonPao)) { 
             this.deviceHistory.add(liteYukonPao);
         }
         
         // Remove data from other devices
-        try{
+        try {
             setCommandString("");
-        } catch (PaoAuthorizationException e){}
+        } catch (PaoAuthorizationException e) {}
         
         clearErrorMsg();
     }
 
-    // Gets the list of previously added devices
-    public List<LiteYukonPAObject> getDeviceHistory(){
+    /** Gets the list of previously added devices. */
+    public List<LiteYukonPAObject> getDeviceHistory() {
         return this.deviceHistory;
     }
     
-
-    /**
-     * @param liteYukonPao
-     */
     @Override
-    public void setLiteYukonPao(LiteYukonPAObject liteYukonPao){
-        //Only update the liteYukonPaobject if it has changed to prevent
+    public void setLiteYukonPao(LiteYukonPAObject liteYukonPao) {
+        // Only update the liteYukonPaobject if it has changed to prevent
         // history from this paobject from being removed.
-        if( liteYukonPao != null && 
-                !(liteYukonPao.equals(super.getLiteYukonPao()))) {
+        if (liteYukonPao != null && !(liteYukonPao.equals(super.getLiteYukonPao()))) {
             addToDeviceHistory(liteYukonPao);
         }
+        
         super.setLiteYukonPao(liteYukonPao);
     }
     
-    /**
-     * 
-     * @param paoId
-     */
-    public void setLiteYukonPao(int paoId){
+    public void setLiteYukonPao(int paoId) {
+        
         LiteYukonPAObject litePAO = null;
-        if (paoId != PAOGroups.INVALID){
+        if (paoId != PAOGroups.INVALID) {
             litePAO = paoDao.getLiteYukonPAO(paoId);
         }
+        
         this.setLiteYukonPao(litePAO);
     }
-
+    
     public YukonUserContext getUserContext() {
         return userContext;
     }
-
+    
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
     }
