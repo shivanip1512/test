@@ -201,11 +201,11 @@ public class EcobeeController {
         
         Duration specifiedDuration = new Duration(startDate, endDate);
         
-        List<Map<String, Object>> errResponse = new ArrayList<>();
+        List<Map<String, String>> errResponse = new ArrayList<>();
         boolean validationError = false;
         if (specifiedDuration.isLongerThan(Duration.standardDays(7)) ||
                 startDate.isAfter(endDate)) {
-            Map<String, Object> json = new HashMap<>();
+            Map<String, String> json = new HashMap<>();
             json.put("errorType", "dateRangeError");
             errResponse.add(json);
             validationError = true;
@@ -213,7 +213,7 @@ public class EcobeeController {
         
         if (loadGroupIds == null) {
             // Load groups are required.
-            Map<String, Object> json = new HashMap<>();
+            Map<String, String> json = new HashMap<>();
             json.put("errorType", "loadgroupsUnspecified");
             errResponse.add(json);
             validationError = true;
