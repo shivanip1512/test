@@ -30,12 +30,6 @@
            </manifest>
            <fileset dir="src/main/resources"/>
 		</jar>
-
-	<copy todir="${yukon.lib}">
- 	    <fileset dir="">
- 		<include name="**/*.dll"/>
-	    </fileset>
-       </copy>
    </target>
    
    <target name="install" depends="build">
