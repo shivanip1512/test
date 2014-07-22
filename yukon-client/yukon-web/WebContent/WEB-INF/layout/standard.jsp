@@ -61,6 +61,7 @@
 </head>
 <body>
     <cti:msgScope paths="layout.standard">
+    <cti:homeUrl var="homeUrl"/>
 
         <div id="modal-glass" style="display: none;">
             <div class="tint"></div>
@@ -106,7 +107,7 @@
                     <div class="navOut">
                         <nav role="navigation">
                             <ul>
-                                <li class="logo"><a href="<cti:url value="/home"/>"></a></li>
+                                <li class="logo"><a href="${homeUrl}"></a></li>
                                 <cti:outputContent writable="${menuRenderer}"/>
                             </ul>
                         </nav>
@@ -250,7 +251,7 @@
                         </div>
                         <div class="right">
                             <div class="branding">
-                                <a class="footer-logo" href="<cti:url value="/home"/>"></a>
+                                <a class="footer-logo" href="${homeUrl}"></a>
                             </div>
                         </div>
                     </div>

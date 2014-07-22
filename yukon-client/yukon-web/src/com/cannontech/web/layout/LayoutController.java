@@ -234,7 +234,7 @@ public class LayoutController {
                     breadCrumbs = pageDetail.getBreadCrumbText();
                 }
                 menuRenderer.setBreadCrumb(breadCrumbs);
-                menuRenderer.setHomeUrl("/home");
+                menuRenderer.setHomeUrl(getHomeUrl(user));
                 map.addAttribute("menuRenderer", new Writable() {
                     @Override
                     public void write(Writer out) throws IOException {
@@ -312,6 +312,14 @@ public class LayoutController {
         return skin.getViewName();
     }
 
+    private String getHomeUrl(LiteYukonUser user) {
+        String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+        if("/operator/Operations.jsp".equals(homeUrl)){
+            homeUrl="/dashboard";
+        }
+        return homeUrl;
+    }
+    
     private String buildDisplayName(LiteContact contact, LiteYukonUser user) {
         if (contact == null) {
             return user.getUsername();

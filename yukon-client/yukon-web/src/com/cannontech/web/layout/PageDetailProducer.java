@@ -17,6 +17,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleTemplateProcessor;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.util.ServletUtil;
@@ -38,7 +40,8 @@ public class PageDetailProducer {
     private final static String CONTEXTUAL_PAGE_NAME = "contextualPageName";
 
     @Autowired private HttpExpressionLanguageResolver expressionLanguageResolver;
-
+    @Autowired private RolePropertyDao rolePropertyDao;
+    
     public PageDetail render(PageInfo pageInfo, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
         PageDetail pageDetail = new PageDetail();
 
@@ -198,7 +201,7 @@ public class PageDetailProducer {
 
     private String renderHomeCrumb(HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
         String message = messageSourceAccessor.getMessage("yukon.web.menu.home");
-        String link = "/home";
+        String link = getHomeUrl(ServletUtil.getYukonUser(request));
 
         return "<li>" + createLink(request, message, link) + "</li>";
     }
@@ -215,6 +218,14 @@ public class PageDetailProducer {
         return "<a href=\"" + request.getContextPath() + safeLink + "\">" + safeLabel + "</a>";
     }
 
+    private String getHomeUrl(LiteYukonUser user) {
+        String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+        if("/operator/Operations.jsp".equals(homeUrl)){
+            homeUrl="/dashboard";
+        }
+        return homeUrl;
+    }
+    
     private PageContext createPageContext(PageInfo pageInfo, HttpServletRequest request,
             MessageSourceAccessor messageSourceAccessor) {
         if (pageInfo == null) {
