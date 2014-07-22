@@ -33,16 +33,6 @@
            <fileset dir="src/main/resources"/>
        </jar>
 
-        <copy todir="${yukon.lib}">
-            <fileset dir="src/main/resources">
-                <include name="**/*.txt"/>
-            </fileset>
-        </copy>
-
-       <copy todir="${yukon.lib}">
-         <fileset dir="conf"/>
-       </copy>
-       
    </target>
 
 
