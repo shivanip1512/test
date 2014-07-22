@@ -48,24 +48,6 @@
        
    </target>
 
-	<target name="install" depends="build">
-   		<jar jarfile="${yukon.client.bin}/services.jar"
-   			basedir="build/"
-   			manifest="resource/manifest.mf">
-            <manifest>
-               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-               <attribute name="Permissions" value="all-permissions"/>
-           </manifest>
-   		</jar>   			
-   			
-   		<copy todir="${yukon.client.bin}">
- 	    	<fileset dir="resource">
-				<include name="**/*.conf"/>
-	    	</fileset>
-       </copy>       
-   </target>
-   
    <target name="clean">
        <delete dir="build"/>        
    </target>

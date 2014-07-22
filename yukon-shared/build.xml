@@ -17,16 +17,6 @@
         </jar>
     </target>
 
-    <target name="install" depends="build">
-        <jar jarfile="${yukon.client.bin}/yukon-shared.jar">
-            <manifest>
-                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-                <attribute name="Permissions" value="all-permissions"/>
-            </manifest>
-        </jar>
-    </target>
-
     <target name="clean" />
 
     <target name="runUnitTests" />

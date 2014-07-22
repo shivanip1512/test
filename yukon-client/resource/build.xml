@@ -14,14 +14,6 @@
        </copy>
    </target>
 
-	<target name="install" depends="build">   		
-   		<copy todir="${yukon.server.config}" preservelastmodified="yes">
-           <fileset dir=".">
-               <include name="**/*.xml"/>
-           </fileset>
-       </copy>
-   </target>
-   
    <target name="clean" />       
 
    <!-- Run unit tests - will stop running if a failure or error occurs during a test -->

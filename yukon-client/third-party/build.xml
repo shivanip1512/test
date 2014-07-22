@@ -17,17 +17,6 @@
        </copy>
    </target>
 
-   <target name="install" depends="build">
-   	   <copy todir="${yukon.client.bin}" preservelastmodified="yes">
-   	   		<fileset dir=".">
-               <include name="**/*.jar"/>
-               <include name="**/*.zip"/>
-               <include name="**/*.exe"/>
-               <include name="**/*.dll"/>
-           </fileset>
-       </copy>
-   </target>
-      	   			
    <target name="clean"/>
    
    <!-- Run unit tests - will stop running if a failure or error occurs during a test -->

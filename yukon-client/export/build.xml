@@ -35,32 +35,6 @@
 
    </target>
 
-
-   <target name="install" depends="build">
-        <jar jarfile="${yukon.client.bin}/export.jar"
-            basedir="build/"
-            manifest="src/main/resources/manifest.mf">
-            <manifest>
-               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-               <attribute name="Permissions" value="all-permissions"/>
-           </manifest>
-        </jar>
-            
-        <copy todir="${yukon.client.bin}">
-            <fileset dir="src/main/resources">
-                <include name="**/*.txt"/>
-            </fileset>
-       </copy>
-
-       <copy todir="${yukon.lib}">
-         <fileset dir="conf"/>
-       </copy>
-              
-   </target>
-   
-   
-   
    <target name="clean">
        <delete dir="build"/>
    </target>

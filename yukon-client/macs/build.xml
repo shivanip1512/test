@@ -33,17 +33,6 @@
        </jar>       
    </target>
 
-	<target name="install" depends="build">
-   		<jar jarfile="${yukon.client.bin}/macs.jar"
-   			basedir="build/" manifest="src/main/resources/manifest.mf">
-	        <manifest>
-	           <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-	           <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-	           <attribute name="Permissions" value="all-permissions"/>
-	       </manifest>
-   		</jar>   			 
-   </target>
-   
    <target name="clean">
        <delete dir="build"/>        
    </target>

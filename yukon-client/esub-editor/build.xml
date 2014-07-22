@@ -34,21 +34,6 @@
 
    </target>
 
-	<target name="install" depends="build">
-   		<jar jarfile="${yukon.client.bin}/esub-editor.jar" basedir="build/" manifest="resource/manifest.mf" >
-            <manifest>
-               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-               <attribute name="Permissions" value="all-permissions"/>
-           </manifest>
-	 	    <fileset dir="resource">
-				<include name="**/*.gif"/>
-				<include name="**/*.ico"/>
-			</fileset>		
-		</jar>   			
-   </target>
-
-
    <target name="clean">
        <delete dir="build"/>        
    </target>
