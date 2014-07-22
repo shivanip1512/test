@@ -19,19 +19,6 @@
 	
 	<target name="all" depends="clean, build" />
 
-	<target name="install" depends="build">
-        
-		<jar jarfile="${yukon.client.bin}/yukon-web.jar" basedir="build/">
-            <manifest>
-                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-            	<attribute name="Build-Info" value="${build.info}"/>
-                <attribute name="Permissions" value="all-permissions"/>
-            </manifest>
-		</jar>
-        
-	</target>
-    
 	<target name="build" depends="build_src, web_content"/>
 
     <!-- 

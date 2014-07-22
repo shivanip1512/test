@@ -76,19 +76,6 @@
         </delete>
     </target>
 
-    <target name="install">
-        <mkdir dir="${yukon.client.home}" />
-        <mkdir dir="${yukon.client.bin}" />
-        <mkdir dir="${yukon.client.config}" />
-        <mkdir dir="${yukon.client.export}" />
-        <mkdir dir="${yukon.client.log}" />
-        <mkdir dir="${yukon.client.help}" />
-
-        <antcall target="callall" inheritAll="true">
-            <param name="dotarget" value="install" />
-        </antcall>
-    </target>
-
     <target name="uninstall">
         <delete>
             <fileset dir="${yukon.client.home}" />
