@@ -105,12 +105,29 @@ yukon.dr.ecobee = (function () {
                         }
                     },
                     error: function(xhr, status, error, $form) {
-                        $('#ecobee-download-popup').html(xhr.responseText);
+                        var errList = xhr.responseJSON,
+                            ilist,
+                            errorType,
+                            showNothingSelected = false;
+                        for (ilist = 0; ilist < errList.length; ilist += 1) {
+                            errorType = errList[ilist].errorType;
+                            if ('loadgroupsUnspecified' === errorType) {
+                                showNothingSelected = true;
+                            }
+                            if ('dateRangeError' === errorType) {
+                                $('#bad-date-range').show();
+                            }
+                        }
                         // initialize the date/time pickers
                         yukon.ui.initDateTimePickers().ancestorInit('#ecobee-download-popup');
                         
                         // initialize the load group picker
                         loadGroupPicker.show.call(loadGroupPicker, true);
+                        
+                        // must show nothing selected text after picker initialized
+                        if (true === showNothingSelected) {
+                            $('#picker_loadGroupPicker_nothingSelected').show();
+                        }
                     }
                 });
             });

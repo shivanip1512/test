@@ -37,6 +37,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -200,24 +201,29 @@ public class EcobeeController {
         
         Duration specifiedDuration = new Duration(startDate, endDate);
         
+        List<Map<String, Object>> errResponse = new ArrayList<>();
+        boolean validationError = false;
         if (specifiedDuration.isLongerThan(Duration.standardDays(7)) ||
                 startDate.isAfter(endDate)) {
-            response.setStatus(400);
-            DateTime now = new DateTime();
-            model.addAttribute("now", now);
-            model.addAttribute("oneDayAgo", new DateTime(now.minusDays(1)));
-            
-            return "dr/ecobee/download.jsp";
+            Map<String, Object> json = new HashMap<>();
+            json.put("errorType", "dateRangeError");
+            errResponse.add(json);
+            validationError = true;
         }
         
         if (loadGroupIds == null) {
             // Load groups are required.
-            response.setStatus(400);
-            DateTime now = new DateTime();
-            model.addAttribute("now", now);
-            model.addAttribute("oneDayAgo", new DateTime(now.minusDays(1)));
-            
-            return "dr/ecobee/download.jsp";
+            Map<String, Object> json = new HashMap<>();
+            json.put("errorType", "loadgroupsUnspecified");
+            errResponse.add(json);
+            validationError = true;
+        }
+        
+        if (validationError == true) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setContentType("application/json");
+            JsonUtils.getWriter().writeValue(response.getOutputStream(), errResponse);
+            return null;
         }
         List<String> serialNumbers = drGroupDeviceMappingDao.getSerialNumbersForLoadGroups(Lists.newArrayList(loadGroupIds));
         

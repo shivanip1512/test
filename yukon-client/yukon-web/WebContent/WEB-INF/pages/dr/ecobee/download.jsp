@@ -18,6 +18,7 @@
             <span class="fl" style="margin-right: 5px;"><i:inline key="yukon.common.to"/></span>
             <dt:dateTime name="ecobeeEndReportDate" value="${now}" maxDate="${now}"/>
         </tags:nameValue2>
+        <div class="error dn" id="bad-date-range"><i:inline key=".download.dateOutOfRange"/></div>
     </tags:nameValueContainer2>
     <h3 class="stacked"><i:inline key=".loadGroups"/></h3>
     <div id="loadGroup">

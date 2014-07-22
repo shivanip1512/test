@@ -459,6 +459,7 @@
 <entry key="yukon.web.modules.dr.ecobee.details.download.ready">Ready</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.failed">Failed</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.maxDayRange">(Maximum Seven Day Range)</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.dateOutOfRange">Start and end dates out of range.</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.none">No ecobee sync issues.</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.serialNumber">SN:</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.group">Group:</entry>
