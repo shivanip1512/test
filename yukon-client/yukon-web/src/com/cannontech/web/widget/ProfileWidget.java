@@ -96,10 +96,9 @@ public class ProfileWidget extends WidgetControllerBase {
 
     private String calcIntervalStr(int secs, YukonUserContext userContext) {
         String intervalString = null;
-        if (secs == -1) {
-            intervalString = "Unknown";
-        } else if (secs == 0) {
-            intervalString = "0";
+        if (secs == 0) {
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            intervalString = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.unknown");
         } else {    
             Duration duration = Duration.standardSeconds(secs);
             intervalString = durationFormattingService.formatDuration(duration, DurationFormat.DHMS_REDUCED, userContext);

@@ -12,6 +12,7 @@
     <entry key="yukon.web.widgets.profileWidget.startAfterToday">Start date: {0} must be after today.</entry>
     <entry key="yukon.web.widgets.profileWidget.stopAfterToday">Stop date: {0} must be after today.</entry>
     <entry key="yukon.web.widgets.profileWidget.stopAfterStart">Stop date: {0} must be after start date: {1}</entry>
+    <entry key="yukon.web.widgets.profileWidget.unknown">Unknown</entry>
     
     <!-- profileWidget/render.jsp -->
     <entry key="yukon.web.widgets.profileWidget.channel">Channel</entry>

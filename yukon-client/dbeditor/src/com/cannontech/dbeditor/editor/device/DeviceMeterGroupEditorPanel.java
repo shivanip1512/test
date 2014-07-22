@@ -1119,14 +1119,11 @@ public void setValue(Object val)
 			SwingUtil.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
 		}
 		
-		if (dlp.getVoltageDmdRate().intValue() != -1) {
 		    SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxlVoltRate(), dlp.getVoltageDmdRate().intValue());
-		}
 		
-		if (dlp.getVoltageDmdRate().intValue() != -1) {
 		    SwingUtil.setIntervalComboBoxSelectedItem(getLoadProfileDemandRateComboBox(), dlp
             .getLoadProfileDemandRate().intValue());
-		}
+		
 		
 		if( DeviceTypesFuncs.isLoadProfile1Channel(deviceType))
 		{
