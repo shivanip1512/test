@@ -31,23 +31,6 @@
            </manifest>
            <fileset dir="src/main/resources"/>
        </jar>       
-
-       <jar jarfile="${yukon.lib}/tztest.jar"
-            basedir="build/" manifest="src/main/resources/tztest_manifest.mf">
-           <manifest>
-               <attribute name="Main-Class" value="com.cannontech.tools.TimeZoneTest"/>
-               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-           </manifest>
-           <include name="com/cannontech/tools/TimeZoneTest.class"/>
-       </jar>
-
-		<copy todir="${yukon.lib}">
-	 	    <fileset dir="src/main/resources">
-		 		<include name="**/*.bat"/>
-	 	    	<include name="**/*.properties"/>
-		    </fileset>
-	    </copy>
    </target>
 
    <target name="clean">
