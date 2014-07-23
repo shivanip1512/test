@@ -873,8 +873,8 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand )
         const std::vector<unsigned char> response = list_of
                 (0x79)(0x02)(0X00)(0x01)  // command code + operation + status + 1 tlv
                 (0x02)                    // tlv type 2
-                (0x00)(0x71)              // tlv size (2-bytes)
-                (0x1c)                    // number of metrics descriptor
+                (0x00)(0x79)              // tlv size (2-bytes)
+                (0x1e)                    // number of metrics descriptor
                 (0x00)(0x01)(0x00)(0x00)  // nothing specified
                 (0x00)(0x02)(0x20)(0x00)  // Fund/Harmonic - Fundamental
                 (0x00)(0x03)(0x40)(0x00)  // Fund/Harmonic - Harmonic
@@ -902,7 +902,9 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand )
                 (0x00)(0x22)(0x00)(0x00)  // Scaling Factor 10^0
                 (0x00)(0x23)(0x00)(0x07)  // Scaling Factor 10^-3
                 (0x00)(0x29)(0x00)(0x06)  // Scaling Factor 10^-6
-                (0x00)(0x2a)(0x00)(0x05); // Scaling Factor 1/10ths
+                (0x00)(0x2a)(0x00)(0x05)  // Scaling Factor 1/10ths
+                (0x00)(0x00)(0x00)(0x00)  // Unknown metric ID 0
+                (0xff)(0xff)(0x00)(0x00); // Unknown metric ID 65535
 
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
@@ -937,14 +939,16 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand )
                 "Var delivered, peak demand (34): Scaling Factor: 1\n"
                 "Var received, peak demand (35): Scaling Factor: 10e-3 (milli)\n"
                 "VA hour delivered (41): Scaling Factor: 10e-6 (micro)\n"
-                "VA hour received (42): Scaling Factor: 10e-1 (deci)\n";
+                "VA hour received (42): Scaling Factor: 10e-1 (deci)\n"
+                "Unknown (0): Scaling Factor: 1\n"
+                "Unknown (65535): Scaling Factor: 1\n";
 
         BOOST_CHECK_EQUAL( rcv.description, desc_exp );
 
         const RfnChannelConfigurationCommand::MetricIds metricsExpected = boost::assign::list_of
             (0x01)(0x02)(0x03)(0x05)(0x06)(0x07)(0x08)(0x09)
             (0x0a)(0x0b)(0x0c)(0x15)(0x16)(0x17)(0x1f)(0x20)
-            (0x21)(0x22)(0x23)(0x29)(0x2a);
+            (0x21)(0x22)(0x23)(0x29)(0x2a)(0xffff);
 
         BOOST_CHECK_EQUAL( cmd.getMetricsReceived(), metricsExpected );
     }
@@ -1000,7 +1004,6 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                 // tlv full description
                 ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x00) )
                 ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x01)(0x03) )
-                ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
                 // tlv full description - metric qualifier
                 ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
                 ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
@@ -1017,7 +1020,6 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                 // tlv full description
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
                 // tlv full description - metric qualifier
                 ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
@@ -1066,8 +1068,7 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand_exceptions )
                 ( list_of(0x79)(0x01)(0X00)(0x00) )
                 // tlv channel selection configuration
                 ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x00)(0x00) )
-                ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x00)(0x01)(0x03) )
-                ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x00)(0x03)(0x01)(0xff)(0xff) );
+                ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x00)(0x01)(0x03) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
@@ -1080,8 +1081,7 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (0), expected (1)" ) )
                 // tlv channel selection configuration
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 0, expected >= 1" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 7" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) );
+                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 7" ) );
 
         RfnGetChannelSelectionCommand cmd;
 
@@ -1123,7 +1123,6 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand_exceptio
                 // tlv full description
                 ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x00) )
                 ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x01)(0x03) )
-                ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
                 // tlv full description - metric qualifier
                 ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
                 ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
@@ -1140,7 +1139,6 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand_exceptio
                 // tlv full description
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
                 // tlv full description - metric qualifier
                 ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
@@ -1374,7 +1372,6 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
                 // tlv full description
                 ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x00) )
                 ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x01)(0x03) )
-                ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0xff)(0xff)(0x00)(0x00) )
                 // tlv full description - metric qualifier
                 ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x80)(0x00) )
                 ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x60)(0x00) )
@@ -1391,7 +1388,6 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
                 // tlv full description
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) )
                 // tlv full description - metric qualifier
                 ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
@@ -1437,9 +1433,8 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand_exceptions )
                 ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x07)(0x01)(0x00) )
                 ( list_of(0x7b)(0x01)(0X00)(0x02)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00) )
                 // tlv interval recording configuration
-                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x00)                                                                   )
-                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)             )
-                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x0b)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01)(0xff)(0xff) );
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x00) )
+                ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
                 ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
@@ -1451,8 +1446,7 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand_exceptions )
                 ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
                 // tlv channel selection configuration
                 ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for interval recording received 0, expected >= 9" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 3" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Received unknown metric id (65535)" ) );
+                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 3" ) );
 
         std::vector< RfnCommand::CommandException > actual;
 

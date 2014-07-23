@@ -184,7 +184,7 @@ std::string getMetricDescription( unsigned metricId )
 
     if( ! item )
     {
-        return std::string();
+        return "Unknown";
     }
 
     return item->touRate
@@ -438,17 +438,7 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
 
         std::string metricDescription = getMetricDescription(metricId);
 
-        validate( Condition( ! metricDescription.empty(), ErrorInvalidData )
-                << "Received unknown metric id (" << metricId << ")" );
-
         result.description += metricDescription + " (" + CtiNumStr(metricId) + ")\n";
-
-        //  this is the desired metric list, which is a filter on the meter's available channels.
-        /*
-        const bool isNewInsert = _metricsReceived.insert(metricId).second;
-        validate( Condition( isNewInsert, ErrorInvalidData )
-                << "Received unexpected duplicated metric: " << metricDescription << " (" << metricId << ")" );
-        */
     }
 }
 
@@ -485,9 +475,6 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
 
         std::string metricDescription = getMetricDescription(metricId);
 
-        validate( Condition( ! metricDescription.empty(), ErrorInvalidData )
-                << "Received unknown metric id (" << metricId << ")" );
-
         result.description += metricDescription + " (" + CtiNumStr(metricId) + "): ";
 
         const unsigned metricQualifier = getValueFromBytes_bEndian( response, offset, 2 );
@@ -500,15 +487,15 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
 
         if( metricQFields.coincidentValue == 0 )
         {
-            const bool isNewInsert = _metricsReceived.insert(metricId).second;
-            //  Do not treat duplicates as errors - it's currently possible to
-            //  receive multiple voltage metrics with different qualifiers (as of June 2014).
-            //  This will need to be rectified in a future firmware release.
-            /*
-            // check for duplicated metricId
-            validate( Condition( isNewInsert, ErrorInvalidData )
-                    << "Received unexpected duplicated metric: " << metricDescription << " (" << metricId << ")" );
-            */
+            //  Metric ID 0 is a the catch-all "unrecognized" metric ID, so don't insert it
+            if( metricId )
+            {
+                //  Duplicates are allowed - it's possible to receive multiple voltage
+                //    metrics with different qualifiers, for example.
+                //  That particular case is due to a marketing requirement to report both
+                //    the meter's voltage and the Metrology library's voltage.
+                _metricsReceived.insert(metricId);
+            }
 
             coincidentValue = 0;
             metricsIdsCoincidentReceived.clear();
@@ -521,11 +508,8 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
                     << "Received unexpected coincident value: " << metricQFields.coincidentValue << " (expected: " << coincidentValueExp << "), "
                     << metricDescription << " (" << metricId << ")" );
 
-            // check for duplicated coincident metricId
-            const bool isNewInsert = metricsIdsCoincidentReceived.insert(metricId).second;
-            validate( Condition( isNewInsert, ErrorInvalidData )
-                    << "Received unexpected duplicated coincident metric: " << metricDescription << " (" << metricId << ")"
-                    << ", coincident value: " << coincidentValue );
+            //  Duplicates are allowed - it's possible to receive multiple unrecognized (0) metrics
+            metricsIdsCoincidentReceived.insert(metricId);
         }
 
         result.description += metricQFields.resolve() + "\n";
