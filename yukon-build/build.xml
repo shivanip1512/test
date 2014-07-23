@@ -214,7 +214,6 @@
             <fileset file="${basedir}/yukon-client/monitor/src/main/resources/YukonNoAlarm.ico" />
             <fileset file="${basedir}/yukon-client/monitor/src/main/resources/AlarmMonitor.ico" />
             <fileset file="${basedir}/yukon-client/monitor/systray4j.dll" />
-            <fileset file="${basedir}/yukon-client/export/src/main/resources/ReadMe.txt" />
             <fileset dir="${basedir}/yukon-client/export/conf" />
             <fileset file="${basedir}/yukon-client/trending/resource/GraphIcon.ico"/>
             <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
