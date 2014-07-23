@@ -17,6 +17,9 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +30,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.user.UserAuthenticationInfo;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -223,7 +225,7 @@ public class UserProfileController {
             }
         }
         if (bindingResult.hasErrors()) {
-            result.putAll(JsonUtils.getErrorJson(bindingResult, accessor));
+            result.putAll(getErrorJson(bindingResult, accessor));
             return result;
         }
 
@@ -247,7 +249,42 @@ public class UserProfileController {
             }
         }
 
-        result.putAll(JsonUtils.getErrorJson(bindingResult, accessor));
+        result.putAll(getErrorJson(bindingResult, accessor));
+        return result;
+    }
+    
+    /**
+     * Call this when a JSON-based action needs to fail and returns the list of errors as Map<String, Object>s.
+     * @param errors  Errors or BindingResult
+     * @param accessor MessageSourceAccessor to interpret message keys.
+     * @return result a Map<String, Object>
+     * 
+     * @postcondition result['success'] = false
+     * @postcondition result['errors'] = List<Object>[ 0+ Map<String, Object>[field:{String}, message:{String}, severity:"ERROR"]]
+     */
+    private Map<String, Object> getErrorJson(Errors errors, MessageSourceAccessor accessor) {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("success", false);
+        List<Object> errorList = new ArrayList<>();
+        
+        for (ObjectError err : errors.getGlobalErrors()) {
+            final String msg = accessor.getMessage(err.getCode(), err.getArguments());
+            Map<String, Object> errorJson = Maps.newHashMapWithExpectedSize(3);
+            errorJson.put("field", "GLOBAL");
+            errorJson.put("message", msg);
+            errorJson.put("severity", "ERROR");
+            errorList.add(errorJson);
+        }
+        for (FieldError err : errors.getFieldErrors()) {
+            final String msg = accessor.getMessage(err.getCode(), err.getArguments());
+            Map<String, Object> errorJson = Maps.newHashMapWithExpectedSize(3);
+            errorJson.put("field", err.getField());
+            errorJson.put("message", msg);
+            errorJson.put("severity", "ERROR");
+            errorList.add(errorJson);
+        }
+        result.put("errors", errorList);
+        
         return result;
     }
 

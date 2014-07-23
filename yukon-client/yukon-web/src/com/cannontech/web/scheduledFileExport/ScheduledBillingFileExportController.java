@@ -1,7 +1,9 @@
 package com.cannontech.web.scheduledFileExport;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,9 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +49,7 @@ import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTa
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/*")
@@ -141,7 +147,7 @@ public class ScheduledBillingFileExportController {
         }
         
         if (bindingResult.hasErrors()) {
-            return JsonUtils.getErrorJson(bindingResult, accessor);
+            return getErrorJson(bindingResult, accessor);
         }
 
         MessageSourceResolvable msgObj = null;
@@ -155,8 +161,13 @@ public class ScheduledBillingFileExportController {
             scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobUpdated", exportData.getScheduleName());
         }
-
-        return JsonUtils.getSuccessJson(msgObj, accessor);
+        
+        String message = accessor.getMessage(msgObj);
+        Map<String, Object> json = new HashMap<>();
+        json.put("success", true);
+        json.put("message", message);
+        
+        return json;
     }
 
     @RequestMapping("jobs")
@@ -182,7 +193,12 @@ public class ScheduledBillingFileExportController {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         MessageSourceResolvable msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.deletedSuccess", jobName);
         
-        return JsonUtils.getSuccessJson(msgObj, accessor);
+        String message = accessor.getMessage(msgObj);
+        Map<String, Object> json = new HashMap<>();
+        json.put("success", true);
+        json.put("message", message);
+        
+        return json;
     }
 
     public static String getGroupNamesString(Set<? extends DeviceGroup> deviceGroups) {
@@ -202,6 +218,41 @@ public class ScheduledBillingFileExportController {
         }
         
         return groupNames;
+    }
+    
+    /**
+     * Call this when a JSON-based action needs to fail and returns the list of errors as Map<String, Object>s.
+     * @param errors  Errors or BindingResult
+     * @param accessor MessageSourceAccessor to interpret message keys.
+     * @return result a Map<String, Object>
+     * 
+     * @postcondition result['success'] = false
+     * @postcondition result['errors'] = List<Object>[ 0+ Map<String, Object>[field:{String}, message:{String}, severity:"ERROR"]]
+     */
+    private Map<String, Object> getErrorJson(Errors errors, MessageSourceAccessor accessor) {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("success", false);
+        List<Object> errorList = new ArrayList<>();
+
+        for (ObjectError err : errors.getGlobalErrors()) {
+            final String msg = accessor.getMessage(err.getCode(), err.getArguments());
+            Map<String, Object> errorJson = Maps.newHashMapWithExpectedSize(3);
+            errorJson.put("field", "GLOBAL");
+            errorJson.put("message", msg);
+            errorJson.put("severity", "ERROR");
+            errorList.add(errorJson);
+        }
+        for (FieldError err : errors.getFieldErrors()) {
+            final String msg = accessor.getMessage(err.getCode(), err.getArguments());
+            Map<String, Object> errorJson = Maps.newHashMapWithExpectedSize(3);
+            errorJson.put("field", err.getField());
+            errorJson.put("message", msg);
+            errorJson.put("severity", "ERROR");
+            errorList.add(errorJson);
+        }
+        result.put("errors", errorList);
+
+        return result;
     }
 
 }
