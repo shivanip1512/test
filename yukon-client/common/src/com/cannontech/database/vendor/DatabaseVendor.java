@@ -14,6 +14,7 @@ public enum DatabaseVendor {
     ORACLE9I  ("Oracle",9),
     ORACLE10G ("Oracle",10),
     ORACLE11G ("Oracle",11),
+    ORACLE12C ("Oracle",12),
     UNKNOWN("");
     
     private static Logger logger = YukonLogManager.getLogger(DatabaseVendor.class);

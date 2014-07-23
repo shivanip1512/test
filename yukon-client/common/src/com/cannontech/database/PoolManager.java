@@ -1,7 +1,17 @@
 package com.cannontech.database;
 
-import static com.cannontech.common.config.MasterConfigBooleanKeysEnum.*;
-import static com.cannontech.common.config.MasterConfigStringKeysEnum.*;
+import static com.cannontech.common.config.MasterConfigBooleanKeysEnum.DB_JAVA_TEST_ON_BORROW;
+import static com.cannontech.common.config.MasterConfigBooleanKeysEnum.DB_JAVA_TEST_ON_RETURN;
+import static com.cannontech.common.config.MasterConfigBooleanKeysEnum.DB_JAVA_TEST_WHILE_IDLE;
+import static com.cannontech.common.config.MasterConfigBooleanKeysEnum.DB_SSL_ENABLED;
+import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_JAVA_DRIVER;
+import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_JAVA_URL;
+import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_JAVA_VALIDATION_QUERY;
+import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_PASSWORD;
+import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_SQLSERVER;
+import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_SQLSERVER_HOST;
+import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_TYPE;
+import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_USERNAME;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -58,7 +68,7 @@ public class PoolManager {
     private String primaryUser;
 	private BasicDataSource bds;
 	
-	private enum DatabaseVendor { ORACLE_DATABASE, MSSQL_DATABASE }
+	private enum DatabaseVendor { ORACLE_DATABASE, ORACLE12_DATABASE, MSSQL_DATABASE }
 
     private PoolManager() {
         init();
@@ -73,6 +83,8 @@ public class PoolManager {
             dbType = DatabaseVendor.MSSQL_DATABASE;
         } else if ("oracle".equalsIgnoreCase(dbTypeName)) {
             dbType = DatabaseVendor.ORACLE_DATABASE;
+        } else if ("oracle12".equalsIgnoreCase(dbTypeName)) {
+            dbType = DatabaseVendor.ORACLE12_DATABASE;
         } else {
             throw new BadConfigurationException("Unrecognized database type (DB_TYPE) in master.cfg: " + dbTypeName);
         }
@@ -103,10 +115,9 @@ public class PoolManager {
             log.debug("Found MSSQL");
             return new ConnectionDescription(url.toString(), dbType);
         }
-        
-        if (dbType == DatabaseVendor.ORACLE_DATABASE) {
+        else if (dbType == DatabaseVendor.ORACLE_DATABASE) {
             try {
-                // configure as Oracle
+                // configure as Oracle using SID, which has been deprecated as of Oracle 12c.
                 // example: jdbc:oracle:thin:@mn1db02:1521:xcel
                 StringBuilder url = new StringBuilder();
                 url.append("jdbc:oracle:thin:@");
@@ -117,6 +128,24 @@ public class PoolManager {
                 url.append(tnsName);
                 
                 log.debug("Found oracle");
+                return new ConnectionDescription(url.toString(), dbType);
+            } catch (UnknownKeyException e) {
+                throw new BadConfigurationException("Cannot connect to Oracle without DB_SQLSERVER_HOST and DB_SQLSERVER being specified.", e);
+            }
+        }
+        else if (dbType == DatabaseVendor.ORACLE12_DATABASE) {
+            try {
+                // configure as Oracle 12c using service name, not SID.
+                // example: jdbc:oracle:thin:@mn1db02:1521/xcel
+                StringBuilder url = new StringBuilder();
+                url.append("jdbc:oracle:thin:@");
+                String host = configSource.getRequiredString(DB_SQLSERVER_HOST);
+                url.append(host);
+                url.append(":1521/");
+                String tnsName = configSource.getRequiredString(DB_SQLSERVER);
+                url.append(tnsName);
+                
+                log.debug("Found Oracle 12C");
                 return new ConnectionDescription(url.toString(), dbType);
             } catch (UnknownKeyException e) {
                 throw new BadConfigurationException("Cannot connect to Oracle without DB_SQLSERVER_HOST and DB_SQLSERVER being specified.", e);
@@ -169,6 +198,7 @@ public class PoolManager {
         String defaultValidationQuery;
         switch (connectionDescription.type) {
         case ORACLE_DATABASE:
+        case ORACLE12_DATABASE:
             defaultValidationQuery = "select 1 from dual";
             break;
         default:
