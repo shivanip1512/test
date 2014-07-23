@@ -211,7 +211,7 @@
         <copy todir="${client.bin}" preservelastmodified="true">
         	<fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**"/>
-            <fileset file="${basedir}/yukon-client/commander/resource/CommanderIcon.ico"/>
+            <fileset file="${basedir}/yukon-client/commander/src/main/resources/CommanderIcon.ico"/>
             <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
             <fileset file="${basedir}/yukon-client/esub-editor/resource/esubEditorIcon.ico"/>
             <fileset dir="${basedir}/yukon-client/export/conf" />
