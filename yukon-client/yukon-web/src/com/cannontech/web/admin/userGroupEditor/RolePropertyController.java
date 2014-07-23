@@ -41,7 +41,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
 
-@Controller("/roleEditor/*")
+@Controller
 @RequestMapping("/roleEditor/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class RolePropertyController {

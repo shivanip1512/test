@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.BankOpState;
@@ -52,7 +53,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-@Controller("/command/*")
+@Controller
 @RequestMapping("/command/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class CommandController {
@@ -262,9 +263,9 @@ public class CommandController {
             @Override
             public void recievedResponse(CapControlServerResponse message) {
                 if (!message.isSuccess()) {
-                    this.errorMessage = message.getResponse();
+                    errorMessage = message.getResponse();
                 }
-                this.response = message;
+                response = message;
             }
             @Override
             public String getErrorMessage() {
@@ -283,29 +284,35 @@ public class CommandController {
         
         return "redirect:/capcontrol/tier/feeders";
     }
-    
-    @RequestMapping("returnBank")
-    public String returnBank(ModelMap model, FlashScope flash, LiteYukonUser user, int bankId, boolean assignHere) {
-        
-        rolePropertyDao.verifyProperty(permissions.get(CapControlType.CAPBANK), user);
+
+    @CheckRoleProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS)
+    @RequestMapping(value="{bankId}/move-back")
+    public String returnBank(ModelMap model, FlashScope flash, @PathVariable int bankId, LiteYukonUser user) {
         CapBankDevice bank = cache.getCapBankDevice(bankId);
-        Feeder feeder;
-        ItemCommand command;
-        if (!assignHere) {
-            feeder = cache.getFeeder(bank.getOrigFeederID());
-            command = CommandHelper.buildItemCommand(CommandType.RETURN_CAP_TO_ORIGINAL_FEEDER.getCommandId(), bankId, user);
-        } else {
-            feeder = cache.getFeeder(bank.getParentID());
-            BankMoveBean bean = new BankMoveBean();
-            bean.setBankId(bankId);
-            bean.setOldFeederId(bank.getOrigFeederID());
-            bean.setNewFeederId(bank.getParentID());
-            bean.setDisplayOrder(bank.getControlOrder()); // IS THIS RIGHT?
-            bean.setCloseOrder(bank.getCloseOrder());
-            bean.setTripOrder(bank.getTripOrder());
-            command = CommandHelper.buildBankMove(user, bean, true); 
-        }
-        
+        Feeder feeder = cache.getFeeder(bank.getOrigFeederID());
+        ItemCommand command = CommandHelper.buildItemCommand(CommandType.RETURN_CAP_TO_ORIGINAL_FEEDER.getCommandId(), bankId, user);
+        return doBankMoveCommand(model, flash, command, feeder, bank);
+    }
+
+    @CheckRoleProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS)
+    @RequestMapping(value="{bankId}/assign-here")
+    public String assignHere(ModelMap model, FlashScope flash, @PathVariable int bankId, LiteYukonUser user) {
+        CapBankDevice bank = cache.getCapBankDevice(bankId);
+        Feeder feeder = cache.getFeeder(bank.getParentID());
+
+        BankMoveBean bean = new BankMoveBean();
+        bean.setBankId(bankId);
+        bean.setOldFeederId(bank.getOrigFeederID());
+        bean.setNewFeederId(bank.getParentID());
+        bean.setDisplayOrder(bank.getControlOrder()); // IS THIS RIGHT?
+        bean.setCloseOrder(bank.getCloseOrder());
+        bean.setTripOrder(bank.getTripOrder());
+        ItemCommand command = CommandHelper.buildBankMove(user, bean, true);
+
+        return doBankMoveCommand(model, flash, command, feeder, bank);
+    }
+
+    private String doBankMoveCommand(ModelMap model, FlashScope flash, ItemCommand command, Feeder feeder, CapBankDevice bank){
         CommandResultCallback callback = new CommandResultCallback() {
             private CapControlServerResponse response;
             private String errorMessage;
@@ -320,16 +327,16 @@ public class CommandController {
             @Override
             public void recievedResponse(CapControlServerResponse message) {
                 if (!message.isSuccess()) {
-                    this.errorMessage = message.getResponse();
+                    errorMessage = message.getResponse();
                 }
-                this.response = message;
+                response = message;
             }
             @Override
             public String getErrorMessage() {
                 return errorMessage;
             }
         };
-        
+
         CapControlServerResponse response = executor.blockingExecute(command, CapControlServerResponse.class, callback);
         if (response.isTimeout()) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveTimeout", bank.getCcName(), feeder.getCcName()));
@@ -338,12 +345,11 @@ public class CommandController {
         } else {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveSuccess", bank.getCcName(), feeder.getCcName()));
         }
-        
-        model.addAttribute("substationId", cache.getParentSubStationId(bankId));
-        model.addAttribute("areaId", cache.getParentAreaId(bankId));
+
+        model.addAttribute("substationId", cache.getParentSubStationId(bank.getCcId()));
         return "redirect:/capcontrol/tier/feeders";
     }
-    
+
     @RequestMapping("manualStateChange")
     public String manualStateChange(HttpServletResponse response, 
                                            ModelMap model, 

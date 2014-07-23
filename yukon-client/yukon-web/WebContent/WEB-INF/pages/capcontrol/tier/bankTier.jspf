@@ -148,7 +148,12 @@ margin: 0px;
 
                 <%-- Parent Feeder --%>
                 <td>
-                    <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>
+                    <c:if test="${viewableCapBank.capBankDevice.bankMoved}">
+                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT" styleClass="warning"/>
+                    </c:if>
+                    <c:if test="${not viewableCapBank.capBankDevice.bankMoved}">
+                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>
+                    </c:if>
                 </td>
 
                 <%-- Daily/Max/Total Ops --%>
@@ -163,6 +168,7 @@ margin: 0px;
                         <c:if test="${hasCapbankControl}">
                             <cm:dropdownOption key=".capBank.actions" icon="icon-cog" href="javascript:void(0);" classes="js-bank-command" />
                             <cm:dropdownOption key=".capBank.state" icon="icon-pencil" href="javascript:void(0);" classes="js-bank-state" />
+                            <li class="divider" />
                         </c:if>
                          <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
                             <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
@@ -174,11 +180,22 @@ margin: 0px;
                                 <cm:dropdownOption key=".cbc.info" icon="icon-magnifier" classes="js-cbc-info" href="javascript:void(0);" />
                         </c:if>
                         <c:if test="${hasCapbankControl}">
-                            <c:set var="warning" value=""/>
-                            <c:if test="${viewableCapBank.capBankDevice.bankMoved}">
-                                <c:set var="warning" value="warning"/>
+                            <li class="divider" />
+                            <c:if test="${not viewableCapBank.capBankDevice.bankMoved}">
+                                <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="js-move-bank" href="javascript:void(0);" />
                             </c:if>
-                            <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="js-move-bank ${warning}" href="javascript:void(0);" />
+                            <c:if test="${viewableCapBank.capBankDevice.bankMoved}">
+                                <cti:url var="assignUrl" value="/capcontrol/command/returnBank">
+                                    <cti:param name="bankId" value="${bankId}"/>
+                                    <cti:param name="assignHere" value="true"/>
+                                </cti:url>
+                                <cti:url var="returnUrl" value="/capcontrol/command/returnBank">
+                                    <cti:param name="bankId" value="${bankId}"/>
+                                    <cti:param name="assignHere" value="false"/>
+                                </cti:url>
+                                <cm:dropdownOption href="${returnUrl}" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER" icon="icon-bullet-go-left" />
+                                <cm:dropdownOption href="${assignUrl}" key=".command.assignBankHere" icon="icon-bullet-go-down" />
+                            </c:if>
                         </c:if>
                     </cm:dropdown>
                 </td>

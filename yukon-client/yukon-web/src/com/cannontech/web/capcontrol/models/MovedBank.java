@@ -7,6 +7,9 @@ public class MovedBank {
     private CapBankDevice capbank = null;
     private String currentFeederName = "";
     private String originalFeederName = "";
+    private Integer currentSubstationId = null;
+    private Integer originalSubstationId = null;
+    
     
     public MovedBank(CapBankDevice capbank) {
         this.capbank = capbank;
@@ -30,5 +33,21 @@ public class MovedBank {
 
     public CapBankDevice getCapbank() {
         return capbank;
+    }
+
+    public Integer getCurrentSubstationId() {
+        return currentSubstationId;
+    }
+
+    public void setCurrentSubstationId(Integer currentSubstationId) {
+        this.currentSubstationId = currentSubstationId;
+    }
+
+    public Integer getOriginalSubstationId() {
+        return originalSubstationId;
+    }
+
+    public void setOriginalSubstationId(Integer originalSubstationId) {
+        this.originalSubstationId = originalSubstationId;
     }
 }

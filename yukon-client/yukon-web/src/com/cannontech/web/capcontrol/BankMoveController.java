@@ -5,9 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.capcontrol.model.BankMoveBean;
 import com.cannontech.cbc.cache.CapControlCache;
@@ -15,7 +13,6 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
@@ -103,11 +100,7 @@ public class BankMoveController {
     }
     
     @RequestMapping("movedCapBanks")
-    public String movedCapBanks(@RequestParam(required=false) Integer itemsPerPage,
-                                @RequestParam(value="page", defaultValue="1") Integer currentPage,
-                                ModelMap model,
-                                YukonUserContext context) throws ServletRequestBindingException {
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
+    public String movedCapBanks(ModelMap model, YukonUserContext context) {
 
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(context.getYukonUser());
         
@@ -118,29 +111,25 @@ public class BankMoveController {
             for (CapBankDevice capBank : capBanks) {
                 if (capBank.isBankMoved()) {
                     MovedBank movedBank = new MovedBank(capBank);
+
                     movedBank.setCurrentFeederName(updaterHelper.getCapBankValueAt(capBank, UpdaterHelper.UpdaterDataType.CB_PARENT_COLUMN, context).toString());
                     movedBank.setOriginalFeederName(filterCapControlCache.getFeeder(capBank.getOrigFeederID()).getCcName());
+
+                    SubStation originalSub = filterCapControlCache.getParentSubstation(capBank.getOrigFeederID());
+                    SubStation currentSub = filterCapControlCache.getParentSubstation(capBank.getParentID());
+                    movedBank.setCurrentSubstationId(currentSub.getCcId());
+                    movedBank.setOriginalSubstationId(originalSub.getCcId());
+
                     movedCaps.add(movedBank);
                 }
             }
         }
-        
-        int startIndex = (currentPage - 1) * itemsPerPage;
-        int toIndex = startIndex + itemsPerPage;
-        int numberOfResults = movedCaps.size();
-        
-        if(numberOfResults < toIndex) toIndex = numberOfResults;
-        movedCaps = movedCaps.subList(startIndex, toIndex);
-        
+
         SearchResults<MovedBank> result = new SearchResults<MovedBank>();
         result.setResultList(movedCaps);
-        result.setBounds(startIndex, itemsPerPage, numberOfResults);
+        result.setHitCount(movedCaps.size());
         model.addAttribute("searchResult", result);
-        model.addAttribute("itemList", result.getResultList());
-        model.addAttribute("isFiltered", false);
-        model.addAttribute("movedCaps", movedCaps);
-        
+
         return "move/movedCapBanks.jsp";
     }
-    
 }

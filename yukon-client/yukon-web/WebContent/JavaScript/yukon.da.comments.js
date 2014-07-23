@@ -5,7 +5,6 @@
  * @requires jQuery UI 1.9.2+
  */
 
-yukon.namespace('yukon.da');
 yukon.namespace('yukon.da.comments');
 
 yukon.da.comments = (function () {

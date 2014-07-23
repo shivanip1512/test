@@ -9,7 +9,7 @@ import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@Controller("/tier/cceditorpopup/*")
+@Controller
 @RequestMapping("/tier/cceditorpopup/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class CCEditorController {

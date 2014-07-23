@@ -7,43 +7,54 @@
 
 <cti:standardPage module="capcontrol" page="movedCapBanks">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
-    <script type="text/javascript">
-    $(function() {
-        $('#movedCBTable').on('click', 'a.moveLink', function (event) {
-            var a = event.currentTarget;
-            yukon.da.getMovedBankMenu(a.id, event);
-        });
-    });
-    </script>
 
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="" />
-    
-    <tags:sectionContainer2 nameKey="movedContainer">
-        <c:choose>
-            <c:when test="${searchResult.hitCount == 0}">
-                <span class="empty-list"><i:inline key=".noRecentMoves"/></span>
-            </c:when>
-            <c:otherwise>
-                <div data-url="<cti:url value="/capcontrol/move/movedCapBanks"/>" data-static>
-                    <table id="movedCBTable" class="compact-results-table">
+
+    <c:choose>
+        <c:when test="${searchResult.hitCount == 0}">
+            <span class="empty-list"><i:inline key=".noRecentMoves"/></span>
+        </c:when>
+        <c:otherwise>
+            <table class="compact-results-table">
+                <thead>
+                    <tr>
+                        <th><i:inline key=".capBank"/></th>
+                        <th><i:inline key=".originalFeeder"/></th>
+                        <th><i:inline key=".recentFeeder"/></th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="movedCapbank" items="${searchResult.resultList}">
                         <tr>
-                            <th><i:inline key=".recentFeeder"/></th>
-                            <th><i:inline key=".originalFeeder"/></th>
-                            <th><i:inline key=".capBank"/></th>
+                            <td>${fn:escapeXml(movedCapbank.capbank.ccName)}</td>
+                            <td>
+                                <cti:url var="originalSubUrl" value="/capcontrol/tier/feeders">
+                                    <cti:param name="substationId" value="${movedCapbank.originalSubstationId}" />
+                                </cti:url>
+                                <a href="${originalSubUrl}">${fn:escapeXml(movedCapbank.originalFeederName)}</a>
+                            </td>
+                            <td>
+                                <cti:url var="currentSubUrl" value="/capcontrol/tier/feeders">
+                                    <cti:param name="substationId" value="${movedCapbank.currentSubstationId}" />
+                                </cti:url>
+                                <a href="${currentSubUrl}">${fn:escapeXml(movedCapbank.currentFeederName)}</a>
+                            </td>
+                            <td>
+                                <c:set var="bankId" value="${movedCapbank.capbank.ccId}"/>
+                                <cti:url var="assignUrl" value="/capcontrol/command/${bankId}/assign-here" />
+                                <cti:url var="returnUrl" value="/capcontrol/command/${bankId}/move-back" />
+                                <cti:msg2 var="returnText" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER"/>
+                                <cti:msg2 var="assignText" key=".command.assignBankHere"/>
+                                <div class="button-group fr">
+                                    <cti:button href="${returnUrl}" label="${returnText}" icon="icon-bullet-go-left" />
+                                    <cti:button href="${assignUrl}" label="${assignText}" icon="icon-bullet-go-down" />
+                                </div>
+                            </td>
                         </tr>
-                        <c:forEach var="movedCapbank" items="${movedCaps}">
-                            <tr id="tr_cap_${movedCapbank.capbank.ccId}">
-                                <td id="${fn:escapeXml(movedCapbank.capbank.ccName)}">
-                                    <a href="javascript:void(0);" class="moveLink" id="${movedCapbank.capbank.ccId}">${fn:escapeXml(movedCapbank.currentFeederName)}</a>
-                                </td>
-                                <td>${fn:escapeXml(movedCapbank.originalFeederName)}</td>
-                                <td>${fn:escapeXml(movedCapbank.capbank.ccName)}</td>
-                            </tr>
-                        </c:forEach>
-                    </table>
-                </div>
-                <tags:pagingResultsControls result="${searchResult}"/>
-            </c:otherwise>
-        </c:choose>
-    </tags:sectionContainer2>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </c:otherwise>
+    </c:choose>
 </cti:standardPage>

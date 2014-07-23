@@ -37,7 +37,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
-@Controller("/menu/*")
+@Controller
 @RequestMapping("/menu/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class MenuController {
@@ -300,21 +300,6 @@ public class MenuController {
         return "tier/popupmenu/opStateChangeMenu.jsp";
     }
 
-    @RequestMapping("movedBankMenu")
-    public String movedBankMenu(ModelMap model, int id, YukonUserContext userContext) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        CapBankDevice capBank = cache.getCapBankDevice(id);
-        
-        model.addAttribute("paoId", id);
-        String paoName = capBank.getCcName();
-        model.addAttribute("title", paoName);
-        
-        model.addAttribute("assignLabel", accessor.getMessage("yukon.web.modules.capcontrol.command.assignBankHere"));
-        model.addAttribute("returnLabel", accessor.getMessage(CommandType.RETURN_CAP_TO_ORIGINAL_FEEDER));
-        
-        return "tier/popupmenu/movedBankMenu.jsp";
-    }
-    
     @RequestMapping("create")
     public String create(ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);

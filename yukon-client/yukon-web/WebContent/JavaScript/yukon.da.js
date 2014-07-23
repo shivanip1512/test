@@ -86,18 +86,13 @@ yukon.da = (function () {
                     bankInfoOpener = menu.find('.js-bank-info'),
                     cbcInfoOpener = menu.find('.js-cbc-info');
 
-                if( moveBankOpener.is('.warning') ){
-                    moveBankOpener.click( function(event) {
-                        mod.getMovedBankMenu(bankId, event);
-                    });
-                } else {
-                    moveBankOpener.click( function(event) {
+                moveBankOpener.click( function(event) {
                         mod.showDialog(moveBankTitle,
                                     yukon.url('/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)), 
                                     {'height': 650, 'width': 650, 'modal': true}, 
                                     '#contentPopup'); 
-                    });
-                }
+                });
+
                 bankCommandOpener.click( function(event){
                     mod.getCommandMenu(bankId, event);
                 });
@@ -263,10 +258,6 @@ yukon.da = (function () {
                     $('.js-no-field-message').show();
                 }
             });
-        },
-
-        getMovedBankMenu : function(id, event) {
-            mod.getMenuFromURL(yukon.url('/capcontrol/menu/movedBankMenu?id=' + id), event);
         },
 
         checkAll: function(allCheckBox, selector) {
