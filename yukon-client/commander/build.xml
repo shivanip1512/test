@@ -22,20 +22,13 @@
 	      </classpath> 
      	</javac>
 
-		<jar jarfile="${yukon.lib}/yc.jar" basedir="build/" manifest="resource/manifest.mf">
+		<jar jarfile="${yukon.lib}/yc.jar" basedir="build/" manifest="src/main/resources/manifest.mf">
            <manifest>
                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
                <attribute name="Permissions" value="all-permissions"/>
            </manifest>
-		    <fileset dir="resource">
-				<include name="**/*.gif"/>
-		 		<include name="**/*.ico"/>       	
-			</fileset>
-			<fileset dir="src">
-			    <exclude name="**/*.java"/>
-			</fileset>
-
+	       <fileset dir="src/main/resources"/>
 		</jar>
 
 	</target>
