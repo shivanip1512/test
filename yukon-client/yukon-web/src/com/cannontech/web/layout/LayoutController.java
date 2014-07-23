@@ -314,7 +314,7 @@ public class LayoutController {
 
     private String getHomeUrl(LiteYukonUser user) {
         String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-        if("/operator/Operations.jsp".equals(homeUrl)){
+        if ("/operator/Operations.jsp".equals(homeUrl)) {
             homeUrl="/dashboard";
         }
         return homeUrl;
