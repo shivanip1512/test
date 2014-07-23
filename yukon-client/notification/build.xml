@@ -32,11 +32,6 @@
            </manifest>
            <fileset dir="src/main/resources"/>
         </jar>
-   	
-	    <copy todir="${yukon.lib}">
-	      <fileset dir="conf"/>
-	    </copy>
-   	
    </target>
 
    <target name="clean">

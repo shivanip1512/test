@@ -211,17 +211,19 @@
         <copy todir="${client.bin}" preservelastmodified="true">
         	<fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**"/>
+            <fileset file="${basedir}/yukon-client/commander/resource/CommanderIcon.ico"/>
+            <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
+            <fileset file="${basedir}/yukon-client/esub-editor/resource/esubEditorIcon.ico"/>
+            <fileset dir="${basedir}/yukon-client/export/conf" />
             <fileset file="${basedir}/yukon-client/monitor/src/main/resources/YukonNoAlarm.ico" />
             <fileset file="${basedir}/yukon-client/monitor/src/main/resources/AlarmMonitor.ico" />
             <fileset file="${basedir}/yukon-client/monitor/systray4j.dll" />
-            <fileset dir="${basedir}/yukon-client/export/conf" />
+            <fileset dir="${basedir}/yukon-client/notification/conf" />
+            <fileset file="${basedir}/yukon-client/resource/remoteLogging.xml" />
             <fileset file="${basedir}/yukon-client/trending/resource/GraphIcon.ico"/>
-            <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
             <fileset file="${basedir}/yukon-client/tdc/resource/tdcIcon.ico"/>
-            <fileset file="${basedir}/yukon-client/commander/resource/CommanderIcon.ico"/>
-            <fileset file="${basedir}/yukon-client/esub-editor/resource/esubEditorIcon.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
-            <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>       	
+            <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>
         </copy>
 
         <signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
