@@ -82,8 +82,6 @@ NOTES:
 -During an error, the application can be rerun and and it will pick up
  command execution on the last command that did not execute successfully (only commands that 
  do not have a @success true tag will run).  
--Output can be logged to a file by changing :
- client_log_file=false to true in config.properties.
 
 Format of DBUpdate files:
 1) All comments should begin and end on 1 line.

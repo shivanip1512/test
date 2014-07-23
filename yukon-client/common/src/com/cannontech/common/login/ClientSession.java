@@ -44,11 +44,6 @@ import com.cannontech.user.YukonUserContext;
  * Holds session information for client programs.
  * Start with the static establishSession methods.
  * 
- * If a db.properties exists in the classpath a 'local login' will be attempted
- * instead of a 'remote login'
- * 
- * In either case if there is a currentuserid,currentsessionid an attempt will be made to
- * use it, if that fails the user will be asked for their credentials.
  */
 public class ClientSession {
     private static ClientSession instance;
@@ -307,7 +302,7 @@ public class ClientSession {
 
     private void setSessionInfo(LiteYukonUser u) {
         CTILogger.debug("Setting session: user=" + u);
-        this.user = u;
+        user = u;
     }
 
     private LoginPanel makeLocalLoginPanel(ClientApplicationRememberMe rememberMeSetting) {

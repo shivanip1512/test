@@ -56,7 +56,7 @@ public void convert(String dsm2Root) throws Exception {
 	//check database connection and
  	// initialize the changeid and timestamp to allow for cumalitive action
 	if( !initYukonStuff() ) {
-		System.out.println("Couldn't get a connection to the database, check db.properties");
+		System.out.println("Couldn't get a connection to the database, check database settings in master.cfg");
 		System.exit(1);
 	}
 	
@@ -136,12 +136,15 @@ private static float getAccumulatorMultiplier(int id)
         {
         try
             {
-            if (rset != null)
+            if (rset != null) {
                 rset.close();
-            if (stmt != null)
+            }
+            if (stmt != null) {
                 stmt.close();
-            if (conn != null)
+            }
+            if (conn != null) {
                 conn.close();
+            }
         }
         catch (java.sql.SQLException e2) {            
         }
@@ -178,12 +181,15 @@ private static float getAnalogMultiplier(int id)
         {
         try
             {
-            if (rset != null)
+            if (rset != null) {
                 rset.close();
-            if (stmt != null)
+            }
+            if (stmt != null) {
                 stmt.close();
-            if (conn != null)
+            }
+            if (conn != null) {
                 conn.close();
+            }
         }
         catch (java.sql.SQLException e2) {            
         }
@@ -200,8 +206,9 @@ private static float getMultiplier(int id)
 {
 	float mult = getAnalogMultiplier(id);
 
-	if( mult < 0 )
-		mult = getAccumulatorMultiplier(id);
+	if( mult < 0 ) {
+        mult = getAccumulatorMultiplier(id);
+    }
 
 	return mult;
 }
@@ -296,8 +303,9 @@ public static void main(String[] args) throws Exception {
 	if( args.length == 2)
 	{
 		String lowerCaseArg = args[1].toLowerCase();
-		if( lowerCaseArg.startsWith("force"))
-			p.forceInsert = true;
+		if( lowerCaseArg.startsWith("force")) {
+            p.forceInsert = true;
+        }
 	}
 	System.out.println(" FORCE = " + p.forceInsert);
 	p.convert(args[0]);
@@ -347,20 +355,22 @@ private void writePointData(int id, float multiplier, DSM2PointData[] data)
 		int count = 0;
 		for(int i = 0; i < data.length; i++ ) {
 
-			if( data[i] == null)
-				continue;
+			if( data[i] == null) {
+                continue;
+            }
 				
-			java.sql.Timestamp timestamp = new java.sql.Timestamp( (long) data[i].time*1000L);
+			java.sql.Timestamp timestamp = new java.sql.Timestamp( data[i].time*1000L);
 
 			// We only want two decimal places so we'll do a little trick	
-			double value = (double) Math.round(data[i].value*multiplier*100.0) / 100.0;
+			double value = Math.round(data[i].value*multiplier*100.0) / 100.0;
 			int quality = getQuality(data[i].quality);
 
 			if( forceInsert )
 			{
 			}
-			else if(timestamp.getTime() <= lastTimestamp)
-				continue;
+			else if(timestamp.getTime() <= lastTimestamp) {
+                continue;
+            }
 
 			pstmt.setLong(1, changeID++);
 			pstmt.setInt(2, id);			
@@ -385,8 +395,12 @@ private void writePointData(int id, float multiplier, DSM2PointData[] data)
 	finally
 	{
 		try {
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
+			if( pstmt != null ) {
+                pstmt.close();
+            }
+			if( conn != null ) {
+                conn.close();
+            }
 		} catch(java.sql.SQLException e2) { e2.printStackTrace(); }
 	}
 }
@@ -406,8 +420,9 @@ private boolean initYukonStuff() {
 	
 		if(rset.next()) {
 			changeID = rset.getLong(1) + 1;
-			if( rset.getTimestamp(2) != null)
-			    lastTimestamp = rset.getTimestamp(2).getTime();	
+			if( rset.getTimestamp(2) != null) {
+                lastTimestamp = rset.getTimestamp(2).getTime();
+            }	
 		}	
 		rset.close();
 		return true;
@@ -426,8 +441,9 @@ private boolean exists(int pointID)
 {
 	for (int i = 0; i < pointVector.size(); i++)
 	{
-		if( ((Integer)pointVector.get(i)).intValue() == pointID)
-			return true;
+		if( ((Integer)pointVector.get(i)).intValue() == pointID) {
+            return true;
+        }
 	}
 	return false;
 }

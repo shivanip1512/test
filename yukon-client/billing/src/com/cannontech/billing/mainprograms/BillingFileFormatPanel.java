@@ -769,8 +769,8 @@ private String getInputFileText()
 		catch( Exception e)
 		{
 			inputFileText = "C:\\yukon\\client\\config\\input.txt";
-			CTILogger.info("[" + new java.util.Date() + "]  Billing File Input Path was NOT found in config.properties, defaulted to " + inputFileText);
-			CTILogger.info("[" + new java.util.Date() + "]  Add row named 'billing_input_file' to config.properties with the proper billing file location.");
+            CTILogger.info("[" + new java.util.Date() + "]  Data Export Input File is not a valid global setting value, defaulted to " + inputFileText);
+            CTILogger.info("[" + new java.util.Date() + "]  Update the global setting Data Export > Input File value with the proper billing file location.");
 		}
 	}
 	return inputFileText;

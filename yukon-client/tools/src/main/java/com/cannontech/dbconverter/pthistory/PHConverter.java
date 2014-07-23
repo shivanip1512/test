@@ -68,14 +68,14 @@ public void convert(String dsm2Root) throws Exception {
 	DispatchClientConnection conn = connect();
 
 	if( conn == null ) {
-		System.out.println("Couldn't connect to dispatch, check config.properties and make sure dispatch is running");
+		System.out.println("Couldn't connect to dispatch, check settings in master.cfg and make sure dispatch is running");
 		System.exit(1);
 	}
 
 	//check database connection
 	java.sql.Connection c = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 	if( c == null ) {
-		System.out.println("Couldn't get a connection to the database, check db.properties");
+		System.out.println("Couldn't get a connection to the database, check database settings in master.cfg");
 		System.exit(1);
 	}
 	try {
@@ -169,12 +169,15 @@ private static float getAccumulatorMultiplier(int id)
         {
         try
             {
-            if (rset != null)
+            if (rset != null) {
                 rset.close();
-            if (stmt != null)
+            }
+            if (stmt != null) {
                 stmt.close();
-            if (conn != null)
+            }
+            if (conn != null) {
                 conn.close();
+            }
         }
         catch (java.sql.SQLException e2) {            
         }
@@ -211,12 +214,15 @@ private static float getAnalogMultiplier(int id)
         {
         try
             {
-            if (rset != null)
+            if (rset != null) {
                 rset.close();
-            if (stmt != null)
+            }
+            if (stmt != null) {
                 stmt.close();
-            if (conn != null)
+            }
+            if (conn != null) {
                 conn.close();
+            }
         }
         catch (java.sql.SQLException e2) {            
         }
@@ -233,8 +239,9 @@ private static float getMultiplier(int id)
 {
 	float mult = getAnalogMultiplier(id);
 
-	if( mult < 0 )
-		mult = getAccumulatorMultiplier(id);
+	if( mult < 0 ) {
+        mult = getAccumulatorMultiplier(id);
+    }
 
 	return mult;
 }
@@ -269,8 +276,9 @@ private static void sendPointData(DispatchClientConnection conn, int id, float m
 	
 	for( int i = 0; i < data.length; i++ ) {
 
-		if( data[i] == null )
-			continue;
+		if( data[i] == null ) {
+            continue;
+        }
 
 		PointData pData = new PointData();
 		
