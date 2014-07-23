@@ -219,7 +219,6 @@
             <fileset file="${basedir}/yukon-client/monitor/src/main/resources/AlarmMonitor.ico" />
             <fileset file="${basedir}/yukon-client/monitor/systray4j.dll" />
             <fileset dir="${basedir}/yukon-client/notification/conf" />
-            <fileset file="${basedir}/yukon-client/resource/remoteLogging.xml" />
             <fileset file="${basedir}/yukon-client/trending/resource/GraphIcon.ico"/>
             <fileset file="${basedir}/yukon-client/tdc/resource/tdcIcon.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
