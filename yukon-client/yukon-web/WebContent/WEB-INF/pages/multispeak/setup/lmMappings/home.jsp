@@ -36,8 +36,10 @@
 
                 <cti:msg2 var="message" key=".changeMapping.message"/>
                 <cti:msg2 var="title" key=".changeMapping.title"/>
+                <cti:msg2 var="addText" key="components.button.add.label"/>
+                <cti:msg2 var="editText" key="components.button.edit.label"/>
                 <cti:button nameKey="add" busy="true" classes="js-add-btn fn vat" data-ok-event="yukon_substation_mappings_add"
-                    data-message="${message}" data-title="${title}"/>
+                    data-message="${message}" data-title="${title}" data-edit-text="${editText}" data-add-text="${addText}"/>
 
                 <%-- These inputs are used by the picker --%>
                 <input type="hidden" id="mappedNameId" >
@@ -49,14 +51,11 @@
                     endAction="yukon.substation.mappings.setMappedNameId"
                     linkType="none"/>
             </tags:nameValue2>
-        <div class="user-message error dn js-add-error"><i:inline key=".error.add"/></div>
         </tags:nameValueContainer2>
     </tags:sectionContainer2>
 
     <%-- ALL MAPPINGS --%>
     <tags:sectionContainer2 nameKey="allMappings">
-        <div class="user-message error dn js-delete-error"><i:inline key=".error.delete"/></div>
-        <div class="user-message warning dn js-reload-error"><i:inline key=".error.reload"/></div>
         <div data-mappings-table data-url="reloadAllMappingsTable">
             <jsp:include page="allMappingsTable.jsp"/>
         </div>

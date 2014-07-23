@@ -27,6 +27,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
+import com.google.common.collect.ImmutableMap;
 
 @CheckGlobalSetting(GlobalSettingType.MSP_LM_MAPPING_SETUP)
 @Controller
@@ -45,20 +46,18 @@ public class LMMappingsController {
         return "setup/lmMappings/home.jsp";
     }
 
-    @RequestMapping("findMapping")
-    public @ResponseBody Map<String, String> findMapping(ModelMap model, String strategyName, String substationName) {
+    @RequestMapping("find-mapping")
+    public @ResponseBody Map<String, ? extends Object> findMapping(ModelMap model, String strategyName, String substationName) {
 
-        Map<String,String> result = new HashMap<>();
 
         String mappedName = findMappedName(strategyName, substationName);
 
         if (mappedName != null) {
-            result.put("mappedName", mappedName);
+            return ImmutableMap.of("found", true,
+                                   "mappedName", mappedName);
         } else {
-            result.put("error", "not found");
+            return ImmutableMap.of("found", false);
         }
-
-        return result;
     }
 
     @RequestMapping("addOrUpdateMapping")

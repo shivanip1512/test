@@ -3,6 +3,8 @@ yukon.namespace('yukon.substation.mappings');
 /**
  * This module handles behavior on the device configuration pages.
  * @module yukon.deviceConfig
+ * @requires JQUERY
+ * @requires yukon
  */
 yukon.substation.mappings = (function () {
 
@@ -14,25 +16,17 @@ yukon.substation.mappings = (function () {
                 url = container.data('url'),
                 params = {'sort': sort, 'dir': dir};
 
-            container.load(url, params, function (response, status, jqXhr) {
-                if (status === 'error') {
-                    $('.js-reload-error').show();
-                } else {
-                    $('.js-reload-error').hide();
-                }
-            });
+            container.load(url, params);
         },
 
         _getMappedName = function (callback) {
-            $.getJSON(yukon.url('/multispeak/setup/lmMappings/findMapping'),
+            $.getJSON(yukon.url('/multispeak/setup/lmMappings/find-mapping'),
                 {
                     'strategyName': $('.js-strategy.js-mapping-input').val(),
                     'substationName': $('.js-substation.js-mapping-input').val()
                 })
                 .done(function (data, textStatus, jqXHR) {
                     callback(data);
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    callback({'error': errorThrown});
                 });
         },
 
@@ -74,7 +68,7 @@ yukon.substation.mappings = (function () {
                     } else {
                         _getMappedName(function (data) {
                             yukon.ui.unbusy(btn);
-                            if (data.mappedName) {
+                            if (data.found) {
                                 btn.trigger('yukon_substation_mappings_confirm_add');
                             } else {
                                 btn.trigger('yukon_substation_mappings_add');
@@ -84,19 +78,18 @@ yukon.substation.mappings = (function () {
                 });
 
                 $(document).on('input', '.js-mapping-input', function () {
-                    var paoValue = $('.pao-values').find('*');
-                    paoValue.addClass('disabled');
+                    var paoName = $('.mapped-pao-name');
+                    paoName.addClass('disabled');
                     _getMappedName(function (data) {
-                        var container = $('.mapped-pao-name'),
-                            addBtnText = $('.js-add-btn').find('.b-label');
-                        if (data.mappedName) {
-                            container.text(data.mappedName);
-                            addBtnText.text('Change');
+                        var addBtnText = addBtn.find('.b-label');
+                        if (data.found) {
+                            paoName.text(data.mappedName);
+                            addBtnText.text(addBtn.data('editText'));
                         } else {
-                            container.text(container.data('emptyText'));
-                            addBtnText.text('Add');
+                            paoName.text(paoName.data('emptyText'));
+                            addBtnText.text(addBtn.data('addText'));
                         }
-                        paoValue.removeClass('disabled');
+                        paoName.removeClass('disabled');
                     });
                 });
 
@@ -110,10 +103,7 @@ yukon.substation.mappings = (function () {
                     $.getJSON(yukon.url('/multispeak/setup/lmMappings/removeMapping'),
                         {'mspLMInterfaceMappingId': mappingId}
                     ).done(function (data, textStatus, jqXHR) {
-                        $('.js-delete-error').hide();
                         _reloadAllMappingsTable();
-                    }).fail(function (jqXHR, textStatus, errorThrown) {
-                        $('.js-delete-error').show();
                     });
                 });
             },
@@ -134,11 +124,8 @@ yukon.substation.mappings = (function () {
                         'mappedNameId': mappedNameId
                     }
                 ).done(function (data, textStatus, jqXHR) {
-                    $('.js-add-error').hide();
-                    $('.mapped-pao-name').html($('#mappedName').val());
+                    $('.mapped-pao-name').text($('#mappedName').val());
                     _reloadAllMappingsTable();
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $('.js-add-error').show();
                 });
             }
         };

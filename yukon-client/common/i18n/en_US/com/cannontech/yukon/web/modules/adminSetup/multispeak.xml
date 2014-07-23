@@ -140,10 +140,10 @@
     <entry key="yukon.web.modules.adminSetup.lmMappings.substation">Substation</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.pao">Program or Scenario</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.mapKey">{0} / {1}</entry>
-    <entry key="yukon.web.modules.adminSetup.lmMappings.changeMapping.message">Strategy/Substation value is already mapped. Do you wish to overwrite this?</entry>
+    <entry key="yukon.web.modules.adminSetup.lmMappings.changeMapping.message">Strategy/Substation value is already mapped. Are you sure you want to overwrite this?</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.changeMapping.title">Change Mapping</entry>
-    <entry key="yukon.web.modules.adminSetup.lmMappings.error.noStrategy">Must input a Strategy name</entry>
-    <entry key="yukon.web.modules.adminSetup.lmMappings.error.noSubstation">Must input a Substation name</entry>
+    <entry key="yukon.web.modules.adminSetup.lmMappings.error.noStrategy">Strategy name is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.lmMappings.error.noSubstation">Substation name is required.</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.error.notFound">Not Found</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.error.add">Unable to add mapping</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.error.delete">Unable to remove mapping</entry>
