@@ -185,14 +185,8 @@ margin: 0px;
                                 <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="js-move-bank" href="javascript:void(0);" />
                             </c:if>
                             <c:if test="${viewableCapBank.capBankDevice.bankMoved}">
-                                <cti:url var="assignUrl" value="/capcontrol/command/returnBank">
-                                    <cti:param name="bankId" value="${bankId}"/>
-                                    <cti:param name="assignHere" value="true"/>
-                                </cti:url>
-                                <cti:url var="returnUrl" value="/capcontrol/command/returnBank">
-                                    <cti:param name="bankId" value="${bankId}"/>
-                                    <cti:param name="assignHere" value="false"/>
-                                </cti:url>
+                                <cti:url var="returnUrl" value="/capcontrol/command/${bankId}/move-back" />
+                                <cti:url var="assignUrl" value="/capcontrol/command/${bankId}/assign-here" />
                                 <cm:dropdownOption href="${returnUrl}" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER" icon="icon-bullet-go-left" />
                                 <cm:dropdownOption href="${assignUrl}" key=".command.assignBankHere" icon="icon-bullet-go-down" />
                             </c:if>
