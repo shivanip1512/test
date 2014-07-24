@@ -138,7 +138,7 @@ public void retrieve() throws java.sql.SQLException {
         Object demandRateResult[] = retrieve(new String[] {"Value"},
                                              "DynamicPaoInfo",
                                              new String[] {"PAObjectID", "InfoKey", "Owner"},
-                                             new Object[] {getDeviceID(), "mct ied load profile rate", "scanner"});
+                                             new Object[] {getDeviceID(), "mct ied load profile rate", "porter"});
         
         if (demandRateResult.length == 1) {
             setLoadProfileDemandRate(Integer.parseInt(demandRateResult[0].toString()));
