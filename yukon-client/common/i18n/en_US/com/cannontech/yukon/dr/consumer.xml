@@ -336,7 +336,13 @@
     <!-- HardwareConfig Types -->
 	<entry key="yukon.web.dr.consumer.hardwareConfigType.EXPRESSCOM">EXPRESSCOM</entry>
 	<entry key="yukon.web.dr.consumer.hardwareConfigType.EXPRESSCOM.invalidSerialNumber">Serial number for ExpressCom devices should be less than 2,147,483,647.</entry>
-    
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.NOT_CONFIGURABLE.invalidSerialNumber">Serial number is too long </entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.VERSACOM.invalidSerialNumber">Serial number for VersaCom devices is too long</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.SA205.invalidSerialNumber">Serial number is too long</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.SA305.invalidSerialNumber">Serial number is too long</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.SA_SIMPLE.invalidSerialNumber">Serial number is too long</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.SEP.invalidSerialNumber">Serial number is too long</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.ECOBEE.invalidSerialNumber">Serial number for ECOBEE device is too long</entry>
     <!-- savedSchedules.jsp -->
     <entry key="yukon.dr.consumer.savedSchedules.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     
