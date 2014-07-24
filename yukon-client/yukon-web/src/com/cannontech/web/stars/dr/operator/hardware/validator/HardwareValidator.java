@@ -5,13 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.inventory.Hardware;
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.HardwareConfigType;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -34,16 +35,12 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
     @Override
     public void doValidation(Hardware hardware, Errors errors) {
         HardwareType hardwareType = hardware.getHardwareType();
-        HardwareConfigType hardwareTypeConfig = hardwareType.getHardwareConfigType();
         EnergyCompanySetting currentSetting;
         
 
         /* Set the type for */
         hardware.setHardwareType(hardwareType);
-        int energyCompanyId = hardware.getEnergyCompanyId();
-        currentSetting = ecSettingDao.getSetting(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,energyCompanyId);
-
-        
+                    
         //This will validate any hardware extensions. Ex. Zigbee devices
         hardwareTypeExtensionService.validateDevice(hardware, errors);
         
@@ -52,7 +49,7 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
             if (StringUtils.isBlank(hardware.getSerialNumber())) {
                 errors.rejectValue("serialNumber", "yukon.web.error.required");
             } else {
-                validateSN(hardware.getSerialNumber(), errors, hardwareTypeConfig, "serialNumber",currentSetting);
+                validateSN(hardware.getSerialNumber(), errors, hardware, "serialNumber");
             }
         } else if (hardwareType == HardwareType.NON_YUKON_METER) {
             /* Meter Number */
@@ -70,7 +67,8 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
         
         /* Alternate Tracking Number */
         if (StringUtils.isNotBlank(hardware.getAltTrackingNumber())) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "altTrackingNumber", hardware.getAltTrackingNumber(), 40);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "altTrackingNumber", 
+                hardware.getAltTrackingNumber(), 40);
         }
         
         /* Device Info Notes */
@@ -101,7 +99,8 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
                         
                         if(!paoType.isTwoWayLcr()) {
                             /* The device with this id is no longer a two way lcr. */
-                            errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.invalidDeviceType", new Object[] {pao.getLiteID(), pao.getPaoName()}, null);
+                            errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.invalidDeviceType"
+                                , new Object[] {pao.getLiteID(), pao.getPaoName()}, null);
                         }
                         
                         /* Device can only be used by one lcr at a time */
@@ -110,14 +109,17 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
                             if (hardware.getInventoryId() == null) {
                                 /* Creating a two way lcr and the two way device is already in use */
                                 String unavailableDeviceName = pao.getPaoName();
-                                errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.unavailable", new String[] {unavailableDeviceName}, null);
+                                errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.unavailable",
+                                    new String[] {unavailableDeviceName}, null);
                             } else {
                                 /* Updating a two way lcr, see if the inventory for this device is us */
                                 LiteInventoryBase inventory = inventoryBaseDao.getByInventoryId(hardware.getInventoryId());
                                 /* If something is using this device and it's not this inventory reject this device id */
                                 if (inventoryBase.getDeviceID() != inventory.getDeviceID()) {
                                     String unavailableDeviceName = pao.getPaoName();
-                                    errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.unavailable", new String[] {unavailableDeviceName}, null);
+                                    errors.rejectValue("deviceId", 
+                                        "yukon.web.modules.operator.hardware.error.unavailable", 
+                                        new String[] {unavailableDeviceName}, null);
                                 }
                             }
                         } catch (NotFoundException e) {/* Ok */}
@@ -126,9 +128,11 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
                         try {
                             int serial = Integer.valueOf(hardware.getSerialNumber());
                             if (pao.getAddress() != serial) {
-                                errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.addressMismatch", new String[] {pao.getPaoName()}, null);
+                                errors.rejectValue("deviceId", 
+                                    "yukon.web.modules.operator.hardware.error.addressMismatch", 
+                                    new String[] {pao.getPaoName()}, null);
                             }
-                        } catch (NumberFormatException ignore) {/* Ignore this since we are checking serial number above. */}
+                        } catch (NumberFormatException ignore) {/* Ignore this since we are checking serial number above.*/}
                         
                     } catch (NotFoundException e) {
                         /* Device no longer exists.*/
@@ -142,52 +146,53 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
                         errors.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.unavailable");
                     }
                 } else {
-                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "twoWayDeviceName", "yukon.web.modules.operator.hardware.error.required");
+                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "twoWayDeviceName", 
+                        "yukon.web.modules.operator.hardware.error.required");
                 }
             }
         }
     }
     
-    private void validateSN(String sn, Errors errors, HardwareConfigType  type, String path, EnergyCompanySetting currentSetting) {
-        
-       String settingValue = currentSetting.getValue().toString();
+    /** Add comments
+     * @param sn
+     * @param errors
+     * @param hardware
+     * @param path
+     */
+    private void validateSN(String sn, Errors errors, Hardware hardware, String path) {
+        boolean isSerialNumberValid;
+        final HardwareConfigType hardwareConfigType = hardware.getHardwareType().getHardwareConfigType();
+        if (StringUtils.isBlank(sn)) {
+            errors.rejectValue(path, "yukon.web.error.required");
+            return;
+        }
+        /* Get the current energy company setting value for Serial Number Validation field */
 
-       /*if the serial number setting for the particular energy company is numeric*/
-       if(settingValue == "NUMERIC")
-       {
-    	   /* For all hardwares with the config type as Expresscom the serial number must be a valid integer since it has to match the 
-            * address in DeviceCarrierSettings which is a varchar(18) * and must be less than  2147483647 */
-        if (type == HardwareConfigType.EXPRESSCOM) {
-           
-            if (!StringUtils.isNumeric(sn)) {
-                errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
-            } else {
-               try {
-                   Integer.parseInt(sn);
-               } catch(NumberFormatException e) {
-                   errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.tooLong.deviceserialNumber");
-               }
-            }
-        } else
-        {   /*For all Non-ExpressCom the serial number length must be less than 30 and has to be numeric*/
+        SerialNumberValidation currentECSNValidation =
+            ecSettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class,
+                hardware.getEnergyCompanyId());
+
+        /* Check if the current energy company setting is numeric) */
+        if (currentECSNValidation == SerialNumberValidation.NUMERIC) {
+            /* Check if the serial number entered is numeric) */
             if (!StringUtils.isNumeric(sn)) {
                 errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
             }
-            else
-            {
-                YukonValidationUtils.checkExceedsMaxLength(errors, path, sn, 30);  
+            /* Validate the serial number against that for the HardwareConfigType */
+            isSerialNumberValid = hardwareConfigType.isValidSerialNumber(sn);
+            if (!isSerialNumberValid) {
+                errors.rejectValue(path, hardwareConfigType.getValidationErrorKey());
+            }
+
+        } else {
+            /* Check if the current energy company setting for Serial Number is Alphanumeric */
+            if (currentECSNValidation == SerialNumberValidation.ALPHANUMERIC) {
+                if (!StringUtils.isAlphanumeric(sn)) {
+                    errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
+                }
             }
         }
-        /*If the energy company setting is alphanumeric */
-       }else{
-            /* Not an ExpressCom device so serial number should contain  only alpha numeric characters and
-             * be less than 30 characters long. */
-            if (!StringUtils.isAlphanumeric(sn)) {
-                errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
-            } else {
-                YukonValidationUtils.checkExceedsMaxLength(errors, path, sn, 30);
-            }
-         }
-       } 
-    }  
+    }
+} 
+  
     

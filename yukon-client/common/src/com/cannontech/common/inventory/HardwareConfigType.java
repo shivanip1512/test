@@ -21,6 +21,7 @@ public enum HardwareConfigType {
     private int hardwareConfigTypeId;
     private PaoTag enrollmentTag;
     private boolean supportsVirtualEnrollment;
+    private final static String keyPrefix = "yukon.web.dr.consumer.hardwareConfigType.";
 
     private final static ImmutableSet<HardwareConfigType> saTypes = ImmutableSet.of(SA_SIMPLE, SA205, SA305);
     private final static ImmutableSet<HardwareConfigType> supportsServiceInOut = ImmutableSet.of(EXPRESSCOM, VERSACOM);
@@ -67,4 +68,20 @@ public enum HardwareConfigType {
         return supportsServiceInOut.contains(this);
     }
     
+    public boolean isValidSerialNumber(String serialNumber) {
+        try {
+            Integer.parseInt(serialNumber);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    
+    public String getFormatKey() {
+        return keyPrefix + name();
+    }
+
+    public String getValidationErrorKey() {
+        return getFormatKey() + ".invalidSerialNumber";
+    }
 }
