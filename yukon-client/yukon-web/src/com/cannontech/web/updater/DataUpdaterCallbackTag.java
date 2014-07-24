@@ -31,10 +31,10 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
         }
         
         JspWriter out = getJspContext().getOut();
-        out.print("<script type=\"text/javascript\">");
+        out.print("<script>");
         
         // print out a call to register the callback function
-        out.print("\nyukon.dataUpdater.cannonDataUpdateRegistration(" + function + ",{");
+        out.print("\nyukon.dataUpdater.registerCallback(" + function + ",{");
         boolean firstId = true;
         for(String identifierName : identifierAttributes.keySet()) {
             

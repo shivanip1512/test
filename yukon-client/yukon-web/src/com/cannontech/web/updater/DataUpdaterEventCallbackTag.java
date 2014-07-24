@@ -18,8 +18,8 @@ public class DataUpdaterEventCallbackTag extends YukonTagSupport {
     public void doTag() throws JspException, IOException {
         
         JspWriter out = getJspContext().getOut();
-        out.print("<script type=\"text/javascript\">");
-        out.print("\nyukon.dataUpdater.cannonDataUpdateEventRegistration(" + function + ", \"" + id + "\");\n");
+        out.print("<script>");
+        out.print("\nyukon.dataUpdater.registerEventCallback(" + function + ", \"" + id + "\");\n");
         out.print("\n</script>");
     }
     

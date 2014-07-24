@@ -1,129 +1,120 @@
-/* see the dataUpdateEnabler.tag to see where this is referenced */
-var isWindowUnloading = false;
-$(window).bind('beforeunload',function(){
-            isWindowUnloading = true; 
-        });
 yukon.namespace('yukon.dataUpdater');
-yukon.dataUpdater = (function () {
-    var _updaterTimeout = null,
-        lastUpdate = 0,
-        failureCount = 0,
-        disableHighlight = false,
-        cannonDataUpdateRegistrations = [],
-        url,
-        delayMs,
-        mod = {},
-        processResponseCallback = function (transport) {
-            var someValueHasUpdated = false,
-                responseStruc,
-                updateElems,
-                updateClassElems,
-                updateColorElems;
 
-            responseStruc = transport;
-            // looks like stuff is working, hide error div
-            $('#data-updater-error').hide();
-            failureCount = 0;
+/**
+ * Module to handle updating dynamic data on all Yukon pages.
+ * 
+ * Elements updated are expected to have special data attributes:
+ * data-updater:       The contents of the element will be replaced by the response.
+ * data-class-updater: The response is a class name applied to the element.
+ * data-color-updater: The response is an html color value used as the color or background-color of the element.
+ * 
+ * The value of these attributes is expected to be a multipart identifier parsed on the backend to decided the 
+ * service used to render the response data for that particular element.  Elements using the data updater 
+ * pattern are typically built by special tags:
+ * cti:dataUpdaterValue
+ * 
+ * This module also handles callback function execution on update instead.  Functions are registered and fired as 
+ * callbacks when new data is detected for their multipart identifiers.  Used by tags:
+ * cti:dataUpdaterCallback
+ * cti:dataUpdaterCallbackEvent
+ * 
+ * @module yukon.dataUpdater
+ * @requires JQUERY
+ * @requires yukon
+ */
+yukon.dataUpdater = (function () {
+    
+    var _updaterTimeout = null,
+        _lastUpdate = 0,
+        _failureCount = 0,
+        _disableHighlight = false,
+        _callbackRegistrations = [],
+        _url = '',
+        _delayMS = 4000,
+        
+        _processResponseCallback = function (response) {
+        
+            var someValueHasUpdated = false;
             
-            // find all of the updateable elements
-            updateElems = $('[data-updater]');
-            $.each (updateElems, function(key, val) {
-                var newData,
-                    attVal = $(val).attr('data-updater');
-                if ('undefined' === typeof attVal || 'undefined' === typeof responseStruc.data) {
+            // If we got here stuff is working, hide error.
+            $('#data-updater-error').hide();
+            _failureCount = 0;
+            
+            // Update all the [data-updater] elements if the data changed.
+            $('[data-updater]').each(function (key, val) {
+                
+                var elem = $(val), 
+                    newData,
+                    identifier = elem.attr('data-updater');
+                
+                if (typeof identifier === 'undefined' || typeof response.data === 'undefined') {
                     return;
                 }
-                newData = responseStruc.data[attVal];
-                if ('undefined' !== typeof newData) {
-                    if ($(val).html() !== newData) {
+                
+                newData = response.data[identifier];
+                
+                if (typeof newData !== 'undefined') {
+                    if (elem.html() !== newData) {
                         // escape html: creates a div in isolation, sets its text
                         // to whatever's in newData, then effectively escapes it 
                         // via the html function
                         newData = $('<div>').text(newData).html();
-                        $(val).html(newData);
+                        elem.html(newData);
                         someValueHasUpdated = true;
-                        if (!disableHighlight) {
-                            $(val).flashYellow(3.5);
+                        if (!_disableHighlight) {
+                            elem.flashYellow(3.5);
                         }
                     }
                 }
             });
-
-            // update the classes
-            updateClassElems = $('[data-class-updater]');
-            $.each (updateClassElems, function(key, val) {
-                var id = $(val).attr('data-class-updater'),
-                    newData,
-                    className;
-                if ('undefined' === typeof id || 'undefined' === typeof responseStruc.data) {
+            
+            // Update all the [data-class-updater] elements if the data changed.
+            $('[data-class-updater]').each(function (key, val) {
+                
+                var elem = $(val), 
+                    identifier = elem.attr('data-class-updater'),
+                    newData;
+                
+                if (typeof identifier === 'undefined' || typeof response.data === 'undefined') {
                     return;
                 }
-                newData = responseStruc.data[id];
-                className = $(val).attr('class');
-                if ('undefined' !== typeof newData && className !== newData) {
-                    $(val).attr('class', newData);
+                
+                newData = response.data[identifier];
+                
+                if (typeof newData !== 'undefined' && newData !== elem.attr('class')) {
+                    elem.attr('class', newData);
                 }
             });
-
-            // update the colors
-            updateColorElems = $('[data-color-updater]');
-            $.each (updateColorElems, function(key, val) {
-                var id = $(val).attr('data-color-updater'),
+            
+            // Update all the [data-color-updater] elements if the data changed.
+            $('[data-color-updater]').each(function (key, val) {
+                
+                var elem = $(val), 
+                    identifier = elem.attr('data-color-updater'),
                     newData,
-                    format, // what are typical/legal values for this?
-                    backgroundColor,
-                    color,
-                    current_value,
-                    // jquery (and plain old javascript) returns color values in rgb format:
-                    //   rgb(0, 153, 51)
-                    // but we need:
-                    //   #009933
-                    rgb2hex = function(rgb) {
-                        var compositeRgb,
-                            hex = function(x) {
-                                return ('0' + parseInt(x, 10).toString(16)).slice(-2);
-                            };
-                        if ('undefined' === typeof rgb || '' === rgb || null === rgb) {
-                            return '#000000';
-                        }
-                        
-                        // IE8 returns color in hex
-                        if (rgb.match(/^#[\da-f]{6}$/)) {
-                            return rgb;
-                        }
-                        
-                        rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
-                        compositeRgb = hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-                        compositeRgb = compositeRgb.toLowerCase();
-                        return '#' + compositeRgb;
-                    };
-                if ('undefined' === typeof id || 'undefined' === typeof responseStruc.data) {
+                    format = elem.attr('data-format'),
+                    property = format === 'background' ? 'background-color' : 'color',
+                    current_value = format === 'background' ? elem.css('background-color') : elem.css('color');
+                    
+                if (typeof identifier === 'undefined' || typeof response.data === 'undefined') {
                     return;
                 }
-                newData = responseStruc.data[id];
+                
+                newData = response.data[identifier];
                 newData = 'undefined' === typeof newData ? newData : newData.toLowerCase();
-                format = $(val).attr('data-format');
-                backgroundColor = $(val).css('background-color');
-                color = $(val).css('color');
-                current_value = format == 'background' ? backgroundColor : color;
                 // IE represents rgba(0,0,0,0) as transparent, so translate to rgb format here
-                // to satisfy rgb2hex, which expects the rgb format
+                // to satisfy rgbToHex, which expects the rgb format.
                 if ('transparent' === current_value) {
                     current_value = 'rgba(0,0,0,0)';
                 }
-                if ('undefined' !== typeof newData && newData !== rgb2hex(current_value)) {
-                    // data was sent and is different than current
-                    if (format === 'background') {
-                        $(val).css({'background-color': newData});
-                        $(val).children().css({'background-color': newData});
-                    } else {
-                        $(val).css({'color': newData});
-                        $(val).children().css({'color': newData});
-                    }
+                if ('undefined' !== typeof newData && newData !== yukon.ui.util.rgbToHex(current_value)) {
+                    // Data was sent and is different than current
+                    elem.css(property, newData);
+                    elem.children().css(property, newData);
                 }
             });
 
-            cannonDataUpdateRegistrations.forEach(function(it, index, ar) {
+            _callbackRegistrations.forEach(function (it, index, ar) {
                 var idMap = it.identifierMap,
                     allIdentifierValues = {},
                     gotNewData = false,
@@ -138,10 +129,10 @@ yukon.dataUpdater = (function () {
                     (it.callback)();
                     return;
                 }
-                $.each (idMap, function(key, val) {
+                $.each(idMap, function (key, val) {
                     var newData;
-                    if ('undefined' !== typeof responseStruc.data) {
-                        newData = responseStruc.data[idMap[key]];
+                    if ('undefined' !== typeof response.data) {
+                        newData = response.data[idMap[key]];
                         if ('undefined' !== typeof newData) {
                             gotNewData = true;
                             allIdentifierValues[key] = newData;
@@ -154,18 +145,19 @@ yukon.dataUpdater = (function () {
             });
 
             // save latest date
-            lastUpdate = responseStruc.toDate;
+            _lastUpdate = response.toDate;
             // schedule next update
             if (_updaterTimeout) {
                 clearTimeout(_updaterTimeout);
             }
-            _updaterTimeout = setTimeout(doUpdate, delayMs);
-        }, // end of processResponseCallback
-        failureCallback = function () {
+            _updaterTimeout = setTimeout(_doUpdate, _delayMS);
+        },
+        
+        _failureCallback = function () {
             // something bad happened, show user that updates are off
-            failureCount++;
-            $('#data-updater-error-count').html(failureCount);
-            if(failureCount > 1) {
+            _failureCount++;
+            $('#data-updater-error-count').html(_failureCount);
+            if(_failureCount > 1) {
                 // wait for 2 errors before we show error message
                 // to avoid flashing error message on page transitions.
                 $('#data-updater-error').show();
@@ -175,40 +167,37 @@ yukon.dataUpdater = (function () {
             if (_updaterTimeout) {
                 clearTimeout(_updaterTimeout);
             }
-            _updaterTimeout = setTimeout(doUpdate, delayMs * 5);
+            _updaterTimeout = setTimeout(_doUpdate, _delayMS * 5);
         },
-        warnStaleData = function() {
+        
+        _warnStaleData = function () {
             $('#updatedWarning').dialog('open');
         },
-        doUpdate = function () {
+        
+        _doUpdate = function () {
             // if none exist on this page, get out
             // build up JS object to be used for request
             var reqData = {
-                    fromDate : lastUpdate,
+                    fromDate : _lastUpdate,
                     requestTokens : []
                 },
-                updaters = [
-                    '-',
-                    '-class-',
-                    '-color-'
-                ],
-                getUpdater = function(updateName) {
+                getUpdater = function (updateName) {
                     var fullName = 'data' + updateName + 'updater',
                         updateElems = $('[' + fullName + ']'),
-                        updateData = $.makeArray(updateElems).map(function(al) {
+                        updateData = $.makeArray(updateElems).map(function (al) {
                             return $(al).attr(fullName);
                         });
                     return updateData;
-                },
-                json_reqData;
+                };
 
-            $.each (updaters, function(index, updateStr) {
+            $.each([ '-', '-class-', '-color-' ], function (index, updateStr) {
                 var addedData = getUpdater(updateStr);
                 reqData.requestTokens = reqData.requestTokens.concat(addedData);
             });
-            cannonDataUpdateRegistrations.forEach(function(it, index, ar) {
+            
+            _callbackRegistrations.forEach(function (it, index, ar) {
                 var idMap = it.identifierMap;
-                $.each (idMap, function(key, val) {
+                $.each(idMap, function (key, val) {
                     reqData.requestTokens = reqData.requestTokens.concat(val);
                 });
             });
@@ -218,75 +207,77 @@ yukon.dataUpdater = (function () {
                 if (_updaterTimeout) {
                     clearTimeout(_updaterTimeout);
                 }
-                _updaterTimeout = setTimeout(doUpdate, delayMs);
+                _updaterTimeout = setTimeout(_doUpdate, _delayMS);
                 return;
             }
-            json_reqData = JSON.stringify(reqData);
-
+            
             $.ajax({
-                url: url,
+                url: _url,
                 type: 'POST',
-                data: json_reqData,
+                data: JSON.stringify(reqData),
                 contentType: 'application/json; charset=utf-8',
                 dataType: "json"
-            }).done(function(data, textStatus, xhr) {
-                processResponseCallback(data);
-            }).fail(function(xhr, textStatus, errorThrown) {
+            }).done(function (data, textStatus, xhr) {
+                _processResponseCallback(data);
+            }).fail(function (xhr, textStatus, errorThrown) {
                 // Since we're asking for json data, if we get a 200 status, but its not json this will 
                 // result in a parse error and call fail(), not done()
                 if (xhr.status === 409) {
-                    warnStaleData();
+                    _warnStaleData();
                 }
-                if(xhr.getAllResponseHeaders() || !isWindowUnloading) {
-                    failureCallback();   
-                } else {
-                    failureCount=0;
-                }
-                isWindowUnloading = false;
+                
+                _failureCallback();
+                
             });
             reqData.requestTokens = [];
         };
-
+    
     mod = {
+        
         /**
-         * @param    callback        {function}
-         * @param    identifierMap    {Object} JSON
+         * Register a callback function to fire for the provided identifiers.
+         * @param callback {function} Function to fire on update.
+         * @param identifierMap {Object} 
          */
-        cannonDataUpdateRegistration : function (callback, identifierMap) {
-            // callback will include the formatted string as its one argument
-
-            cannonDataUpdateRegistrations.push({
+        registerCallback: function (callback, identifierMap) {
+            _callbackRegistrations.push({
                 'identifierMap': identifierMap,
                 'callback': callback
             });
         },
-
+        
         /**
-         * 
-         * @param callback        {function}
-         * @param identifier    {DOM id}
+         * Register a callback that will only fire if the response contains a 'boolean' property 
+         * whose value is 'true' or true. Once fired the callback will never be fired again.
+         * @param callback {function} Function to fire on update.
+         * @param identifier {DOM id}
          */
-        cannonDataUpdateEventRegistration : function (callback, identifier) {
+        registerEventCallback: function (callback, identifier) {
             var didIt = false,
-                callbackWrapper = function(data) {
-                    // previously, the comparison was data.boolean == true, which
-                    // worked because of type coercion. With ===, we have to be explicit
-                    if (!didIt && (data.boolean === true || 'true' === data.boolean)) {
+                callbackWrapper = function (data) {
+                    if (!didIt && (data.boolean === true || data.boolean === 'true')) {
                         didIt = true;
                         callback();
                     }
                 };
-            mod.cannonDataUpdateRegistration(callbackWrapper, {'boolean': identifier});  
+            mod.registerCallback(callbackWrapper, { 'boolean': identifier });
         },
-        initiateCannonDataUpdate : function (dataUpdaterUrl, dataUpdaterDelayMs) {
-            url = dataUpdaterUrl;
-            delayMs = dataUpdaterDelayMs;
+        
+        /**
+         * Schedules the first update request after waiting 'delay' milliseconds.
+         * The first update recursively reschedules consecutive updates from then on.
+         * @param url
+         * @param delay
+         */
+        start: function (url, delay) {
+            _url = url;
+            _delayMS = delay;
             if (_updaterTimeout) {
                 clearTimeout(_updaterTimeout);
             }
-            _updaterTimeout = setTimeout(doUpdate, delayMs);
+            _updaterTimeout = setTimeout(_doUpdate, _delayMS);
         }
     };
+    
     return mod;
 })();
-

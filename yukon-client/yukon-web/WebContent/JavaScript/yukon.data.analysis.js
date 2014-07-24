@@ -4,6 +4,11 @@ yukon.namespace('yukon.dataAnalysis');
 yukon.dataAnalysis = (function() {
     var mod = {
         changeStatus : function (msg) {
+            if (msg === '') {
+                // analysis was deleted
+                debug.log('no status for analysis');
+                return;
+            }
             var data = $.parseJSON(msg.value),
                 status = data.status.trim(),
                 row = $('[data-analysis=' + data.analysisId + ']'),

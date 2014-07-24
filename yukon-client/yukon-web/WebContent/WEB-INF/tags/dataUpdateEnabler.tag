@@ -7,7 +7,7 @@
 <c:url var="updateUrl" value="/updater/update" />
 
 <script type="text/javascript">
-yukon.dataUpdater.initiateCannonDataUpdate("${updateUrl}", <cti:getProperty property="DATA_UPDATER_DELAY_MS"/>);
+yukon.dataUpdater.start("${updateUrl}", <cti:getProperty property="DATA_UPDATER_DELAY_MS"/>);
 </script>
 
 <div id="data-updater-error" style="display: none">
