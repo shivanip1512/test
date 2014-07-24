@@ -45,12 +45,7 @@ public class ForgotPasswordRequestEndpoint {
         XmlVersionUtils.addVersionAttribute(response, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         try {
-            //see if resetting the password even makes sense.  this assumes that the authentication
-            //for the user is done through the corresponding UserLoginRequest webservice
-            if(!globalSettingDao.getBoolean(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
-                throw new NotAuthorizedException("Password recovery is not available.");
-            }
-
+            
             String userName = requestTemplate.evaluateAsString("//y:username");
             String email = requestTemplate.evaluateAsString("//y:email");
             String fName = requestTemplate.evaluateAsString("//y:firstName");
@@ -58,8 +53,16 @@ public class ForgotPasswordRequestEndpoint {
             String accNum = requestTemplate.evaluateAsString("//y:accountNumber");
             String notes = requestTemplate.evaluateAsString("//y:notes");
             String energyComp = requestTemplate.evaluateAsString("//y:energyProvider");
-
+            
+            // Event logging for password request attempted
             systemEventLogService.passwordRequestAttempted(userName, email, accNum, EventSource.API);
+            
+            //see if resetting the password even makes sense.  this assumes that the authentication
+            //for the user is done through the corresponding UserLoginRequest webservice
+            if(!globalSettingDao.getBoolean(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
+                throw new NotAuthorizedException("Password recovery is not available.");
+            }            
+
             //try to recover the password
             StarsRequestPword reqPword = new StarsRequestPword(userName, email, fName, lName, accNum, 
                                                                starsCustAccountInformationDao,

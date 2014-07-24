@@ -42,6 +42,7 @@
     <entry key="yukon.common.events.tagSet">Tag Set</entry>
     <entry key="yukon.common.events.thermostatLabel">Thermostat Label</entry>
     <entry key="yukon.common.events.username">Username</entry>
+    <entry key="yukon.common.events.email">Email</entry>
     <entry key="yukon.common.events.warehouseName">Warehouse Name</entry>
     <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
     <entry key="yukon.common.events.commandScheduleId">Command Schedule Id</entry>
@@ -381,6 +382,9 @@
     <entry key="yukon.common.events.system.login.loginChangeAttempted">User {1} attempted to change to user {2}. Source: {3}</entry>
     <entry key="yukon.common.events.system.login.loginUsernameChangeAttempted">User {1} attempted to change to username {2}. Source: {3}</entry>
     <entry key="yukon.common.events.system.login.loginPasswordChangeAttempted">User {1} attempted to change password. Source: {2}</entry>
+    <entry key="yukon.common.events.system.login.loginConsumerAttempted">Consumer user {1} attempted to log in. Source: {2}.</entry>
+    <entry key="yukon.common.events.system.login.loginConsumer">Consumer user {1} logged in. Source: {2}.</entry>
+    <entry key="yukon.common.events.system.login.passwordRequestAttempted">User {1} attempted password request for email {2} and account number {3}. Source: {4}.</entry>
 
     <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}.</entry>
     <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}.</entry>    
