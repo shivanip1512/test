@@ -27,7 +27,7 @@ import com.google.common.collect.Sets;
 
 public class EcobeeHardwareReadNowStrategy implements HardwareReadNowStrategy{
     
-    private static final Logger log = YukonLogManager.getLogger(HardwareReadNowStrategy.class);
+    private static final Logger log = YukonLogManager.getLogger(EcobeeHardwareReadNowStrategy.class);
     private static final String keyBase = "yukon.web.modules.operator.hardware.";
     
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
