@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
 import com.cannontech.message.util.Message;
 
@@ -26,8 +27,8 @@ public class Schedule extends Message implements Serializable, YukonPao {
     public final static String STATE_PENDING = "Pending";
     public final static String STATE_DISABLED = "Disabled";
 
-    // An invalid time for any schedule date field being the Year 1900 in millis
-    public final static long INVALID_DATE = -2177452800000L;
+    // An invalid time for any schedule date field being the Year 1990 in millis
+    public final static long INVALID_DATE = CtiUtilities.get1990GregCalendar().getTime().getTime();
 
     private int id = 0;
     private String scheduleName = "";
