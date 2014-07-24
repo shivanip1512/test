@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleTemplateProcessor;
@@ -28,6 +27,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
 
 public class PageDetailProducer {
+    
     private final static Logger log = YukonLogManager.getLogger(PageDetailProducer.class);
 
     private final static String MODULE_NAME = "moduleName";
@@ -176,7 +176,7 @@ public class PageDetailProducer {
         String result = previousCrumbs + "<li>" + thisCrumb + "</li>";
         return result;
     }
-
+    
     public String getPagePart(String pagePart, PageContext pageContext, MessageSourceAccessor messageSourceAccessor) {
         // look for specific override message
         PageInfo pageInfo = pageContext.pageInfo;
@@ -188,24 +188,26 @@ public class PageDetailProducer {
             String result = messageSourceAccessor.getMessage(resolvable);
             return result;
         } catch (NoSuchMessageException e) {
-            LogHelper.trace(log, "no specific label found for %s on %s", pagePart, pageInfo);
+            log.trace(String.format("no specific label found for %s on %s", pagePart, pageInfo));
         }
-
+        
         String pagePartTemplate =
             messageSourceAccessor.getMessage("yukon.web.layout.standard.pageType." + pageInfo.getPageType()
                 + ".pagePart." + pagePart);
-
+        
         String result = new SimpleTemplateProcessor().process(pagePartTemplate, pageContext.pageLabels);
         return result;
     }
-
-    private String renderHomeCrumb(HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
-        String message = messageSourceAccessor.getMessage("yukon.web.menu.home");
-        String link = getHomeUrl(ServletUtil.getYukonUser(request));
-
-        return "<li>" + createLink(request, message, link) + "</li>";
+    
+    private String renderHomeCrumb(HttpServletRequest request, MessageSourceAccessor accessor) {
+        
+        String message = accessor.getMessage("yukon.web.menu.home");
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+        
+        return "<li>" + createLink(request, message, homeUrl) + "</li>";
     }
-
+    
     private String createLink(HttpServletRequest request, String label, String link) {
         // abbreviate label to prevent bread crumbs from being too long
         label = StringUtils.elideCenter(label, 60);
@@ -214,16 +216,8 @@ public class PageDetailProducer {
             return safeLabel;
         }
         String safeLink = StringEscapeUtils.escapeHtml4(link);
-
+        
         return "<a href=\"" + request.getContextPath() + safeLink + "\">" + safeLabel + "</a>";
-    }
-
-    private String getHomeUrl(LiteYukonUser user) {
-        String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-        if ("/operator/Operations.jsp".equals(homeUrl)) {
-            homeUrl="/dashboard";
-        }
-        return homeUrl;
     }
     
     private PageContext createPageContext(PageInfo pageInfo, HttpServletRequest request,

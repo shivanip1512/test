@@ -1133,10 +1133,6 @@
     <bean id="checkPaoAuthorizationTagPrototype" class="com.cannontech.web.taglib.CheckPaoAuthorizationTag">
         <property name="paoAuthorizationService" ref="paoAuthorizationService"/>
     </bean>
-    
-    <bean id="homeUrlTagPrototype" class="com.cannontech.web.taglib.HomeUrlTag">
-        <property name="rolePropertyDao" ref="rolePropertyDao"/>
-    </bean>
 
     <bean id="msg2TagPrototype" class="com.cannontech.web.i18n.Msg2Tag">
         <property name="objectFormattingService" ref="objectFormattingService"/>

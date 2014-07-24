@@ -37,13 +37,11 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.JsLibrary;
 import com.cannontech.web.Writable;
 import com.cannontech.web.menu.CommonModuleBuilder;
@@ -56,11 +54,13 @@ import com.cannontech.web.menu.renderer.StandardMenuRenderer;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.user.service.UserPreferenceService;
+import com.cannontech.web.util.WebUtilityService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
 @Controller
 public class LayoutController {
+    
     @Autowired private CommonModuleBuilder moduleBuilder;
     @Autowired private ConfigurationSource configSource;
     @Autowired private EnergyCompanyDao ecDao;
@@ -73,6 +73,7 @@ public class LayoutController {
     @Autowired private UserPreferenceService prefService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private YukonUserDao userDao;
+    @Autowired private WebUtilityService webUtilService;
 
     private List<String> layoutScriptFiles;
 
@@ -113,13 +114,19 @@ public class LayoutController {
 
     // StandardPageTag forwards to here!
     @RequestMapping("/")
-    public String display(final HttpServletRequest request, final HttpServletResponse response, ModelMap map)
-            throws JspException {
+    public String display(final HttpServletRequest request, HttpServletResponse response, 
+            ModelMap model, YukonUserContext userContext) {
+        
+        LiteYukonUser user = userContext.getYukonUser();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        model.addAttribute("homeUrl", webUtilService.getHomeUrl(request, user));
+        
         // get data passed over - in attributes
         final BodyContent bodyContent = StandardPageTag.getBodyContent(request);
 
         // create a callback for writing out the body (as opposed to just putting a string of the body in the model)
-        map.addAttribute("bodyContent", new Writable() {
+        model.addAttribute("bodyContent", new Writable() {
             @Override
             public void write(Writer out) throws IOException {
                 bodyContent.writeOut(out);
@@ -127,26 +134,23 @@ public class LayoutController {
         });
 
         final StandardPageInfo tagInfo = StandardPageTag.getStandardPageInfo(request);
-        map.addAttribute("info", tagInfo);
-
-        final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        model.addAttribute("info", tagInfo);
 
         // used for determining page title etc...
         final Module moduleBase = getModuleBase(tagInfo.getModuleName());
-        map.addAttribute("module", moduleBase);
+        model.addAttribute("module", moduleBase);
 
         // parse the module_config.xml and figure out our hierarchy for menus etc...
         PageInfo pageInfo = moduleBase.getPageInfo(tagInfo.getPageName());
 
         PageDetail pageDetailTemp;
         if (pageInfo != null) {
-            map.addAttribute("canFavorite", !pageInfo.isHideFavorite());
+            model.addAttribute("canFavorite", !pageInfo.isHideFavorite());
             List<String> resolvedLabelArgs =
                 expressionLanguageResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
             String labelArgs = com.cannontech.common.util.StringUtils.listAsJsSafeString(resolvedLabelArgs);
-            map.addAttribute("labelArgs", labelArgs);
-            pageDetailTemp = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
+            model.addAttribute("labelArgs", labelArgs);
+            pageDetailTemp = pageDetailProducer.render(pageInfo, request, accessor);
         } else {
             // create dummy page detail for pre-2010 pages
             // TODO  consider delegating this functionality to the PageInfo object itself: new PageDetail(tagInfo)
@@ -158,9 +162,9 @@ public class LayoutController {
                 try {
                     String pageTitleKey =
                         "yukon.web.modules." + tagInfo.getModuleName() + "." + tagInfo.getPageName() + ".pageTitle";
-                    pageDetailTemp.setPageTitle(messageSourceAccessor.getMessage(pageTitleKey));
+                    pageDetailTemp.setPageTitle(accessor.getMessage(pageTitleKey));
                 } catch (NoSuchMessageException e) {
-                    pageDetailTemp.setPageTitle(messageSourceAccessor.getMessageWithDefault(
+                    pageDetailTemp.setPageTitle(accessor.getMessageWithDefault(
                         "yukon.web.defaults.pageTitle", ""));
                 }
 
@@ -169,25 +173,24 @@ public class LayoutController {
 
         final PageDetail pageDetail = pageDetailTemp;
 
-        map.addAttribute("pageDetail", pageDetail);
+        model.addAttribute("pageDetail", pageDetail);
 
-        map.addAttribute("servletPath", tagInfo.getServletPath());
+        model.addAttribute("servletPath", tagInfo.getServletPath());
 
         List<String> moduleConfigCssList = new ArrayList<String>(moduleBase.getCssFiles());
         removeDuplicates(moduleConfigCssList);
-        map.addAttribute("moduleConfigCss", moduleConfigCssList);
+        model.addAttribute("moduleConfigCss", moduleConfigCssList);
 
         List<String> innerContentCssList = new ArrayList<String>(tagInfo.getCssFiles());
         removeDuplicates(innerContentCssList);
-        map.addAttribute("innerContentCss", innerContentCssList);
+        model.addAttribute("innerContentCss", innerContentCssList);
 
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
         String cssLocations = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.STD_PAGE_STYLE_SHEET, user);
         cssLocations = StringUtils.defaultString(cssLocations, "");
         String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
         List<String> loginGroupCssList = new ArrayList<String>(Arrays.asList(cssLocationArray));
         removeDuplicates(loginGroupCssList);
-        map.addAttribute("loginGroupCss", loginGroupCssList);
+        model.addAttribute("loginGroupCss", loginGroupCssList);
 
         Set<String> finalScriptList = new LinkedHashSet<String>();
 
@@ -196,7 +199,7 @@ public class LayoutController {
         // get script files declared in the module
         finalScriptList.addAll(moduleBase.getScriptFiles());
         finalScriptList.addAll(tagInfo.getScriptFiles());
-        map.addAttribute("javaScriptFiles", finalScriptList);
+        model.addAttribute("javaScriptFiles", finalScriptList);
 
         LayoutSkinEnum skin = moduleBase.getSkin();
 
@@ -234,8 +237,8 @@ public class LayoutController {
                     breadCrumbs = pageDetail.getBreadCrumbText();
                 }
                 menuRenderer.setBreadCrumb(breadCrumbs);
-                menuRenderer.setHomeUrl(getHomeUrl(user));
-                map.addAttribute("menuRenderer", new Writable() {
+                menuRenderer.setHomeUrl(webUtilService.getHomeUrl(request, user));
+                model.addAttribute("menuRenderer", new Writable() {
                     @Override
                     public void write(Writer out) throws IOException {
                         menuRenderer.renderMenu(out);
@@ -243,7 +246,7 @@ public class LayoutController {
                 });
             }
         } else {
-            map.addAttribute("menuRenderer", new Writable() {
+            model.addAttribute("menuRenderer", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {
                     try {
@@ -254,14 +257,14 @@ public class LayoutController {
                 }
             });
 
-            map.addAttribute("searchRenderer", new Writable() {
+            model.addAttribute("searchRenderer", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {
                     searchRenderer.render(moduleBase, request, out);
                 }
             });
 
-            map.addAttribute("bcRenderer", new Writable() {
+            model.addAttribute("bcRenderer", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {
                     String breadCrumbs = tagInfo.getBreadCrumbs();
@@ -285,15 +288,15 @@ public class LayoutController {
             // The user does not need an Energy Company just to log in.
         }
 
-        map.addAttribute("energyCompanyName", energyCompanyName);
-        map.addAttribute("username", username);
+        model.addAttribute("energyCompanyName", energyCompanyName);
+        model.addAttribute("username", username);
 
-        map.addAttribute("displayName", buildDisplayName(userDao.getLiteContact(yukonUser.getLiteID()), yukonUser));
+        model.addAttribute("displayName", buildDisplayName(userDao.getLiteContact(yukonUser.getLiteID()), yukonUser));
 
         boolean showContextualNavigation = pageInfo != null && pageInfo.isShowContextualNavigation();
-        map.addAttribute("showContextualNavigation", showContextualNavigation);
+        model.addAttribute("showContextualNavigation", showContextualNavigation);
         if (showContextualNavigation) {
-            map.addAttribute("contextualNavigationMenu", new Writable() {
+            model.addAttribute("contextualNavigationMenu", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {
                     out.append(pageDetail.getRenderContextualNavigation());
@@ -301,23 +304,15 @@ public class LayoutController {
             });
         }
 
-        map.addAttribute("currentTime", new Date());
+        model.addAttribute("currentTime", new Date());
 
-        map.addAttribute("alertSounds", prefService.getDefaultNotificationAlertSound(yukonUser));
-        map.addAttribute("alertFlash", prefService.getDefaultNotificationAlertFlash(yukonUser));
+        model.addAttribute("alertSounds", prefService.getDefaultNotificationAlertSound(yukonUser));
+        model.addAttribute("alertFlash", prefService.getDefaultNotificationAlertFlash(yukonUser));
 
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-cache, no-store");
 
         return skin.getViewName();
-    }
-
-    private String getHomeUrl(LiteYukonUser user) {
-        String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-        if ("/operator/Operations.jsp".equals(homeUrl)) {
-            homeUrl="/dashboard";
-        }
-        return homeUrl;
     }
     
     private String buildDisplayName(LiteContact contact, LiteYukonUser user) {
@@ -366,7 +361,7 @@ public class LayoutController {
         return "undefined";
     }
 
-    private Module getModuleBase(String moduleName) throws JspException {
+    private Module getModuleBase(String moduleName) {
         Module moduleBase = moduleBuilder.getModule(moduleName);
 
         return moduleBase;

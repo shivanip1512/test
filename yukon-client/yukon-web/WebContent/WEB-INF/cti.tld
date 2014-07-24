@@ -1928,30 +1928,6 @@
   </tag>
   
   <tag>
-    <name>homeUrl</name>
-    <tag-class>com.cannontech.web.taglib.HomeUrlTag</tag-class>
-    <body-content>scriptless</body-content>
-    <description>
-    Prints or exposes a Home URL based on Home_Url Role Property        
-    </description>
-    <attribute>
-        <name>var</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-        <name>scope</name>
-        <required>false</required>
-        <rtexprvalue>false</rtexprvalue>
-    </attribute>    
-    <attribute>
-        <name>htmlEscape</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
     <name>dataGrid</name>
     <tag-class>com.cannontech.web.taglib.DataGridTag</tag-class>
     <body-content>scriptless</body-content>

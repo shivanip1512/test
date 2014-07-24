@@ -61,7 +61,6 @@
 </head>
 <body>
     <cti:msgScope paths="layout.standard">
-    <cti:homeUrl var="homeUrl"/>
 
         <div id="modal-glass" style="display: none;">
             <div class="tint"></div>

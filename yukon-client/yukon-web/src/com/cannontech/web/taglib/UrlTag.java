@@ -57,10 +57,12 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
         
         // add parameters to the baseUrl
         String result = appendParams(baseUrl);
+        
+        // escape the full url if need be
         if (htmlEscape) {
             result = StringEscapeUtils.escapeHtml4(result);
         }
-
+        
         // store or print the output
         if (var != null) {
             getPageContext().setAttribute(var, result, scope);

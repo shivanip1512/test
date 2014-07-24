@@ -759,20 +759,24 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
     /**
      * Returns the URL for the "host". Could be useful
      * for building links that go into emails.
-     *
      */
     public static URL getHostURL(HttpServletRequest req) {
         try {
             StringBuffer hostString = req.getRequestURL();
             URL fullHostUrl = new URL(hostString.toString());
-            URL hostUrl = new URL(fullHostUrl.getProtocol(), fullHostUrl.getHost(), fullHostUrl.getPort(), "");    
+            URL hostUrl = new URL(fullHostUrl.getProtocol(), fullHostUrl.getHost(), fullHostUrl.getPort(), "");
             return hostUrl;
         } catch (MalformedURLException e) {
             throw new RuntimeException("Unable to build host URL", e);
         }
     }
     
-    
+    /**
+     * If the url starts with a slash like '/dashboard', the applications context
+     * path will be added to the url: '/yukon/dashboard'.  In production this doesn't
+     * usually matter since Yukon is the root application but in development it is 
+     * usually set to '/yukon'.
+     */
     public static String createSafeUrl(ServletRequest request, String url) {
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest)request;
