@@ -14,19 +14,20 @@ import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.hardware.service.DeviceReadStrategy;
+import com.cannontech.web.stars.dr.operator.hardware.service.HardwareReadNowStrategy;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareStrategyType;
 import com.google.common.collect.Maps;
 
-public class ZigBeeReadStrategy implements DeviceReadStrategy{
+public class ZigBeeHardwareReadNowStrategy implements HardwareReadNowStrategy{
     
-    private static final Logger log = YukonLogManager.getLogger(ZigBeeReadStrategy.class);
+    private static final Logger log = YukonLogManager.getLogger(ZigBeeHardwareReadNowStrategy.class);
     private static final String keyBase = "yukon.web.modules.operator.hardware.";
     
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ZigbeeWebService zigbeeWebService;
     @Autowired private ZigbeeDeviceDao zigbeeDeviceDao;
     
+    @Override
     public Map<String, Object> readNow(int deviceId,YukonUserContext context) {
         final MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         final ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);

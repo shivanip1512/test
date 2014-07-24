@@ -25,7 +25,7 @@ public class HardwareController {
   public Map<String, Object> readNow(int deviceId, YukonUserContext userContext) {
       Map<String, Object> resultMap = new HashMap<>();
       
-      resultMap= hardwareServiceImpl.readNow(deviceId, userContext);
+      resultMap = hardwareServiceImpl.readNow(deviceId, userContext);
       return resultMap;
   }
 }

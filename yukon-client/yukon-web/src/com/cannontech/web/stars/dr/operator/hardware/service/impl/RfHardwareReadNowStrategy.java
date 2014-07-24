@@ -20,12 +20,12 @@ import com.cannontech.dr.rfn.service.RfnUnicastCallback;
 import com.cannontech.dr.rfn.service.WaitableRfnUnicastCallback;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.hardware.service.DeviceReadStrategy;
+import com.cannontech.web.stars.dr.operator.hardware.service.HardwareReadNowStrategy;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareStrategyType;
 import com.cannontech.web.widget.AttributeReadingHelper;
 
-public class RfReadStrategy implements DeviceReadStrategy {
-    private static final Logger log = YukonLogManager.getLogger(RfReadStrategy.class);
+public class RfHardwareReadNowStrategy implements HardwareReadNowStrategy {
+    private static final Logger log = YukonLogManager.getLogger(RfHardwareReadNowStrategy.class);
     private static final String keyBase = "yukon.web.modules.operator.hardware.";
 
     @Autowired private RfnDeviceDao rfnDeviceDao;

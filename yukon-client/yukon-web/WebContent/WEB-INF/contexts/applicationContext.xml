@@ -1582,10 +1582,10 @@
 
     <bean id="hardwareModelHelper" class="com.cannontech.web.stars.dr.operator.HardwareModelHelper"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareReadServiceImpl"/>
-    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EcobeeReadStrategy"/>
-    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.PlcReadStrategy"/>
-    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.RfReadStrategy"/>
-    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigBeeReadStrategy"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EcobeeHardwareReadNowStrategy"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.PlcHardwareReadNowStrategy"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.RfHardwareReadNowStrategy"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigBeeHardwareReadNowStrategy"/>
 
     <bean id="inventoryTaskResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean id="inventoryTaskBackingService" class="com.cannontech.web.updater.dr.InventoryTaskBackingService">
