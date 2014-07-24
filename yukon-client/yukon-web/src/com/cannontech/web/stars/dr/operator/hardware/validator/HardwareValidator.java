@@ -153,12 +153,6 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
         }
     }
     
-    /** Add comments
-     * @param sn
-     * @param errors
-     * @param hardware
-     * @param path
-     */
     private void validateSN(String sn, Errors errors, Hardware hardware, String path) {
         boolean isSerialNumberValid;
         final HardwareConfigType hardwareConfigType = hardware.getHardwareType().getHardwareConfigType();
