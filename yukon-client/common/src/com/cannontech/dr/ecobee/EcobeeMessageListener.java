@@ -91,12 +91,13 @@ public class EcobeeMessageListener {
     private EcobeeDutyCycleDrParameters buildDutyCycleDrParameters(StreamMessage message) throws JMSException {
         //Get the raw values
         int groupId = message.readInt();
-        int dutyCyclePercent = message.readByte();
+        int runtimePercent = message.readByte();
         byte rampingOptions = message.readByte();
         long utcStartTimeSeconds = message.readInt();
         long utcEndTimeSeconds = message.readInt();
 
         //Massage the data into the form we want
+        int shedTimePercent = 100 - runtimePercent;
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
         boolean rampIn = (rampingOptions & 2) == 2;
@@ -105,6 +106,6 @@ public class EcobeeMessageListener {
                   + ") End time: " + endTime + " (" + utcEndTimeSeconds + ") Ramp in: " + rampIn + " Ramp out: " 
                   + rampOut);
         
-        return new EcobeeDutyCycleDrParameters(startTime, endTime, dutyCyclePercent, rampIn, rampOut, groupId);
+        return new EcobeeDutyCycleDrParameters(startTime, endTime, shedTimePercent, rampIn, rampOut, groupId);
     }
 }
