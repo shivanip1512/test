@@ -4406,23 +4406,23 @@
             <!-- ANALOG POINTS -->
             <point type="Analog" offset="1">
                 <init>true</init>
-                <name>Outdoor Temp</name>
-                <archive><type>ON_CHANGE</type></archive>
+                <name>Outdoor Temperature</name>
+                <archive><type>ON_UPDATE</type></archive>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Temp-F"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="2">
                 <init>true</init>
-                <name>Indoor Temp</name>
-                <archive><type>ON_CHANGE</type></archive>
+                <name>Indoor Temperature</name>
+                <archive><type>ON_UPDATE</type></archive>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Temp-F"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="3">
                 <init>true</init>
-                <name>Set Cool Temp</name>
+                <name>Cool Set Temperature</name>
                 <archive><type>ON_CHANGE</type></archive>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Temp-F"/>
@@ -4430,7 +4430,7 @@
             </point>
             <point type="Analog" offset="4">
                 <init>true</init>
-                <name>Set Heat Temp</name>
+                <name>Heat Set Temperature</name>
                 <archive><type>ON_CHANGE</type></archive>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Temp-F"/>
@@ -4439,7 +4439,7 @@
             <point type="Analog" offset="5">
                 <init>true</init>
                 <name>Run Time Data Log</name>
-                <archive><type>ON_CHANGE</type></archive>
+                <archive><type>ON_UPDATE</type></archive>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="0"/>
@@ -4447,9 +4447,9 @@
             <!-- STATUS POINTS -->
             <point type="Status" offset="1">
                 <init>true</init>
-                <name>Event Activity</name>
+                <name>Control Status</name>
                 <archive><type>ON_CHANGE</type></archive>
-                <stategroup value="TwoStateActive" />
+                <stategroup value="TrueFalse" />
             </point>
         </points>
         <attributes>
@@ -4457,19 +4457,19 @@
                 <basicLookup point="Run Time Data Log" />
             </attribute>
             <attribute name="INDOOR_TEMPERATURE">
-                <basicLookup point="Indoor Temp" />
+                <basicLookup point="Indoor Temperature" />
             </attribute>
             <attribute name="OUTDOOR_TEMPERATURE">
-                <basicLookup point="Outdoor Temp" />
+                <basicLookup point="Outdoor Temperature" />
             </attribute>
             <attribute name="COOL_SET_TEMPERATURE">
-                <basicLookup point="Set Cool Temp" />
+                <basicLookup point="Cool Set Temperature" />
             </attribute>
             <attribute name="HEAT_SET_TEMPERATURE">
-                <basicLookup point="Set Heat Temp" />
+                <basicLookup point="Heat Set Temperature" />
             </attribute>
             <attribute name="CONTROL_STATUS">
-                <basicLookup point="Event Activity" />
+                <basicLookup point="Control Status" />
             </attribute>
         </attributes>
         <tags>
