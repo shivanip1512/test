@@ -26,7 +26,8 @@ import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 public interface EcobeeCommunicationService {
     String OPT_OUT_SET = "optout";
     String UNENROLLED_SET = "unenrolled";
-
+    String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
+    
     /**
      * Registers the specified device with Ecobee.
      * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API

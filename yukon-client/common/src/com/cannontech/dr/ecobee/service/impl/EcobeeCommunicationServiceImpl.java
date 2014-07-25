@@ -268,7 +268,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         String eventDisplayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.eventDisplayMessage");
         
         String groupIdString = Integer.toString(parameters.getGroupId());
-        DutyCycleDrRequest request = new DutyCycleDrRequest(groupIdString, "yukonCycle", eventDisplayMessage,
+        DutyCycleDrRequest request = new DutyCycleDrRequest(groupIdString, YUKON_CYCLE_EVENT_NAME, eventDisplayMessage,
                     parameters.getDutyCyclePercent(), parameters.getStartTime(), parameters.isRampIn(),
                     parameters.getEndTime(), parameters.isRampOut());
 

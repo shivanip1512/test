@@ -1,10 +1,11 @@
 package com.cannontech.dr.ecobee.service.impl;
 
+import static com.cannontech.dr.ecobee.service.EcobeeCommunicationService.*;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -72,8 +73,7 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
                     lastRuntime = reading.getDate();
                 }
                 runtime += reading.getRuntimeSeconds();
-                TrueFalse controlStatus = 
-                        StringUtils.isBlank(reading.getEventActivity()) ? TrueFalse.FALSE : TrueFalse.TRUE;
+                TrueFalse controlStatus = checkEventActivity(reading.getEventActivity());
                 setPointValue(paoIdentifier, BuiltInAttribute.CONTROL_STATUS, 
                               reading.getDate(), controlStatus.getRawState());
             }
@@ -90,7 +90,19 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
         }
         updateAssetAvailability(paoIdentifier, lastReading, lastRuntime);
     }
-
+    
+    /**
+     * Determine if the event activity string matches a Yukon ecobee DR event name.
+     * This method needs to be updated whenever a new ecobee control type (e.g. gear) is added, so that reporting works
+     * correctly.
+     */
+    private TrueFalse checkEventActivity(String eventString) {
+        if (eventString.equals(YUKON_CYCLE_EVENT_NAME)) {
+            return TrueFalse.TRUE;
+        }
+        return TrueFalse.FALSE;
+    }
+    
     private void updateAssetAvailability(PaoIdentifier paoIdentifier, Instant lastCommTime, Instant lastRuntime) {
         if (lastCommTime != null || lastRuntime != null) {
             AllRelayCommunicationTimes commTimes = 
