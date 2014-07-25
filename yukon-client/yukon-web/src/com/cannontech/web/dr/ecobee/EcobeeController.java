@@ -25,6 +25,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
@@ -221,7 +222,7 @@ public class EcobeeController {
         
         if (validationError == true) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.setContentType("application/json");
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             JsonUtils.getWriter().writeValue(response.getOutputStream(), errResponse);
             return null;
         }

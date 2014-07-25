@@ -81,8 +81,48 @@ yukon.dr.ecobee = (function () {
             });
             
             $(document).on('yukon_dr_ecobee_download_start', function (ev) {
+                var inputIdList = $('[name="loadGroupIds"]'),
+                    // Ensure loadGroupIds in inputs match those selected in picker. The picker creates
+                    // hidden inputs which it leaves in the DOM, so we must clean them up here after
+                    // the server returns an error and the user changes their selections.
+                    syncLoadGroupIds = function (loadGroupIdDict) {
+                        inputIdList.each(function (index, elem) {
+                            var paoId = $(elem).val();
+                            if (false === (paoId in loadGroupIdDict)) {
+                                $(elem).remove();
+                            }
+                        });
+                    },
+                    // Given an array of objects containing paoId properties, amongst others, create a
+                    // dictionary object consisting of all the values of the passed property pulled out of the
+                    // passed object. This enables the lookup in syncLoadGroupIds.
+                    makePaoIdDict = function (objs, prop) {
+                        var paoIdDict = Object.create(null),
+                            i,
+                            propVal;
+                        for (i = 0; i < objs.length; i += 1) {
+                            propVal = objs[i][prop];
+                            $.extend(paoIdDict,
+                                Object.defineProperty(
+                                    Object.create(null),
+                                    propVal.toString(),
+                                    {enumerable: true, value: propVal}));
+                        }
+                        return paoIdDict;
+                    },
+                    loadGroupIdDictionary;
                 
-                loadGroupPicker.endAction.call(loadGroupPicker, loadGroupPicker.selectedItems);
+                if (0 < loadGroupPicker.selectedItems.length) {
+                    loadGroupPicker.endAction.call(loadGroupPicker, loadGroupPicker.selectedItems);
+                    loadGroupIdDictionary = makePaoIdDict(loadGroupPicker.selectedItems, 'paoId');
+                    syncLoadGroupIds(loadGroupIdDictionary);
+                } else {
+                    // removed possibly accumulated inputs from previous selections
+                    $('[name="loadGroupIds"]').each(function (index, elem) {
+                        $(elem).remove();
+                    });
+                    // submit knowing the request will fail, clean up in error function
+                }
                 
                 $('#ecobee-download-popup form').ajaxSubmit({
                     url: 'ecobee/download/start', 
@@ -106,11 +146,13 @@ yukon.dr.ecobee = (function () {
                     },
                     error: function(xhr, status, error, $form) {
                         var errList = xhr.responseJSON,
-                            ilist,
+                            i,
                             errorType,
                             showNothingSelected = false;
-                        for (ilist = 0; ilist < errList.length; ilist += 1) {
-                            errorType = errList[ilist].errorType;
+                        // clear possibly leftover date range message
+                        $('#bad-date-range').hide();
+                        for (i = 0; i < errList.length; i += 1) {
+                            errorType = errList[i].errorType;
                             if ('loadgroupsUnspecified' === errorType) {
                                 showNothingSelected = true;
                             }
