@@ -2,14 +2,29 @@ package com.cannontech.common.inventory;
 
 import org.apache.commons.lang3.Validate;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
 
-public enum HardwareConfigType {
+public enum HardwareConfigType implements DisplayableEnum {
     NOT_CONFIGURABLE(0, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
-    EXPRESSCOM(1, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
+    EXPRESSCOM(1, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true) {
+        /**
+         * Must be a valid integer, fit in DeviceCarrierSettings.Address (varchar(18)) and be less than
+         * 2147483647
+         */
+        @Override
+        public boolean isSerialNumberValid(String serialNumber) {
+            try {
+                Integer.parseInt(serialNumber);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+    },
     VERSACOM(2, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
     SA205(3, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
     SA305(4, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
@@ -47,7 +62,16 @@ public enum HardwareConfigType {
         this.supportsVirtualEnrollment = supportsVirtualEnrollment;
         
     }
-
+      
+    /**
+     * Override this method to change the serial number validation for a specific enum
+     * Default is an string value is valid. EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION is expected
+     * to be validated against prior to this call.
+     */
+    public boolean isSerialNumberValid(String serialNumber) {
+        return true;
+    };
+    
     public int getHardwareConfigTypeId() {
         return hardwareConfigTypeId;
     }
@@ -68,19 +92,13 @@ public enum HardwareConfigType {
         return supportsServiceInOut.contains(this);
     }
     
-    public boolean isValidSerialNumber(String serialNumber) {
-        try {
-            Integer.parseInt(serialNumber);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-    
+    @Override 
     public String getFormatKey() {
         return keyPrefix + name();
     }
 
+    /*Return i18n key for validation error check.*/
+    
     public String getValidationErrorKey() {
         return getFormatKey() + ".invalidSerialNumber";
     }

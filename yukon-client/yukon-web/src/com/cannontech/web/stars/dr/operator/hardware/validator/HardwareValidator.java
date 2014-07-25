@@ -154,11 +154,12 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
     }
     
     private void validateSN(String sn, Errors errors, Hardware hardware, String path) {
-        boolean isSerialNumberValid;
-        final HardwareConfigType hardwareConfigType = hardware.getHardwareType().getHardwareConfigType();
+        boolean isValidForConfigType;
+
         if (StringUtils.isBlank(sn)) {
             errors.rejectValue(path, "yukon.web.error.required");
             return;
+            /* stop checking since serial number could potentially be null */
         }
         /* Get the current energy company setting value for Serial Number Validation field */
 
@@ -172,19 +173,27 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
             if (!StringUtils.isNumeric(sn)) {
                 errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
             }
-            /* Validate the serial number against that for the HardwareConfigType */
-            isSerialNumberValid = hardwareConfigType.isValidSerialNumber(sn);
-            if (!isSerialNumberValid) {
-                errors.rejectValue(path, hardwareConfigType.getValidationErrorKey());
-            }
 
-        } else {
+        /*Check if the current energy company setting is alphanumeric */    
+
+        } else if (currentECSNValidation == SerialNumberValidation.ALPHANUMERIC) {
             /* Check if the current energy company setting for Serial Number is Alphanumeric */
-            if (currentECSNValidation == SerialNumberValidation.ALPHANUMERIC) {
+            {
                 if (!StringUtils.isAlphanumeric(sn)) {
                     errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
                 }
             }
+        }
+
+        /* check for valid length */
+        YukonValidationUtils.checkExceedsMaxLength(errors, path, sn, 30);
+
+        /* check for specific configuration (protocol) type */
+
+        final HardwareConfigType hardwareConfigType = hardware.getHardwareType().getHardwareConfigType();
+        isValidForConfigType = hardwareConfigType.isSerialNumberValid(sn);
+        if (!isValidForConfigType) {
+            errors.rejectValue(path, hardwareConfigType.getValidationErrorKey());
         }
     }
 } 
