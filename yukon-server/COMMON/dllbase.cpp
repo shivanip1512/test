@@ -50,7 +50,7 @@ IM_EX_CTIBASE CtiThreadMonitor   ThreadMonitor;
  *  These are the Configuration Parameters for the Real Time Database
  */
 
-string     dbDll("ora15d.dll");
+string     dbType("none");
 string     dbName("yukon");
 string     dbUser("yukon");
 string     dbPassword("yukon");
@@ -101,7 +101,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
             InitYukonBaseGlobals();                            // Load up the config file.
 
             // Set default database connection params
-            setDatabaseParams(dbDll, dbName, dbUser, dbPassword);
+            setDatabaseParams(dbType, dbName, dbUser, dbPassword);
 
             Cti::parseXmlFiles( getYukonBase() );
             Cti::parseJsonFiles();
@@ -148,29 +148,11 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL/DB_TYPE found : " << str << endl;
 
-        dbDll = str;
-        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-
-        if(str == "oracle")
-        {
-            #ifdef _DEBUG
-            dbDll = "ora15d.dll";
-            #else
-            dbDll = "ora12d.dll";
-            #endif
-        }
-        else if(str == "mssql")
-        {
-            #ifdef _DEBUG
-            dbDll = "msq15d.dll";
-            #else
-            dbDll = "msq12d.dll";
-            #endif
-        }
+        dbType = boost::algorithm::to_lower_copy(str);
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL   failed : " << endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL/DB_TYPE not found " << endl;
     }
 
     if( !(str = gConfigParms.getValueAsString("DB_SQLSERVER")).empty() )

@@ -2480,7 +2480,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
     if( ciStringEqual(amfm_interface,m3iAMFMInterfaceString) )
     {
         int refreshrate = 3600;
-        string amFmDbDll = "none";
+        string amFmDbType = "none";
         string amFmDbName = "none";
         string amFmDbUser = "none";
         string amFmDbPassword = "none";
@@ -2504,28 +2504,12 @@ void CtiCCSubstationBusStore::doAMFMThr()
         std::strcpy(var, "CAP_CONTROL_AMFM_DB_TYPE");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
-            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-            if(str == "oracle")
-            {
-                #ifdef _DEBUG
-                amFmDbDll = "ora15d.dll";
-                #else
-                amFmDbDll = "ora12d.dll";
-                #endif
-            }
-            else if(str == "mssql")
-            {
-                #ifdef _DEBUG
-                amFmDbDll = "msq15d.dll";
-                #else
-                amFmDbDll = "msq12d.dll";
-                #endif
-            }
+            amFmDbType = boost::algorithm::to_lower_copy(str);
 
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << amFmDbDll << endl;
+                dout << CtiTime() << " - " << var << ":  " << amFmDbType << endl;
             }
         }
         else
@@ -2583,13 +2567,13 @@ void CtiCCSubstationBusStore::doAMFMThr()
         }
 
 
-        if( amFmDbDll != "none" && amFmDbName != "none" && amFmDbUser != "none" && amFmDbPassword != "none" )
+        if( amFmDbType != "none" && amFmDbName != "none" && amFmDbUser != "none" && amFmDbPassword != "none" )
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Obtaining connection to the AMFM database..." << endl;
             }
-            setDatabaseParams(amFmDbDll,amFmDbName,amFmDbUser,amFmDbPassword);
+            setDatabaseParams(amFmDbType,amFmDbName,amFmDbUser,amFmDbPassword);
 
             time_t start = ::time(NULL);
 

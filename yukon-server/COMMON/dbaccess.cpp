@@ -1,23 +1,15 @@
 #include "precompiled.h"
 
-#include <set>
-#include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!
-#include "types.h"
-#include "dlldefs.h"
 #include "dbaccess.h"
 #include "dllbase.h"
 #include "logger.h"
-#include "cparms.h"
-#include "ctistring.h"
+
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/foreach.hpp>
 
 #include <SQLAPI.h>
-#include "database_writer.h"
 
-using namespace std;
-
-typedef set< long > ignoreCol;
-static ignoreCol dbIgnores;     // Vendor Error numbers that should be ignored for Oracle, or SQLServer.
+namespace {
 
 struct DBConnectionHolder
 {
@@ -31,22 +23,17 @@ struct DBConnectionHolder
     }
 };
 
-// Bookkeeping information about a database connection
-struct NewDBInfoStruct
-{
-    string serverName;
-    string user;
-    string password;
-    string dll; // currently ora15d/ora12d/msq15d/msq12d...
+std::string dbType;
+std::string dbServer;
+std::string dbUser;
+std::string dbPassword;
 
-    std::list<DBConnectionHolder> connectionList;
-
-};
-
-static NewDBInfoStruct NewDBInfo;
+std::vector<DBConnectionHolder> connectionList;
 
 // This lock serializes access to the database,connection
-static RWRecursiveLock<RWMutexLock> DbMutex;
+RWRecursiveLock<RWMutexLock> DbMutex;
+
+}
 
 /**
  For a given dbID, set the necessary information to make a connection
@@ -54,15 +41,15 @@ static RWRecursiveLock<RWMutexLock> DbMutex;
  a call to getDatabase or getConnection will cause a connection to be made.
 **/
 DLLEXPORT
-void setDatabaseParams(const string& dll, const string& name,
-                       const string& user, const string& password )
+void setDatabaseParams(const std::string& type, const std::string& name,
+                       const std::string& user, const std::string& password )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( DbMutex);
 
-    NewDBInfo.password = password;
-    NewDBInfo.user = user;
-    NewDBInfo.serverName = name;
-    NewDBInfo.dll = dll;
+    dbType     = type;
+    dbServer   = name;
+    dbUser     = user;
+    dbPassword = password;
 }
 
 /**
@@ -141,21 +128,19 @@ SAConnection* createDBConnection()
 
     try
     {
-        CtiString tempStr = NewDBInfo.dll;
-        if(tempStr.contains("ora"))
+        std::string server = dbServer;
+
+        if( boost::starts_with(dbType, "oracle") )
         {
-            //connection->setOption("UseAPI") = "OCI7";
             connection->setClient(SA_Oracle_Client);
-            tempStr = NewDBInfo.serverName;
         }
         else
         {
             connection->setClient(SA_SQLServer_Client);
-            tempStr = NewDBInfo.serverName;
-            tempStr += "@";
+            server += "@";
         }
 
-        connection->Connect(tempStr.c_str(), NewDBInfo.user.c_str(), NewDBInfo.password.c_str());
+        connection->Connect(server.c_str(), dbUser.c_str(), dbPassword.c_str());
         return connection;
     }
     catch(...)
@@ -165,7 +150,7 @@ SAConnection* createDBConnection()
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Database connection unsuccessful " << endl;
+        dout << CtiTime() << " Database connection unsuccessful " << std::endl;
     }
 
     return NULL;
@@ -176,7 +161,7 @@ SAConnection* getNewConnection()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( DbMutex);
 
-    BOOST_FOREACH(DBConnectionHolder &connHolder, NewDBInfo.connectionList)
+    BOOST_FOREACH(DBConnectionHolder &connHolder, connectionList)
     {
         if(!connHolder.inUse)
         {
@@ -203,10 +188,10 @@ SAConnection* getNewConnection()
 
     if(connHolder.connection != NULL)
     {
-        NewDBInfo.connectionList.push_back(connHolder);
+        connectionList.push_back(connHolder);
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Database connection " << NewDBInfo.connectionList.size() << " created " << endl;
+            dout << CtiTime() << " Database connection " << connectionList.size() << " created " << std::endl;
         }
     }
 
@@ -218,7 +203,7 @@ void releaseDBConnection(SAConnection *connection)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( DbMutex);
 
-    BOOST_FOREACH(DBConnectionHolder &connHolder, NewDBInfo.connectionList)
+    BOOST_FOREACH(DBConnectionHolder &connHolder, connectionList)
     {
         if(connHolder.connection == connection)
         {
@@ -228,6 +213,6 @@ void releaseDBConnection(SAConnection *connection)
     }
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << " **** CHECKPOINT **** Attempted to release a connection that could not be found " << __FILE__ << " " << __LINE__ << endl;
+        dout << " **** CHECKPOINT **** Attempted to release a connection that could not be found " << __FILE__ << " " << __LINE__ << std::endl;
     }
 }
