@@ -88,7 +88,7 @@ yukon.dr.ecobee = (function () {
                     syncLoadGroupIds = function (loadGroupIdDict) {
                         inputIdList.each(function (index, elem) {
                             var paoId = $(elem).val();
-                            if (false === (paoId in loadGroupIdDict)) {
+                            if (false === (loadGroupIdDict.hasOwnProperty(paoId))) {
                                 $(elem).remove();
                             }
                         });
@@ -97,7 +97,7 @@ yukon.dr.ecobee = (function () {
                     // dictionary object consisting of all the values of the passed property pulled out of the
                     // passed object. This enables the lookup in syncLoadGroupIds.
                     makePaoIdDict = function (objs, prop) {
-                        var paoIdDict = Object.create(null),
+                        var paoIdDict = Object.create(Object.prototype),
                             i,
                             propVal;
                         for (i = 0; i < objs.length; i += 1) {
