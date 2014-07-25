@@ -1,6 +1,8 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
@@ -20,12 +22,18 @@ import com.cannontech.common.device.commands.CollectingCommandCompletionCallback
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
+import com.cannontech.common.device.commands.CommandRequestType;
+import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
+import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -36,6 +44,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifierWithUnsupported;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableSet;
@@ -53,7 +62,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
 
-    private RecentResultsCache<GroupMeterReadResult> resultsCache = new RecentResultsCache<>();
+    private final RecentResultsCache<GroupMeterReadResult> resultsCache = new RecentResultsCache<>();
 
     @Override
     public boolean isReadable(YukonPao device, Set<? extends Attribute> attributes, LiteYukonUser user) {
@@ -107,7 +116,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
             new CommandRequestRetryExecutor<>(commandRequestDeviceExecutor, retryParameters);
         CommandRequestExecutionObjects<CommandRequestDevice> executionObjects =
             retryExecutor.execute(commandRequests, callback, type, user);
-
+        
         return executionObjects;
     }
 
@@ -116,9 +125,54 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
             DeviceCollection deviceCollection, Set<? extends Attribute> attributes, DeviceRequestType type,
             CommandCompletionCallback<CommandRequestDevice> callback, LiteYukonUser user,
             RetryParameters retryParameters) {
-        List<PaoMultiPointIdentifier> attributePointIdentifiers =
-            attributeService.findPaoMultiPointIdentifiersForAttributes(deviceCollection, attributes).getDevicesAndPoints();
-        return backgroundReadDeviceCollection(attributePointIdentifiers, type, callback, user, retryParameters);
+        
+        CommandRequestExecution execution =
+            commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE, type, 0, user);
+        
+        PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers =
+            attributeService.findPaoMultiPointIdentifiersForAttributes(deviceCollection, attributes);
+        
+        Set<YukonPao> unsupportedDevices = new HashSet<>();
+        
+        // MCTs that support the attributes
+        List<PaoMultiPointIdentifier> supportedDevices = new ArrayList<>();
+        
+        unsupportedDevices.addAll(paoPointIdentifiers.getUnsupportedDevices().keySet());
+        
+        log.debug("Attributes are not supported:" + attributes + " for  " + unsupportedDevices);
+        
+        for(PaoMultiPointIdentifier identifier: paoPointIdentifiers.getDevicesAndPoints()){
+            if(identifier.getPao().getPaoType().isMct()){
+                supportedDevices.add(identifier);
+            }else{
+                unsupportedDevices.add(identifier.getPao());
+            }
+        }
+        
+        for (YukonPao device : unsupportedDevices) {
+            CommandRequestUnsupported unsupported = new CommandRequestUnsupported();
+            unsupported.setCommandRequestExecId(execution.getId());
+            unsupported.setDeviceId(device.getPaoIdentifier().getPaoId());
+            unsupported.setType(CommandRequestUnsupportedType.UNSUPPORTED);
+            commandRequestExecutionResultDao.saveUnsupported(unsupported);
+        }
+        
+        CommandRequestExecutionObjects<CommandRequestDevice> executionObjects = null;
+        if (!supportedDevices.isEmpty()) {
+            List<CommandRequestDevice> commandRequests =
+                meterReadCommandGeneratorService.getCommandRequests(supportedDevices);
+            CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor =
+                new CommandRequestRetryExecutor<>(commandRequestDeviceExecutor, retryParameters);
+            executionObjects = retryExecutor.execute(commandRequests, callback, execution, user);
+        } else {
+            execution.setStopTime(new Date());
+            execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.COMPLETE);
+            commandRequestExecutionDao.saveOrUpdate(execution);
+            CommandRequestExecutionContextId commandRequestExecutionContextId = new CommandRequestExecutionContextId(execution.getContextId());
+            executionObjects = new CommandRequestExecutionObjects<CommandRequestDevice>(null, null, commandRequestExecutionContextId);
+        }
+
+        return executionObjects;
     }
 
     @Override

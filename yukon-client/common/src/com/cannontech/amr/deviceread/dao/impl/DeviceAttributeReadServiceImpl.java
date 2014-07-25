@@ -25,8 +25,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
-import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
@@ -238,7 +236,11 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             log.debug(String.format("%s strategy will be used to read %.3s", strategy, devicesForThisStrategy));
         }
              
-        CommandRequestExecution execution = createExecution(type, requestCount, userContext.getYukonUser());
+        CommandRequestExecution execution =
+            commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
+                                                              type,
+                                                              requestCount,
+                                                              userContext.getYukonUser());
         completionCallback.setExecution(execution);
         
         if (thePlan.isEmpty()) {
@@ -410,19 +412,5 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             }
         }
         return unreadableDevices;
-    }
-    
-    private CommandRequestExecution createExecution(DeviceRequestType type, int requestCount, LiteYukonUser user){
-        CommandRequestExecutionContextId contextId = new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
-        CommandRequestExecution execution = new CommandRequestExecution();
-        execution.setContextId(contextId.getId());
-        execution.setStartTime(new Date());
-        execution.setRequestCount(requestCount);
-        execution.setCommandRequestExecutionType(type);
-        execution.setUserName(user.getUsername());
-        execution.setCommandRequestType(CommandRequestType.DEVICE);
-        execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.STARTED);
-        commandRequestExecutionDao.saveOrUpdate(execution);
-        return execution;
     }
 }

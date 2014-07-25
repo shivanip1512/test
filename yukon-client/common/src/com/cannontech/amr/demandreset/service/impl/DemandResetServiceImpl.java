@@ -27,7 +27,6 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
@@ -145,12 +144,18 @@ public class DemandResetServiceImpl implements DemandResetService {
             log.debug("Unverifiable:" + unverifiableDevices);
         }
         final CommandRequestExecution initiatedExecution =
-            createExecution(user, DeviceRequestType.DEMAND_RESET_COMMAND, devicesToSend.size());
+            commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
+                                                              DeviceRequestType.DEMAND_RESET_COMMAND,
+                                                              devicesToSend.size(),
+                                                              userContext.getYukonUser());
         result.setInitiatedExecution(initiatedExecution);
         saveUnsupported(unsupportedDevices, initiatedExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
         if(!devicesToSend.isEmpty()){
             CommandRequestExecution verificationExecution =
-                    createExecution(user, DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY, devicesToVerify.size());
+                commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
+                                                                  DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY,
+                                                                  devicesToVerify.size(),
+                                                                  userContext.getYukonUser());
                 result.setVerificationExecution(verificationExecution);
             saveUnsupported(unverifiableDevices, verificationExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
         }
@@ -352,22 +357,6 @@ public class DemandResetServiceImpl implements DemandResetService {
         }
     }
     
-    private CommandRequestExecution createExecution(LiteYukonUser user, DeviceRequestType type, int requestCount) {
-        CommandRequestExecutionContextId contextId =
-            new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
-        CommandRequestExecution execution = new CommandRequestExecution();
-        execution.setContextId(contextId.getId());
-        execution.setStartTime(new Date());
-        execution.setRequestCount(requestCount);
-        execution.setCommandRequestExecutionType(type);
-        execution.setUserName(user.getUsername());
-        execution.setCommandRequestType(CommandRequestType.DEVICE);
-        execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.STARTED);
-        commandRequestExecutionDao.saveOrUpdate(execution);
-        return execution;
-    }
-    
-
     private void completeCommandRequestExecutionRecord(CommandRequestExecution commandRequestExecution,
                                                        CommandRequestExecutionStatus executionStatus) {
         // If one execution failed and one succeeded (PLC or RFN), consider the execution failed.
@@ -398,12 +387,18 @@ public class DemandResetServiceImpl implements DemandResetService {
             log.debug("Unverifiable:" + unverifiableDevices);
         }
         CommandRequestExecution initiatedExecution =
-            createExecution(user, DeviceRequestType.DEMAND_RESET_COMMAND, devicesToSend.size());
+            commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
+                                                              DeviceRequestType.DEMAND_RESET_COMMAND,
+                                                              devicesToSend.size(),
+                                                              user);
         saveUnsupported(unsupportedDevices, initiatedExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
         CommandRequestExecution verificationExecution = null;
         if (!devicesToSend.isEmpty()) {
             verificationExecution =
-                createExecution(user, DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY, devicesToVerify.size());
+                commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
+                                                                  DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY,
+                                                                  devicesToVerify.size(),
+                                                                  user);
             saveUnsupported(unverifiableDevices,
                             verificationExecution.getId(),
                             CommandRequestUnsupportedType.UNSUPPORTED);

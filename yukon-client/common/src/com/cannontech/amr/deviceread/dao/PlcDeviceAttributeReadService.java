@@ -28,8 +28,9 @@ public interface PlcDeviceAttributeReadService {
     
     /**
      * This method only exists to support old code that hasn't been converted 
-     * to the DeviceAttributeReadService.
+     * to the DeviceAttributeReadService.This method work only on PLC devices.
      */
+    @Deprecated
     public CommandRequestExecutionObjects<CommandRequestDevice> backgroundReadDeviceCollection(DeviceCollection deviceCollection, 
                                                                            Set<? extends Attribute> attributes, 
                                                                            DeviceRequestType type, 

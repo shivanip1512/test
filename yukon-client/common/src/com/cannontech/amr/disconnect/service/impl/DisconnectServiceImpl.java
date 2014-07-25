@@ -24,7 +24,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
@@ -71,7 +70,11 @@ public class DisconnectServiceImpl implements DisconnectService {
         final DisconnectResult result = new DisconnectResult();
         result.setCommand(command);
         result.setKey(resultsCache.addResult(result));
-        final CommandRequestExecution execution = createExecution(userContext.getYukonUser());
+        final CommandRequestExecution execution =
+            commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
+                                                              DeviceRequestType.GROUP_CONNECT_DISCONNECT,
+                                                              0,
+                                                              userContext.getYukonUser());
         result.setCommandRequestExecution(execution);
 
         final StoredDeviceGroup allDevicesGroup = tempDeviceGroupService.createTempGroup();
@@ -266,21 +269,6 @@ public class DisconnectServiceImpl implements DisconnectService {
             unsupported.setType(type);
             commandRequestExecutionResultDao.saveUnsupported(unsupported);
         }
-    }
-
-    private CommandRequestExecution createExecution(LiteYukonUser user) {
-        CommandRequestExecutionContextId contextId =
-            new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
-        CommandRequestExecution execution = new CommandRequestExecution();
-        execution.setContextId(contextId.getId());
-        execution.setStartTime(new Date());
-        execution.setRequestCount(0);
-        execution.setCommandRequestExecutionType(DeviceRequestType.GROUP_CONNECT_DISCONNECT);
-        execution.setUserName(user.getUsername());
-        execution.setCommandRequestType(CommandRequestType.DEVICE);
-        execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.STARTED);
-        commandRequestExecutionDao.saveOrUpdate(execution);
-        return execution;
     }
 
     @Override

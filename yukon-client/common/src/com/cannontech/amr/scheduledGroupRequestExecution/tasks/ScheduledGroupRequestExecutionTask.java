@@ -11,6 +11,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
@@ -36,7 +37,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.support.YukonTaskBase;
 public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 
-	private Logger log = YukonLogManager.getLogger(ScheduledGroupRequestExecutionTask.class);
+	private final Logger log = YukonLogManager.getLogger(ScheduledGroupRequestExecutionTask.class);
 
     // Injected variables
 	private String name;
@@ -56,6 +57,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao;
     @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
 
     @Override
     public void start() {
@@ -109,21 +111,22 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 executionObjects = retryExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
                 currentExecutor = commandRequestDeviceExecutor;
                 currentCallback = executionObjects.getCallback();
-
-            } else if (getAttributes() != null) {
-            	DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
-    	        
-    	        executionObjects = plcDeviceAttributeReadService.backgroundReadDeviceCollection(deviceCollection, 
-                                                     attributes, getCommandRequestExecutionType(), dummyCallback, 
-                                                     user, getRetryParameters());
-    	        
-    	        currentExecutor = executionObjects.getCommandRequestExecutor();
-    	        currentCallback = executionObjects.getCallback();
-    	        
-            } else {
-            	throw new UnsupportedOperationException("A command string or attribute is required to run task.");
-            }
             
+            } else if (getAttributes() != null) {
+                //Devices that are not MCTs will be marked as unsupported
+                DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
+                executionObjects =
+                    plcDeviceAttributeReadService.backgroundReadDeviceCollection(deviceCollection,
+                                                                                 attributes,
+                                                                                 getCommandRequestExecutionType(),
+                                                                                 dummyCallback,
+                                                                                 user,
+                                                                                 getRetryParameters());
+                currentExecutor = executionObjects.getCommandRequestExecutor();
+                currentCallback = executionObjects.getCallback();
+            } else {
+                throw new UnsupportedOperationException("A command string or attribute is required to run task.");
+            }
 	        // create ScheduledGroupRequestExecutionResult record
 	        ScheduledGroupRequestExecutionPair pair = new ScheduledGroupRequestExecutionPair();
 	        pair.setCommandRequestExecutionContextId(executionObjects.getContextId());

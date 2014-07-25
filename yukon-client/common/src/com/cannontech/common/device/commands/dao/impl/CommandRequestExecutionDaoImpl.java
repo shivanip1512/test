@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
+import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -18,13 +20,14 @@ import com.cannontech.database.DateRowMapper;
 import com.cannontech.database.RowAndFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDao {
 
 	private static final RowAndFieldMapper<CommandRequestExecution> rowAndFieldMapper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
+    @Autowired YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<CommandRequestExecution> template;
     
     static {
@@ -32,11 +35,13 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     }
     
     // SAVE OR UPDATE
+    @Override
     public void saveOrUpdate(CommandRequestExecution commandRequestExecution) {
     	template.save(commandRequestExecution);
     }
     
     // GET BY ID
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CommandRequestExecution getById(final int commandRequestExecutionId) {
         
@@ -69,6 +74,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     }
     
     // BY RANGE
+    @Override
     public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date beginTime, Date endTime, DeviceRequestType type, boolean ascending) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -103,6 +109,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     }
     
     // REQUEST COUNT
+    @Override
     public int getRequestCountByCreId(int commandRequestExecutionId) {
     	
     	String sql = "SELECT CRE.RequestCount FROM CommandRequestExec CRE WHERE CRE.CommandRequestExecId = ?";
@@ -110,6 +117,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     }
     
     // IS COMPLETE
+    @Override
     public boolean isComplete(int commandRequestExecutionId) {
     	
     	Date stopTime = queryForStopTime(commandRequestExecutionId);
@@ -121,6 +129,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     }
     
     // STOP TIME
+    @Override
     public Date getStopTime(int commandRequestExecutionId) {
     	
     	return queryForStopTime(commandRequestExecutionId);
@@ -140,13 +149,23 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     	template.setFieldMapper(rowAndFieldMapper); 
     }
     
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
-	}
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    @Override
+    public CommandRequestExecution createStartedExecution(CommandRequestType commandType,
+                                                          DeviceRequestType deviceType,
+                                                          int requestCount,
+                                                          LiteYukonUser user) {
+        CommandRequestExecutionContextId contextId =
+            new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
+        CommandRequestExecution execution = new CommandRequestExecution();
+        execution.setContextId(contextId.getId());
+        execution.setStartTime(new Date());
+        execution.setRequestCount(requestCount);
+        execution.setCommandRequestExecutionType(deviceType);
+        execution.setUserName(user.getUsername());
+        execution.setCommandRequestType(commandType);
+        execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.STARTED);
+        saveOrUpdate(execution);
+        return execution;
     }
 	
 }

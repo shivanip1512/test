@@ -993,6 +993,7 @@
                 <name>Read IED Blink Count</name>
                 <cmd text="getvalue ied outage" />
                 <pointRef name="IED Blink Count" />
+                <pointRef name="IED Demand Reset Count" />
             </command>
         </commands>
         <attributes>
@@ -1463,6 +1464,7 @@
                 <name>Read IED Blink Count</name>
                 <cmd text="getvalue ied outage" />
                 <pointRef name="IED Blink Count" />
+                <pointRef name="IED Demand Reset Count" />
             </command>
         </commands>
         <attributes>

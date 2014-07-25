@@ -520,14 +520,19 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     // EXECUTION TEMPLATE
     @Override
     public CommandRequestExecutionTemplate<T> getExecutionTemplate(DeviceRequestType type, final LiteYukonUser user) {
-        
-        CommandRequestExecutionContextId contextId = new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
-        CommandRequestExecutionParameterDto parameterDto = new CommandRequestExecutionParameterDto(contextId, type, user);
-        int priority = CommandRequestExecutionDefaults.getPriority(type);
-        boolean noqueue = CommandRequestExecutionDefaults.isNoqueue(type);
-        parameterDto = parameterDto.withPriority(priority).withNoqueue(noqueue);
-        
-        return new CommandRequestExecutionTemplateImpl(parameterDto);
+
+        CommandRequestExecutionContextId contextId =
+            new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
+        return new CommandRequestExecutionTemplateImpl(type, contextId, user);
+    }
+
+    // EXECUTION TEMPLATE
+    @Override
+    public CommandRequestExecutionTemplate<T> getExecutionTemplate(CommandRequestExecution execution,
+                                                                   final LiteYukonUser user) {
+
+        CommandRequestExecutionContextId contextId = new CommandRequestExecutionContextId(execution.getContextId());
+        return new CommandRequestExecutionTemplateImpl(execution.getCommandRequestExecutionType(), contextId, user);
     }
     
     @Override
@@ -536,23 +541,20 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                                          List<T> commands,
                                          final LiteYukonUser user) {
 
-        CommandRequestExecutionParameterDto parameterDto =
-            new CommandRequestExecutionParameterDto(new CommandRequestExecutionContextId(execution.getContextId()),
-                                                    execution.getCommandRequestExecutionType(),
-                                                    user);
-        int priority = CommandRequestExecutionDefaults.getPriority(execution.getCommandRequestExecutionType());
-        boolean noqueue = CommandRequestExecutionDefaults.isNoqueue(execution.getCommandRequestExecutionType());
-        parameterDto = parameterDto.withPriority(priority).withNoqueue(noqueue);
-        CommandRequestExecutionTemplate<T> template = new CommandRequestExecutionTemplateImpl(parameterDto);
+        CommandRequestExecutionTemplate<T> template = getExecutionTemplate(execution, user);
         template.execute(commands, callback, execution);
     }
     
     private final class CommandRequestExecutionTemplateImpl implements CommandRequestExecutionTemplate<T> {
         
-        private final CommandRequestExecutionParameterDto parameterDto;
+        private CommandRequestExecutionParameterDto parameterDto;
 
-        private CommandRequestExecutionTemplateImpl(CommandRequestExecutionParameterDto parameterDto) {
-            this.parameterDto = parameterDto;
+        private CommandRequestExecutionTemplateImpl(DeviceRequestType type, CommandRequestExecutionContextId contextId,
+                                                    LiteYukonUser user) {
+            parameterDto = new CommandRequestExecutionParameterDto(contextId, type, user);
+            int priority = CommandRequestExecutionDefaults.getPriority(type);
+            boolean noqueue = CommandRequestExecutionDefaults.isNoqueue(type);
+            parameterDto = parameterDto.withPriority(priority).withNoqueue(noqueue);
         }
         
         @Override
