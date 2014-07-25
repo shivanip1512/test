@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
@@ -52,8 +53,10 @@ import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -66,6 +69,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
     @Autowired private @Qualifier("ecobee") RestOperations restTemplate;
     @Autowired private GlobalSettingDao settingDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private static final String modifySetUrlPart = "hierarchy/set?format=json";
     private static final String modifyThermostatUrlPart = "hierarchy/thermostat?format=json";
@@ -259,9 +263,12 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         log.debug("Sending ecobee duty cycle DR.");
         
         String url = getUrlBase() + demandResponseUrlPart;
-
+        
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        String eventDisplayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.eventDisplayMessage");
+        
         String groupIdString = Integer.toString(parameters.getGroupId());
-        DutyCycleDrRequest request = new DutyCycleDrRequest(groupIdString, "yukonDutyCycleDr",
+        DutyCycleDrRequest request = new DutyCycleDrRequest(groupIdString, "yukonCycle", eventDisplayMessage,
                     parameters.getDutyCyclePercent(), parameters.getStartTime(), parameters.isRampIn(),
                     parameters.getEndTime(), parameters.isRampOut());
 
@@ -307,9 +314,14 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
         ecobeeQueryCountDao.incrementQueryCount(queryType);
         try {
+            String requestJson = JsonUtils.toJson(request);
+            log.debug("Body json: " + requestJson);
             ResponseEntity<E> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType,
-                                                   Collections.singletonMap("bodyJson", JsonUtils.toJson(request)));
-            return responseEntity.getBody();
+                                                   Collections.singletonMap("bodyJson", requestJson));
+            E response = responseEntity.getBody();
+            log.debug("Ecobee status code: " + response.getStatus().getCode());
+            log.debug("Ecobee status message: " + response.getStatus().getMessage());
+            return response;
         } catch (JsonProcessingException e) {
             throw new EcobeeCommunicationException("Unable to parse request object into valid JSON.", e);
         }

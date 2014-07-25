@@ -146,7 +146,7 @@ public class JsonSerializationTest {
         Instant endDate = timeFormater.parseDateTime("2012-01-01 20:25:00").toInstant();
 
         DutyCycleDrRequest request =
-            new DutyCycleDrRequest("bogusSetName", "bogusDrName", 99, startDate, false, endDate, false);
+            new DutyCycleDrRequest("bogusSetName", "bogusDrName", "bogusMessage", 99, startDate, false, endDate, false);
         DutyCycleDrRequest testRequest = testSerialization(request);
 
         Assert.assertEquals(request, testRequest);

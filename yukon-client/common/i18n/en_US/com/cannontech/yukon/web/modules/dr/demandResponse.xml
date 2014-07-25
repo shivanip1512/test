@@ -508,6 +508,8 @@
 <entry key="yukon.web.modules.dr.ecobee.queryType.DEMAND_RESPONSE">Demand Response</entry>
 <entry key="yukon.web.modules.dr.ecobee.queryType.SYSTEM">System</entry>
 
+<entry key="yukon.web.modules.dr.ecobee.eventDisplayMessage">Savings</entry>
+
 <entry key="yukon.web.modules.dr.home.rfPerformance.title">RF Broadcast Performance</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.last24Hr">Last 24 Hours</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.last7Days">Last 7 Days</entry>

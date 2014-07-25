@@ -9,16 +9,20 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class DutyCycleDrRequest {
     private final String operation = "create";
     private final Selection selection;
     private final DutyCycleDr demandResponse;
-
-    public DutyCycleDrRequest(String setName, String drName, int dutyCyclePercentage, Instant startDate, 
+    
+    /**
+     * @param drName Name of the event to send to ecobee. Must be less than 12 characters.
+     */
+    public DutyCycleDrRequest(String setName, String drName, String eventDisplayMessage, int dutyCyclePercentage, Instant startDate, 
             boolean randomizeStartTime, Instant endDate, boolean randomizeEndTime) {
         selection = new Selection(SelectionType.MANAGEMENT_SET, "/" + setName);
-        demandResponse = new DutyCycleDr(drName, "", dutyCyclePercentage, startDate, randomizeStartTime, endDate,
+        demandResponse = new DutyCycleDr(drName, eventDisplayMessage, dutyCyclePercentage, startDate, randomizeStartTime, endDate,
                                               randomizeEndTime);
     }
 
