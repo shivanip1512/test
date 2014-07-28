@@ -67,6 +67,28 @@ BOOST_AUTO_TEST_CASE(test_parse_time_string)
         BOOST_CHECK_EQUAL(34, parsedTime->minute);
         BOOST_CHECK_EQUAL(56, parsedTime->second);
     }
+    {
+        std::string timeStr = "00:00:00";
+
+        const boost::optional<TimeParts> parsedTime =
+                parseTimeString(timeStr);
+
+        BOOST_REQUIRE(parsedTime);
+        BOOST_CHECK_EQUAL( 0, parsedTime->hour);
+        BOOST_CHECK_EQUAL( 0, parsedTime->minute);
+        BOOST_CHECK_EQUAL( 0, parsedTime->second);
+    }
+    {
+        std::string timeStr = "23:59:59";
+
+        const boost::optional<TimeParts> parsedTime =
+                parseTimeString(timeStr);
+
+        BOOST_REQUIRE(parsedTime);
+        BOOST_CHECK_EQUAL( 0, parsedTime->hour);
+        BOOST_CHECK_EQUAL( 0, parsedTime->minute);
+        BOOST_CHECK_EQUAL( 0, parsedTime->second);
+    }
 
     //  Valid time - hh:mm
     {
@@ -78,6 +100,28 @@ BOOST_AUTO_TEST_CASE(test_parse_time_string)
         BOOST_REQUIRE(parsedTime);
         BOOST_CHECK_EQUAL(12, parsedTime->hour);
         BOOST_CHECK_EQUAL(34, parsedTime->minute);
+        BOOST_CHECK_EQUAL( 0, parsedTime->second);
+    }
+    {
+        std::string timeStr = "00:00";
+
+        const boost::optional<TimeParts> parsedTime =
+                parseTimeString(timeStr);
+
+        BOOST_REQUIRE(parsedTime);
+        BOOST_CHECK_EQUAL( 0, parsedTime->hour);
+        BOOST_CHECK_EQUAL( 0, parsedTime->minute);
+        BOOST_CHECK_EQUAL( 0, parsedTime->second);
+    }
+    {
+        std::string timeStr = "23:59";
+
+        const boost::optional<TimeParts> parsedTime =
+                parseTimeString(timeStr);
+
+        BOOST_REQUIRE(parsedTime);
+        BOOST_CHECK_EQUAL(23, parsedTime->hour);
+        BOOST_CHECK_EQUAL(59, parsedTime->minute);
         BOOST_CHECK_EQUAL( 0, parsedTime->second);
     }
 
