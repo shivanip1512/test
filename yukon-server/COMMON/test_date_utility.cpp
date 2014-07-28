@@ -85,9 +85,9 @@ BOOST_AUTO_TEST_CASE(test_parse_time_string)
                 parseTimeString(timeStr);
 
         BOOST_REQUIRE(parsedTime);
-        BOOST_CHECK_EQUAL( 0, parsedTime->hour);
-        BOOST_CHECK_EQUAL( 0, parsedTime->minute);
-        BOOST_CHECK_EQUAL( 0, parsedTime->second);
+        BOOST_CHECK_EQUAL( 23, parsedTime->hour);
+        BOOST_CHECK_EQUAL( 59, parsedTime->minute);
+        BOOST_CHECK_EQUAL( 59, parsedTime->second);
     }
 
     //  Valid time - hh:mm
