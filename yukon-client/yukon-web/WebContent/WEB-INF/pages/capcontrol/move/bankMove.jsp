@@ -28,6 +28,7 @@ selectFeeder = function (fid) {
 
 function handleNodeClick(node, event) {
     if (node.getLevel() == 4) {
+        node.select();
         selectFeeder(node.data.key);
     } else {
         if (node.getEventTargetType(event) == "title") {
@@ -86,10 +87,15 @@ function getTreeStructure() {
                 <span>${fn:escapeXml(path)}</span>
             </tags:nameValue2>
         </tags:nameValueContainer2>
-    
-        <tags:boxContainer2 nameKey="feedersContainer">
-            <jsTree:inlineTree id="feederTree" maxHeight="250" treeParameters="{children: getTreeStructure(), minExpandLevel:1, clickFolderMode: 3, onClick: handleNodeClick}"/>
-        </tags:boxContainer2>
+
+        <h3><i:inline key=".feedersContainer.title"/></h3>
+
+        <jsTree:inlineTree id="feederTree" maxHeight="250" styleClass="stacked" 
+            treeParameters="{children: getTreeStructure(),
+                             minExpandLevel:1,
+                             clickFolderMode: 3,
+                             onClick: handleNodeClick,
+                             selectMode: 1}"/>
 
         <div id="controlOrders"></div>
         

@@ -59,6 +59,10 @@ yukon.da = (function () {
                 return true;
             });
 
+            if ($('[data-has-control]').length) {
+                mod.initBankTier();
+            }
+
             /* creation menu popup */
             $('.js-cc-create').click(function() {
                 var content = $('#contentPopup');
@@ -70,7 +74,7 @@ yukon.da = (function () {
         },
 
         initBankTier: function() {
-            
+
             var banks = $('[data-bank-id]');
             banks.each( function(index, item){
                 var row = $(item),
@@ -81,6 +85,7 @@ yukon.da = (function () {
                     bankInfoTitle = row.attr('data-bank-info-title'),
                     menu = row.find('.dropdown-trigger .dropdown-menu'),
                     moveBankOpener = menu.find('.js-move-bank'),
+                    assignMovedBankOpener = menu.find('.js-assign,.js-return'),
                     bankCommandOpener = menu.find('.js-bank-command'),
                     stateMenuOpener = menu.find('.js-bank-state'),
                     bankInfoOpener = menu.find('.js-bank-info'),
@@ -91,6 +96,15 @@ yukon.da = (function () {
                                     yukon.url('/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)), 
                                     {'height': 650, 'width': 650, 'modal': true}, 
                                     '#contentPopup'); 
+                });
+
+                assignMovedBankOpener.click( function(event) {
+                    var command = $(this).is('.js-assign') ? 'assign-here' : 'move-back',
+                        url = yukon.url('/capcontrol/command/' + bankId + '/' + command);
+
+                    $.getJSON(url).always( function (data) {
+                        window.location.reload();
+                    });
                 });
 
                 bankCommandOpener.click( function(event){
@@ -108,7 +122,6 @@ yukon.da = (function () {
                 stateMenuOpener.click( function(event){
                     mod.getMenuFromURL(yukon.url('/capcontrol/menu/capBankState?id=' + bankId), event, {showNote: true});
                 });
-
             });
         },
 

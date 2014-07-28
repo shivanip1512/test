@@ -7,11 +7,12 @@
 
 <cti:standardPage module="capcontrol" page="movedCapBanks">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
+    <cti:includeScript link="/JavaScript/yukon.da.moved.banks.js" />
 
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="" />
 
     <c:choose>
-        <c:when test="${searchResult.hitCount == 0}">
+        <c:when test="${empty movedBanks}">
             <span class="empty-list"><i:inline key=".noRecentMoves"/></span>
         </c:when>
         <c:otherwise>
@@ -25,8 +26,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="movedCapbank" items="${searchResult.resultList}">
-                        <tr>
+                    <c:forEach var="movedCapbank" items="${movedBanks}">
+                        <tr data-bank-id="${movedCapbank.capbank.ccId}">
                             <td>${fn:escapeXml(movedCapbank.capbank.ccName)}</td>
                             <td>
                                 <cti:url var="originalSubUrl" value="/capcontrol/tier/feeders">
@@ -41,14 +42,11 @@
                                 <a href="${currentSubUrl}">${fn:escapeXml(movedCapbank.currentFeederName)}</a>
                             </td>
                             <td>
-                                <c:set var="bankId" value="${movedCapbank.capbank.ccId}"/>
-                                <cti:url var="assignUrl" value="/capcontrol/command/${bankId}/assign-here" />
-                                <cti:url var="returnUrl" value="/capcontrol/command/${bankId}/move-back" />
                                 <cti:msg2 var="returnText" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER"/>
                                 <cti:msg2 var="assignText" key=".command.assignBankHere"/>
                                 <div class="button-group fr">
-                                    <cti:button href="${returnUrl}" label="${returnText}" icon="icon-bullet-go-left" />
-                                    <cti:button href="${assignUrl}" label="${assignText}" icon="icon-bullet-go-down" />
+                                    <cti:button classes="js-return" label="${returnText}" icon="icon-bullet-go-left" />
+                                    <cti:button classes="js-assign" label="${assignText}" icon="icon-bullet-go-down" />
                                 </div>
                             </td>
                         </tr>

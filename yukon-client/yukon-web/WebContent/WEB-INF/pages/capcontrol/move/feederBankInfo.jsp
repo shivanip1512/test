@@ -6,8 +6,9 @@
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.bankMove">
 
-<tags:boxContainer2 nameKey="selectedFeeder" arguments="${feederName}">
-    <div style="max-height: 112px;overflow: auto;overflow-x: hidden;">
+<h3><i:inline key=".selectedFeeder.title" arguments="${feederName}" /></h3>
+
+<div style="max-height: 112px;overflow: auto;overflow-x: hidden;">
     <c:if test="${empty capBankList}">
         <span class="empty-list"><i:inline key=".noBanks"/></span>
     </c:if>
@@ -34,7 +35,5 @@
             </tbody>
         </table>
     </c:if>
-
-    </div>
-</tags:boxContainer2>
+</div>
 </cti:msgScope>

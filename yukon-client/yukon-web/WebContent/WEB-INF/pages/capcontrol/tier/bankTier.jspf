@@ -6,26 +6,13 @@
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
-
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
-<style type="text/css">
-.compact-results-table tr td:first-child i.icon:first-child {
-margin: 0px;
-}
-</style>
 
-<c:if test="${hasCapbankControl}">
-    <script type="text/javascript">
-        $(function() {
-            yukon.da.initBankTier();
-        });
-    </script>
-</c:if>
 
-    <tags:boxContainer2 nameKey="banksContainer" hideEnabled="true" showInitially="true">
-
-    <table id="capBankTable" class="compact-results-table has-actions">
+<tags:boxContainer2 nameKey="banksContainer" hideEnabled="true" showInitially="true">
+    <c:set var="hasControlAttr" value="${hasCapbankControl ? 'data-has-control' : ''}" />
+    <table id="capBankTable" class="compact-results-table has-actions" ${hasControlAttr}>
         <thead>
             <tr>
                 <th width="16px"></th>
@@ -148,12 +135,8 @@ margin: 0px;
 
                 <%-- Parent Feeder --%>
                 <td>
-                    <c:if test="${viewableCapBank.capBankDevice.bankMoved}">
-                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT" styleClass="warning"/>
-                    </c:if>
-                    <c:if test="${not viewableCapBank.capBankDevice.bankMoved}">
-                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>
-                    </c:if>
+                    <c:set var="movedClass" value="${viewableCapBank.capBankDevice.bankMoved ? 'warning' : ''}" />
+                    <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT" styleClass="${movedClass}"/>
                 </td>
 
                 <%-- Daily/Max/Total Ops --%>
@@ -185,10 +168,8 @@ margin: 0px;
                                 <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="js-move-bank" href="javascript:void(0);" />
                             </c:if>
                             <c:if test="${viewableCapBank.capBankDevice.bankMoved}">
-                                <cti:url var="returnUrl" value="/capcontrol/command/${bankId}/move-back" />
-                                <cti:url var="assignUrl" value="/capcontrol/command/${bankId}/assign-here" />
-                                <cm:dropdownOption href="${returnUrl}" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER" icon="icon-bullet-go-left" />
-                                <cm:dropdownOption href="${assignUrl}" key=".command.assignBankHere" icon="icon-bullet-go-down" />
+                                <cm:dropdownOption classes="js-return" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER" icon="icon-bullet-go-left" />
+                                <cm:dropdownOption classes="js-assign" key=".command.assignBankHere" icon="icon-bullet-go-down" />
                             </c:if>
                         </c:if>
                     </cm:dropdown>
@@ -196,5 +177,4 @@ margin: 0px;
             </tr>
         </c:forEach>
     </table>
-                
-    </tags:boxContainer2>
+</tags:boxContainer2>
