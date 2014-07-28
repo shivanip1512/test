@@ -17,7 +17,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
-import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 
@@ -35,9 +34,7 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
     @Override
     public void doValidation(Hardware hardware, Errors errors) {
         HardwareType hardwareType = hardware.getHardwareType();
-        EnergyCompanySetting currentSetting;
-        
-
+  
         /* Set the type for */
         hardware.setHardwareType(hardwareType);
                     
@@ -45,12 +42,9 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
         hardwareTypeExtensionService.validateDevice(hardware, errors);
         
         /* Serial Number */
-        if (!hardwareType.isMeter()) {  /* Check serial numbers for switches and tstats */
-            if (StringUtils.isBlank(hardware.getSerialNumber())) {
-                errors.rejectValue("serialNumber", "yukon.web.error.required");
-            } else {
-                validateSN(hardware.getSerialNumber(), errors, hardware, "serialNumber");
-            }
+        if (!hardwareType.isMeter()) { /* Check serial numbers for switches and tstats */
+            validateSN(hardware.getSerialNumber(), errors, hardware, "serialNumber");
+
         } else if (hardwareType == HardwareType.NON_YUKON_METER) {
             /* Meter Number */
             if (StringUtils.isBlank(hardware.getMeterNumber())) {
@@ -153,45 +147,42 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
         }
     }
     
-    private void validateSN(String sn, Errors errors, Hardware hardware, String path) {
-        boolean isValidForConfigType;
+    private void validateSN(String serialNumber, Errors errors, Hardware hardware, String path) {
 
-        if (StringUtils.isBlank(sn)) {
+        if (StringUtils.isBlank(serialNumber)) {
             errors.rejectValue(path, "yukon.web.error.required");
             return;
             /* stop checking since serial number could potentially be null */
         }
         /* Get the current energy company setting value for Serial Number Validation field */
 
-        SerialNumberValidation currentECSNValidation =
+        SerialNumberValidation serialNumberValidation =
             ecSettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class,
                 hardware.getEnergyCompanyId());
 
         /* Check if the current energy company setting is numeric) */
-        if (currentECSNValidation == SerialNumberValidation.NUMERIC) {
+        if (serialNumberValidation == SerialNumberValidation.NUMERIC) {
             /* Check if the serial number entered is numeric) */
-            if (!StringUtils.isNumeric(sn)) {
+            if (!StringUtils.isNumeric(serialNumber)) {
                 errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
             }
 
-        /*Check if the current energy company setting is alphanumeric */    
+            /* Check if the current energy company setting is alphanumeric */
 
-        } else if (currentECSNValidation == SerialNumberValidation.ALPHANUMERIC) {
-            /* Check if the current energy company setting for Serial Number is Alphanumeric */
-            {
-                if (!StringUtils.isAlphanumeric(sn)) {
-                    errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
-                }
+        } else if (serialNumberValidation == SerialNumberValidation.ALPHANUMERIC)
+        /* Check if the current energy company setting for Serial Number is Alphanumeric */
+        {
+            if (!StringUtils.isAlphanumeric(serialNumber)) {
+                errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
             }
         }
 
         /* check for valid length */
-        YukonValidationUtils.checkExceedsMaxLength(errors, path, sn, 30);
+        YukonValidationUtils.checkExceedsMaxLength(errors, path, serialNumber, 30);
 
         /* check for specific configuration (protocol) type */
-
         final HardwareConfigType hardwareConfigType = hardware.getHardwareType().getHardwareConfigType();
-        isValidForConfigType = hardwareConfigType.isSerialNumberValid(sn);
+        boolean isValidForConfigType = hardwareConfigType.isSerialNumberValid(serialNumber);
         if (!isValidForConfigType) {
             errors.rejectValue(path, hardwareConfigType.getValidationErrorKey());
         }
