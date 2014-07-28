@@ -40,28 +40,15 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 		{ PaoType.LM_CURTAIL_PROGRAM },
 
 		//LMProgramDirectPanel
-		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM },
+		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM },
 		//LMProgramControlWindowPanel
-		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM },
+		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM },
 		//LMProgramListPanel
-		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM },
+		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM },
 		//LMProgramDirectCustomerListPanel
-		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM },
+		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM },
 		//LMProgramDirectMemberControlPanel
-		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM },
-		
-		//LMProgramDirectPanel
-		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_ECOBEE_PROGRAM },
-		//LMProgramControlWindowPanel
-		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_ECOBEE_PROGRAM },
-		//LMProgramListPanel
-		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_ECOBEE_PROGRAM },
-		//LMProgramDirectCustomerListPanel
-		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_ECOBEE_PROGRAM },
-		//LMProgramDirectMemberControlPanel
-		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_ECOBEE_PROGRAM },
-		
-		
+		{ PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM },
 		
 		//LMProgramEnergyExchangePanel
 		{ PaoType.LM_ENERGY_EXCHANGE_PROGRAM},
@@ -158,38 +145,13 @@ public Object[] createNewPanel(int panelIndex)
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectMemberControlPanel();
 			objs[1] = "Member Control";
 			break;
-		case 8:
-		    objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectPanel(getProgramType());
-		    objs[1] = "Gears";
-		    break;
-		    
-		case 9:
-		    controlWindowPanel = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramControlWindowPanel();
-		    objs[0] = controlWindowPanel;
-		    objs[1] = "Control Window";
-		    break;
-		    
-		case 10:
-		    objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramListPanel();
-		    objs[1] = "Groups";
-		    break;
-		    
-		case 11:
-		    objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectNotifGroupListPanel();
-		    objs[1] = "Notification";
-		    break;
-		    
-		case 12:
-		    objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectMemberControlPanel();
-		    objs[1] = "Member Control";
-		    break;
 			
-		case 13:
+		case 8:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramEnergyExchangePanel();
 			objs[1] = "Energy Exchange";
 			break;
 
-		case 14:
+		case 9:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramEnergyExchangeCustomerListPanel();
 			objs[1] = "Exchange Customers";
 			break;

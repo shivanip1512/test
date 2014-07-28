@@ -714,8 +714,6 @@ private javax.swing.JLabel getJLabelHowToStop() {
 			ivjJLabelHowToStop.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJLabelHowToStop.setText("How to Stop Control:");
 			// user code begin {1}
-			ivjJComboBoxHowToStop.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_TIME_IN ) );
-			ivjJComboBoxHowToStop.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_RESTORE ) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
