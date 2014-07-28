@@ -18,7 +18,7 @@ public class DemandResetBackingService  extends RecentResultUpdateBackingService
        if (demandResetResult  == null) {
            return "";
        }
-       DemandResetResultFields fields = DemandResetResultFields.valueOf(resultTypeStr);
+       DemandResetResultField fields = DemandResetResultField.valueOf(resultTypeStr);
        return fields.getValue(demandResetResult);
     }
     

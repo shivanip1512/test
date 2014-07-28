@@ -9,7 +9,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.web.updater.ResultAccessor;
 
-public enum DemandResetResultFields {
+public enum DemandResetResultField {
 
     CONFIRMED_COUNT(new ResultAccessor<DemandResetResult>() {
         @Override
@@ -126,7 +126,7 @@ public enum DemandResetResultFields {
 
     private ResultAccessor<DemandResetResult> resultAccessor;
 
-    DemandResetResultFields(ResultAccessor<DemandResetResult> resultAccessor) {
+    DemandResetResultField(ResultAccessor<DemandResetResult> resultAccessor) {
         this.resultAccessor = resultAccessor;
     }
 
