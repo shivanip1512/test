@@ -25,7 +25,7 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
         </div>
     </div>
     
-    <div id="picker_${id}_nothingSelected" style="display:none" class="error"><i:inline key=".nothingSelected"/></div>
+    <div id="picker_${id}_nothingSelected" style="display:none;" class="error"><i:inline key=".nothingSelected"/></div>
     <div class="js-block-this">
         <div id="picker_${id}_results" class="pickerResults"></div>
         <div id="picker_${id}_noResults" style="display: none" class="pickerResults"><i:inline key=".noResults"/></div>

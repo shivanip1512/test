@@ -81,46 +81,12 @@ yukon.dr.ecobee = (function () {
             });
             
             $(document).on('yukon_dr_ecobee_download_start', function (ev) {
-                var inputIdList = $('[name="loadGroupIds"]'),
-                    // Ensure loadGroupIds in inputs match those selected in picker. The picker creates
-                    // hidden inputs which it leaves in the DOM, so we must clean them up here after
-                    // the server returns an error and the user changes their selections.
-                    syncLoadGroupIds = function (loadGroupIdDict) {
-                        inputIdList.each(function (index, elem) {
-                            var paoId = $(elem).val();
-                            if (false === (loadGroupIdDict.hasOwnProperty(paoId))) {
-                                $(elem).remove();
-                            }
-                        });
-                    },
-                    // Given an array of objects containing paoId properties, amongst others, create a
-                    // dictionary object consisting of all the values of the passed property pulled out of the
-                    // passed object. This enables the lookup in syncLoadGroupIds.
-                    makePaoIdDict = function (objs, prop) {
-                        var paoIdDict = Object.create(Object.prototype),
-                            i,
-                            propVal;
-                        for (i = 0; i < objs.length; i += 1) {
-                            propVal = objs[i][prop];
-                            $.extend(paoIdDict,
-                                Object.defineProperty(
-                                    Object.create(null),
-                                    propVal.toString(),
-                                    {enumerable: true, value: propVal}));
-                        }
-                        return paoIdDict;
-                    },
-                    loadGroupIdDictionary;
                 
                 if (0 < loadGroupPicker.selectedItems.length) {
                     loadGroupPicker.endAction.call(loadGroupPicker, loadGroupPicker.selectedItems);
-                    loadGroupIdDictionary = makePaoIdDict(loadGroupPicker.selectedItems, 'paoId');
-                    syncLoadGroupIds(loadGroupIdDictionary);
                 } else {
                     // removed possibly accumulated inputs from previous selections
-                    $('[name="loadGroupIds"]').each(function (index, elem) {
-                        $(elem).remove();
-                    });
+                    $('[name="loadGroupIds"]').remove();
                     // submit knowing the request will fail, clean up in error function
                 }
                 
@@ -394,7 +360,11 @@ yukon.dr.ecobee = (function () {
             var pickerThis = loadGroupPicker,
                 loadGroupDiv = document.getElementById('loadGroup'),
                 ssInputId = 'picker_' + pickerThis.pickerId + '_ss',
-                ssInputElem = document.getElementById(ssInputId);
+                ssInputElem = document.getElementById(ssInputId),
+                oldHiddenInputs = $('[name="' + pickerThis.destinationFieldName + '"]');
+            // purge all previously made selections, if any. If we don't, they will
+            // be submitted to server.
+            oldHiddenInputs.remove();
             $.each(loadGroups, function (key, selectedItem) {
                 var inputElement = document.createElement('input');
                 inputElement.type = 'hidden';
