@@ -356,16 +356,6 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
                                                 OutMessage->Request.SOE,
                                                 CtiMultiMsg_vec( )) );
     }
-    else
-    {
-        /*if(OutMessage != NULL)
-        {
-            tmpoutList.push_back( OutMessage );
-            OutMessage = NULL;
-        } */
-
-        //executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, true);
-    }
 
     return nRet;
 }

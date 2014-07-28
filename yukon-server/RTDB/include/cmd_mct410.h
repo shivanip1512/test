@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cmd_dlc.h"
+#include "cmd_mct4xx.h"
 
 namespace Cti {
 namespace Devices {
@@ -9,7 +9,7 @@ namespace Commands {
 //  forward declaration for ResultHandler
 class Mct410DisconnectConfigurationCommand;
 
-class Mct410Command : public DlcCommand
+class Mct410Command : public Mct4xxCommand
 {
 public:
 
@@ -20,7 +20,7 @@ public:
         virtual void handleCommandResult(const Mct410DisconnectConfigurationCommand &command) = 0;
     };
 
-    virtual void invokeResultHandler(DlcCommand::ResultHandler &rh) const
+    virtual void invokeResultHandler(Mct4xxCommand::ResultHandler &rh) const
     {
         rh.handleCommandResult(*this);
     }

@@ -1296,20 +1296,11 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
             //  grab up to three potential dates
             for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
             {
-                CtiTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
+                CtiDate holiday_date = parseDateString(parse.getsValue("holiday_date" + CtiNumStr(i)));
 
-                int month = atoi(date_tokenizer("/").data()),
-                    day   = atoi(date_tokenizer("/").data()),
-                    year  = atoi(date_tokenizer("/").data());
-
-                if( year > 2000 )
+                if( holiday_date.isValid() && holiday_date > CtiDate::now() )
                 {
-                    CtiDate holiday_date(day, month, year);
-
-                    if( holiday_date.isValid() && holiday_date > CtiDate::now() )
-                    {
-                        holidays[holiday_count++] = CtiTime(holiday_date).seconds();
-                    }
+                    holidays[holiday_count++] = CtiTime(holiday_date).seconds();
                 }
             }
 

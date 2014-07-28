@@ -43,7 +43,7 @@ public:
         return insert<const T &>(item);
     }
 
-    // insert unsigned char has unsigned
+    // insert unsigned char as unsigned
     Condition& operator<<(unsigned char val)
     {
         return insert<unsigned>(val);

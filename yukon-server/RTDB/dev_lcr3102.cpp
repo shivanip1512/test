@@ -3,7 +3,6 @@
 #include "dev_lcr3102.h"
 #include "ctidate.h"
 #include "date_utility.h"
-#include "ctitokenizer.h"
 
 #include <boost/optional.hpp>
 
@@ -1222,18 +1221,18 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
         // Grab the info from the parser!
         CtiDate date = parseDateString(parse.getsValue("hourly_log_date"));
 
-        CtiTokenizer time_tokenizer(parse.getsValue("hourly_log_time"));
-        int startHour = atoi(time_tokenizer(":").data());
-        int startMin  = atoi(time_tokenizer(":").data());
-        int startSec  = atoi(time_tokenizer(":").data());
+        const boost::optional<TimeParts> timeParts = parseTimeString(parse.getsValue("hourly_log_time"));
 
-        CtiTime executeTime = CtiTime(date, startHour, startMin, startSec);
+        if( timeParts )
+        {
+            CtiTime executeTime = CtiTime(date, timeParts->hour, timeParts->minute, timeParts->second);
 
-        DlcCommandSPtr hourlyLogRead(new Lcr3102HourlyDataLogCommand(executeTime.seconds()));
+            DlcCommandSPtr hourlyLogRead(new Lcr3102HourlyDataLogCommand(executeTime.seconds()));
 
-        found = tryExecuteCommand(*OutMessage, hourlyLogRead);
+            found = tryExecuteCommand(*OutMessage, hourlyLogRead);
 
-        function = OutMessage->Sequence;
+            function = OutMessage->Sequence;
+        }
     }
     else if(parse.getFlags() & CMD_FLAG_GV_RUNTIME || parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
     {

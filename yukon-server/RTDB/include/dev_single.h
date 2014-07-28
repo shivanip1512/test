@@ -16,6 +16,8 @@
 #include "connection.h"
 #include "xfer.h"
 
+#include "exceptions.h"
+
 class CtiVerificationBase;  //  this is so boost_time.h isn't included via verification_objects.h - for now
 
 namespace Cti {

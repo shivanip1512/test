@@ -16,28 +16,12 @@ class IM_EX_DEVDB DeviceCommand : boost::noncopyable
 public:
 
     typedef std::vector<unsigned char> Bytes;
+    typedef YukonErrorException CommandException;
 
     virtual bool isComplete()
     {
         return true;
     }
-
-    struct CommandException : std::exception
-    {
-        CommandException(YukonError_t code, std::string description) :
-            error_code(code),
-            error_description(description)
-        {
-        }
-
-        std::string error_description;
-        YukonError_t error_code;
-
-        virtual const char *what() const
-        {
-            return error_description.c_str();
-        }
-    };
 
     struct point_data : CtiDeviceSingle::point_info
     {
