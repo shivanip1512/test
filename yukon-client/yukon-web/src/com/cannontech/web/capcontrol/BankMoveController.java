@@ -12,7 +12,6 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
@@ -105,7 +104,7 @@ public class BankMoveController {
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(context.getYukonUser());
         
         List<Area> areas = filterCapControlCache.getAreas();
-        List<MovedBank> movedCaps = Lists.newArrayList();   
+        List<MovedBank> movedBanks = Lists.newArrayList();   
         for (Area area : areas) {
             List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksByArea(area.getPaoId());
             for (CapBankDevice capBank : capBanks) {
@@ -120,15 +119,11 @@ public class BankMoveController {
                     movedBank.setCurrentSubstationId(currentSub.getCcId());
                     movedBank.setOriginalSubstationId(originalSub.getCcId());
 
-                    movedCaps.add(movedBank);
+                    movedBanks.add(movedBank);
                 }
             }
         }
-
-        SearchResults<MovedBank> result = new SearchResults<MovedBank>();
-        result.setResultList(movedCaps);
-        result.setHitCount(movedCaps.size());
-        model.addAttribute("searchResult", result);
+        model.addAttribute("movedBanks", movedBanks);
 
         return "move/movedCapBanks.jsp";
     }
