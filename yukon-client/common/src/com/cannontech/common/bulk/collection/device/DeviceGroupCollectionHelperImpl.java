@@ -109,7 +109,7 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
             }
             
             @Override
-            public long getDeviceCount() {
+            public int getDeviceCount() {
                 return deviceGroupService.getDeviceCount(Collections.singletonList(group));
             }
             

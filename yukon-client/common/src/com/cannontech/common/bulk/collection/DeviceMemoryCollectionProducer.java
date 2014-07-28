@@ -33,7 +33,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
 
     @Autowired private DeviceDao deviceDao;
 
-    private Cache<String, DeviceCollection> memoryMap = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build();
+    private final Cache<String, DeviceCollection> memoryMap = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build();
 
     @Override
     public DeviceCollectionType getSupportedType() {
@@ -105,7 +105,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
             }
 
             @Override
-            public long getDeviceCount() {
+            public int getDeviceCount() {
                 return devices.size();
             }
 
@@ -147,7 +147,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
             }
 
             @Override
-            public long getDeviceCount() {
+            public int getDeviceCount() {
                 return devices.size();
             }
 

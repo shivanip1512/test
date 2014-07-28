@@ -917,7 +917,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         MRServerDemandResetCallback callback =
                 new MRServerDemandResetCallback(mspObjectDao, vendor, meterNumbersByPaoId,
                                                 responseURL, transactionId);
-        demandResetService.sendDemandReset(validMeters, callback, UserUtils.getYukonUser());
+        demandResetService.sendDemandResetAndVerify(validMeters, callback, UserUtils.getYukonUser());
         errors.addAll(callback.getErrors());
 
         return errors.toArray(new ErrorObject[errors.size()]);

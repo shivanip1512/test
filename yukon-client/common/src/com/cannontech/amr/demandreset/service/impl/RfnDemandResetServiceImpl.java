@@ -245,7 +245,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
     }
 
     @Override
-    public void sendDemandReset(final CommandRequestExecution sendExecution, final CommandRequestExecution verificationExecution,
+    public void sendDemandReset(final CommandRequestExecution sendExecution,
                                 final Set<? extends YukonPao> paos, final DemandResetCallback callback,
                                 LiteYukonUser user) {
         Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao =
@@ -319,8 +319,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                  * received from NM before timing out or ReplyType is not OK.
                  * 
                  * This method unregisters for point data, removes the device from the list of
-                 * devices
-                 * waiting for verification and creates an applicable error.
+                 * devices waiting for verification and creates an applicable error.
                  */
                 private void processError(SimpleDevice device, int errorCode) {
 
@@ -342,7 +341,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                                         deviceIterator.remove();
                                         asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
                                                                                       ImmutableSet.of(pointId));
-                                        saveCommandRequestExecutionResult(verificationExecution,
+                                        saveCommandRequestExecutionResult(verificationInfo.verificationExecution,
                                                                           device.getDeviceId(),
                                                                           error.getErrorCode());
                                         errors.put(device, deviceError);
@@ -364,6 +363,19 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         // The set returned by keySet isn't serializable, so we have to make a copy.
         Set<RfnIdentifier> meterIds = Sets.newHashSet(devicesByRfnMeterIdentifier.keySet());
         qrTemplate.send(new RfnMeterDemandResetRequest(meterIds), handler);
+    }
+    
+    @Override
+    public void sendDemandResetAndVerify(final CommandRequestExecution sendExecution, final CommandRequestExecution verificationExecution,
+                                final Set<? extends YukonPao> paos, final DemandResetCallback callback,
+                                LiteYukonUser user) {
+
+        sendDemandReset(sendExecution, paos, callback, user);
+        List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
+        BiMap<SimpleDevice, LitePoint> deviceToPoint =
+            attributeService.getPoints(devices, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
+        
+        final Set<SimpleDevice> verifiableDevices = deviceToPoint.keySet();
         
         if (!verifiableDevices.isEmpty()) {
             if (log.isDebugEnabled()) {
@@ -409,16 +421,16 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                         }
                         callback.failed(device, "Demand reset failed, the reset timestamp  was not received.");
                     } else {
-                        Instant lastResetInstant = new Instant(pointData.getPointDataTimeStamp());
+                        Instant resetTime = new Instant(pointData.getPointDataTimeStamp());
                         RfnDemandResetState resetState = RfnDemandResetState.values()[(int) pointData.getValue()];
                         if (log.isDebugEnabled()) {
-                            log.debug("lastResetInstant: " + lastResetInstant.toDate());
+                            log.debug("lastResetInstant: " + resetTime.toDate());
                             log.debug("whenRequested: " + verificationInfo.whenRequested.toDate());
                             log.debug("resetState: " + resetState);
                         }
-                        if (lastResetInstant.isAfter(verificationInfo.whenRequested)
+                        if (resetTime.isAfter(verificationInfo.whenRequested)
                             && resetState == RfnDemandResetState.SUCCESS) {
-                            callback.verified(device, lastResetInstant);
+                            callback.verified(device, resetTime);
                             if (log.isDebugEnabled()) {
                                 log.debug("Verified: " + device);
                             }

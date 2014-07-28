@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.amr.demandreset.model.DemandResetResult;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
-import com.cannontech.amr.demandreset.service.DemandResetCallback.Results;
 import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.amr.demandreset.service.DemandResetVerificationCallback;
 import com.cannontech.clientutils.YukonLogManager;
@@ -60,36 +58,6 @@ public class DemandResetServiceImpl implements DemandResetService {
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
     private final RecentResultsCache<DemandResetResult> resultsCache = new RecentResultsCache<>();
-
-    private final static class Callback extends DemandResetVerificationCallback {
-        DemandResetCallback callerCallback;
-        AtomicBoolean finished = new AtomicBoolean(false);
-        Results results;
-
-        @Override
-        public void initiated(Results results) {
-            // These get aggregated (from all strategies) so we only make a single call back to
-            // the the caller of sendDemandReset.
-            this.results = results;
-            finished.set(true);
-        }
-
-        @Override
-        public void failed(SimpleDevice device, String reason) {
-            callerCallback.failed(device, reason);
-        }
-
-        @Override
-        public void cannotVerify(SimpleDevice device, String reason) {
-            callerCallback.cannotVerify(device, reason);
-        }
-
-        // These go out one at a time to the caller so we can just proxy.
-        @Override
-        public void verified(SimpleDevice device, Instant pointDataTimeStamp) {   
-            callerCallback.verified(device, pointDataTimeStamp);
-        }
-    }
 
     @Autowired private List<DemandResetStrategy> strategies;
     private final Duration replyTimeout;
@@ -171,7 +139,6 @@ public class DemandResetServiceImpl implements DemandResetService {
                 this.devicesToSend.addAll(devicesToSend);
                 this.devicesToVerify.addAll(devicesToVerify);
                 pendingStrategies = new AtomicInteger(strategies.size());
-                System.out.println("pendingStrategies="+pendingStrategies);
             }
             
             //Initiated called once per strategy after the request was sent. 
@@ -228,7 +195,7 @@ public class DemandResetServiceImpl implements DemandResetService {
                     remaining = pendingStrategies.get();
                 }*/
                 
-                // Process devices that timed out, not implemented
+             //saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode)
             }
 
             @Override
@@ -311,7 +278,7 @@ public class DemandResetServiceImpl implements DemandResetService {
                     result.setCancellable(true);
                 }
                 // send demand reset and collect callbacks needed for cancellation
-                result.addCommandCompletionCallbacks(strategy.sendDemandReset(initiatedExecution,
+                result.addCommandCompletionCallbacks(strategy.sendDemandResetAndVerify(initiatedExecution,
                                                                               result.getVerificationExecution(),
                                                                               meters,
                                                                               callback,
@@ -368,11 +335,91 @@ public class DemandResetServiceImpl implements DemandResetService {
         }
     }
     
+    
     @Override
-    public void sendDemandReset(Set<? extends YukonPao> devices, DemandResetCallback callback, LiteYukonUser user) {
+    public void sendDemandReset(Set<? extends YukonPao> devices, final DemandResetCallback callback, LiteYukonUser user) {
         log.debug("sendDemandReset");
         
-        List<Callback> callbacks = new ArrayList<>();
+        Set<SimpleDevice> allDevices = Sets.newHashSet(PaoUtils.asSimpleDeviceListFromPaos(devices));
+        Set<SimpleDevice> devicesToSend = new HashSet<>(filterDevices(allDevices));
+        Set<SimpleDevice> unsupportedDevices = Sets.difference(allDevices, devicesToSend);
+        
+        if (log.isDebugEnabled()) {
+            log.debug("All Devices:" + allDevices);
+            log.debug("Support Demand Reset:" + devicesToSend);
+            log.debug("Unsupported:" + unsupportedDevices);
+        }
+        
+        final CommandRequestExecution initiatedExecution =
+                commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
+                                                                  DeviceRequestType.DEMAND_RESET_COMMAND,
+                                                                  devicesToSend.size(),
+                                                                  user);
+        class InitiationCallback extends DemandResetVerificationCallback {
+            AtomicInteger pendingStrategies = new AtomicInteger(strategies.size());
+            Results finalResults;
+
+            public InitiationCallback(Set<SimpleDevice> devicesToSend) {
+                finalResults = new Results(devicesToSend);
+            }
+            
+            @Override
+            public void initiated(Results results) {
+                finalResults.append(results);
+                int remaining = pendingStrategies.decrementAndGet();
+                if (remaining == 0) {
+                    log.debug("initiated:" + finalResults.getAllDevices());
+                    completeCommandRequestExecutionRecord(initiatedExecution, CommandRequestExecutionStatus.COMPLETE);
+                    callback.initiated(finalResults);
+                }
+            }
+            
+            public boolean isComplete() {
+                int remaining = pendingStrategies.get();
+                if (remaining == 0) {
+                    return true;
+                }
+                return false;
+            }     
+        }
+        
+        saveUnsupported(unsupportedDevices, initiatedExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
+        
+        InitiationCallback initiationCallback = new InitiationCallback(devicesToSend);
+        for (DemandResetStrategy strategy : strategies) {
+            Set<SimpleDevice> meters = strategy.filterDevices(devicesToSend);
+            if (meters.isEmpty()) {
+                callback.complete();
+            } else {
+                strategy.sendDemandReset(initiatedExecution, meters, initiationCallback, user);
+            }
+        }
+       
+        MutableDuration millisWaited = new MutableDuration(0);
+        Duration waitPeriod = new Duration(250);
+        boolean initiationComplete = false;
+        while (!initiationComplete && millisWaited.isShorterThan(replyTimeout)) {
+            try {
+                Thread.sleep(waitPeriod.getMillis());
+                millisWaited.plus(waitPeriod);
+            } catch (InterruptedException e) {
+                log.warn("caught exception in sendDemandReset", e);
+            }
+            initiationComplete = initiationCallback.isComplete();
+        }
+        
+        //Timeout 
+        if(!initiationComplete){
+            //???
+            //saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode)
+            completeCommandRequestExecutionRecord(initiatedExecution, CommandRequestExecutionStatus.FAILED);
+        }
+    }
+    
+    @Override
+    public void sendDemandResetAndVerify(Set<? extends YukonPao> devices, final DemandResetCallback callback, LiteYukonUser user) {
+        log.debug("sendDemandResetAndVerify");
+        
         Set<SimpleDevice> allDevices = Sets.newHashSet(PaoUtils.asSimpleDeviceListFromPaos(devices));
         Set<SimpleDevice> devicesToSend = new HashSet<>(filterDevices(allDevices));
         Set<SimpleDevice> unsupportedDevices = Sets.difference(allDevices, devicesToSend);
@@ -386,7 +433,7 @@ public class DemandResetServiceImpl implements DemandResetService {
             log.debug("Verifiable:" + devicesToVerify);
             log.debug("Unverifiable:" + unverifiableDevices);
         }
-        CommandRequestExecution initiatedExecution =
+        final CommandRequestExecution initiatedExecution =
             commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
                                                               DeviceRequestType.DEMAND_RESET_COMMAND,
                                                               devicesToSend.size(),
@@ -399,51 +446,114 @@ public class DemandResetServiceImpl implements DemandResetService {
                                                                   DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY,
                                                                   devicesToVerify.size(),
                                                                   user);
-            saveUnsupported(unverifiableDevices,
-                            verificationExecution.getId(),
-                            CommandRequestUnsupportedType.UNSUPPORTED);
+            saveUnsupported(unverifiableDevices, verificationExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
+        }
+        
+        
+        class VerificationCallback extends DemandResetVerificationCallback {
+            AtomicInteger initiationStrategies = new AtomicInteger(strategies.size());
+            AtomicInteger verificationStrategies = new AtomicInteger(strategies.size());
+            Results finalResults;
+            CommandRequestExecution execution;
+
+
+            public VerificationCallback(CommandRequestExecution verificationExecution, Set<SimpleDevice> devicesToSend) {
+                execution = verificationExecution;
+                finalResults = new Results(devicesToSend);
+            }
+            
+            @Override
+            public void initiated(Results results) {
+                results.append(results);
+                int remaining = initiationStrategies.decrementAndGet();
+                if (remaining == 0) {
+                    log.debug("initiated:" + results.getAllDevices());
+                    callback.initiated(finalResults);
+                    completeCommandRequestExecutionRecord(initiatedExecution, CommandRequestExecutionStatus.COMPLETE);
+                }
+            }
+            
+            public boolean isInitiationComplete() {
+                int remaining = initiationStrategies.get();
+                if (remaining == 0) {
+                    return true;
+                }
+                return false;
+            } 
+            
+            public boolean isVerificationComplete() {
+                int remaining = verificationStrategies.get();
+                if (remaining == 0) {
+                    return true;
+                }
+                return false;
+            }    
+            
+            @Override
+            public void failed(SimpleDevice device, String reason) {
+                callback.failed(device, reason);
+            }
+
+            @Override
+            public void cannotVerify(SimpleDevice device, String reason) {
+                callback.cannotVerify(device, reason);
+            }
+
+            @Override
+            public void verified(SimpleDevice device, Instant resetTime) { 
+                callback.verified(device, resetTime);
+            }
+            
+            @Override
+            public void complete() {
+                int remaining = verificationStrategies.decrementAndGet();
+                if (remaining == 0) {
+                    completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.COMPLETE);
+                }
+            }
         }
 
+        VerificationCallback verificationCallback = new VerificationCallback(initiatedExecution, devicesToSend);
         for (DemandResetStrategy strategy : strategies) {
-            Set<? extends YukonPao> strategyDevices = strategy.filterDevices(devicesToSend);
-            if (strategyDevices.iterator().hasNext()) {
-                Callback strategyCallback = new Callback();
-                strategyCallback.callerCallback = callback;
-                callbacks.add(strategyCallback);
-                strategy.sendDemandReset(initiatedExecution, verificationExecution, strategyDevices, strategyCallback, user);
+            Set<SimpleDevice> meters = strategy.filterDevices(devicesToSend);
+            if (meters.isEmpty()) {
+                callback.complete();
+            } else {
+                strategy.sendDemandResetAndVerify(initiatedExecution,
+                                                  verificationExecution,
+                                                  meters,
+                                                  verificationCallback,
+                                                  user);
             }
         }
 
         MutableDuration millisWaited = new MutableDuration(0);
         Duration waitPeriod = new Duration(250);
-        boolean finished = false;
-        while (!finished && millisWaited.isShorterThan(replyTimeout)) {
+        boolean initiationComplete = verificationCallback.isInitiationComplete();
+        boolean verificationComplete = verificationCallback.isVerificationComplete();
+        while (!initiationComplete && !verificationComplete && millisWaited.isShorterThan(replyTimeout)) {
             try {
                 Thread.sleep(waitPeriod.getMillis());
                 millisWaited.plus(waitPeriod);
             } catch (InterruptedException e) {
                 log.warn("caught exception in sendDemandReset", e);
             }
-            finished = true;
-            for (Callback strategyCallback : callbacks) {
-                if (!strategyCallback.finished.get()) {
-                    finished = false;
-                }
-            }
+            verificationComplete = verificationCallback.isVerificationComplete();
+            initiationComplete = verificationCallback.isInitiationComplete();
         }
-
-        Results finalResults = new Results(devices);
-        for (Callback strategyCallback : callbacks) {
-            if (strategyCallback.finished.get()) {
-                finalResults.append(strategyCallback.results);
-            } else {
-                log.error("timed out waiting for demand reset");
-                throw new RuntimeException("timed out waiting for demand reset");
-            }
+        
+        //Timeout 
+        if(!verificationComplete){
+            //???
+            //saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode)
+            completeCommandRequestExecutionRecord(initiatedExecution, CommandRequestExecutionStatus.FAILED);
         }
-        completeCommandRequestExecutionRecord(initiatedExecution, CommandRequestExecutionStatus.COMPLETE);
-        completeCommandRequestExecutionRecord(verificationExecution, CommandRequestExecutionStatus.COMPLETE);
-        callback.initiated(finalResults);
+        //Timeout 
+        if(!initiationComplete){
+            //???
+            //saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode)
+            completeCommandRequestExecutionRecord(initiatedExecution, CommandRequestExecutionStatus.FAILED);
+        }
     }
     
     @Override

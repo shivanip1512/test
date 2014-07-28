@@ -16,13 +16,6 @@ public interface DemandResetService {
     <T extends YukonPao> Set<T> filterDevices(Set<T> devices);
 
     /**
-     * Send a demand reset to the specified list of devices. The caller may filter this
-     * list with {@link #validDevices(Iterable)} first. If the user doesn't filter the devices,
-     * unsupported devices will be ignored and the entry will be added to CommandRequestUnsupported.
-     */
-    void sendDemandReset(Set<? extends YukonPao> devices, DemandResetCallback callback,
-                         LiteYukonUser user);
-    /**
      * Returns result for the key provided.
      */
     DemandResetResult getResult(String key);
@@ -35,11 +28,26 @@ public interface DemandResetService {
     /**
      * Sends demand reset to the specified list of devices.
      */
-    DemandResetResult sendDemandReset(DeviceCollection deviceCollection, SimpleCallback<DemandResetResult> callback,
-                                      YukonUserContext userContext);
+
     
     /**
      * Attempts to cancel the command sent. 
      */
     void cancel(String key, LiteYukonUser user);
+    
+    /**
+     * Sends and verifies demand reset.
+     */
+    void sendDemandResetAndVerify(Set<? extends YukonPao> devices, DemandResetCallback callback, LiteYukonUser user);
+
+    /**
+     * Sends demand reset command.
+     */
+    void sendDemandReset(Set<? extends YukonPao> devices, DemandResetCallback callback, LiteYukonUser user);
+
+    /**
+     * Sends and verifies demand reset.
+     */
+    DemandResetResult sendDemandReset(DeviceCollection deviceCollection,
+                                      SimpleCallback<DemandResetResult> alertCallback, YukonUserContext userContext);    
 }

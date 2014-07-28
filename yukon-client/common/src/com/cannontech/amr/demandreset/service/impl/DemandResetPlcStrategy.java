@@ -20,12 +20,26 @@ public class DemandResetPlcStrategy implements DemandResetStrategy {
     public <T extends YukonPao> Set<T> filterDevices(Set<T> devices) {
         return plcDemandResetService.filterDevices(devices);
     }
+    
+    @Override
+    public CommandCompletionCallback<CommandRequestDevice> sendDemandReset(CommandRequestExecution initiatedExecution,
+                                                                           Set<? extends YukonPao> paos,
+                                                                           DemandResetCallback callback,
+                                                                           LiteYukonUser user) {
+        return plcDemandResetService.sendDemandReset(initiatedExecution, paos, callback, user);
+    }
 
     @Override
-    public Set<CommandCompletionCallback<CommandRequestDevice>> sendDemandReset(CommandRequestExecution sendExecution, CommandRequestExecution verificationExecution,
-                                Set<? extends YukonPao> devices, DemandResetCallback callback,
-                                LiteYukonUser user) {
-        return plcDemandResetService.sendDemandReset(sendExecution, verificationExecution, devices, callback, user);
+    public Set<CommandCompletionCallback<CommandRequestDevice>> sendDemandResetAndVerify(CommandRequestExecution initiatedExecution,
+                                                                                         CommandRequestExecution verificationExecution,
+                                                                                         Set<? extends YukonPao> paos,
+                                                                                         DemandResetCallback callback,
+                                                                                         LiteYukonUser user) {
+        return plcDemandResetService.sendDemandResetAndVerify(initiatedExecution,
+                                                              verificationExecution,
+                                                              paos,
+                                                              callback,
+                                                              user);
     }
     
     @Override

@@ -15,15 +15,24 @@ public interface DemandResetStrategy {
      * Filter the given devices for devices which can be sent a demand reset using RF.
      */
     <T extends YukonPao> Set<T> filterDevices(Set<T> devices);
-
+    
     /**
      * Send a demand reset to the given devices.
+     * @return Callback needed for cancellation.
+     */
+    CommandCompletionCallback<CommandRequestDevice> sendDemandReset(CommandRequestExecution initiatedExecution,
+                                                                    Set<? extends YukonPao> paos,
+                                                                    DemandResetCallback callback, LiteYukonUser user);
+    /**
+     * Send and verify demand reset.
      * @return Callbacks needed for cancellation.
      */
-    Set<CommandCompletionCallback<CommandRequestDevice>> sendDemandReset(CommandRequestExecution sendExecution, CommandRequestExecution verificationExecution,
-                         Set<? extends YukonPao> devices, DemandResetCallback callback, LiteYukonUser user);
-    
-    
+    Set<CommandCompletionCallback<CommandRequestDevice>> sendDemandResetAndVerify(CommandRequestExecution initiatedExecution,
+                                                                                  CommandRequestExecution verificationExecution,
+                                                                                  Set<? extends YukonPao> paos,
+                                                                                  DemandResetCallback callback,
+                                                                                  LiteYukonUser user);
+
     /**
      * Returns devices that is possible to verify
      */

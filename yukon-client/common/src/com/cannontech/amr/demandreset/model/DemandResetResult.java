@@ -137,39 +137,37 @@ public class DemandResetResult implements Completable, Comparable<DemandResetRes
      * Returns the count of the devices that responded
      */
     public int getCompletedCount() {
-        return (int) (getFailedCollection().getDeviceCount() 
+        return getFailedCollection().getDeviceCount() 
                       + getConfirmedCollection().getDeviceCount()
-                      + getUnconfirmedCollection().getDeviceCount());
+                      + getUnconfirmedCollection().getDeviceCount();
     }
     
     /**
      * Returns the count of all the devices
      */
     public int getTotalCount() {
-        return (int) getAllDevicesCollection().getDeviceCount();
+        return getAllDevicesCollection().getDeviceCount();
     }
     
     /**
      * Returns the count of the devices that succeeded
      */
     public int getSuccessCount() {
-        return (int) (getConfirmedCollection().getDeviceCount()
-                      + getUnconfirmedCollection().getDeviceCount());
+        return getConfirmedCollection().getDeviceCount()  + getUnconfirmedCollection().getDeviceCount();
     }
     
     /**
      * Returns the count of the devices that failed
      */
     public int getFailedCount() {
-        return (int) getFailedCollection().getDeviceCount();
+        return getFailedCollection().getDeviceCount();
     }
     
     /**
      * Returns the count of the devices that the command was not sent to
      */
     public int getNotAttemptedCount() {
-        return (int) (getUnsupportedCollection().getDeviceCount() 
-                + getCanceledCollection().getDeviceCount());
+        return getUnsupportedCollection().getDeviceCount() + getCanceledCollection().getDeviceCount();
     }
 
     

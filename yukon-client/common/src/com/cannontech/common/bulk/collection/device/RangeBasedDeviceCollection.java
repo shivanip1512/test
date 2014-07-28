@@ -19,7 +19,7 @@ public abstract class RangeBasedDeviceCollection implements DeviceCollection {
     }
     
     @Override
-    public long getDeviceCount() {
+    public int getDeviceCount() {
         return getDeviceList().size();
     }
     

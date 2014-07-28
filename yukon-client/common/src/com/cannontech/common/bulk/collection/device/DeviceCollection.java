@@ -25,7 +25,7 @@ public interface DeviceCollection extends Iterable<SimpleDevice> {
      * than creating actual devices and returning them if all you want is the count.
      * @return Count of how many devices are in the collection
      */
-    public long getDeviceCount();
+    public int getDeviceCount();
 
     /**
      * Method to get an iterator for the devices in this collection.

@@ -112,7 +112,7 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
             }
 
             @Override
-            public long getDeviceCount() {
+            public int getDeviceCount() {
                 return deviceIds.size();
             }
 

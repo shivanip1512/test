@@ -77,19 +77,11 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     }
     
     @Override
-    public Set<CommandCompletionCallback<CommandRequestDevice>> sendDemandReset(CommandRequestExecution initiatedExecution, CommandRequestExecution verificationExecution,
-                                final Set<? extends YukonPao> paos,
-                                final DemandResetCallback callback, final LiteYukonUser user) {
-                
-        // Use midnight in the local (server) time. This assumes the meters use the same
-        // timezone as the server. (The reset time for a 470 is always at midnight of the previous
-        // night (morning) of the reset.)
-        final DateTime whenRequested = new DateTime().withTimeAtStartOfDay();
-        
-        //Callbacks returned from this method are needed for cancellation
-        Set<CommandCompletionCallback<CommandRequestDevice>> callbacks =
-            new HashSet<CommandCompletionCallback<CommandRequestDevice>>();
-        
+    public CommandCompletionCallback<CommandRequestDevice> sendDemandReset(CommandRequestExecution initiatedExecution,
+                                                                           final Set<? extends YukonPao> paos,
+                                                                           DemandResetCallback callback,
+                                                                           final LiteYukonUser user) {
+
         // send demand reset command
         Set<SimpleDevice> devices = new HashSet<SimpleDevice>(PaoUtils.asSimpleDeviceListFromPaos(paos));
         List<CommandRequestDevice> initiatedCommands = getCommandRequests(devices, DEMAND_RESET_COMMAND);
@@ -98,6 +90,30 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                                                               initiatedCallback,
                                                               initiatedCommands,
                                                               user);
+        return initiatedCallback;
+    }
+    
+    @Override
+    public Set<CommandCompletionCallback<CommandRequestDevice>> sendDemandResetAndVerify(CommandRequestExecution initiatedExecution,
+                                                                                         CommandRequestExecution verificationExecution,
+                                                                                         final Set<? extends YukonPao> paos,
+                                                                                         final DemandResetCallback callback,
+                                                                                         final LiteYukonUser user) {
+
+        // Use midnight in the local (server) time. This assumes the meters use the same
+        // timezone as the server. (The reset time for a 470 is always at midnight of the previous
+        // night (morning) of the reset.)
+        final DateTime whenRequested = new DateTime().withTimeAtStartOfDay();
+
+        // Callbacks returned from this method are needed for cancellation
+        Set<CommandCompletionCallback<CommandRequestDevice>> callbacks =
+            new HashSet<CommandCompletionCallback<CommandRequestDevice>>();
+
+        Set<SimpleDevice> devices = new HashSet<SimpleDevice>(PaoUtils.asSimpleDeviceListFromPaos(paos));
+
+        CommandCompletionCallback<CommandRequestDevice> initiatedCallback =
+            sendDemandReset(initiatedExecution, paos, callback, user);
+        callbacks.add(initiatedCallback);
 
         // Only devices that support the IED_DEMAND_RESET_COUNT attribute are able to be verified.
         BiMap<SimpleDevice, LitePoint> deviceToPoint =
@@ -105,7 +121,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
 
         Set<SimpleDevice> devicesWithoutPoint = Sets.difference(devices, deviceToPoint.keySet());
         callbacks.add(initiatedCallback);
-        if(log.isDebugEnabled() && !devicesWithoutPoint.isEmpty()){
+        if (log.isDebugEnabled() && !devicesWithoutPoint.isEmpty()) {
             log.error("Can't Verify:" + devicesWithoutPoint + " \"IED Demand Reset Count\" point is missing.");
         }
         for (SimpleDevice device : devicesWithoutPoint) {
@@ -126,7 +142,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         }
         return callbacks;
     }
-       
+      
     private class InitiatedCallback implements CommandCompletionCallback<CommandRequestDevice> {
         
         private final DemandResetCallback callback;
@@ -250,18 +266,18 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                     log.error("Failed:" + device);
                     callback.failed(device, "Demand reset failed, the reset timestamp  was not received.");
                 } else {
-                    Instant lastResetInstant = new Instant(value.getPointDataTimeStamp());
+                    Instant resetTime = new Instant(value.getPointDataTimeStamp());
                     if (log.isDebugEnabled()) {
-                        log.debug("pointDataDate: " + lastResetInstant.toDate());
+                        log.debug("pointDataDate: " + resetTime.toDate());
                         log.debug("whenRequested: " + whenRequested.toDate());
                     }
-                    if (lastResetInstant.isBefore(whenRequested.toInstant())) {
+                    if (resetTime.isBefore(whenRequested.toInstant())) {
                         log.error("Failed:" + device);
                         callback.failed(device,
                                         "Demand reset failed, the reset timestamp is outside of the expected range.");
                     } else {
                         log.debug("Verified:" + device);
-                        callback.verified(device, lastResetInstant);
+                        callback.verified(device, resetTime);
                     }
                 }
                 meters.remove(command.getDevice());

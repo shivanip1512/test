@@ -54,9 +54,10 @@ public interface DemandResetCallback {
     /**
      * This will be called on a per device basis for devices for which the demand reset has been
      * verified to have occurred.  This will be called when it is known for sure that the reset
-     * happened.
+     * happened. 
+     * @param resetTime - time of the reset.
      */
-    void verified(SimpleDevice device, Instant pointDataTimeStamp);
+    void verified(SimpleDevice device, Instant resetTime);
 
     /**
      * This method will be called on a per device basis when it is known that the demand reset
@@ -76,13 +77,20 @@ public interface DemandResetCallback {
      */
     void complete();
     
+    /**
+     * Returns true if the execution was canceled
+     */
     boolean isCanceled();
     
     /**
-     * This method should be called if user canceled
+     * This method should be called if user canceled the execution
      */
     void cancel();
-    
+   
+    /**
+     * This method should be called if it is confirmed that the command send to the devices was
+     * canceled.
+     */
     void canceled(SimpleDevice device);
     
     /**

@@ -14,16 +14,23 @@ public interface RfnDemandResetService {
     <T extends YukonPao> Set<T> filterDevices(Set<T> devices);
 
     /**
-     * Send a demand reset to the specified list of devices.  The caller should have filtered this
-     * list with {@link #validDevices(Iterable)} first.  Any devices which cannot be reset will be
-     * ignored.
-
-     */
-    void sendDemandReset(CommandRequestExecution sendExecution, CommandRequestExecution verificationExecution,
-                         Set<? extends YukonPao> devices, DemandResetCallback callback, LiteYukonUser user);
-
-    /**
      * Returns set of devices that can be verified
      */
     public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> devices);
+
+    /**
+     * Send a demand reset to the specified list of devices.  The caller should have filtered this
+     * list with {@link #validDevices(Iterable)} first.  Any devices which cannot be reset will be
+     * ignored.
+     */
+    void sendDemandReset(CommandRequestExecution sendExecution, Set<? extends YukonPao> paos,
+                         DemandResetCallback callback, LiteYukonUser user);
+
+    /**
+     * Send and verify demand reset.  The caller should have filtered this
+     * list with {@link #validDevices(Iterable)} first.  Any devices which cannot be reset will be
+     * ignored.
+     */
+    void sendDemandResetAndVerify(CommandRequestExecution sendExecution, CommandRequestExecution verificationExecution,
+                                  Set<? extends YukonPao> paos, DemandResetCallback callback, LiteYukonUser user);
 }

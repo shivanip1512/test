@@ -14,24 +14,37 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class DemandResetRfnStrategy implements DemandResetStrategy {
-    @Autowired
-    private RfnDemandResetService rfnDemandResetService;
+    
+    @Autowired private RfnDemandResetService rfnDemandResetService;
 
     @Override
     public <T extends YukonPao> Set<T> filterDevices(Set<T> devices) {
         return rfnDemandResetService.filterDevices(devices);
     }
 
+
+
     @Override
-    public Set<CommandCompletionCallback<CommandRequestDevice>> sendDemandReset(CommandRequestExecution sendExecution,
-                                                                                CommandRequestExecution verificationExecution,
-                                                                                Set<? extends YukonPao> devices,
-                                                                                DemandResetCallback callback,
-                                                                                LiteYukonUser user) {
-        rfnDemandResetService.sendDemandReset(sendExecution, verificationExecution, devices, callback, user);
+    public CommandCompletionCallback<CommandRequestDevice> sendDemandReset(CommandRequestExecution initiatedExecution,
+                                                                    Set<? extends YukonPao> paos,
+                                                                    DemandResetCallback callback, LiteYukonUser user){
+        rfnDemandResetService.sendDemandReset(initiatedExecution,  paos, callback, user);
+        // Returning null, this strategy does not support cancellations
+        return null;
+        
+    }
+
+    @Override
+    public Set<CommandCompletionCallback<CommandRequestDevice>> sendDemandResetAndVerify(CommandRequestExecution initiatedExecution,
+                                                                                         CommandRequestExecution verificationExecution,
+                                                                                         Set<? extends YukonPao> paos,
+                                                                                         DemandResetCallback callback,
+                                                                                         LiteYukonUser user) {
+        rfnDemandResetService.sendDemandResetAndVerify(initiatedExecution, verificationExecution, paos, callback, user);
         // Returning null, this strategy does not support cancellations
         return null;
     }
+
 
     @Override
     public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> paos) {

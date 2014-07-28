@@ -13,6 +13,7 @@ public abstract class ListBasedDeviceCollection implements DeviceCollection {
         return getDeviceList().iterator();
     }
 
+    @Override
     public List<SimpleDevice> getDevices(int start, int size) {
 
         List<SimpleDevice> list = this.getDeviceList();
@@ -24,7 +25,7 @@ public abstract class ListBasedDeviceCollection implements DeviceCollection {
     }
     
     @Override
-    public long getDeviceCount() {
+    public int getDeviceCount() {
         return getDeviceList().size();
     }
     
