@@ -8,7 +8,7 @@ import java.awt.Color;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.loadcontrol.LCUtils;
+import com.cannontech.loadcontrol.TdcLoadcontrolUtils;
 import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
@@ -86,7 +86,8 @@ public class GroupTableModel extends javax.swing.table.AbstractTableModel implem
 
 	public static final java.util.Comparator GROUP_NAME_COMPARATOR = new java.util.Comparator()
 	{
-		public int compare(Object o1, Object o2)
+		@Override
+        public int compare(Object o1, Object o2)
 		{
 			try
 			{
@@ -114,6 +115,7 @@ public GroupTableModel() {
  * Insert the method's description here.
  * Creation date: (3/20/00 11:40:31 AM)
  */
+@Override
 public void clear() 
 {
 	//do NOT remove the elements, but just set the reference to our list to a
@@ -162,6 +164,7 @@ private String displayControlTime(long millisecs)
  * @param row int
  * @param col int
  */
+@Override
 public java.awt.Color getCellBackgroundColor(int row, int col) 
 {
 	return backGroundColor;
@@ -174,6 +177,7 @@ public java.awt.Color getCellBackgroundColor(int row, int col)
  * @param col int
  * 
  */
+@Override
 public java.awt.Color getCellForegroundColor(int row, int col) 
 {
 	if( getRowAt(row) != null && getRowCount() > row && col < getColumnCount() )
@@ -213,6 +217,7 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 /**
  * getColumnCount method comment.
  */
+@Override
 public int getColumnCount() {
 	return columnNames.length;
 }
@@ -221,6 +226,7 @@ public int getColumnCount() {
  * @return java.lang.String
  * @param index int
  */
+@Override
 public String getColumnName(int index) {
 	return columnNames[index];
 }
@@ -232,8 +238,9 @@ public String getColumnName(int index) {
  */
 public synchronized Object getRowAt(int rowIndex) 
 {
-	if( rowIndex < 0 || rowIndex >= getRowCount() )
-		return null;
+	if( rowIndex < 0 || rowIndex >= getRowCount() ) {
+        return null;
+    }
 
 	return getRows().get(rowIndex);
 }
@@ -241,6 +248,7 @@ public synchronized Object getRowAt(int rowIndex)
 /**
  * getRowCount method comment.
  */
+@Override
 public int getRowCount() 
 {
 	return getRows().size();
@@ -252,8 +260,9 @@ public int getRowCount()
  */
 private java.util.Vector getRows()
 {
-	if( rows == null )
-		rows = new java.util.Vector(10);
+	if( rows == null ) {
+        rows = new java.util.Vector(10);
+    }
 		
 	return rows;
 }
@@ -263,6 +272,7 @@ private java.util.Vector getRows()
  * @param row int
  * @param col int
  */
+@Override
 public java.awt.Color getSelectedRowColor(int row, int col) 
 {
 	return getCellForegroundColor(row, col);
@@ -270,6 +280,7 @@ public java.awt.Color getSelectedRowColor(int row, int col)
 /**
  * getValueAt method comment.
  */
+@Override
 public Object getValueAt(int row, int col) 
 {
 	if( row < getRowCount() && row >= 0 )
@@ -277,10 +288,10 @@ public Object getValueAt(int row, int col)
 		ILMGroup rowValue = (ILMGroup)getRowAt(row);
 		
         // the following line could be changed to be more careful about the formatting
-		return LCUtils.getGroupValueAt( rowValue, col, new SystemUserContext() );
-	}
-	else
-		return null;
+		return TdcLoadcontrolUtils.getGroupValueAt( rowValue, col, new SystemUserContext() );
+	} else {
+        return null;
+    }
 	
 }
 /**
@@ -289,6 +300,7 @@ public Object getValueAt(int row, int col)
  * @param row int
  * @param column int
  */
+@Override
 public boolean isCellEditable(int row, int column) {
 	return false;
 }
@@ -318,7 +330,7 @@ public synchronized void setCurrentData(LMControlArea cntrArea_, LMProgramBase p
 		for( int i = 0; i < currentControlArea.getLmProgramVector().size(); i++ )
 		{
 			LMProgramBase prg = 
-				(LMProgramBase)currentControlArea.getLmProgramVector().get(i);
+				currentControlArea.getLmProgramVector().get(i);
 
 			if( prgBse_ != null )
 			{
@@ -327,9 +339,9 @@ public synchronized void setCurrentData(LMControlArea cntrArea_, LMProgramBase p
 					getRows().addAll( rows.size(), prg.getLoadControlGroupVector() );
 					break; //we only want to see this programs groups, get out now	
 				}
-			}			
-			else
-				getRows().addAll( rows.size(), prg.getLoadControlGroupVector() );
+			} else {
+                getRows().addAll( rows.size(), prg.getLoadControlGroupVector() );
+            }
 		}
 	
 		//always keep our list in order by the Group Name
@@ -337,21 +349,23 @@ public synchronized void setCurrentData(LMControlArea cntrArea_, LMProgramBase p
 		java.util.Collections.sort( 
 				rows,
 				GROUP_NAME_COMPARATOR );				
-	}
-	else
-		clear();
+	} else {
+        clear();
+    }
 
 	//by using fireTableRowsUpdated(int,int) we do not clear the table selection
-	if( oldRowCount == getRowCount() && oldRowCount >= 0 )	
-		fireTableRowsUpdated( 0, getRowCount()-1 );
-	else
-		fireTableDataChanged();
+	if( oldRowCount == getRowCount() && oldRowCount >= 0 ) {
+        fireTableRowsUpdated( 0, getRowCount()-1 );
+    } else {
+        fireTableDataChanged();
+    }
 }
 
 /**
  * This method was created in VisualAge.
  * @param event javax.swing.event.TableModelEvent
  */
+@Override
 public void tableChanged(javax.swing.event.TableModelEvent event ) 
 {
 	if( event instanceof com.cannontech.loadcontrol.events.LCGenericTableModelEvent )

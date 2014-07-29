@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.datamodels;
  */
 import java.awt.Color;
 
-import com.cannontech.loadcontrol.LCUtils;
+import com.cannontech.loadcontrol.TdcLoadcontrolUtils;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.SystemUserContext;
 
@@ -78,7 +78,8 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	 * Creation date: (4/6/2001 10:08:28 AM)
 	 * @param LMControlArea
 	 */
-	public synchronized void addControlAreaAt( LMControlArea area, int indx )
+	@Override
+    public synchronized void addControlAreaAt( LMControlArea area, int indx )
 	{
 		//area = fileterArea(area);
 	
@@ -95,7 +96,8 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	 * Insert the method's description here.
 	 * Creation date: (3/20/00 11:40:31 AM)
 	 */
-	public void clear() 
+	@Override
+    public void clear() 
 	{
 		//this clearControlAreas() method will notify all observers of the
 		// cleared ControlAreas, we must catch if so we can clear our list!
@@ -223,7 +225,8 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	/**
 	 * getColumnCount method comment.
 	 */
-	public int getColumnCount() {
+	@Override
+    public int getColumnCount() {
 		return COLUMN_NAMES.length;
 	}
 	/**
@@ -231,7 +234,8 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	 * @return java.lang.String
 	 * @param index int
 	 */
-	public String getColumnName(int index) {
+	@Override
+    public String getColumnName(int index) {
 		return COLUMN_NAMES[index];
 	}
 	/**
@@ -241,8 +245,9 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	 */
 	public java.util.Vector getCurrentControlAreas() 
 	{
-		if( currentControlAreas == null )
-			currentControlAreas = new java.util.Vector(10);
+		if( currentControlAreas == null ) {
+            currentControlAreas = new java.util.Vector(10);
+        }
 	
 		return currentControlAreas;
 	}
@@ -251,35 +256,39 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	/**
 	 * This method returns the value of a row in the form of a LMControlArea object.
 	 */
-	public synchronized LMControlArea getRowAt(int rowIndex) 
+	@Override
+    public synchronized LMControlArea getRowAt(int rowIndex) 
 	{
-		if( rowIndex < 0 || rowIndex >= getRowCount() )
-			return null;
-		else
-			return (LMControlArea)getCurrentControlAreas().get(rowIndex);	
+		if( rowIndex < 0 || rowIndex >= getRowCount() ) {
+            return null;
+        } else {
+            return (LMControlArea)getCurrentControlAreas().get(rowIndex);
+        }	
 	}
 	
 	/**
 	 * getRowCount method comment.
 	 */
-	public int getRowCount() 
+	@Override
+    public int getRowCount() 
 	{
 		return getCurrentControlAreas().size();
 	}
 	/**
 	 * getValueAt method comment.
 	 */
-	public synchronized Object getValueAt(int row, int col) 
+	@Override
+    public synchronized Object getValueAt(int row, int col) 
 	{
 	
 		if( row < getRowCount() && row >= 0 )
 		{
 			LMControlArea lmCntrArea = getRowAt(row);
 			// the following line could be changed to be more careful about the formatting
-			return LCUtils.getControlAreaValueAt( lmCntrArea, col, new SystemUserContext());					
-		}
-		else
-			return null;
+			return TdcLoadcontrolUtils.getControlAreaValueAt( lmCntrArea, col, new SystemUserContext());					
+		} else {
+            return null;
+        }
 	}
 
 
@@ -318,7 +327,8 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	 * @param row int
 	 * @param column int
 	 */
-	public boolean isCellEditable(int row, int column) {
+	@Override
+    public boolean isCellEditable(int row, int column) {
 		return false;
 	}
 	/**
@@ -326,7 +336,8 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	 * Creation date: (4/6/2001 10:08:28 AM)
 	 * @param LMControlArea
 	 */
-	public void removeControlArea( LMControlArea area )
+	@Override
+    public void removeControlArea( LMControlArea area )
 	{
 		int loc = getCurrentControlAreas().indexOf(area);
 		
@@ -343,7 +354,8 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	 * Creation date: (4/6/2001 10:08:28 AM)
 	 * @param LMControlArea
 	 */
-	public void setControlAreaAt( LMControlArea area, int index )
+	@Override
+    public void setControlAreaAt( LMControlArea area, int index )
 	{
 		//area = fileterArea(area);
 		getCurrentControlAreas().setElementAt( area, index );

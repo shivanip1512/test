@@ -101,7 +101,6 @@ public enum JwsJnlp {
                 "jta.jar",
                 "jtds-1.3.0.jar",
                 "libthrift-0.9.0.jar",
-                "loadcontrol.jar",
                 "log4j-1.2.17.jar",
                 "lucene-core-3.4.0.jar",
                 "mailapi-1.5.1.jar",

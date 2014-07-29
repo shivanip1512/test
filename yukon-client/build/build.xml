@@ -99,7 +99,6 @@
         <ant dir="${export}" target="${dotarget}" />
         <ant dir="${esub}" target="${dotarget}" />
         <ant dir="${tdc}" target="${dotarget}" />
-        <ant dir="${loadcontrol}" target="${dotarget}" />
         <ant dir="${dbeditor}" target="${dotarget}" />
         <ant dir="${commander}" target="${dotarget}" />
         <ant dir="${resource}" target="${dotarget}" />
