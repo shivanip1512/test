@@ -204,6 +204,7 @@
         <!-- Yukon Base Component (Client) -->
         <property name="client.dir" value="${install.bag}/Yukon Base/Client"/>
         <property name="client.bin" value="${client.dir}/bin"/>
+        <property name="yukon.exampleXml" value="${basedir}/yukon-client/lib/exampleXml"/>
         <mkdir dir="${client.dir}"/>
        	<mkdir dir="${client.dir}/Export"/>
        	<mkdir dir="${client.dir}/Log"/>
@@ -225,6 +226,12 @@
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>
         </copy>
+
+        <mkdir dir="${yukon.exampleXml}"/>
+        <copy file="${basedir}/yukon-client/common/src/com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml" 
+            tofile="${yukon.exampleXml}/rfnPointMapping_Example.xml"/>
+        <copy file="${basedir}/yukon-client/common/src/com/cannontech/common/pao/definition/dao/paoDefinition.xml" 
+            tofile="${yukon.exampleXml}/deviceDefinition_Example.xml"/>
 
         <signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
 			<fileset dir="${client.bin}">

@@ -8,11 +8,7 @@
    
    <target name="build">
        <mkdir dir="build"/>
-   	   
-   	   <mkdir dir="${yukon.exampleXml}"/>
-   	   <copy file="src/com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml" tofile="${yukon.exampleXml}/rfnPointMapping_Example.xml"/>
-   	   <copy file="src/com/cannontech/common/pao/definition/dao/paoDefinition.xml" tofile="${yukon.exampleXml}/deviceDefinition_Example.xml"/>
-   	   
+
        <javac srcdir="src"
               destdir="build"
               target="${yukon.javac.target}" 
