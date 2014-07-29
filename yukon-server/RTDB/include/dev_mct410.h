@@ -7,7 +7,7 @@ namespace Cti {
 namespace Devices {
 
 class IM_EX_DEVDB Mct410Device :
-    public Inherits<Mct410Device, Mct4xxDevice>,
+    private Inherits<Mct410Device, Mct4xxDevice>,
     public Commands::Mct410Command::ResultHandler
 {
 private:

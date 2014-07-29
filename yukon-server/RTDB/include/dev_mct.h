@@ -14,7 +14,7 @@ struct Inherits : Parent
     typedef Parent Inherited;
 };
 
-class IM_EX_DEVDB MctDevice : public Inherits<MctDevice, CarrierDevice>, boost::noncopyable
+class IM_EX_DEVDB MctDevice : private Inherits<MctDevice, CarrierDevice>, boost::noncopyable
 {
 private:
 
