@@ -7,10 +7,13 @@ namespace Cti {
 namespace Devices {
 
 class IM_EX_DEVDB Mct410Device :
-    private Inherits<Mct410Device, Mct4xxDevice>,
+    public Mct4xxDevice,
     public Commands::Mct410Command::ResultHandler
 {
 private:
+
+    typedef Mct410Device Self;
+    typedef Mct4xxDevice Parent;
 
     typedef int (Self::*DecodeMethod)(const INMESS *, CtiTime &, CtiMessageList &, CtiMessageList &, OutMessageList &);
 
@@ -464,10 +467,6 @@ public:
     };
 
     Mct410Device( );
-    Mct410Device( const Mct410Device &aRef );
-    virtual ~Mct410Device( );
-
-    Mct410Device &operator=( const Mct410Device &aRef );
 
     void setDisconnectAddress( unsigned long address );
 

@@ -7,16 +7,12 @@
 namespace Cti {
 namespace Devices {
 
-template <class Child, class Parent>
-struct Inherits : Parent
-{
-    typedef Child Self;
-    typedef Parent Inherited;
-};
-
-class IM_EX_DEVDB MctDevice : private Inherits<MctDevice, CarrierDevice>, boost::noncopyable
+class IM_EX_DEVDB MctDevice : public CarrierDevice, boost::noncopyable
 {
 private:
+
+    typedef MctDevice Self;
+    typedef CarrierDevice Parent;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();

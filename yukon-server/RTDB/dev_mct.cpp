@@ -763,7 +763,7 @@ INT MctDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
     if( status == NoResultDecodeMethod )
     {
-        status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
+        status = Parent::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
     }
 
     if( status == NoResultDecodeMethod )

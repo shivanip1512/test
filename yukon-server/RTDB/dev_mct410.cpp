@@ -63,26 +63,6 @@ Mct410Device::Mct410Device( ) :
     _daily_read_info.interest.needs_verification = false;
 }
 
-Mct410Device::Mct410Device( const Mct410Device &aRef )
-{
-    *this = aRef;
-}
-
-Mct410Device::~Mct410Device( )
-{
-}
-
-Mct410Device &Mct410Device::operator=( const Mct410Device &aRef )
-{
-    if( this != &aRef )
-    {
-        Inherited::operator=( aRef );
-    }
-
-    return *this;
-}
-
-
 void Mct410Device::setDisconnectAddress( unsigned long address )
 {
     _disconnectAddress = address;
@@ -580,7 +560,7 @@ bool Mct410Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
         return true;
     }
 
-    return Inherited::getOperation(cmd, bst);
+    return Parent::getOperation(cmd, bst);
 }
 
 
@@ -948,7 +928,7 @@ INT Mct410Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMess
             return decodeGetConfigDailyReadInterest(*InMessage, TimeNow, vgList, retList, outList);
     }
 
-    return Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
+    return Parent::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 }
 
 
@@ -1030,7 +1010,7 @@ INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
         default:
         {
-            retVal = Inherited::SubmitRetry(InMessage, TimeNow, vgList, retList, outList);
+            retVal = Parent::SubmitRetry(InMessage, TimeNow, vgList, retList, outList);
         }
     }
 
@@ -1572,7 +1552,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
     }
     else
     {
-        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = Parent::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     if( found )
@@ -1871,7 +1851,7 @@ INT Mct410Device::executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse
         return NoMethod;
     }
 
-    return Inherited::executePutStatus(pReq, parse, OutMessage, vgList, retList, outList);
+    return Parent::executePutStatus(pReq, parse, OutMessage, vgList, retList, outList);
 }
 
 
@@ -2081,7 +2061,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         }
         else
         {
-            nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+            nRet = Parent::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
         }
     }
     else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
@@ -2475,7 +2455,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
     }
     else
     {
-        nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = Parent::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     if( found )
@@ -2619,7 +2599,7 @@ INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
     }
     else
     {
-        nRet = Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = Parent::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     if( found )
