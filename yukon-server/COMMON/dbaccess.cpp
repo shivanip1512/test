@@ -124,6 +124,11 @@ std::string assignSQLPlaceholders(const std::string &sql)
 // Attempts to create a connection to the database, returns NULL if not successful.
 SAConnection* createDBConnection()
 {
+    if( dbType == "none" )
+    {
+        return NULL;
+    }
+
     SAConnection* connection = new SAConnection();
 
     try
