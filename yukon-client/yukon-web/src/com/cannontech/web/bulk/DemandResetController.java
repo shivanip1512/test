@@ -1,20 +1,18 @@
 package com.cannontech.web.bulk;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.demandreset.model.DemandResetResult;
 import com.cannontech.amr.demandreset.service.DemandResetService;
@@ -44,8 +42,7 @@ public class DemandResetController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping("action")
-    public String action(ModelMap model, DeviceCollection deviceCollection, String key)
-            throws ServletException {
+    public String action(ModelMap model, DeviceCollection deviceCollection, String key){
         model.addAttribute("deviceCollection", deviceCollection); 
         if (StringUtils.isNotBlank(key)) {
             model.addAttribute("result", demandResetService.getResult(key));
@@ -58,44 +55,47 @@ public class DemandResetController {
     public String start(HttpServletRequest request, 
                       ModelMap model, 
                       DeviceCollection deviceCollection,
-                      YukonUserContext userContext) throws ServletException {
+                      YukonUserContext userContext){
         
         DemandResetResult result = demandResetService.sendDemandReset(deviceCollection,
-                                                            new AlertCallback(userContext, request),
+                                                            new AlertCallback(request),
                                                             userContext);
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAllAttributes(deviceCollection.getCollectionParameters());
         model.addAttribute("key", result.getKey());
+
         
         return "redirect:action";
     }
 
     @RequestMapping("recent-results")
-    public String recentResults(ModelMap model) throws ServletException {
+    public String recentResults(ModelMap model){
         model.addAttribute("results", demandResetService.getResults()); 
         
         return "demand/reset/results.jsp";
     }
 
     @RequestMapping("result-detail")
-    public String resultDetail(ModelMap model, String resultKey) throws ServletException {
+    public String resultDetail(ModelMap model, String resultKey){
         model.addAttribute("result", demandResetService.getResult(resultKey));    
         
         return "demand/reset/resultDetail.jsp";
     }
 
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
-    public @ResponseBody Map<String, String> cancel(String key, YukonUserContext userContext) {
+    public void cancel(HttpServletResponse resp, String key, YukonUserContext userContext) {
+        
         demandResetService.cancel(key, userContext.getYukonUser());
         
-        return Collections.singletonMap("success", "true");
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
 
     private class AlertCallback implements SimpleCallback<DemandResetResult> {
-        HttpServletRequest request;
 
-        AlertCallback(YukonUserContext userContext, HttpServletRequest request) {
-            this.request = request;
+        String url;
+
+        AlertCallback(HttpServletRequest request) {
+            this.url= ServletUtil.createSafeUrl(request, "/bulk/demand-reset/result-detail?resultKey=");
         }
 
         @Override
@@ -125,8 +125,7 @@ public class DemandResetController {
             } else {
                 template = new ResolvableTemplate("yukon.common.alerts.demandResetCompletion");
             }
-            String url = ServletUtil.createSafeUrl(request, "result-detail?resultKey=" + result.getKey());
-            template.addData("url", url);
+            template.addData("url", url + result.getKey());
             template.addData("percentSuccess", percentSuccess);
             template.addData("completedCount", result.getCompletedCount());
 

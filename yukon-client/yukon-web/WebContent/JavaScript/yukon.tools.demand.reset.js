@@ -4,7 +4,8 @@ yukon.namespace('yukon.tools.demand.reset');
  * Singleton that manages the device collection demand reset feature.
  * 
  * @module yukon.tools.demand.reset
- * @requires JQUERY
+ *  @requires JQUERY
+ *  @requires yukon
  */
 yukon.tools.demand.reset = (function() {
     
@@ -14,7 +15,7 @@ yukon.tools.demand.reset = (function() {
     _initialized = false,
     _canceled = false,
     
-    _mod = {
+    mod = {
         
         /** Initialize this module. Depends on DOM elements so only call after DOM is loaded. */
         init: function() {
@@ -22,15 +23,17 @@ yukon.tools.demand.reset = (function() {
             if (_initialized) return;
             
             $('#cancel-btn').click(function(ev) {
+                var btn = $(this),
+                params = {
+                    key: btn.data('key'),
+                    command: btn.data('command')
+                };
+
                 _canceled = true;
-                $('#cancel-btn').hide();
                 debug.log('canceling demand reset');
-                var args = {};
-                var key = $(this).data('key');
-                var command = $(this).data('command');
-                args.key = key;
-                args.command = command;
-                $.post(yukon.url('/bulk/demand-reset/cancel'), args).done(function(result) {
+    
+                $.post(yukon.url('/bulk/demand-reset/cancel'), params)
+                .done(function (result) {
                     debug.log('demand reset cancel result: ' + result);
                 });
             });
@@ -67,7 +70,7 @@ yukon.tools.demand.reset = (function() {
         }
     };
     
-    return _mod;
+    return mod;
 })();
 
 $(function() { yukon.tools.demand.reset.init(); });
