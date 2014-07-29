@@ -29,31 +29,15 @@
         </tags:nameValue2>
     </tags:nameValueContainer2>
     
-    <h3><i:inline key=".detail.users.title"/></h3>
     <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".admin">
-            <input type="text" value="" placeholder="<cti:msg2 key=".username.placeholder"/>">
-            <input type="password" value="" placeholder="<cti:msg2 key=".password.placeholder"/>">
-            <label class="block-label"><input type="radio" name="default" checked>&nbsp;<i:inline key=".defaultUser"/></label>
+        <tags:nameValue2 nameKey=".username">
+            <input type="text" value="">
         </tags:nameValue2>
-        <tr>
-            <td class="name"><i:inline key=".superAdmin"/>:<em class="db"><i:inline key=".optional"/></em></td>
-            <td class="value">
-                <input type="text" value="" placeholder=<cti:msg2 key=".username.placeholder"/>>
-                <input type="password" value="" placeholder="<cti:msg2 key=".password.placeholder"/>">
-                <label class="block-label"><input type="radio" name="default">&nbsp;<i:inline key=".defaultUser"/></label>
-            </td>
-        </tr>
-        <tr>
-            <td class="name"><i:inline key=".user"/><em class="db"><i:inline key=".optional"/></em></td>
-            <td class="value">
-                <input type="text" value="" placeholder=<cti:msg2 key=".username.placeholder"/>>
-                <input type="password" value="" placeholder="<cti:msg2 key=".password.placeholder"/>">
-                <label class="block-label"><input type="radio" name="default">&nbsp;<i:inline key=".defaultUser"/></label>
-            </td>
-        </tr>
+        <tags:nameValue2 nameKey=".password">
+            <input type="password" value="">
+        </tags:nameValue2>
     </tags:nameValueContainer2>
-
+    
     <h3><i:inline key=".detail.location.title"/>&nbsp;<em class="subtle"><i:inline key=".optional"/></em></h3>
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".latitude">

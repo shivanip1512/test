@@ -14,7 +14,8 @@
     
     <!-- Gateway Dashboard -->
     <entry key="yukon.web.modules.operator.gateways.dashboard.pageName">Gateways</entry>
-    
+    <entry key="yukon.web.modules.operator.gateways.dashboard.connected">Connected</entry>
+	
     <!-- Gateway Details -->
     <entry key="yukon.web.modules.operator.gateways.detail.pageName">Gateway</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.pageDescription">{0}</entry>
@@ -31,6 +32,7 @@
     <entry key="yukon.web.modules.operator.gateways.detail.sequenceStart">Sequence Start</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.sequenceEnd">Sequence End</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.completeness">Completeness</entry>
+
     
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.connect">Connect</entry>
@@ -56,10 +58,9 @@
     <entry key="yukon.web.modules.operator.gateways.radios">Radios</entry>
     <entry key="yukon.web.modules.operator.gateways.superAdmin">Super Admin</entry>
     <entry key="yukon.web.modules.operator.gateways.admin">Admin</entry>
-    <entry key="yukon.web.modules.operator.gateways.user">User</entry>
+    <entry key="yukon.web.modules.operator.gateways.username">Username</entry>
+    <entry key="yukon.web.modules.operator.gateways.password">Password</entry>
     <entry key="yukon.web.modules.operator.gateways.defaultUser">Default User</entry>
-    <entry key="yukon.web.modules.operator.gateways.username.placeholder">username</entry>
-    <entry key="yukon.web.modules.operator.gateways.password.placeholder">password</entry>
     <entry key="yukon.web.modules.operator.gateways.optional">(optional)</entry>
     <entry key="yukon.web.modules.operator.gateways.latitude">Latitude</entry>
     <entry key="yukon.web.modules.operator.gateways.longitude">Longitude</entry>

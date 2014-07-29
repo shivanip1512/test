@@ -24,6 +24,7 @@
 
 <div id="page-actions" class="dn">
     <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
+    <cm:dropdownOption icon="icon-cross" key="components.button.delete.label"/>
     <li class="divider"></li>
     <cm:dropdownOption icon="icon-connect" key=".connect"/>
     <cm:dropdownOption icon="icon-disconnect" key=".disconnect"/>
@@ -32,7 +33,7 @@
 </div>
 
 <div id="gateway-edit-popup" class="dn" data-title="Edit Gateway" data-url="${gateway.id}/edit" 
-    data-width="550" data-dialog data-event="yukon_assets_gateway_save"></div>
+    data-width="360" data-dialog data-event="yukon_assets_gateway_save"></div>
 
 <div class="column-12-12 clearfix">
     <div class="column one">
@@ -40,9 +41,6 @@
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".name">GW001</tags:nameValue2>
                 <tags:nameValue2 nameKey=".serialNumber">7500000383</tags:nameValue2>
-                <tags:nameValue2 nameKey=".type">Energy Management</tags:nameValue2>
-                <tags:nameValue2 nameKey=".maxNodes"></tags:nameValue2>
-                <tags:nameValue2 nameKey=".productNo"></tags:nameValue2>
                 <tags:nameValue2 nameKey=".hardwareVersion">1000156_06</tags:nameValue2>
                 <tags:nameValue2 nameKey=".softwareVersion">R_5_3_0</tags:nameValue2>
                 <tags:nameValue2 nameKey=".upperStackVersion">R_5_3_0_0_1</tags:nameValue2>
@@ -61,16 +59,31 @@
             <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" classes="fr"/>
         </div>
         
-        <tags:sectionContainer2 nameKey="comms" styleClass="stacked">
+    </div>
+    <div class="column two nogutter">
+        <tags:sectionContainer2 nameKey="location" styleClass="stacked">
+            <div id="gateway-location" class="map"></div>
+            <div class="buffered">
+                <div id="map-tiles" class="fr button-group">
+                    <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
+                    <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
+                    <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+                </div>
+            </div>
+        </tags:sectionContainer2>
+        
+    </div>
+    
+</div>
+<div class="stacked">
+    <tags:sectionContainer2 nameKey="comms" styleClass="stacked">
+        <div class="column one">
             <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".username">
+                    <span class="empty-list">admin</span>
+                </tags:nameValue2>
                 <tags:nameValue2 nameKey=".connectionType">TCP/IP</tags:nameValue2>
-                <tags:nameValue2 nameKey=".ipaddress">10.106.46.102 Port: 32030 EkaNet ( TCP + SSL )</tags:nameValue2>
-                <tags:nameValue2 nameKey=".connectionStatus">
-                    <span class="state-box green"></span>&nbsp;Connected
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".lastComms">
-                    <span class="green">Successful</span>&nbsp;(7/16/2014 9:45:07 AM)
-                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".ipaddress">10.106.46.102 Port: 32030</tags:nameValue2>
                 <tags:nameValue2 nameKey=".radios">
                     <div title="3/31/2014 2:11:07 PM" class="stacked">
                         <div>EkaNet 915 MHz</div>
@@ -82,40 +95,22 @@
                     </div>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
-        </tags:sectionContainer2>
-    </div>
-    <div class="column two nogutter">
-        <tags:sectionContainer2 nameKey="location" styleClass="stacked">
-            <div id="gateway-location" class="map"></div>
-            <div class="buffered">
-                <div id="mouse-position" class="fl detail"></div>
-                <div id="scale-line" class="fl"></div>
-                
-                <div id="map-tiles" class="fr button-group">
-                    <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
-                    <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
-                    <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
-                </div>
-            </div>
-        </tags:sectionContainer2>
-        <tags:sectionContainer2 nameKey="users" >
+        </div>
+        <div class="column two nogutter">
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".superAdmin">
-                    <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".admin">admin&nbsp;&nbsp;<strong>(default)</strong></tags:nameValue2>
-                <tags:nameValue2 nameKey=".user">
-                    <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
+	            <tags:nameValue2 nameKey=".connectionStatus">
+	                <span class="state-box green"></span>&nbsp;Connected
+	            </tags:nameValue2>
+	            <tags:nameValue2 nameKey=".lastComms">
+	                <span class="green">Successful</span>&nbsp;(7/16/2014 9:45:07 AM)
+	            </tags:nameValue2>
+	        </tags:nameValueContainer2>
             <div class="action-area">
                 <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/>
             </div>
-        </tags:sectionContainer2>
-    </div>
-    
+        </div>
+    </tags:sectionContainer2>
 </div>
-
 <div class="stacked">
     <tags:sectionContainer2 nameKey="dataCollection">
         <div class="column-12-12 clearfix">

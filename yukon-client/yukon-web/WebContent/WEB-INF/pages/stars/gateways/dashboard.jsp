@@ -11,25 +11,26 @@
         <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
     </div>
     <div id="gateway-create-popup" class="dn" data-title="Create Gateway" data-url="gateways/create" 
-        data-width="550" data-dialog data-event="yukon_assets_gateway_save">
+        data-width="360" data-dialog data-event="yukon_assets_gateway_save">
         
     </div>
     <table class="compact-results-table has-actions has-alerts">
         <thead>
             <tr>
                 <th></th>
-                <th>Name<cti:icon icon="icon-bullet-arrow-down" classes="fn M0"/></th>
-                <th>Serial #</th>
-                <th>IP Address</th>
-                <th>Last Comm</th>
-                <th colspan="2">Data Collection</th>
+                <th><i:inline key=".name"/><cti:icon icon="icon-bullet-arrow-down" classes="fn M0"/></th>
+                <th><i:inline key=".serialNumber"/></th>
+                <th><i:inline key=".ipaddress"/></th>
+                <th><i:inline key=".lastComms"/></th>
+                <th colspan="2"><i:inline key=".detail.dataCollection.title"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
         <tbody>
             <c:forEach items="${gateways}" var="gateway">
                 <tr>
-                    <td title="Connected (7/14/2014 10:23:40 AM)">
+<!--                 TODO : determine if they are connected and display the appropriate tool tip -->
+                    <td title="<cti:msg2 key=".connected"/> <cti:formatDate type="DATEHM" value="${gateway.lastCommTimestamp}"/>">
                         <c:set var="clazz" value="${gateway.connected ? 'green' : 'red'}"/>
                         <span class="state-box ${clazz}"></span>
                     </td>
@@ -50,7 +51,7 @@
                         <span class="${clazz}"><i:inline key="${gateway.lastComm}"/></span>
                     </td>
                     <td>
-                        <div class="dib progress">
+                        <div class="dib vam progress">
                             <c:set var="clazz" value="progress-bar-success"/>
                             <c:if test="${gateway.dataWarning}">
                                 <c:set var="clazz" value="progress-bar-warning"/>
