@@ -22,8 +22,8 @@ struct YukonErrorException : std::exception
     {
     }
 
-    const std::string error_description;
-    const YukonError_t error_code;
+    std::string error_description;
+    YukonError_t error_code;
 
     virtual const char *what() const
     {
