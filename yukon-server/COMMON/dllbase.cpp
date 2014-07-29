@@ -51,7 +51,7 @@ IM_EX_CTIBASE CtiThreadMonitor   ThreadMonitor;
  */
 
 string     dbType("none");
-string     dbName("yukon");
+string     dbName("localhost");
 string     dbUser("yukon");
 string     dbPassword("yukon");
 
