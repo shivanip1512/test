@@ -4,7 +4,6 @@ Trusted-Only: true
 Class-Path: ./ 
  common.jar 
  jradius-client.jar 
- loadcontrol.jar 
  yukonappserver.jar 
  SqlServer.jar 
  ojdbc6.jar 

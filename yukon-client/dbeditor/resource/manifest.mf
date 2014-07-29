@@ -7,7 +7,6 @@ Class-Path:
  jradius-client.jar 
  billing.jar 
  yukonappserver.jar 
- loadcontrol.jar 
  jcfield401K.jar 
  ojdbc6.jar 
  SqlServer.jar 

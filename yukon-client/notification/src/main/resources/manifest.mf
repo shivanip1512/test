@@ -2,7 +2,6 @@ Manifest-Version: 1.0
 Main-Class: com.cannontech.notif.server.NotificationServer
 Class-Path: ./ 
  common.jar 
- loadcontrol.jar 
  cbc.jar  
  mx4j.jar 
  mx4j-jmx.jar 

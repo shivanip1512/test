@@ -5,7 +5,6 @@ Class-Path: ./
  common.jar 
  cbc.jar 
  jradius-client.jar 
- loadcontrol.jar 
  yukonappserver.jar 
  graph.jar 
  macs.jar 

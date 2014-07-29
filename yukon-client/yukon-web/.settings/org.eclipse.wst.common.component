@@ -10,9 +10,6 @@
         <dependent-module archiveName="web-common.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/web-common/web-common">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="loadcontrol.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/loadcontrol/loadcontrol">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="cbc.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cbc/cbc">
             <dependency-type>uses</dependency-type>
         </dependent-module>

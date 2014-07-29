@@ -7,7 +7,6 @@ Class-Path: ./
  jcommon.jar 
  common.jar 
  yukonappserver.jar 
- loadcontrol.jar 
  jcpagelayout450K.jar 
  batik.jar 
  junit.jar 

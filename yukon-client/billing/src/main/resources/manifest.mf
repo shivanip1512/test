@@ -3,7 +3,6 @@ Main-Class: com.cannontech.billing.mainprograms.BillingFileFormatPanel
 Trusted-Only: true
 Class-Path: ./ 
  common.jar 
- loadcontrol.jar 
  yukonappserver.jar 
  SqlServer.jar 
  activation.jar 
