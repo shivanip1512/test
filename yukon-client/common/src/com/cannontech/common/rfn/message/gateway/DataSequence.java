@@ -1,7 +1,7 @@
 package com.cannontech.common.rfn.message.gateway;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 public class DataSequence implements Serializable {
     
@@ -9,7 +9,7 @@ public class DataSequence implements Serializable {
     
     private DataType type;
     private double completionPercentage;
-    private List<SequenceBlock> blocks;
+    private Set<SequenceBlock> blocks;
     
     public DataType getType() {
         return type;
@@ -27,11 +27,11 @@ public class DataSequence implements Serializable {
         this.completionPercentage = completionPercentage;
     }
     
-    public List<SequenceBlock> getBlocks() {
+    public Set<SequenceBlock> getBlocks() {
         return blocks;
     }
     
-    public void setBlocks(List<SequenceBlock> blocks) {
+    public void setBlocks(Set<SequenceBlock> blocks) {
         this.blocks = blocks;
     }
     
