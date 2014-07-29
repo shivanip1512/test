@@ -7,16 +7,39 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.Socket;
-import java.text.*;
-import java.util.*;
-import java.io.*;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Observer;
+import java.util.Random;
+import java.util.SimpleTimeZone;
+import java.util.StringTokenizer;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
-import com.cannontech.fdemulator.common.*;
-import com.cannontech.fdemulator.fileio.*;
+
+import com.cannontech.fdemulator.common.FDEProtocol;
+import com.cannontech.fdemulator.common.FDTestPanel;
+import com.cannontech.fdemulator.common.FDTestPanelNotifier;
+import com.cannontech.fdemulator.common.FdeLogger;
+import com.cannontech.fdemulator.common.TraceLogPanel;
+import com.cannontech.fdemulator.fileio.RdexFileIO;
 
 /**
  * @author ASolberg
@@ -80,8 +103,8 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 	private Socket fdeSocket = null;
 	private DataOutputStream out = null;
 	private DataInputStream in = null;
-	private final String DEFAULT_POINTFILE = "resource/rdex_points.cfg";
-	private final String DEFAULT_TRAFFICFILE = "resource/rdex_traffic_log.txt";
+	private final String DEFAULT_POINTFILE = "src/main/resources/rdex_points.cfg";
+	private final String DEFAULT_TRAFFICFILE = "src/main/resources/rdex_traffic_log.txt";
 	private String pointFile = null;
 	private String trafficFile = null;
 	private RdexFileIO rdexFileIO = null;
@@ -210,14 +233,15 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		 * arrive in timely fashion.  A timer going off
 		 * indicates an error that will be processed
 		 */
-		public void run()
+		@Override
+        public void run()
 		{
 			retryHeartbeat++;
 			SwingUtilities.invokeLater(new FdeLogger(log, "Heartbeat timeout: " + getTimeStamp(), 4));
 			//write message to traffic log file
 			try
 			{
-				FileWriter traffic = new FileWriter("resource/rdex_traffic_log.txt", true);
+				FileWriter traffic = new FileWriter("src/main/resources/rdex_traffic_log.txt", true);
 				traffic.write(getDebugTimeStamp() + "-------------------10 SECOND HEARTBEAT TIMED OUT-------------------" + "\n");
 				traffic.close();
 			} catch (Exception e)
@@ -234,7 +258,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 				//write message to traffic log file
 				try
 				{
-					FileWriter traffic = new FileWriter("resource/rdex_traffic_log.txt", true);
+					FileWriter traffic = new FileWriter("src/main/resources/rdex_traffic_log.txt", true);
 					traffic.write(getDebugTimeStamp() + "---------DISCONNECTING DUE TO 60 SECOND TIME OUT FROM YUKON--------" + "\n");
 					traffic.close();
 				} catch (Exception e)
@@ -274,7 +298,8 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		 * Run gets called when the interval timer expires,
 		 * sendPoints gets called to send all points whose intervals are up
 		 */
-		public void run()
+		@Override
+        public void run()
 		{
 			thirtySecond++;
 			sixtySecond++;
@@ -363,7 +388,8 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		}
 	}
 
-	public void run()
+	@Override
+    public void run()
 	{
 		try
 		{
@@ -392,17 +418,20 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 	}
 
 	// Method to make sure settings are done b4 starting
-	public boolean settingDone()
+	@Override
+    public boolean settingDone()
 	{
 		return settings.isSet();
 	}
 
-	public JPanel getStatPanel()
+	@Override
+    public JPanel getStatPanel()
 	{
 		return statPanel;
 	}
 
-	public FDTestPanel getTestPanel()
+	@Override
+    public FDTestPanel getTestPanel()
 	{
 		return testPanel;
 	}
@@ -412,7 +441,8 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		return settings;
 	}
 
-	public void updateStats()
+	@Override
+    public void updateStats()
 	{
 		serverDataLabel.setText(settings.getServer());
 		back1DataLabel.setText(settings.getBack1());
@@ -423,11 +453,13 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		trafficDataLabel.setText(settings.getTrafficPath());
 	}
 
-	public boolean startConnection()
+	@Override
+    public boolean startConnection()
 	{
 		retryStart++;
-		if (retryStart == 5)
-			retryStart = 1;
+		if (retryStart == 5) {
+            retryStart = 1;
+        }
 		// get the settings
 		RDEX_REG_NAME = settings.getRegName();
 		if (settings.getServer().equals(""))
@@ -563,7 +595,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		// Create recieve log random access file
 		try
 		{
-			pointList = new RandomAccessFile("resource/rdex_yukon_points.txt", "rw");
+			pointList = new RandomAccessFile("src/main/resourcesrdex_yukon_points.txt", "rw");
 
 		} catch (Exception e)
 		{
@@ -730,8 +762,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue < nextpoint.getPointMin())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMax());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							} else
 							{
 								Double cvdouble = new Double(currentvalue);
@@ -741,8 +774,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue > nextpoint.getPointMax())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMin());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							}
 						}
 						out.flush();
@@ -775,8 +809,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop10 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -805,8 +840,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop10 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -879,8 +915,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue < nextpoint.getPointMin())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMax());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							} else
 							{
 								Double cvdouble = new Double(currentvalue);
@@ -890,8 +927,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue > nextpoint.getPointMax())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMin());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							}
 						}
 						out.flush();
@@ -924,8 +962,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop30 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -954,8 +993,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop30 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -1029,8 +1069,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue < nextpoint.getPointMin())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMax());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							} else
 							{
 
@@ -1043,8 +1084,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue > nextpoint.getPointMax())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMin());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							}
 						}
 						out.flush();
@@ -1077,8 +1119,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop60 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -1107,8 +1150,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop60 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -1180,8 +1224,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue < nextpoint.getPointMin())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMax());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							} else
 							{
 								Double cvdouble = new Double(currentvalue);
@@ -1191,8 +1236,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue > nextpoint.getPointMax())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMin());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							}
 						}
 						out.flush();
@@ -1225,8 +1271,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop300 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -1255,8 +1302,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop300 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -1328,8 +1376,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue < nextpoint.getPointMin())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMax());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							} else
 							{
 								Double cvdouble = new Double(currentvalue);
@@ -1339,8 +1388,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue > nextpoint.getPointMax())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMin());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							}
 						}
 						out.flush();
@@ -1373,8 +1423,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop900 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -1403,8 +1454,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop900 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -1479,8 +1531,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue < nextpoint.getPointMin())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMax());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							} else
 							{
 								Double cvdouble = new Double(currentvalue);
@@ -1492,8 +1545,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 								if (currentvalue > nextpoint.getPointMax())
 								{
 									nextpoint.setPointCurrentValue(nextpoint.getPointMin());
-								} else
-									nextpoint.setPointCurrentValue(currentvalue);
+								} else {
+                                    nextpoint.setPointCurrentValue(currentvalue);
+                                }
 							}
 						}
 						out.flush();
@@ -1526,8 +1580,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop3600 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -1556,8 +1611,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						if (flipflop3600 == 0)
 						{
 							valueString = "Open";
-						} else
-							valueString = "Close";
+						} else {
+                            valueString = "Close";
+                        }
 						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
@@ -1724,8 +1780,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					if (flipflop10 == 0)
 					{
 						valueString = "Open";
-					} else
-						valueString = "Close";
+					} else {
+                        valueString = "Close";
+                    }
 					SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON STARTUP: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 					try
 					{
@@ -1754,8 +1811,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					if (flipflop10 == 0)
 					{
 						valueString = "Open";
-					} else
-						valueString = "Close";
+					} else {
+                        valueString = "Close";
+                    }
 					SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON STARTUP: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 					try
 					{
@@ -1851,8 +1909,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 				if ("1".equals(mvalue))
 				{
 					state = "Close";
-				} else
-					state = "Open";
+				} else {
+                    state = "Open";
+                }
 				SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON MANUAL: Status Name: " + mname + " Point: " + state, 1));
 				// Write message to traffic log file
 				try
@@ -1902,8 +1961,9 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 				if ("1".equals(mvalue))
 				{
 					state = "Close";
-				} else
-					state = "Open";
+				} else {
+                    state = "Open";
+                }
 				SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON MANUAL: Control Name: " + mname + " Point: " + state, 1));
 				// Write message to traffic log file
 				try
@@ -2050,7 +2110,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						rFloatValue = in.readFloat();
 						System.out.println(getDebugTimeStamp() + "RDEX RECV: Value " + rFloatValue);
 						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Value " + "Name: " + pointString + " Value: " + nf.format(rFloatValue) + " Quality: " + quality + " TStamp: " + new String(time, 0, 16), 2));
-						writeToFile("Value", pointString, (double) rFloatValue);
+						writeToFile("Value", pointString, rFloatValue);
 						quit = 1;
 						break;
 
@@ -2081,7 +2141,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						}
 						System.out.println(getDebugTimeStamp() + "RDEX RECV: Status " + statusValueString);
 						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Status " + "Name: " + pointString + " State: " + statusValueString + " Quality: " + quality + " TStamp: " + new String(time, 0, 16), 2));
-						writeToFile("Status", pointString, (double) rStatusValue);
+						writeToFile("Status", pointString, rStatusValue);
 						quit = 1;
 						break;
 
@@ -2112,7 +2172,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						}
 						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Control " + "Name: " + pointString + " State: " + controlValueString + " TStamp: " + new String(time, 0, 16), 2));
 						System.out.println(getDebugTimeStamp() + "RDEX RECV: Control " + controlValueString);
-						writeToFile("Control", pointString, (double) rStatusValue);
+						writeToFile("Control", pointString, rStatusValue);
 						quit = 1;
 						break;
 
@@ -2149,14 +2209,15 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		BufferedReader fileBuffer = null;
 		try
 		{
-			fileBuffer = new BufferedReader(new FileReader("resource/rdex_yukon_points.txt"));
+			fileBuffer = new BufferedReader(new FileReader("src/main/resourcesrdex_yukon_points.txt"));
 		} catch (Exception e)
 		{
 			if (e.toString().equalsIgnoreCase("java.io.FileNotFoundException"))
 			{
 				System.out.println("File not found when trying to load points from file");
-			} else
-				e.printStackTrace(System.out);
+			} else {
+                e.printStackTrace(System.out);
+            }
 		}
 
 		String[] pointAsStrings = new String[500];
@@ -2203,14 +2264,15 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 
 		try
 		{
-			fileBuffer = new BufferedReader(new FileReader("resource/rdex_yukon_points.txt"));
+			fileBuffer = new BufferedReader(new FileReader("src/main/resourcesrdex_yukon_points.txt"));
 		} catch (Exception e)
 		{
 			if (e.toString().equalsIgnoreCase("java.io.FileNotFoundException"))
 			{
 				System.out.println("File not found when trying to load points from file");
-			} else
-				e.printStackTrace(System.out);
+			} else {
+                e.printStackTrace(System.out);
+            }
 		}
 
 		String currentLine = "";
@@ -2265,7 +2327,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		{
 			try
 			{
-				FileWriter yukonFileWriter = new FileWriter(new File("resource/rdex_yukon_points.txt"));
+				FileWriter yukonFileWriter = new FileWriter(new File("src/main/resourcesrdex_yukon_points.txt"));
 
 				for (int j = 0; j < pointAsStrings.length; j++)
 				{
@@ -2321,7 +2383,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		{
 			try
 			{
-				FileWriter yukonFileWriter = new FileWriter(new File("resource/rdex_yukon_points.txt"));
+				FileWriter yukonFileWriter = new FileWriter(new File("src/main/resourcesrdex_yukon_points.txt"));
 
 				for (int j = 0; i < pointAsStrings.length; j++)
 				{
@@ -2407,19 +2469,22 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		}
 	}
 
-	public void hbOn(boolean on)
+	@Override
+    public void hbOn(boolean on)
 	{
 		hbeat = on;
 	}
 
 	// returns protocol name
-	public String getName()
+	@Override
+    public String getName()
 	{
 		return new String("RDEX");
 	}
 
 	//	Creates a new timestamp
-	public String getTimeStamp()
+	@Override
+    public String getTimeStamp()
 	{
 		if (tz.inDaylightTime(gc.getTime()))
 		{
@@ -2433,7 +2498,8 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 
 	}
 
-	public String getFormalTimeStamp()
+	@Override
+    public String getFormalTimeStamp()
 	{
 		return fdf.format(new Date());
 	}
@@ -2443,7 +2509,8 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		return dbdf.format(new Date()) + " ";
 	}
 
-	public void closeConnection()
+	@Override
+    public void closeConnection()
 	{
 		try
 		{
@@ -2460,17 +2527,20 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 			if (e.toString().equalsIgnoreCase("java.lang.NullPointerException"))
 			{
 				System.out.println("canceled heartbeat timer that didn't exist yet");
-			} else
-				e.printStackTrace(System.out);
+			} else {
+                e.printStackTrace(System.out);
+            }
 		}
 	}
 
-	public void listenForActions(Observer o)
+	@Override
+    public void listenForActions(Observer o)
 	{
 		notifier.addObserver(o);
 	}
 
-	public void editSettings()
+	@Override
+    public void editSettings()
 	{
 		settings = new RdexSettings("Settings", this);
 		settings.listenForActions(testPanel.getWindow());

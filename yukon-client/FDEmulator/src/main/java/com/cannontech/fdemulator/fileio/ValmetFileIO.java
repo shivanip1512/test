@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
  */
 public class ValmetFileIO
 {
-	public static String valmetFile = "resource/valmet_points.cfg";
+	public static String valmetFile = "src/main/resources/valmet_points.cfg";
 	private static final String LF = System.getProperty("line.separator");
 	private BufferedReader file;
 	

@@ -31,7 +31,7 @@ public class AcsPointTableModel extends javax.swing.table.AbstractTableModel
 	public static final int MAX_COLUMN = 7;
 	public static final int DELTA_COLUMN = 8;
 	public static final int MAXSTART_COLUMN = 9;
-	public static final String acsFile = "resource/acs_points.cfg";
+	public static final String acsFile = "src/main/resources/acs_points.cfg";
 	private static final String LF = System.getProperty("line.separator");
 	private BufferedReader file;
 	private AcsFileIO acsFileIO = null;

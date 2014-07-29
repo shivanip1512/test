@@ -123,7 +123,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
     private Socket fdeSocket = null;
     private DataOutputStream out = null;
     private DataInputStream in = null;
-    private String trafficFile = "resource/valmet_traffic_log.txt";
+    private String trafficFile = "src/main/resources/valmet_traffic_log.txt";
     private ValmetFileIO valmetFileIO = null;
 
     // stat panel variables
@@ -237,6 +237,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
          * arrive in timely fashion. A timer going off
          * indicates an error that will be processed
          */
+        @Override
         public void run() {
             retryHeartbeat++;
             SwingUtilities.invokeLater(new FdeLogger(log, "Heartbeat timeout: " + getTimeStamp(), 4));
@@ -272,6 +273,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
          * Run gets called when the interval timer expires,
          * sendPoints gets called to send all points whose intervals are up.
          */
+        @Override
         public void run() {
             thirtySecond++;
             sixtySecond++;
@@ -343,6 +345,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
          * Run gets called when the timer expires, just sends a timesync to fdr who will
          * probably ignore it
          */
+        @Override
         public void run() {
             try {
                 out.writeShort(401);
@@ -361,6 +364,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         }
     }
 
+    @Override
     public void run() {
         try {
 
@@ -383,14 +387,17 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
     }
 
     // Method to make sure settings are done b4 starting
+    @Override
     public boolean settingDone() {
         return settings.isSet();
     }
 
+    @Override
     public JPanel getStatPanel() {
         return statPanel;
     }
 
+    @Override
     public FDTestPanel getTestPanel() {
         return testPanel;
     }
@@ -399,6 +406,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         return settings;
     }
 
+    @Override
     public void updateStats() {
         serverDataLabel.setText(settings.getServer());
         portDataLabel.setText(settings.getPort());
@@ -407,10 +415,12 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         extendedNameDataLabel.setText(settings.isExtendedName() ? "true" : "false");
     }
 
+    @Override
     public boolean startConnection() {
         retryStart++;
-        if (retryStart == 5)
+        if (retryStart == 5) {
             retryStart = 1;
+        }
         
         // get settings
         if (!settings.getServer().equals("")) {
@@ -726,8 +736,9 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 String state = "";
                 if ("1".equals(mpoint)) {
                     state = "Close";
-                } else
+                } else {
                     state = "Open";
+                }
                 
                 final String message = "SENT ON MANUAL: Status Name: " + mname + " Point: " + state + " Quality: " + mquality + "\n";
                 SwingUtilities.invokeLater(new FdeLogger(log, message, 1));
@@ -901,7 +912,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                                                                + new String(time, 0, 18), 2));
                     
                     logger.info("VALMET RECV: Status " + statusValueString);
-                    writeToFile("Status", pointString, (double) rStatusValue);
+                    writeToFile("Status", pointString, rStatusValue);
                     quit = 1;
                     break;
 
@@ -932,7 +943,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                                                                + controlValueString + " TStamp: "
                                                                + new String(time, 0, 18), 2));
                     logger.info( "VALMET RECV: Control " + controlValueString);
-                    writeToFile("Control", pointString, (double) rStatusValue);
+                    writeToFile("Control", pointString, rStatusValue);
                     quit = 1;
                     break;
 
@@ -968,7 +979,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         // make buffered reader
         BufferedReader fileBuffer = null;
         try {
-            fileBuffer = new BufferedReader(new FileReader("resource/valmet_yukon_points.txt"));
+            fileBuffer = new BufferedReader(new FileReader("src/main/resources/valmet_yukon_points.txt"));
         } catch (FileNotFoundException e) {
             logger.error("File not found when trying to load points from file",e);
         }
@@ -1006,7 +1017,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         int out = 0;
 
         try {
-            fileBuffer = new BufferedReader(new FileReader("resource/valmet_yukon_points.txt"));
+            fileBuffer = new BufferedReader(new FileReader("src/main/resources/valmet_yukon_points.txt"));
         } catch (FileNotFoundException e) {
             logger.error("File not found when trying to load points from file",e);
         }
@@ -1046,7 +1057,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
 
         if (newpoint) {
             try {
-                FileWriter yukonFileWriter = new FileWriter(new File("resource/valmet_yukon_points.txt"));
+                FileWriter yukonFileWriter = new FileWriter(new File("src/main/resources/valmet_yukon_points.txt"));
 
                 for (int j = 0; j < pointAsStrings.length; j++) {
                     try {
@@ -1093,7 +1104,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         } else {
             try {
                 FileWriter yukonFileWriter =
-                    new FileWriter(new File("resource/valmet_yukon_points.txt"));
+                    new FileWriter(new File("src/main/resources/valmet_yukon_points.txt"));
 
                 for (int j = 0; i < pointAsStrings.length; j++) {
                     try {
@@ -1165,16 +1176,19 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         }
     }
 
+    @Override
     public void hbOn(boolean on) {
         hbeat = on;
     }
 
     // returns protocol name
+    @Override
     public String getName() {
         return new String("VALMET");
     }
 
     // Creates a new timestamp
+    @Override
     public String getTimeStamp() {
         if (tz.inDaylightTime(gc.getTime())) {
             return df.format(new Date()) + "dCST";
@@ -1185,6 +1199,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
 
     }
 
+    @Override
     public String getFormalTimeStamp() {
         return fdf.format(new Date());
     }
@@ -1193,6 +1208,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         return dbdf.format(new Date()) + " ";
     }
 
+    @Override
     public void closeConnection() {
         try {
             connectedToYukon = false;
@@ -1215,10 +1231,12 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         }
     }
 
+    @Override
     public void listenForActions(Observer o) {
         notifier.addObserver(o);
     }
 
+    @Override
     public void editSettings() {
         settings = new ValmetSettings("Settings", this);
         settings.listenForActions(testPanel.getWindow());
@@ -1244,8 +1262,9 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
             valueString = value.toString();
         } else if (flipFlopValue == 1) {
             valueString = "Open";
-        } else
+        } else {
             valueString = "Close";
+        }
         try {
             out.writeShort(VALMET_CONTROL);
             out.writeBytes(getTimeStamp());
@@ -1372,8 +1391,9 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
 
                     if (currentvalue < nextpoint.getPointMin()) {
                         nextpoint.setPointCurrentValue(nextpoint.getPointMax());
-                    } else
+                    } else {
                         nextpoint.setPointCurrentValue(currentvalue);
+                    }
                 } else {
 
                     Double cvdouble = new Double(currentvalue);
@@ -1385,8 +1405,9 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
 
                     if (currentvalue > nextpoint.getPointMax()) {
                         nextpoint.setPointCurrentValue(nextpoint.getPointMin());
-                    } else
+                    } else {
                         nextpoint.setPointCurrentValue(currentvalue);
+                    }
                 }
             }
             SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: " + "Value " + "Name: "
@@ -1406,8 +1427,9 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         String valueString = "";
         if (flipFlopValue == 1) {
             valueString = "Open";
-        } else
+        } else {
             valueString = "Close";
+        }
         try {
             out.writeShort(VALMET_STATUS);
             out.writeBytes(getTimeStamp());

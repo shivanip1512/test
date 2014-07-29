@@ -43,8 +43,8 @@ public class ValmetSettings extends JFrame implements ActionListener
 	private JTextField portField = new JTextField();
     private JLabel portLabel = new JLabel("Port:");
 	private JLabel defaultServer = new JLabel("127.0.0.1");
-	private JLabel defaultPointPath = new JLabel("resource/valmet_points.cfg");
-	private JLabel defaultTrafficPath = new JLabel("resource/valmet_traffic_log.txt");
+	private JLabel defaultPointPath = new JLabel("src/main/resources/valmet_points.cfg");
+	private JLabel defaultTrafficPath = new JLabel("src/main/resources/valmet_traffic_log.txt");
     private JLabel defaultPort = new JLabel("1666");
     private JLabel defaultExtendedName = new JLabel("Use Extended Name:");
 
@@ -55,7 +55,7 @@ public class ValmetSettings extends JFrame implements ActionListener
 	private String outPort = null;
 	private boolean extendedName = false;
 	private boolean set = false;
-	ImageIcon fde = new ImageIcon("resource/fdeicon.gif");
+	ImageIcon fde = new ImageIcon("src/main/resources/fdeicon.gif");
 	private RandomAccessFile settingsFile;
 
 	public ValmetSettings(String title, ValmetProtocol protocol)
@@ -78,7 +78,7 @@ public class ValmetSettings extends JFrame implements ActionListener
 		// start at beginning of file
 		try
 		{
-			settingsFile = new RandomAccessFile("resource/settings.cfg", "rw");
+			settingsFile = new RandomAccessFile("src/main/resources/settings.cfg", "rw");
 			settingsFile.seek(0);
 		} catch (Exception e)
 		{
@@ -123,7 +123,7 @@ public class ValmetSettings extends JFrame implements ActionListener
 		// start at beginning of file
 		try
 		{
-			settingsFile = new RandomAccessFile("resource/settings.cfg", "rw");
+			settingsFile = new RandomAccessFile("src/main/resources/settings.cfg", "rw");
 			settingsFile.seek(0);
 		} catch (Exception e)
 		{

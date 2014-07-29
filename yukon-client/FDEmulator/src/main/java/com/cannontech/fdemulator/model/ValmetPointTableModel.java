@@ -31,7 +31,7 @@ public class ValmetPointTableModel extends javax.swing.table.AbstractTableModel
 	public static final int MAX_COLUMN = 6;
 	public static final int DELTA_COLUMN = 7;
 	public static final int MAXSTART_COLUMN = 8;
-	public static final String valmetFile = "resource/valmet_points.cfg";
+	public static final String valmetFile = "src/main/resources/valmet_points.cfg";
 	private ValmetFileIO valmetFileIO = null;
 
 	//The column names based on their column index

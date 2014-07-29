@@ -38,7 +38,7 @@ public class FDEFrameWindow extends JFrame implements Observer, ActionListener
 	JMenuItem acsProto = new JMenuItem();
 	JMenuItem valmetProto = new JMenuItem();
 
-	ImageIcon fde = new ImageIcon("resource/fdeicon.gif");
+	ImageIcon fde = new ImageIcon("src/main/resources/fdeicon.gif");
 
 	TitledBorder titledBorder;
 	int numTests = 0;

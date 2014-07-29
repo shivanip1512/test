@@ -27,7 +27,7 @@ public class AboutDialog extends JDialog implements ActionListener
 	private JLabel copyrightjLabel = new JLabel();
 	private JLabel versionjLabel = new JLabel();
 	private JButton okButton = new JButton();
-	ImageIcon cannon = new ImageIcon("resource/cannonlogo_small.gif");
+	ImageIcon cannon = new ImageIcon("src/main/resources/cannonlogo_small.gif");
 	private JLabel logo = new JLabel(cannon);
 
 	/** 
@@ -55,7 +55,7 @@ public class AboutDialog extends JDialog implements ActionListener
 	private void jbInit() throws Exception
 	{
 
-		this.getContentPane().setLayout(null);
+		getContentPane().setLayout(null);
 		this.setSize(250, 210);
 		this.setLocation(getParent().getLocationOnScreen().x + 30, getParent().getLocationOnScreen().y + 30);
 
@@ -73,16 +73,17 @@ public class AboutDialog extends JDialog implements ActionListener
 
 		logo.setBounds(5, 5, 125, 30);
 		logo.setBorder(new EtchedBorder(EtchedBorder.RAISED));
-		this.getContentPane().add(logo, null);
-		this.getContentPane().add(companyNamejLabel, null);
-		this.getContentPane().add(fDEjLabel, null);
-		this.getContentPane().add(copyrightjLabel, null);
-		this.getContentPane().add(versionjLabel, null);
-		this.getContentPane().add(okButton, null);
+		getContentPane().add(logo, null);
+		getContentPane().add(companyNamejLabel, null);
+		getContentPane().add(fDEjLabel, null);
+		getContentPane().add(copyrightjLabel, null);
+		getContentPane().add(versionjLabel, null);
+		getContentPane().add(okButton, null);
 
-		this.addWindowListener(new WindowAdapter()
+		addWindowListener(new WindowAdapter()
 		{
-			public void windowClosing(WindowEvent e)
+			@Override
+            public void windowClosing(WindowEvent e)
 			{
 				actionPerformed(null);
 			}
@@ -94,7 +95,8 @@ public class AboutDialog extends JDialog implements ActionListener
 	 * 
 	 * @param ActionEvent
 	 */
-	public void actionPerformed(ActionEvent e)
+	@Override
+    public void actionPerformed(ActionEvent e)
 	{
 		setVisible(false);
 		dispose();

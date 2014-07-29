@@ -56,8 +56,8 @@ public class RdexSettings extends JFrame implements ActionListener
 	private JLabel defaultBack1 = new JLabel("127.0.0.1");
 	private JLabel defaultBack2 = new JLabel("127.0.0.1");
 	private JLabel defaultBack3 = new JLabel("127.0.0.1");
-	private JLabel defaultPointPath = new JLabel("resource/rdex_points.cfg");
-	private JLabel defaultTrafficPath = new JLabel("resource/rdex_traffic_log.txt");
+	private JLabel defaultPointPath = new JLabel("src/main/resources/rdex_points.cfg");
+	private JLabel defaultTrafficPath = new JLabel("src/main/resources/rdex_traffic_log.txt");
 	private JLabel defaultPort = new JLabel("1670");
 	private String regName = "";
 	private String name = "";
@@ -68,7 +68,7 @@ public class RdexSettings extends JFrame implements ActionListener
 	private String trafficPath = "";
 	private String port = "";
 	private boolean set = false;
-	ImageIcon fde = new ImageIcon("resource/fdeicon.gif");
+	ImageIcon fde = new ImageIcon("src/main/resources/fdeicon.gif");
 	BufferedReader file;
 	private RandomAccessFile settingsFile;
 
@@ -92,7 +92,7 @@ public class RdexSettings extends JFrame implements ActionListener
 		// start at beginning of file
 		try
 		{
-			settingsFile = new RandomAccessFile("resource/settings.cfg", "rw");
+			settingsFile = new RandomAccessFile("src/main/resources/settings.cfg", "rw");
 			settingsFile.seek(0);
 		} catch (Exception e)
 		{
@@ -141,7 +141,7 @@ public class RdexSettings extends JFrame implements ActionListener
 		// start at beginning of file
 		try
 		{
-			settingsFile = new RandomAccessFile("resource/settings.cfg", "rw");
+			settingsFile = new RandomAccessFile("src/main/resources/settings.cfg", "rw");
 			settingsFile.seek(0);
 		} catch (Exception e)
 		{

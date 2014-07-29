@@ -56,7 +56,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class PointEditor extends JFrame implements ActionListener {
 
     // component variables
-    private ImageIcon icon = new ImageIcon("resource/fdeicon.gif");
+    private ImageIcon icon = new ImageIcon("src/main/resources/fdeicon.gif");
     private JTabbedPane tabbedPane;
     private JPanel acsPanel;
     private JPanel rdexPanel;
@@ -143,9 +143,9 @@ public class PointEditor extends JFrame implements ActionListener {
     private JTable valmetTable;
     private JScrollPane valmetScrollPane;
 
-    private String valmetFile = "resource/valmet_points.cfg";
-    private String rdexFile = "resource/rdex_points.cfg";
-    private String acsFile = "resource/acs_points.cfg";
+    private String valmetFile = "src/main/resources/valmet_points.cfg";
+    private String rdexFile = "src/main/resources/rdex_points.cfg";
+    private String acsFile = "src/main/resources/acs_points.cfg";
 
     private Object[] valmetArray;
     private Object[] rdexArray;
@@ -185,7 +185,7 @@ public class PointEditor extends JFrame implements ActionListener {
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
         tabbedPane = new JTabbedPane();
-        icon = new ImageIcon("resource/fdeicon.gif");
+        icon = new ImageIcon("src/main/resources/fdeicon.gif");
         acsPanel = new JPanel();
         acsPanel.setLayout(null);
         acsTypeLabel = new JLabel("Type:");
@@ -341,7 +341,7 @@ public class PointEditor extends JFrame implements ActionListener {
         acsCopy.addActionListener(this);
 
         try {
-            acsPointList = new RandomAccessFile("resource/acs_points.cfg", "rw");
+            acsPointList = new RandomAccessFile("src/main/resources/acs_points.cfg", "rw");
         } catch (Exception e) {
             System.out.println("error making random access file" + e);
         }
@@ -484,7 +484,7 @@ public class PointEditor extends JFrame implements ActionListener {
         rdexCopy.addActionListener(this);
 
         try {
-            rdexPointList = new RandomAccessFile("resource/rdex_points.cfg", "rw");
+            rdexPointList = new RandomAccessFile("src/main/resources/rdex_points.cfg", "rw");
         } catch (Exception e) {
             System.out.println("error making random access file" + e);
         }
@@ -634,7 +634,7 @@ public class PointEditor extends JFrame implements ActionListener {
         valmetCopy.addActionListener(this);
 
         try {
-            valmetPointList = new RandomAccessFile("resource/valmet_points.cfg", "rw");
+            valmetPointList = new RandomAccessFile("src/main/resources/valmet_points.cfg", "rw");
         } catch (Exception e) {
             System.out.println("error making random access file" + e);
         }

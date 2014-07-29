@@ -110,8 +110,8 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	private Socket fdeSocket = null;
 	private DataOutputStream out = null;
 	private DataInputStream in = null;
-	private final String DEFAULT_POINTFILE = "resource/acs_points.cfg";
-	private final String DEFAULT_TRAFFICFILE = "resource/acs_traffic_log.txt";
+	private final String DEFAULT_POINTFILE = "src/main/resources/acs_points.cfg";
+	private final String DEFAULT_TRAFFICFILE = "src/main/resources/acs_traffic_log.txt";
 	private RandomAccessFile pointList;
 	private String pointFile = null;
 	private String trafficFile = null;
@@ -241,7 +241,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 			//write message to traffic log file
 			try
 			{
-				FileWriter traffic = new FileWriter("resource/acs_traffic_log.txt", true);
+				FileWriter traffic = new FileWriter("src/main/resources/acs_traffic_log.txt", true);
 				traffic.write(getDebugTimeStamp() + "-------------------10 SECOND HEARTBEAT TIMED OUT-------------------" + "\n");
 				traffic.close();
 			} catch (Exception e)
@@ -259,7 +259,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 				//write message to traffic log file
 				try
 				{
-					FileWriter traffic = new FileWriter("resource/acs_traffic_log.txt", true);
+					FileWriter traffic = new FileWriter("src/main/resources/acs_traffic_log.txt", true);
 					traffic.write(getDebugTimeStamp() + "---------DISCONNECTING DUE TO 60 SECOND TIME OUT FROM YUKON--------" + "\n");
 					traffic.close();
 				} catch (Exception e)
@@ -619,7 +619,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 		// Create recieve log random access file
 		try
 		{
-			pointList = new RandomAccessFile("resource/acs_yukon_points.txt", "rw");
+			pointList = new RandomAccessFile("src/main/resources/acs_yukon_points.txt", "rw");
 		} catch (Exception e)
 		{
 			System.out.println(getDebugTimeStamp() + "Error creating recv log file");
@@ -1282,7 +1282,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 		BufferedReader fileBuffer = null;
 		try
 		{
-			fileBuffer = new BufferedReader(new FileReader("resource/acs_yukon_points.txt"));
+			fileBuffer = new BufferedReader(new FileReader("src/main/resources/acs_yukon_points.txt"));
 		} catch (Exception e)
 		{
 			if ("java.io.FileNotFoundException".equalsIgnoreCase(e.toString()))
@@ -1337,7 +1337,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 
 		try
 		{
-			fileBuffer = new BufferedReader(new FileReader("resource/acs_yukon_points.txt"));
+			fileBuffer = new BufferedReader(new FileReader("src/main/resources/acs_yukon_points.txt"));
 		} catch (Exception e)
 		{
 			if ("java.io.FileNotFoundException".equalsIgnoreCase(e.toString()))
@@ -1408,7 +1408,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 		{
 			try
 			{
-				FileWriter yukonFileWriter = new FileWriter(new File("resource/acs_yukon_points.txt"));
+				FileWriter yukonFileWriter = new FileWriter(new File("src/main/resources/acs_yukon_points.txt"));
 
 				for (int j = 0; j < pointAsStrings.length; j++)
 				{
@@ -1465,7 +1465,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 		{
 			try
 			{
-				FileWriter yukonFileWriter = new FileWriter(new File("resource/acs_yukon_points.txt"));
+				FileWriter yukonFileWriter = new FileWriter(new File("src/main/resources/acs_yukon_points.txt"));
 
 				for (int j = 0; i < pointAsStrings.length; j++)
 				{

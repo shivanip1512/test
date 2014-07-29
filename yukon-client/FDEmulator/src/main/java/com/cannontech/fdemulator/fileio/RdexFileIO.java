@@ -24,7 +24,7 @@ import com.cannontech.fdemulator.protocols.RdexPoint;
 public class RdexFileIO
 {
 	
-	public static String rdexFile = "resource/rdex_points.cfg";
+	public static String rdexFile = "src/main/resources/rdex_points.cfg";
 	private static final String LF = System.getProperty("line.separator");
 	private BufferedReader file;
 	

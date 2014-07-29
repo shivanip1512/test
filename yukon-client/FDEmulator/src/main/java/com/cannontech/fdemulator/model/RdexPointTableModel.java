@@ -22,7 +22,7 @@ public class RdexPointTableModel extends javax.swing.table.AbstractTableModel
 	public static final int MAX_COLUMN = 5;
 	public static final int DELTA_COLUMN = 6;
 	public static final int MAXSTART_COLUMN = 7;
-	public static final String rdexFile = "resource/rdex_points.cfg";
+	public static final String rdexFile = "src/main/resources/rdex_points.cfg";
 	private static final String LF = System.getProperty("line.separator");
 	private BufferedReader file;
 	private RdexFileIO rdexFileIO = null;

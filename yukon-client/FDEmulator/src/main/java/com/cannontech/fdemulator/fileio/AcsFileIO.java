@@ -22,7 +22,7 @@ import com.cannontech.fdemulator.protocols.ACSPoint;
  */
 public class AcsFileIO
 {
-	public static String acsFile = "resource/acs_points.cfg";
+	public static String acsFile = "src/main/resources/acs_points.cfg";
 	private static final String LF = System.getProperty("line.separator");
 	private BufferedReader file;
 	
