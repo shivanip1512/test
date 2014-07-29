@@ -27,8 +27,15 @@ public interface PlcDeviceAttributeReadService {
     public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attributes, DeviceRequestType type, LiteYukonUser user);
     
     /**
+     * Please use this method instead:
+     * @see com.cannontech.amr.deviceread.dao#readDeviceCollection()
+     * 
      * This method only exists to support old code that hasn't been converted 
-     * to the DeviceAttributeReadService.This method work only on PLC devices.
+     * to the DeviceAttributeReadService.
+     * 
+     * note: This method works only on PLC devices. This method supports cancellations and retries while
+     * @see com.cannontech.amr.deviceread.dao#readDeviceCollection() does not.
+     * 
      */
     @Deprecated
     public CommandRequestExecutionObjects<CommandRequestDevice> backgroundReadDeviceCollection(DeviceCollection deviceCollection, 
