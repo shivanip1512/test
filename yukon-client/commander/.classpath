@@ -20,7 +20,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry kind="lib" path="/common/resource"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

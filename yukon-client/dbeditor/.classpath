@@ -13,6 +13,5 @@
 	<classpathentry kind="lib" path="resource"/>
 	<classpathentry kind="lib" path="/common/resource"/>
 	<classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

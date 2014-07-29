@@ -20,6 +20,5 @@
 			<attribute name="owner.project.facets" value="jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -3,6 +3,5 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="/common"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -10,7 +10,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/common"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/trending"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/esub"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/tdc"/>

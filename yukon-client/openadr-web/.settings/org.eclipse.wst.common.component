@@ -12,9 +12,6 @@
         <dependent-module archiveName="yukonappserver.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/yukonappserver/yukonappserver">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="loadcontrol.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/loadcontrol/loadcontrol">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="java-output-path" value="/openadr-web/build/classes"/>
         <property name="context-root" value="openadr"/>
     </wb-module>
