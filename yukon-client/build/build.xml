@@ -177,14 +177,6 @@
         </antcall>
     </target>
 
-    <target name="loadcontrol">
-        <antcall target="tdc" />
-        <antcall target="singlebuild" inheritAll="true">
-            <param name="dotarget" value="build" />
-            <param name="filename" value="${loadcontrol}" />
-        </antcall>
-    </target>
-
     <target name="yukon-web">
         <antcall target="singlebuild" inheritAll="true">
             <param name="dotarget" value="build" />
