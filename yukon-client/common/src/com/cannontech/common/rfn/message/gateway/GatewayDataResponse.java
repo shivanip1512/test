@@ -1,7 +1,6 @@
 package com.cannontech.common.rfn.message.gateway;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -32,12 +31,12 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private ConnectionStatus connectionStatus;
     private LastCommStatus lastCommStatus;
     private long lastCommStatusTimestamp;
-    private List<Radio> radios;
+    private Set<Radio> radios;
     
     private Authentication authentication;
     
     private String collectionSchedule; // Cron string
-    private List<DataSequence> sequences;
+    private Set<DataSequence> sequences;
     
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
@@ -151,11 +150,11 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         this.lastCommStatusTimestamp = lastCommStatusTimestamp;
     }
     
-    public List<Radio> getRadios() {
+    public Set<Radio> getRadios() {
         return radios;
     }
     
-    public void setRadios(List<Radio> radios) {
+    public void setRadios(Set<Radio> radios) {
         this.radios = radios;
     }
     
@@ -175,11 +174,11 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         this.collectionSchedule = collectionSchedule;
     }
     
-    public List<DataSequence> getSequences() {
+    public Set<DataSequence> getSequences() {
         return sequences;
     }
     
-    public void setSequences(List<DataSequence> sequences) {
+    public void setSequences(Set<DataSequence> sequences) {
         this.sequences = sequences;
     }
     
