@@ -989,8 +989,8 @@
                 <name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
                 <cmd text="getconfig intervals" />
             </command>
-            <command id="READ_IED_BLINK_COUNT">
-                <name>Read IED Blink Count</name>
+            <command id="READ_IED_COUNTS">
+                <name>Read IED Blink and Demand Reset Counts</name>
                 <cmd text="getvalue ied outage" />
                 <pointRef name="IED Blink Count" />
                 <pointRef name="IED Demand Reset Count" />
@@ -1460,8 +1460,8 @@
                 <name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
                 <cmd text="getconfig intervals" />
             </command>
-            <command id="READ_IED_BLINK_COUNT">
-                <name>Read IED Blink Count</name>
+            <command id="READ_IED_COUNTS">
+                <name>Read IED Blink and Demand Reset Counts</name>
                 <cmd text="getvalue ied outage" />
                 <pointRef name="IED Blink Count" />
                 <pointRef name="IED Demand Reset Count" />
