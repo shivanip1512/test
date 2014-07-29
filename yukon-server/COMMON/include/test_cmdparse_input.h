@@ -249,5 +249,14 @@ std::string inputStrings[] = {
 "getconfig configuration",
 "putconfig xcom data 'Offpeak rate:6.5*CENTSSIGN*/kWh' msgpriority 7 timeout 150 min",
 "putconfig xcom data 'Offpeak rate:6.5*C*/kWh' msgpriority 7 timeout 150 min",
+"getvalue voltage profile",
+"getvalue voltage profile 12/24/1997",
+"getvalue voltage profile 12:34",
+"getvalue voltage profile 12/24/1997 12:34",
+"getvalue voltage profile 12/24/1997 12/25/1997",
+"getvalue voltage profile 12/24/1997 12:34 12/25/1997",
+"getvalue voltage profile 12/24/1997 12/25/1997 12:35",
+//  230
+"getvalue voltage profile 12/24/1997 12:34 12/25/1997 12:35",
 };
 
