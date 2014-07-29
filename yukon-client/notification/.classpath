@@ -6,7 +6,6 @@
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry kind="lib" path="/third-party/httpclient-4.3.4.jar"/>
 	<classpathentry kind="lib" path="/third-party/httpcore-4.3.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
