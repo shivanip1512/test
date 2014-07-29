@@ -165,6 +165,7 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
             /* Check if the serial number entered is numeric) */
             if (!StringUtils.isNumeric(serialNumber)) {
                 errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
+                return;
             }
 
             /* Check if the current energy company setting is alphanumeric */
@@ -174,6 +175,7 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
         {
             if (!StringUtils.isAlphanumeric(serialNumber)) {
                 errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
+                return;
             }
         }
 
