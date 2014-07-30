@@ -2270,6 +2270,24 @@ void LoadCommFailPoints(LONG ptid)
     {
         commFailDeviceIDToPointIDMap.clear();       // No more map.
     }
+    else
+    {
+        // remove the map elements with ptid as their value
+
+        CtiCommFailPoints_t::iterator entry = commFailDeviceIDToPointIDMap.begin();
+
+        while ( entry != commFailDeviceIDToPointIDMap.end() )
+        {
+            if ( entry->second == ptid )
+            {
+                entry = commFailDeviceIDToPointIDMap.erase( entry );
+            }
+            else
+            {
+                ++entry;
+            }
+        }
+    }
 
     LONG did, pid;
     string sql = string("select paobjectid, pointid from point where pointoffset = ") + CtiNumStr(COMM_FAIL_OFFSET) + string(" and pointtype = 'Status'");
