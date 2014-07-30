@@ -24,6 +24,7 @@ import javax.swing.event.TreeSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.YukonImagePanel;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.TitleBorder;
@@ -39,7 +40,6 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
 import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.message.dispatch.message.DBChangeMsg;

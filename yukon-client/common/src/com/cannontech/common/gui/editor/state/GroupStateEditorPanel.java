@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.editor.state;
+package com.cannontech.common.gui.editor.state;
 /**
  * This type was created in VisualAge.
  */
@@ -25,6 +25,7 @@ import javax.swing.event.CaretListener;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.YukonImagePanel;
 import com.cannontech.common.gui.util.ColorComboBoxCellRenderer;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -37,7 +38,6 @@ import com.cannontech.database.data.state.GroupState;
 import com.cannontech.database.data.state.State;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.db.state.YukonImage;
-import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.util.value.JCValueEvent;
 import com.klg.jclass.util.value.JCValueListener;

@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.state;
 
+import com.cannontech.common.gui.wizard.state.GroupStateNamePanel;
 import com.cannontech.database.db.state.StateGroupUtils;
 
 /**

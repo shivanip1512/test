@@ -32,7 +32,7 @@ public Object[] createNewPanel(int panelIndex)
 	switch( panelIndex )
 	{
 		case 0: 
-			objs[0] = new com.cannontech.dbeditor.editor.state.GroupStateEditorPanel();
+			objs[0] = new com.cannontech.common.gui.editor.state.GroupStateEditorPanel();
 			objs[1] = "General";
 			break;
 	}

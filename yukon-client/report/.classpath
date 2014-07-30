@@ -4,7 +4,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/web-common"/>
-	<classpathentry kind="src" path="/dbeditor"/>
 	<classpathentry kind="src" path="/resource"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar">

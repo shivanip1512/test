@@ -464,8 +464,8 @@ public void imageButton_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 
    	final javax.swing.JDialog d = new javax.swing.JDialog();
 
-   	com.cannontech.dbeditor.wizard.state.YukonImagePanel yPanel =
-		new com.cannontech.dbeditor.wizard.state.YukonImagePanel( yukonImages )
+   	com.cannontech.common.gui.YukonImagePanel yPanel =
+		new com.cannontech.common.gui.YukonImagePanel( yukonImages )
    	{
 	  	public void disposePanel()
 	  	{

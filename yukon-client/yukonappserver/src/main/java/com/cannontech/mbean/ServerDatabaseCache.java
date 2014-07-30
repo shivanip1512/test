@@ -275,10 +275,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     /**
      * Called by:
-     * com.cannontech.analysis.tablemodel.HECO_SettlementModelBase.loadSettlementCustomerMap()
-     * com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramEnergyExchangeCustomerListPanel.
-     * initializeAddPanel()
-     * com.cannontech.dbeditor.editor.notification.group.NotificationPanel.getJTreeNotifs()
+     * HECO_SettlementModelBase.loadSettlementCustomerMap()
+     * LMProgramEnergyExchangeCustomerListPanel.initializeAddPanel()
+     * NotificationPanel.getJTreeNotifs()
      */
     @Override
     public List<LiteCICustomer> getAllCICustomers() {

@@ -53,15 +53,19 @@ public AdvancedPropertiesDialog( AdvancedPropertiesGUI panel, String newTitle )
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
-	if (e.getSource() == getJButtonOk()) 
-		connEtoC1(e);
-	if (e.getSource() == getJButtonCanel()) 
-		connEtoC2(e);
+	if (e.getSource() == getJButtonOk()) {
+        connEtoC1(e);
+    }
+	if (e.getSource() == getJButtonCanel())
+     {
+        connEtoC2(e);
 	// user code begin {2}
 	// user code end
+    }
 }
 /**
  * connEtoC1:  (JButtonOk.action.actionPerformed(java.awt.event.ActionEvent) --> BaseAdvancedPanel.jButtonOk_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
@@ -72,7 +76,7 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.jButtonOk_ActionPerformed(arg1);
+		jButtonOk_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -90,7 +94,7 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.jButtonCanel_ActionPerformed(arg1);
+		jButtonCanel_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -213,7 +217,6 @@ private java.awt.FlowLayout getJPanelOkCancelFlowLayout() {
 /**
  * Insert the method's description here.
  * Creation date: (9/20/2001 3:04:52 PM)
- * @return com.cannontech.dbeditor.editor.device.AdvancedPropertiesGUI
  */
 public AdvancedPropertiesGUI getPropertiesPanel() {
 	return propertiesPanel;
@@ -304,8 +307,9 @@ public void jButtonCanel_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	//set the current values in this Panel to the original values
 	getPropertiesPanel().setValue( getPropertiesPanel().getOriginalObject() );
 
-	if( dialog != null )
-		dialog.setVisible(false);
+	if( dialog != null ) {
+        dialog.setVisible(false);
+    }
 
 	return;
 }
@@ -323,8 +327,9 @@ public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	
 	setResponse( RESPONSE_ACCEPT );
 
-	if( dialog != null )
-		dialog.setVisible(false);
+	if( dialog != null ) {
+        dialog.setVisible(false);
+    }
 	
 	return;
 }
@@ -340,7 +345,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aAdvancedPropertiesDialog);
 		frame.setSize(aAdvancedPropertiesDialog.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -356,7 +362,6 @@ public static void main(java.lang.String[] args) {
 /**
  * Insert the method's description here.
  * Creation date: (9/20/2001 3:04:52 PM)
- * @param newPropertiesPanel com.cannontech.dbeditor.editor.device.AdvancedPropertiesGUI
  */
 private void setPropertiesPanel(AdvancedPropertiesGUI newPropertiesPanel) {
 	propertiesPanel = newPropertiesPanel;
@@ -395,7 +400,7 @@ public int showPanel( java.awt.Frame parentFrame )
 		remove( getJPanelOkCancel() );
 
 		// if we have a GridBagLayout, add the real panel and readd 
-		if( this.getLayout() instanceof java.awt.GridBagLayout )
+		if( getLayout() instanceof java.awt.GridBagLayout )
 		{
 			//be sure the users defined panel is in the top portion of the AdvancedPanel
 			java.awt.GridBagConstraints g = ((java.awt.GridBagLayout)getLayout()).getConstraints(getJPanelDynamic());
@@ -406,9 +411,9 @@ public int showPanel( java.awt.Frame parentFrame )
 			java.awt.GridBagConstraints gb = ((java.awt.GridBagLayout)getLayout()).getConstraints(getJPanelOkCancel());
 			gb.gridy = 2;
 			add( getJPanelOkCancel(), gb );
-		}
-		else
-			throw new IllegalStateException(this.getClass().getName() + " is only allowed to have a GridBagLayout, please check source code!!!");
+		} else {
+            throw new IllegalStateException(this.getClass().getName() + " is only allowed to have a GridBagLayout, please check source code!!!");
+        }
 
 		dialog.setTitle( getTitle() );
 		dialog.setContentPane( this );
@@ -418,8 +423,9 @@ public int showPanel( java.awt.Frame parentFrame )
 							 (int)(getSize().getHeight() + 35) );
 
 
-		if( parentFrame != null )
-			dialog.setLocationRelativeTo(parentFrame);
+		if( parentFrame != null ) {
+            dialog.setLocationRelativeTo(parentFrame);
+        }
 	}
 
 

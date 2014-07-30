@@ -1,8 +1,8 @@
-package com.cannontech.dbeditor.wizard.state;
+package com.cannontech.common.gui.wizard.state;
 
+import com.cannontech.common.gui.editor.state.GroupStateEditorPanel;
 import com.cannontech.database.data.state.GroupState;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.dbeditor.editor.state.GroupStateEditorPanel;
 
 /**
  * This type was created in VisualAge.
@@ -102,13 +102,15 @@ private com.klg.jclass.field.JCSpinField getStateNumberSpinner() {
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object val) {
 
     GroupState gs = (GroupState) val;
 
 	String stateGroupName = getStateGroupNameTextField().getText();
-	if( stateGroupName != null )
-		gs.getStateGroup().setName(stateGroupName);
+	if( stateGroupName != null ) {
+        gs.getStateGroup().setName(stateGroupName);
+    }
 
 
 
@@ -133,10 +135,11 @@ public Object getValue(Object val) {
     {
         Object stateNumberSpinVal = getStateNumberSpinner().getValue();
         Integer numberOfStates = null;
-        if( stateNumberSpinVal instanceof Long )
+        if( stateNumberSpinVal instanceof Long ) {
             numberOfStates = new Integer( ((Long)stateNumberSpinVal).intValue() );
-        else if( stateNumberSpinVal instanceof Integer )
+        } else if( stateNumberSpinVal instanceof Integer ) {
             numberOfStates = new Integer( ((Integer)stateNumberSpinVal).intValue() );
+        }
         
     	// add the rest of the states below
     	for(int i=0;i<numberOfStates.intValue();i++)
@@ -222,14 +225,15 @@ private void initConnections() throws java.lang.Exception {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() {
     if( getStateGroupNameTextField().getText().length() > 0 )
     {
         setErrorString("The State Group Name text field must be filled in");
         return true;
-    }
-    else
+    } else {
         return false;
+    }
 }
 
 /**
@@ -244,7 +248,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aGroupStateNamePanel);
 		frame.setSize(aGroupStateNamePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -257,15 +262,18 @@ public static void main(java.lang.String[] args) {
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object val)
 {
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getStateGroupNameTextField().requestFocus(); 
@@ -278,9 +286,11 @@ public void setFirstFocus()
  * @param e javax.swing.event.CaretEvent
  */
 
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
-    if (e.getSource() == getStateGroupNameTextField()) 
+    if (e.getSource() == getStateGroupNameTextField()) {
         connEtoC3(e);
+    }
 }
 
 /**
@@ -289,7 +299,7 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
  */
 private void connEtoC3(javax.swing.event.CaretEvent arg1) {
     try {
-        this.stateGroupNameTextField_CaretUpdate();
+        stateGroupNameTextField_CaretUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }

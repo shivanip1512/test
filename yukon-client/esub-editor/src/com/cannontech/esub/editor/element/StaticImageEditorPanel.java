@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.YukonImagePanel;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.util.SwingUtil;
@@ -13,7 +14,6 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.conns.ConnPool;
@@ -238,8 +238,8 @@ public class StaticImageEditorPanel extends DataInputPanel {
 				Frame parent = SwingUtil.getParentFrame(StaticImageEditorPanel.this);
 				final javax.swing.JDialog d = new javax.swing.JDialog(parent);
 
-				com.cannontech.dbeditor.wizard.state.YukonImagePanel yPanel =
-					new com.cannontech.dbeditor.wizard.state.YukonImagePanel(
+				com.cannontech.common.gui.YukonImagePanel yPanel =
+					new com.cannontech.common.gui.YukonImagePanel(
 						null) {
 					public void disposePanel() {
 						d.setVisible(false);

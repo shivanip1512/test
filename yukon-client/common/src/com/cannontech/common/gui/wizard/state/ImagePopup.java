@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.wizard.state;
+package com.cannontech.common.gui.wizard.state;
 
 import javax.swing.JPopupMenu;
 
@@ -13,7 +13,7 @@ import com.cannontech.spring.YukonSpringHook;
  * 
  * A undefined generated comment
  */
-class ImagePopup extends JPopupMenu implements java.awt.event.ActionListener
+public class ImagePopup extends JPopupMenu implements java.awt.event.ActionListener
 {
    private LiteYukonImage selectedLiteImage = null;
    private com.cannontech.common.gui.util.CTICallBack caller = null;
@@ -53,12 +53,15 @@ class ImagePopup extends JPopupMenu implements java.awt.event.ActionListener
     * Method to handle events for the ActionListener interface.
     * @param e java.awt.event.ActionEvent
     */
-   public void actionPerformed(java.awt.event.ActionEvent e) 
+   @Override
+public void actionPerformed(java.awt.event.ActionEvent e) 
    {
-      if (e.getSource() == getJMenuItemDelete()) 
-         jButtonActionPerformed_Delete(e);
-      if (e.getSource() == getJMenuItemEdit()) 
-         jButtonActionPerformed_Edit(e);
+      if (e.getSource() == getJMenuItemDelete()) {
+        jButtonActionPerformed_Delete(e);
+    }
+      if (e.getSource() == getJMenuItemEdit()) {
+        jButtonActionPerformed_Edit(e);
+    }
    }
    
    

@@ -13,7 +13,6 @@
 	<classpathentry kind="lib" path="/third-party/batik.jar"/>
 	<classpathentry kind="lib" path="/third-party/jloox30.jar"/>
 	<classpathentry kind="src" path="/esub"/>
-	<classpathentry kind="src" path="/dbeditor"/>
 	<classpathentry kind="src" path="/trending"/>
 	<classpathentry kind="src" path="/tdc"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common"/>

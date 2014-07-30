@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.wizard.state;
+package com.cannontech.common.gui;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -6,6 +6,8 @@ import javax.swing.SwingConstants;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.image.ImageChooser;
 import com.cannontech.common.gui.util.DialogUtil;
+import com.cannontech.common.gui.wizard.state.GroupStateNamePanel;
+import com.cannontech.common.gui.wizard.state.ImagePopup;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.yukon.IDatabaseCache;
@@ -22,14 +24,16 @@ public class YukonImagePanel extends com.cannontech.common.gui.util.DataInputPan
          super(popupMenu);
       }
       
-      public void mousePressed(java.awt.event.MouseEvent me) 
+      @Override
+    public void mousePressed(java.awt.event.MouseEvent me) 
       {
          javax.swing.JLabel imageLabel = (javax.swing.JLabel)me.getSource();
          
-         if( me.isControlDown() )
+         if( me.isControlDown() ) {
             unselectLabel( imageLabel );
-         else
+        } else {
             selectLabel(imageLabel, false);
+        }
       }
    }
    public static final int CANCEL_OPTION = 0;
@@ -86,17 +90,22 @@ public YukonImagePanel(LiteYukonImage[] images)
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
-	if (e.getSource() == getJButtonAddImages()) 
-		connEtoC1(e);
-	if (e.getSource() == getJButtonOk()) 
-		connEtoC2(e);
-	if (e.getSource() == getJButtonCancel()) 
-		connEtoC3(e);
+	if (e.getSource() == getJButtonAddImages()) {
+        connEtoC1(e);
+    }
+	if (e.getSource() == getJButtonOk()) {
+        connEtoC2(e);
+    }
+	if (e.getSource() == getJButtonCancel())
+     {
+        connEtoC3(e);
 	// user code begin {2}
 	// user code end
+    }
 }
 
 
@@ -109,7 +118,7 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.jButtonAddImages_ActionPerformed(arg1);
+		jButtonAddImages_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -129,7 +138,7 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.jButtonOk_ActionPerformed(arg1);
+		jButtonOk_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -149,7 +158,7 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.jButtonCancel_ActionPerformed(arg1);
+		jButtonCancel_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -169,7 +178,7 @@ private void connEtoC5(javax.swing.event.ListSelectionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.jListCategories_ValueChanged(arg1);
+		jListCategories_ValueChanged(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -180,6 +189,7 @@ private void connEtoC5(javax.swing.event.ListSelectionEvent arg1) {
 }
 
 
+@Override
 public void ctiCallBackAction( java.beans.PropertyChangeEvent pEvent )
 {
    if( pEvent.getSource() == getImagePopupMenu() )
@@ -236,7 +246,8 @@ private void doImagePanelLayout()
    
    javax.swing.SwingUtilities.invokeLater( new Runnable()
    {   
-      public void run()
+      @Override
+    public void run()
       {
          java.awt.Component currComp = null;
          int currPoint = 0;
@@ -259,10 +270,11 @@ private void doImagePanelLayout()
          }
          
 
-         if( currComp != null )
+         if( currComp != null ) {
             getJPanelImages().setPreferredSize( new java.awt.Dimension(
                   (int)getJPanelImages().getPreferredSize().getWidth(),
                   currPoint + getJPanelImagesFlowLayout().getHgap() ) );
+        }
 
          getJPanelImages().revalidate();
          getJPanelImages().repaint();
@@ -555,26 +567,29 @@ public int getReturnResult()
 
 public javax.swing.ImageIcon getSelectedImageIcon()
 {
-   if( selectedLabel != null )
-      return (javax.swing.ImageIcon)selectedLabel.getIcon();
-   else
-      return null;
+   if( selectedLabel != null ) {
+    return (javax.swing.ImageIcon)selectedLabel.getIcon();
+} else {
+    return null;
+}
 }
 
 
 /* Return a null image if there is nothing selected */
 public LiteYukonImage getSelectedLiteImage() 
 {
-   if( selectedLabel == null )
-      return null;
-   else
-      return (LiteYukonImage)selectedLabel.getClientProperty("YukonImage");
+   if( selectedLabel == null ) {
+    return null;
+} else {
+    return (LiteYukonImage)selectedLabel.getClientProperty("YukonImage");
+}
 }
 
 
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object val) 
 {
 
@@ -809,7 +824,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aGroupStateNamePanel);
 		frame.setSize(aGroupStateNamePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -821,26 +837,30 @@ public static void main(java.lang.String[] args) {
 }
 
 
-   public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e)
+   @Override
+public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e)
    {
    }
 
 
-   public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e)
+   @Override
+public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e)
    {  
    }
 
 
-   public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) 
+   @Override
+public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) 
    {
       
       if( e.getSource() == getImagePopupMenu() )
       {
-         if( selectedLabel != null )
+         if( selectedLabel != null ) {
             getImagePopupMenu().setSelectedLiteImage(
                   (LiteYukonImage)selectedLabel.getClientProperty("YukonImage") );
-         else
+        } else {
             getImagePopupMenu().setSelectedLiteImage(null);
+        }
 
       }
          
@@ -851,17 +871,20 @@ private void selectLabel(final javax.swing.JLabel label, final boolean scrollToL
 {
    javax.swing.SwingUtilities.invokeLater(new Runnable() 
    {
-      public void run() 
+      @Override
+    public void run() 
       {
-         if (selectedLabel != null) 
+         if (selectedLabel != null) {
             selectedLabel.setBorder(unselectedBorder);
+        }
 
          label.setBorder(selectedBorder);
          selectedLabel = label;
          
-         if( scrollToLabel )
+         if( scrollToLabel ) {
             getJScrollPaneImages().getViewport().scrollRectToVisible(
                new java.awt.Rectangle(label.getLocation(), label.getSize()) );
+        }
       }
    });
 
@@ -872,18 +895,20 @@ public void setSelectedLiteYukonImage( LiteYukonImage liteImg )
 {
    for( int i = 0; i < getJPanelImages().getComponentCount(); i++ )
    {
-      if( !(getJPanelImages().getComponent(i) instanceof javax.swing.JLabel) )
-         continue;
+      if( !(getJPanelImages().getComponent(i) instanceof javax.swing.JLabel) ) {
+        continue;
+    }
 
       javax.swing.JLabel imgLabel = (javax.swing.JLabel)getJPanelImages().getComponent(i);
       LiteYukonImage labelImage = (LiteYukonImage)imgLabel.getClientProperty("YukonImage");
 
-      if( labelImage != null && liteImg != null )
-         if( labelImage.getImageID() == liteImg.getImageID() )
+      if( labelImage != null && liteImg != null ) {
+        if( labelImage.getImageID() == liteImg.getImageID() )
          {
             selectLabel( imgLabel, true );
             return;
-         }   
+         }
+    }   
    }
 
 }
@@ -904,9 +929,11 @@ protected void setUpImages( LiteYukonImage[] images )
          java.util.List imgList = cache.getAllYukonImages();
          images = new LiteYukonImage[ imgList.size() ];
    
-         for( int i = 0; i < imgList.size(); i++ )
-            if( ((LiteYukonImage)imgList.get(i)).getImageValue() != null )
-               images[i] = (LiteYukonImage)imgList.get(i);
+         for( int i = 0; i < imgList.size(); i++ ) {
+            if( ((LiteYukonImage)imgList.get(i)).getImageValue() != null ) {
+                images[i] = (LiteYukonImage)imgList.get(i);
+            }
+        }
       }   
    }
 
@@ -927,8 +954,9 @@ protected void setUpImages( LiteYukonImage[] images )
       {
 			currCategory = image.getImageCategory();
 
-         if( !currCategory.equalsIgnoreCase(com.cannontech.common.util.CtiUtilities.STRING_NONE) )
-      	  catVector.add( currCategory );
+         if( !currCategory.equalsIgnoreCase(com.cannontech.common.util.CtiUtilities.STRING_NONE) ) {
+            catVector.add( currCategory );
+        }
 		}
       
    }
@@ -960,21 +988,25 @@ protected void setUpImages( LiteYukonImage[] images )
    /**
     * setValue method comment.
     */
-   public void setValue(Object val) {
+   @Override
+public void setValue(Object val) {
    }
 
 
    private void unselectLabel(final javax.swing.JLabel label) 
    {
-      if( label != selectedLabel )
-         return;
+      if( label != selectedLabel ) {
+        return;
+    }
    
       javax.swing.SwingUtilities.invokeLater(new Runnable() 
       {
-         public void run()
+         @Override
+        public void run()
          {
-            if (selectedLabel != null) 
-               selectedLabel.setBorder(unselectedBorder);
+            if (selectedLabel != null) {
+                selectedLabel.setBorder(unselectedBorder);
+            }
    
             label.setBorder(unselectedBorder);
             selectedLabel = null;
@@ -989,12 +1021,15 @@ protected void setUpImages( LiteYukonImage[] images )
  * @param e javax.swing.event.ListSelectionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void valueChanged(javax.swing.event.ListSelectionEvent e) {
 	// user code begin {1}
 	// user code end
-	if (e.getSource() == getJListCategories()) 
-		connEtoC5(e);
+	if (e.getSource() == getJListCategories())
+     {
+        connEtoC5(e);
 	// user code begin {2}
 	// user code end
+    }
 }
 }
