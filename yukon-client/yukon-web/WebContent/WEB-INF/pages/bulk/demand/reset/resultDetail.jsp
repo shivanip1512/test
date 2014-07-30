@@ -32,7 +32,8 @@
                     countKey="DEMAND_RESET/${result.key}/COMPLETED_ITEMS"
                     progressLabelTextKey=".bulk.demandReset.results.progressLabel"
                     statusTextKey="DEMAND_RESET/${result.key}/STATUS_TEXT"
-                    statusClassKey="DEMAND_RESET/${result.key}/STATUS_CLASS" classes="dib fl" />
+                    statusClassKey="DEMAND_RESET/${result.key}/STATUS_CLASS" 
+                    classes="dib fl" barClasses="push-down-3"/>
                     
                 <c:if test="${not result.isCanceled()}">
                     <cti:button id="cancel-btn" nameKey="cancel" data-key="${result.key}"/>

@@ -58,6 +58,7 @@ yukon.tools.demand.reset = (function() {
                 });
                 
                 $('.js-progress .js-action').show();
+                $('#cancel-btn').hide();
             }
         },
         

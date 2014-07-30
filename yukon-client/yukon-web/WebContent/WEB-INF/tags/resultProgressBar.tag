@@ -12,7 +12,8 @@
 <%@ attribute name="isAbortedKey" %>
 <%@ attribute name="hideCount" %>
 <%@ attribute name="completionCallback" description="Name of a javascript function to call when progress reaches 100%. The function will be called each iteration of the data updater, so the function must manage being called multiple times if needed." %>
-<%@ attribute name="classes" description="CSS class names applied to the container" %>
+<%@ attribute name="classes" description="CSS class names applied to the container." %>
+<%@ attribute name="barClasses" description="CSS class names applied to the progress bar." %>
 
 <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
 <cti:uniqueIdentifier var="pDescId" prefix="pgd_"/>
@@ -36,7 +37,8 @@
                                 countKey="${countKey}" 
                                 isAbortedKey="${pageScope.isAbortedKey}" 
                                 hideCount="${pageScope.hideCount}" 
-                                completionCallback="${pageScope.completionCallback}" />
+                                completionCallback="${pageScope.completionCallback}"
+                                barClasses="${barClasses}"/>
 </div>
 
 <cti:dataUpdaterCallback function="yukon.ui.progressbar.updateProgressStatus('${pDescId}')" initialize="true" statusText="${statusTextKey}" />
