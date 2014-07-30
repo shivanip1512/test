@@ -24,7 +24,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -52,7 +51,6 @@ public class MapController {
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private PaoDao paoDao;
     @Autowired private PaoLoadingService paoLoadingService;
-    @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private PointService pointService;
     @Autowired private StateDao stateDao;
