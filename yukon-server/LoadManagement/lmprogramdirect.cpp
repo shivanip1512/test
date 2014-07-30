@@ -1145,10 +1145,13 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 {
                                     multiDispatchMsg->insert( CTIDBG_new CtiSignalMsg( SYS_PID_LOADMANAGEMENT,
                                                                                        0,
-                                                                                       "Thermostat Set Point, LM Program: " + getPAOName(),
                                                                                        logMessage,
-                                                                                       GeneralLogType,
-                                                                                       SignalEvent) );
+                                                                                       currentLMGroup->getPAOName() + " / (" + CtiNumStr( currentLMGroup->getPAOId() ) + "): Thermostat Set Point",
+                                                                                       LoadMgmtLogType,
+                                                                                       SignalEvent,
+                                                                                       "(yukon system)",
+                                                                                       0,
+                                                                                       defaultLMStartPriority - 1 ) );
                                 }
                                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
@@ -1933,10 +1936,13 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
                             {
                                 multiDispatchMsg->insert( CTIDBG_new CtiSignalMsg( SYS_PID_LOADMANAGEMENT,
                                                                                    0,
-                                                                                   "Thermostat Set Point, LM Program: " + getPAOName(),
                                                                                    logMessage,
-                                                                                   GeneralLogType,
-                                                                                   SignalEvent) );
+                                                                                   currentLMGroup->getPAOName() + " / (" + CtiNumStr( currentLMGroup->getPAOId() ) + "): Thermostat Set Point",
+                                                                                   LoadMgmtLogType,
+                                                                                   SignalEvent,
+                                                                                   "(yukon system)",
+                                                                                   0,
+                                                                                   defaultLMStartPriority - 1 ) );
                             }
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
@@ -3328,10 +3334,13 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                         {
                             multiDispatchMsg->insert( CTIDBG_new CtiSignalMsg( SYS_PID_LOADMANAGEMENT,
                                                                                0,
-                                                                               "Thermostat Set Point, LM Program: " + getPAOName(),
                                                                                logMessage,
-                                                                               GeneralLogType,
-                                                                               SignalEvent) );
+                                                                               currentLMGroup->getPAOName() + " / (" + CtiNumStr( currentLMGroup->getPAOId() ) + "): Thermostat Set Point",
+                                                                               LoadMgmtLogType,
+                                                                               SignalEvent,
+                                                                               "(yukon system)",
+                                                                               0,
+                                                                               defaultLMStartPriority - 1 ) );
                         }
                         startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
@@ -6124,10 +6133,13 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
                 {
                     multiDispatchMsg->insert( CTIDBG_new CtiSignalMsg( SYS_PID_LOADMANAGEMENT,
                                                                        0,
-                                                                       "Thermostat Simple Set Point, LM Program: " + getPAOName(),
                                                                        logMessage,
-                                                                       GeneralLogType,
-                                                                       SignalEvent) );
+                                                                       currentLMGroup->getPAOName() + " / (" + CtiNumStr( currentLMGroup->getPAOId() ) + "): Thermostat Simple Set Point",
+                                                                       LoadMgmtLogType,
+                                                                       SignalEvent,
+                                                                       "(yukon system)",
+                                                                       0,
+                                                                       defaultLMStartPriority - 1 ) );
                 }
                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
                 currentLMGroup->setNextControlTime(gInvalidCtiTime);
