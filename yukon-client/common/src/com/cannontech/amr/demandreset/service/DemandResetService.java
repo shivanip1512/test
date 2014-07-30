@@ -48,6 +48,6 @@ public interface DemandResetService {
     /**
      * Sends and verifies demand reset.
      */
-    DemandResetResult sendDemandReset(DeviceCollection deviceCollection,
+    DemandResetResult sendDemandResetAndVerify(DeviceCollection deviceCollection,
                                       SimpleCallback<DemandResetResult> alertCallback, YukonUserContext userContext);    
 }

@@ -57,7 +57,7 @@ public class DemandResetController {
                       DeviceCollection deviceCollection,
                       YukonUserContext userContext){
         
-        DemandResetResult result = demandResetService.sendDemandReset(deviceCollection,
+        DemandResetResult result = demandResetService.sendDemandResetAndVerify(deviceCollection,
                                                             new AlertCallback(request),
                                                             userContext);
         model.addAttribute("deviceCollection", deviceCollection);
