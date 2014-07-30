@@ -9,10 +9,13 @@ import org.apache.lucene.search.TermRangeQuery;
 
 
 public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
+    
     BooleanQuery query = new BooleanQuery(false);
+    
     public YukonObjectCriteriaHelper() {
         query.setMinimumNumberShouldMatch(1);
     }
+    
     public Query getCriteria() {
         return query;
     }

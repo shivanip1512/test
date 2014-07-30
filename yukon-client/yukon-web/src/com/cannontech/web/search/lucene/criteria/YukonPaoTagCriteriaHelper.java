@@ -14,7 +14,8 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 
 public abstract class YukonPaoTagCriteriaHelper extends YukonObjectCriteriaHelper {
-    private PaoDefinitionDao paoDefinitionDao;
+    
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     @PostConstruct
     public void initialize() {
@@ -28,10 +29,6 @@ public abstract class YukonPaoTagCriteriaHelper extends YukonObjectCriteriaHelpe
         
     }
     
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    
     protected abstract Set<PaoTag> getPaoTags();
+    
 }

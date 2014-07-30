@@ -8,4 +8,5 @@ public class AnalogPointCriteria extends YukonObjectCriteriaHelper {
         super();
         addCriteria("pointtype", "Analog", BooleanClause.Occur.SHOULD);
     }
+    
 }

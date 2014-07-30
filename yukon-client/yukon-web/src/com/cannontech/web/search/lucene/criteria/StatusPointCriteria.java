@@ -8,5 +8,5 @@ public class StatusPointCriteria extends YukonObjectCriteriaHelper {
         super();
         addCriteria("pointtype", "Status", BooleanClause.Occur.MUST);
     }
-
+    
 }

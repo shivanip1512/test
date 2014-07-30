@@ -9,5 +9,5 @@ public class VoltReductionCriteria extends YukonObjectCriteriaHelper {
         addCriteria("pointtype", "Status", BooleanClause.Occur.SHOULD);
         addCriteria("pointtype", "CalcStatus", BooleanClause.Occur.SHOULD);
     }
-
+    
 }

@@ -7,9 +7,9 @@ import org.apache.lucene.search.BooleanClause;
  * 
  */
 public class MeterCriteria extends YukonObjectCriteriaHelper {
-
-	public MeterCriteria() {
-		addCriteria("isMeter", "true", BooleanClause.Occur.SHOULD);
-	}
-
+    
+    public MeterCriteria() {
+        addCriteria("isMeter", "true", BooleanClause.Occur.SHOULD);
+    }
+    
 }
