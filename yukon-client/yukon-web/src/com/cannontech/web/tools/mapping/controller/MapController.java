@@ -25,7 +25,6 @@ import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.dao.PaoLocationDao;
-import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -99,10 +98,8 @@ public class MapController {
         
         YukonPao pao = paoDao.getYukonPao(id);
         DisplayablePao displayable = paoLoadingService.getDisplayablePao(pao);
-        PaoLocation location = paoLocationDao.getLocation(id);
         
         model.addAttribute("pao", displayable);
-        model.addAttribute("location", location);
         
         List<Attribute> supported = new ArrayList<>();
 
