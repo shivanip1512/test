@@ -4,10 +4,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<cti:url var="appName" value="/"/>
-<c:if test="${appName == '/'}">
+<c:set var="appContextPath" value="${pageContext.request.contextPath}"/>
+<c:if test="${appContextPath == '/'}">
     <%-- When we're running as the root web application, we need an empty string for a prefix. --%>
-    <c:set var="appName" value=""/>
+    <c:set var="appContextPath" value=""/>
 </c:if>
 <script type="text/javascript">
 var yg = {
@@ -15,7 +15,7 @@ var yg = {
         formats: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
     },
     
-    app_name: '${appName}',
+    app_context_path: '${appContextPath}',
     
     text: {
         cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>',
