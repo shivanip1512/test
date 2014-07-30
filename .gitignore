@@ -37,9 +37,6 @@ yukon-client/export/.cvsignore
 yukon-client/export/bin
 yukon-client/export/build
 yukon-client/lib
-yukon-client/loadcontrol/.cvsignore
-yukon-client/loadcontrol/bin
-yukon-client/loadcontrol/build
 yukon-client/macs/.cvsignore
 yukon-client/macs/bin
 yukon-client/macs/build
