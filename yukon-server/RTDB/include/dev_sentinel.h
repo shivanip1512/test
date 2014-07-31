@@ -65,8 +65,6 @@ public:
 private:
     CtiProtocolANSI_sentinel   _ansiProtocol;
 
-    std::string _result_string;
-
     unsigned long _lastLPTime;
 };
 

@@ -20,7 +20,7 @@ class IM_EX_PROT CtiANSIApplication
           kv2,
           sentinel,
           focus
-      
+
       } ANSI_DEVICE_TYPE;
 
       typedef enum
@@ -121,7 +121,7 @@ class IM_EX_PROT CtiANSIApplication
     bool checkResponse( BYTE aResponseByte);
     void identificationData(BYTE * );
     bool areThereMorePackets( void );
-    
+
     bool isReadComplete( void ) const;
     bool isReadFailed( void )   const;
 
@@ -165,7 +165,7 @@ class IM_EX_PROT CtiANSIApplication
        CtiANSIDatalink   _datalinkLayer;
 
        int               _prot_version;
-       BYTE               *_currentTable;
+       std::vector<BYTE>  _currentTable;
        int                _currentTableSize;
        int                _totalBytesInTable;
        int                _initialOffset;

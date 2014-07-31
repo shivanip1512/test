@@ -438,37 +438,35 @@ class IM_EX_PROT CtiProtocolANSI
 
       ULONG                            _bytesInGot;
 
-      ANSI_TABLE_WANTS                 *_tables;
-      WANTS_HEADER                     *_header;
+      std::vector<ANSI_TABLE_WANTS>     _tables;
+      boost::scoped_ptr<WANTS_HEADER>   _header;
 
-      CtiAnsiBillingTable              *_billingTable;
+      boost::scoped_ptr<CtiAnsiTable00> _table00;
+      boost::scoped_ptr<CtiAnsiTable01> _table01;
+      boost::scoped_ptr<CtiAnsiTable08> _table08;
+      boost::scoped_ptr<CtiAnsiTable10> _table10;
+      boost::scoped_ptr<CtiAnsiTable11> _table11;
+      boost::scoped_ptr<CtiAnsiTable12> _table12;
+      boost::scoped_ptr<CtiAnsiTable13> _table13;
+      boost::scoped_ptr<CtiAnsiTable14> _table14;
+      boost::scoped_ptr<CtiAnsiTable15> _table15;
+      boost::scoped_ptr<CtiAnsiTable16> _table16;
+      boost::scoped_ptr<CtiAnsiTable21> _table21;
+      boost::scoped_ptr<CtiAnsiTable22> _table22;
+      boost::scoped_ptr<CtiAnsiTable23> _table23;
+      boost::scoped_ptr<CtiAnsiTable27> _table27;
+      boost::scoped_ptr<CtiAnsiTable28> _table28;
+      boost::scoped_ptr<CtiAnsiTable31> _table31;
+      boost::scoped_ptr<CtiAnsiTable32> _table32;
+      boost::scoped_ptr<CtiAnsiTable33> _table33;
+      boost::scoped_ptr<CtiAnsiTable51> _table51;
+      boost::scoped_ptr<CtiAnsiTable52> _table52;
+      boost::scoped_ptr<CtiAnsiTable61> _table61;
+      boost::scoped_ptr<CtiAnsiTable62> _table62;
+      boost::scoped_ptr<CtiAnsiTable63> _table63;
+      boost::scoped_ptr<CtiAnsiTable64> _table64;
 
-      CtiAnsiTable00  *_table00;
-      CtiAnsiTable01  *_table01;
-      CtiAnsiTable08  *_table08;
-      CtiAnsiTable10  *_table10;
-      CtiAnsiTable11  *_table11;
-      CtiAnsiTable12  *_table12;
-      CtiAnsiTable13  *_table13;
-      CtiAnsiTable14  *_table14;
-      CtiAnsiTable15  *_table15;
-      CtiAnsiTable16  *_table16;
-      CtiAnsiTable21  *_table21;
-      CtiAnsiTable22  *_table22;
-      CtiAnsiTable23  *_table23;
-      CtiAnsiTable27  *_table27;
-      CtiAnsiTable28  *_table28;
-      CtiAnsiTable31  *_table31;
-      CtiAnsiTable32  *_table32;
-      CtiAnsiTable33  *_table33;
-      CtiAnsiTable51  *_table51;
-      CtiAnsiTable52  *_table52;
-      CtiAnsiTable61  *_table61;
-      CtiAnsiTable62  *_table62;
-      CtiAnsiTable63  *_table63;
-      CtiAnsiTable64  *_table64;
-
-      CtiAnsiTable25  *_frozenRegTable;
+      boost::scoped_ptr<CtiAnsiTable25> _frozenRegTable;
 
       bool _validFlag;
       bool _previewTable64;
@@ -482,9 +480,9 @@ class IM_EX_PROT CtiProtocolANSI
 
       int _seqNbr;
 
-       double *_lpValues;
-       ULONG *_lpTimes;
-       UINT8 *_lpQuality;
+       std::vector<double> _lpValues;
+       std::vector<unsigned long> _lpTimes;
+       std::vector<unsigned char> _lpQuality;
 
        std::string _ansiDevName;
 

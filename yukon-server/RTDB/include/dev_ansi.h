@@ -73,13 +73,14 @@ public:
       int            command;
    };
 
+protected:
+
+   std::string _result_string;
 
 private:
 
-    void createLoadProfilePointData(CtiPointAnalogSPtr pPoint, std::list< CtiReturnMsg* > &retList);
-    void createPointData(CtiPointAnalogSPtr pPoint, double value, double timestamp,unsigned int archiveFlag, std::list< CtiReturnMsg* > &retList);
-
-    std::string _result_string;
+    void createLoadProfilePointData(const CtiPointAnalog &analogPoint, std::list< CtiReturnMsg* > &retList);
+    void createPointData(const CtiPointAnalog &analogPoint, double value, double timestamp,unsigned int archiveFlag, std::list< CtiReturnMsg* > &retList);
 
     unsigned long _lastLPTime;
 };

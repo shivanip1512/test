@@ -15,7 +15,6 @@ CtiANSIApplication::CtiANSIApplication() :
     _currentState(identified),
     _requestedState(identified),
     _prot_version(0),
-    _currentTable(NULL),
     _currentTableSize(1024),
     _totalBytesInTable(0),
     _initialOffset(0),
@@ -70,13 +69,9 @@ void CtiANSIApplication::init( void )
 
     _wrDataSize = 0;
     _negotiateRetry = 0;
-    if (_currentTable != NULL)
-    {
-        delete []_currentTable;
-        _currentTable = NULL;
-    }
     _currentTableSize = 1024;
-    _currentTable = CTIDBG_new BYTE[_currentTableSize];
+    _currentTable.clear();
+    _currentTable.resize(_currentTableSize);
     getDatalinkLayer().init();
 
     if (_ansiDeviceType == kv2)
@@ -101,7 +96,7 @@ void CtiANSIApplication::terminateSession( void )
     _currentState = getNextState (_requestedState);
     setRetries (MAXRETRIES);
     setTableComplete (false);
-    memset( _currentTable, 0, sizeof( *_currentTable ) );
+    std::fill(_currentTable.begin(), _currentTable.end(), 0);
 
     _totalBytesInTable = 0;
 }
@@ -110,11 +105,7 @@ void CtiANSIApplication::terminateSession( void )
 
 void CtiANSIApplication::destroyMe( void )
 {
-    if( _currentTable != NULL )
-    {
-        delete []_currentTable;
-        _currentTable = NULL;
-    }
+    _currentTable.clear();
 
     if (_parmPtr != NULL)
     {
@@ -412,13 +403,8 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
 
 void CtiANSIApplication::initializeTableRequest( short aID, int aOffset, unsigned int aBytesExpected, BYTE aType, BYTE aOperation )
 {
-    if (_currentTable != NULL)
-    {
-        delete []_currentTable;
-        _currentTable = NULL;
-    }
-    _currentTable = CTIDBG_new BYTE[_currentTableSize];
-
+    _currentTable.clear();
+    _currentTable.resize(_currentTableSize);
 
     _currentTableID = aID;
     _currentTableOffset = aOffset;
@@ -590,7 +576,7 @@ bool CtiANSIApplication::analyzePacket()
                              headerOffset = 6;
                          }
                     }
-                     memcpy (_currentTable+_totalBytesInTable,
+                     memcpy (&*(_currentTable.begin()+_totalBytesInTable),
                          getDatalinkLayer().getCurrentPacket()+headerOffset,
                          getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount); //header(6),crc(2),length(2),response(1)
                      _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount;
@@ -606,7 +592,7 @@ bool CtiANSIApplication::analyzePacket()
                      if (getDatalinkLayer().getPacketBytesReceived() >= 12)
                      {
                      // move the data into storage
-                     memcpy (_currentTable+_totalBytesInTable,
+                     memcpy (&*(_currentTable.begin()+_totalBytesInTable),
                          getDatalinkLayer().getCurrentPacket()+9,
                          getDatalinkLayer().getPacketBytesReceived()-12); //header(6),crc(2),length(2),checksum(1),response(1)
 
@@ -901,7 +887,7 @@ void CtiANSIApplication::identificationData( BYTE *aPacket)
 
 BYTE* CtiANSIApplication::getCurrentTable( )
 {
-    return _currentTable;
+    return &_currentTable.front();
 }
 
 void CtiANSIApplication::setCurrentTableSize(int tableSize)
