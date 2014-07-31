@@ -23,11 +23,7 @@ protected:
 public:
 
    CarrierDevice();
-   CarrierDevice(const CarrierDevice &aRef);
-
    virtual ~CarrierDevice();
-
-   CarrierDevice &operator=(const CarrierDevice &aRef);
 
    virtual boost::shared_ptr<Cti::DataAccessLoadProfile> getLoadProfile();
 

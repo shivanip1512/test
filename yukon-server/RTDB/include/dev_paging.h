@@ -20,10 +20,7 @@ protected:
 public:
 
    DevicePaging();
-   DevicePaging(const DevicePaging& aRef);
    virtual ~DevicePaging();
-
-   DevicePaging& operator=(const DevicePaging& aRef);
 
    const CtiTableDeviceTapPaging& getPaging() const;
 

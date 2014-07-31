@@ -35,27 +35,9 @@ CtiDeviceCCU::CtiDeviceCCU() :
     }
 }
 
-
-CtiDeviceCCU::CtiDeviceCCU(const CtiDeviceCCU& aRef)
-{
-    *this = aRef;
-}
-
-
 CtiDeviceCCU::~CtiDeviceCCU()
 {
 }
-
-
-CtiDeviceCCU& CtiDeviceCCU::operator=(const CtiDeviceCCU& aRef)
-{
-    if( this != &aRef )
-    {
-        Inherited::operator=(aRef);
-    }
-    return *this;
-}
-
 
 //  checks if we've reset this algorithm recently - we can only do so every AlgorithmRepeatInterval seconds
 bool CtiDeviceCCU::checkAlgorithmReset(int alg)

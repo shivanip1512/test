@@ -53,21 +53,7 @@ CtiDeviceION::CtiDeviceION() :
 //    resetIONScansPending();
 }
 
-CtiDeviceION::CtiDeviceION(const CtiDeviceION &aRef)
-{
-   *this = aRef;
-}
-
 CtiDeviceION::~CtiDeviceION() {}
-
-CtiDeviceION &CtiDeviceION::operator=(const CtiDeviceION &aRef)
-{
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
-   return *this;
-}
 
 
 void CtiDeviceION::setMeterGroupData( const string &meterNumber )

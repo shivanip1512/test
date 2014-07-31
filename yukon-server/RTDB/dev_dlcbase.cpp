@@ -32,25 +32,8 @@ DlcBaseDevice::DlcBaseDevice() :
     _activeIndex(EmetconProtocol::DLCCmd_LAST)
 {}
 
-DlcBaseDevice::DlcBaseDevice(const DlcBaseDevice& aRef)
-{
-    *this = aRef;
-}
-
-DlcBaseDevice::~DlcBaseDevice() {}
-
-DlcBaseDevice& DlcBaseDevice::operator=(const DlcBaseDevice& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        CtiLockGuard<CtiMutex> guard(_classMutex);
-
-        DeviceRoutes = aRef.DeviceRoutes;
-    }
-    return *this;
-}
+DlcBaseDevice::~DlcBaseDevice()
+{}
 
 string DlcBaseDevice::getSQLCoreStatement() const
 {

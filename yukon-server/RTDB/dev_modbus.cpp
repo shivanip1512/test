@@ -41,21 +41,8 @@ ModbusDevice::ModbusDevice(void)
 {
 }
 
-ModbusDevice::ModbusDevice(const ModbusDevice &aRef)
-{
-   *this = aRef;
-}
-
-ModbusDevice::~ModbusDevice() {}
-
-ModbusDevice &ModbusDevice::operator=(const ModbusDevice &aRef)
-{
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
-   return *this;
-}
+ModbusDevice::~ModbusDevice()
+{}
 
 INT ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {

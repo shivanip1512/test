@@ -113,11 +113,7 @@ public:
     };
 
     Mct31xDevice( );
-    Mct31xDevice( const Mct31xDevice &aRef );
-
     virtual ~Mct31xDevice( );
-
-    Mct31xDevice &operator=( const Mct31xDevice &aRef );
 
     CtiTableDeviceMCTIEDPort &getIEDPort( void );
 

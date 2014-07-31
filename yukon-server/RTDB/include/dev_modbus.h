@@ -55,11 +55,8 @@ protected:
 
 public:
 
-    ModbusDevice(void);
-    ModbusDevice(const ModbusDevice& aRef);
+    ModbusDevice();
     virtual ~ModbusDevice();
-
-    ModbusDevice& operator=(const ModbusDevice& aRef);
 
     virtual std::string getSQLCoreStatement() const;
 

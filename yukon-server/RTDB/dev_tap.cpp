@@ -1529,46 +1529,6 @@ _outMessage(NULL),
 _pacingReport(false)
 {}
 
-/*
-CtiDeviceTapPagingTerminal::CtiDeviceTapPagingTerminal(const CtiDeviceTapPagingTerminal& aRef) :
-   _sendFiller(true),
-   _idByteCount(20),
-   _pageCount(0),
-   _pagePrefix('a'),
-   _pageLength(0),
-   _inStr(string()),
-   _pageBuffer(NULL)
-{
-   *this = aRef;
-}
-*/
-CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::operator=(const CtiDeviceTapPagingTerminal& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        _idByteCount = 10;
-
-        _pageCount = aRef.getPageCount();
-        _pagePrefix = aRef.getPagePrefix();
-
-        if( aRef.isValidPageBuffer() )
-        {
-            allocateDataBins(NULL);
-
-            for(int i = 0; i < aRef.getPageLength(); i++ )
-            {
-                _pageBuffer[i] = aRef.getPageBuffer(i);
-            }
-            _pageLength = aRef.getPageLength();
-        }
-
-        setSendFiller(aRef.getSendFiller());
-    }
-    return *this;
-}
-
 ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
 {
     ULONG CSum = 0;

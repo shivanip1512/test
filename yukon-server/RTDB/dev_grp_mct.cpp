@@ -30,24 +30,8 @@ CtiDeviceGroupMCT::CtiDeviceGroupMCT()
 {
 }
 
-CtiDeviceGroupMCT::CtiDeviceGroupMCT( const CtiDeviceGroupMCT &aRef )
-{
-    *this = aRef;
-}
-
 CtiDeviceGroupMCT::~CtiDeviceGroupMCT()
 {
-}
-
-
-CtiDeviceGroupMCT &CtiDeviceGroupMCT::operator=( const CtiDeviceGroupMCT &aRef )
-{
-    if( this != &aRef )
-    {
-
-    }
-
-    return *this;
 }
 
 LONG CtiDeviceGroupMCT::getRouteID( void )

@@ -58,10 +58,7 @@ protected:
 public:
 
    CtiDeviceWctpTerminal();
-   CtiDeviceWctpTerminal(const CtiDeviceWctpTerminal& aRef);
    virtual ~CtiDeviceWctpTerminal();
-
-   CtiDeviceWctpTerminal& operator=(const CtiDeviceWctpTerminal& aRef);
 
    CHAR  incrementPagePrefix();
 

@@ -20,10 +20,7 @@ protected:
 public:
 
     CtiDeviceGroupRipple();
-    CtiDeviceGroupRipple(const CtiDeviceGroupRipple& aRef);
     virtual ~CtiDeviceGroupRipple();
-
-    CtiDeviceGroupRipple& operator=(const CtiDeviceGroupRipple& aRef);
 
     CtiTableRippleLoadGroup   getRippleTable() const;
     CtiTableRippleLoadGroup&  getRippleTable();

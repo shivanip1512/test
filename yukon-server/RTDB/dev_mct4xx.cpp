@@ -150,23 +150,8 @@ Mct4xxDevice::Mct4xxDevice()
     }
 }
 
-Mct4xxDevice::Mct4xxDevice(const Mct4xxDevice& aRef)
-{
-    *this = aRef;
-}
-
 Mct4xxDevice::~Mct4xxDevice()
 {
-}
-
-Mct4xxDevice &Mct4xxDevice::operator=(const Mct4xxDevice &aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        CtiLockGuard<CtiMutex> guard(_classMutex);            // Protect this device!
-    }
-    return *this;
 }
 
 const Mct4xxDevice::error_map Mct4xxDevice::error_codes = boost::assign::map_list_of

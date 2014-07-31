@@ -88,11 +88,6 @@ _cycleTimeExclusion(NULL)
 {
 }
 
-CtiDeviceExclusion::CtiDeviceExclusion(const CtiDeviceExclusion& aRef)
-{
-    *this = aRef;
-}
-
 CtiDeviceExclusion::~CtiDeviceExclusion()
 {
     if(_cycleTimeExclusion != NULL)
@@ -100,18 +95,6 @@ CtiDeviceExclusion::~CtiDeviceExclusion()
         delete _cycleTimeExclusion;
         _cycleTimeExclusion = NULL;
     }
-}
-
-CtiDeviceExclusion& CtiDeviceExclusion::operator=(const CtiDeviceExclusion& aRef)
-{
-    if(this != &aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
 }
 
 CtiDeviceExclusion& CtiDeviceExclusion::setId(LONG id)

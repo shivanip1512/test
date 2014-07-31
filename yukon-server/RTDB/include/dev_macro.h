@@ -30,10 +30,8 @@ protected:
 public:
 
     CtiDeviceMacro( );
-    CtiDeviceMacro( const CtiDeviceMacro &aRef );
-    ~CtiDeviceMacro( );
+    virtual ~CtiDeviceMacro( );
 
-    CtiDeviceMacro &operator=( const CtiDeviceMacro &aRef );
     virtual void DumpData( void );
 
     void clearDeviceList( void );

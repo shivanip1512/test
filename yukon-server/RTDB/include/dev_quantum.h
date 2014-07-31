@@ -156,24 +156,6 @@ private:
     ULONG _currentRecordTime;
     LONG  _currentRecordLocation;
 
-    CtiDeviceQuantum &operator=( const CtiDeviceQuantum &aRef )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-
-        return *this;
-    }
-
-    CtiDeviceQuantum( const CtiDeviceQuantum & aRef )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-    }
-
     LONG getPreviousRecordLocation( LONG currentRecordAddress );
     LONG getNextRecordLocation( LONG currentRecordAddress );
 

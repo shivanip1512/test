@@ -18,10 +18,9 @@ protected:
 public:
 
     CtiDeviceGroupPoint();
-    CtiDeviceGroupPoint(const CtiDeviceGroupPoint& aRef);
     virtual ~CtiDeviceGroupPoint();
+
     virtual LONG getRouteID();
-    CtiDeviceGroupPoint& operator=(const CtiDeviceGroupPoint& aRef);
 
     INT generateRequest(CtiRequestMsg *pReq, CtiCommandParser &parse);
     std::string getDescription(const CtiCommandParser & parse) const;

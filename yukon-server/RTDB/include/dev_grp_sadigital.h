@@ -18,10 +18,7 @@ protected:
 public:
 
     CtiDeviceGroupSADigital();
-    CtiDeviceGroupSADigital(const CtiDeviceGroupSADigital& aRef);
     virtual ~CtiDeviceGroupSADigital();
-
-    CtiDeviceGroupSADigital& operator=(const CtiDeviceGroupSADigital& aRef);
 
     CtiTableSASimpleGroup getLoadGroup() const;
     CtiTableSASimpleGroup& getLoadGroup();

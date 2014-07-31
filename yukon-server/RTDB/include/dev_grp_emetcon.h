@@ -16,16 +16,8 @@ protected:
 
 public:
 
-   CtiDeviceGroupEmetcon();//   {}
-
-   CtiDeviceGroupEmetcon(const CtiDeviceGroupEmetcon& aRef);/*
-   {
-      *this = aRef;
-   }                                                          */
-
-   virtual ~CtiDeviceGroupEmetcon();// {}
-
-   CtiDeviceGroupEmetcon& operator=(const CtiDeviceGroupEmetcon& aRef);
+   CtiDeviceGroupEmetcon();
+   virtual ~CtiDeviceGroupEmetcon();
 
    CtiTableEmetconLoadGroup   getEmetconGroup() const;//      { return EmetconGroup; }
    CtiTableEmetconLoadGroup&  getEmetconGroup();//            { return EmetconGroup; }

@@ -685,22 +685,6 @@ CtiDeviceSixnet::~CtiDeviceSixnet()
     _fields.clear();
 }
 
-
-CtiDeviceSixnet& CtiDeviceSixnet::operator=(const CtiDeviceSixnet& aRef)
-{
-    if (this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
-}
-
-
 CtiProtocolSixnet& CtiDeviceSixnet::getSixnetProtocol()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);

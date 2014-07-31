@@ -26,10 +26,7 @@ protected:
 
 public:    
     CtiDeviceGroupExpresscom();
-    CtiDeviceGroupExpresscom(const CtiDeviceGroupExpresscom& aRef);
     virtual ~CtiDeviceGroupExpresscom();
-
-    CtiDeviceGroupExpresscom& operator=(const CtiDeviceGroupExpresscom& aRef);
 
 
     CtiTableExpresscomLoadGroup   getExpresscomGroup() const;

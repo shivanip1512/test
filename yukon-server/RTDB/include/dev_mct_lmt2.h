@@ -49,10 +49,7 @@ protected:
 public:
 
     Lmt2Device();
-    Lmt2Device( const Lmt2Device &aRef );
     virtual ~Lmt2Device();
-
-    Lmt2Device& operator=(const Lmt2Device& aRef);
 
     ULONG calcNextLPScanTime( void );
 };

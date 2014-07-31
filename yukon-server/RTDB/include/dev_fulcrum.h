@@ -175,26 +175,6 @@ private:
 
     typedef CtiDeviceSchlumberger Inherited;
 
-    CtiDeviceFulcrum & operator=(const CtiDeviceFulcrum & aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-
-        return *this;
-    }
-
-    CtiDeviceFulcrum (const CtiDeviceFulcrum & aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-    }
-
-protected:
-
 public:
 
    // default constructor that takes 2 optional parameters

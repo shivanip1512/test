@@ -62,10 +62,7 @@ protected:
 public:
 
     Mct24xDevice( );
-    Mct24xDevice( const Mct24xDevice &aRef );
     virtual ~Mct24xDevice( );
-
-    Mct24xDevice &operator=( const Mct24xDevice &aRef );
 
     ULONG calcNextLPScanTime( void );
 };

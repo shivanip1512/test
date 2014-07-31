@@ -45,12 +45,7 @@ protected:
 public:
 
     Repeater900Device();
-
-    Repeater900Device(const Repeater900Device& aRef);
-
     virtual ~Repeater900Device();
-
-    Repeater900Device& operator=(const Repeater900Device& aRef);
 
     INT GeneralScan   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority);
 };

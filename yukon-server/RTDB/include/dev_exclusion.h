@@ -19,7 +19,7 @@ class CtiDeviceExclusion;
 
 typedef boost::shared_ptr< CtiDeviceExclusion > CtiExclusionSPtr;
 
-class IM_EX_DEVDB CtiDeviceExclusion
+class IM_EX_DEVDB CtiDeviceExclusion : private boost::noncopyable
 {
 public:
 
@@ -48,13 +48,7 @@ private:
 public:
 
     CtiDeviceExclusion(LONG id = 0);
-
-    CtiDeviceExclusion(const CtiDeviceExclusion& aRef);
-
     virtual ~CtiDeviceExclusion();
-
-    CtiDeviceExclusion& operator=(const CtiDeviceExclusion& aRef);
-
 
     LONG getId() const;
     CtiDeviceExclusion& setId(LONG id);

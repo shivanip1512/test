@@ -92,25 +92,6 @@ private:
     std::vector<int>     iLPPulseVector;
     CtiMeterMachineStates_t    iRequestedState;
 
-    CtiDeviceDR87 & operator=(const CtiDeviceDR87 & aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << FO(__FILE__) << " = operator is invalid for this device" << std::endl;
-        }
-        return *this;
-    }
-
-    CtiDeviceDR87 (const CtiDeviceDR87 & aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << FO(__FILE__) << " copy constructor is invalid for this device" << std::endl;
-        }
-    }
-
-protected:
-
 public:
 
     CtiDeviceDR87(BYTE         *aPtr  = NULL,

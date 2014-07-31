@@ -31,23 +31,8 @@ DnpDevice::DnpDevice()
     resetDNPScansPending();
 }
 
-DnpDevice::DnpDevice(const DnpDevice &aRef)
-{
-   *this = aRef;
-}
-
-DnpDevice::~DnpDevice() {}
-
-DnpDevice &DnpDevice::operator=(const DnpDevice &aRef)
-{
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
-   return *this;
-}
-
-
+DnpDevice::~DnpDevice()
+{}
 
 LONG DnpDevice::getAddress() const
 {

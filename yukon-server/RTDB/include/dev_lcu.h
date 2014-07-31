@@ -94,9 +94,7 @@ private:
 public:
 
     CtiDeviceLCU(INT type = TYPE_LCU415);
-    CtiDeviceLCU(const CtiDeviceLCU& aRef);
     virtual ~CtiDeviceLCU();
-    CtiDeviceLCU& operator=(const CtiDeviceLCU& aRef);
 
     bool           isLCULockedOut( ) const;
     bool           isLCULockedOut( const INMESS *InMessage );

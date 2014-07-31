@@ -37,11 +37,7 @@ protected:
 public:
 
     Mct22xDevice();
-    Mct22xDevice(const Mct22xDevice& aRef);
-
     virtual ~Mct22xDevice();
-
-    Mct22xDevice& operator=(const Mct22xDevice& aRef);
 };
 
 }

@@ -35,10 +35,7 @@ protected:
 public:
 
     Cbc6510Device();
-    Cbc6510Device(const Cbc6510Device& aRef);
     virtual ~Cbc6510Device();
-
-    Cbc6510Device& operator=(const Cbc6510Device& aRef);
 
     virtual std::string getDescription(const CtiCommandParser & parse) const;
 

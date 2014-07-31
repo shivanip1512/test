@@ -810,23 +810,11 @@ string CtiDeviceSystem::getDescription(const CtiCommandParser &parse) const
     return resultString;
 }
 
-CtiDeviceSystem::CtiDeviceSystem() {}
+CtiDeviceSystem::CtiDeviceSystem()
+{}
 
-CtiDeviceSystem::CtiDeviceSystem(const CtiDeviceSystem& aRef)
-{
-    *this = aRef;
-}
-
-CtiDeviceSystem::~CtiDeviceSystem() {}
-
-CtiDeviceSystem& CtiDeviceSystem::operator=(const CtiDeviceSystem& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-    }
-    return *this;
-}
+CtiDeviceSystem::~CtiDeviceSystem()
+{}
 
 void CtiDeviceSystem::DecodeDatabaseReader(Cti::RowReader &rdr)
 {

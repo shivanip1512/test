@@ -38,25 +38,9 @@ public:
         _isShed(UNCONTROLLED)
     {}
 
-    CtiDeviceGroupBase(const CtiDeviceGroupBase& aRef) :
-        _isShed(UNCONTROLLED)
-    {
-        *this = aRef;
-    }
-
     virtual ~CtiDeviceGroupBase() {}
 
     virtual LONG getRouteID() = 0;      // Must be defined!
-
-    CtiDeviceGroupBase& operator=(const CtiDeviceGroupBase& aRef)
-    {
-        if(this != &aRef)
-        {
-            Inherited::operator=(aRef);
-            _isShed = aRef._isShed;
-        }
-        return *this;
-    }
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
     {

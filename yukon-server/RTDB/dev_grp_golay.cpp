@@ -19,24 +19,8 @@ CtiDeviceGroupGolay::CtiDeviceGroupGolay()
 {
 }
 
-CtiDeviceGroupGolay::CtiDeviceGroupGolay(const CtiDeviceGroupGolay& aRef)
-{
-    *this = aRef;
-}
-
 CtiDeviceGroupGolay::~CtiDeviceGroupGolay()
 {
-}
-
-CtiDeviceGroupGolay& CtiDeviceGroupGolay::operator=(const CtiDeviceGroupGolay& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        _loadGroup = aRef.getLoadGroup();
-    }
-
-    return *this;
 }
 
 CtiTableSASimpleGroup CtiDeviceGroupGolay::getLoadGroup() const

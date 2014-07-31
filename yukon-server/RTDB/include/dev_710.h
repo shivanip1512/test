@@ -20,11 +20,7 @@ private:
 public:
 
     CtiDeviceCCU710();
-
-    CtiDeviceCCU710(const CtiDeviceCCU710& aRef);
     virtual ~CtiDeviceCCU710();
-
-    CtiDeviceCCU710& operator=(const CtiDeviceCCU710& aRef);
 
     INT Loopback(OUTMESS*);
 

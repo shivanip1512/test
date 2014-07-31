@@ -143,10 +143,7 @@ public:
     };
 
     DlcBaseDevice();
-    DlcBaseDevice(const DlcBaseDevice& aRef);
     virtual ~DlcBaseDevice();
-
-    DlcBaseDevice& operator=(const DlcBaseDevice& aRef);
 
     virtual std::string getSQLCoreStatement() const;
 

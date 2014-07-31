@@ -48,22 +48,8 @@ CtiDeviceGridAdvisor::CtiDeviceGridAdvisor()
 {
 }
 
-CtiDeviceGridAdvisor::CtiDeviceGridAdvisor(const CtiDeviceGridAdvisor &aRef)
-{
-   *this = aRef;
-}
-
-CtiDeviceGridAdvisor::~CtiDeviceGridAdvisor() {}
-
-CtiDeviceGridAdvisor &CtiDeviceGridAdvisor::operator=(const CtiDeviceGridAdvisor &aRef)
-{
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
-   return *this;
-}
-
+CtiDeviceGridAdvisor::~CtiDeviceGridAdvisor()
+{}
 
 INT CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {

@@ -120,34 +120,11 @@ _command(Normal)
     resetStates();
 }
 
-/*CtiDeviceTnppPagingTerminal::CtiDeviceTnppPagingTerminal(const CtiDeviceTnppPagingTerminal& aRef)
-{
-    //Dont think I will need this function.
-}*/
-
 CtiDeviceTnppPagingTerminal::~CtiDeviceTnppPagingTerminal()
 {
     //Nothing special.
 
 }
-
-// operator = is not complete!! If it is ever needed, complete it.
-/*
-CtiDeviceTnppPagingTerminal& CtiDeviceTnppPagingTerminal::operator=(const CtiDeviceTnppPagingTerminal& aRef)
-{//why would you ever do this, I dont know???
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        _snpp = aRef.getTap();
-
-        setPreviousState(aRef.getPreviousState());
-        setCurrentState(aRef.getCurrentState());
-        _command = Normal;
-
-    }
-    return *this;
-}*/
 
 INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
 {

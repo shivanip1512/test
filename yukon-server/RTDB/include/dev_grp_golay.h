@@ -18,10 +18,7 @@ protected:
 public:
 
     CtiDeviceGroupGolay();
-    CtiDeviceGroupGolay(const CtiDeviceGroupGolay& aRef);
     virtual ~CtiDeviceGroupGolay();
-
-    CtiDeviceGroupGolay& operator=(const CtiDeviceGroupGolay& aRef);
 
     CtiTableSASimpleGroup getLoadGroup() const;
     CtiTableSASimpleGroup& getLoadGroup();

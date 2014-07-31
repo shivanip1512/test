@@ -23,10 +23,7 @@ protected:
 public:
 
     CtiDeviceGroupSA205();
-    CtiDeviceGroupSA205(const CtiDeviceGroupSA205& aRef);
     virtual ~CtiDeviceGroupSA205();
-
-    CtiDeviceGroupSA205& operator=(const CtiDeviceGroupSA205& aRef);
 
     CtiTableSA205105Group getLoadGroup() const;
     CtiTableSA205105Group& getLoadGroup();

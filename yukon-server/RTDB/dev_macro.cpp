@@ -36,30 +36,13 @@
 using std::list;
 using namespace std;
 
-CtiDeviceMacro::CtiDeviceMacro( )  {  }
-
-CtiDeviceMacro::CtiDeviceMacro( const CtiDeviceMacro &aRef )
+CtiDeviceMacro::CtiDeviceMacro( )
 {
-    *this = aRef;
 }
 
-CtiDeviceMacro::~CtiDeviceMacro( )  {  }
-
-
-CtiDeviceMacro &CtiDeviceMacro::operator=( const CtiDeviceMacro &aRef )
+CtiDeviceMacro::~CtiDeviceMacro( )
 {
-    if( this != &aRef )
-    {
-        Inherited::operator=( aRef );
-
-        //  copy their pointer list, but tag it unclean
-        _deviceList.clear( );
-        _deviceList.insert( _deviceList.begin( ), aRef._deviceList.begin( ), aRef._deviceList.end( ) );
-    }
-
-    return *this;
 }
-
 
 void CtiDeviceMacro::DumpData( )
 {

@@ -476,27 +476,6 @@ private:
     // only needed in the A1
     std::vector<int>     _sLPPulseVector;
 
-protected:
-
-   CtiDeviceAlphaA1 & operator=(const CtiDeviceAlphaA1 & aRef)
-   {
-       {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-       }
-
-       return *this;
-   }
-
-   CtiDeviceAlphaA1 (const CtiDeviceAlphaA1 & aRef)
-   {
-       {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-       }
-   }
-
-
 public:
 
    CtiDeviceAlphaA1(BYTE         *dataPtr  = NULL,

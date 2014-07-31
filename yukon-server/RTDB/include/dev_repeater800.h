@@ -31,11 +31,7 @@ protected:
 public:
 
    Repeater800Device();
-   Repeater800Device(const Repeater800Device& aRef);
-
    virtual ~Repeater800Device();
-
-   Repeater800Device& operator=(const Repeater800Device& aRef);
 };
 
 }

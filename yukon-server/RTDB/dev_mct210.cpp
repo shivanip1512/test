@@ -24,24 +24,9 @@ Mct210Device::Mct210Device()
 {
 }
 
-Mct210Device::Mct210Device(const Mct210Device &aRef)
-{
-    *this = aRef;
-}
-
 Mct210Device::~Mct210Device()
 {
 }
-
-Mct210Device& Mct210Device::operator=(const Mct210Device &aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-    }
-    return *this;
-}
-
 
 Mct210Device::CommandSet Mct210Device::initCommandStore()
 {

@@ -26,44 +26,12 @@ public:
     pDialup(NULL)
     {}
 
-    CtiDeviceRemote(const CtiDeviceRemote& aRef) :
-    pDialup(NULL)
-    {
-        *this = aRef;
-    }
-
     virtual ~CtiDeviceRemote()
     {
         if(pDialup != NULL)
         {
             delete pDialup;
         }
-    }
-
-    CtiDeviceRemote& operator=(const CtiDeviceRemote& aRef)
-    {
-        Inherited::operator=(aRef);
-
-        if(this != &aRef)
-        {
-            CtiLockGuard<CtiMutex> guard(_classMutex);
-
-            Direct = aRef.getDirect();
-
-            if(isDialup())             // If I was a dialup free up the old stuff
-            {
-                delete pDialup;
-                pDialup = NULL;
-            }
-
-            if(aRef.isDialup())
-            {
-                // Copy the dialup stuff
-                pDialup = CTIDBG_new CtiTableDeviceDialup;
-                *pDialup = aRef.getDialup();
-            }
-        }
-        return *this;
     }
 
     const CtiTableDeviceDirectComm &getDirect() const

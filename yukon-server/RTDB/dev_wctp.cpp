@@ -1325,54 +1325,6 @@ timeEllapsed(0),
 _outMessage(NULL)
 {}
 
-
-CtiDeviceWctpTerminal::CtiDeviceWctpTerminal(const CtiDeviceWctpTerminal& aRef) :
-_sendFiller(true),
-_outMessage(NULL),
-_pacingReport(false),
-handler(0),
-headerParsed(false),
-statusParsed(false),
-timeEllapsed(0)
-{
-   *this = aRef;
-}
-
-CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::operator=(const CtiDeviceWctpTerminal& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        _pageCount = aRef.getPageCount();
-        _pagePrefix = aRef.getPagePrefix();
-
-        if( aRef.isValidPageBuffer() )
-        {
-            allocateDataBins(NULL);
-
-            for(int i = 0; i < aRef.getPageLength(); i++ )
-            {
-                _pageBuffer[i] = aRef.getPageBuffer(i);
-            }
-            _pageLength = aRef.getPageLength();
-        }
-
-        _inStr = string();
-        _outBuffer = NULL;
-        _inBuffer = NULL;
-        _xmlBuffer = NULL;
-        readLinePtr = NULL;
-        parser = NULL;
-        handler = NULL;
-        statusParsed = FALSE;
-        headerParsed = FALSE;
-        timeEllapsed = 0;
-    }
-    return *this;
-}
-
-
 // ---------------------------------------------------------------------------
 //  SAXWctpHandler: Constructors and Destructor
 // ---------------------------------------------------------------------------

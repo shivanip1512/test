@@ -45,28 +45,12 @@ using std::string;
 using std::endl;
 using std::list;
 
-CtiDeviceWelco::CtiDeviceWelco() :
-_deadbandsSent(0)
+CtiDeviceWelco::CtiDeviceWelco()
+    :   _deadbandsSent(0)
 {}
 
-CtiDeviceWelco::CtiDeviceWelco(const CtiDeviceWelco& aRef) :
-_deadbandsSent(0)
-{
-    *this = aRef;
-}
-
-CtiDeviceWelco::~CtiDeviceWelco() {}
-
-CtiDeviceWelco& CtiDeviceWelco::operator=(const CtiDeviceWelco& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        setDeadbandsSent( aRef.getDeadbandsSent() );
-    }
-    return *this;
-}
-
+CtiDeviceWelco::~CtiDeviceWelco()
+{}
 
 INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
                                     CtiCommandParser &parse,

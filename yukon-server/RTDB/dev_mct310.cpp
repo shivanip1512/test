@@ -40,33 +40,13 @@ const Mct310Device::CommandSet Mct310Device::_commandStore = Mct310Device::initC
 #define S_PWRFAIL310_BIT      0x10
 #define TAMPER_BIT            0x08
 
-
-
-
-
 Mct310Device::Mct310Device( )
 {
-}
-
-Mct310Device::Mct310Device( const Mct310Device &aRef )
-{
-    *this = aRef;
 }
 
 Mct310Device::~Mct310Device( )
 {
 }
-
-Mct310Device& Mct310Device::operator=( const Mct310Device &aRef )
-{
-    if( this != &aRef )
-    {
-        Inherited::operator=( aRef );
-    }
-
-    return *this;
-}
-
 
 Mct310Device::CommandSet Mct310Device::initCommandStore( )
 {

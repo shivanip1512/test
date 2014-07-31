@@ -20,10 +20,8 @@ protected:
 public:
 
    CtiDeviceDavis();
-   CtiDeviceDavis(const CtiDeviceDavis& aRef);
    virtual ~CtiDeviceDavis();
 
-   CtiDeviceDavis& operator=(const CtiDeviceDavis& aRef);
    /*
     *  These guys initiate a scan based upon the type requested.
     */

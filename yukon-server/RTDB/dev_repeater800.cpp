@@ -19,24 +19,11 @@ namespace Devices {
 const Repeater800Device::CommandSet Repeater800Device::_commandStore = Repeater800Device::initCommandStore();
 
 
-Repeater800Device::Repeater800Device() {}
+Repeater800Device::Repeater800Device()
+{}
 
-Repeater800Device::Repeater800Device(const Repeater800Device& aRef)
-{
-    *this = aRef;
-}
-
-Repeater800Device::~Repeater800Device() {}
-
-Repeater800Device& Repeater800Device::operator=(const Repeater800Device& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-    }
-
-    return *this;
-}
+Repeater800Device::~Repeater800Device()
+{}
 
 Repeater800Device::CommandSet Repeater800Device::initCommandStore()
 {

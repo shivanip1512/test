@@ -335,26 +335,6 @@ private:
 
     typedef CtiDeviceAlpha Inherited;
 
-    CtiDeviceAlphaPPlus & operator=(const CtiDeviceAlphaPPlus & aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-
-        return *this;
-    }
-
-    CtiDeviceAlphaPPlus (const CtiDeviceAlphaPPlus & aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-    }
-
-protected:
-
 public:
 
     CtiDeviceAlphaPPlus(BYTE         *dataPtr  = NULL,

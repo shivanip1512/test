@@ -539,10 +539,7 @@ public:
     };
 
     Mct470Device( );
-    Mct470Device( const Mct470Device &aRef );
     virtual ~Mct470Device( );
-
-    Mct470Device &operator=( const Mct470Device &aRef );
 
     virtual ULONG calcNextLPScanTime( void );
 

@@ -54,23 +54,8 @@ Mct470Device::Mct470Device( ) :
 {
 }
 
-Mct470Device::Mct470Device( const Mct470Device &aRef )
-{
-    *this = aRef;
-}
-
 Mct470Device::~Mct470Device( )
 {
-}
-
-Mct470Device &Mct470Device::operator=( const Mct470Device &aRef )
-{
-    if( this != &aRef )
-    {
-        Inherited::operator=( aRef );
-    }
-
-    return *this;
 }
 
 Mct470Device::ConfigPartsList Mct470Device::initConfigParts430()

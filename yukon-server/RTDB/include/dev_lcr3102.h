@@ -133,9 +133,6 @@ protected:
 public:
 
     Lcr3102Device( );
-    Lcr3102Device( const Lcr3102Device &aRef );
-
-    Lcr3102Device& operator=( const Lcr3102Device &aRef );
 
     virtual LONG getAddress() const;
 

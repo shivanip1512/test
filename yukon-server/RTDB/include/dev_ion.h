@@ -44,11 +44,7 @@ protected:
 public:
 
     CtiDeviceION();
-    CtiDeviceION(const CtiDeviceION& aRef);
-
     virtual ~CtiDeviceION();
-
-    CtiDeviceION& operator=(const CtiDeviceION& aRef);
 
     //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
     CtiTableDeviceMeterGroup  getMeterGroup() const;

@@ -14,12 +14,7 @@ protected:
 public:
 
    CtiDeviceSystem();
-
-   CtiDeviceSystem(const CtiDeviceSystem& aRef);
-
    virtual ~CtiDeviceSystem();
-
-   CtiDeviceSystem& operator=(const CtiDeviceSystem& aRef);
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,

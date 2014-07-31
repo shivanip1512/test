@@ -55,10 +55,8 @@ protected:
 public:
 
     CtiDeviceILEX();
-    CtiDeviceILEX(const CtiDeviceILEX& aRef);
     virtual ~CtiDeviceILEX();
 
-    CtiDeviceILEX& operator=(const CtiDeviceILEX& aRef);
     /*
      *  These guys initiate a scan based upon the type requested.
      */

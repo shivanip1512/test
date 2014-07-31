@@ -177,38 +177,7 @@ public:
         _handshakesRemaining(3)
     {}
 
-    CtiDeviceIED(const CtiDeviceIED& aRef)
-    {
-        *this = aRef;
-    }
-
     virtual ~CtiDeviceIED() {}
-
-    CtiDeviceIED& operator=(const CtiDeviceIED& aRef)
-    {
-        if(this != &aRef)
-        {
-            Inherited::operator=(aRef);
-            _ied = getIED();
-
-#if 0 // CGP 051700 I don't think we really want to copy the device as being in a scan state.. Do we?
-
-            _currentState = (CtiMeterMachineStates_t) aRef.getCurrentState();
-            _previousState = (CtiMeterMachineStates_t) aRef.getPreviousState();
-            _attemptsRemaining = aRef.getAttemptsRemaining();
-            _currentCommand = (CtiMeterCmdStates_t) aRef.getCurrentCommand();
-#else
-
-            _currentState = StateHandshakeSendStart;
-            _previousState = StateHandshakeSendStart;
-            _attemptsRemaining = 3;
-            _currentCommand = CmdScanData;
-#endif
-
-        }
-
-        return *this;
-    }
 
     CtiTableDeviceIED&   getIED()            { return _ied; }
     CtiTableDeviceIED    getIED() const      { return _ied; }

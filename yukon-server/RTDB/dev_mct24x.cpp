@@ -23,25 +23,9 @@ Mct24xDevice::Mct24xDevice( )
 {
 }
 
-Mct24xDevice::Mct24xDevice( const Mct24xDevice &aRef )
-{
-    *this = aRef;
-}
-
 Mct24xDevice::~Mct24xDevice( )
 {
 }
-
-Mct24xDevice& Mct24xDevice::operator=(const Mct24xDevice& aRef)
-{
-    if( this != &aRef )
-    {
-        Inherited::operator=( aRef );
-    }
-
-    return *this;
-}
-
 
 Mct24xDevice::CommandSet Mct24xDevice::initCommandStore()
 {

@@ -18,24 +18,11 @@ namespace Devices {
 
 const Mct22xDevice::CommandSet Mct22xDevice::_commandStore = Mct22xDevice::initCommandStore();
 
-Mct22xDevice::Mct22xDevice() {}
+Mct22xDevice::Mct22xDevice()
+{}
 
-Mct22xDevice::Mct22xDevice(const Mct22xDevice &aRef)
-{
-   *this = aRef;
-}
-
-Mct22xDevice::~Mct22xDevice() {}
-
-Mct22xDevice& Mct22xDevice::operator=(const Mct22xDevice &aRef)
-{
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
-   return *this;
-}
-
+Mct22xDevice::~Mct22xDevice()
+{}
 
 Mct22xDevice::CommandSet Mct22xDevice::initCommandStore()
 {

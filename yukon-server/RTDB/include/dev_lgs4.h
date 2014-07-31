@@ -360,26 +360,6 @@ private:
     ULONG          iOldTime;
     BOOL           iUpdateLPFlag;
 
-    CtiDeviceLandisGyrS4 & operator=(const CtiDeviceLandisGyrS4 & aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-
-        return *this;
-    }
-
-    CtiDeviceLandisGyrS4 (const CtiDeviceLandisGyrS4 & aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-    }
-
-protected:
-
 public:
 
     CtiDeviceLandisGyrS4(BYTE         *dataPtr  = NULL,

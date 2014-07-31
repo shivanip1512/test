@@ -215,23 +215,11 @@ INT CtiDeviceCCU710::Loopback(OUTMESS* OutMessage)
    return(NORMAL);
 }
 
-CtiDeviceCCU710::CtiDeviceCCU710() {}
+CtiDeviceCCU710::CtiDeviceCCU710() 
+{}
 
-CtiDeviceCCU710::CtiDeviceCCU710(const CtiDeviceCCU710& aRef)
-{
-  *this = aRef;
-}
-
-CtiDeviceCCU710::~CtiDeviceCCU710() {}
-
-CtiDeviceCCU710& CtiDeviceCCU710::operator=(const CtiDeviceCCU710& aRef)
-{
-  if(this != &aRef)
-  {
-     Inherited::operator=(aRef);
-  }
-  return *this;
-}
+CtiDeviceCCU710::~CtiDeviceCCU710() 
+{}
 
 INT CtiDeviceCCU710::getProtocolWrap() const
 {

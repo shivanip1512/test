@@ -17,24 +17,11 @@ namespace Devices {
 const Lmt2Device::CommandSet Lmt2Device::_commandStore = Lmt2Device::initCommandStore();
 
 
-Lmt2Device::Lmt2Device() {}
+Lmt2Device::Lmt2Device()
+{}
 
-Lmt2Device::Lmt2Device(const Lmt2Device& aRef)
-{
-  *this = aRef;
-}
-
-Lmt2Device::~Lmt2Device() {}
-
-Lmt2Device& Lmt2Device::operator=(const Lmt2Device& aRef)
-{
-  if(this != &aRef)
-  {
-     Inherited::operator=(aRef);
-  }
-  return *this;
-}
-
+Lmt2Device::~Lmt2Device()
+{}
 
 Lmt2Device::CommandSet Lmt2Device::initCommandStore()
 {

@@ -20,32 +20,15 @@ _lastSACommandType(SA305_DI_Control)
 {
 }
 
-CtiDeviceGroupSA305::CtiDeviceGroupSA305(const CtiDeviceGroupSA305& aRef)
-{
-    *this = aRef;
-}
-
 CtiDeviceGroupSA305::~CtiDeviceGroupSA305()
 {
 }
-
-CtiDeviceGroupSA305& CtiDeviceGroupSA305::operator=(const CtiDeviceGroupSA305& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        _loadGroup = aRef.getLoadGroup();
-        _lastSACommandType = aRef.getLastSACommandType();
-    }
-
-    return *this;
-}
-
 
 CtiTableSA305LoadGroup CtiDeviceGroupSA305::getLoadGroup() const
 {
     return _loadGroup;
 }
+
 CtiTableSA305LoadGroup& CtiDeviceGroupSA305::getLoadGroup()
 {
     return _loadGroup;

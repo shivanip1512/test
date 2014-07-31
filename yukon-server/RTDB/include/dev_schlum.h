@@ -72,7 +72,7 @@ typedef struct
 #pragma pack(pop, schlumberger_packing)     // Restore the prior packing alignment..
 
 
-class IM_EX_DEVDB CtiDeviceSchlumberger : public CtiDeviceMeter, boost::noncopyable
+class IM_EX_DEVDB CtiDeviceSchlumberger : public CtiDeviceMeter
 {
 private:
 

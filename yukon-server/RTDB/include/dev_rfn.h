@@ -13,7 +13,6 @@ namespace Devices {
 
 class IM_EX_DEVDB RfnDevice :
     public CtiDeviceSingle,
-    public boost::noncopyable,
     public Commands::RfnCommand::ResultHandler  //  default implementation, to be overridden by child classes
 {
 public:

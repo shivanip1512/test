@@ -39,10 +39,7 @@ protected:
 public:
 
    CtiDeviceTapPagingTerminal();
-   CtiDeviceTapPagingTerminal(const CtiDeviceTapPagingTerminal& aRef);
    virtual ~CtiDeviceTapPagingTerminal();
-
-   CtiDeviceTapPagingTerminal& operator=(const CtiDeviceTapPagingTerminal& aRef);
 
    CHAR  incrementPagePrefix();
 

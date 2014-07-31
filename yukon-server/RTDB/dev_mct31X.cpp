@@ -38,28 +38,9 @@ Mct31xDevice::Mct31xDevice( )
     }
 }
 
-Mct31xDevice::Mct31xDevice( const Mct31xDevice &aRef )
-{
-    *this = aRef;
-}
 
-Mct31xDevice::~Mct31xDevice( ) { }
-
-Mct31xDevice& Mct31xDevice::operator=( const Mct31xDevice &aRef )
-{
-    if( this != &aRef )
-    {
-        //  ACH
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - in Mct31xDevice::operator= **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        Inherited::operator=( aRef );
-    }
-
-    return *this;
-}
+Mct31xDevice::~Mct31xDevice( )
+{ }
 
 
 CtiTableDeviceMCTIEDPort &Mct31xDevice::getIEDPort( void )

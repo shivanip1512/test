@@ -36,10 +36,7 @@ protected:
 public:
 
     CtiDeviceGroupMCT();
-    CtiDeviceGroupMCT( const CtiDeviceGroupMCT &aRef );
     virtual ~CtiDeviceGroupMCT();
-
-    CtiDeviceGroupMCT& operator=( const CtiDeviceGroupMCT &aRef );
 
     virtual std::string getSQLCoreStatement() const;
 

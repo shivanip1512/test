@@ -17,10 +17,8 @@ protected:
 public:
 
     CtiDeviceCBC();
-    CtiDeviceCBC(const CtiDeviceCBC& aRef);
     virtual ~CtiDeviceCBC();
 
-    CtiDeviceCBC& operator=(const CtiDeviceCBC& aRef);
     CtiTableDeviceCBC   getCBC() const;
     CtiTableDeviceCBC&  getCBC();
     CtiDeviceCBC&     setCBC(const CtiTableDeviceCBC& aRef);

@@ -24,25 +24,6 @@ Lcr3102Device::Lcr3102Device( )
 
 }
 
-
-Lcr3102Device::Lcr3102Device( const Lcr3102Device &aRef )
-{
-    *this = aRef;
-}
-
-
-Lcr3102Device& Lcr3102Device::operator=( const Lcr3102Device &aRef )
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-//????   Is this needed?
-//        CtiLockGuard<CtiMutex> guard(_classMutex);            // Protect this device!
-    }
-    return *this;
-}
-
-
 INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList )
 {
     INT retCode = NoError;

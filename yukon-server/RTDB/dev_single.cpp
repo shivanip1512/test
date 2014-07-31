@@ -1278,26 +1278,6 @@ _useScanFlags(0)
     }
 }
 
-CtiDeviceSingle::CtiDeviceSingle(const CtiDeviceSingle& aRef)
-{
-    int i;
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** This is expensive. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-
-    for(i = 0; i < ScanRateInvalid; i++)
-    {
-        _scanRateTbl[i] = NULL;
-    }
-
-
-    *this = aRef;
-}
-
 CtiDeviceSingle::~CtiDeviceSingle()
 {
     int i;
@@ -1324,35 +1304,6 @@ CtiDeviceSingle::~CtiDeviceSingle()
             }
         }
     }
-}
-
-CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
-{
-    int i;
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        CtiLockGuard<CtiMutex> guard(_classMutex);
-
-        for(i = 0; i < ScanRateInvalid; i++)
-        {
-            if(aRef.isRateValid(i))
-            {
-                if(!_scanRateTbl[i])
-                    _scanRateTbl[i] = CTIDBG_new CtiTableDeviceScanRate;
-
-                if(_scanRateTbl[i])
-                    *_scanRateTbl[i] = aRef.getRateTable(i);
-            }
-        }
-
-        if(aRef.isScanDataValid())
-        {
-            _scanData = *(aRef.getScanData());
-        }
-    }
-        CtiLockGuard<CtiMutex> guard(_classMutex);
-    return *this;
 }
 
 BOOL CtiDeviceSingle::isRateValid(const INT i) const

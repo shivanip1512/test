@@ -150,26 +150,6 @@ protected:
     BYTE           *_singleMsgBuffer;
     USHORT         _singleMsgBufferBytes;
 
-
-    CtiDeviceAlpha & operator=(const CtiDeviceAlpha & aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-
-        return *this;
-    }
-
-    CtiDeviceAlpha (const CtiDeviceAlpha & aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-    }
-
-
 public:
 
     CtiDeviceAlpha(BYTE         *dataPtr  = NULL,

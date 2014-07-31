@@ -34,26 +34,9 @@ CtiDeviceGroupExpresscom::CtiDeviceGroupExpresscom()
 {
 }
 
-CtiDeviceGroupExpresscom::CtiDeviceGroupExpresscom(const CtiDeviceGroupExpresscom& aRef)
-{
-    *this = aRef;
-}
-
 CtiDeviceGroupExpresscom::~CtiDeviceGroupExpresscom()
 {
 }
-
-CtiDeviceGroupExpresscom& CtiDeviceGroupExpresscom::operator=(const CtiDeviceGroupExpresscom& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        _expresscomGroup = aRef.getExpresscomGroup();
-    }
-
-    return *this;
-}
-
 
 CtiTableExpresscomLoadGroup CtiDeviceGroupExpresscom::getExpresscomGroup() const
 {

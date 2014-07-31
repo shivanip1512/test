@@ -411,52 +411,6 @@ _currTrxID(0)
 {
 }
 
-CtiDeviceBase::CtiDeviceBase(const CtiDeviceBase& aRef) :
-_commFailCount(gDefaultCommFailCount),
-_attemptCount(0),
-_attemptFailCount(0),
-_attemptRetryCount(0),
-_attemptSuccessCount(0),
-_pointMgr(NULL),
-_logOnNeeded(TRUE),
-_singleDevice(false),
-_routeMgr(NULL),
-_responsesOnTrxID(0),
-_currTrxID(0)
-{
-    *this = aRef;
-}
-
-CtiDeviceBase& CtiDeviceBase::operator=(const CtiDeviceBase& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        CtiLockGuard<CtiMutex> guard(_classMutex);
-
-        if(_pointMgr != NULL)
-        {
-            delete _pointMgr;
-            _pointMgr   = NULL;
-        }
-        _routeMgr      = aRef.getRouteManager();
-        _logOnNeeded   = aRef.getLogOnNeeded();
-
-        setCommFailCount(aRef.getCommFailCount());
-        setAttemptCount(aRef.getAttemptCount());
-        setAttemptFailCount(aRef.getAttemptFailCount());
-        setAttemptRetryCount(aRef.getAttemptRetryCount());
-        setAttemptSuccessCount(aRef.getAttemptSuccessCount());
-        setResponsesOnTrxID( aRef.getResponsesOnTrxID());
-        setTrxID(aRef.getCurrentTrxID());
-
-        setDeviceBase( aRef.getDeviceBase() );
-        _exclusion = aRef.exclusion();
-    }
-    return *this;
-}
-
 void CtiDeviceBase::purgeStaticPaoInfo()
 {
     // We dont own this data, but we can clear our internal stores.
@@ -975,11 +929,6 @@ void CtiDeviceBase::setExpectedFreeze(int freeze)
 bool CtiDeviceBase::hasExclusions() const
 {
     return _exclusion.hasExclusions();
-}
-
-CtiDeviceExclusion CtiDeviceBase::exclusion() const
-{
-    return _exclusion;
 }
 
 CtiDeviceExclusion& CtiDeviceBase::getExclusion()

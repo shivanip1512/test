@@ -25,10 +25,8 @@ protected:
 public:
 
    CtiDeviceWelco();
-   CtiDeviceWelco(const CtiDeviceWelco& aRef);
    virtual ~CtiDeviceWelco();
 
-   CtiDeviceWelco& operator=(const CtiDeviceWelco& aRef);
    INT WelCoContinue    (OUTMESS *OutMessage, INT Priority);
    INT WelCoGetError    (OUTMESS *OutMessage, INT Priority);
    INT WelCoPoll        (OUTMESS *OutMessage, INT Priority);

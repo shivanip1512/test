@@ -13,26 +13,8 @@ CarrierDevice::CarrierDevice()
     loadProfile.reset(new CtiTableDeviceLoadProfile());
 }
 
-CarrierDevice::CarrierDevice(const CarrierDevice &aRef)
-{
-    *this = aRef;
-}
-
-CarrierDevice::~CarrierDevice() {}
-
-CarrierDevice &CarrierDevice::operator=(const CarrierDevice &aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        CtiLockGuard<CtiMutex> guard(_classMutex);
-
-        CarrierSettings   = aRef.CarrierSettings;
-    }
-
-    return *this;
-}
+CarrierDevice::~CarrierDevice() 
+{}
 
 boost::shared_ptr<DataAccessLoadProfile> CarrierDevice::getLoadProfile()
 {

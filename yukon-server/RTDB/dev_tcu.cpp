@@ -587,25 +587,11 @@ bool CtiDeviceTCU::getSendFiller() const
    return _sendFiller;
 }
 
-CtiDeviceTCU::CtiDeviceTCU() : _sendFiller(false) {}
-
-CtiDeviceTCU::CtiDeviceTCU(const CtiDeviceTCU& aRef)
-{
-   *this = aRef;
-}
+CtiDeviceTCU::CtiDeviceTCU() : _sendFiller(false)
+{}
 
 CtiDeviceTCU::~CtiDeviceTCU()
 {
-}
-
-CtiDeviceTCU& CtiDeviceTCU::operator=(const CtiDeviceTCU& aRef)
-{
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-      setSendFiller( aRef.getSendFiller() );
-   }
-   return *this;
 }
 
 INT CtiDeviceTCU::getProtocolWrap() const

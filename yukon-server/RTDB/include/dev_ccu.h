@@ -39,12 +39,7 @@ protected:
 public:
 
     CtiDeviceCCU();
-
-    CtiDeviceCCU(const CtiDeviceCCU& aRef);
-
     virtual ~CtiDeviceCCU();
-
-    CtiDeviceCCU& operator=(const CtiDeviceCCU& aRef);
 
     INT CCUDecode(const INMESS *InMessage, CtiTime &ScanTime, std::list< CtiMessage* > &retList);
     CtiReturnMsg*  CCUDecodeStatus(INMESS *InMessage);

@@ -33,12 +33,6 @@ public:
     {
     }
 
-    CtiDeviceIDLC(const CtiDeviceIDLC& aRef) :
-        _trxInfo(NULL)
-    {
-        *this = aRef;
-    }
-
     virtual ~CtiDeviceIDLC()
     {
         if(_trxInfo != NULL)
@@ -46,34 +40,6 @@ public:
             delete _trxInfo;
             _trxInfo = NULL;
         }
-    }
-
-    CtiDeviceIDLC& operator=(const CtiDeviceIDLC& aRef)
-    {
-        Inherited::operator=(aRef);
-
-        if(this != &aRef)
-        {
-            _idlc = aRef.getIDLC();
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
-
-            if(_trxInfo != NULL)
-            {
-                delete _trxInfo;
-                _trxInfo = NULL;
-            }
-
-            if( aRef.ownsTrxInfo() != NULL )
-            {
-                initTrxInfo();
-                *_trxInfo = *(aRef._trxInfo); // Do an init + assignment
-            }
-        }
-        return *this;
     }
 
     CtiTableDeviceIDLC  getIDLC() const

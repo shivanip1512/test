@@ -305,23 +305,8 @@ CtiDeviceGroupEmetcon::CtiDeviceGroupEmetcon()
 {
 }
 
-CtiDeviceGroupEmetcon::CtiDeviceGroupEmetcon(const CtiDeviceGroupEmetcon& aRef)
-{
-    *this = aRef;
-}
-
-CtiDeviceGroupEmetcon::~CtiDeviceGroupEmetcon() {}
-
-CtiDeviceGroupEmetcon& CtiDeviceGroupEmetcon::operator=(const CtiDeviceGroupEmetcon& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        EmetconGroup = aRef.getEmetconGroup();
-    }
-    return *this;
-}
+CtiDeviceGroupEmetcon::~CtiDeviceGroupEmetcon()
+{}
 
 CtiTableEmetconLoadGroup   CtiDeviceGroupEmetcon::getEmetconGroup() const      { return EmetconGroup;}
 CtiTableEmetconLoadGroup&  CtiDeviceGroupEmetcon::getEmetconGroup()            { return EmetconGroup;}

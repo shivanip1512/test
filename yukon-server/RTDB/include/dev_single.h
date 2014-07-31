@@ -156,11 +156,7 @@ private:
 public:
 
     CtiDeviceSingle();
-    CtiDeviceSingle(const CtiDeviceSingle& aRef);
-
     virtual ~CtiDeviceSingle();
-
-    CtiDeviceSingle& operator=(const CtiDeviceSingle& aRef);
 
     BOOL isRateValid(const INT i) const;
 

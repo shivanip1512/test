@@ -17,12 +17,7 @@ protected:
 public:
 
    CtiDeviceGroupVersacom();
-
-   CtiDeviceGroupVersacom(const CtiDeviceGroupVersacom& aRef);
-
    virtual ~CtiDeviceGroupVersacom();
-
-   CtiDeviceGroupVersacom& operator=(const CtiDeviceGroupVersacom& aRef);
 
    CtiTableVersacomLoadGroup   getVersacomGroup() const;
    CtiTableVersacomLoadGroup&  getVersacomGroup();

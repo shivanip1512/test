@@ -7,7 +7,7 @@
 namespace Cti {
 namespace Devices {
 
-class IM_EX_DEVDB MctDevice : public CarrierDevice, boost::noncopyable
+class IM_EX_DEVDB MctDevice : public CarrierDevice
 {
 private:
 

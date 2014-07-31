@@ -125,10 +125,7 @@ public:
     };
 
     Mct310Device( );
-    Mct310Device( const Mct310Device &aRef );
     virtual ~Mct310Device( );
-
-    Mct310Device &operator=( const Mct310Device &aRef );
 
     //  virtual so that the MCT318 can override it
     virtual ULONG calcNextLPScanTime( void );

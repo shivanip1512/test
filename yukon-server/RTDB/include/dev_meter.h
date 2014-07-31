@@ -24,11 +24,7 @@ protected:
 public:
 
    CtiDeviceMeter( );
-   CtiDeviceMeter(const CtiDeviceMeter& aRef);
-
    virtual ~CtiDeviceMeter( )  { };
-
-   CtiDeviceMeter& operator=(const CtiDeviceMeter& aRef);
 
    int readDSTFile( std::string &id );
 

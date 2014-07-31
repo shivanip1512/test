@@ -25,27 +25,6 @@ CtiDeviceMeter::CtiDeviceMeter( )
    _dstFlag = FALSE;
 }
 
-
-CtiDeviceMeter::CtiDeviceMeter(const CtiDeviceMeter& aRef)
-{
-    *this = aRef;
-}
-
-
-CtiDeviceMeter &CtiDeviceMeter::operator=(const CtiDeviceMeter& aRef)
-{
-    Inherited::operator=(aRef);
-
-    if(this != &aRef)
-    {
-       MeterGroup = aRef.getMeterGroup();
-//         _dstFlag = aRef._dstFlag;
-//         _dstFlagValid = aRef._dstFlagValid;
-    }
-    return *this;
-}
-
-
 inline bool CtiDeviceMeter::isMeter() const   { return true; }
 
 CtiTableDeviceMeterGroup  CtiDeviceMeter::getMeterGroup() const     {  return MeterGroup;  }

@@ -26,10 +26,7 @@ protected:
 public:
 
    CtiDeviceTnppPagingTerminal();
-   CtiDeviceTnppPagingTerminal(const CtiDeviceTnppPagingTerminal& aRef);
    virtual ~CtiDeviceTnppPagingTerminal();
-
-   CtiDeviceTnppPagingTerminal& operator=(const CtiDeviceTnppPagingTerminal& aRef);
 
    INT decode(CtiXfer &xfer,INT commReturnValue);
    INT generate(CtiXfer  &xfer);

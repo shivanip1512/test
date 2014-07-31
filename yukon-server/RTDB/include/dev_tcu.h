@@ -26,12 +26,7 @@ protected:
 public:
 
    CtiDeviceTCU();
-
-   CtiDeviceTCU(const CtiDeviceTCU& aRef);
-
    virtual ~CtiDeviceTCU();
-
-   CtiDeviceTCU& operator=(const CtiDeviceTCU& aRef);
 
    /*
     *  These guys initiate a scan based upon the type requested.

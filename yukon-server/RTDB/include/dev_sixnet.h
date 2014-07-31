@@ -238,10 +238,7 @@ private:
 public:
 
    CtiDeviceSixnet();
-
    virtual ~CtiDeviceSixnet();
-
-   CtiDeviceSixnet& operator=(const CtiDeviceSixnet& aRef);
 
    // get 8, 16 or 32-bit value from buffer
    static int get8(uchar* p)    { return p[0];}

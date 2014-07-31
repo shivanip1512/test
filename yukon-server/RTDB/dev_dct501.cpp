@@ -20,25 +20,11 @@ namespace Devices {
 const Dct501Device::CommandSet Dct501Device::_commandStore = Dct501Device::initCommandStore();
 
 
-Dct501Device::Dct501Device( ) { }
+Dct501Device::Dct501Device( )
+{}
 
-Dct501Device::Dct501Device( const Dct501Device &aRef )
-{
-    *this = aRef;
-}
-
-Dct501Device::~Dct501Device( ) { }
-
-Dct501Device& Dct501Device::operator=(const Dct501Device& aRef)
-{
-    if( this != &aRef )
-    {
-        Inherited::operator=( aRef );
-    }
-
-    return *this;
-}
-
+Dct501Device::~Dct501Device( )
+{}
 
 Dct501Device::CommandSet Dct501Device::initCommandStore()
 {

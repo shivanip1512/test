@@ -228,24 +228,11 @@ string CtiDeviceGroupVersacom::getPutConfigAssignment(UINT modifier)
     return  string(assign);
 }
 
-CtiDeviceGroupVersacom::CtiDeviceGroupVersacom()   {}
+CtiDeviceGroupVersacom::CtiDeviceGroupVersacom()
+{}
 
-CtiDeviceGroupVersacom::CtiDeviceGroupVersacom(const CtiDeviceGroupVersacom& aRef)
-{
-    *this = aRef;
-}
-
-CtiDeviceGroupVersacom::~CtiDeviceGroupVersacom() {}
-
-CtiDeviceGroupVersacom& CtiDeviceGroupVersacom::operator=(const CtiDeviceGroupVersacom& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        VersacomGroup = aRef.getVersacomGroup();
-    }
-    return *this;
-}
+CtiDeviceGroupVersacom::~CtiDeviceGroupVersacom()
+{}
 
 CtiTableVersacomLoadGroup   CtiDeviceGroupVersacom::getVersacomGroup() const      { return VersacomGroup;}
 CtiTableVersacomLoadGroup&  CtiDeviceGroupVersacom::getVersacomGroup()            { return VersacomGroup;}

@@ -102,12 +102,6 @@ _lcuStatus(0)
     }
 }
 
-CtiDeviceLCU::CtiDeviceLCU(const CtiDeviceLCU& aRef) :
-_honktime(DUTYCYCLESIZE, make_pair(CtiTime().seconds() - CtiTime().seconds() % DUTYCYCLESIZE, 0.0))
-{
-    *this = aRef;
-}
-
 CtiDeviceLCU::~CtiDeviceLCU()
 {
     if(_lastControlMessage)
@@ -1867,15 +1861,6 @@ bool CtiDeviceLCU::isLCUAlarmed( const INMESS *InMessage )
 CtiMutex& CtiDeviceLCU::getLCUExclusionMux()
 {
     return _lcuExclusionMux;
-}
-
-CtiDeviceLCU& CtiDeviceLCU::operator=(const CtiDeviceLCU& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-    }
-    return *this;
 }
 
 /*

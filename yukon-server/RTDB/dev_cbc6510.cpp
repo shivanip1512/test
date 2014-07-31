@@ -24,25 +24,11 @@ using std::list;
 namespace Cti {
 namespace Devices {
 
-Cbc6510Device::Cbc6510Device() {}
+Cbc6510Device::Cbc6510Device()
+{}
 
-Cbc6510Device::Cbc6510Device(const Cbc6510Device &aRef)
-{
-   *this = aRef;
-}
-
-Cbc6510Device::~Cbc6510Device() {}
-
-Cbc6510Device &Cbc6510Device::operator=(const Cbc6510Device &aRef)
-{
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
-
-   return *this;
-}
-
+Cbc6510Device::~Cbc6510Device()
+{}
 
 INT Cbc6510Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {

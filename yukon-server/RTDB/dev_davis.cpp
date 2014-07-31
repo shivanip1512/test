@@ -45,23 +45,8 @@ using std::list;
 CtiDeviceDavis::CtiDeviceDavis()
 {}
 
-CtiDeviceDavis::CtiDeviceDavis(const CtiDeviceDavis& aRef)
-{
-    *this = aRef;
-}
-
 CtiDeviceDavis::~CtiDeviceDavis()
-{
-}
-
-CtiDeviceDavis& CtiDeviceDavis::operator=(const CtiDeviceDavis& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-    }
-    return *this;
-}
+{}
 
 INT CtiDeviceDavis::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {

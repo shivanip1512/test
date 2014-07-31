@@ -39,31 +39,10 @@ _rsvp(0)
 {
 }
 
-CtiDeviceGroupRipple::CtiDeviceGroupRipple(const CtiDeviceGroupRipple& aRef) :
-_rsvp(0)
-{
-    *this = aRef;
-}
-
 CtiDeviceGroupRipple::~CtiDeviceGroupRipple()
 {
     if(_rsvp) delete _rsvp;
 }
-
-CtiDeviceGroupRipple& CtiDeviceGroupRipple::operator=(const CtiDeviceGroupRipple& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        _rippleTable = aRef.getRippleTable();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
-}
-
 
 CtiDeviceGroupRipple& CtiDeviceGroupRipple::setRippleTable(const CtiTableRippleLoadGroup& aRef)
 {

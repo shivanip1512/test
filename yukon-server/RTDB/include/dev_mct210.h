@@ -52,11 +52,8 @@ public:
     };
 
     Mct210Device();
-    Mct210Device(const Mct210Device& aRef);
-
     virtual ~Mct210Device();
 
-    Mct210Device& operator=(const Mct210Device &aRef);
 };
 
 }

@@ -9,24 +9,8 @@ DevicePaging::DevicePaging()
 {
 }
 
-DevicePaging::DevicePaging(const DevicePaging& aRef)
-{
-
-}
-
 DevicePaging::~DevicePaging()
 {
-}
-
-DevicePaging& DevicePaging::operator=(const DevicePaging& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        _tapTable = aRef.getPaging();
-    }
-    return *this;
 }
 
 const CtiTableDeviceTapPaging& DevicePaging::getPaging() const

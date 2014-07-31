@@ -19,11 +19,7 @@ protected:
 public:
 
     CtiDeviceGridAdvisor();
-    CtiDeviceGridAdvisor(const CtiDeviceGridAdvisor& aRef);
-
     virtual ~CtiDeviceGridAdvisor();
-
-    CtiDeviceGridAdvisor& operator=(const CtiDeviceGridAdvisor& aRef);
 
     virtual std::string getSQLCoreStatement() const;
 

@@ -69,10 +69,7 @@ protected:
 public:
 
    Mct2xxDevice( );
-   Mct2xxDevice( const Mct2xxDevice &aRef );
    virtual ~Mct2xxDevice( );
-
-   Mct2xxDevice &operator=( const Mct2xxDevice &aRef );
 
 };
 

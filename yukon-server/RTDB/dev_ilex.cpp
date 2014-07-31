@@ -44,23 +44,8 @@ CtiDeviceILEX::CtiDeviceILEX() :
     _sequence(0)
 {}
 
-CtiDeviceILEX::CtiDeviceILEX(const CtiDeviceILEX& aRef)
-{
-    *this = aRef;
-}
-
-CtiDeviceILEX::~CtiDeviceILEX() {}
-
-CtiDeviceILEX& CtiDeviceILEX::operator=(const CtiDeviceILEX& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        _freezeNumber = aRef.getFreezeNumber();
-    }
-    return *this;
-}
-
+CtiDeviceILEX::~CtiDeviceILEX()
+{}
 
 INT CtiDeviceILEX::header(PBYTE  Header,          /* Pointer to message */
                           USHORT Function,        /* Function code */

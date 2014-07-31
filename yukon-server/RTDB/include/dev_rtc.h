@@ -6,7 +6,7 @@
 
 #include <list>
 
-class IM_EX_DEVDB CtiDeviceRTC : public CtiDeviceRemote, boost::noncopyable
+class IM_EX_DEVDB CtiDeviceRTC : public CtiDeviceRemote
 {
 private:
 

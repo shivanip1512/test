@@ -319,11 +319,7 @@ protected:
 public:
 
     Mct4xxDevice();
-    Mct4xxDevice(const Mct4xxDevice &aRef);
-
     virtual ~Mct4xxDevice();
-
-    Mct4xxDevice &operator=(const Mct4xxDevice &aRef);
 
     enum
     {

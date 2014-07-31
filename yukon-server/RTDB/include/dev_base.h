@@ -42,7 +42,7 @@ namespace Devices {
  *  into CtiDeviceSingle and CtiDeviceGroup.. This guy is destinied to have MANY
  *  virtual functions.
  */
-class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAOLite
+class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAOLite, private boost::noncopyable
 {
 public:
     typedef CtiTableDynamicPaoInfo::PaoInfoKeys               PaoInfoKeys;
@@ -103,10 +103,8 @@ public:
     typedef std::vector< std::pair< unsigned long, CtiTime > > prohibitions;
 
     CtiDeviceBase();
-    CtiDeviceBase(const CtiDeviceBase& aRef);
     virtual ~CtiDeviceBase();
 
-    CtiDeviceBase& operator=(const CtiDeviceBase& aRef);
     bool operator<(const CtiDeviceBase& rhs) const;
 
     virtual CtiRouteSPtr getRoute(LONG RteId) const;  //  virtual for unit tests
@@ -307,7 +305,6 @@ public:
     virtual void addExclusion(CtiTablePaoExclusion &paox);
     virtual void clearExclusions();
     virtual CtiDeviceExclusion& getExclusion();
-    virtual CtiDeviceExclusion exclusion() const; // New copy.
     virtual exclusions getExclusions() const;
     virtual CtiTime selectCompletionTime() const;
     virtual bool isDeviceExcluded(long id) const;

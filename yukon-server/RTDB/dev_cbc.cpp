@@ -410,25 +410,8 @@ string CtiDeviceCBC::getDescription(const CtiCommandParser & parse) const
     return tmp;
 }
 
-
-CtiDeviceCBC::CtiDeviceCBC(const CtiDeviceCBC& aRef)
-{
-    *this = aRef;
-}
-
 CtiDeviceCBC::~CtiDeviceCBC()
 {
-}
-
-CtiDeviceCBC& CtiDeviceCBC::operator=(const CtiDeviceCBC& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        _cbc = aRef.getCBC();
-    }
-    return *this;
 }
 
 CtiTableDeviceCBC   CtiDeviceCBC::getCBC() const
