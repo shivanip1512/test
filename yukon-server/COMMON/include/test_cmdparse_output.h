@@ -257,4 +257,12 @@ std::string parse_asString[] = {
 "command=1:flags=2048::read_points_date_begin=12/24/1997,-2147483648,0.000:read_points_date_end=12/25/1997,-2147483648,0.000:read_points_time_end=12:35,-2147483648,0.000:type=versacom,0,0.000:voltage_profile=(none),1,1.000",
 //  230
 "command=1:flags=2048::read_points_date_begin=12/24/1997,-2147483648,0.000:read_points_date_end=12/25/1997,-2147483648,0.000:read_points_time_begin=12:34,-2147483648,0.000:read_points_time_end=12:35,-2147483648,0.000:type=versacom,0,0.000:voltage_profile=(none),1,1.000",
+"command=1:flags=0::channel=(none),1,1.000:lp_channel=(none),1,1.000:lp_command=lp,-2147483648,0.000:type=versacom,0,0.000",
+"command=1:flags=0::channel=(none),1,1.000:lp_channel=(none),1,1.000:lp_command=lp,-2147483648,0.000:lp_date_start=(none),-2147483648,0.000:type=versacom,0,0.000",
+"command=1:flags=0::channel=(none),1,1.000:lp_channel=(none),1,1.000:lp_command=lp,-2147483648,0.000:lp_time_start=12:34,-2147483648,0.000:type=versacom,0,0.000",
+"command=1:flags=0::channel=(none),1,1.000:lp_channel=(none),1,1.000:lp_command=lp,-2147483648,0.000:lp_date_start=12:34,-2147483648,0.000:type=versacom,0,0.000",
+"command=1:flags=0::channel=(none),1,1.000:lp_channel=(none),1,1.000:lp_command=lp,-2147483648,0.000:lp_date_start=12/25/1997,-2147483648,0.000:type=versacom,0,0.000",
+"command=1:flags=0::channel=(none),1,1.000:lp_channel=(none),1,1.000:lp_command=lp,-2147483648,0.000:lp_date_end=12/25/1997,-2147483648,0.000:lp_date_start=12:34,-2147483648,0.000:type=versacom,0,0.000",
+"command=1:flags=0::channel=(none),1,1.000:lp_channel=(none),1,1.000:lp_command=lp,-2147483648,0.000:lp_date_start=12/25/1997,-2147483648,0.000:lp_time_start=12:35,-2147483648,0.000:type=versacom,0,0.000",
+"command=1:flags=0::channel=(none),1,1.000:lp_channel=(none),1,1.000:lp_command=lp,-2147483648,0.000:lp_date_end=12/25/1997,-2147483648,0.000:lp_date_start=12:34,-2147483648,0.000:lp_time_end=12:35,-2147483648,0.000:type=versacom,0,0.000",
 };

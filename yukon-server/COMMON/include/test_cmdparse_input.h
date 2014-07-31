@@ -258,5 +258,13 @@ std::string inputStrings[] = {
 "getvalue voltage profile 12/24/1997 12/25/1997 12:35",
 //  230
 "getvalue voltage profile 12/24/1997 12:34 12/25/1997 12:35",
+"getvalue lp channel 1 ",
+"getvalue lp channel 1 12/24/1997",
+"getvalue lp channel 1 12:34",
+"getvalue lp channel 1 12/24/1997 12:34",
+"getvalue lp channel 1 12/24/1997 12/25/1997",
+"getvalue lp channel 1 12/24/1997 12:34 12/25/1997",
+"getvalue lp channel 1 12/24/1997 12/25/1997 12:35",
+"getvalue lp channel 1 12/24/1997 12:34 12/25/1997 12:35",
 };
 
