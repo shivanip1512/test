@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.amr.device.search.dao.DeviceSearchDao;
 import com.cannontech.amr.device.search.model.CompositeFilterBy;
@@ -27,8 +26,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 
-@Service
 public class DeviceSearchServiceImpl implements DeviceSearchService {
+    
     @Autowired private DeviceSearchDao deviceSearchDao;
     @Autowired private PaoDao paoDao;
     @Autowired private DeviceDao deviceDao;

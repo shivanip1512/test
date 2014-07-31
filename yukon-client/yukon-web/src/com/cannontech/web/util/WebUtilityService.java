@@ -3,7 +3,6 @@ package com.cannontech.web.util;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -13,7 +12,6 @@ import com.cannontech.util.ServletUtil;
 /**
  * A utility service to house methods solving common needs of controllers and views.
  */
-@Service
 public class WebUtilityService {
     
     @Autowired private RolePropertyDao rolePropertyDao;

@@ -18,8 +18,8 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-@Service
 public class CustomerAccountPageIndexBuilder extends DbPageIndexBuilder {
+    
     @Autowired private RolePropertyDao rolePropertyDao;
 
     private final static SqlFragmentSource baseQuery;

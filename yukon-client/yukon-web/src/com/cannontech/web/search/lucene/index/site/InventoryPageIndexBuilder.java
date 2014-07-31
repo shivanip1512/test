@@ -30,8 +30,8 @@ import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 
-@Service
 public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
+    
     private final Logger log = YukonLogManager.getLogger(InventoryPageIndexBuilder.class);
 
     @Autowired private RolePropertyDao rolePropertyDao;

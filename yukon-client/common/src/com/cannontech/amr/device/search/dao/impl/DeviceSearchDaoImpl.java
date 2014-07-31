@@ -21,8 +21,8 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 
-@Repository
 public class DeviceSearchDaoImpl implements DeviceSearchDao {
+    
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DeviceSearchRowMapper deviceSearchRowMapper;
     

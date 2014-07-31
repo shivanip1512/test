@@ -2,15 +2,12 @@ package com.cannontech.web.stars.gateway;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.cannontech.web.stars.gateway.model.ConnectStatus;
 import com.cannontech.web.stars.gateway.model.Gateway;
 import com.cannontech.web.stars.gateway.model.LastComm;
 import com.cannontech.web.stars.gateway.model.SequenceData;
 import com.google.common.collect.ImmutableList;
 
-@Service
 public class GatewayHelper {
 
     // mockup model object list, useful fake data retrieved from Pacificor system

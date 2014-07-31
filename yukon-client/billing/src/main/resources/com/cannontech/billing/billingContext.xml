@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    
+    <bean id="dynamicBillingFormatter" class="com.cannontech.billing.format.dynamic.DynamicBillingFormatter">
+        <property name="dynamicBillingFileDao" ref="dynamicBillingFileDao" />
+    </bean>
+    
+    <bean id="itronClient"
+        class="com.cannontech.billing.format.itron.ItronClientImpl">
+        <property name="endPoint">
+            <value>http://itron.com/webservices/</value>
+        </property>
+        <property name="operationName">
+            <value>Import</value>
+        </property>
+        <property name="service">
+            <bean class="org.apache.axis.client.Service" />
+        </property>
+    </bean>
+    
+    <bean id="itronClientHandler" class="com.cannontech.billing.format.itron.ItronClientHandler">
+        <property name="itronClient"><ref bean="itronClient"/></property>
+    </bean>
   
-  <bean id="dynamicBillingFormatter" class="com.cannontech.billing.format.dynamic.DynamicBillingFormatter">
-  	<property name="dynamicBillingFileDao" ref="dynamicBillingFileDao" />
-  </bean>
-
-	<bean id="itronClient"
-		class="com.cannontech.billing.format.itron.ItronClientImpl">
-		<property name="endPoint">
-			<value>http://itron.com/webservices/</value>
-		</property>
-		<property name="operationName">
-			<value>Import</value>
-		</property>
-		<property name="service">
-			<bean class="org.apache.axis.client.Service" />
-		</property>
-	</bean>
-	
-	<bean id="itronClientHandler" class="com.cannontech.billing.format.itron.ItronClientHandler">
-		<property name="itronClient"><ref bean="itronClient"/></property>
-	</bean>
-  
-  	<bean id="curtailmentEventsItronFormat" class="com.cannontech.billing.format.simple.CurtailmentEventsItronFormat" scope="prototype"/>
+    <bean id="curtailmentEventsItronFormat" class="com.cannontech.billing.format.simple.CurtailmentEventsItronFormat" scope="prototype"/>
+    
 </beans>
