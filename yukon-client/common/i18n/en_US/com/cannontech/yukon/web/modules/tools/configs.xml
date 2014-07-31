@@ -535,6 +535,7 @@
     <entry key="yukon.web.modules.tools.configs.category.changeWarning">Any changes made to this category will not update device configurations in the field. Configurations must be resent to all devices to apply any category changes.</entry>
     <entry key="yukon.web.modules.tools.configs.category.invalidTime">Invalid time specified.</entry>
     <entry key="yukon.web.modules.tools.configs.category.postDisabled">Items that are not "Slot Disabled" must be specified consecutively starting with Display Item 1.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.error.immediateDisconnect">Connect Delay cannot be 0 for Reconnect Parameter 'Immediate'</entry>
 
     <!-- configuration entries -->
     <entry key="yukon.web.modules.tools.configs.config.VIEW.pageName">Configuration</entry>

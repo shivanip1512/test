@@ -12,13 +12,15 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.web.deviceConfiguration.enumeration.DisconnectMode.ConfigurationType;
+import com.cannontech.web.deviceConfiguration.enumeration.ReconnectParameter.ReconnectType;
 import com.cannontech.web.deviceConfiguration.model.CategoryEditBean;
 import com.cannontech.web.deviceConfiguration.model.CategoryEditBean.RateBackingBean;
 import com.cannontech.web.deviceConfiguration.model.CategoryTemplate;
+import com.cannontech.web.deviceConfiguration.model.ChannelField;
 import com.cannontech.web.deviceConfiguration.model.ChannelInput;
 import com.cannontech.web.deviceConfiguration.model.Field;
 import com.cannontech.web.deviceConfiguration.model.FloatField;
-import com.cannontech.web.deviceConfiguration.model.ChannelField;
 import com.cannontech.web.deviceConfiguration.model.IntegerField;
 import com.cannontech.web.deviceConfiguration.model.RateInput;
 import com.cannontech.web.input.validate.InputValidator;
@@ -130,6 +132,18 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
                         }
                     }
                 }
+            }
+        }
+
+        if ( ! errors.hasErrors() && CategoryType.RFN_DISCONNECT_CONFIGURATION.value().equals(categoryTemplate.getCategoryType())) {
+
+            ConfigurationType mode = ConfigurationType.valueOf(target.getCategoryInputs().get("disconnectMode"));
+            ReconnectType reconnectType = ReconnectType.valueOf(target.getCategoryInputs().get("reconnectParam"));
+            int delay = Integer.valueOf(target.getCategoryInputs().get("disconnectLoadLimitConnectDelay"));
+
+            if (mode == ConfigurationType.DEMAND_THRESHOLD && reconnectType == ReconnectType.IMMEDIATE && delay == 0) {
+                errors.rejectValue("categoryInputs[reconnectParam]", baseKey + ".error.immediateDisconnect");
+                errors.rejectValue("categoryInputs[disconnectLoadLimitConnectDelay]", baseKey + ".error.immediateDisconnect");
             }
         }
     }

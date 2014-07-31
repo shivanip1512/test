@@ -195,7 +195,9 @@ input[type=radio]:focus { outline:none; }
 @media screen and (-webkit-min-device-pixel-ratio:0) {
     select:not([multiple]):not([size]), 
     select[size="1"] {
-        background: white url('../Icons/bullet_arrow_down.png') right no-repeat;
+        background-image: url('../Icons/bullet_arrow_down.png');
+        background-position: right;
+        background-repeat: no-repeat;
         padding-right: 16px;
     }
 }
@@ -638,8 +640,9 @@ ol.error{list-style-type: none;}
     background: #FFFFDA url('../Icons/warning.gif') 5px no-repeat; 
     border-color: @orange;
 }
-input.error {
-    background: pink;
+input.error,
+select.error {
+    background-color: #ffeeee;
     border-color: @red;
 }
 
