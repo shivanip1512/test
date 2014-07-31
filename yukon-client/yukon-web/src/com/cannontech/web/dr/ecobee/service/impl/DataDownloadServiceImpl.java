@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -35,7 +36,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
     @Autowired @Qualifier("ecobeeReads") private RecentResultsCache<EcobeeReadResult> readResultsCache;
 
     @Override
-    public String start(final List<String> serialNumbers, final Range<Instant> dateRange) throws IOException {
+    public String start(final List<String> serialNumbers, final Range<Instant> dateRange, final DateTimeZone timeZone) throws IOException {
         
         final File file = File.createTempFile("ecobee_data_" + Instant.now().getMillis(), ".csv");
         file.deleteOnExit();
@@ -51,7 +52,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
                 
                 try (FileWriter output = new FileWriter(file)) {
                     
-                    DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
+                    DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZone(timeZone);
                     String headerFormat = "%s,%s,%s,%s,%s,%s,%s,%s\n";
                     String dataFormat = "%s,%s,%s,%s,%s,%s,%d,%s\n";
                     output.write(String.format(headerFormat, "Serial Number", 
@@ -80,7 +81,6 @@ public class DataDownloadServiceImpl implements DataDownloadService {
                         for (EcobeeDeviceReadings deviceReadings : batchedReads) {
                             
                             for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
-                                
                                 String dateStr = timeFormatter.print(deviceReading.getDate());
                                 int runtimeSeconds = deviceReading.getRuntimeSeconds();
                                 if (0 > runtimeSeconds) {

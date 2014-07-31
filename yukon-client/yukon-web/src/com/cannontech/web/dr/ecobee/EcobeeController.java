@@ -195,7 +195,7 @@ public class EcobeeController {
                                  Integer[] loadGroupIds,
                                  String ecobeeStartReportDate, 
                                  String ecobeeEndReportDate,
-                                 LiteYukonUser yukonUser) throws IOException {
+                                 YukonUserContext userContext) throws IOException {
 
         Instant startDate = new Instant(dateTimeFormatter.parseMillis(ecobeeStartReportDate));
         Instant endDate = new Instant(dateTimeFormatter.parseMillis(ecobeeEndReportDate));
@@ -228,9 +228,9 @@ public class EcobeeController {
         }
         List<String> serialNumbers = drGroupDeviceMappingDao.getSerialNumbersForLoadGroups(Lists.newArrayList(loadGroupIds));
         
-        String resultKey = dataDownloadService.start(serialNumbers, Range.inclusive(startDate, endDate));
+        String resultKey = dataDownloadService.start(serialNumbers, Range.inclusive(startDate, endDate), userContext.getJodaTimeZone());
         
-        ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, Arrays.toString(loadGroupIds), 
+        ecobeeEventLogService.dataDownloaded(userContext.getYukonUser(), startDate, endDate, Arrays.toString(loadGroupIds), 
                                                     EventSource.OPERATOR);
         
         model.addAttribute("key", resultKey);
