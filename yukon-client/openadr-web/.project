@@ -6,7 +6,6 @@
 		<project>common</project>
 		<project>web-common</project>
 		<project>yukonappserver</project>
-		<project>loadcontrol</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

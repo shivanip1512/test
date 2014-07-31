@@ -5,7 +5,6 @@
 	<projects>
 		<project>common</project>
 		<project>web-common</project>
-		<project>loadcontrol</project>
 		<project>servlet</project>
 		<project>cbc</project>
 		<project>billing</project>
