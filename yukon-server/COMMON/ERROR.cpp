@@ -2,6 +2,7 @@
 
 #include "dsm2err.h"
 #include "yukon.h"
+#include "constants.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -19,7 +20,7 @@ struct error_info {
 
 typedef std::map<int, error_info> ErrorLookup;
 
-static const ErrorLookup CtiErrors = boost::assign::map_list_of
+static const ErrorLookup CtiErrors = boost::assign::map_list_of<int, error_info>
     //  0
     (NORMAL,        error_info(ERRTYPENONE,     "Normal (Success) Return"))
     (NOTNORMAL,     error_info(ERRTYPESYSTEM,   "Not Normal (Unsuccessful) Return"))

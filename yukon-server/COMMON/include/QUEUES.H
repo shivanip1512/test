@@ -1,23 +1,21 @@
 #pragma once
 
+#include <map>
 #include "cticalls.h"
 #include "types.h"
-#include <map>
+#include "constants.h"
 
-#ifndef MAXPRIORITY
-   #define MAXPRIORITY 15
-#endif
-
-#ifndef __OS2__
-   #define ERROR_QUE_ELEMENT_NOT_EXIST     333     /* MSG%QUE_ELEMENT_NOT_EXIST */
-   #define ERROR_QUE_NO_MEMORY             334     /* MSG%QUE_NO_MEMORY */
-   #define ERROR_QUE_INVALID_PRIORITY      336     /* MSG%none */
-   #define ERROR_QUE_INVALID_HANDLE        337     /* MSG%none */
-   #define ERROR_QUE_MEMORY_ERROR          339     /* MSG%none */
-   #define ERROR_QUE_EMPTY                 342     /* MSG%none */
-   #define ERROR_QUE_UNABLE_TO_ACCESS      345     /* MSG%none */
-   #define ERROR_QUE_UNABLE_TO_INIT        347     /* MSG%none */
-#endif
+enum QueueError_t
+{
+    ERROR_QUE_ELEMENT_NOT_EXIST   = 333,     /* MSG%QUE_ELEMENT_NOT_EXIST */
+    ERROR_QUE_NO_MEMORY           = 334,     /* MSG%QUE_NO_MEMORY */
+    ERROR_QUE_INVALID_PRIORITY    = 336,     /* MSG%none */
+    ERROR_QUE_INVALID_HANDLE      = 337,     /* MSG%none */
+    ERROR_QUE_MEMORY_ERROR        = 339,     /* MSG%none */
+    ERROR_QUE_EMPTY               = 342,     /* MSG%none */
+    ERROR_QUE_UNABLE_TO_ACCESS    = 345,     /* MSG%none */
+    ERROR_QUE_UNABLE_TO_INIT      = 347      /* MSG%none */
+};
 
 typedef struct _QUEUEENT
 {

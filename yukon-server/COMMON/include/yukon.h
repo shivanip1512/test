@@ -133,7 +133,7 @@ enum CtiAlarm_t
 enum YukonError_t
 {
     NoError = 0,
-    //NORMAL = 0,
+    //NORMAL = 0, // NORMAL is defined inside constants.h
     NOTNORMAL = 1,
     NODWORD,
     BADTYPE,

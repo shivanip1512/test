@@ -1,8 +1,4 @@
-//should this be here?
-#define STANDNAMLEN 20
-#ifndef  NORMAL
-   #define NORMAL 0
-#endif
+#pragma once
 
 /****************************************************************************
  * OS2 - Win32 type translations
@@ -26,7 +22,3 @@
 #define  PSZ      LPSTR
 #define  SEL      USHORT            // A Thread ID.
 #define  TID      DWORD             // A Thread ID.
-
-
-
-

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <time.h>
+#include <set>
 
 #include "cticonnect.h"
 #include "mutex.h"
@@ -9,8 +10,7 @@
 #include "dsm2err.h"
 #include "words.h"
 #include "macro_offset.h"
-
-#include <set>
+#include "constants.h"
 
 
 class CTINEXUS;
@@ -20,19 +20,6 @@ extern LONG gOutMessageCounter;
 IM_EX_CTIBASE void incrementCount();
 IM_EX_CTIBASE void decrementCount();
 IM_EX_CTIBASE LONG OutMessageCount();
-
-
-#define STANDNAMLEN           20
-#define MAX_VERSACOM_MESSAGE  40
-
-#define MAXPRIORITY     15
-
-/* Misc. definitions */
-#define MAXIDLC         128
-#define CCUGLOBAL       127
-#define RTUGLOBAL       126
-#define TIMEOUT         5
-#define PREAMLEN        3
 
 
 #pragma pack(push, message_packing, 1)
@@ -233,7 +220,6 @@ struct DIALUPREPLY
  * making things require this though....
  *----------------------------------------------------------------------------*/
 
-#define COMMAND_STR_SIZE 255
 struct PIL_ECHO               // Data echo'ed through porter fro the PIL.
 {
    char     BuildIt;          // 022801 CGP If !FALSE porter will analyze the CommandStr and make his own assumptions.
@@ -259,8 +245,6 @@ struct PIL_ECHO               // Data echo'ed through porter fro the PIL.
        } Emetcon;
    } ProtocolInfo;
 };
-
-#define MAX_SA_MSG_SIZE 256
 
 struct CtiSAData
 {
@@ -546,9 +530,6 @@ struct collect_inmess_target_device
                 : im.DeviceID);
     }
 };
-
-
-#define PORTERSU_DEVID     -2;
 
 /* Prototypes from UCTTime.C */
 IM_EX_CTIBASE int            UCTFTime (struct timeb *);

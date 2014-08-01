@@ -759,7 +759,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         if(pTap->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
         {
             //  Requeue the OM at the head of its priority so it will be examined next
-            if(Port->writeQueueWithPriority(OutMessage, std::min(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
+            if(Port->writeQueueWithPriority(OutMessage, std::min<int>(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -789,7 +789,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         if(pWctp->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
         {
             //  Requeue the OM at the head of its priority so it will be examined next
-            if(Port->writeQueueWithPriority(OutMessage, std::min(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
+            if(Port->writeQueueWithPriority(OutMessage, std::min<int>(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3421,7 +3421,7 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
                 {
                     //  Requeue the original OM.  Writing at Priority + 1 effectively
                     //    puts it at the head of its priority so it will be examined next
-                    if(Port->writeQueueWithPriority(OutMessage, std::min(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
+                    if(Port->writeQueueWithPriority(OutMessage, std::min<int>(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3446,7 +3446,7 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
             {
                 //  Requeue the original OM.  Writing at Priority + 1 effectively
                 //    puts it at the head of its priority so it will be examined next
-                if(Port->writeQueueWithPriority(OutMessage, std::min(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
+                if(Port->writeQueueWithPriority(OutMessage, std::min<int>(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
