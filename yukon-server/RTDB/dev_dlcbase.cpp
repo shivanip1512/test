@@ -200,9 +200,6 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
     }
     else
     {
-        long msgId = pReq->UserMessageId();
-        long connHandle = (long)pReq->getConnectionHandle();
-
         if(OutMessage != NULL)
         {
             tmpOutList.push_back( OutMessage );
@@ -210,19 +207,6 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
         }
 
         executeOnDLCRoute(pReq, parse, tmpOutList, vgList, retList, outList, broadcast);
-
-        const bool outMessagesGenerated = getGroupMessageCount(msgId, connHandle);
-
-        for( CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); )
-        {
-            CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(*itr);
-
-            // Set expectMore on all CtiReturnMsgs but the last, unless there was a command sent, in which case set expectMore on all of them.
-            if( ++itr != retList.end() || outMessagesGenerated )
-            {
-                retMsg->setExpectMore(true);
-            }
-        }
     }
 
     return nRet;
@@ -476,11 +460,6 @@ int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow
             ReturnMsg->setResultString(getName() + " / " + description);
         }
 
-        if( ptr.get() )
-        {
-            ReturnMsg->setExpectMore(true);
-        }
-
         retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList);
 
         if( ptr.get() )
@@ -516,17 +495,6 @@ int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow
                               CtiCommandParser(newReq.CommandString()),
                               list<OUTMESS *>(1, OutMessage),
                               vgList, retList, outList, false);
-
-            if (getGroupMessageCount(newReq.UserMessageId(), (long)newReq.getConnectionHandle()))
-            {
-                for each(CtiMessage* msg in retList)
-                {
-                    if( CtiReturnMsg* retMsg = dynamic_cast<CtiReturnMsg*>(msg) )
-                    {
-                        retMsg->setExpectMore(true);
-                    }
-                }
-            }
         }
         else
         {
@@ -622,25 +590,17 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
 {
     int nRet = NoError;
 
-    CtiRouteSPtr Route;
-
     string resultString;
     long      routeID;
-
-    CtiReturnMsg* pRet = 0;
 
     while( !tmpOutList.empty() )
     {
         OUTMESS *pOut = tmpOutList.front(); tmpOutList.pop_front();
 
-        if( pReq->RouteId() )
-        {
-            pOut->Request.RouteID = pReq->RouteId();
-        }
-        else
-        {
-            pOut->Request.RouteID = getRouteID();
-        }
+        pOut->Request.RouteID =
+                pReq->RouteId()
+                    ? pReq->RouteId()
+                    : getRouteID();
 
         EstablishOutMessagePriority( pOut, MAXPRIORITY - 4 );
 
@@ -652,7 +612,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
             pOut->MessageFlags |= MessageFlag_BroadcastOnMacroSubroutes;
         }
 
-        if( (Route = getRoute( pOut->Request.RouteID )) )
+        if( CtiRouteSPtr Route = getRoute(pOut->Request.RouteID) )
         {
             pOut->TargetID  = getID();
 
@@ -758,29 +718,16 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
              *  Form up the reply here since the ExecuteRequest funciton will consume the
              *  OutMessage.
              */
-            pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                           string(pOut->Request.CommandStr),
-                                           Route->getName(),
-                                           nRet,
-                                           pOut->Request.RouteID,
-                                           pOut->Request.RetryMacroOffset,
-                                           pOut->Request.Attempt,
-                                           pOut->Request.GrpMsgID,
-                                           pOut->Request.UserID,
-                                           pOut->Request.SOE,
-                                           CtiMultiMsg_vec());
 
             // Start the control request on its route(s)
             if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
             {
-                resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + GetErrorString(nRet) + ") performing command on route " + Route->getName().data();
-                pRet->setResultString(resultString);
-                pRet->setStatus( nRet );
-            }
-            else
-            {
-                delete pRet;
-                pRet = 0;
+                retList.push_back(
+                        new CtiReturnMsg(
+                                getID(),
+                                pOut->Request,
+                                getName() + ": ERROR " + CtiNumStr(nRet) + " (" + GetErrorString(nRet) + ") performing command on route " + Route->getName(),
+                                nRet));
             }
         }
         else if( getRouteManager() == 0 )       // If there is no route manager, we need porter to do the route work!
@@ -794,31 +741,30 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
         }
         else
         {
-            nRet = BADROUTE;
-
-            resultString = getName() + ": ERROR: Route or Route Transmitter not available for device ";
-
-            pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                           string(pOut->Request.CommandStr),
-                                           resultString,
-                                           nRet,
-                                           pOut->Request.RouteID,
-                                           pOut->Request.RetryMacroOffset,
-                                           pOut->Request.Attempt,
-                                           pOut->Request.GrpMsgID,
-                                           pOut->Request.UserID,
-                                           pOut->Request.SOE,
-                                           CtiMultiMsg_vec());
-        }
-
-        if(pRet)
-        {
-            retList.push_back( pRet );
+            retList.push_back(
+                    new CtiReturnMsg(
+                            getID(),
+                            pOut->Request,
+                            getName() + ": ERROR: Route or Route Transmitter not available for device ",
+                            BADROUTE));
         }
 
         if( pOut )
         {
             delete pOut;
+        }
+    }
+
+    const bool outMessagesGenerated = getGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+
+    for( CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); )
+    {
+        CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(*itr);
+
+        // Set expectMore on all CtiReturnMsgs but the last, unless there was a command sent, in which case set expectMore on all of them.
+        if( ++itr != retList.end() || outMessagesGenerated )
+        {
+            retMsg->setExpectMore(true);
         }
     }
 
