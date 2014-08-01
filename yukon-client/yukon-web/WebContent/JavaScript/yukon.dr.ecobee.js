@@ -138,7 +138,7 @@ yukon.dr.ecobee = (function () {
                         loadGroupPicker.show.call(loadGroupPicker, true);
                         
                         // must show nothing selected text after picker initialized
-                        if (true === showNothingSelected) {
+                        if (showNothingSelected) {
                             $('#picker_loadGroupPicker_nothingSelected').show();
                         }
                     }
