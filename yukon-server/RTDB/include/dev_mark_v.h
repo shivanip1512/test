@@ -64,7 +64,6 @@ private:
 
 public:
    CtiDeviceMarkV();
-   virtual ~CtiDeviceMarkV();
 
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,

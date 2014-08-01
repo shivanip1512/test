@@ -32,7 +32,6 @@ protected:
 public:
 
    CtiDeviceTCU();
-   virtual ~CtiDeviceTCU();
 
    /*
     *  These guys initiate a scan based upon the type requested.

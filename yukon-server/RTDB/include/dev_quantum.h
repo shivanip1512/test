@@ -196,11 +196,6 @@ public:
        setRetryAttempts( SCHLUMBERGER_RETRIES );
     }
 
-    virtual ~CtiDeviceQuantum( )
-    {
-       // all the databuffers are destroyed in base if needed
-    }
-
     INT               getCommandPacket( ) const;
     CtiDeviceQuantum &setCommandPacket( INT aCmd );
 

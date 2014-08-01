@@ -23,7 +23,6 @@ protected:
 
 public:
     Mct440_2133BDevice() {};
-    virtual ~Mct440_2133BDevice() {};
 };
 
 

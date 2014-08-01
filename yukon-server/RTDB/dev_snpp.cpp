@@ -61,11 +61,6 @@ CtiDeviceSnppPagingTerminal::CtiDeviceSnppPagingTerminal()
     resetStates();
 }
 
-CtiDeviceSnppPagingTerminal::~CtiDeviceSnppPagingTerminal()
-{
-    //Nothing special.
-}
-
 INT CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
 {
     INT status = commReturnValue;

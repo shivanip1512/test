@@ -23,7 +23,6 @@ protected:
 public:
 
     CtiDeviceCBC();
-    virtual ~CtiDeviceCBC();
 
     CtiTableDeviceCBC   getCBC() const;
     CtiTableDeviceCBC&  getCBC();

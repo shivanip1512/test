@@ -17,7 +17,6 @@ private:
 
 public:
     Cbc8020Device() {};
-    virtual ~Cbc8020Device() {};
 
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
     static void initOffsetAttributeMaps( std::map <int, PointAttribute> &analogOffsetAttribute,

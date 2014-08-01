@@ -43,7 +43,6 @@ protected:
 public:
 
     Mct22xDevice();
-    virtual ~Mct22xDevice();
 };
 
 }

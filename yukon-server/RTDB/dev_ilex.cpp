@@ -44,9 +44,6 @@ CtiDeviceILEX::CtiDeviceILEX() :
     _sequence(0)
 {}
 
-CtiDeviceILEX::~CtiDeviceILEX()
-{}
-
 INT CtiDeviceILEX::header(PBYTE  Header,          /* Pointer to message */
                           USHORT Function,        /* Function code */
                           USHORT SubFunction1,    /* High order sub function code */

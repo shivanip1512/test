@@ -87,7 +87,6 @@ private:
 
 public:
     RfnResidentialDevice() {};
-    virtual ~RfnResidentialDevice() {};
 };
 
 typedef RfnResidentialDevice Rfn410fxDevice;

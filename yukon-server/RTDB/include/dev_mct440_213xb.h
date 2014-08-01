@@ -108,6 +108,8 @@ protected:
         Memory_EventLogMaxOffset                = 9,
     };
 
+    Mct440_213xBDevice() {};
+
     virtual const FunctionReadValueMappings  *getReadValueMaps() const;
     virtual const std::set<UINT>             *getExcludedCommands() const;
     virtual ConfigPartsList                   getPartsList();
@@ -164,12 +166,6 @@ protected:
     virtual void parseTOUDayScheduleString         (std::string &schedule, long (&times)[9], long (&rates)[10]);
 
     virtual void createTOUScheduleConfig           (const long (&daySchedule)[8], const long (&times)[4][9], const long (&rates)[4][10], OUTMESS *&OutMessage, OutMessageList &outList);
-
-protected:
-    Mct440_213xBDevice() {};
-
-public:
-    virtual ~Mct440_213xBDevice() {};
 };
 
 

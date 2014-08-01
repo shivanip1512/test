@@ -27,9 +27,6 @@ namespace Devices {
 Cbc6510Device::Cbc6510Device()
 {}
 
-Cbc6510Device::~Cbc6510Device()
-{}
-
 INT Cbc6510Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NoMethod;

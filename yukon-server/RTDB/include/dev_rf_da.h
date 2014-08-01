@@ -23,7 +23,6 @@ private:
 
 public:
     RfDaDevice() {};
-    virtual ~RfDaDevice() {};
 };
 
 }

@@ -34,10 +34,6 @@ CtiDeviceGroupExpresscom::CtiDeviceGroupExpresscom()
 {
 }
 
-CtiDeviceGroupExpresscom::~CtiDeviceGroupExpresscom()
-{
-}
-
 CtiTableExpresscomLoadGroup CtiDeviceGroupExpresscom::getExpresscomGroup() const
 {
     return _expresscomGroup;

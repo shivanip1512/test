@@ -27,11 +27,6 @@ _last_freeze(0)
 {
 }
 
-
-MctBroadcastDevice::~MctBroadcastDevice()
-{
-}
-
 string MctBroadcastDevice::getSQLCoreStatement() const
 {
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "

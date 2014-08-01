@@ -36,13 +36,6 @@ CtiDeviceKV2::CtiDeviceKV2() :
 }
 
 //=========================================================================================================================================
-//=========================================================================================================================================
-
-CtiDeviceKV2::~CtiDeviceKV2()
-{
-}
-
-//=========================================================================================================================================
 //scanner has decided that it's time to talk to an ansi-talking device and has called up on Us to carry out this mission - let us be brave
 //
 //we get handed a bunch of junk we don't care about, build a header about the command (GeneralScan) and , then pop down

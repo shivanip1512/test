@@ -53,8 +53,6 @@ CtiDeviceION::CtiDeviceION() :
 //    resetIONScansPending();
 }
 
-CtiDeviceION::~CtiDeviceION() {}
-
 
 void CtiDeviceION::setMeterGroupData( const string &meterNumber )
 {

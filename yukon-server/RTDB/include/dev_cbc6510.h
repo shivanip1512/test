@@ -41,7 +41,6 @@ protected:
 public:
 
     Cbc6510Device();
-    virtual ~Cbc6510Device();
 
     virtual std::string getDescription(const CtiCommandParser & parse) const;
 

@@ -40,10 +40,6 @@ CtiDeviceMacro::CtiDeviceMacro( )
 {
 }
 
-CtiDeviceMacro::~CtiDeviceMacro( )
-{
-}
-
 void CtiDeviceMacro::DumpData( )
 {
     Inherited::DumpData( );

@@ -61,7 +61,6 @@ protected:
 public:
 
     CtiDeviceILEX();
-    virtual ~CtiDeviceILEX();
 
     /*
      *  These guys initiate a scan based upon the type requested.

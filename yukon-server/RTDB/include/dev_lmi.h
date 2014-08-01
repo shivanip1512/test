@@ -31,7 +31,6 @@ protected:
 public:
 
     CtiDeviceLMI();
-    virtual ~CtiDeviceLMI();
 
     virtual std::string getSQLCoreStatement() const;
 

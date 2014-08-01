@@ -32,7 +32,6 @@ protected:
 public:
 
    CtiDeviceTnppPagingTerminal();
-   virtual ~CtiDeviceTnppPagingTerminal();
 
    INT decode(CtiXfer &xfer,INT commReturnValue);
    INT generate(CtiXfer  &xfer);

@@ -30,7 +30,6 @@ protected:
 
 public:
     RfnCommercialDevice() {};
-    virtual ~RfnCommercialDevice() {};
 };
 
 typedef RfnCommercialDevice Rfn430a3dDevice;

@@ -83,7 +83,6 @@ protected:
 
 public:
     Mct420Device() {};
-    virtual ~Mct420Device() {};
 
     static point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
 };

@@ -58,8 +58,6 @@ public:
     };
 
     Mct210Device();
-    virtual ~Mct210Device();
-
 };
 
 }

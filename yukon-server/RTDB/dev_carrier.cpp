@@ -13,9 +13,6 @@ CarrierDevice::CarrierDevice()
     loadProfile.reset(new CtiTableDeviceLoadProfile());
 }
 
-CarrierDevice::~CarrierDevice() 
-{}
-
 boost::shared_ptr<DataAccessLoadProfile> CarrierDevice::getLoadProfile()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);

@@ -230,8 +230,6 @@ public:
 
     MctDevice( );
 
-    virtual ~MctDevice( ) {};
-
     virtual CtiTime adjustNextScanTime( const INT scanType=ScanRateGeneral );
 
     static bool isMct410( int type );

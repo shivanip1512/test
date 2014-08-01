@@ -23,10 +23,6 @@ Mct24xDevice::Mct24xDevice( )
 {
 }
 
-Mct24xDevice::~Mct24xDevice( )
-{
-}
-
 Mct24xDevice::CommandSet Mct24xDevice::initCommandStore()
 {
     CommandSet cs;

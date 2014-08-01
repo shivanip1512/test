@@ -27,8 +27,8 @@ public:
 
     typedef CtiDeviceAnsi Inherited;
 
-   CtiDeviceFocus();
-   virtual ~CtiDeviceFocus();
+    CtiDeviceFocus();
+
    virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void );
    virtual unsigned long updateLastLpTime();
 

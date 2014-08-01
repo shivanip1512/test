@@ -21,8 +21,7 @@ private:
 
 public:
 
-   CtiDeviceKV2();
-   virtual ~CtiDeviceKV2();
+    CtiDeviceKV2();
 
    virtual INT DemandReset( CtiRequestMsg *pReq,
                     CtiCommandParser &parse,

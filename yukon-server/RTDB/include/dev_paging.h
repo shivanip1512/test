@@ -26,7 +26,6 @@ protected:
 public:
 
    DevicePaging();
-   virtual ~DevicePaging();
 
    const CtiTableDeviceTapPaging& getPaging() const;
 

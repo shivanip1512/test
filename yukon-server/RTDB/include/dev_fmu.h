@@ -116,13 +116,11 @@ private:
 
     std::queue< CtiVerificationBase * > _verification_objects;
 
-protected:
-
 public:
     INT _cmd_len;
 
     CtiDeviceFMU();
-    ~CtiDeviceFMU();
+    
     virtual LONG getAddress() const;
 
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);

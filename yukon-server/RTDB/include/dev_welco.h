@@ -26,12 +26,9 @@ private:
 
    int     _deadbandsSent;
 
-protected:
-
 public:
 
    CtiDeviceWelco();
-   virtual ~CtiDeviceWelco();
 
    INT WelCoContinue    (OUTMESS *OutMessage, INT Priority);
    INT WelCoGetError    (OUTMESS *OutMessage, INT Priority);

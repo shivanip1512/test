@@ -37,7 +37,6 @@ protected:
 public:
 
    Repeater800Device();
-   virtual ~Repeater800Device();
 };
 
 }

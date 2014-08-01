@@ -48,10 +48,6 @@ _retryTime(second_clock::universal_time())
     resetStates(true);
 }
 
-CtiDevicePagingReceiver::~CtiDevicePagingReceiver()
-{
-}
-
 INT CtiDevicePagingReceiver::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     //So far I am doing nothing with the result...

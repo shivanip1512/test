@@ -3250,13 +3250,3 @@ CtiDeviceVectron::CtiDeviceVectron ( BYTE         *dataPtr,
    setRetryAttempts(SCHLUMBERGER_RETRIES);
 }
 
-CtiDeviceVectron::~CtiDeviceVectron()
-{
-   // all the databuffers are destroyed in base if needed
-
-}
-
-
-
-
-

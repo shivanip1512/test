@@ -36,7 +36,6 @@ protected:
 public:
 
     CtiDeviceMacro( );
-    virtual ~CtiDeviceMacro( );
 
     virtual void DumpData( void );
 

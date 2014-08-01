@@ -29,7 +29,6 @@ protected:
 public:
 
    CarrierDevice();
-   virtual ~CarrierDevice();
 
    virtual boost::shared_ptr<Cti::DataAccessLoadProfile> getLoadProfile();
 

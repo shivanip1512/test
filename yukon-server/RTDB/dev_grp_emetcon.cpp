@@ -305,9 +305,6 @@ CtiDeviceGroupEmetcon::CtiDeviceGroupEmetcon()
 {
 }
 
-CtiDeviceGroupEmetcon::~CtiDeviceGroupEmetcon()
-{}
-
 CtiTableEmetconLoadGroup   CtiDeviceGroupEmetcon::getEmetconGroup() const      { return EmetconGroup;}
 CtiTableEmetconLoadGroup&  CtiDeviceGroupEmetcon::getEmetconGroup()            { return EmetconGroup;}
 

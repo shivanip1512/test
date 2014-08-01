@@ -24,10 +24,6 @@ Mct210Device::Mct210Device()
 {
 }
 
-Mct210Device::~Mct210Device()
-{
-}
-
 Mct210Device::CommandSet Mct210Device::initCommandStore()
 {
     CommandSet cs;

@@ -20,12 +20,9 @@ private:
     CtiTableDeviceAddress    _address;
     CtiTableDeviceDirectComm _commport;
 
-protected:
-
 public:
 
     CtiDeviceGridAdvisor();
-    virtual ~CtiDeviceGridAdvisor();
 
     virtual std::string getSQLCoreStatement() const;
 

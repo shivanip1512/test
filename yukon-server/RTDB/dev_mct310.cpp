@@ -44,9 +44,6 @@ Mct310Device::Mct310Device( )
 {
 }
 
-Mct310Device::~Mct310Device( )
-{
-}
 
 Mct310Device::CommandSet Mct310Device::initCommandStore( )
 {

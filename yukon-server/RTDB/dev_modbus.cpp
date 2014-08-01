@@ -41,9 +41,6 @@ ModbusDevice::ModbusDevice(void)
 {
 }
 
-ModbusDevice::~ModbusDevice()
-{}
-
 INT ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;

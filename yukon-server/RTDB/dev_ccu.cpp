@@ -35,10 +35,6 @@ CtiDeviceCCU::CtiDeviceCCU() :
     }
 }
 
-CtiDeviceCCU::~CtiDeviceCCU()
-{
-}
-
 //  checks if we've reset this algorithm recently - we can only do so every AlgorithmRepeatInterval seconds
 bool CtiDeviceCCU::checkAlgorithmReset(int alg)
 {

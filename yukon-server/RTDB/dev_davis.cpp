@@ -45,9 +45,6 @@ using std::list;
 CtiDeviceDavis::CtiDeviceDavis()
 {}
 
-CtiDeviceDavis::~CtiDeviceDavis()
-{}
-
 INT CtiDeviceDavis::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;

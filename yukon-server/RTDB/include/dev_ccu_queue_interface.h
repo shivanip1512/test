@@ -20,7 +20,6 @@ private:
 public:
 
     CCU711DeviceQueueInterface();
-    virtual ~CCU711DeviceQueueInterface() {};
 
     void set711Info(CtiTransmitter711Info *pInfo);
 

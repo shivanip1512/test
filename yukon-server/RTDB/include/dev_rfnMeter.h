@@ -93,7 +93,6 @@ private:
 
 public:
     RfnMeterDevice() {};
-    virtual ~RfnMeterDevice() {};
 };
 
 typedef RfnMeterDevice Rfn410flDevice;  //  kWh only

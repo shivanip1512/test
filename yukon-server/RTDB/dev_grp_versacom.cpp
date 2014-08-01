@@ -231,9 +231,6 @@ string CtiDeviceGroupVersacom::getPutConfigAssignment(UINT modifier)
 CtiDeviceGroupVersacom::CtiDeviceGroupVersacom()
 {}
 
-CtiDeviceGroupVersacom::~CtiDeviceGroupVersacom()
-{}
-
 CtiTableVersacomLoadGroup   CtiDeviceGroupVersacom::getVersacomGroup() const      { return VersacomGroup;}
 CtiTableVersacomLoadGroup&  CtiDeviceGroupVersacom::getVersacomGroup()            { return VersacomGroup;}
 

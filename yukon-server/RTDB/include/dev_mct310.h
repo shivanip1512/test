@@ -131,7 +131,6 @@ public:
     };
 
     Mct310Device( );
-    virtual ~Mct310Device( );
 
     //  virtual so that the MCT318 can override it
     virtual ULONG calcNextLPScanTime( void );

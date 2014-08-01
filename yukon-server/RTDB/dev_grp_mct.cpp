@@ -30,15 +30,10 @@ CtiDeviceGroupMCT::CtiDeviceGroupMCT()
 {
 }
 
-CtiDeviceGroupMCT::~CtiDeviceGroupMCT()
-{
-}
-
 LONG CtiDeviceGroupMCT::getRouteID( void )
 {
     return _lmGroupMCT.getRouteID();
 }
-
 
 string CtiDeviceGroupMCT::getDescription( const CtiCommandParser &parse ) const
 {

@@ -28,13 +28,11 @@ CtiDeviceAnsi::CtiDeviceAnsi() :
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiDeviceAnsi::~CtiDeviceAnsi()
-{
-}
 int CtiDeviceAnsi::buildSingleTableRequest(BYTE *ptr, UINT tableId)
 {
     return 0;
 }
+
 INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
                                     list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {

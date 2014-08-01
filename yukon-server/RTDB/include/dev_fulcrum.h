@@ -202,11 +202,6 @@ public:
       setRetryAttempts(SCHLUMBERGER_RETRIES);
    }
 
-   virtual ~CtiDeviceFulcrum()
-   {
-      // all the databuffers are destroyed in base if needed
-   }
-
    /*
     *  These guys initiate a scan based upon the type requested.
     */

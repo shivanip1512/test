@@ -31,9 +31,6 @@ DnpDevice::DnpDevice()
     resetDNPScansPending();
 }
 
-DnpDevice::~DnpDevice()
-{}
-
 LONG DnpDevice::getAddress() const
 {
     return _dnp_address.getSlaveAddress();

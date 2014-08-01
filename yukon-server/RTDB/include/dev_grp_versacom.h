@@ -23,7 +23,6 @@ protected:
 public:
 
    CtiDeviceGroupVersacom();
-   virtual ~CtiDeviceGroupVersacom();
 
    CtiTableVersacomLoadGroup   getVersacomGroup() const;
    CtiTableVersacomLoadGroup&  getVersacomGroup();

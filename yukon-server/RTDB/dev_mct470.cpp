@@ -54,10 +54,6 @@ Mct470Device::Mct470Device( ) :
 {
 }
 
-Mct470Device::~Mct470Device( )
-{
-}
-
 Mct470Device::ConfigPartsList Mct470Device::initConfigParts430()
 {
     Mct470Device::ConfigPartsList tempList;

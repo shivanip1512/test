@@ -150,10 +150,6 @@ Mct4xxDevice::Mct4xxDevice()
     }
 }
 
-Mct4xxDevice::~Mct4xxDevice()
-{
-}
-
 const Mct4xxDevice::error_map Mct4xxDevice::error_codes = boost::assign::map_list_of
         (0xfffffffe, error_details("Meter communications problem",                 InvalidQuality))
         (0xfffffffd, error_details("No data yet available for requested interval", InvalidQuality))

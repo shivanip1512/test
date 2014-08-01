@@ -545,7 +545,6 @@ public:
     };
 
     Mct470Device( );
-    virtual ~Mct470Device( );
 
     virtual ULONG calcNextLPScanTime( void );
 

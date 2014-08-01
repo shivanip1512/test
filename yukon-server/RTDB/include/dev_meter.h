@@ -30,7 +30,6 @@ protected:
 public:
 
    CtiDeviceMeter( );
-   virtual ~CtiDeviceMeter( )  { };
 
    int readDSTFile( std::string &id );
 

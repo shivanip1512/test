@@ -20,9 +20,6 @@ const Lmt2Device::CommandSet Lmt2Device::_commandStore = Lmt2Device::initCommand
 Lmt2Device::Lmt2Device()
 {}
 
-Lmt2Device::~Lmt2Device()
-{}
-
 Lmt2Device::CommandSet Lmt2Device::initCommandStore()
 {
    CommandSet cs;

@@ -17,7 +17,6 @@ private:
 
 public:
     CtiDeviceSeriesV() {};
-    virtual ~CtiDeviceSeriesV() {};
 
     Cti::Protocol::Interface *getProtocol();
 

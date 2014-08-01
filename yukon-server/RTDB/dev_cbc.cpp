@@ -410,10 +410,6 @@ string CtiDeviceCBC::getDescription(const CtiCommandParser & parse) const
     return tmp;
 }
 
-CtiDeviceCBC::~CtiDeviceCBC()
-{
-}
-
 CtiTableDeviceCBC   CtiDeviceCBC::getCBC() const
 {
     return _cbc;

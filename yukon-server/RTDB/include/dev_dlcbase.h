@@ -151,7 +151,6 @@ public:
     };
 
     DlcBaseDevice();
-    virtual ~DlcBaseDevice();
 
     virtual std::string getSQLCoreStatement() const;
 

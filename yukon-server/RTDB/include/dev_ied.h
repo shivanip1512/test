@@ -185,8 +185,6 @@ public:
         _handshakesRemaining(3)
     {}
 
-    virtual ~CtiDeviceIED() {}
-
     CtiTableDeviceIED&   getIED()            { return _ied; }
     CtiTableDeviceIED    getIED() const      { return _ied; }
     CtiDeviceIED&        setIED(const CtiTableDeviceIED &aIED )

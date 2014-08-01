@@ -75,8 +75,6 @@ protected:
 public:
 
    Mct2xxDevice( );
-   virtual ~Mct2xxDevice( );
-
 };
 
 }

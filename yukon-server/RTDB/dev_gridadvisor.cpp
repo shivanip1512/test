@@ -48,9 +48,6 @@ CtiDeviceGridAdvisor::CtiDeviceGridAdvisor()
 {
 }
 
-CtiDeviceGridAdvisor::~CtiDeviceGridAdvisor()
-{}
-
 INT CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;

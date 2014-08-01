@@ -590,10 +590,6 @@ bool CtiDeviceTCU::getSendFiller() const
 CtiDeviceTCU::CtiDeviceTCU() : _sendFiller(false)
 {}
 
-CtiDeviceTCU::~CtiDeviceTCU()
-{
-}
-
 INT CtiDeviceTCU::getProtocolWrap() const
 {
     INT protocol = ProtocolWrapIDLC;

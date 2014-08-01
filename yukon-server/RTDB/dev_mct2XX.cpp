@@ -21,9 +21,6 @@ const Mct2xxDevice::CommandSet Mct2xxDevice::_commandStore = Mct2xxDevice::initC
 Mct2xxDevice::Mct2xxDevice( )
 {}
 
-Mct2xxDevice::~Mct2xxDevice( )
-{}
-
 Mct2xxDevice::CommandSet Mct2xxDevice::initCommandStore()
 {
     CommandSet cs;

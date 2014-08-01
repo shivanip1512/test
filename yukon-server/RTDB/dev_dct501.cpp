@@ -23,9 +23,6 @@ const Dct501Device::CommandSet Dct501Device::_commandStore = Dct501Device::initC
 Dct501Device::Dct501Device( )
 {}
 
-Dct501Device::~Dct501Device( )
-{}
-
 Dct501Device::CommandSet Dct501Device::initCommandStore()
 {
     CommandSet cs;

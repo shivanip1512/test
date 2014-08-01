@@ -77,7 +77,6 @@ protected:
 public:
 
     DnpDevice();
-    virtual ~DnpDevice();
 
     virtual std::string getSQLCoreStatement() const;
 

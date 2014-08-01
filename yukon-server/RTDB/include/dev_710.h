@@ -24,7 +24,6 @@ private:
 public:
 
     CtiDeviceCCU710();
-    virtual ~CtiDeviceCCU710();
 
     INT Loopback(OUTMESS*);
 

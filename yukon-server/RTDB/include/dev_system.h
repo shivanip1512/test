@@ -15,12 +15,9 @@ private:
 
     typedef CtiDeviceBase Inherited;
 
-protected:
-
 public:
 
    CtiDeviceSystem();
-   virtual ~CtiDeviceSystem();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,

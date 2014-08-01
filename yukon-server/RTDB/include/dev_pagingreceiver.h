@@ -44,7 +44,6 @@ public:
 
     static std::vector<const char*> initCommandVector();
     CtiDevicePagingReceiver();
-    virtual ~CtiDevicePagingReceiver();
     int recvCommRequest(OUTMESS *OutMessage);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 

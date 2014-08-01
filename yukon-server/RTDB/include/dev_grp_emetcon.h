@@ -23,7 +23,6 @@ protected:
 public:
 
    CtiDeviceGroupEmetcon();
-   virtual ~CtiDeviceGroupEmetcon();
 
    CtiTableEmetconLoadGroup   getEmetconGroup() const;//      { return EmetconGroup; }
    CtiTableEmetconLoadGroup&  getEmetconGroup();//            { return EmetconGroup; }

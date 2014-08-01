@@ -315,13 +315,6 @@ public:
    }
    */
 
-   virtual ~CtiDeviceVectron();/*
-   {
-      // all the databuffers are destroyed in base if needed
-
-   }                             */
-
-
    INT                     getCommandPacket () const;
    CtiDeviceVectron&       setCommandPacket (INT aCommand);
 

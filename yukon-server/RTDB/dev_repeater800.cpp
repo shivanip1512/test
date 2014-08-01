@@ -22,8 +22,6 @@ const Repeater800Device::CommandSet Repeater800Device::_commandStore = Repeater8
 Repeater800Device::Repeater800Device()
 {}
 
-Repeater800Device::~Repeater800Device()
-{}
 
 Repeater800Device::CommandSet Repeater800Device::initCommandStore()
 {

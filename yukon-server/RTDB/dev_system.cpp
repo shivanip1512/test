@@ -813,9 +813,6 @@ string CtiDeviceSystem::getDescription(const CtiCommandParser &parse) const
 CtiDeviceSystem::CtiDeviceSystem()
 {}
 
-CtiDeviceSystem::~CtiDeviceSystem()
-{}
-
 void CtiDeviceSystem::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled

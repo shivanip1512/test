@@ -25,7 +25,6 @@ protected:
 public:
 
     CtiDeviceGroupSA105();
-    virtual ~CtiDeviceGroupSA105();
 
     CtiTableSA205105Group getLoadGroup() const;
     CtiTableSA205105Group& getLoadGroup();

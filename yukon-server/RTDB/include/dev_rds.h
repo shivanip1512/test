@@ -22,7 +22,6 @@ private:
 public:
 
     RDSTransmitter();
-    virtual ~RDSTransmitter();
 
     int recvCommRequest( OUTMESS *OutMessage );
 

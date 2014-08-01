@@ -22,8 +22,6 @@ const Repeater900Device::CommandSet Repeater900Device::_commandStore = Repeater9
 Repeater900Device::Repeater900Device()
 { }
 
-Repeater900Device::~Repeater900Device()
-{ }
 
 Repeater900Device::CommandSet Repeater900Device::initCommandStore()
 {

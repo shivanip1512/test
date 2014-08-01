@@ -121,7 +121,6 @@ public:
     };
 
     Mct31xDevice( );
-    virtual ~Mct31xDevice( );
 
     CtiTableDeviceMCTIEDPort &getIEDPort( void );
 

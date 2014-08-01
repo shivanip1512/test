@@ -25,7 +25,6 @@ private:
 
 public:
     RfnDevice() {};
-    virtual ~RfnDevice() {};
 
     typedef std::vector<Commands::RfnCommandSPtr> RfnCommandList;
     typedef boost::ptr_deque<CtiReturnMsg> ReturnMsgList;

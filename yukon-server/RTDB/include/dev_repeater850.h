@@ -43,7 +43,6 @@ protected:
 
 public:
     Repeater850Device() {};
-    virtual ~Repeater850Device() {};
 };
 
 }

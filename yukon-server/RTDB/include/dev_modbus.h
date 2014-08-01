@@ -62,7 +62,6 @@ protected:
 public:
 
     ModbusDevice();
-    virtual ~ModbusDevice();
 
     virtual std::string getSQLCoreStatement() const;
 

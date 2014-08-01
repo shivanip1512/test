@@ -492,13 +492,6 @@ public:
    {
    }
 
-
-   virtual ~CtiDeviceAlphaA1()
-   {
-       // all the databuffers are destroyed in base if needed
-
-   }
-
    // all routines required by base class dev_meter
    virtual INT ResultDisplay (const INMESS *InMessage);
    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);

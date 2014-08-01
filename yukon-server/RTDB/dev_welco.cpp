@@ -49,9 +49,6 @@ CtiDeviceWelco::CtiDeviceWelco()
     :   _deadbandsSent(0)
 {}
 
-CtiDeviceWelco::~CtiDeviceWelco()
-{}
-
 INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
                                     CtiCommandParser &parse,
                                     OUTMESS *&OutMessage,

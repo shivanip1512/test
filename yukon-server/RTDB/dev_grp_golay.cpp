@@ -19,10 +19,6 @@ CtiDeviceGroupGolay::CtiDeviceGroupGolay()
 {
 }
 
-CtiDeviceGroupGolay::~CtiDeviceGroupGolay()
-{
-}
-
 CtiTableSASimpleGroup CtiDeviceGroupGolay::getLoadGroup() const
 {
     return _loadGroup;

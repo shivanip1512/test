@@ -24,7 +24,6 @@ protected:
 public:
 
     CtiDeviceGroupSADigital();
-    virtual ~CtiDeviceGroupSADigital();
 
     CtiTableSASimpleGroup getLoadGroup() const;
     CtiTableSASimpleGroup& getLoadGroup();

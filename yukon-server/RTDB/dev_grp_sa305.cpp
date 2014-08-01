@@ -20,10 +20,6 @@ _lastSACommandType(SA305_DI_Control)
 {
 }
 
-CtiDeviceGroupSA305::~CtiDeviceGroupSA305()
-{
-}
-
 CtiTableSA305LoadGroup CtiDeviceGroupSA305::getLoadGroup() const
 {
     return _loadGroup;

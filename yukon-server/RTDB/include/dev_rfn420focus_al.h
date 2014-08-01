@@ -33,7 +33,6 @@ private:
 
 public:
     Rfn420FocusAlDevice() {};
-    virtual ~Rfn420FocusAlDevice() {};
 };
 
 

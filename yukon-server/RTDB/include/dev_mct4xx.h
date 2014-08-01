@@ -327,7 +327,6 @@ protected:
 public:
 
     Mct4xxDevice();
-    virtual ~Mct4xxDevice();
 
     enum
     {

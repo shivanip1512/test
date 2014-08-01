@@ -41,7 +41,6 @@ protected:
 public:
 
     CtiDeviceGroupMCT();
-    virtual ~CtiDeviceGroupMCT();
 
     virtual std::string getSQLCoreStatement() const;
 

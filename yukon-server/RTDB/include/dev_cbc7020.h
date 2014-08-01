@@ -20,7 +20,6 @@ private:
 
 public:
     Cbc7020Device() {};
-    virtual ~Cbc7020Device() {};
 
     typedef std::vector<const char *> ConfigPartsList;
 

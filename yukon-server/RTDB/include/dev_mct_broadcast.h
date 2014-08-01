@@ -41,7 +41,6 @@ protected:
 public:
 
     MctBroadcastDevice();
-    virtual ~MctBroadcastDevice();
 
     virtual INT ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList );
 

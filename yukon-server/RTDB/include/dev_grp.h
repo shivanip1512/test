@@ -44,8 +44,6 @@ public:
         _isShed(UNCONTROLLED)
     {}
 
-    virtual ~CtiDeviceGroupBase() {}
-
     virtual LONG getRouteID() = 0;      // Must be defined!
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr)

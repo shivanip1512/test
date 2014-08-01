@@ -32,9 +32,6 @@ DlcBaseDevice::DlcBaseDevice() :
     _activeIndex(EmetconProtocol::DLCCmd_LAST)
 {}
 
-DlcBaseDevice::~DlcBaseDevice()
-{}
-
 string DlcBaseDevice::getSQLCoreStatement() const
 {
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "

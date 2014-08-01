@@ -25,7 +25,6 @@ private:
 public:
 
    CtiDeviceSentinel();
-   virtual ~CtiDeviceSentinel();
 
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,

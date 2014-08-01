@@ -20,7 +20,6 @@ public:
    typedef CtiDeviceFocus Inherited;
 
    Ipc420ADDevice();
-   virtual ~Ipc420ADDevice();
   
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);

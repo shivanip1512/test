@@ -31,10 +31,6 @@ _remainingSleepDelay(0)
     resetStates(StateSendRequestedMessage);
 }
 
-RDSTransmitter::~RDSTransmitter()
-{
-}
-
 int RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
 {
     int retVal = NoError;

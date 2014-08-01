@@ -55,7 +55,6 @@ protected:
 public:
 
     Lmt2Device();
-    virtual ~Lmt2Device();
 
     ULONG calcNextLPScanTime( void );
 };

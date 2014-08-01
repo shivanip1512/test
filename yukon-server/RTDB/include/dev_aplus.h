@@ -352,12 +352,6 @@ public:
     {
     }
 
-
-    virtual ~CtiDeviceAlphaPPlus()
-    {
-        // all the databuffers are destroyed in base if needed
-    }
-
     virtual INT ResultDisplay (const INMESS *InMessage);
     virtual INT GeneralScan(CtiRequestMsg *pReq,
                             CtiCommandParser &parse,

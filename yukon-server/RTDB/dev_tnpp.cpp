@@ -120,11 +120,6 @@ _command(Normal)
     resetStates();
 }
 
-CtiDeviceTnppPagingTerminal::~CtiDeviceTnppPagingTerminal()
-{
-    //Nothing special.
-
-}
 
 INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
 {

@@ -32,8 +32,6 @@ protected:
 
 public:    
     CtiDeviceGroupExpresscom();
-    virtual ~CtiDeviceGroupExpresscom();
-
 
     CtiTableExpresscomLoadGroup   getExpresscomGroup() const;
     CtiTableExpresscomLoadGroup&  getExpresscomGroup();

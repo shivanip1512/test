@@ -218,9 +218,6 @@ INT CtiDeviceCCU710::Loopback(OUTMESS* OutMessage)
 CtiDeviceCCU710::CtiDeviceCCU710() 
 {}
 
-CtiDeviceCCU710::~CtiDeviceCCU710() 
-{}
-
 INT CtiDeviceCCU710::getProtocolWrap() const
 {
    return ProtocolWrapNone;

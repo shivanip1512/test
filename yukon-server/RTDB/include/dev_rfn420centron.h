@@ -27,7 +27,6 @@ private:
 
 public:
     Rfn420CentronDevice() {};
-    virtual ~Rfn420CentronDevice() {};
 };
 
 

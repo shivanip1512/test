@@ -24,7 +24,6 @@ protected:
 public:
 
     CtiDeviceGroupPoint();
-    virtual ~CtiDeviceGroupPoint();
 
     virtual LONG getRouteID();
 

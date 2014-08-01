@@ -68,7 +68,6 @@ protected:
 public:
 
     Mct24xDevice( );
-    virtual ~Mct24xDevice( );
 
     ULONG calcNextLPScanTime( void );
 };

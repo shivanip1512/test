@@ -24,7 +24,6 @@ protected:
 public:
 
     CtiDeviceGroupGolay();
-    virtual ~CtiDeviceGroupGolay();
 
     CtiTableSASimpleGroup getLoadGroup() const;
     CtiTableSASimpleGroup& getLoadGroup();

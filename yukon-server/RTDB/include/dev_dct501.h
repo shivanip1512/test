@@ -49,7 +49,6 @@ protected:
 public:
 
    Dct501Device( );
-   virtual ~Dct501Device( );
 
    virtual ULONG calcNextLPScanTime( void );
    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );

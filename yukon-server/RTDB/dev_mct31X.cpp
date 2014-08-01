@@ -39,10 +39,6 @@ Mct31xDevice::Mct31xDevice( )
 }
 
 
-Mct31xDevice::~Mct31xDevice( )
-{ }
-
-
 CtiTableDeviceMCTIEDPort &Mct31xDevice::getIEDPort( void )
 {
     return _iedPort;

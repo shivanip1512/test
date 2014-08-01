@@ -9,10 +9,6 @@ DevicePaging::DevicePaging()
 {
 }
 
-DevicePaging::~DevicePaging()
-{
-}
-
 const CtiTableDeviceTapPaging& DevicePaging::getPaging() const
 {
     return _tapTable;

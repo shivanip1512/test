@@ -18,12 +18,6 @@ CtiDeviceLMI::CtiDeviceLMI() :
 {
 }
 
-
-CtiDeviceLMI::~CtiDeviceLMI()
-{
-}
-
-
 Cti::Protocol::Interface *CtiDeviceLMI::getProtocol()
 {
     return (Cti::Protocol::Interface *)&_lmi;

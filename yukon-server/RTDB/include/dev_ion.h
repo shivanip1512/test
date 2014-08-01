@@ -50,7 +50,6 @@ protected:
 public:
 
     CtiDeviceION();
-    virtual ~CtiDeviceION();
 
     //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
     CtiTableDeviceMeterGroup  getMeterGroup() const;
