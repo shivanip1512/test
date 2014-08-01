@@ -660,11 +660,6 @@ bool CtiDeviceLMI::hasExclusions() const
     return _lmi_exclusion.hasExclusions();
 }
 
-CtiDeviceExclusion CtiDeviceLMI::exclusion() const
-{
-    return _lmi_exclusion;
-}
-
 CtiDeviceExclusion& CtiDeviceLMI::getExclusion()
 {
     return _lmi_exclusion;

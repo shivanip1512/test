@@ -14,11 +14,23 @@ namespace Devices   {
 class IM_EX_DEVDB RfnCommercialDevice
     :   public RfnMeterDevice
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    RfnCommercialDevice(const RfnCommercialDevice&);
+    RfnCommercialDevice& operator=(const RfnCommercialDevice&);
+
 protected:
 
     YukonError_t executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
     YukonError_t executeReadDemandFreezeInfo (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+
+public:
+    RfnCommercialDevice() {};
+    virtual ~RfnCommercialDevice() {};
 };
 
 typedef RfnCommercialDevice Rfn430a3dDevice;

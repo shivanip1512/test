@@ -8,6 +8,14 @@ namespace Devices {
 
 class IM_EX_DEVDB Mct440_213xBDevice : public Mct420Device
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    Mct440_213xBDevice(const Mct440_213xBDevice&);
+    Mct440_213xBDevice& operator=(const Mct440_213xBDevice&);
+
     typedef Mct420Device Inherited;
 
     static const FunctionReadValueMappings  _readValueMaps;
@@ -156,6 +164,12 @@ protected:
     virtual void parseTOUDayScheduleString         (std::string &schedule, long (&times)[9], long (&rates)[10]);
 
     virtual void createTOUScheduleConfig           (const long (&daySchedule)[8], const long (&times)[4][9], const long (&rates)[4][10], OUTMESS *&OutMessage, OutMessageList &outList);
+
+protected:
+    Mct440_213xBDevice() {};
+
+public:
+    virtual ~Mct440_213xBDevice() {};
 };
 
 

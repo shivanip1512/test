@@ -14,6 +14,12 @@
 class IM_EX_DEVDB CtiDeviceMarkV : public CtiDeviceMeter
 {
 private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiDeviceMarkV(const CtiDeviceMarkV&);
+    CtiDeviceMarkV& operator=(const CtiDeviceMarkV&);
 
     typedef CtiDeviceMeter Inherited;
 
@@ -56,14 +62,8 @@ private:
     CtiProtocolTransdata       _transdataProtocol;
     CtiProtocolTransdata::llp  _llp;
 
-protected:
-
 public:
-
    CtiDeviceMarkV();
-
-   CtiDeviceMarkV( const CtiDeviceMarkV& aRef );
-
    virtual ~CtiDeviceMarkV();
 
    virtual INT GeneralScan(CtiRequestMsg              *pReq,

@@ -13,7 +13,6 @@ struct Test_RDSTransmitter : RDSTransmitter
 {
     typedef RDSTransmitter Inherited;
 
-    using RDSTransmitter::RDSTransmitter;
     using RDSTransmitter::resetStates;
     using RDSTransmitter::getEncoderAddress;
     using RDSTransmitter::getSiteAddress;

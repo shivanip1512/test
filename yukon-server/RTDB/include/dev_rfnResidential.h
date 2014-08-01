@@ -15,6 +15,14 @@ namespace Devices   {
 class IM_EX_DEVDB RfnResidentialDevice
     :   public RfnMeterDevice
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    RfnResidentialDevice(const RfnResidentialDevice&);
+    RfnResidentialDevice& operator=(const RfnResidentialDevice&);
+
 protected:
 
     virtual ConfigMap getConfigMethods(bool readOnly);
@@ -76,6 +84,10 @@ private:
     std::string getReconnectParamString( Commands::RfnRemoteDisconnectConfigurationCommand::Reconnect reconnectParam );
 
     bool isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig, std::map<std::string, std::string> &configMap );
+
+public:
+    RfnResidentialDevice() {};
+    virtual ~RfnResidentialDevice() {};
 };
 
 typedef RfnResidentialDevice Rfn410fxDevice;

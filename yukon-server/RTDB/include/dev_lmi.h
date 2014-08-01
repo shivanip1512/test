@@ -8,6 +8,12 @@
 class IM_EX_DEVDB CtiDeviceLMI : public CtiDeviceRemote
 {
 private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiDeviceLMI(const CtiDeviceLMI&);
+    CtiDeviceLMI& operator=(const CtiDeviceLMI&);
 
     CtiTableDeviceAddress _address;
     CtiTableDeviceSeriesV _seriesv;
@@ -49,7 +55,6 @@ public:
     void addExclusion(CtiTablePaoExclusion &paox);
     void clearExclusions();
     CtiDeviceExclusion& getExclusion();
-    CtiDeviceExclusion exclusion() const; // New copy.
     exclusions getExclusions() const;
     CtiTime selectCompletionTime() const;
     bool   isDeviceExcluded(long id) const;

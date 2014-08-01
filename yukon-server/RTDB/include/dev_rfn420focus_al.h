@@ -9,6 +9,14 @@ namespace Devices {
 class IM_EX_DEVDB Rfn420FocusAlDevice
     :   public RfnResidentialDevice
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    Rfn420FocusAlDevice(const Rfn420FocusAlDevice&);
+    Rfn420FocusAlDevice& operator=(const Rfn420FocusAlDevice&);
+
     virtual ConfigMap getConfigMethods(bool readOnly);
 
     YukonError_t executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
@@ -22,6 +30,10 @@ class IM_EX_DEVDB Rfn420FocusAlDevice
     bool isDisplayConfigCurrent( const std::vector<std::string> &config_display_metrics,
                                  const unsigned config_display_digits,
                                  const unsigned char config_display_duration );
+
+public:
+    Rfn420FocusAlDevice() {};
+    virtual ~Rfn420FocusAlDevice() {};
 };
 
 

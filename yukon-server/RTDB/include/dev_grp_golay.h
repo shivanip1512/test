@@ -8,6 +8,12 @@
 class IM_EX_DEVDB CtiDeviceGroupGolay : public CtiDeviceGroupBase
 {
 private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiDeviceGroupGolay(const CtiDeviceGroupGolay&);
+    CtiDeviceGroupGolay& operator=(const CtiDeviceGroupGolay&);
 
     typedef CtiDeviceGroupBase Inherited;
 
