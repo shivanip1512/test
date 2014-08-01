@@ -33,5 +33,6 @@
             destinationFieldId="loadGroupId"
             endAction="yukon.dr.ecobee.assignInputs"/>
     </div>
+    <div class="error dn" id="missing-serial-numbers"><i:inline key=".download.missingSerialNumbers"/></div>
 </form>
 </cti:msgScope>

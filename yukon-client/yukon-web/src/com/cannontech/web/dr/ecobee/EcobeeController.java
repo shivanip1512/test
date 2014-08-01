@@ -210,23 +210,33 @@ public class EcobeeController {
             json.put("errorType", "dateRangeError");
             errResponse.add(json);
             validationError = true;
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
         }
         
+        List<String> serialNumbers = null;
         if (loadGroupIds == null) {
             // Load groups are required.
             Map<String, String> json = new HashMap<>();
             json.put("errorType", "loadgroupsUnspecified");
             errResponse.add(json);
             validationError = true;
-        }
-        
-        if (validationError == true) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
+        } else {
+            serialNumbers = drGroupDeviceMappingDao.getSerialNumbersForLoadGroups(Lists.newArrayList(loadGroupIds));
+            if (serialNumbers.isEmpty()) {
+                // If list of serialNumbers is empty, tell client.
+                Map<String, String> json = new HashMap<>();
+                json.put("errorType", "loadgroupsMissingSerialNumbers");
+                errResponse.add(json);
+                validationError = true;
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
+        }
+        if (validationError == true) {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             JsonUtils.getWriter().writeValue(response.getOutputStream(), errResponse);
             return null;
         }
-        List<String> serialNumbers = drGroupDeviceMappingDao.getSerialNumbersForLoadGroups(Lists.newArrayList(loadGroupIds));
         
         String resultKey = dataDownloadService.start(serialNumbers, Range.inclusive(startDate, endDate), userContext.getJodaTimeZone());
         

@@ -117,6 +117,7 @@ yukon.dr.ecobee = (function () {
                             showNothingSelected = false;
                         // clear possibly leftover date range message
                         $('#bad-date-range').hide();
+                        $('#missing-serial-numbers').hide();
                         for (i = 0; i < errList.length; i += 1) {
                             errorType = errList[i].errorType;
                             if ('loadgroupsUnspecified' === errorType) {
@@ -124,6 +125,10 @@ yukon.dr.ecobee = (function () {
                             }
                             if ('dateRangeError' === errorType) {
                                 $('#bad-date-range').show();
+                            }
+                            
+                            if ('loadgroupsMissingSerialNumbers' === errorType) {
+                                $('#missing-serial-numbers').show();
                             }
                         }
                         // initialize the date/time pickers
