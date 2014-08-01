@@ -25,11 +25,8 @@ import com.cannontech.user.YukonUserContext;
 
 public class YCBean extends YC implements MessageListener, HttpSessionBindingListener {
     
-    List<LiteYukonPAObject> deviceHistory = new ArrayList<LiteYukonPAObject>();
-    
-    //Contains <String>serialType to <Vector<String>> serialNumbers
+    private List<LiteYukonPAObject> deviceHistory = new ArrayList<>();
     private HashMap<String, Vector<String>> serialTypeToNumberMap;
-
     private int userID;
     private YukonUserContext userContext;
     
@@ -40,10 +37,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     };
     
     YukonUserDao userDao = YukonSpringHook.getBean(YukonUserDao.class);
-
-    public YCBean() {
-        super();
-    }
     
     public void setSerialNumber(String serialType, String serialNumber) {
         
