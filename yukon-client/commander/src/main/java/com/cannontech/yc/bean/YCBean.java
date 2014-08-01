@@ -36,7 +36,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
         PaoType.ROUTE_MACRO
     };
     
-    YukonUserDao userDao = YukonSpringHook.getBean(YukonUserDao.class);
+    private YukonUserDao userDao = YukonSpringHook.getBean(YukonUserDao.class);
     
     public void setSerialNumber(String serialType, String serialNumber) {
         
