@@ -154,7 +154,7 @@
                                     
                                     <cti:button classes="js-pref-default" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage"/>
                                     
-                                    <div class="button-group dib fl">
+                                    <div class="button-group fl">
                                         <c:forEach var="prefOption" items="${prefOptions}" varStatus="stat">
                                         
                                             <cti:msg2 var="prefText" key="${prefOption.message}"/>

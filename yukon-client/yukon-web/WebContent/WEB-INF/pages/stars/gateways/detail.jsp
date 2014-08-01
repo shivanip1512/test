@@ -77,36 +77,38 @@
 </div>
 <div class="stacked">
     <tags:sectionContainer2 nameKey="comms" styleClass="stacked">
-        <div class="column one">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".username">
-                    <span class="empty-list">admin</span>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".connectionType">TCP/IP</tags:nameValue2>
-                <tags:nameValue2 nameKey=".ipaddress">10.106.46.102 Port: 32030</tags:nameValue2>
-                <tags:nameValue2 nameKey=".radios">
-                    <div title="3/31/2014 2:11:07 PM" class="stacked">
-                        <div>EkaNet 915 MHz</div>
-                        <div>MAC Address: 00:14:08:03:44:D0</div>
-                    </div>
-                    <div title="5/2/2014 7:49:12 PM">
-                        <div>EkaNet 915 MHz</div>
-                        <div>MAC Address: FF:FF:FF:FF:FF:FF</div>
-                    </div>
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
-        </div>
-        <div class="column two nogutter">
-            <tags:nameValueContainer2>
-	            <tags:nameValue2 nameKey=".connectionStatus">
-	                <span class="state-box green"></span>&nbsp;Connected
-	            </tags:nameValue2>
-	            <tags:nameValue2 nameKey=".lastComms">
-	                <span class="green">Successful</span>&nbsp;(7/16/2014 9:45:07 AM)
-	            </tags:nameValue2>
-	        </tags:nameValueContainer2>
-            <div class="action-area">
-                <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/>
+        <div class="column-12-12 clearfix">
+            <div class="column one">
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey=".username">
+                        <span class="empty-list">admin</span>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".connectionType">TCP/IP</tags:nameValue2>
+                    <tags:nameValue2 nameKey=".ipaddress">10.106.46.102 Port: 32030</tags:nameValue2>
+                    <tags:nameValue2 nameKey=".radios">
+                        <div title="3/31/2014 2:11:07 PM" class="stacked">
+                            <div>EkaNet 915 MHz</div>
+                            <div>MAC Address: 00:14:08:03:44:D0</div>
+                        </div>
+                        <div title="5/2/2014 7:49:12 PM">
+                            <div>EkaNet 915 MHz</div>
+                            <div>MAC Address: FF:FF:FF:FF:FF:FF</div>
+                        </div>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </div>
+            <div class="column two nogutter">
+                <tags:nameValueContainer2>
+    	            <tags:nameValue2 nameKey=".connectionStatus">
+    	                <span class="state-box green"></span>&nbsp;Connected
+    	            </tags:nameValue2>
+    	            <tags:nameValue2 nameKey=".lastComms">
+    	                <span class="green">Successful</span>&nbsp;(7/16/2014 9:45:07 AM)
+    	            </tags:nameValue2>
+    	        </tags:nameValueContainer2>
+                <div class="action-area">
+                    <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/>
+                </div>
             </div>
         </div>
     </tags:sectionContainer2>

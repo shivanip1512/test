@@ -30,7 +30,7 @@
     <cti:msg2 var="group" key=".group"/>
     <cti:msg2 var="selected" key=".selected"/>
     <input id="collection-type-${uniqueId}" type="hidden" name="collectionType" value="${isGroup ? 'group' : 'idList'}">
-    <div class="dib fl toggle-btns" style="margin-right:10px;">
+    <div class="button-group button-group-toggle fl" style="margin-right:10px;">
         <cti:button label="${group}" icon="icon-folder" classes="${isGroup ? 'on M0' : 'M0'}" data-show="#group-selector-${uniqueId}"/>
         <cti:button label="${selected}" icon="icon-table" classes="${!isGroup ? 'on' : ''}" data-show="#device-selector-${uniqueId}"/>
     </div>

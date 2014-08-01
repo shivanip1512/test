@@ -406,11 +406,9 @@ yukon.ui = (function () {
             });
             
             /** Toggle buttons in a button group */
-            $(document).on('click', '.toggle-btns .button', function (ev) { 
+            $(document).on('click', '.button-group-toggle .button', function (ev) { 
                 
-                var btn = $(this),
-                    value = btn.data('value'),
-                    input = btn.closest('.toggle-btns').find('[data-input]');
+                var btn = $(this), input, value;
                 
                 btn.addClass('on').siblings('.button').removeClass('on');
                 // Toggle visibility of show/hide elements
@@ -421,7 +419,11 @@ yukon.ui = (function () {
                     $(btn.data('show')).show();
                 }
                 // Set an input if we need to
-                if (value && typeof input.length) input.val(value);
+                if (btn.is('[data-value]')) {
+                    value = btn.data('value');
+                    input = btn.is('[data-input]') ? $(btn.data('input')) : btn.siblings('[data-input]');
+                    input.val(value);
+                }
             });
             
             /** Elements that navigate on click */

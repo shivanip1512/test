@@ -79,9 +79,9 @@ yukon.dr.dashboard = (function() {
             $('#broadcast-config .js-time-label').html(timeFormatter.formatTime($('#rf-performance-command-time').val(), 0));
             $('#broadcast-config .js-email-time-label').html(timeFormatter.formatTime($('#rf-performance-email-time').val(), 0));
 
-            $(document).on('click', '#broadcast-config .toggle-btns .button', function() {
+            $(document).on('click', '#broadcast-config .button-group-toggle .button', function() {
                 
-                if ($('#broadcast-config .toggle-btns .yes').hasClass('on')) {
+                if ($('#broadcast-config .button-group-toggle .yes').hasClass('on')) {
                     $('#rf-performance-email').val('true');
                     $('.js-notif-group').show('fade');
                     $('.js-email-schedule').show('fade');
@@ -94,13 +94,13 @@ yukon.dr.dashboard = (function() {
             });
 
             if ($('#rf-performance-email').val() === 'true') {
-                $('#broadcast-config .toggle-btns .yes').addClass('on');
-                $('#broadcast-config .toggle-btns .no').removeClass('on');
+                $('#broadcast-config .button-group-toggle .yes').addClass('on');
+                $('#broadcast-config .button-group-toggle .no').removeClass('on');
                 $('.js-notif-group').show();
                 $('.js-email-schedule').show();
             } else {
-                $('#broadcast-config .toggle-btns .no').addClass('on');
-                $('#broadcast-config .toggle-btns .yes').removeClass('on');
+                $('#broadcast-config .button-group-toggle .no').addClass('on');
+                $('#broadcast-config .button-group-toggle .yes').removeClass('on');
                 $('.js-notif-group').hide();
                 $('.js-email-schedule').hide();
             }

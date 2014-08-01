@@ -33,7 +33,7 @@
     <c:forEach var="input" items="${categoryEditBean.channelInputs}" varStatus="loopStatus">
         <div class="clearfix stacked form-control">
             <cti:msg2 key="${input.attribute}" />
-            <div class="toggle-btns fr dib">
+            <div class="button-group button-group-toggle fr">
                 <c:forEach var="readType" items="${field.readTypes}">
                     <c:set var="clazz" value="yes" />
                     <c:if test="${readType == 'DISABLED' }">

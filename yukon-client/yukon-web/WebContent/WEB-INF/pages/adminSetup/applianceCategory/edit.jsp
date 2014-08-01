@@ -194,7 +194,7 @@
                 </c:if>
                 <c:if test="${!applianceCategory.consumerSelectable}">
                     <c:set var ="filtered" value="${empty filterBy ? false : true}"/>
-                    <div class="button-group fr clearfix">
+                    <div class="button-group fr">
                         <cti:button nameKey="filter" icon="icon-filter" data-popup=".js-filter-popup" classes="js-filter fl ${filtered ? 'left' : ''}"/>
                         <cti:button renderMode="buttonImage" classes="js-clear-filter fr right ${filtered ? '' : 'dn'}" icon="icon-cross"/>
                     </div>

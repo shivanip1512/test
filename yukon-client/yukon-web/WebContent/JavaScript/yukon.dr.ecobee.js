@@ -210,8 +210,8 @@ yukon.dr.ecobee = (function () {
                 }
             });
 
-            $(document).on('click', '#ecobee-error-checking-toggle .toggle-btns .button', function () {
-                var checkErrorsOn = $('#ecobee-error-checking-toggle .toggle-btns .button.yes').hasClass('on');
+            $(document).on('click', '#ecobee-error-checking-toggle .button-group-toggle .button', function () {
+                var checkErrorsOn = $('#ecobee-error-checking-toggle .button-group-toggle .button.yes').hasClass('on');
                 if (checkErrorsOn) {
                     $('#ecobee-check-errors').val('true');
                     $('#ecobee-error-check-schedule').show('fade');
@@ -221,8 +221,8 @@ yukon.dr.ecobee = (function () {
                 }
             });
 
-            $(document).on('click', '#ecobee-data-collection-toggle .toggle-btns .button', function() {
-                var dataCollectionOn = $('#ecobee-data-collection-toggle .toggle-btns .button.yes').hasClass('on');
+            $(document).on('click', '#ecobee-data-collection-toggle .button-group-toggle .button', function() {
+                var dataCollectionOn = $('#ecobee-data-collection-toggle .button-group-toggle .button.yes').hasClass('on');
                 if (dataCollectionOn) {
                     $('#ecobee-data-collection').val('true');
                     $('#ecobee-data-collection-schedule').show('fade');
@@ -234,22 +234,22 @@ yukon.dr.ecobee = (function () {
             });
 
             if ('true' === $('#ecobee-check-errors').val()) {
-                $('#ecobee-error-checking-toggle .toggle-btns .yes').addClass('on');
-                $('#ecobee-error-checking-toggle .toggle-btns .no').removeClass('on');
+                $('#ecobee-error-checking-toggle .button-group-toggle .yes').addClass('on');
+                $('#ecobee-error-checking-toggle .button-group-toggle .no').removeClass('on');
                 $('#ecobee-error-check-schedule').show();
             } else {
-                $('#ecobee-error-checking-toggle .toggle-btns .no').addClass('on');
-                $('#ecobee-error-checking-toggle .toggle-btns .yes').removeClass('on');
+                $('#ecobee-error-checking-toggle .button-group-toggle .no').addClass('on');
+                $('#ecobee-error-checking-toggle .button-group-toggle .yes').removeClass('on');
                 $('#ecobee-error-check-schedule').hide();
             }
 
             if ('true' === $('#ecobee-data-collection').val()) {
-                $('#ecobee-data-collection-toggle .toggle-btns .yes').addClass('on');
-                $('#ecobee-data-collection-toggle .toggle-btns .no').removeClass('on');
+                $('#ecobee-data-collection-toggle .button-group-toggle .yes').addClass('on');
+                $('#ecobee-data-collection-toggle .button-group-toggle .no').removeClass('on');
                 $('#ecobee-data-collection-schedule').show();
             } else {
-                $('#ecobee-data-collection-toggle .toggle-btns .no').addClass('on');
-                $('#ecobee-data-collection-toggle .toggle-btns .yes').removeClass('on');
+                $('#ecobee-data-collection-toggle .button-group-toggle .no').addClass('on');
+                $('#ecobee-data-collection-toggle .button-group-toggle .yes').removeClass('on');
                 $('#ecobee-data-collection-schedule').hide();
             }
             

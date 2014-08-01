@@ -10,7 +10,7 @@
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="CREATE,EDIT">
     <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
-    <div class="toggle-btns clearfix">
+    <div class="button-group button-group-toggle">
         <cti:msg2 var="trueText" key="yukon.common.true"/>
         <cti:msg2 var="falseText" key="yukon.common.false"/>
         <c:choose>

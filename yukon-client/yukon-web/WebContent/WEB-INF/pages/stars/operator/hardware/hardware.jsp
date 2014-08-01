@@ -371,47 +371,49 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                             </table>
                             <div id="zbCommandStatus" class="dn error zbCommandMsg"></div>
                             <div class="page-action-area">
-                                <c:choose>
-                                    <c:when test="${showDisabledRefresh}">
-                                        <cti:button nameKey="refreshDisabled" disabled="true"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <cti:button id="refresh" nameKey="refresh"/>
-                                    </c:otherwise>
-                                </c:choose>
-                                
-                                <c:if test="${showCommissionActions}">
-                                    <cti:button nameKey="commission" id="commission"/>
-                                    <cti:button nameKey="decommission" id="decommission"/>
+                                <div class="button-group">
+                                    <c:choose>
+                                        <c:when test="${showDisabledRefresh}">
+                                            <cti:button nameKey="refreshDisabled" disabled="true"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:button id="refresh" nameKey="refresh" icon="icon-arrow-refresh"/>
+                                        </c:otherwise>
+                                    </c:choose>
                                     
-                                    <cti:msgScope paths=".commissionConfirmation,">
-                                        <i:simplePopup id="confirmCommissionPopup" styleClass="commissionConfirmationMsg" titleKey=".title" on="#commission">
-                                            <p>
-                                                <div id="decommissionedConfirmMsg">
-                                                    <i:inline key=".message"/>
+                                    <c:if test="${showCommissionActions}">
+                                        <cti:button nameKey="commission" id="commission" icon="icon-accept"/>
+                                        <cti:button nameKey="decommission" id="decommission" icon="icon-delete"/>
+                                        
+                                        <cti:msgScope paths=".commissionConfirmation,">
+                                            <i:simplePopup id="confirmCommissionPopup" styleClass="commissionConfirmationMsg" titleKey=".title" on="#commission">
+                                                <p>
+                                                    <div id="decommissionedConfirmMsg">
+                                                        <i:inline key=".message"/>
+                                                    </div>
+                                                    <div id="commissionedConfirmMsg" class="error" style="display:none">
+                                                        <i:inline key=".warnMessage"/>
+                                                    </div>
+                                                <p>
+                                                <div class="action-area">
+                                                    <cti:button nameKey="ok" name="commissionSubmit" type="submit" classes="primary action"/>
+                                                    <cti:button nameKey="cancel" onclick="$('#confirmCommissionPopup').dialog('close')" />
                                                 </div>
-                                                <div id="commissionedConfirmMsg" class="error" style="display:none">
-                                                    <i:inline key=".warnMessage"/>
-                                                </div>
-                                            <p>
-                                            <div class="action-area">
-                                                <cti:button nameKey="ok" name="commissionSubmit" type="submit" classes="primary action"/>
-                                                <cti:button nameKey="cancel" onclick="$('#confirmCommissionPopup').dialog('close')" />
-                                            </div>
-                                        </i:simplePopup>
-                                    </cti:msgScope>
-                                    <cti:dataUpdaterCallback function="getCommissionConfirmationCallback()" initialize="true" value="POINT/${hardware.commissionedId}/VALUE"/>
-
-                                    <tags:confirmDialog submitName="decommissionSubmit"
-                                        nameKey=".decommissionConfirmation"
-                                        styleClass="commissionConfirmationMsg" on="#decommission"
-                                        endAction="hide" />
-                                </c:if>
-                                
-                                <c:if test="${showDisabledCommissionActions}">
-                                    <cti:button nameKey="commission.disabled" disabled="true"/>
-                                    <cti:button nameKey="decommission.disabled" disabled="true"/>
-                                </c:if>
+                                            </i:simplePopup>
+                                        </cti:msgScope>
+                                        <cti:dataUpdaterCallback function="getCommissionConfirmationCallback()" initialize="true" value="POINT/${hardware.commissionedId}/VALUE"/>
+    
+                                        <tags:confirmDialog submitName="decommissionSubmit"
+                                            nameKey=".decommissionConfirmation"
+                                            styleClass="commissionConfirmationMsg" on="#decommission"
+                                            endAction="hide" />
+                                    </c:if>
+                                    
+                                    <c:if test="${showDisabledCommissionActions}">
+                                        <cti:button nameKey="commission.disabled" disabled="true" icon="icon-accept"/>
+                                        <cti:button nameKey="decommission.disabled" disabled="true" icon="icon-delete"/>
+                                    </c:if>
+                                </div>
                             </div>
                         </tags:sectionContainer2>
                     </cti:displayForPageEditModes>
@@ -423,57 +425,62 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                             <c:choose>
                                 <c:when test="${not empty assignedDevices}">
                                     <table class="compact-results-table dashed">
-                                        <tr>
-                                            <th><i:inline key=".serialNumber"/></th>
-                                            <th><i:inline key=".status"/></th>
-                                            <th><i:inline key=".actions"/></th>
-                                        </tr>
-                                        <c:forEach var="device" items="${assignedDevices}">
+                                        <thead>
                                             <tr>
-                                                <cti:url value="/stars/operator/hardware/view" var="viewUrl">
-                                                    <cti:param name="accountId" value="${accountId}"/>
-                                                    <cti:param name="inventoryId" value="${device.inventoryIdentifier.inventoryId}"/>
-                                                </cti:url>
-                                                <td><a href="${viewUrl}">${device.serialNumber}</a></td>
-                                                <td class="pointStateColumn">
-                                                    <cti:pointStatus pointId="${device.commissionId}" />
-                                                    <cti:pointValue pointId="${device.commissionId}" format="VALUE"/>
-                                                </td>
-                                                <td class="wsnw last">
-                                                    <cti:button nameKey="assignedDevices.commission" renderMode="image" classes="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}" icon="icon-accept"/>
-                                                    <cti:button nameKey="assignedDevices.decommission" renderMode="image" classes="assignedDevicesDecommission" id="assignedDevicesDecommission_${device.deviceId}" icon="icon-delete"/>
-                                                    <cti:msgScope paths=".commissionConfirmation,">
-                                                        <i:simplePopup id="confirmCommissionPopup_${device.deviceId}" styleClass="commissionConfirmationMsg" titleKey=".title" on="#assignedDevicesCommission_${device.deviceId}">
-                                                            <p>
-                                                                <div id="decommissionedConfirmMsg_${device.deviceId}">
-                                                                    <i:inline key=".message"/>
-                                                                </div>
-                                                                <div id="commissionedConfirmMsg_${device.deviceId}" class="error" style="display:none">
-                                                                    <i:inline key=".warnMessage"/>
-                                                                </div>
-                                                            <p>
-                                                            <div class="action-area">
-                                                                <cti:button name="assignedDevicesCommissionSubmit_${device.deviceId}" nameKey="ok" type="submit" classes="primary action"/>
-                                                                <cti:button nameKey="cancel" onclick="$('#confirmCommissionPopup_${device.deviceId}').dialog('close')" />
-                                                            </div>
-                                                        </i:simplePopup>
-                                                    </cti:msgScope>
-                                                    <cti:dataUpdaterCallback function="getEndpointCommissionConfirmationCallback('${device.deviceId}')" initialize="true" value="POINT/${device.commissionId}/VALUE"/>
-                                                    <tags:confirmDialog submitName="assignedDevicesDecommissionSubmit_${device.deviceId}"
-                                                        nameKey=".decommissionConfirmation" 
-                                                        styleClass="commissionConfirmationMsg" on="#assignedDevicesDecommission_${device.deviceId}"
-                                                        endAction="hide" />
-                                                    
-                                                    <cti:url value="/stars/operator/hardware/zb/removeDeviceFromGateway" var="removeUrl">
-                                                        <cti:param name="accountId" value="${accountId}"/>
-                                                        <cti:param name="inventoryId" value="${inventoryId}"/>
-                                                        <cti:param name="gatewayId" value="${hardware.deviceId}"/>
-                                                        <cti:param name="deviceId" value="${device.deviceId}"/>
-                                                    </cti:url>
-                                                    <cti:button nameKey="remove" href="${removeUrl}" renderMode="image" classes="js-blocker" icon="icon-cross"/>
-                                                </td>
+                                                <th><i:inline key=".serialNumber"/></th>
+                                                <th><i:inline key=".status"/></th>
+                                                <th></th>
                                             </tr>
-                                        </c:forEach>
+                                        </thead>
+                                        <tfoot></tfoot>
+                                        <tbody>
+                                            <c:forEach var="device" items="${assignedDevices}">
+                                                <tr>
+                                                    <cti:url value="/stars/operator/hardware/view" var="viewUrl">
+                                                        <cti:param name="accountId" value="${accountId}"/>
+                                                        <cti:param name="inventoryId" value="${device.inventoryIdentifier.inventoryId}"/>
+                                                    </cti:url>
+                                                    <td><a href="${viewUrl}">${device.serialNumber}</a></td>
+                                                    <td class="pointStateColumn">
+                                                        <cti:pointStatus pointId="${device.commissionId}" />
+                                                        <cti:pointValue pointId="${device.commissionId}" format="VALUE"/>
+                                                    </td>
+                                                    <td class="wsnw">
+                                                        <cti:button nameKey="assignedDevices.commission" renderMode="image" classes="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}" icon="icon-accept"/>
+                                                        <cti:button nameKey="assignedDevices.decommission" renderMode="image" classes="assignedDevicesDecommission" id="assignedDevicesDecommission_${device.deviceId}" icon="icon-delete"/>
+                                                        <cti:msgScope paths=".commissionConfirmation,">
+                                                            <i:simplePopup id="confirmCommissionPopup_${device.deviceId}" styleClass="commissionConfirmationMsg" titleKey=".title" on="#assignedDevicesCommission_${device.deviceId}">
+                                                                <p>
+                                                                    <div id="decommissionedConfirmMsg_${device.deviceId}">
+                                                                        <i:inline key=".message"/>
+                                                                    </div>
+                                                                    <div id="commissionedConfirmMsg_${device.deviceId}" class="error" style="display:none">
+                                                                        <i:inline key=".warnMessage"/>
+                                                                    </div>
+                                                                <p>
+                                                                <div class="action-area">
+                                                                    <cti:button name="assignedDevicesCommissionSubmit_${device.deviceId}" nameKey="ok" type="submit" classes="primary action"/>
+                                                                    <cti:button nameKey="cancel" onclick="$('#confirmCommissionPopup_${device.deviceId}').dialog('close')" />
+                                                                </div>
+                                                            </i:simplePopup>
+                                                        </cti:msgScope>
+                                                        <cti:dataUpdaterCallback function="getEndpointCommissionConfirmationCallback('${device.deviceId}')" initialize="true" value="POINT/${device.commissionId}/VALUE"/>
+                                                        <tags:confirmDialog submitName="assignedDevicesDecommissionSubmit_${device.deviceId}"
+                                                            nameKey=".decommissionConfirmation" 
+                                                            styleClass="commissionConfirmationMsg" on="#assignedDevicesDecommission_${device.deviceId}"
+                                                            endAction="hide" />
+                                                        
+                                                        <cti:url value="/stars/operator/hardware/zb/removeDeviceFromGateway" var="removeUrl">
+                                                            <cti:param name="accountId" value="${accountId}"/>
+                                                            <cti:param name="inventoryId" value="${inventoryId}"/>
+                                                            <cti:param name="gatewayId" value="${hardware.deviceId}"/>
+                                                            <cti:param name="deviceId" value="${device.deviceId}"/>
+                                                        </cti:url>
+                                                        <cti:button nameKey="remove" href="${removeUrl}" renderMode="image" classes="js-blocker" icon="icon-cross"/>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
                                     </table>
                                 </c:when>
                                 <c:otherwise>

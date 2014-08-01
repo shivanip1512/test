@@ -32,13 +32,14 @@
 */
 
 /* VARIABLES */
-@primary-color: #06C;
+@primary-color: #06c;
 @font-color: #555;
-@visited-color: #04A;
+@visited-color: #04a;
 
-@red: #D14836;
+@red: #d14836;
 @green: #093;
-@orange: #FB8521;
+@blue: #1f4cff;
+@orange: #fb8521;
 
 @form-control-height: 26px;
 
@@ -574,14 +575,30 @@ a.pipe-selector.selected {color: @font-color; cursor: default;}
 .pipe-selector .pipe + * {margin-left: 5px;}
 
 /* COLOR CODING */
-.red, .error, .error {color: @red !important}
-.error[type=checkbox] {outline: 2px solid @red;}
-ol.error{list-style-type: none;}
-.green, .success {color: @green !important;}
-.orange, .warning {color: @orange !important;}
-.gray, .grey, .disabled, .disabled a {color:#888 !important; cursor:default;}
-.disabled, .disabled a, .disabled:hover, .disabled a:hover {text-decoration: none;}
-.setting .detail > span {color: @font-color;}
+.red, 
+.error{ color: @red !important }
+.error[type=checkbox] { outline: 2px solid @red; }
+ol.error{ list-style-type: none; }
+.green, 
+.success { color: @green !important; }
+.blue { color: @blue !important; }
+.orange, 
+.warning { color: @orange !important; }
+
+.gray, 
+.grey, 
+.disabled, 
+.disabled a { 
+    color:#888 !important; 
+    cursor:default;
+}
+
+.disabled, 
+.disabled a,
+.disabled:hover, 
+.disabled a:hover { text-decoration: none; }
+
+.setting .detail > span { color: @font-color; }
 
 /* FLASH SCOPES */
 .page-help, 
@@ -708,12 +725,16 @@ select.error {
 .setting .value-description .default {font-weight: bold;}
 
 /* MISC */
-.clearfix:before, 
-.clearfix:after {
+// clear fix rule
+.clearfix:before,
+.button-group:before, 
+.clearfix:after,
+.button-group:after {
     content: " ";
     display: table;
 }
-.clearfix:after { clear: both; }
+.clearfix:after,
+.button-group:after { clear: both; }
 
 .code {
     font-family: Consolas, "Liberation Mono", Courier, monospace;
@@ -863,13 +884,13 @@ hr.dashed,
     border: 2px solid @red;
 }
 
-.toggle-btns .button:focus { outline: none; }
-.toggle-btns .yes.on .b-label, 
-.toggle-btns .yes.on:hover .b-label { 
+.button-group-toggle .button:focus { outline: none; }
+.button-group-toggle .yes.on .b-label, 
+.button-group-toggle .yes.on:hover .b-label { 
     color: @green;
 }
-.toggle-btns .no.on .b-label, 
-.toggle-btns .no.on:hover .b-label {
+.button-group-toggle .no.on .b-label, 
+.button-group-toggle .no.on:hover .b-label {
     color: @red;
 }
 /* Pulls icon down towards middle of the container/tr instead of the top */
@@ -880,6 +901,7 @@ hr.dashed,
     border: 1px solid #ccc;
     background-color: #efefef;
     color: inherit;
+    padding: 1px 2px;
 }
 /* COLOR PICKER */
 .color-picker {

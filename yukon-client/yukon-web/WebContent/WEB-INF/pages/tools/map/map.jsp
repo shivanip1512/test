@@ -142,7 +142,7 @@
         </div>
         
         <c:if test="${dynamic}">
-            <div id="map-updater" class="toggle-btns fr">
+            <div id="map-updater" class="button-group button-group-toggle fr">
                 <cti:button nameKey="on" classes="on yes"/>
                 <cti:button nameKey="off" classes="no"/>
             </div>

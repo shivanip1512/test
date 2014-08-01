@@ -114,7 +114,7 @@
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".rfPerformance.configure.emailResults">
                                     <tags:hidden path="email" id="rf-performance-email"/>
-                                    <div class="toggle-btns">
+                                    <div class="button-group button-group-toggle">
                                         <cti:button nameKey="on" classes="on yes M0"/>
                                         <cti:button nameKey="off" classes="no M0"/>
                                     </div>

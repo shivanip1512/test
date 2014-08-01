@@ -21,7 +21,7 @@
     name of <span class="label label-attr">.b-label</span>.
 </p>
 
-<h2>Button Text</h2>
+<h2 id="button-text-example">Button Text</h2>
 
 <p class="description">
     The <span class="label label-attr">&lt;cti:button&gt;</span> tag's <span class="label label-attr">nameKey</span> 
@@ -60,7 +60,7 @@
 &lt;cti:button label=&quot;&#36;{saveLabel}&quot;/&gt;
 </pre>
 
-<h2>Disabling Buttons</h2>
+<h2 id="disabled-buttons-example">Disabling Buttons</h2>
 
 <p class="description">You can disable a button by setting the <span class="label label-attr">disabled</span> attribute to <em>true</em>.</p>
 <div class="column-4-20 clearfix button-example">
@@ -70,7 +70,7 @@
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">&lt;cti:button nameKey=&quot;edit&quot; disabled=&quot;true&quot;/&gt;</pre>
 
-<h2>Button Type</h2>
+<h2 id="button-types-example">Button Type</h2>
 
 <p class="description">The <span class="label label-attr">&lt;cti:button&gt;</span> tag has a 
     <span class="label label-attr">type</span> attribute that is equivalent to the <span class="label label-attr">type</span> 
@@ -119,7 +119,7 @@
 &lt;cti:button nameKey=&quot;delete&quot; icon=&quot;icon-cross&quot; disabled=&quot;true&quot;/&gt;
 </pre>
 
-<h2>Render Mode</h2>
+<h2 id="render-mode-example">Render Mode</h2>
 
 <p class="description">
     The <span class="label label-attr">&lt;cti:button&gt;</span> tag has a <span class="label label-attr">renderMode</span>
@@ -148,7 +148,7 @@
 &lt;cti:button renderMode=&quot;labeledImage&quot; icon=&quot;icon-add&quot; nameKey=&quot;add&quot;/&gt;
 </pre>
 
-<h2>Button Groups</h2>
+<h2 id="button-groups-example">Button Groups</h2>
 
 <p class="description">
     Buttons can be grouped together by using a container class <span class="label label-attr">.button-group</span> or 
@@ -158,12 +158,12 @@
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <div class="clearfix stacked button-group">
+        <div class="button-group stacked">
             <cti:button renderMode="buttonImage" icon="icon-box"/>
             <cti:button renderMode="buttonImage" icon="icon-flag-red"/>
             <cti:button renderMode="buttonImage" icon="icon-bin"/>
         </div>
-        <div class="clearfix stacked button-group">
+        <div class="button-group stacked">
             <cti:button renderMode="buttonImage" icon="icon-resultset-first-gray"/>
             <cti:button renderMode="buttonImage" icon="icon-resultset-previous-gray"/>
             <cti:button label="1"/>
@@ -183,12 +183,12 @@
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;clearfix stacked button-group&quot;&gt;
+&lt;div class=&quot;button-group&quot;&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-box&quot;/&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-flag-red&quot;/&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-bin&quot;/&gt;
 &lt;/div&gt;
-&lt;div class=&quot;clearfix stacked button-group&quot;&gt;
+&lt;div class=&quot;button-group&quot;&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-first-gray&quot;/&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-resultset-previous-gray&quot;/&gt;
     &lt;cti:button label=&quot;1&quot;/&gt;
@@ -206,17 +206,18 @@
 &lt;/div&gt;
 </pre>
 
-<h3 class="subtle">Toggle Buttons</h3>
+<h3 id="toggle-buttons-example" class="subtle">Toggle Buttons</h3>
 
 <p class="description">
-    Button groups can be made to act like toggle or radio buttons by add the <span class="label label-attr">.toggle-btns</span>
-    class the container element.  Yukon's js library will automatically make one of the buttons look punched in when clicked
-    by simply added the <span class="label label-attr">.on</span> class to the button.
+    Button groups can be made to act like toggle or radio buttons by adding the 
+    <span class="label label-attr">.button-group-toggle</span> class. Add the <span class="label label-attr">.on</span> 
+    class to the toggled button to make it look punched in. Yukon's js library will do this automatically when one of the 
+    buttons is clicked.
 </p>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <div class="toggle-btns clearfix stacked">
+        <div class="button-group button-group-toggle">
             <cti:button renderMode="buttonImage" icon="icon-text-align-left"/>
             <cti:button renderMode="buttonImage" icon="icon-text-align-center" classes="on"/>
             <cti:button renderMode="buttonImage" icon="icon-text-align-justify"/>
@@ -226,7 +227,7 @@
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;toggle-btns clearfix stacked&quot;&gt;
+&lt;div class=&quot;button-group button-group-toggle&quot;&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-left&quot;/&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-center&quot; classes=&quot;on&quot;/&gt;
     &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-text-align-justify&quot;/&gt;
@@ -234,42 +235,108 @@
 &lt;/div&gt;
 </pre>
 <p class="description">
-    Toggle buttons can show a little more visual state using the <span class="label label-attr">.toggle-btns</span> class
-    on the container element and adding the <span class="label label-attr">.yes</span> or 
-    <span class="label label-attr">.no</span> classes to the buttons.  Yukon's js library handles this automatically as well.
+    Show a little more visual state by adding the <span class="label label-attr">.yes</span> or 
+    <span class="label label-attr">.no</span> classes to the buttons.
 </p>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <div class="clearfix stacked toggle-btns">
+        <div class="button-group button-group-toggle">
             <cti:button nameKey="on" classes="yes on"/>
             <cti:button nameKey="off" classes="no"/>
         </div>
-        <div class="clearfix stacked toggle-btns">
-            <cti:button label="Activated" classes="yes on"/>
+        <div class="button-group button-group-toggle">
+            <cti:button label="Activated" classes="yes"/>
             <cti:button label="Deactivated"/>
-            <cti:button label="Disabled" classes="no"/>
+            <cti:button label="Disabled" classes="no on"/>
         </div>
     </div>
 </div>
+<h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;clearfix stacked toggle-btns&quot;&gt;
+&lt;div class=&quot;button-group button-group-toggle&quot;&gt;
     &lt;cti:button nameKey=&quot;on&quot; classes=&quot;yes on&quot;/&gt;
     &lt;cti:button nameKey=&quot;off&quot; classes=&quot;no&quot;/&gt;
 &lt;/div&gt;
-&lt;div class=&quot;clearfix stacked toggle-btns&quot;&gt;
+&lt;div class=&quot;button-group button-group-toggle&quot;&gt;
     &lt;cti:button label=&quot;Activate&quot; classes=&quot;yes on&quot;/&gt;
     &lt;cti:button label=&quot;Deactivate&quot;/&gt;
     &lt;cti:button label=&quot;Disabled&quot; classes=&quot;no&quot;/&gt;
 &lt;/div&gt;
 </pre>
+<p class="description">
+    Show or hide elements when toggling using the <span class="label label-attr">data-show</span> attribute on the buttons.
+    The attribute values should be css selectors to the desired element(s).
+</p>
+<div class="column-4-20 clearfix button-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="button-group button-group-toggle">
+            <cti:button label="Show Red and Green" data-show="#row-red, #row-green" classes="on"/>
+            <cti:button label="Show Blue" data-show="#row-blue"/>
+        </div>
+        <div class="separated-sections buffered">
+            <div id="row-red" class="section red">This is the red row.</div>
+            <div id="row-green" class="section green">This is the green row.</div>
+            <div id="row-blue" class="section blue dn">This is the blue row.</div>
+        </div>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;button-group button-group-toggle&quot;&gt;
+    &lt;cti:button label=&quot;Show Red and Green&quot; data-show=&quot;#row-red, #row-green&quot; classes=&quot;on&quot;/&gt;
+    &lt;cti:button label=&quot;Show Blue&quot; data-show=&quot;#row-blue&quot;/&gt;
+&lt;/div&gt;
+&lt;div class=&quot;separated-sections buffered&quot;&gt;
+    &lt;div id=&quot;row-red&quot; class=&quot;section red&quot;&gt;This is the red row.&lt;/div&gt;
+    &lt;div id=&quot;row-green&quot; class=&quot;section green&quot;&gt;This is the green row.&lt;/div&gt;
+    &lt;div id=&quot;row-blue&quot; class=&quot;section blue dn&quot;&gt;This is the blue row.&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+<p class="description">
+    Set an input value using the <span class="label label-attr">data-value</span> attribute on the buttons.  The input can be
+    be a sibling with the <span class="label label-attr">data-input</span> attribute or it can be specified as the value of 
+    the <span class="label label-attr">data-input</span> on the button.
+</p>
+<div class="column-4-20 clearfix button-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="stacked">
+            <div class="button-group button-group-toggle">
+                <cti:button label="Set Input to 'Bob'" data-input="#first-name" data-value="Bob" classes="on"/>
+                <cti:button label="Set Input to 'Jim'" data-input="#first-name" data-value="Jim"/>
+            </div>
+            <input id="first-name" type="text" name="firstName" value="Bob">
+        </div>
+        <div class="button-group button-group-toggle full-width">
+            <cti:button label="Set Input to 'Bob'" data-value="Vila" classes="on"/>
+            <cti:button label="Set Input to 'Jim'" data-value="Belushi"/>
+            <input data-input id="first-name" type="text" name="firstName" value="Vila">
+        </div>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;button-group button-group-toggle&quot;&gt;
+    &lt;cti:button label=&quot;Set Input to 'Bob'&quot; data-input=&quot;#first-name&quot; data-value=&quot;Bob&quot; classes=&quot;on&quot;/&gt;
+    &lt;cti:button label=&quot;Set Input to 'Jim'&quot; data-input=&quot;#first-name&quot; data-value=&quot;Jim&quot;/&gt;
+&lt;/div&gt;
+&lt;input id=&quot;first-name&quot; type=&quot;text&quot; name=&quot;firstName&quot; value=&quot;Bob&quot;&gt;
+...
+&lt;div class=&quot;button-group button-group-toggle&quot;&gt;
+    &lt;cti:button label=&quot;Set Input to 'Bob'&quot; data-value=&quot;Vila&quot; classes=&quot;on&quot;/&gt;
+    &lt;cti:button label=&quot;Set Input to 'Jim'&quot; data-value=&quot;Belushi&quot;/&gt;
+    &lt;input data-input id=&quot;first-name&quot; type=&quot;text&quot; name=&quot;firstName&quot; value=&quot;Vila&quot;/&gt;
+&lt;/div&gt;
+</pre>
     
-<h2>Primary Buttons</h2>
+<h2 id="primary-buttons-example">Primary Buttons</h2>
 
 <p class="description">
     Primary buttons are buttons that usually are part of a group.  They represent the primary action a user is probably
-    looking for.  To make one add two classes <span class="label label-attr">.action</span> and 
-    <span class="label label-attr">.primary</span> to it your button.  
+    looking for.  To make one, add two classes <span class="label label-attr">.action</span> and 
+    <span class="label label-attr">.primary</span> to your button.  
 </p>
 <p class="description">
     Dialogs should always have a primary button.  Traditional forms
@@ -318,7 +385,7 @@
 &lt;/div&gt;
 </pre>
     
-<h2>Busy Buttons and Group Disabling</h2>
+<h2 id="busy-buttons-example">Busy Buttons and Group Disabling</h2>
 
 <p class="description">
     The <span class="label label-attr">&lt;cti:button&gt;</span> tag has the ability disable itself and show an internal 

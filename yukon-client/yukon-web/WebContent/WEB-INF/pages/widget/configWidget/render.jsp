@@ -8,8 +8,8 @@
     <tags:nameValue2 nameKey=".currentConfigurations">${fn:escapeXml(currentConfigName)}</tags:nameValue2>
 </tags:nameValueContainer2>
 <c:if test="${not empty currentConfigId}">
-    <div class="button-group stacked-medium clearfix">
-        <div class="dib fr">
+    <div class="stacked-medium clearfix">
+        <div class="button-group fr">
             <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                 <tags:widgetActionRefresh method="unassignConfig" nameKey="unassign" classes="M0"/>
             </cti:checkRolesAndProperties>
