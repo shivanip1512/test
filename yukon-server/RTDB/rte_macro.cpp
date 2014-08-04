@@ -35,25 +35,6 @@ CtiRouteMacro::CtiRouteMacro()
 {
 }
 
-CtiRouteMacro::CtiRouteMacro(const CtiRouteMacro& aRef)
-{
-    *this = aRef;
-}
-
-CtiRouteMacro::~CtiRouteMacro()
-{
-}
-
-CtiRouteMacro& CtiRouteMacro::operator=(const CtiRouteMacro& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        RouteList = aRef.getRouteList();
-    }
-    return *this;
-}
-
 void CtiRouteMacro::DumpData()
 {
     Inherited::DumpData();

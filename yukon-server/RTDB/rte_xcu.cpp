@@ -39,24 +39,6 @@ CtiRouteXCU::CtiRouteXCU()
 {
 }
 
-CtiRouteXCU::CtiRouteXCU(const CtiRouteXCU& aRef)
-{
-    *this = aRef;
-}
-
-CtiRouteXCU::~CtiRouteXCU()
-{
-}
-
-CtiRouteXCU& CtiRouteXCU::operator=(const CtiRouteXCU& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-    }
-    return *this;
-}
-
 void CtiRouteXCU::resetDevicePointer()
 {
     _transmitterDevice.reset();

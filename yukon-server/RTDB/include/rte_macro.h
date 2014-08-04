@@ -13,6 +13,14 @@
 
 class IM_EX_DEVDB CtiRouteMacro : public CtiRouteBase
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiRouteMacro(const CtiRouteMacro&);
+    CtiRouteMacro& operator=(const CtiRouteMacro&);
+
 protected:
 
    // All I really do is hint at REAL Routes.... Which had better exist somewhere else.. I think.
@@ -20,8 +28,6 @@ protected:
    RWTValOrderedVector< boost::shared_ptr< CtiRoute > >  RoutePtrList;    // Not responsible for these route pointer's memory...
 
    mutable CtiMutex _routeListMux;
-
-private:
 
 public:
 
@@ -31,10 +37,7 @@ public:
    typedef RWTValOrderedVector< boost::shared_ptr< CtiRoute > > CtiRoutePtrList_t;
 
    CtiRouteMacro();
-   CtiRouteMacro(const CtiRouteMacro& aRef);
-   ~CtiRouteMacro();
 
-   CtiRouteMacro& operator=(const CtiRouteMacro& aRef);
    virtual void DumpData();
 
    CtiMutex& getRouteListMux();

@@ -13,7 +13,7 @@
 #include "string_utility.h"
 
 
-class CtiTransmitterInfo
+class CtiTransmitterInfo : private boost::noncopyable
 {
 public:
 
@@ -61,11 +61,6 @@ public:
         RemoteSequence.Reply   = 0;
     }
 
-    CtiTransmitterInfo(const CtiTransmitterInfo& aRef)
-    {
-        *this = aRef;
-    }
-
     virtual ~CtiTransmitterInfo()
     {
         if( _controlOutMessage )
@@ -73,18 +68,6 @@ public:
             delete _controlOutMessage;
             _controlOutMessage = NULL;
         }
-    }
-
-    CtiTransmitterInfo& operator=(const CtiTransmitterInfo& aRef)
-    {
-        if(this != &aRef)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
-        }
-        return *this;
     }
 
     //  Routine to set a status bit (mutex-protected)

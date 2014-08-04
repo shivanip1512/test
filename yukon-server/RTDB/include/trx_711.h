@@ -21,10 +21,6 @@ public:
     unsigned long    LastColdStartTime;
     bool             SequencingBroken;
 
-private:
-
-public:
-
     CtiTransmitter711Info(int type) :
         CtiTransmitterInfo(type),
         QueueHandle(NULL),
@@ -47,27 +43,10 @@ public:
         }
     }
 
-    CtiTransmitter711Info(const CtiTransmitter711Info& aRef)
-    {
-       *this = aRef;
-    }
-
     virtual ~CtiTransmitter711Info()
     {
         CloseQueue(QueueHandle);
         CloseQueue(ActinQueueHandle);
-    }
-
-
-    CtiTransmitter711Info& operator=(const CtiTransmitter711Info& aRef)
-    {
-        if( this != &aRef )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-
-        return *this;
     }
 
     CtiTransmitter711Info& reduceEntsConts(BOOL rcontstoo)

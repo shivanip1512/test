@@ -988,29 +988,8 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
     return status;
 }
 
-
 CtiRouteCCU::CtiRouteCCU()
 {
-}
-
-CtiRouteCCU::CtiRouteCCU(const CtiRouteCCU& aRef)
-{
-    *this = aRef;
-}
-
-CtiRouteCCU::~CtiRouteCCU()
-{
-}
-
-CtiRouteCCU& CtiRouteCCU::operator=(const CtiRouteCCU& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        Carrier = aRef.Carrier;
-        RepeaterList = aRef.RepeaterList;
-    }
-    return *this;
 }
 
 void CtiRouteCCU::DumpData()

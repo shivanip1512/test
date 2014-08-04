@@ -22,8 +22,16 @@
 class CtiRequestMsg;    // Use forward declaration #include "msg_pcrequest.h"
 class CtiReturnMsg;
 
-class IM_EX_DEVDB CtiRouteBase : public CtiMemDBObject
+class IM_EX_DEVDB CtiRouteBase : private boost::noncopyable, public CtiMemDBObject
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiRouteBase(const CtiRouteBase&);
+    CtiRouteBase& operator=(const CtiRouteBase&);
+
 protected:
 
     CtiTblPAOLite _tblPAO;
@@ -36,27 +44,7 @@ public:
     typedef CtiMemDBObject Inherited;
 
     CtiRouteBase() {}
-
-    CtiRouteBase(const CtiRouteBase& aRef)
-    {
-        *this = aRef;
-    }
-
     virtual ~CtiRouteBase() {}
-
-    CtiRouteBase& operator=(const CtiRouteBase& aRef)
-    {
-        if(this != &aRef)
-        {
-            Inherited::operator=(aRef);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " FIX FIX FIX  **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
-
-        }
-        return *this;
-    }
 
     /*
      *  Some nice little virtual functinos to make me like life...

@@ -30,23 +30,8 @@ using std::string;
 using std::endl;
 using std::list;
 
-CtiRouteVersacom::CtiRouteVersacom() {}
-
-CtiRouteVersacom::CtiRouteVersacom(const CtiRouteVersacom& aRef)
-{
-    *this = aRef;
-}
-
-CtiRouteVersacom::~CtiRouteVersacom() {}
-
-CtiRouteVersacom& CtiRouteVersacom::operator=(const CtiRouteVersacom& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-    }
-    return *this;
-}
+CtiRouteVersacom::CtiRouteVersacom() 
+{}
 
 void CtiRouteVersacom::DumpData()
 {

@@ -31,23 +31,8 @@
 using std::endl;
 using std::list;
 
-CtiRouteExpresscom::CtiRouteExpresscom() {}
-
-CtiRouteExpresscom::CtiRouteExpresscom(const CtiRouteExpresscom& aRef)
-{
-    *this = aRef;
-}
-
-CtiRouteExpresscom::~CtiRouteExpresscom() {}
-
-CtiRouteExpresscom& CtiRouteExpresscom::operator=(const CtiRouteExpresscom& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-    }
-    return *this;
-}
+CtiRouteExpresscom::CtiRouteExpresscom() 
+{}
 
 void CtiRouteExpresscom::DumpData()
 {
