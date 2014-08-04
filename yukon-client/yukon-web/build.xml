@@ -19,7 +19,7 @@
 	
 	<target name="all" depends="clean, build" />
 
-	<target name="build" depends="build_src, web_content"/>
+	<target name="build" depends="build_src, precompile_java"/>
 
     <!-- 
         Target to delete all of the files and directories from any previous builds
@@ -103,8 +103,9 @@
         <echo>Adding generated_web.xml elements to web.xml</echo>
 
         <loadfile property="generated.xml" srcfile="${yukon-web}/fragment_web.xml"></loadfile>
-        <copy file="${yukon-web}/WebContent/WEB-INF/web.xml" tofile="${yukon-web}/generated_web.xml" overwrite="true"/>
-        <replace file="${yukon-web}/generated_web.xml" token="&lt;!-- [INSERT GENERATED WEB.XML FRAGMENT HERE] --&gt;" value="${generated.xml}"></replace>
+        <copy file="${yukon-web}/WebContent/WEB-INF/web.xml" tofile="${yukon.lib}/generated_web.xml" overwrite="true"/>
+        <replace file="${yukon.lib}/generated_web.xml" token="&lt;!-- [INSERT GENERATED WEB.XML FRAGMENT HERE] --&gt;" 
+        	value="${generated.xml}"></replace>
         <delete file="${yukon-web}/fragment_web.xml"/>
      </target>
     
@@ -125,56 +126,7 @@
         <jar jarfile="${yukon.lib}/yukon-web-jsp.jar" basedir="${yukon-web}/build_jsp/" excludes="*.xml *.jar"/>
         
     </target> 
- 
-    <!--
-        Target to create a WebContent folder with precompiled jsps included
-    -->   
-    <target name="web_content" depends="precompile_java">
 
-        <mkdir dir="${yukon-web}/WebContent_merged"  />
-                
-        <!-- Copy all of the necessary web application files into the deploy directory -->   
-        <copy todir="${yukon-web}/WebContent_merged" includeemptydirs="false">
-            <fileset dir="${yukon-web}/WebContent">
-                <exclude name="**/CVS" />
-                <exclude name="WEB-INF/web.xml" />
-                <exclude name="WEB-INF/classes/**" />
-                <exclude name="**/.*" />
-                <exclude name="**/build.xml" />
-                <exclude name="**/*.jsp" />
-                <exclude name="**/*.jspf" />
-                <exclude name="**/*.tag" />
-            </fileset>
-        </copy>
-
-        <!--
-        	Copy all jars from the yukon lib directory into the WebContent_merged/WEB-INF/lib.
-        	Skip jars that are part of Tomcat and jars we use for testing.
-    	-->
-        <copy todir="${yukon-web}/WebContent_merged/WEB-INF/lib" flatten="true">
-           <fileset dir="${yukon.lib}" >
-              <include name="**/*.jar" />
-              <exclude name="catalina.jar"/>
-              <exclude name="easymock-3.0.jar"/>
-              <exclude name="h2-1.4.178.jar"/>
-              <exclude name="jsp-api.jar"/>
-              <exclude name="servlet-api.jar"/>
-              <exclude name="tomcat-api.jar"/>
-              <exclude name="tomcat-util.jar"/>
-           </fileset>
-        </copy>
-
-        <!-- Copy the dummy login.jsp file into the deploy directory -->   
-        <copy todir="${yukon-web}/WebContent_merged" flatten="true" file="${yukon-web}/resources/login.jsp" overwrite="true"/>
-
-        <!-- Copy everything to yukon-client dir -->   
-        <mkdir dir="${yukon.lib}/WebContent" />
- 	 	<copy todir="${yukon.lib}/WebContent">
-     	    <fileset dir="${yukon-web}/WebContent_merged" />
- 	 	</copy>
- 	 	<copy tofile="${yukon.lib}/WebContent/WEB-INF/web.xml" file="${yukon-web}/generated_web.xml" />
-    </target>
-    
     <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
     <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">

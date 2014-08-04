@@ -226,14 +226,16 @@
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>
         </copy>
-
+        
+        <antcall target="copy_web_content"/>
+        
         <mkdir dir="${yukon.exampleXml}"/>
         <copy file="${basedir}/yukon-client/common/src/com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml" 
             tofile="${yukon.exampleXml}/rfnPointMapping_Example.xml"/>
         <copy file="${basedir}/yukon-client/common/src/com/cannontech/common/pao/definition/dao/paoDefinition.xml" 
             tofile="${yukon.exampleXml}/deviceDefinition_Example.xml"/>
 
-        <signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
+    	<signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
 			<fileset dir="${client.bin}">
 				<include name="*.jar"/>
 				<exclude name="activation.jar"/>
@@ -341,6 +343,55 @@
                 <isfailure code="${installererrorcode}" />
             </condition>
         </fail>
+    </target>
+
+    <target name="copy_web_content" >
+        <property name="yukon.lib" value="${basedir}/yukon-client/lib" />
+        <property name="yukon-web" value="${basedir}/yukon-client/yukon-web" />
+
+        <mkdir dir="${yukon-web}/WebContent_merged"  />
+                
+        <!-- Copy all of the necessary web application files into the deploy directory -->   
+        <copy todir="${yukon-web}/WebContent_merged" includeemptydirs="false">
+            <fileset dir="${yukon-web}/WebContent">
+                <exclude name="**/CVS" />
+                <exclude name="WEB-INF/web.xml" />
+                <exclude name="WEB-INF/classes/**" />
+                <exclude name="**/.*" />
+                <exclude name="**/build.xml" />
+                <exclude name="**/*.jsp" />
+                <exclude name="**/*.jspf" />
+                <exclude name="**/*.tag" />
+            </fileset>
+        </copy>
+
+        <!--
+            Copy all jars from the yukon lib directory into the WebContent_merged/WEB-INF/lib.
+            Skip jars that are part of Tomcat and jars we use for testing.
+        -->
+        <copy todir="${yukon-web}/WebContent_merged/WEB-INF/lib" flatten="true">
+           <fileset dir="${yukon.lib}" >
+              <include name="**/*.jar" />
+              <exclude name="catalina.jar"/>
+              <exclude name="easymock-3.0.jar"/>
+              <exclude name="h2-1.4.178.jar"/>
+              <exclude name="jsp-api.jar"/>
+              <exclude name="servlet-api.jar"/>
+              <exclude name="tomcat-api.jar"/>
+              <exclude name="tomcat-util.jar"/>
+           </fileset>
+        </copy>
+
+        <!-- Copy the dummy login.jsp file into the deploy directory -->   
+        <copy todir="${yukon-web}/WebContent_merged" flatten="true" file="${yukon-web}/resources/login.jsp" overwrite="true"/>
+
+        <!-- Copy everything to yukon-client dir -->   
+        <mkdir dir="${yukon.lib}/WebContent" />
+        <copy todir="${yukon.lib}/WebContent">
+            <fileset dir="${yukon-web}/WebContent_merged" />
+        </copy>
+        <copy tofile="${yukon.lib}/WebContent/WEB-INF/web.xml" file="${yukon.lib}/generated_web.xml" />
+        
     </target>
 
     <target name="build-dist" depends="updatedbscripts">
