@@ -241,6 +241,8 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append(  "AND lmhb.inventoryid = ib.inventoryid");
         sql.append(  "AND lmhb.LMHardwareTypeID IN ");
         sql.append(    "(SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID").in(THERMOSTAT_TYPES).append(")");
+        sql.append(  "AND lmhb.LMHardwareTypeId NOT IN ");
+        sql.append(    "(SELECT entryId FROM YukonListEntry WHERE YukonDefinitionId").in(HardwareType.NON_SCHEDULABLE_OR_MANUAL_ADJUSTMENT_TYPES).append(")");
         List<Thermostat> thermostatList = jdbcTemplate.query(sql, new ThermostatRowMapper(ec));
         return thermostatList;
     }

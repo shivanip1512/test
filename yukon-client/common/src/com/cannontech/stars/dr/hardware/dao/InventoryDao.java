@@ -28,14 +28,18 @@ import com.cannontech.stars.model.LiteLmHardware;
 public interface InventoryDao {
 
     /**
-     * Method to get a list of thermostats based on an account
+     * Method to get a list of thermostats based on an account.
+     * Note: this method will not return "non-configurable" thermostats (those that lack schedule & set-point support
+     * in Yukon)
      * @param account - Account to get stats for
      * @return List of thermostats for account
      */
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account);
 
     /**
-     * Method to get a list of thermostats based on an account id
+     * Method to get a list of thermostats based on an account id.
+     * Note: this method will not return "non-configurable" thermostats (those that lack schedule & set-point support
+     * in Yukon)
      * @param accountId - Account Id to get stats for
      * @return List of thermostats for account
      */
