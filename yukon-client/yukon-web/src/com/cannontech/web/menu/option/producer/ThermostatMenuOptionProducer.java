@@ -90,15 +90,19 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
         List<MenuOptionProducer> producerList = new ArrayList<MenuOptionProducer>(4);
 
         MenuOptionProducer producer;
-
-        // Create saved schedules menu option
         int inventoryId = thermSummary.getInventoryId();
-        producer = createLink("savedSchedules", "/stars/consumer/thermostat/schedule/view/saved?thermostatIds=" + inventoryId);
-        producerList.add(producer);
+        
+        // Create saved schedules menu option
+        if (thermSummary.getHardwareType().isSupportsSchedules()) {
+            producer = createLink("savedSchedules", "/stars/consumer/thermostat/schedule/view/saved?thermostatIds=" + inventoryId);
+            producerList.add(producer);
+        }
         
         // Create manual menu option
-        producer = createLink("manual", "/stars/consumer/thermostat/view?thermostatIds=" + inventoryId);
-        producerList.add(producer);
+        if (thermSummary.getHardwareType().isSupportsManualAdjustment()) {
+            producer = createLink("manual", "/stars/consumer/thermostat/view?thermostatIds=" + inventoryId);
+            producerList.add(producer);
+        }
         
         // Create history menu option
         producer = createLink("history", "/stars/consumer/thermostat/schedule/history?thermostatIds=" + inventoryId);

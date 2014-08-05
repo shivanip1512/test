@@ -47,7 +47,8 @@
     </h3>
     
     <div>
-        <form method="post" action="/stars/consumer/thermostat/view/allSelected" onsubmit="return checkSelected()">
+        <cti:url var="allSelectedUrl" value="/stars/consumer/thermostat/view/allSelected"/>
+        <form method="post" action="${allSelectedUrl}" onsubmit="return checkSelected()">
             <cti:csrfToken/>
             <input type="hidden" id="thermostatIds" name="thermostatIds" value="${param.thermostatIds}">
             

@@ -87,6 +87,8 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     private final static ListMultimap<PaoType, HardwareType> starsToPaoMap;
     
+    public final static ImmutableSet<HardwareType> NON_SCHEDULABLE_OR_MANUAL_ADJUSTMENT_TYPES;
+    
     static {
         Builder<HardwareType> builder = ImmutableSet.builder();
         builder.add(UTILITY_PRO_ZIGBEE);
@@ -133,6 +135,15 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         starsToPaoMap.put(PaoType.LCR3102, LCR_3102);
         starsToPaoMap.put(PaoType.LCR6200_RFN, LCR_6200_RFN);
         starsToPaoMap.put(PaoType.LCR6600_RFN, LCR_6600_RFN);
+        
+        //Set of hardware that don't support schedules or manual adjustment
+        builder = ImmutableSet.builder();
+        for (HardwareType hardwareType : HardwareType.values()) {
+            if (!hardwareType.isSupportsManualAdjustment() && !hardwareType.isSupportsSchedules()) {
+                builder.add(hardwareType);
+            }
+        }
+        NON_SCHEDULABLE_OR_MANUAL_ADJUSTMENT_TYPES = builder.build();
     }
     
     // this key prefix can be found in the following file:
