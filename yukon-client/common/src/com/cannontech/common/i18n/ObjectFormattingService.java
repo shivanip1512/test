@@ -16,8 +16,8 @@ public interface ObjectFormattingService {
      */
     public String formatObjectAsString(Object object, YukonUserContext userContext);
 
-    public MessageSourceResolvable formatObjectAsResolvable(Object object, YukonUserContext userContext);
-
+    public MessageSourceResolvable formatObjectAsResolvable(Object object, YukonUserContext userContext,
+            Object... arguments);
     /**
      * Sort the list of objects based on their localized values. Values are localized using
      * {@link #formatObjectAsString(Object, YukonUserContext)}.

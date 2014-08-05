@@ -16,7 +16,6 @@ import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.TagUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.web.taglib.MessageScopeHelper;
 import com.cannontech.web.taglib.YukonTagSupport;
@@ -51,19 +50,13 @@ public class Msg2Tag extends YukonTagSupport {
         }
 
         MessageSourceResolvable resolvable;
-        
-        if (key instanceof DisplayableEnum) {
-           String enumKey = ((DisplayableEnum) key).getFormatKey();
-           key=enumKey;
-        }
-        
         if (key instanceof String) {
             String baseCode = (String) key;
             resolvable = MessageScopeHelper.forRequest(getRequest()).generateResolvable(baseCode, resolvedArguments);
         } else {
-            resolvable = objectFormattingService.formatObjectAsResolvable(key, getUserContext());
+            resolvable = objectFormattingService.formatObjectAsResolvable(key, getUserContext(), resolvedArguments);
         }
-        
+
         String message;
         try {
             message = getMessageSource().getMessage(resolvable);

@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -29,9 +29,10 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
         String result = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(resolvable);
         return result;
     }
-
+ 
     @Override
-    public MessageSourceResolvable formatObjectAsResolvable(Object object, YukonUserContext userContext) {
+    public MessageSourceResolvable formatObjectAsResolvable(Object object, YukonUserContext userContext,
+            Object... arguments) {
         if (object instanceof MessageSourceResolvable) {
             return (MessageSourceResolvable) object;
         }
@@ -39,13 +40,14 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
             return ((Displayable) object).getMessage();
         }
         if (object instanceof DisplayableEnum) {
-            return new YukonMessageSourceResolvable(((DisplayableEnum) object).getFormatKey());
+            return new YukonMessageSourceResolvable(((DisplayableEnum) object).getFormatKey(), arguments);
         }
         if (object instanceof ResolvableTemplate) {
-            String string = templateProcessorFactory.processResolvableTemplate((ResolvableTemplate) object, userContext);
-            return YukonMessageSourceResolvable.createDefaultWithoutCode(string);
+            String messageString = templateProcessorFactory.processResolvableTemplate((ResolvableTemplate) object,
+                                                                                      userContext);
+            return new YukonMessageSourceResolvable(null, arguments, messageString);
         }
-        return YukonMessageSourceResolvable.createDefaultWithoutCode(ObjectUtils.toString(object));
+        return new YukonMessageSourceResolvable(null, arguments, Objects.toString(object));
     }
 
     @Override
