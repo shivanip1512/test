@@ -91,6 +91,8 @@ protected:
 
     void fillOutMessage(OUTMESS &OutMessage, Devices::Commands::DlcCommand::request_t &request);
 
+    void populateDlcOutMessage(OUTMESS &OutMessage);
+
     int executeOnDLCRoute( CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            std::list< OUTMESS* >     &tmpOutList,

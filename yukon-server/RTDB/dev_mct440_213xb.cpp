@@ -704,15 +704,8 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
     if( found )
     {
-        // Load all the other stuff that is needed
-        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1605,14 +1598,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 {
     INT nRet = NoMethod;
 
-
-    // Load all the other stuff that is needed
-    OutMessage->DeviceID        = getID();
-    OutMessage->TargetID        = getID();
-    OutMessage->Port            = getPortID();
-    OutMessage->Remote          = getAddress();
-    OutMessage->TimeOut         = 2;
-    OutMessage->Retry           = 2;
+    populateDlcOutMessage(*OutMessage);
     OutMessage->Request.RouteID = getRouteID();
 
                                                                 /* --------------- INSTALL CONFIG PART  --------------- */
@@ -2004,13 +1990,7 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
 {
     INT nRet = NoMethod;
 
-    // Load all the other stuff that is needed
-    OutMessage->DeviceID  = getID();
-    OutMessage->TargetID  = getID();
-    OutMessage->Port      = getPortID();
-    OutMessage->Remote    = getAddress();
-    OutMessage->TimeOut   = 2;
-    OutMessage->Retry     = 2;
+    populateDlcOutMessage(*OutMessage);
 
     if( parse.isKeyValid("install") )
     {
@@ -3106,14 +3086,7 @@ INT Mct440_213xBDevice::executePutStatus(CtiRequestMsg     *pReq,
 {
     INT nRet = NoMethod;
 
-
-    // Load all the other stuff that is needed
-    OutMessage->DeviceID  = getID();
-    OutMessage->TargetID  = getID();
-    OutMessage->Port      = getPortID();
-    OutMessage->Remote    = getAddress();
-    OutMessage->TimeOut   = 2;
-    OutMessage->Retry     = 2;
+    populateDlcOutMessage(*OutMessage);
 
     if( parse.isKeyValid("set_tou_holiday_rate") )
     {

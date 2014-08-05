@@ -428,14 +428,8 @@ INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, 
             OutMessage->Buffer.BSt.Length   = command.payload.size();
             std::copy(command.payload.begin(), command.payload.end(), OutMessage->Buffer.BSt.Message);
 
-            // Load all the other stuff that is needed
-            OutMessage->DeviceID  = getID();
-            OutMessage->TargetID  = getID();
-            OutMessage->Port      = getPortID();
-            OutMessage->Remote    = getAddress();
-            OutMessage->TimeOut   = 2;
+            populateDlcOutMessage(*OutMessage);
             OutMessage->Sequence  = function;         // Helps us figure it out later!
-            OutMessage->Retry     = 2;
 
             OutMessage->Request.RouteID   = getRouteID();
             strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);

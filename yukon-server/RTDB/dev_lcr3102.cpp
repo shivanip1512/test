@@ -1036,15 +1036,9 @@ INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
     {
         if(getOperation(EmetconProtocol::Scan_Integrity, OutMessage->Buffer.BSt))
         {
-            // Load all the other stuff that is needed
-            OutMessage->DeviceID  = getID();
-            OutMessage->TargetID  = getID();
-            OutMessage->Port      = getPortID();
-            OutMessage->Remote    = getAddress();
+            populateDlcOutMessage(*OutMessage);
             EstablishOutMessagePriority( OutMessage, ScanPriority );
-            OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = EmetconProtocol::Scan_Integrity;
-            OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.RetryMacroOffset = MacroOffset::none;
 
@@ -1222,14 +1216,8 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
 
     if(found)
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1271,14 +1259,8 @@ INT Lcr3102Device::executeScan(CtiRequestMsg                  *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 2;
         OutMessage->Request.RouteID   = getRouteID();
 
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1351,14 +1333,8 @@ INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1404,14 +1380,8 @@ INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);

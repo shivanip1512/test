@@ -989,14 +989,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
     if( found )
     {
-        // Load all the other stuff that is needed
-        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
-        OutMessage->Retry     = 2;
+        populateDlcOutMessage(*OutMessage);
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().data(), COMMAND_STR_SIZE);
@@ -1081,14 +1074,7 @@ INT Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq,
 
     if( found )
     {
-        // Load all the other stuff that is needed
-        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
-        OutMessage->Retry     = 2;
+        populateDlcOutMessage(*OutMessage);
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1143,14 +1129,7 @@ INT Mct4xxDevice::executeGetStatus(CtiRequestMsg *pReq,
 
     if( found )
     {
-        // Load all the other stuff that is needed
-        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
-        OutMessage->Retry     = 2;
+        populateDlcOutMessage(*OutMessage);
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1893,14 +1872,8 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
             ret = NoError;
             CtiRequestMsg tempReq(*pReq);
 
-            // Load all the other stuff that is needed
-            OutMessage->DeviceID  = getID();
-            OutMessage->TargetID  = getID();
-            OutMessage->Port      = getPortID();
-            OutMessage->Remote    = getAddress();
+            populateDlcOutMessage(*OutMessage);
             OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
-            OutMessage->TimeOut   = 2;
-            OutMessage->Retry     = 2;
             OutMessage->Sequence = Protocols::EmetconProtocol::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
             OutMessage->Request.RouteID   = getRouteID();
 
@@ -1960,14 +1933,8 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
                                          OutMessageList &outList,
                                          bool readsOnly)
 {
-    // Load all the other stuff that is needed
-    OutMessage->DeviceID  = getID();
-    OutMessage->TargetID  = getID();
-    OutMessage->Port      = getPortID();
-    OutMessage->Remote    = getAddress();
+    populateDlcOutMessage(*OutMessage);
     OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
-    OutMessage->TimeOut   = 2;
-    OutMessage->Retry     = 2;
     OutMessage->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
     OutMessage->Request.RouteID   = getRouteID();
 

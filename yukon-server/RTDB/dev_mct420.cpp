@@ -641,14 +641,7 @@ int Mct420Device::executeGetConfig( CtiRequestMsg        *pReq,
 
     if( found )
     {
-        // Load all the other stuff that is needed
-        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
-        OutMessage->Retry     = 2;
+        populateDlcOutMessage(*OutMessage);
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);

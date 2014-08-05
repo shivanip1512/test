@@ -535,12 +535,7 @@ long DlcBaseDevice::trackCommand(const DlcCommandSPtr &command)
 
 void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &request)
 {
-    OutMessage.DeviceID  = getID();
-    OutMessage.TargetID  = getID();
-    OutMessage.Port      = getPortID();
-    OutMessage.Remote    = getAddress();
-    OutMessage.TimeOut   = 2;
-    OutMessage.Retry     = 2;
+    populateDlcOutMessage(OutMessage);
 
     OutMessage.Request.RouteID     = getRouteID();
 
@@ -558,6 +553,15 @@ void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &r
     std::copy(payload.begin(),
               payload.begin() + std::min<unsigned>(payload.size(), BSTRUCT::MessageLength_Max),
               OutMessage.Buffer.BSt.Message);
+}
+
+
+void DlcBaseDevice::populateDlcOutMessage(OUTMESS &OutMessage)
+{
+    populateOutMessage(OutMessage);
+
+    OutMessage.TargetID = getID();
+    OutMessage.Retry = 2;
 }
 
 

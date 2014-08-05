@@ -411,6 +411,15 @@ _currTrxID(0)
 {
 }
 
+void CtiDeviceBase::populateOutMessage(OUTMESS &OutMessage)
+{
+    OutMessage.DeviceID = getID();
+    OutMessage.Port     = getPortID();
+    OutMessage.Remote   = getAddress();
+
+    OutMessage.TimeOut   = 2;
+}
+
 void CtiDeviceBase::purgeStaticPaoInfo()
 {
     // We dont own this data, but we can clear our internal stores.

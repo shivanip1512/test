@@ -74,15 +74,11 @@ INT Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
 
         if(getOperation(EmetconProtocol::Command_Loop, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
         {
-            // Load all the other stuff that is needed
-            OutMessage->DeviceID  = getID();
-            OutMessage->TargetID  = getID();
-            OutMessage->Port      = getPortID();
-            OutMessage->Remote    = getAddress();
+            populateDlcOutMessage(*OutMessage);
+            OutMessage->Retry     = 3;  //  override
+
             EstablishOutMessagePriority( OutMessage, ScanPriority );
-            OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = EmetconProtocol::Scan_General;     // Helps us figure it out later!
-            OutMessage->Retry     = 3;
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -128,14 +124,9 @@ INT Repeater900Device::executeLoopback(CtiRequestMsg                  *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
+        OutMessage->Retry     = 3;  //  override
         OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 3;
         OutMessage->Request.RouteID = getRouteID();
 
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -203,14 +194,9 @@ INT Repeater900Device::executeGetConfig(CtiRequestMsg                  *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
+        OutMessage->Retry     = 3;  //  override
         OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 3;
 
         OutMessage->Request.RouteID = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -380,17 +366,12 @@ INT Repeater900Device::executePutConfig(CtiRequestMsg          *pReq,
                pOutMessage->Buffer.BSt.Message[i+1] = Temp[1];
            }
 
-           // Load all the other stuff that is needed
-           pOutMessage->DeviceID  = getID();
-           pOutMessage->TargetID  = getID();
-           pOutMessage->Port      = getPortID();
-           pOutMessage->Remote    = getAddress();
-           pOutMessage->TimeOut   = 2;
+           populateDlcOutMessage(*OutMessage);
+           pOutMessage->Retry     = 3;  //  override
            pOutMessage->Sequence  = function;     // Helps us figure it out later!
-           pOutMessage->Retry     = 3;
 
            pOutMessage->Request.RouteID = getRouteID();
-           // Tell the porter side to complete the assembly of the message.
+
            strncpy(pOutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
            outList.push_back( pOutMessage );
@@ -423,17 +404,12 @@ INT Repeater900Device::executePutConfig(CtiRequestMsg          *pReq,
     }
     else if(OutMessage)
     {
-       // Load all the other stuff that is needed
-       OutMessage->DeviceID  = getID();
-       OutMessage->TargetID  = getID();
-       OutMessage->Port      = getPortID();
-       OutMessage->Remote    = getAddress();
-       OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
+        OutMessage->Retry     = 3;  //  override
        OutMessage->Sequence  = function;     // Helps us figure it out later!
-       OutMessage->Retry     = 3;
 
        OutMessage->Request.RouteID = getRouteID();
-       // Tell the porter side to complete the assembly of the message.
+
        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
@@ -467,17 +443,12 @@ INT Repeater900Device::executeGetValue(CtiRequestMsg                  *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
+        OutMessage->Retry     = 3;  //  override
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 3;
 
         OutMessage->Request.RouteID = getRouteID();
-        // Tell the porter side to complete the assembly of the message.
+
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 

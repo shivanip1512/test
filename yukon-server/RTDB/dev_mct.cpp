@@ -396,15 +396,8 @@ unsigned long MctDevice::getNextLPScanTime( void )
 
 void MctDevice::sendLPInterval( OUTMESS *&OutMessage, OutMessageList &outList )
 {
-    // Load all the other stuff that is needed
-    OutMessage->DeviceID  = getID();
-    OutMessage->TargetID  = getID();
-    OutMessage->Port      = getPortID();
-    OutMessage->Remote    = getAddress();
-    // 082002 CGP // OutMessage->RouteID   = getRouteID();
-    OutMessage->TimeOut   = 2;
+    populateDlcOutMessage(*OutMessage);
     OutMessage->Sequence  = EmetconProtocol::PutConfig_LoadProfileInterval;     // Helps us figure it out later!
-    OutMessage->Retry     = 2;
 
     // Tell the porter side to complete the assembly of the message.
     OutMessage->Request.BuildIt = TRUE;
@@ -529,15 +522,9 @@ INT MctDevice::GeneralScan(CtiRequestMsg *pReq,
 
         if(getOperation(EmetconProtocol::Scan_General, OutMessage->Buffer.BSt))
         {
-            // Load all the other stuff that is needed
-            OutMessage->DeviceID  = getID();
-            OutMessage->TargetID  = getID();
-            OutMessage->Port      = getPortID();
-            OutMessage->Remote    = getAddress();
+            populateDlcOutMessage(*OutMessage);
             EstablishOutMessagePriority( OutMessage, ScanPriority );
-            OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = EmetconProtocol::Scan_General;     // Helps us figure it out later!
-            OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.RetryMacroOffset = MacroOffset::none;
 
@@ -590,15 +577,9 @@ INT MctDevice::IntegrityScan(CtiRequestMsg *pReq,
 
         if(getOperation(EmetconProtocol::Scan_Integrity, OutMessage->Buffer.BSt))
         {
-            // Load all the other stuff that is needed
-            OutMessage->DeviceID  = getID();
-            OutMessage->TargetID  = getID();
-            OutMessage->Port      = getPortID();
-            OutMessage->Remote    = getAddress();
+            populateDlcOutMessage(*OutMessage);
             EstablishOutMessagePriority( OutMessage, ScanPriority );
-            OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = EmetconProtocol::Scan_Integrity;     // Helps us figure it out later!;
-            OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.RetryMacroOffset = MacroOffset::none;
 
@@ -650,15 +631,9 @@ INT MctDevice::AccumulatorScan(CtiRequestMsg *pReq,
 
         if(getOperation(EmetconProtocol::Scan_Accum, OutMessage->Buffer.BSt))
         {
-            // Load all the other stuff that is needed
-            OutMessage->DeviceID  = getID();
-            OutMessage->TargetID  = getID();
-            OutMessage->Port      = getPortID();
-            OutMessage->Remote    = getAddress();
+            populateDlcOutMessage(*OutMessage);
             EstablishOutMessagePriority( OutMessage, ScanPriority );
-            OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = EmetconProtocol::Scan_Accum;
-            OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.RetryMacroOffset = MacroOffset::none;
 
@@ -712,16 +687,10 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
 
         if(getOperation(EmetconProtocol::Scan_LoadProfile, OutMessage->Buffer.BSt))
         {
-            // Load all the other stuff that is needed
-            OutMessage->DeviceID  = getID();
-            OutMessage->TargetID  = getID();
-            OutMessage->Port      = getPortID();
-            OutMessage->Remote    = getAddress();
+            populateDlcOutMessage(*OutMessage);
             EstablishOutMessagePriority( OutMessage, ScanPriority );
-            OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = EmetconProtocol::Scan_LoadProfile;
-            OutMessage->Retry     = 0;  // 20020906 CGP
-            OutMessage->Request.RouteID   = getRouteID();
+            OutMessage->Retry     = 0;  // override            OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.RetryMacroOffset = MacroOffset::none;
 
             // Tell the porter side to complete the assembly of the message.
@@ -1179,14 +1148,8 @@ INT MctDevice::executeLoopback(CtiRequestMsg *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 2;
         OutMessage->Request.RouteID   = getRouteID();
 
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1285,14 +1248,8 @@ INT MctDevice::executeScan(CtiRequestMsg *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 2;
         OutMessage->Request.RouteID   = getRouteID();
 
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1478,14 +1435,8 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1569,14 +1520,8 @@ INT MctDevice::executePutValue(CtiRequestMsg *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1661,14 +1606,8 @@ INT MctDevice::executeGetStatus(CtiRequestMsg *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1764,14 +1703,8 @@ INT MctDevice::executePutStatus(CtiRequestMsg *pReq,
     }
     else
     {
-       // Load all the other stuff that is needed
-       OutMessage->DeviceID  = getID();
-       OutMessage->TargetID  = getID();
-       OutMessage->Port      = getPortID();
-       OutMessage->Remote    = getAddress();
-       OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
        OutMessage->Sequence  = function;     // Helps us figure it out later!
-       OutMessage->Retry     = 2;
 
        OutMessage->Request.RouteID   = getRouteID();
 
@@ -1938,14 +1871,8 @@ INT MctDevice::executeGetConfig(CtiRequestMsg *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -2505,14 +2432,8 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
     }
     else
     {
-       // Load all the other stuff that is needed
-       OutMessage->DeviceID  = getID();
-       OutMessage->TargetID  = getID();
-       OutMessage->Port      = getPortID();
-       OutMessage->Remote    = getAddress();
-       OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
        OutMessage->Sequence  = function;     // Helps us figure it out later!
-       OutMessage->Retry     = 2;
 
        OutMessage->Request.RouteID   = getRouteID();
        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -2629,14 +2550,8 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);

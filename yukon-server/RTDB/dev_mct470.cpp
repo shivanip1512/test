@@ -462,13 +462,8 @@ void Mct470Device::requestDynamicInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key, O
 
     OUTMESS *newOutMessage = CTIDBG_new OUTMESS(*OutMessage);
 
-    newOutMessage->DeviceID  = getID();
-    newOutMessage->TargetID  = getID();
-    newOutMessage->Port      = getPortID();
-    newOutMessage->Remote    = getAddress();
+    populateDlcOutMessage(*newOutMessage);
     newOutMessage->Priority  = ScanPriority_LoadProfile;
-    newOutMessage->TimeOut   = 2;
-    newOutMessage->Retry     = 2;
 
     // Tell the porter side to complete the assembly of the message.
     newOutMessage->Request.BuildIt = TRUE;
@@ -677,16 +672,9 @@ ULONG Mct470Device::calcNextLPScanTime( void )
 
 void Mct470Device::sendIntervals( OUTMESS *&OutMessage, OutMessageList &outList )
 {
-    // Load all the other stuff that is needed
-    OutMessage->DeviceID  = getID();
-    OutMessage->TargetID  = getID();
-    OutMessage->Port      = getPortID();
-    OutMessage->Remote    = getAddress();
-    // 082002 CGP // OutMessage->RouteID   = getRouteID();
+    populateDlcOutMessage(*OutMessage);
     OutMessage->Priority  = ScanPriority_LoadProfile;
-    OutMessage->TimeOut   = 2;
     OutMessage->Sequence  = EmetconProtocol::GetStatus_LoadProfile;     // Helps us figure it out later!
-    OutMessage->Retry     = 2;
 
     // Tell the porter side to complete the assembly of the message.
     OutMessage->Request.BuildIt = TRUE;
@@ -1714,13 +1702,8 @@ INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
 
                 if( found )
                 {
-                    OutMessage->DeviceID  = getID();
-                    OutMessage->TargetID  = getID();
-                    OutMessage->Port      = getPortID();
-                    OutMessage->Remote    = getAddress();
-                    OutMessage->TimeOut   = 2;
+                    populateDlcOutMessage(*OutMessage);
                     OutMessage->Sequence  = function;         // Helps us figure it out later!
-                    OutMessage->Retry     = 2;
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
@@ -1740,13 +1723,8 @@ INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
                 found = getOperation(function, OutMessage->Buffer.BSt);
                 if( found )
                 {
-                    OutMessage->DeviceID  = getID();
-                    OutMessage->TargetID  = getID();
-                    OutMessage->Port      = getPortID();
-                    OutMessage->Remote    = getAddress();
-                    OutMessage->TimeOut   = 2;
+                    populateDlcOutMessage(*OutMessage);
                     OutMessage->Sequence  = function;         // Helps us figure it out later!
-                    OutMessage->Retry     = 2;
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, "getconfig ied time", COMMAND_STR_SIZE );
@@ -1762,13 +1740,8 @@ INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
 
                 if( found )
                 {
-                    OutMessage->DeviceID  = getID();
-                    OutMessage->TargetID  = getID();
-                    OutMessage->Port      = getPortID();
-                    OutMessage->Remote    = getAddress();
-                    OutMessage->TimeOut   = 2;
+                    populateDlcOutMessage(*OutMessage);
                     OutMessage->Sequence  = function;         // Helps us figure it out later!
-                    OutMessage->Retry     = 2;
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
@@ -1783,13 +1756,8 @@ INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
 
                 if( found )
                 {
-                    OutMessage->DeviceID  = getID();
-                    OutMessage->TargetID  = getID();
-                    OutMessage->Port      = getPortID();
-                    OutMessage->Remote    = getAddress();
-                    OutMessage->TimeOut   = 2;
+                    populateDlcOutMessage(*OutMessage);
                     OutMessage->Sequence  = function;         // Helps us figure it out later!
-                    OutMessage->Retry     = 2;
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, "getconfig intervals", COMMAND_STR_SIZE );
@@ -2011,15 +1979,8 @@ INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
 
     if( found )
     {
-        // Load all the other stuff that is needed
-        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         ::strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -2045,13 +2006,7 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
     {
         case ScanRateIntegrity:
         {
-            // Load all the other stuff that is needed
-            OutMessage->DeviceID  = getID();
-            OutMessage->TargetID  = getID();
-            OutMessage->Port      = getPortID();
-            OutMessage->Remote    = getAddress();
-            OutMessage->TimeOut   = 2;
-            OutMessage->Retry     = 2;
+            populateDlcOutMessage(*OutMessage);
             OutMessage->Request.RouteID   = getRouteID();
 
             CtiString originalString = pReq->CommandString();
@@ -2228,13 +2183,8 @@ INT Mct470Device::executeGetConfig(CtiRequestMsg *pReq,
 
                 if( found )
                 {
-                    OutMessage->DeviceID  = getID();
-                    OutMessage->TargetID  = getID();
-                    OutMessage->Port      = getPortID();
-                    OutMessage->Remote    = getAddress();
-                    OutMessage->TimeOut   = 2;
+                    populateDlcOutMessage(*OutMessage);
                     OutMessage->Sequence  = function;         // Helps us figure it out later!
-                    OutMessage->Retry     = 2;
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
@@ -2267,13 +2217,8 @@ INT Mct470Device::executeGetConfig(CtiRequestMsg *pReq,
                     OutMessage->Buffer.BSt.Length = 1;
                     OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Function_Write;
                     OutMessage->Buffer.BSt.Message[0] = parse.getiValue("start address");
-                    OutMessage->DeviceID  = getID();
-                    OutMessage->TargetID  = getID();
-                    OutMessage->Port      = getPortID();
-                    OutMessage->Remote    = getAddress();
-                    OutMessage->TimeOut   = 2;
+                    populateDlcOutMessage(*OutMessage);
                     OutMessage->Sequence  = function;         // Helps us figure it out later!
-                    OutMessage->Retry     = 2;
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -2293,15 +2238,8 @@ INT Mct470Device::executeGetConfig(CtiRequestMsg *pReq,
 
     if( found )
     {
-        // Load all the other stuff that is needed
-        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         ::strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -2620,15 +2558,8 @@ INT Mct470Device::executePutConfig(CtiRequestMsg *pReq,
 
     if( found )
     {
-        // Load all the other stuff that is needed
-        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -2870,15 +2801,8 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
 
     if( found )
     {
-        // Load all the other stuff that is needed
-        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().data(), COMMAND_STR_SIZE);
