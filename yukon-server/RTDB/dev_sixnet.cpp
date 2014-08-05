@@ -1689,17 +1689,10 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             OutMessage->Buffer.DUPReq.LastFileTime = getLastLPTime().seconds();
 
             // Load all the other stuff that is needed
-            OutMessage->DeviceID  = getID();
-            OutMessage->TargetID  = getID();
-            OutMessage->Port      = getPortID();
-            OutMessage->Remote    = getAddress();
+            populateRemoteOutMessage(*OutMessage);
+            OutMessage->Retry = 3;  //  override
 
             EstablishOutMessagePriority( OutMessage, ScanPriority );
-
-            OutMessage->TimeOut   = 2;
-            OutMessage->EventCode = RESULT | ENCODED;
-            OutMessage->Sequence  = 0;
-            OutMessage->Retry     = 3;
 
             outList.push_back(OutMessage);
             OutMessage = NULL;

@@ -3,11 +3,9 @@
 #include "dev_single.h"
 #include "tbl_dialup.h"
 #include "tbl_direct.h"
-#include "string_utility.h"
+#include "porter.h"  //  for RESULT and ENCODED
 
-#include <ctype.h>
-#include <rw\thr\mutex.h>
-#include <rw\db\nullind.h>
+#include "string_utility.h"
 
 class IM_EX_DEVDB CtiDeviceRemote : public CtiDeviceSingle
 {
@@ -25,6 +23,15 @@ protected:
 
     CtiTableDeviceDirectComm   Direct;
     CtiTableDeviceDialup       *pDialup;
+
+    void populateRemoteOutMessage(OUTMESS &OutMessage)
+    {
+        populateOutMessage(OutMessage);
+
+        OutMessage.EventCode = RESULT | ENCODED;
+        OutMessage.Sequence  = 0;
+        OutMessage.Retry     = 2;
+    }
 
 public:
 

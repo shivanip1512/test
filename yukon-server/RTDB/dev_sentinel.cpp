@@ -45,14 +45,8 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
       setCurrentCommand( CmdScanData );
 
       // Load all the other stuff that is needed
-      OutMessage->DeviceID  = getID();
-      OutMessage->TargetID  = getID();
-      OutMessage->Port      = getPortID();
-      OutMessage->Remote    = getAddress();
-      OutMessage->TimeOut   = 2;
-      OutMessage->EventCode = RESULT | ENCODED;
-      OutMessage->Sequence  = 0;
-      OutMessage->Retry     = 3;
+      populateRemoteOutMessage(*OutMessage);
+      OutMessage->Retry = 3;  //  override
       EstablishOutMessagePriority( OutMessage, ScanPriority );
 
       //let's populate this list with the tables we want for a general scan...
@@ -102,14 +96,8 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
       setCurrentCommand( CmdScanData );
 
       // Load all the other stuff that is needed
-      OutMessage->DeviceID  = getID();
-      OutMessage->TargetID  = getID();
-      OutMessage->Port      = getPortID();
-      OutMessage->Remote    = getAddress();
-      OutMessage->TimeOut   = 2;
-      OutMessage->EventCode = RESULT | ENCODED;
-      OutMessage->Sequence  = 0;
-      OutMessage->Retry     = 3;
+      populateRemoteOutMessage(*OutMessage);
+      OutMessage->Retry = 3;  //  override
       EstablishOutMessagePriority( OutMessage, ScanPriority );
 
       //let's populate this list with the tables we want for a general scan...

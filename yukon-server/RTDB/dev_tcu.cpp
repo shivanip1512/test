@@ -145,15 +145,9 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
       return(i);
 
    /* Load all the other stuff that is needed */
-   OutMessage->DeviceID        = getID();
-   OutMessage->Port            = getPortID();
-   OutMessage->Remote          = getAddress();
-   OutMessage->TimeOut         = 2;
+   populateRemoteOutMessage(*OutMessage);
    OutMessage->OutLength       = 4;
    OutMessage->InLength        = -1;
-   OutMessage->EventCode       = RESULT | ENCODED;
-   OutMessage->Sequence        = 0;
-   OutMessage->Retry           = 2;
 
    return(NORMAL);
 }

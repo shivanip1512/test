@@ -71,27 +71,17 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
             OutMessage->Buffer.OutMessage[6] = 0;
 
             /* Load all the other stuff that is needed */
-            OutMessage->DeviceID              = getID();
-            OutMessage->TargetID              = getID();
+            populateRemoteOutMessage(*OutMessage);
             OutMessage->Buffer.OutMessage[4]  = 0x08;
-            OutMessage->Port                  = getPortID();
-            OutMessage->Remote                = getAddress();
             EstablishOutMessagePriority( OutMessage, ScanPriority );
-            OutMessage->TimeOut               = 2;
             OutMessage->OutLength             = 0;
             OutMessage->InLength              = -1;
 
             if(OutMessage->Remote == RTUGLOBAL)
             {
+                //  override EventCode - no result expected for a global freeze
                 OutMessage->EventCode = NORESULT | ENCODED;
             }
-            else
-            {
-                OutMessage->EventCode = RESULT | ENCODED;
-            }
-
-            OutMessage->Sequence              = 0;
-            OutMessage->Retry                 = 2;
 
             setScanFlag(ScanRateIntegrity);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
             setScanFlag(ScanFreezePending);
@@ -289,14 +279,10 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
 
 
         /* Load all the other stuff that is needed */
-        OutMessage->DeviceID              = getID();
-        OutMessage->TargetID              = getID();
+        populateRemoteOutMessage(*OutMessage);
         OutMessage->Buffer.OutMessage[4]  = 0x08 | IDLC_NUL_HDR; // IDLC_NUL_HDR is used to request 32 bit accumulators
 
-        OutMessage->Port                  = getPortID();
-        OutMessage->Remote                = getAddress();
         EstablishOutMessagePriority( OutMessage, ScanPriority );
-        OutMessage->TimeOut               = 2;
 
         if(!useScanFlags() || (isScanFlagSet(ScanFrozen) || isScanFlagSet(ScanFreezeFailed)))
         {
@@ -308,9 +294,6 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
         }
 
         OutMessage->InLength = -1;
-        OutMessage->EventCode = RESULT | ENCODED;
-        OutMessage->Sequence = 0;
-        OutMessage->Retry = 2;
 
         setScanFlag(ScanRateIntegrity);
 
@@ -1232,19 +1215,11 @@ INT CtiDeviceWelco::WelCoGetError(OUTMESS *OutMessage, INT Priority)            
     OutMessage->Buffer.OutMessage[6] = 0;
 
     /* Load all the other stuff that is needed */
-    OutMessage->DeviceID     = getID();
-    OutMessage->TargetID     = getID();
+    populateRemoteOutMessage(*OutMessage);
     OutMessage->Buffer.OutMessage[4] = 0x08;
-    OutMessage->Port         = getPortID();
-    OutMessage->Remote       = getAddress();
     EstablishOutMessagePriority( OutMessage, Priority );
-    OutMessage->TimeOut      = 2;
     OutMessage->OutLength    = 0;
     OutMessage->InLength     = -1;
-    OutMessage->EventCode    = RESULT | ENCODED;
-
-    OutMessage->Sequence     = 0;
-    OutMessage->Retry        = 2;
 
     return status;
 }
@@ -1271,18 +1246,10 @@ INT CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
     /* Load all the other stuff that is needed */
     OutMessage->Buffer.OutMessage[4] = 0x08;
 
-    OutMessage->DeviceID  = getID();
-    OutMessage->TargetID  = getID();
-    OutMessage->Port      = getPortID();
-    OutMessage->Remote    = getAddress();
+    populateRemoteOutMessage(*OutMessage);
     EstablishOutMessagePriority( OutMessage, Priority );
-    OutMessage->TimeOut   = 2;
     OutMessage->OutLength = 0;
     OutMessage->InLength  = -1;
-    OutMessage->EventCode = RESULT | ENCODED;
-    OutMessage->Sequence  = 0;
-    OutMessage->Retry     = 2;
-
 
     return status;
 }
@@ -1299,18 +1266,10 @@ INT CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
 
     /* Load all the other stuff that is needed */
     OutMessage->Buffer.OutMessage[4] = 0x08 | IDLC_NUL_HDR;
-    OutMessage->DeviceID     = getID();
-    OutMessage->TargetID     = getID();
-    OutMessage->Port         = getPortID();
-    OutMessage->Remote       = getAddress();
+    populateRemoteOutMessage(*OutMessage);
     EstablishOutMessagePriority( OutMessage, Priority );
-    OutMessage->TimeOut      = 2;
     OutMessage->OutLength    = 0;
     OutMessage->InLength     = -1;
-    OutMessage->EventCode    = RESULT | ENCODED;
-    OutMessage->Sequence     = 0;
-    OutMessage->Retry        = 2;
-
 
     return status;
 
@@ -1352,11 +1311,7 @@ INT CtiDeviceWelco::WelCoTimeSync(OUTMESS *OutMessage, INT Priority)
         OutMessage->Buffer.OutMessage[6] = 7;
 
         /* send a time sync to this guy */
-        OutMessage->DeviceID           = getID();
-        OutMessage->TargetID           = getID();
-        OutMessage->Port               = getPortID();
-        OutMessage->Remote             = getAddress();
-        OutMessage->TimeOut            = 2;
+        populateOutMessage(*OutMessage);  //  not the Remote version, because we override Retry and EventCode anyway
         OutMessage->Retry              = 0;
         OutMessage->OutLength          = 7;
         OutMessage->InLength           = 0;
@@ -1391,18 +1346,10 @@ INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
 
     /* Load all the other stuff that is needed */
     OutMessage->Buffer.OutMessage[4] = 0x08;
-    OutMessage->DeviceID     = getID();
-    OutMessage->TargetID     = getID();
-    OutMessage->Port         = getPortID();
-    OutMessage->Remote       = getAddress();
+    populateRemoteOutMessage(*OutMessage);
     EstablishOutMessagePriority( OutMessage, Priority );
-    OutMessage->TimeOut      = 2;
     OutMessage->OutLength    = 3;
     OutMessage->InLength     = -1;
-    OutMessage->EventCode    = NORESULT | ENCODED;
-
-    OutMessage->Sequence     = 0;
-    OutMessage->Retry        = 2;
 
     return status;
 }
@@ -1534,17 +1481,11 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outLis
                         MyOutMessage->Buffer.OutMessage[6]     = (UCHAR)(ByteCount + 2);
 
                         /* Load all the other stuff that is needed */
-                        MyOutMessage->DeviceID                 = getID();
-                        MyOutMessage->TargetID                 = getID();
-                        MyOutMessage->Port                     = getPortID();
-                        MyOutMessage->Remote                   = getAddress();
+                        populateRemoteOutMessage(*MyOutMessage);
+                        MyOutMessage->Retry = 0;  //  override
                         OverrideOutMessagePriority( MyOutMessage, Priority );
-                        MyOutMessage->TimeOut                  = 2;
-                        MyOutMessage->OutLength                = ByteCount + 2;
-                        MyOutMessage->InLength                 = -1;
-                        MyOutMessage->EventCode                = RESULT | ENCODED;
-                        MyOutMessage->Sequence                 = 0;
-                        MyOutMessage->Retry                    = 0;
+                        MyOutMessage->OutLength = ByteCount + 2;
+                        MyOutMessage->InLength  = -1;
 
                         MyOutMessage->ExpirationTime = CtiTime().seconds() + 120;     // These guys do not need to be on-queue for too long.
 

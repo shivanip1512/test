@@ -360,22 +360,16 @@ INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg *pReq,
         OutMessage->Buffer.DUPReq.LastFileTime = getLastLPTime().seconds();
 
         // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
+        populateRemoteOutMessage(*OutMessage);
+        OutMessage->Retry = 3;  //  override
 
-        // if this is a slave, drop the priority
         EstablishOutMessagePriority( OutMessage, ScanPriority );
 
+        // if this is a slave, drop the priority
         if (!isMaster())
         {
             OverrideOutMessagePriority( OutMessage, OutMessage->Priority - 1 );
         }
-
-        OutMessage->TimeOut   = 2;
-        OutMessage->EventCode = RESULT | ENCODED;
-        OutMessage->Sequence  = 0;
-        OutMessage->Retry     = 3;
 
         outList.push_back(OutMessage);
         OutMessage = NULL;

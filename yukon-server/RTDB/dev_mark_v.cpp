@@ -60,10 +60,8 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       EstablishOutMessagePriority( OutMessage, ScanPriority );
 
       // Load all the other stuff that is needed
-      OutMessage->DeviceID  = getID();
-      OutMessage->TargetID  = getID();
-      OutMessage->Port      = getPortID();
-      OutMessage->Remote    = getAddress();
+      populateRemoteOutMessage(*OutMessage);
+      OutMessage->Retry = 3;  //  override
 
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
@@ -76,11 +74,6 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
           OutMessage->Buffer.DUPReq.LP_Time = getLastLPTime().seconds();
       else
           OutMessage->Buffer.DUPReq.LP_Time = 0;
-
-      OutMessage->TimeOut   = 2;
-      OutMessage->EventCode = RESULT | ENCODED;
-      OutMessage->Sequence  = 0;
-      OutMessage->Retry     = 3;
 
       ptr = ( CtiProtocolTransdata::mkv *)OutMessage->Buffer.OutMessage;
 

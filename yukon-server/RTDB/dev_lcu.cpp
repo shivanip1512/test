@@ -194,19 +194,12 @@ INT CtiDeviceLCU::lcuFreeze(OUTMESS *&OutMessage)
         return(status);
 
     /* Load all the other stuff that is needed */
-    OutMessage->DeviceID        = getID();
-    OutMessage->TargetID        = getID();
-    OutMessage->Port            = getPortID();
-    OutMessage->Remote          = getAddress();
+    populateRemoteOutMessage(*OutMessage);
 
     OverrideOutMessagePriority(OutMessage, MAXPRIORITY - 1);        // This is required to make certain fast scans do not block our comms.
 
-    OutMessage->TimeOut = 2;
     OutMessage->OutLength = 4;
     OutMessage->InLength = -1;
-    OutMessage->EventCode = RESULT | ENCODED;
-    OutMessage->Sequence = 0;
-    OutMessage->Retry = 2;
 
     return(status);
 }
@@ -223,19 +216,12 @@ INT CtiDeviceLCU::lcuReset(OUTMESS *&OutMessage)
         return(status);
 
     /* Load all the other stuff that is needed */
-    OutMessage->DeviceID        = getID();
-    OutMessage->TargetID        = getID();
-    OutMessage->Port            = getPortID();
-    OutMessage->Remote          = getAddress();
+    populateRemoteOutMessage(*OutMessage);
 
     OverrideOutMessagePriority(OutMessage, MAXPRIORITY - 1);        // This is required to make certain fast scans do not block our comms.
 
-    OutMessage->TimeOut = 2;
     OutMessage->OutLength = 4;
     OutMessage->InLength = -1;
-    OutMessage->EventCode = RESULT | ENCODED;
-    OutMessage->Sequence = 0;
-    OutMessage->Retry = 2;
 
     return(status);
 }
@@ -256,16 +242,9 @@ INT CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to pla
             return(status);
 
         /* Load all the other stuff that is needed */
-        OutMessage->DeviceID        = getID();
-        OutMessage->TargetID        = getID();
-        OutMessage->Port            = getPortID();
-        OutMessage->Remote          = getAddress();
-        OutMessage->TimeOut         = 2;
+        populateRemoteOutMessage(*OutMessage);
         OutMessage->OutLength       = 4;
         OutMessage->InLength        = -1;
-        OutMessage->EventCode       = RESULT | ENCODED;
-        OutMessage->Sequence        = 0;
-        OutMessage->Retry           = 2;
     }
 
     return(status);
@@ -281,16 +260,9 @@ INT CtiDeviceLCU::lcuScanInternalStatus(OUTMESS *&OutMessage)
         return(status);
 
     /* Load all the other stuff that is needed */
-    OutMessage->DeviceID        = getID();
-    OutMessage->TargetID        = getID();
-    OutMessage->Port            = getPortID();
-    OutMessage->Remote          = getAddress();
-    OutMessage->TimeOut         = 2;
+    populateRemoteOutMessage(*OutMessage);
     OutMessage->OutLength       = 4;
     OutMessage->InLength        = -1;
-    OutMessage->EventCode       = RESULT | ENCODED;
-    OutMessage->Sequence        = 0;
-    OutMessage->Retry           = 2;
 
     return(status);
 }
@@ -305,16 +277,9 @@ INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
         return(status);
 
     /* Load all the other stuff that is needed */
-    OutMessage->DeviceID        = getID();
-    OutMessage->TargetID        = getID();
-    OutMessage->Port            = getPortID();
-    OutMessage->Remote          = getAddress();
-    OutMessage->TimeOut         = 2;
+    populateRemoteOutMessage(*OutMessage);
     OutMessage->OutLength       = 4;
     OutMessage->InLength        = -1;
-    OutMessage->EventCode       = RESULT | ENCODED;
-    OutMessage->Sequence        = 0;
-    OutMessage->Retry           = 2;
 
     return(status);
 }
@@ -2342,16 +2307,9 @@ INT CtiDeviceLCU::lcuLockout(OUTMESS *&OutMessage, bool lockout)
 
     /* Load all the other stuff that is needed */
     OverrideOutMessagePriority( OutMessage, MAXPRIORITY - 2 );
-    OutMessage->DeviceID        = getID();
-    OutMessage->TargetID        = getID();
-    OutMessage->Port            = getPortID();
-    OutMessage->Remote          = getAddress();
-    OutMessage->TimeOut         = 2;
+    populateRemoteOutMessage(*OutMessage);
     OutMessage->OutLength       = 4;
     OutMessage->InLength        = -1;
-    OutMessage->EventCode       = RESULT | ENCODED;
-    OutMessage->Sequence        = 0;
-    OutMessage->Retry           = 2;
 
     return(status);
 }

@@ -111,14 +111,8 @@ INT MctBroadcastDevice::executePutConfig(CtiRequestMsg                  *pReq,
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
+        populateDlcOutMessage(*OutMessage);
         OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -147,13 +141,7 @@ INT MctBroadcastDevice::executePutStatus(CtiRequestMsg                  *pReq,
     OutMessage->Buffer.BSt.Message[1] = 0;
     OutMessage->Buffer.BSt.Message[2] = 0;
 
-    // Load all the other stuff that is needed
-    OutMessage->DeviceID  = getID();
-    OutMessage->TargetID  = getID();
-    OutMessage->Port      = getPortID();
-    OutMessage->Remote    = getAddress();
-    OutMessage->TimeOut   = 2;
-    OutMessage->Retry     = 2;
+    populateDlcOutMessage(*OutMessage);
 
     OutMessage->Request.RouteID = getRouteID();
 

@@ -68,15 +68,10 @@ INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
         header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXFREEZE, 0, 1);
 
         /* Load all the other stuff that is needed */
-        OutMessage->DeviceID              = getID();
-        OutMessage->Port                  = getPortID();
-        OutMessage->Remote                = getAddress();
-        OutMessage->TimeOut               = 2;
+        populateRemoteOutMessage(*OutMessage);
         OutMessage->OutLength             = 3;
         OutMessage->InLength              = -1;
-        OutMessage->EventCode             = RESULT | ENCODED;
-        OutMessage->Sequence              = 0;
-        OutMessage->Retry                 = 3;
+        OutMessage->Retry = 3;  //  override
 
         OutMessage->Buffer.OutMessage[9]  = setFreezeNumber((BYTE)getLastFreezeNumber()).getFreezeNumber();
         OverrideOutMessagePriority( OutMessage, (MAXPRIORITY - 3) );
@@ -101,16 +96,10 @@ INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, list< O
         header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, !getIlexSequenceNumber(), EXCEPTION_SCAN);
 
         /* Load all the other stuff that is needed */
-        OutMessage->DeviceID              = getID();
-        OutMessage->Port                  = getPortID();
-        OutMessage->Remote                = getAddress();
+        populateRemoteOutMessage(*OutMessage);
         OutMessage->Priority              = (UCHAR)(ScanPriority);
-        OutMessage->TimeOut               = 2;
         OutMessage->OutLength             = 2;
         OutMessage->InLength              = -1;
-        OutMessage->EventCode             = RESULT | ENCODED;
-        OutMessage->Sequence              = 0;
-        OutMessage->Retry                 = 2;
 
         outList.push_back(OutMessage);
         OutMessage = NULL;
@@ -138,16 +127,10 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, getIlexSequenceNumber(), FORCED_SCAN);
 
         /* Load all the other stuff that is needed */
-        OutMessage->DeviceID              = getID();
-        OutMessage->Port                  = getPortID();
-        OutMessage->Remote                = getAddress();
+        populateRemoteOutMessage(*OutMessage);
         EstablishOutMessagePriority( OutMessage, ScanPriority );
-        OutMessage->TimeOut               = 2;
         OutMessage->OutLength             = 2;
         OutMessage->InLength              = -1;
-        OutMessage->EventCode             = RESULT | ENCODED;
-        OutMessage->Sequence              = 0;
-        OutMessage->Retry                 = 2;
 
         outList.push_back(OutMessage);
         OutMessage = NULL;

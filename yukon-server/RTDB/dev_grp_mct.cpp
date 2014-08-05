@@ -375,11 +375,8 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
     else
     {
         // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
+        populateOutMessage(*OutMessage);
         OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
