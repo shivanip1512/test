@@ -5,7 +5,7 @@ import javax.jms.MessageListener;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.command.ActiveMQDestination;
 
-import com.cannontech.messaging.connection.ConnectionException;
+import com.cannontech.messaging.connection.MessagingConnectionException;
 import com.cannontech.messaging.connection.transport.amq.TwoWayTransport;
 
 public class AmqServerConnection extends AmqConnectionBase<TwoWayTransport> {
@@ -20,7 +20,7 @@ public class AmqServerConnection extends AmqConnectionBase<TwoWayTransport> {
 
     @Override
     protected ActiveMQConnection createConnection() {
-        throw new ConnectionException(
+        throw new MessagingConnectionException(
                                       "A <ServerConnection> object should never attempt to create an ActiveMQ connection to a broker by itself");
     }
 

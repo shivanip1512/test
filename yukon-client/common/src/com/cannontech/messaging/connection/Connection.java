@@ -3,9 +3,10 @@ package com.cannontech.messaging.connection;
 import java.net.URI;
 
 import com.cannontech.event.Event;
+import com.cannontech.message.util.ConnectionException;
+import com.cannontech.message.util.Message;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
-import com.cannontech.message.util.Message;
 
 public interface Connection {
 
@@ -24,7 +25,7 @@ public interface Connection {
      * @param message The message to send through this connection
      * @throws ConnectionException
      */
-    void send(Message message) throws ConnectionException;
+    void send(Message message) throws MessagingConnectionException;
 
     /**
      * Retrieves the connection event of this connection. One should register to this event in order be notified about
@@ -61,7 +62,7 @@ public interface Connection {
      * @return the connection URI
      * @throws ConnectionException
      */
-    URI getConnectionUri() throws ConnectionException;
+    URI getConnectionUri() throws MessagingConnectionException;
 
     /**
      * Sets the ability of this connection to reconnect automatically after a connection has been lost.

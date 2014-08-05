@@ -7,12 +7,13 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.event.Event;
+import com.cannontech.message.util.ConnectionException;
+import com.cannontech.message.util.Message;
 import com.cannontech.messaging.connection.event.ConnectionEvent;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEvent;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
 import com.cannontech.messaging.connection.transport.Transport;
-import com.cannontech.message.util.Message;
 
 /**
  * Base implementation of a Connection. A connection can be started once only. Once it is stopped, it can not be
@@ -98,7 +99,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
                 this.connect();
 
                 if (state != ConnectionState.Connected) {
-                    throw new ConnectionException("Connection is not established correctly");
+                    throw new MessagingConnectionException("Connection is not established correctly");
                 }
 
                 isFailed = false;
@@ -165,7 +166,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
      * must be established or must have failed to establish when this method returns.
      * @throws ConnectionException
      */
-    protected abstract void connect() throws ConnectionException;
+    protected abstract void connect() throws MessagingConnectionException;
 
     @Override
     public final void close() {
@@ -189,7 +190,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
      * Disconnect the current connection and free associated resources. subclasses MUST override it and call this super
      * implementation if they need to cleanup additional resources at the subclass level.
      */
-    protected void disconnect() throws ConnectionException {
+    protected void disconnect() throws MessagingConnectionException {
         setDisconnectRequested(true);
         if (transport != null) {
             transport.close();
@@ -237,9 +238,9 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
     }
 
     @Override
-    public void send(Message message) throws ConnectionException {
+    public void send(Message message) throws MessagingConnectionException {
         if (!canQueueMessage()) {
-            throw new ConnectionException("Can not send message as connection is invalid and will not reconnect");
+            throw new MessagingConnectionException("Can not send message as connection is invalid and will not reconnect");
         }
 
         synchronized (outQueue) {
@@ -410,6 +411,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
         return "messaging connection " + getName();
     }
     
+    @Override
     public boolean isConnectionFailed() {
         return isFailed;
     }

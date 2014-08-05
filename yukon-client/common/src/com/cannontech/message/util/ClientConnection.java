@@ -19,6 +19,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.messaging.connection.Connection;
 import com.cannontech.messaging.connection.Connection.ConnectionState;
+import com.cannontech.messaging.connection.MessagingConnectionException;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
 import com.cannontech.messaging.util.ConnectionFactory;
@@ -170,23 +171,27 @@ public abstract class ClientConnection extends Observable implements IServerConn
             // Only instances of com.cannontech.message.util.Command should
             // get here and it should have a ARE_YOU_THERE operation
             // echo it back so servers don't time out on us
-            write(msg);
-        }
-
-        MessageEvent messageEvent = new MessageEvent(this, msg);
-        if (logger.isDebugEnabled()) {
-            logger.debug("sending MessageEvent to " + messageListeners.size() + " listeners: " + messageEvent);
-        }
-        // At one time, the listeners were processed in reverse so that the messageReceived
-        // implementation could remove itself as a listener without causing a concurrent
-        // modification problem. That is no longer a problem, but just in case there is some code
-        // that relies on the reverse ordering, we'll keep it.
-        for (MessageListener messageListener : Lists.reverse(messageListeners)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("sending MessageEvent to " + messageListener);
+            try {
+                write(msg);
+            } catch (ConnectionException e) {
+                logger.warn("could not respond to ARE_YOU_THERE", e);
             }
-            messageListener.messageReceived(messageEvent);
-            totalFiredEvents.incrementAndGet();
+        } else {
+            MessageEvent messageEvent = new MessageEvent(this, msg);
+            if (logger.isDebugEnabled()) {
+                logger.debug("sending MessageEvent to " + messageListeners.size() + " listeners: " + messageEvent);
+            }
+            // At one time, the listeners were processed in reverse so that the messageReceived
+            // implementation could remove itself as a listener without causing a concurrent
+            // modification problem. That is no longer a problem, but just in case there is some code
+            // that relies on the reverse ordering, we'll keep it.
+            for (MessageListener messageListener : Lists.reverse(messageListeners)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("sending MessageEvent to " + messageListener);
+                }
+                messageListener.messageReceived(messageEvent);
+                totalFiredEvents.incrementAndGet();
+            }
         }
     }
 
@@ -200,8 +205,12 @@ public abstract class ClientConnection extends Observable implements IServerConn
         if (connection != null && connection.getState() == ConnectionState.Connected) {
             // This if is probably useless but it is here for the sake of consistency with the legacy code
             if (isValid) {
-                while (!outQueue.isEmpty()) {
-                    connection.send(outQueue.poll());
+                try {
+                    while (!outQueue.isEmpty()) {
+                        connection.send(outQueue.poll());
+                    }
+                } catch (MessagingConnectionException e) {
+                    logger.warn("could not send message", e);
                 }
             }
         }

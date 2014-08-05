@@ -1,8 +1,8 @@
 package com.cannontech.messaging.connection.transport;
 
-import com.cannontech.messaging.connection.ConnectionException;
+import com.cannontech.messaging.connection.MessagingConnectionException;
 
-public class TransportException extends ConnectionException {
+public class TransportException extends MessagingConnectionException {
     private static final long serialVersionUID = 1L;
 
     public TransportException(String message) {

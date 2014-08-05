@@ -6,7 +6,6 @@ import org.jfree.util.Log;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 
 @ManagedResource
@@ -36,13 +35,6 @@ public class DispatchClientConnection extends com.cannontech.message.util.Client
                     } catch (InterruptedException e) {
                         logger.warn("received shutdown signal, queue size: " + inQueue.size());
                         break;
-                    }
-
-                    if (msg instanceof Command && ((Command) msg).getOperation() == Command.ARE_YOU_THERE) {
-                        // Only instances of com.cannontech.message.dispatch.message.Command should get here
-                        // and it should have a ARE_YOU_THERE operation echo it back so vangogh doesn't time
-                        // out on us
-                        write(msg);
                     }
 
                     DispatchClientConnection.super.fireMessageEvent(msg);

@@ -12,7 +12,7 @@ import org.apache.activemq.ActiveMQConnection;
 
 import com.cannontech.message.util.Message;
 import com.cannontech.messaging.connection.ConnectionBase;
-import com.cannontech.messaging.connection.ConnectionException;
+import com.cannontech.messaging.connection.MessagingConnectionException;
 import com.cannontech.messaging.connection.transport.TransportException;
 import com.cannontech.messaging.connection.transport.amq.AmqTransport;
 import com.cannontech.messaging.serialization.MessageFactory;
@@ -65,12 +65,12 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
 
     protected abstract AmqConnectionMonitor createConnectionMonitor(T transport, MessageListener listener);
 
-    protected ActiveMQConnection createConnection() throws ConnectionException, InterruptedException {
+    protected ActiveMQConnection createConnection() throws MessagingConnectionException, InterruptedException {
         try {
             return getConnectionService().createConnection();
         }
         catch (JMSException e) {
-            throw new ConnectionException("Unable to create a connection to the ActiveMQ broker", e);
+            throw new MessagingConnectionException("Unable to create a connection to the ActiveMQ broker", e);
         }
     }
 
@@ -135,11 +135,11 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             }
         }
         catch (JMSException e) {            
-            throw new ConnectionException("Error while starting an ActiveMQ connection", e);
+            throw new MessagingConnectionException("Error while starting an ActiveMQ connection", e);
         }
         catch (InterruptedException e) {
             Thread.interrupted();
-            throw new ConnectionException("Interrupted while waiting to retry connecting", e);
+            throw new MessagingConnectionException("Interrupted while waiting to retry connecting", e);
         }
 
         setState(ConnectionState.Connected);
@@ -171,11 +171,11 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
     }
 
     @Override
-    public void sendMessageToTransport(Message message) throws ConnectionException {
+    public void sendMessageToTransport(Message message) throws MessagingConnectionException {
         T transport = getTransport();
 
         if (transport == null) {
-            throw new ConnectionException("Cannot send message, transport not initialized");
+            throw new MessagingConnectionException("Cannot send message, transport not initialized");
         }
 
         BytesMessage msg;
@@ -194,7 +194,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             transport.sendMessage(msg);
         }
         catch (Exception e) {
-            throw new ConnectionException("Error while sending message", e);
+            throw new MessagingConnectionException("Error while sending message", e);
         }
     }
 
@@ -261,7 +261,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
      * @throws Exception ConnectionException if an error occur
      */
     @Override
-    public URI getConnectionUri() throws ConnectionException {
+    public URI getConnectionUri() throws MessagingConnectionException {
         try {
             if (isManagedConnection()) {
                 return URI.create(getConnectionService().getBrokerUrl());
@@ -269,7 +269,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             return URI.create(connection.getBrokerInfo().getBrokerURL());
         }
         catch (Exception e) {
-            throw new ConnectionException("Error while retrieving broker URI");
+            throw new MessagingConnectionException("Error while retrieving broker URI");
         }
     }
 
