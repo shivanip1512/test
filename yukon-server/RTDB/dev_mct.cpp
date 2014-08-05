@@ -329,11 +329,14 @@ void MctDevice::decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKeys k
 
 LONG MctDevice::getDemandInterval()
 {
-    LONG retval = DemandInterval_Default;
+    const long lastIntervalDemand = getLastIntervalDemandRate();
 
-    if( getLastIntervalDemandRate() )   retval = getLastIntervalDemandRate();
+    if( lastIntervalDemand && lastIntervalDemand != LONG_MAX )
+    {
+        return lastIntervalDemand;
+    }
 
-    return retval;
+    return DemandInterval_Default;
 }
 
 

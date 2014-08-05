@@ -2666,6 +2666,94 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK( writeMsgPriority > readMsgPriority );
     }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect)
+    {
+        test_Mct410IconDevice mct410;
+        mct410.setDisconnectAddress(1234567);
+
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+        config.insertValue("disconnectMode", "DEMAND_THRESHOLD");
+        config.insertValue("disconnectDemandThreshold", "2.71");
+        config.insertValue("disconnectLoadLimitConnectDelay", "4");
+        config.insertValue("disconnectMinutes", "7");
+        config.insertValue("connectMinutes", "17");
+        config.insertValue("reconnectParam", "ARM");
+
+        CtiCommandParser parse("putconfig install disconnect");
+
+        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 2 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        int writeMsgPriority,
+            readMsgPriority;        // Capture message priorities to validate ordering
+
+        INMESS im;
+
+        // Disconnect messages - read-after-write.
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
+
+            const std::vector<unsigned> expected = boost::assign::list_of
+                (0x12)(0xd6)(0x87)(0x2a)(0x96)(0x04)(0x07)(0x11)(0x40);
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            writeMsgPriority = om->Priority;
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+
+            readMsgPriority = om->Priority;
+            OutEchoToIN(om, &im);
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        {
+            im.Return.ProtocolInfo.Emetcon.Function = 0xfe;
+            im.Return.ProtocolInfo.Emetcon.IO = 3;
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Message[5] = 0x12;
+            im.Buffer.DSt.Message[6] = 0x34;
+
+            BOOST_CHECK( ! mct410.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) );
+
+            BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(&im, CtiTime(), vgList, retList, outList) );
+
+            double threshold = 0.0;
+
+            BOOST_CHECK( mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold, threshold) );
+
+            BOOST_CHECK_CLOSE( threshold, 5.64 * 12, 0.001 );
+        }
+    }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 

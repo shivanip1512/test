@@ -3,6 +3,9 @@
 #include "dev_mct.h"
 #include "config_device.h"
 #include "config_data_mct.h"
+
+#include "cmd_mct4xx.h"
+
 #include "ctidate.h"
 
 #include <vector>
@@ -10,7 +13,9 @@
 namespace Cti {
 namespace Devices {
 
-class IM_EX_DEVDB Mct4xxDevice : public MctDevice
+class IM_EX_DEVDB Mct4xxDevice :
+    public MctDevice,
+    protected Commands::Mct4xxCommand::ResultHandler
 {
 private:
     // WORKAROUND:
@@ -26,9 +31,9 @@ protected:
 
 private:
 
-    typedef MctDevice Inherited;
-
+    typedef MctDevice Parent;
     typedef Mct4xxDevice Self;
+
     typedef int (Self::*DecodeMethod)(const INMESS *, CtiTime &, CtiMessageList &, CtiMessageList &, OutMessageList &);
 
     typedef std::map<int, DecodeMethod> DecodeMapping;
@@ -297,6 +302,8 @@ protected:
     INT decodeScanLoadProfile    (const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     virtual INT decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) = 0; // pure virtual, hence this is an abstract class
+
+    void handleCommandResult(const Commands::Mct4xxCommand &cmd);
 
     static const char *PutConfigPart_basic;
     static const char *PutConfigPart_all;

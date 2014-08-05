@@ -18,6 +18,7 @@
 #include <boost/assign/list_of.hpp>
 
 using namespace Cti::Protocols;
+using namespace Cti::Devices::Commands;
 using std::string;
 using std::endl;
 using std::list;
@@ -256,7 +257,7 @@ bool Mct4xxDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
         return true;
     }
 
-    return Inherited::getOperation(cmd, bst);
+    return Parent::getOperation(cmd, bst);
 }
 
 
@@ -984,7 +985,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
     }
     else
     {
-        return Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+        return Parent::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     if( found )
@@ -1068,7 +1069,7 @@ INT Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq,
     }
     else
     {
-        nRet = Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = Parent::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
 
@@ -1124,7 +1125,7 @@ INT Mct4xxDevice::executeGetStatus(CtiRequestMsg *pReq,
     }
     else
     {
-        nRet = Inherited::executeGetStatus(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = Parent::executeGetStatus(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     if( found )
@@ -1812,7 +1813,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
 
     if( !found )
     {
-        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = Parent::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     return nRet;
@@ -1847,7 +1848,7 @@ INT Mct4xxDevice::executePutValue(CtiRequestMsg *pReq,
     }
     else
     {
-        nRet = Inherited::executePutValue(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = Parent::executePutValue(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     return nRet;
@@ -2008,7 +2009,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
     else
     {   //Not sure if this is correct, this could just return NoMethod. This is here
         //just in case anyone wants to use a putconfig install  for anything but configs.
-        //nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+        //nRet = Parent::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
         nRet = NoMethod;
     }
 
@@ -2268,7 +2269,7 @@ INT Mct4xxDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, Cti
 
         default:
         {
-            status = Inherited::decodePutConfig(InMessage,TimeNow,vgList,retList,outList);
+            status = Parent::decodePutConfig(InMessage,TimeNow,vgList,retList,outList);
             break;
         }
     }
@@ -3504,6 +3505,12 @@ Mct4xxDevice::DecodeMapping Mct4xxDevice::initDecodeLookup()
 const Mct4xxDevice::DecodeMapping Mct4xxDevice::_decodeMethods = Mct4xxDevice::initDecodeLookup();
 
 
+void Mct4xxDevice::handleCommandResult(const Mct4xxCommand &cmd)
+{
+    cmd.invokeResultHandler(static_cast<Mct4xxCommand::ResultHandler &>(*this));
+}
+
+
 INT Mct4xxDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     if( !InMessage )
@@ -3520,7 +3527,7 @@ INT Mct4xxDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMess
         return (this->*decoder)(InMessage, TimeNow, vgList, retList, outList);
     }
 
-    return Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
+    return Parent::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 }
 
 
@@ -3575,7 +3582,7 @@ INT Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
         }
     }
 
-    return Inherited::SubmitRetry(InMessage, TimeNow, vgList, retList, outList);
+    return Parent::SubmitRetry(InMessage, TimeNow, vgList, retList, outList);
 }
 
 
@@ -3593,7 +3600,7 @@ INT Mct4xxDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         }
     }
 
-    return Inherited::ErrorDecode(InMessage, TimeNow, retList);
+    return Parent::ErrorDecode(InMessage, TimeNow, retList);
 }
 
 

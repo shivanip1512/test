@@ -8,7 +8,7 @@ namespace Devices {
 
 class IM_EX_DEVDB Mct410Device :
     public Mct4xxDevice,
-    public Commands::Mct410Command::ResultHandler
+    protected Commands::Mct410Command::ResultHandler
 {
 private:
     // WORKAROUND:

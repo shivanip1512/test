@@ -16,7 +16,7 @@ namespace Devices {
 
 class IM_EX_DEVDB DlcBaseDevice :
     public CtiDeviceSingle,
-    public Commands::DlcCommand::ResultHandler
+    protected Commands::DlcCommand::ResultHandler
 {
 private:
     // WORKAROUND:
