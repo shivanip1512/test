@@ -60,8 +60,12 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupReque
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorStateType;
 import com.cannontech.cc.model.EconomicEventParticipantSelection.SelectionState;
 import com.cannontech.cc.model.ProgramParameterKey;
+import com.cannontech.cc.service.CurtailmentEventAction;
 import com.cannontech.cc.service.CurtailmentEventState;
+import com.cannontech.cc.service.EconomicEventAction;
 import com.cannontech.cc.service.EconomicEventState;
+import com.cannontech.cc.service.NotificationReason;
+import com.cannontech.cc.service.NotificationState;
 import com.cannontech.cc.service.NotificationStatus;
 import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.clientutils.CommonUtils;
@@ -123,6 +127,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.ContactNotificationMethodType;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.PaoPropertyName;
+import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -148,7 +153,6 @@ import com.cannontech.common.rfn.message.RfnMessageClass;
 import com.cannontech.common.rfn.message.metadata.CommStatusType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.NetworkManagerError;
 import com.cannontech.common.survey.model.QuestionType;
 import com.cannontech.common.temperature.CelsiusTemperature;
@@ -184,9 +188,9 @@ import com.cannontech.core.dao.RawPointHistoryDao.Mode;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.impl.LiteYukonUserMapper;
 import com.cannontech.core.image.model.YukonImage;
+import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.core.service.DateFormattingService.MidnightMode;
@@ -277,11 +281,6 @@ import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
 import com.cannontech.dr.rfn.model.RfnLcrPointDataMap;
 import com.cannontech.dr.rfn.model.RfnLcrReadSimulatorDeviceParameters;
 import com.cannontech.dr.rfn.model.RfnLcrRelayDataMap;
-import com.cannontech.cc.service.CurtailmentEventAction;
-import com.cannontech.cc.service.EconomicEventAction;
-import com.cannontech.cc.service.NotificationReason;
-import com.cannontech.cc.service.NotificationState;
-import com.cannontech.common.model.Phase;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.loadcontrol.weather.GeographicCoordinate;
 import com.cannontech.loadcontrol.weather.WeatherLocation;
@@ -394,7 +393,6 @@ public class SimpleImmutabilityTest {
             ReadType.class,
             ReadingType.class,
             ReferenceTypeEnum.class,
-            RfnDevice.class,
             RfnIdentifier.class,
             RfnMessageClass.class,
             RfnMetadata.class,
