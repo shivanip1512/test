@@ -6,20 +6,24 @@
 
 class CtiPortSerial : public CtiPort
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiPortSerial(const CtiPortSerial&);
+    CtiPortSerial& operator=(const CtiPortSerial&);
+
 protected:
 
     CtiTablePortSettings _tblPortSettings;
     CtiTablePortTimings _tblPortTimings;
-
-private:
 
 public:
 
     typedef CtiPort Inherited;
 
     CtiPortSerial() {}
-
-    virtual ~CtiPortSerial() {}
 
     const CtiTablePortSettings& getTablePortSettings() const
     {

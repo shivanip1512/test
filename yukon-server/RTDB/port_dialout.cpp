@@ -30,27 +30,6 @@ CtiPortDialout::CtiPortDialout()
 {
 }
 
-CtiPortDialout::CtiPortDialout(const CtiPortDialout& aRef)
-{
-    *this = aRef;
-}
-
-CtiPortDialout::~CtiPortDialout()
-{
-}
-
-CtiPortDialout& CtiPortDialout::operator=(const CtiPortDialout& aRef)
-{
-    if(this != &aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
-}
-
 INT CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
     INT status     = NORMAL;

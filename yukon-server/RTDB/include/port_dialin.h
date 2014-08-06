@@ -24,9 +24,6 @@ private:
 public:
 
     CtiPortDialin();
-    CtiPortDialin(const CtiPortDialin& aRef);
-    virtual ~CtiPortDialin();
-    CtiPortDialin& operator=(const CtiPortDialin& aRef);
 
     INT  connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace);
 

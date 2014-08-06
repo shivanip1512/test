@@ -25,15 +25,6 @@ using std::string;
 CtiPortDialin::CtiPortDialin()
 {}
 
-CtiPortDialin::CtiPortDialin(const CtiPortDialin& aRef)
-{
-    *this = aRef;
-}
-
-CtiPortDialin::~CtiPortDialin()
-{
-}
-
 INT CtiPortDialin::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
     INT status     = !NORMAL;
@@ -103,19 +94,6 @@ INT CtiPortDialin::setup(INT trace)
     }
 
     return NORMAL;
-}
-
-CtiPortDialin& CtiPortDialin::operator=(const CtiPortDialin& aRef)
-{
-    if(this != &aRef)
-    {
-        _tblPortDialup = aRef.getTablePortDialup();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
 }
 
 /* Routine to force the reset of modem */

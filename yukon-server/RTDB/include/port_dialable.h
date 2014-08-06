@@ -5,7 +5,7 @@
 #include "tbl_port_dialup.h"
 
 
-class CtiPortDialable
+class CtiPortDialable : private boost::noncopyable
 {
 protected:
 

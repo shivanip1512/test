@@ -25,10 +25,6 @@ private:
 public:
 
     CtiPortDialout();
-    CtiPortDialout(const CtiPortDialout& aRef);
-    virtual ~CtiPortDialout();
-
-    CtiPortDialout& operator=(const CtiPortDialout& aRef);
 
     INT  connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace);
     INT  disconnect(CtiDeviceSPtr Device, INT trace);
@@ -36,5 +32,4 @@ public:
     INT reset(INT trace);
     INT setup(INT trace);
     INT close(INT trace);
-
 };
