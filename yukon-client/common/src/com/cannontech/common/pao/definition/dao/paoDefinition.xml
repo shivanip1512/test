@@ -4477,6 +4477,15 @@
         </tags>
     </pao>
     
+    <!-- RF Gateway -->
+    <pao id="RFN_GATEWAY">
+        <points></points>
+        <attributes></attributes>
+        <tags>
+            <tag name="DB_EDITOR_INCOMPATIBLE" />
+        </tags>
+    </pao>
+    
     <!-- RF LCRs -->
     <pao id="RF_LCR" abstract="true">
         <displayGroup>RFMESH</displayGroup>

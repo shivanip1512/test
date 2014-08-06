@@ -2,7 +2,7 @@
 package com.cannontech.common.pao;
 
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.Set;
 
@@ -139,7 +139,9 @@ public enum PaoType implements DatabaseRepresentationSource {
     RFWMETER(DeviceTypes.RFWMETER, "RFW-Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
     LCR6200_RFN(DeviceTypes.LCR6200_RFN, "LCR-6200 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),
     LCR6600_RFN(DeviceTypes.LCR6600_RFN, "LCR-6600 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),
-
+    
+    RFN_GATEWAY(DeviceTypes.RFN_GATEWAY, "RFN Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
     ION_7700(DeviceTypes.ION_7700, "ION-7700", PaoCategory.DEVICE, PaoClass.RTU),
     ION_8300(DeviceTypes.ION_8300, "ION-8300", PaoCategory.DEVICE, PaoClass.RTU),
     ION_7330(DeviceTypes.ION_7330, "ION-7330", PaoCategory.DEVICE, PaoClass.RTU),
