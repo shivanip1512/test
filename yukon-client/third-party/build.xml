@@ -3,20 +3,9 @@
 
    <property file="../build/build.properties"/>
 
-   <target name="all" depends="clean,build">
-    </target>
-   
-   <target name="build">
-       <copy todir="${yukon.lib}" preservelastmodified="yes">
-           <fileset dir=".">
-               <include name="**/*.jar"/>
-           </fileset>
-       </copy>
-   </target>
-
+   <target name="all" depends="clean,build"/>
+   <target name="build"/>
    <target name="clean"/>
-   
-   <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
-   <target name="runUnitTests" description="Run all unit tests, stop on failure" />
+   <target name="runUnitTests"/>
 
 </project>

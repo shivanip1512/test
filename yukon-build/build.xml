@@ -209,12 +209,18 @@
        	<mkdir dir="${client.dir}/Export"/>
        	<mkdir dir="${client.dir}/Log"/>
         
-        <copy todir="${client.bag}">
+        <copy todir="${client.bag}" preservelastmodified="yes">
                 <fileset dir="${basedir}/yukon-client/build/lib" excludes="*.jar"/>
          </copy>
 
+        <copy todir="${client.bag}" preservelastmodified="yes">
+            <fileset dir="${basedir}/yukon-client/third-party">
+                <include name="**/*.jar"/>
+            </fileset>
+        </copy>
+
         <copy todir="${client.bin}" preservelastmodified="true">
-        	<fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
+            <fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**"/>
             <fileset file="${basedir}/yukon-client/commander/src/main/resources/CommanderIcon.ico"/>
             <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
