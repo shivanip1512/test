@@ -12,15 +12,15 @@
        <javac srcdir="src"
               destdir="build"
               target="${yukon.javac.target}" 
- 	          source="${yukon.javac.source}"
+              source="${yukon.javac.source}"
               bootclasspath="${yukon.javac.bootclasspath}"
               debug="${yukon.javac.debug}">
-          <classpath>                        
+          <classpath>
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
              </fileset>
-	      </classpath> 
-     	</javac>
+          </classpath> 
+      </javac>
 
        <jar jarfile="${yukon.lib}/services.jar"
             basedir="build/" 
@@ -30,26 +30,14 @@
                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
                <attribute name="Permissions" value="all-permissions"/>
            </manifest>
-       	   <fileset dir="src">
-       	       <exclude name="**/*.java"/>
-       	   </fileset>
-
-       </jar>       
-
-	   <copy todir="${yukon.lib}">
-	 	 <fileset dir="resource">
-		   <include name="**/*.conf"/>
-		 </fileset>
-       </copy>
-       
-       <copy todir="${yukon.lib}">
-         <fileset dir="conf"/>
-       </copy>
-       
+           <fileset dir="src">
+               <exclude name="**/*.java"/>
+           </fileset>
+       </jar>
    </target>
 
    <target name="clean">
-       <delete dir="build"/>        
+       <delete dir="build"/>
    </target>
 
    <!-- Run unit tests - will stop running if a failure or error occurs during a test -->

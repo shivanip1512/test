@@ -215,11 +215,11 @@
 
         <copy todir="${client.bag}" preservelastmodified="yes">
             <fileset dir="${basedir}/yukon-client/third-party">
-                <include name="**/*.jar"/>
+        	   <include name="**/*.jar"/>
             </fileset>
         </copy>
-
-        <copy todir="${client.bin}" preservelastmodified="true">
+    	
+    	<copy todir="${client.bin}" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**"/>
             <fileset file="${basedir}/yukon-client/billing/src/main/resources" includes="*.bat"/>
@@ -236,6 +236,7 @@
             <fileset file="${basedir}/yukon-client/tdc/resource/tdcIcon.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>
+            <fileset dir="${basedir}/yukon-client/services/conf"/>
         </copy>
         
         <antcall target="copy_web_content"/>
