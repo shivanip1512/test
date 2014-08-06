@@ -33,13 +33,6 @@
 		</fileset>
 	</jar>
 
-	<copy todir="${yukon.lib}">
- 	    <fileset dir="resource">
-	 		<include name="**/*.dll"/>
-	    </fileset>
-	</copy>
-
-
    </target>
 
    <target name="clean">

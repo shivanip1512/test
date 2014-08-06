@@ -35,12 +35,6 @@
            </manifest>
            <fileset dir="src/main/resources"/>
         </jar>
-   	
-	    <copy todir="${yukon.lib}">
-	      <fileset dir="conf"/>
-	      <fileset dir="lib"/>
-	    </copy>
-   	
    </target>
 
    <target name="build_gpuff">

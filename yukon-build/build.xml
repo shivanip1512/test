@@ -210,7 +210,8 @@
        	<mkdir dir="${client.dir}/Log"/>
         
         <copy todir="${client.bag}" preservelastmodified="yes">
-                <fileset dir="${basedir}/yukon-client/build/lib" excludes="*.jar"/>
+            <fileset dir="${basedir}/yukon-client/build/lib" excludes="*.jar"/>
+            <fileset dir="${basedir}/yukon-client/sensus-jms/lib"/>
          </copy>
 
         <copy todir="${client.bag}" preservelastmodified="yes">
@@ -237,6 +238,7 @@
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>
             <fileset dir="${basedir}/yukon-client/services/conf"/>
+            <fileset dir="${basedir}/yukon-client/sensus-jms/conf"/>
         </copy>
         
         <antcall target="copy_web_content"/>
