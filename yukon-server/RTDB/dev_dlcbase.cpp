@@ -211,50 +211,40 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
 
 
 INT DlcBaseDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
-try
 {
-    int status = findAndDecodeCommand(*InMessage, TimeNow, vgList, retList, outList);
-
-    if( status == NoResultDecodeMethod )
+    try
     {
-        status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
+        findAndDecodeCommand(*InMessage, TimeNow, vgList, retList, outList);
     }
-
-    return status;
-}
-catch( DlcCommand::CommandException &e )
-{
-    retList.push_back(
-        new CtiReturnMsg(
-            getID(),
-            InMessage->Return,
-            getName() + " / " + e.error_description,
-            e.error_code));
+    catch( DlcCommand::CommandException &e )
+    {
+        retList.push_back(
+            new CtiReturnMsg(
+                getID(),
+                InMessage->Return,
+                getName() + " / " + e.error_description,
+                e.error_code));
+    }
 
     return ExecutionComplete;
 }
 
 
 INT DlcBaseDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
-try
 {
-    int status = findAndDecodeCommand(InMessage, TimeNow, vgList, retList, outList);
-
-    if( status == NoResultDecodeMethod )
+    try
     {
-        status = Inherited::SubmitRetry(InMessage, TimeNow, vgList, retList, outList);
+        findAndDecodeCommand(InMessage, TimeNow, vgList, retList, outList);
     }
-
-    return status;
-}
-catch( DlcCommand::CommandException &e )
-{
-    retList.push_back(
-        new CtiReturnMsg(
-            getID(),
-            InMessage.Return,
-            getName() + " / " + e.error_description,
-            e.error_code));
+    catch( DlcCommand::CommandException &e )
+    {
+        retList.push_back(
+            new CtiReturnMsg(
+                getID(),
+                InMessage.Return,
+                getName() + " / " + e.error_description,
+                e.error_code));
+    }
 
     return ExecutionComplete;
 }
@@ -377,7 +367,7 @@ void DlcBaseDevice::handleCommandResult(const Commands::DlcCommand &command)
 }
 
 
-int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     //  We need to protect _activeCommands/trackCommand()
     CtiLockGuard<CtiMutex> lock(getMux());
@@ -386,18 +376,10 @@ int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow
 
     if( command_itr == _activeCommands.end() )
     {
-        return NoError;  //  in order to silently absorb macro route returns that have already been acted upon
+        return;  //  in order to silently absorb macro route returns that have already been acted upon
     }
 
-    if( ! command_itr->second )
-    {
-        _activeCommands.erase(command_itr);
-
-        return NoResultDecodeMethod;  //  however, we will squawk about a null command pointer
-    }
-
-    DlcCommandSPtr  command_ptr =  command_itr->second;
-    DlcCommand     &command     = *command_ptr;
+    DlcCommand &command = *(command_itr->second);
 
     CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return);
 
@@ -473,9 +455,6 @@ int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow
 
             fillOutMessage(*OutMessage, *ptr);
 
-            //  ExecuteRequest already has the CtiDeviceBase::_classMutex at this point, so it's safe to call trackCommand()
-            OutMessage->Sequence = trackCommand(command_ptr);
-
             CtiRequestMsg newReq(getID(),
                                  InMessage.Return.CommandStr,
                                  InMessage.Return.UserID,
@@ -495,12 +474,10 @@ int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow
         }
         else
         {
+            _activeCommands.erase(command_itr);
+
             decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
         }
-
-        _activeCommands.erase(command_itr);
-
-        return NORMAL;
     }
     catch( DlcCommand::CommandException &e )
     {
@@ -511,23 +488,23 @@ int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow
 
         //  broken!
         _activeCommands.erase(command_itr);
-
-        return ExecutionComplete;
     }
 }
 
 
-long DlcBaseDevice::trackCommand(const DlcCommandSPtr &command)
+long DlcBaseDevice::trackCommand(DlcCommandAutoPtr command)
 {
     if( _activeIndex < EmetconProtocol::DLCCmd_LAST )
     {
         _activeIndex = EmetconProtocol::DLCCmd_LAST;
     }
 
-    while( ! _activeCommands.insert(std::make_pair(_activeIndex, command)).second )
+    while( _activeCommands.count(_activeIndex) )
     {
         _activeIndex++;
     }
+
+    _activeCommands.insert(_activeIndex, command);
 
     return _activeIndex++;
 }
@@ -565,7 +542,7 @@ void DlcBaseDevice::populateDlcOutMessage(OUTMESS &OutMessage)
 }
 
 
-bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command)
+bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandAutoPtr command)
 {
     DlcCommand::request_ptr request = command->executeCommand(CtiTime());
 

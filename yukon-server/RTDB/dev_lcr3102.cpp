@@ -1172,7 +1172,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
         parse = CtiCommandParser(xcomRequest);
         parse.setValue("xc_serial", getSerial());
 
-        DlcCommandSPtr tamperRead(new Lcr3102TamperReadCommand());
+        DlcCommandAutoPtr tamperRead(new Lcr3102TamperReadCommand());
 
         found = tryExecuteCommand(*OutMessage, tamperRead);
 
@@ -1185,7 +1185,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
         parse = CtiCommandParser(xcomRequest);
         parse.setValue("xc_serial", getSerial());
 
-        DlcCommandSPtr tamperRead(new Lcr3102DemandResponseSummaryCommand());
+        DlcCommandAutoPtr tamperRead(new Lcr3102DemandResponseSummaryCommand());
 
         found = tryExecuteCommand(*OutMessage, tamperRead);
 
@@ -1202,7 +1202,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
         {
             CtiTime executeTime = CtiTime(date, timeParts->hour, timeParts->minute, timeParts->second);
 
-            DlcCommandSPtr hourlyLogRead(new Lcr3102HourlyDataLogCommand(executeTime.seconds()));
+            DlcCommandAutoPtr hourlyLogRead(new Lcr3102HourlyDataLogCommand(executeTime.seconds()));
 
             found = tryExecuteCommand(*OutMessage, hourlyLogRead);
 

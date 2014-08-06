@@ -1684,7 +1684,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                                                                 /* --------------------- HOLIDAYS --------------------- */
     else if( parse.isKeyValid("holiday") )
     {
-        DlcCommandSPtr holidayRead(new ::Cti::Devices::Commands::Mct440HolidaysCommand);
+        DlcCommandAutoPtr holidayRead(new ::Cti::Devices::Commands::Mct440HolidaysCommand);
 
         if( tryExecuteCommand(*OutMessage, holidayRead) )
         {
@@ -2074,7 +2074,7 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
         holidays.insert(holiday_date);
     }
 
-    DlcCommandSPtr holidayWrite(new ::Cti::Devices::Commands::Mct440HolidaysCommand(CtiTime::now(), holidays));
+    DlcCommandAutoPtr holidayWrite(new ::Cti::Devices::Commands::Mct440HolidaysCommand(CtiTime::now(), holidays));
 
     //  this call might be able to move out to ExecuteRequest() at some point - maybe we just return
     //    a DlcCommand object that it can execute out there

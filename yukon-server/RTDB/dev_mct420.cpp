@@ -290,7 +290,7 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
                 return ExecutionComplete;
             }
 
-            DlcCommandSPtr meterParameterConfiguration(
+            DlcCommandAutoPtr meterParameterConfiguration(
                 new Mct420MeterParametersCommand(
                     cycleTime,
                     disconnectDisplayDisabled,
@@ -312,7 +312,7 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
                 paoInfoValue = 0x70 & getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters);
             }
 
-            DlcCommandSPtr meterParameterConfiguration(
+            DlcCommandAutoPtr meterParameterConfiguration(
                 new Mct420MeterParametersDisplayDigitsCommand(
                     cycleTime,
                     disconnectDisplayDisabled,
@@ -444,7 +444,7 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
         }
     }
 
-    DlcCommandSPtr lcdConfiguration(new Mct420LcdConfigurationCommand(display_metrics, readsOnly));
+    DlcCommandAutoPtr lcdConfiguration(new Mct420LcdConfigurationCommand(display_metrics, readsOnly));
 
     std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
 
@@ -472,7 +472,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
         return NoConfigData;
     }
 
-    DlcCommandSPtr meterParameterCommand;
+    DlcCommandAutoPtr meterParameterCommand;
 
     if( ! readsOnly )
     {
@@ -653,9 +653,9 @@ int Mct420Device::executeGetConfig( CtiRequestMsg        *pReq,
 }
 
 
-DlcBaseDevice::DlcCommandSPtr Mct420Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
+DlcBaseDevice::DlcCommandAutoPtr Mct420Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
 {
-    return DlcCommandSPtr(new Mct420HourlyReadCommand(date_begin, date_end, channel));
+    return DlcCommandAutoPtr(new Mct420HourlyReadCommand(date_begin, date_end, channel));
 }
 
 

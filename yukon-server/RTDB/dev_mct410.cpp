@@ -1563,7 +1563,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
         return NoConfigData;
     }
 
-    DlcCommandSPtr disconnectCommand;
+    DlcCommandAutoPtr disconnectCommand;
 
     if( ! readsOnly )
     {
@@ -2094,7 +2094,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         const CtiDate date_end   = parseDateString(parse.getsValue("hourly_read_date_end"));
         const unsigned channel   = parse.getiValue("channel", 1);
 
-        DlcCommandSPtr hourlyRead = makeHourlyReadCommand(date_begin, date_end, channel);
+        DlcCommandAutoPtr hourlyRead = makeHourlyReadCommand(date_begin, date_end, channel);
 
         //  this call might be able to move out to ExecuteRequest() at some point - maybe we just return
         //    a DlcCommand object that it can execute out there
@@ -2452,9 +2452,9 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 }
 
 
-DlcBaseDevice::DlcCommandSPtr Mct410Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
+DlcBaseDevice::DlcCommandAutoPtr Mct410Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
 {
-    return DlcCommandSPtr(new Mct410HourlyReadCommand(date_begin, date_end, channel));
+    return DlcCommandAutoPtr(new Mct410HourlyReadCommand(date_begin, date_end, channel));
 }
 
 

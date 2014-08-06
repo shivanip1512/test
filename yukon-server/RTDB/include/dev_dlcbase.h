@@ -8,8 +8,9 @@
 
 #include "cmd_dlc.h"
 
+#include <boost/ptr_container/ptr_map.hpp>
+
 #include <set>
-#include <map>
 
 namespace Cti {
 namespace Devices {
@@ -28,8 +29,7 @@ private:
 
 public:
 
-    typedef boost::shared_ptr<Devices::Commands::DlcCommand> DlcCommandSPtr;
-    typedef boost::weak_ptr  <Devices::Commands::DlcCommand> DlcCommandWPtr;
+    typedef std::auto_ptr<Commands::DlcCommand> DlcCommandAutoPtr;
     static bool dlcAddressMismatch(const DSTRUCT Dst, const CtiDeviceBase & temDevice);
 
 private:
@@ -47,13 +47,13 @@ private:
         DefaultLPRetryMaximum    = 10800    //  maximum is 3 hours
     };
 
-    typedef std::map<long, DlcCommandSPtr> active_command_map;
+    typedef boost::ptr_map<long, Commands::DlcCommand> active_command_map;
 
     active_command_map _activeCommands;
 
     long _activeIndex;
 
-    long trackCommand(const DlcCommandSPtr &command);
+    long trackCommand(DlcCommandAutoPtr command);
 
 protected:
 
@@ -83,11 +83,11 @@ protected:
     virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
     virtual INT executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
 
-    bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command);
+    bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandAutoPtr command);
 
     virtual void handleCommandResult(const Commands::DlcCommand &command);
 
-    int findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    void findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
     void fillOutMessage(OUTMESS &OutMessage, Devices::Commands::DlcCommand::request_t &request);
 
