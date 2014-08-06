@@ -617,9 +617,6 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "rtm";
     devType = TYPE_RTM;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-    tempName = "fmu";
-    devType = TYPE_FMU;
-    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "virtual system";
     devType = TYPE_VIRTUAL_SYSTEM;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);

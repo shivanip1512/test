@@ -132,7 +132,6 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("TNPP TERMINAL")
         ("RTC")
         ("RTM")
-        ("FMU")
         (empty)
         (empty)
         ("RTU-MODBUS")
@@ -167,7 +166,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("MACRO GROUP")
         ("SYSTEM")
         ("VIRTUAL SYSTEM")
-            .repeat(9848, empty);
+            .repeat(9849, empty);
 
     std::vector<std::string> results;
 

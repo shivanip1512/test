@@ -87,7 +87,6 @@
 #include "rte_xcu.h"
 #include "rte_versacom.h"
 #include "rte_expresscom.h"
-#include "dev_fmu.h"
 
 #include "devicetypes.h"
 #include "rtdb.h"
@@ -174,7 +173,6 @@ const DeviceLookup deviceFactory = boost::assign::map_list_of
     (TYPE_MODBUS,       MakeDeviceFunc(makeDevice<ModbusDevice>))
     (TYPE_RTC,          MakeDeviceFunc(makeDevice<CtiDeviceRTC>))
     (TYPE_RTM,          MakeDeviceFunc(makeDevice<CtiDeviceRTM>))
-    (TYPE_FMU,          MakeDeviceFunc(makeDevice<CtiDeviceFMU>))
     (TYPE_PAGING_RECEIVER,  MakeDeviceFunc(makeDevice<CtiDevicePagingReceiver>))
     //  Transmitters
     (TYPE_TCU5000,      MakeDeviceFunc(makeDevice<CtiDeviceTCU>))

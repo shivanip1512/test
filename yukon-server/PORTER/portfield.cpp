@@ -1242,7 +1242,6 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
-                    case TYPE_FMU:
                     case TYPE_CCU721:
                     {
                         CtiDeviceSingleSPtr ds = boost::static_pointer_cast<CtiDeviceSingle>(Device);
@@ -2108,7 +2107,6 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
-                    case TYPE_FMU:
                     case TYPE_CCU721:
                         break;
                     case TYPE_CCU700:

@@ -364,7 +364,6 @@ static const std::map<std::string, int> device_lookups = boost::assign::map_list
     ("repeater",           TYPE_REPEATER900)
 
     //  --- Receivers ---
-    ("fmu",                TYPE_FMU)
     ("page receiver",      TYPE_PAGING_RECEIVER)
 
     //  --- RF mesh meters ---
@@ -929,7 +928,6 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPECBCDNP:
         case TYPE_RTC:
         case TYPE_RTM:
-        case TYPE_FMU:
         case TYPE_PAGING_RECEIVER:
         case TYPE_FCI:
         case TYPE_NEUTRAL_MONITOR:
@@ -1365,7 +1363,6 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
             break;
         }
     case TYPE_RTM:
-    case TYPE_FMU:
     case TYPE_SIXNET:
     case TYPE_RDS:
         {

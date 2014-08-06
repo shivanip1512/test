@@ -26,7 +26,6 @@
 #include "dev_rfn.h"
 #include "dev_rtc.h"
 #include "dev_rtm.h"
-#include "dev_fmu.h"
 #include "dev_tap.h"
 #include "dev_snpp.h"
 #include "dev_tnpp.h"
@@ -708,7 +707,6 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                         rowFound |= loadDeviceType(paoid_subset, "RFN devices",            Devices::RfnDevice());
 
                         rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
-                        rowFound |= loadDeviceType(paoid_subset, "FMU devices",            CtiDeviceIED(),         "FMU");
                         rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
 
                         rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());

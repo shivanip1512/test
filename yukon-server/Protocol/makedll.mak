@@ -417,12 +417,6 @@ expresscom.obj:	precompiled.h expresscom.h cmdparse.h ctitokenizer.h \
 		dbaccess.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h configkey.h configval.h ctidate.h \
 		BeatThePeakAlertLevel.h ctistring.h
-fmu_application.obj:	precompiled.h guard.h utility.h ctitime.h \
-		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		logger.h thread.h mutex.h CtiPCPtrQueue.h
-fmu_datalink.obj:	precompiled.h guard.h utility.h ctitime.h dlldefs.h \
-		queues.h cticalls.h os2_2w32.h types.h numstr.h logger.h \
-		thread.h mutex.h CtiPCPtrQueue.h
 id_ctiprot.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h id_ctiprot.h
 ion_datastream.obj:	precompiled.h ctidbgmem.h guard.h utility.h \

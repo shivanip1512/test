@@ -176,11 +176,10 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceTnppPagingTerminal")
         ("class CtiDeviceRTC")
         ("class CtiDeviceRTM")
-        ("class CtiDeviceFMU")
         ("class CtiDeviceSeriesV")
         ("class CtiDeviceLMI")
-        //  120
         ("class Cti::Devices::ModbusDevice")
+        //  120
         ("class CtiDeviceGridAdvisor")
         ("class CtiDeviceGridAdvisor")
         ("class CtiDeviceGroupEmetcon")
@@ -190,8 +189,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceGroupExpresscom")
         ("class CtiDeviceGroupRfnExpresscom")
         ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        //  130
         ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        //  130
         ("class CtiDeviceGroupMCT")
         ("class CtiDeviceGroupGolay")
         ("class CtiDeviceGroupSADigital")
@@ -202,7 +201,7 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         .repeat(11, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         ("class CtiDeviceMacro")
         ("class CtiDeviceSystem")
-        .repeat(9849, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(9850, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
             ;
 
     std::vector<std::string> results;
@@ -303,12 +302,11 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("repeater 902",                   "class Cti::Devices::Repeater900Device"))
         (std::make_pair("repeater 921",                   "class Cti::Devices::Repeater900Device"))
         (std::make_pair("repeater",                       "class Cti::Devices::Repeater900Device"))
-        (std::make_pair("fmu",                            "class CtiDeviceFMU"))
         (std::make_pair("page receiver",                  "class CtiDevicePagingReceiver"))
         (std::make_pair("rfn-410fl",                      "class Cti::Devices::RfnMeterDevice"))
         (std::make_pair("rfn-410fx",                      "class Cti::Devices::RfnResidentialDevice"))
-        //  70
         (std::make_pair("rfn-410fd",                      "class Cti::Devices::RfnResidentialDevice"))
+        //  70
         (std::make_pair("rfn-420fl",                      "class Cti::Devices::Rfn420FocusAlDevice"))
         (std::make_pair("rfn-420fx",                      "class Cti::Devices::RfnResidentialDevice"))
         (std::make_pair("rfn-420fd",                      "class Cti::Devices::RfnResidentialDevice"))
@@ -318,8 +316,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("rfn-420cl",                      "class Cti::Devices::Rfn420CentronDevice"))
         (std::make_pair("rfn-420cd",                      "class Cti::Devices::Rfn420CentronDevice"))
         (std::make_pair("rfn-430a3d",                     "class Cti::Devices::RfnCommercialDevice"))
-        //  80
         (std::make_pair("rfn-430a3t",                     "class Cti::Devices::RfnCommercialDevice"))
+        //  80
         (std::make_pair("rfn-430a3k",                     "class Cti::Devices::RfnCommercialDevice"))
         (std::make_pair("rfn-430a3r",                     "class Cti::Devices::RfnCommercialDevice"))
         (std::make_pair("rfn-430kv",                      "class Cti::Devices::RfnCommercialDevice"))
@@ -329,8 +327,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("rfn-430sl3",                     "class Cti::Devices::RfnCommercialDevice"))
         (std::make_pair("rfn-430sl4",                     "class Cti::Devices::RfnCommercialDevice"))
         (std::make_pair("rtu-dart",                       "class Cti::Devices::DnpDevice"))
-        //  90
         (std::make_pair("rtu-dnp",                        "class Cti::Devices::DnpDevice"))
+        //  90
         (std::make_pair("rtu-ilex",                       "class CtiDeviceILEX"))
         (std::make_pair("rtu-lmi",                        "class CtiDeviceLMI"))
         (std::make_pair("rtu-modbus",                     "class Cti::Devices::ModbusDevice"))
@@ -340,8 +338,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("rtm",                            "class CtiDeviceRTM"))
         (std::make_pair("golay group",                    "class CtiDeviceGroupGolay"))
         (std::make_pair("sa-105 group",                   "class CtiDeviceGroupSA105"))
-        //  100
         (std::make_pair("sa-205 group",                   "class CtiDeviceGroupSA205"))
+        //  100
         (std::make_pair("sa-305 group",                   "class CtiDeviceGroupSA305"))
         (std::make_pair("sa-digital group",               "class CtiDeviceGroupSADigital"))
         (std::make_pair("ci customer",                    "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
@@ -351,8 +349,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("lm energy exchange",             "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
         (std::make_pair("lm sep program",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
         (std::make_pair("digi sep group",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
-        //  110
         (std::make_pair("emetcon group",                  "class CtiDeviceGroupEmetcon"))
+        //  110
         (std::make_pair("expresscom group",               "class CtiDeviceGroupExpresscom"))
         (std::make_pair("rfn expresscom group",           "class CtiDeviceGroupRfnExpresscom"))
         (std::make_pair("mct group",                      "class CtiDeviceGroupMCT"))
@@ -362,8 +360,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("macro group",                    "class CtiDeviceMacro"))
         (std::make_pair("script",                         "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
         (std::make_pair("simple",                         "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
-        //  120
         (std::make_pair("system",                         "class CtiDeviceSystem"))
+        //  120
         (std::make_pair("virtual system",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
         (std::make_pair("lcu-415",                        "class CtiDeviceLCU"))
         (std::make_pair("lcu-eastriver",                  "class CtiDeviceLCU"))
@@ -373,8 +371,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("snpp terminal",                  "class CtiDeviceSnppPagingTerminal"))
         (std::make_pair("tap terminal",                   "class CtiDeviceTapPagingTerminal"))
         (std::make_pair("tcu-5000",                       "class CtiDeviceTCU"))
-        //  130
         (std::make_pair("tcu-5500",                       "class CtiDeviceTCU"))
+        //  130
         (std::make_pair("tnpp terminal",                  "class CtiDeviceTnppPagingTerminal"))
         (std::make_pair("wctp terminal",                  "class CtiDeviceWctpTerminal"))
         (std::make_pair("alpha a1",                       "class CtiDeviceAlphaA1"))
@@ -384,8 +382,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("dct-501",                        "class Cti::Devices::Dct501Device"))
         (std::make_pair("dr-87",                          "class CtiDeviceDR87"))
         (std::make_pair("focus",                          "class Cti::Devices::CtiDeviceFocus"))
-        //  140
         (std::make_pair("ipc-410fl",                      "class Cti::Devices::Ipc410ALDevice"))
+        //  140
         (std::make_pair("ipc-420fd",                      "class Cti::Devices::Ipc420ADDevice"))
         (std::make_pair("ipc-430s4e",                     "class CtiDeviceLandisGyrS4"))
         (std::make_pair("ipc-430sl",                      "class Cti::Devices::CtiDeviceSentinel"))
@@ -395,8 +393,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("ion-8300",                       "class CtiDeviceION"))
         (std::make_pair("kv",                             "class CtiDeviceKV2"))
         (std::make_pair("kv2",                            "class CtiDeviceKV2"))
-        //  150
         (std::make_pair("landis-gyr s4",                  "class CtiDeviceLandisGyrS4"))
+        //  150
         (std::make_pair("quantum",                        "class CtiDeviceQuantum"))
         (std::make_pair("sentinel",                       "class Cti::Devices::CtiDeviceSentinel"))
         (std::make_pair("sixnet",                         "class CtiDeviceSixnet"))
@@ -406,8 +404,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         (std::make_pair("invalid",                        "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
         (std::make_pair("",                               "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
         (std::make_pair("snuffleupagus",                  "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
-        //  160
         (std::make_pair("giraffe",                        "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        //  160
         (std::make_pair("ecobee program",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
         (std::make_pair("ecobee group",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
             ;

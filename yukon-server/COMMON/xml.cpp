@@ -526,7 +526,6 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         ("REPEATER",                    TYPE_REPEATER900)
 
         //  --- Receivers ---
-//    ("fmu",                         TYPE_FMU)
 //    ("page receiver",               TYPE_PAGING_RECEIVER)
 
         //  --- RF mesh meters ---

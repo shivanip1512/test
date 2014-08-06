@@ -184,7 +184,6 @@ string desolveDeviceType( int aType )
 
         case TYPE_RTC:          Ret = "rtc";            break;
         case TYPE_RTM:          Ret = "rtm";            break;
-        case TYPE_FMU:          Ret = "fmu";            break;
 
         case TYPE_SYSTEM:       Ret = "system";         break;
 

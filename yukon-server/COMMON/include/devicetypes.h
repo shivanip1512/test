@@ -139,7 +139,6 @@ enum DeviceTypes {
 
     TYPE_RTC,
     TYPE_RTM,
-    TYPE_FMU,
     TYPE_SERIESVRTU,
     TYPE_SERIESVLMIRTU,
     TYPE_MODBUS,

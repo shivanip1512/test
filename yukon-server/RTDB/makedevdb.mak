@@ -82,7 +82,6 @@ dev_dlcbase.obj \
 dev_dnp.obj \
 dev_dr87.obj \
 dev_exclusion.obj \
-dev_fmu.obj \
 dev_fulcrum.obj \
 dev_gridadvisor.obj \
 dev_grp_emetcon.obj \
@@ -1324,28 +1323,6 @@ dev_exclusion.obj:	precompiled.h dlldefs.h dllbase.h dsm2.h \
 		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
 		dev_exclusion.h tbl_paoexclusion.h logger.h thread.h \
 		CtiPCPtrQueue.h
-dev_fmu.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h types.h \
-		ctidbgmem.h database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h mutex.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
-		optional.h macro_offset.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h configkey.h configval.h dev_fmu.h \
-		dev_ied.h dev_remote.h dev_single.h dev_base.h cmdparse.h \
-		ctitokenizer.h parsevalue.h dev_exclusion.h \
-		tbl_paoexclusion.h config_device.h hashkey.h hash_functions.h \
-		rte_base.h dbmemobject.h ctibase.h ctinexus.h socket_helper.h \
-		critical_section.h message.h collectable.h tbl_pao_lite.h \
-		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h logger.h thread.h CtiPCPtrQueue.h msg_signal.h \
-		string_utility.h tbl_static_paoinfo.h pointdefs.h \
-		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h msg_pcrequest.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		timing_util.h xfer.h tbl_dialup.h tbl_direct.h tbl_dv_ied.h \
-		verification_objects.h msg_cmd.h porter.h devicetypes.h \
-		ctistring.h
 dev_focus.obj:	precompiled.h porter.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -3358,7 +3335,7 @@ mgr_device.obj:	precompiled.h mgr_device.h dlldefs.h rtdb.h hashkey.h \
 		cmd_mct410_disconnectConfiguration.h dev_modbus.h \
 		prot_modbus.h dev_repeater.h dev_rfn.h rfn_identifier.h \
 		cmd_rfn.h rfn_asid.h dev_rtc.h tbl_dv_rtc.h dev_rtm.h \
-		dev_fmu.h dev_tap.h dev_paging.h tbl_dv_tappaging.h \
+		dev_tap.h dev_paging.h tbl_dv_tappaging.h \
 		encryption_oneway_message.h dev_snpp.h dev_tnpp.h \
 		tbl_dv_tnpp.h dev_pagingreceiver.h tbl_dv_pagingreceiver.h \
 		dev_grp_emetcon.h tbl_dv_emetcon.h dev_grp_expresscom.h \
@@ -3953,7 +3930,7 @@ slctdev.obj:	precompiled.h dev_710.h dev_idlc.h types.h os2_2w32.h \
 		dev_rfnCommercial.h dev_rtc.h tbl_dv_rtc.h dev_sixnet.h \
 		prot_sixnet.h rte_macro.h tbl_rtmacro.h rte_ccu.h rte_xcu.h \
 		smartmap.h tbl_rtcarrier.h tbl_rtrepeater.h rte_versacom.h \
-		tbl_rtversacom.h master.h rte_expresscom.h dev_fmu.h rtdb.h \
+		tbl_rtversacom.h master.h rte_expresscom.h rtdb.h \
 		slctdev.h std_helper.h
 test_cmd_device.obj:	cmd_device.h dev_single.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
