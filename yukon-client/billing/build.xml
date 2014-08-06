@@ -15,7 +15,7 @@
  	          source="${yukon.javac.source}"
               bootclasspath="${yukon.javac.bootclasspath}"
               debug="${yukon.javac.debug}">
-          <classpath>                        
+          <classpath>
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
              </fileset>
@@ -31,17 +31,11 @@
                <attribute name="Permissions" value="all-permissions"/> 
            </manifest>
            <fileset dir="src/main/resources"/>
-       </jar>       
-   
-		<copy todir="${yukon.lib}">
-	 	    <fileset dir="src/main/resources">
-	 		<include name="**/*.bat"/>
-		    </fileset>
-	    </copy>
+       </jar>
    </target>
 
    <target name="clean">
-       <delete dir="build"/>        
+       <delete dir="build"/>
    </target>
    
    <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
