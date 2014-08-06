@@ -209,6 +209,10 @@
        	<mkdir dir="${client.dir}/Export"/>
        	<mkdir dir="${client.dir}/Log"/>
         
+        <copy todir="${client.bag}">
+                <fileset dir="${basedir}/yukon-client/build/lib" excludes="*.jar"/>
+         </copy>
+
         <copy todir="${client.bin}" preservelastmodified="true">
         	<fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**"/>
