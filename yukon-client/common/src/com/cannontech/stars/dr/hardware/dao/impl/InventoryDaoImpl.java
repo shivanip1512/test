@@ -83,6 +83,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * Implementation class for InventoryDao
@@ -233,6 +234,9 @@ public class InventoryDaoImpl implements InventoryDao {
     
     @Override
     public List<Thermostat> getThermostatsByAccountId(int accountId) {
+        Set<HardwareType> supportedTypes = 
+                Sets.intersection(HardwareType.getManualAdjustmentTypes(), HardwareType.getSchedulableTypes());
+        
         EnergyCompany ec = ecDao.getEnergyCompany(ecMappingDao.getCustomerAccountEC(accountId).getEnergyCompanyId());
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ib.*, lmhb.*");
@@ -241,8 +245,8 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append(  "AND lmhb.inventoryid = ib.inventoryid");
         sql.append(  "AND lmhb.LMHardwareTypeID IN ");
         sql.append(    "(SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID").in(THERMOSTAT_TYPES).append(")");
-        sql.append(  "AND lmhb.LMHardwareTypeId NOT IN ");
-        sql.append(    "(SELECT entryId FROM YukonListEntry WHERE YukonDefinitionId").in(HardwareType.NON_SCHEDULABLE_OR_MANUAL_ADJUSTMENT_TYPES).append(")");
+        sql.append(  "AND lmhb.LMHardwareTypeId IN ");
+        sql.append(    "(SELECT entryId FROM YukonListEntry WHERE YukonDefinitionId").in(supportedTypes).append(")");
         List<Thermostat> thermostatList = jdbcTemplate.query(sql, new ThermostatRowMapper(ec));
         return thermostatList;
     }
