@@ -170,12 +170,6 @@ public:
 
     unsigned long getTardyTime(int scantype) const;
 
-    CtiTableDeviceScanRate  getRateTable(const INT i) const;
-
-    CtiTableDeviceScanRate& getRateTable(const INT i);
-
-    CtiDeviceSingle&     setRateTables(const INT i, const CtiTableDeviceScanRate* aScanRate);
-
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual void DecodeScanRateDatabaseReader(Cti::RowReader &rdr);
     virtual void DecodeDeviceWindowDatabaseReader(Cti::RowReader &rdr);

@@ -32,28 +32,7 @@ _realTimeScan(-1)
 {
 }
 
-CtiTableDeviceMCTIEDPort::CtiTableDeviceMCTIEDPort(const CtiTableDeviceMCTIEDPort& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceMCTIEDPort::~CtiTableDeviceMCTIEDPort() {}
-
-CtiTableDeviceMCTIEDPort& CtiTableDeviceMCTIEDPort::operator=(const CtiTableDeviceMCTIEDPort& aRef)
-{
-
-    if( this != &aRef )
-    {
-        _deviceID           = aRef.getDeviceID();
-        _password           = aRef.getPassword();
-        _connectedIED       = aRef.getIEDType();
-        _iedScanRate        = aRef.getIEDScanRate();
-        _defaultDataClass   = aRef.getDefaultDataClass();
-        _defaultDataOffset  = aRef.getDefaultDataOffset();
-        _realTimeScan       = aRef.getRealTimeScanFlag();
-    }
-    return *this;
-}
 
 long CtiTableDeviceMCTIEDPort::getDeviceID() const
 {
@@ -61,11 +40,10 @@ long CtiTableDeviceMCTIEDPort::getDeviceID() const
     return _deviceID;
 }
 
-CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setDeviceID(long aLong)
+void CtiTableDeviceMCTIEDPort::setDeviceID(long aLong)
 {
 
     _deviceID = aLong;
-    return *this;
 }
 
 string CtiTableDeviceMCTIEDPort::getPassword() const
@@ -80,11 +58,10 @@ string& CtiTableDeviceMCTIEDPort::getPassword()
     return _password;
 }
 
-CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setPassword(string &aStr)
+void CtiTableDeviceMCTIEDPort::setPassword(string &aStr)
 {
 
     _password = aStr;
-    return *this;
 }
 
 int CtiTableDeviceMCTIEDPort::getIEDType() const
@@ -99,11 +76,10 @@ int &CtiTableDeviceMCTIEDPort::getIEDType()
     return _connectedIED;
 }
 
-CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setIEDType(IEDTypes type)
+void CtiTableDeviceMCTIEDPort::setIEDType(IEDTypes type)
 {
 
     _connectedIED = type;
-    return *this;
 }
 
 int CtiTableDeviceMCTIEDPort::getIEDScanRate() const
@@ -118,11 +94,10 @@ int &CtiTableDeviceMCTIEDPort::getIEDScanRate()
     return _iedScanRate;
 }
 
-CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setIEDScanRate(int scanrate)
+void CtiTableDeviceMCTIEDPort::setIEDScanRate(int scanrate)
 {
 
     _iedScanRate = scanrate;
-    return *this;
 }
 
 int CtiTableDeviceMCTIEDPort::getDefaultDataClass() const
@@ -137,11 +112,10 @@ int &CtiTableDeviceMCTIEDPort::getDefaultDataClass()
     return _defaultDataClass;
 }
 
-CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setDefaultDataClass(int dataclass)
+void CtiTableDeviceMCTIEDPort::setDefaultDataClass(int dataclass)
 {
 
     _defaultDataClass = dataclass;
-    return *this;
 }
 
 int CtiTableDeviceMCTIEDPort::getDefaultDataOffset() const
@@ -156,11 +130,9 @@ int &CtiTableDeviceMCTIEDPort::getDefaultDataOffset()
     return _defaultDataOffset;
 }
 
-CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setDefaultDataOffset(int dataoffset)
+void CtiTableDeviceMCTIEDPort::setDefaultDataOffset(int dataoffset)
 {
-
     _defaultDataOffset = dataoffset;
-    return *this;
 }
 
 int CtiTableDeviceMCTIEDPort::getRealTimeScanFlag() const
@@ -176,11 +148,10 @@ int &CtiTableDeviceMCTIEDPort::getRealTimeScanFlag()
 }
 
 
-CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setRealTimeScanFlag(int flag)
+void CtiTableDeviceMCTIEDPort::setRealTimeScanFlag(int flag)
 {
 
     _realTimeScan = flag;
-    return *this;
 }
 
 void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(Cti::RowReader &rdr)

@@ -27,27 +27,7 @@ CtiTablePointTrigger::CtiTablePointTrigger() :
     _commandTimeOut(0)
 {}
 
-CtiTablePointTrigger::CtiTablePointTrigger(const CtiTablePointTrigger& aRef)
-{
-    *this = aRef;
-}
-
 CtiTablePointTrigger::~CtiTablePointTrigger() {}
-
-CtiTablePointTrigger& CtiTablePointTrigger::operator=(const CtiTablePointTrigger& aRef)
-{
-    if(this != &aRef)
-    {
-        _pointID                 = aRef.getPointID();
-        _triggerID               = aRef.getTriggerID();
-        _triggerDeadband         = aRef.getTriggerDeadband();
-        _verificationID          = aRef.getVerificationID();
-        _verificationDeadband    = aRef.getVerificationDeadband();
-        _commandTimeOut          = aRef.getCommandTimeOut();
-        //_parameters              = aRef.getParameters();
-    }
-    return *this;
-}
 
 string CtiTablePointTrigger::getSQLCoreStatement(long pointID)
 {

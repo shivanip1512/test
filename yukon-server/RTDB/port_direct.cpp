@@ -26,22 +26,6 @@ using std::string;
 using std::endl;
 using std::list;
 
-CtiTablePortLocalSerial CtiPortDirect::getLocalSerial() const
-{
-    return _localSerial;
-}
-
-CtiTablePortLocalSerial& CtiPortDirect::getLocalSerial()
-{
-    return _localSerial;
-}
-
-CtiPortDirect& CtiPortDirect::setLocalSerial(const CtiTablePortLocalSerial& aRef)
-{
-    _localSerial = aRef;
-    return *this;
-}
-
 INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 {
     INT      status = NORMAL;

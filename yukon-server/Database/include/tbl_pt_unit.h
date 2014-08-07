@@ -16,8 +16,16 @@
 
 #include "tbl_unitmeasure.h"
 
-class IM_EX_CTIYUKONDB CtiTablePointUnit : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTablePointUnit : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTablePointUnit(const CtiTablePointUnit&);
+    CtiTablePointUnit& operator=(const CtiTablePointUnit&);
+
 protected:
 
    INT                  _unitID;            // FK constraint against table  UnitMeasure
@@ -28,16 +36,10 @@ protected:
 
    INT                  _logFrequency;
 
-private:
-
 public:
 
    CtiTablePointUnit();
-   CtiTablePointUnit(const CtiTablePointUnit& aRef);
    virtual ~CtiTablePointUnit();
-
-
-   CtiTablePointUnit&   operator=(const CtiTablePointUnit& aRef);
 
    INT                  getUnitID() const;
    CtiTablePointUnit&   setUnitID(const INT &id);
@@ -53,7 +55,7 @@ public:
    INT                  getLogFrequency() const;
    CtiTablePointUnit&   setLogFrequency(INT i);
 
-   CtiTableUnitMeasure  getUnitMeasure() const;
+   const CtiTableUnitMeasure& getUnitMeasure() const;
    CtiTableUnitMeasure& getUnitMeasure();
 
    void                 DecodeDatabaseReader(Cti::RowReader &rdr);

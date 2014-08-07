@@ -34,18 +34,14 @@ CtiDeviceGroupExpresscom::CtiDeviceGroupExpresscom()
 {
 }
 
-CtiTableExpresscomLoadGroup CtiDeviceGroupExpresscom::getExpresscomGroup() const
-{
-    return _expresscomGroup;
-}
 CtiTableExpresscomLoadGroup& CtiDeviceGroupExpresscom::getExpresscomGroup()
 {
     return _expresscomGroup;
 }
-CtiDeviceGroupExpresscom& CtiDeviceGroupExpresscom::setExpresscomGroup(const CtiTableExpresscomLoadGroup& aRef)
+
+const CtiTableExpresscomLoadGroup& CtiDeviceGroupExpresscom::getExpresscomGroup() const
 {
-    _expresscomGroup = aRef;
-    return *this;
+    return _expresscomGroup;
 }
 
 LONG CtiDeviceGroupExpresscom::getRouteID()

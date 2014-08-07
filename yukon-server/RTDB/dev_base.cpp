@@ -631,20 +631,6 @@ bool CtiDeviceBase::adjustCommCounts( bool &isCommFail, bool retry )
     return(bAdjust);
 }
 
-const CtiTableDeviceBase& CtiDeviceBase::getDeviceBase() const
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    return _deviceBase;
-}
-
-CtiDeviceBase& CtiDeviceBase::setDeviceBase(const CtiTableDeviceBase& tbldevbase)
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    _deviceBase = tbldevbase;
-
-    return *this;
-}
-
 int CtiDeviceBase::incResponsesOnTrxID(int trxid)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);

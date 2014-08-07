@@ -33,9 +33,8 @@ protected:
 public:    
     CtiDeviceGroupExpresscom();
 
-    CtiTableExpresscomLoadGroup   getExpresscomGroup() const;
-    CtiTableExpresscomLoadGroup&  getExpresscomGroup();
-    CtiDeviceGroupExpresscom&     setExpresscomGroup(const CtiTableExpresscomLoadGroup& aRef);
+    CtiTableExpresscomLoadGroup&       getExpresscomGroup();
+    const CtiTableExpresscomLoadGroup& getExpresscomGroup() const;
 
     virtual std::string getSQLCoreStatement() const;
 

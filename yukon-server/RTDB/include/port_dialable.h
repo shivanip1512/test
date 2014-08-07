@@ -47,9 +47,7 @@ public:
     virtual INT waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
     virtual INT disconnect(CtiDeviceSPtr Device, INT trace);
 
-    CtiTablePortDialup getTablePortDialup() const;
-    CtiTablePortDialup& getTablePortDialup();
-    CtiPortDialable& setTablePortDialup(const CtiTablePortDialup& aRef);
+    const CtiTablePortDialup& getTablePortDialup() const;
 
     static std::string getSQLCoreStatement();
 

@@ -33,33 +33,7 @@ CtiTblPAOLite::CtiTblPAOLite() :
     _disableFlag(false)
 {}
 
-CtiTblPAOLite::CtiTblPAOLite(const CtiTblPAOLite& aRef)
-{
-    *this = aRef;
-}
-
 CtiTblPAOLite::~CtiTblPAOLite() {}
-
-CtiTblPAOLite& CtiTblPAOLite::operator=(const CtiTblPAOLite& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        _paObjectID = aRef._paObjectID;
-        _class = aRef._class;
-        _name = aRef._name;
-        _type = aRef._type;
-        _disableFlag = aRef._disableFlag;
-
-        /* WHAT WAS THIS CHECKPOINT FOR?
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        } */
-    }
-    return *this;
-}
 
 LONG CtiTblPAOLite::getID() const
 {

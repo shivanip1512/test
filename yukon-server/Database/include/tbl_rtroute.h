@@ -12,14 +12,21 @@
 
 IM_EX_CTIBASE INT getDebugLevel(void);
 
-class CtiTableRoute : public CtiMemDBObject
+class CtiTableRoute : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableRoute(const CtiTableRoute&);
+    CtiTableRoute& operator=(const CtiTableRoute&);
+
 protected:
 
    LONG        RouteID;
    std::string   Name;
    INT         Type;
-
 
 public:
 
@@ -27,10 +34,8 @@ public:
 
    CtiTableRoute();
    CtiTableRoute(LONG &aRoute, std::string aStr, INT aType);
-   CtiTableRoute(const CtiTableRoute& aRef);
    virtual ~CtiTableRoute();
 
-   CtiTableRoute& operator=(const CtiTableRoute& aRef);
    void DumpData();
 
    static std::string& getSQLColumns(std::string &str);

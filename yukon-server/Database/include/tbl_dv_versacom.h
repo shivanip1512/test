@@ -13,8 +13,16 @@
 #include "row_reader.h"
 
 
-class IM_EX_CTIYUKONDB CtiTableVersacomLoadGroup : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableVersacomLoadGroup : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableVersacomLoadGroup(const CtiTableVersacomLoadGroup&);
+    CtiTableVersacomLoadGroup& operator=(const CtiTableVersacomLoadGroup&);
+
 protected:
 
    LONG     _deviceID;
@@ -29,17 +37,10 @@ protected:
 
    LONG     _routeID;            // the route (macro) which defines this device.
 
-private:
-
 public:
 
    CtiTableVersacomLoadGroup();
-
-   CtiTableVersacomLoadGroup(const CtiTableVersacomLoadGroup& aRef);
-
    virtual ~CtiTableVersacomLoadGroup();
-
-   CtiTableVersacomLoadGroup& operator=(const CtiTableVersacomLoadGroup& aRef);
 
    INT  getSerial() const;
    CtiTableVersacomLoadGroup& setSerial( const INT a_ser );

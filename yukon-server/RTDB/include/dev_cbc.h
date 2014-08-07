@@ -24,9 +24,7 @@ public:
 
     CtiDeviceCBC();
 
-    CtiTableDeviceCBC   getCBC() const;
-    CtiTableDeviceCBC&  getCBC();
-    CtiDeviceCBC&     setCBC(const CtiTableDeviceCBC& aRef);
+    const CtiTableDeviceCBC& getCBC() const;
 
     int getCBCRetries(void);
 

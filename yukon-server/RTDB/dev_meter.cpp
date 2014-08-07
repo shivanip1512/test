@@ -27,16 +27,6 @@ CtiDeviceMeter::CtiDeviceMeter( )
 
 inline bool CtiDeviceMeter::isMeter() const   { return true; }
 
-CtiTableDeviceMeterGroup  CtiDeviceMeter::getMeterGroup() const     {  return MeterGroup;  }
-CtiTableDeviceMeterGroup& CtiDeviceMeter::getMeterGroup()           {  return MeterGroup;  }
-
-CtiDeviceMeter& CtiDeviceMeter::setMeterGroup( const CtiTableDeviceMeterGroup &aMeterGroup )
-{
-    MeterGroup = aMeterGroup;
-    return *this;
-}
-
-
 int CtiDeviceMeter::readDSTFile( string &id )
 {
     int tmpDSTFlag;

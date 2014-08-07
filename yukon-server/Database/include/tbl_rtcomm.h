@@ -26,25 +26,26 @@
 #include "dlldefs.h"
 
 
-class IM_EX_CTIYUKONDB CtiTableCommRoute : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableCommRoute : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableCommRoute(const CtiTableCommRoute&);
+    CtiTableCommRoute& operator=(const CtiTableCommRoute&);
+
 protected:
 
    LONG        _routeID;
    LONG        DeviceID;
    bool        DefaultRoute;
 
-private:
-
 public:
 
    CtiTableCommRoute(const LONG dID = -1L, const bool aDef = FALSE);
-
-   CtiTableCommRoute(const CtiTableCommRoute& aRef);
-
-   ~CtiTableCommRoute();
-
-   CtiTableCommRoute& operator=(const CtiTableCommRoute& aRef);
+   virtual ~CtiTableCommRoute();
 
    void DumpData();
 

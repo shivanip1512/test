@@ -14,24 +14,8 @@ _serial(0),
 _routeID(-1)
 {}
 
-CtiTableDeviceCBC::CtiTableDeviceCBC(const CtiTableDeviceCBC& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceCBC::~CtiTableDeviceCBC()
 {}
-
-CtiTableDeviceCBC& CtiTableDeviceCBC::operator=(const CtiTableDeviceCBC& aRef)
-{
-    if(this != &aRef)
-    {
-        _deviceID = aRef.getDeviceID();
-        _serial = aRef.getSerial();
-        _routeID = aRef.getRouteID();
-    }
-    return *this;
-}
 
 INT  CtiTableDeviceCBC::getSerial() const
 {

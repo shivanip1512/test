@@ -29,25 +29,8 @@ CtiTablePortTimings::CtiTablePortTimings()
    }
 }
 
-CtiTablePortTimings::CtiTablePortTimings(const CtiTablePortTimings& aRef)
-{
-   *this = aRef;
-}
-
 CtiTablePortTimings::~CtiTablePortTimings()
 {
-}
-
-CtiTablePortTimings& CtiTablePortTimings::operator=(const CtiTablePortTimings& aRef)
-{
-   if(this != &aRef)
-   {
-      for(int i = 0; i < LAST_DELAY; i++)
-      {
-         _delays[ i ] = aRef.getDelay(i);
-      }
-   }
-   return *this;
 }
 
 CtiTablePortTimings&  CtiTablePortTimings::setDelay(int Offset, int D)

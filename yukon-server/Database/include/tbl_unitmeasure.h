@@ -15,8 +15,16 @@
 #include "yukon.h"
 
 
-class IM_EX_CTIYUKONDB CtiTableUnitMeasure : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableUnitMeasure : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableUnitMeasure(const CtiTableUnitMeasure&);
+    CtiTableUnitMeasure& operator=(const CtiTableUnitMeasure&);
+
 protected:
 
    //string   _uomName;
@@ -24,15 +32,9 @@ protected:
    //string   _longName;
    //string   _formula;
 
-private:
-
 public:
    CtiTableUnitMeasure();
-
-   CtiTableUnitMeasure(const CtiTableUnitMeasure& aRef);
    virtual ~CtiTableUnitMeasure();
-
-   CtiTableUnitMeasure& operator=(const CtiTableUnitMeasure& aRef);
 
    void DecodeDatabaseReader(Cti::RowReader &rdr);
    void dump() const;

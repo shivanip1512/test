@@ -33,25 +33,9 @@ CtiTableDeviceLoadProfile::CtiTableDeviceLoadProfile() :
 {
 }
 
-CtiTableDeviceLoadProfile::CtiTableDeviceLoadProfile(const CtiTableDeviceLoadProfile& aRef)
-{
-    *this = aRef;
-}
 
 CtiTableDeviceLoadProfile::~CtiTableDeviceLoadProfile() {}
 
-CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::operator=(const CtiTableDeviceLoadProfile& aRef)
-{
-    if( this != &aRef )
-    {
-        _deviceID               = aRef.getDeviceID();
-        _lastIntervalDemandRate = aRef.getLastIntervalDemandRate();
-        _loadProfileDemandRate  = aRef.getLoadProfileDemandRate();
-        _channelsValid          = aRef._channelsValid;
-    }
-
-    return *this;
-}
 
 INT  CtiTableDeviceLoadProfile::getLastIntervalDemandRate()  const  {  return _lastIntervalDemandRate;  }
 INT  CtiTableDeviceLoadProfile::getLoadProfileDemandRate()   const  {  return _loadProfileDemandRate;   }

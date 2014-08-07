@@ -17,27 +17,6 @@ MaxConnectTime(INT_MAX),
 BaudRate(0)
 {}
 
-CtiTableDeviceDialup::CtiTableDeviceDialup(const CtiTableDeviceDialup &aRef)
-{
-    *this = aRef;
-}
-
-CtiTableDeviceDialup& CtiTableDeviceDialup::operator=(const CtiTableDeviceDialup &aRef)
-{
-
-    if(this != &aRef)
-    {
-        _deviceID      = aRef.getDeviceID();
-        PhoneNumber    = aRef.getPhoneNumber();
-        MinConnectTime = aRef.getMinConnectTime();
-        MaxConnectTime = aRef.getMaxConnectTime();
-        LineSettings   = aRef.getLineSettings();
-        BaudRate       = aRef.getBaudRate();
-    }
-
-    return *this;
-}
-
 INT  CtiTableDeviceDialup::getMinConnectTime() const
 {
 

@@ -185,13 +185,7 @@ public:
         _handshakesRemaining(3)
     {}
 
-    CtiTableDeviceIED&   getIED()            { return _ied; }
-    CtiTableDeviceIED    getIED() const      { return _ied; }
-    CtiDeviceIED&        setIED(const CtiTableDeviceIED &aIED )
-    {
-        _ied = aIED;
-        return *this;
-    }
+    const CtiTableDeviceIED& getIED() const { return _ied; }
 
     virtual std::string getSQLCoreStatement() const
     {

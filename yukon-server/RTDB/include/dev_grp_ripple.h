@@ -28,10 +28,6 @@ public:
     CtiDeviceGroupRipple();
     virtual ~CtiDeviceGroupRipple();
 
-    CtiTableRippleLoadGroup   getRippleTable() const;
-    CtiTableRippleLoadGroup&  getRippleTable();
-    CtiDeviceGroupRipple&     setRippleTable(const CtiTableRippleLoadGroup& aRef);
-
     virtual LONG getRouteID();
     virtual std::string getDescription(const CtiCommandParser & parse) const;
 
@@ -50,6 +46,3 @@ public:
 
     void contributeToBitPattern(BYTE *bptr, bool shed) const;
 };
-
-inline CtiTableRippleLoadGroup CtiDeviceGroupRipple::getRippleTable() const     { CtiLockGuard<CtiMutex> guard(_classMutex); return _rippleTable;}
-inline CtiTableRippleLoadGroup& CtiDeviceGroupRipple::getRippleTable()          { CtiLockGuard<CtiMutex> guard(_classMutex); return _rippleTable;}

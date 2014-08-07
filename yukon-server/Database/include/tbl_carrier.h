@@ -13,8 +13,16 @@
 #include "row_reader.h"
 
 
-class IM_EX_CTIYUKONDB CtiTableDeviceCarrier : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDeviceCarrier : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableDeviceCarrier(const CtiTableDeviceCarrier&);
+    CtiTableDeviceCarrier& operator=(const CtiTableDeviceCarrier&);
+
 protected:
 
    LONG     _deviceID;
@@ -23,12 +31,7 @@ protected:
 public:
 
    CtiTableDeviceCarrier();
-
-   CtiTableDeviceCarrier(const CtiTableDeviceCarrier& aRef);
-
    virtual ~CtiTableDeviceCarrier();
-
-   CtiTableDeviceCarrier& operator=(const CtiTableDeviceCarrier& aRef);
 
    INT  getAddress() const;
    CtiTableDeviceCarrier& setAddress( const INT aAddress );

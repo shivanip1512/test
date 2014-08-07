@@ -51,11 +51,6 @@ public:
 
     CtiDeviceION();
 
-    //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
-    CtiTableDeviceMeterGroup  getMeterGroup() const;
-    CtiTableDeviceMeterGroup& getMeterGroup();
-    CtiDeviceION& setMeterGroup( const CtiTableDeviceMeterGroup & aMeterGroup );
-    //----
     void setMeterGroupData( const std::string &meterNumber);
 
     virtual std::string getSQLCoreStatement() const;

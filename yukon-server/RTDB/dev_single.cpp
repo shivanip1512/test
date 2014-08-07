@@ -1359,31 +1359,6 @@ void CtiDeviceSingle::setScanRate(int a, LONG b)
     }
 }
 
-CtiTableDeviceScanRate  CtiDeviceSingle::getRateTable(const INT i) const
-{
-    return *(_scanRateTbl[i]);
-}
-CtiTableDeviceScanRate& CtiDeviceSingle::getRateTable(const INT i)
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-
-    return(*(_scanRateTbl[i]));
-}
-CtiDeviceSingle&     CtiDeviceSingle::setRateTables(const INT i, const CtiTableDeviceScanRate* aScanRate)
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-
-    if(_scanRateTbl[i] == NULL)
-    {
-        _scanRateTbl[i] = CTIDBG_new CtiTableDeviceScanRate;
-    }
-
-    if(_scanRateTbl[i])
-        *(_scanRateTbl[i]) = *aScanRate;
-
-    return *this;
-}
-
 BOOL CtiDeviceSingle::isWindowOpen(CtiTime &aNow, CtiTime &opensAt, CtiDeviceWindow_t windowType) const
 {
     BOOL status = TRUE;

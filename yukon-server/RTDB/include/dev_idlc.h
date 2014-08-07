@@ -48,21 +48,14 @@ public:
         }
     }
 
-    CtiTableDeviceIDLC  getIDLC() const
-    {
-        return _idlc;
-    }
-
     CtiTableDeviceIDLC& getIDLC()
     {
         return _idlc;
     }
 
-    CtiDeviceIDLC& setIDLC( const CtiTableDeviceIDLC &aRef )
+    const CtiTableDeviceIDLC& getIDLC() const
     {
-        CtiLockGuard<CtiMutex> guard(_classMutex);
-        _idlc = aRef;
-        return *this;
+        return _idlc;
     }
 
     virtual LONG getAddress() const

@@ -64,28 +64,9 @@ CtiTableSA305LoadGroup::CtiTableSA305LoadGroup() :
     _function(0)
 {
 }
-CtiTableSA305LoadGroup::CtiTableSA305LoadGroup(const CtiTableSA305LoadGroup& aRef)
-{
-    *this = aRef;
-}
 
 CtiTableSA305LoadGroup::~CtiTableSA305LoadGroup()
 {
-}
-
-CtiTableSA305LoadGroup& CtiTableSA305LoadGroup::operator=(const CtiTableSA305LoadGroup& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-
-    return *this;
 }
 
 LONG CtiTableSA305LoadGroup::getLmGroupId() const

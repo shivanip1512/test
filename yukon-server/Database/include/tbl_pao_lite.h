@@ -16,8 +16,15 @@
 #include "row_reader.h"
 
 //This is the lite version of CtiTblPAO. The only string stored by this object is the name.
-class IM_EX_CTIYUKONDB CtiTblPAOLite : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTblPAOLite : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTblPAOLite(const CtiTblPAOLite&);
+    CtiTblPAOLite& operator=(const CtiTblPAOLite&);
 
 protected:
 
@@ -33,12 +40,7 @@ public:
     typedef CtiMemDBObject Inherited;
 
     CtiTblPAOLite();
-
-    CtiTblPAOLite(const CtiTblPAOLite& aRef);
-
     virtual ~CtiTblPAOLite();
-
-    CtiTblPAOLite& operator=(const CtiTblPAOLite& aRef);
 
     LONG   getID()    const;
     INT    getClass() const;

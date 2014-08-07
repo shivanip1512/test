@@ -18,27 +18,8 @@ _stopTime(stop),
 _readJobId(jobId)
 {}
 
-CtiTblDeviceReadRequestLog::CtiTblDeviceReadRequestLog(const CtiTblDeviceReadRequestLog& aRef)
-{
-    *this = aRef;
-}
-
 CtiTblDeviceReadRequestLog::~CtiTblDeviceReadRequestLog()
 {
-}
-
-CtiTblDeviceReadRequestLog& CtiTblDeviceReadRequestLog::operator=(const CtiTblDeviceReadRequestLog& aRef)
-{
-    if(this != &aRef)
-    {
-        _requestLogId = aRef.getRequestLogId();
-        _requestId = aRef.getRequestId();
-        _command = aRef.getCommand();
-        _startTime = aRef.getStartTime();
-        _stopTime = aRef.getStopTime();
-        _readJobId = aRef.getReadJobId();
-    }
-    return *this;
 }
 
 long  CtiTblDeviceReadRequestLog::getRequestLogId() const

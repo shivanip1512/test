@@ -19,20 +19,9 @@ CtiDeviceGroupGolay::CtiDeviceGroupGolay()
 {
 }
 
-CtiTableSASimpleGroup CtiDeviceGroupGolay::getLoadGroup() const
+const CtiTableSASimpleGroup& CtiDeviceGroupGolay::getLoadGroup() const
 {
     return _loadGroup;
-}
-
-CtiTableSASimpleGroup& CtiDeviceGroupGolay::getLoadGroup()
-{
-    return _loadGroup;
-}
-
-CtiDeviceGroupGolay& CtiDeviceGroupGolay::setLoadGroup(const CtiTableSASimpleGroup& aRef)
-{
-    _loadGroup = aRef;
-    return *this;
 }
 
 LONG CtiDeviceGroupGolay::getRouteID()

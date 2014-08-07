@@ -12,8 +12,15 @@
 #include "yukon.h"
 #include "row_reader.h"
 
-class IM_EX_CTIYUKONDB CtiTableRippleLoadGroup : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableRippleLoadGroup : public CtiMemDBObject, private boost::noncopyable
 {
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableRippleLoadGroup(const CtiTableRippleLoadGroup&);
+    CtiTableRippleLoadGroup& operator=(const CtiTableRippleLoadGroup&);
+
 protected:
 
    LONG           _deviceID;
@@ -25,12 +32,7 @@ protected:
 public:
 
    CtiTableRippleLoadGroup();
-
-   CtiTableRippleLoadGroup(const CtiTableRippleLoadGroup& aRef);
-
    virtual ~CtiTableRippleLoadGroup();
-
-   CtiTableRippleLoadGroup& operator=(const CtiTableRippleLoadGroup& aRef);
 
    LONG  getRouteID() const;
 

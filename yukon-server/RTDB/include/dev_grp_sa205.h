@@ -30,9 +30,7 @@ public:
 
     CtiDeviceGroupSA205();
 
-    CtiTableSA205105Group getLoadGroup() const;
-    CtiTableSA205105Group& getLoadGroup();
-    CtiDeviceGroupSA205& setLoadGroup(const CtiTableSA205105Group& aRef);
+    const CtiTableSA205105Group& getLoadGroup() const;
 
     virtual std::string getSQLCoreStatement() const;
 

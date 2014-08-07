@@ -33,28 +33,7 @@ _relayMask(0),
 _routeID(-1)
 {}
 
-CtiTableLMGroupVersacomSerial::CtiTableLMGroupVersacomSerial(const CtiTableLMGroupVersacomSerial& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableLMGroupVersacomSerial::~CtiTableLMGroupVersacomSerial() {}
-
-CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::operator=(const CtiTableLMGroupVersacomSerial& aRef)
-{
-
-
-    if(this != &aRef)
-    {
-        _deviceID = aRef.getDeviceID();
-        _serial = aRef.getSerial();
-        _groupID = aRef.getGroupID();
-        _addressUsage = aRef.getAddressUsage();
-        _relayMask = aRef.getRelayMask();
-        _routeID = aRef.getRouteID();
-    }
-    return *this;
-}
 
 INT  CtiTableLMGroupVersacomSerial::getSerial() const
 {

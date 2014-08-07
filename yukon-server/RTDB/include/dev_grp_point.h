@@ -35,6 +35,6 @@ public:
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
-    CtiTablePointGroup& getLoadGroup() { return _loadGroup; }
+    const CtiTablePointGroup& getLoadGroup() const { return _loadGroup; }
 
 };

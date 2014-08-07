@@ -27,42 +27,8 @@ _taggedForStr("(none)")       // user field
 {
 }
 
-CtiTableTagLog::CtiTableTagLog(const CtiTableTagLog& aRef) :
-_logId(0),                    // no two tags share the same one
-_instanceId(0),               //
-_pointId(0),                  //
-_tagid(0),                    // refers to id in tag table
-_userName("(none)"),          // VC(60)
-_actionStr("(none)"),         // VC(20)
-_descriptionStr("(none)"),    // VC(120)
-_referenceStr("(none)"),      // job id, etc, user field
-_taggedForStr("(none)")      // user field
-{
-    *this = aRef;
-}
-
 CtiTableTagLog::~CtiTableTagLog()
 {
-}
-
-CtiTableTagLog& CtiTableTagLog::operator=(const CtiTableTagLog& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        setLogId( aRef.getLogId() );
-        setInstanceId( aRef.getInstanceId() );
-        setPointId( aRef.getPointId() );
-        setTagId( aRef.getTagId() );
-        setUserName( aRef.getUserName() );
-        setActionStr( aRef.getActionStr() );
-        setDescriptionStr( aRef.getDescriptionStr() );
-        setTagTime( aRef.getTagTime() );
-        setReferenceStr( aRef.getReferenceStr() );
-        setTaggedForStr( aRef.getTaggedForStr() );
-    }
-    return *this;
 }
 
 int CtiTableTagLog::operator==(const CtiTableTagLog &right) const

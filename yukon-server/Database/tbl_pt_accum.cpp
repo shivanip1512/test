@@ -22,17 +22,6 @@
 using std::string;
 using std::endl;
 
-CtiTablePointAccumulator& CtiTablePointAccumulator::operator=(const CtiTablePointAccumulator& aRef)
-{
-   if(this != &aRef)
-   {
-      _pointID          = aRef.getPointID();
-      _multiplier       = aRef.getMultiplier();
-      _dataOffset       = aRef.getDataOffset();
-   }
-   return *this;
-}
-
 void CtiTablePointAccumulator::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    rdr       >> _multiplier;
@@ -79,11 +68,6 @@ CtiTablePointAccumulator::CtiTablePointAccumulator() :
    _dataOffset(0.0),
    _pointID(0)
 {}
-
-CtiTablePointAccumulator::CtiTablePointAccumulator(const CtiTablePointAccumulator& aRef)
-{
-   *this = aRef;
-}
 
 CtiTablePointAccumulator::~CtiTablePointAccumulator() {}
 

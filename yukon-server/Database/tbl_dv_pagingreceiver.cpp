@@ -17,39 +17,8 @@ _capcode10(0), _capcode11(0), _capcode12(0), _capcode13(0),
 _capcode14(0), _capcode15(0), _capcode16(0), _deviceID(0)
 {}
 
-CtiTableDevicePagingReceiver::CtiTableDevicePagingReceiver(const CtiTableDevicePagingReceiver& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDevicePagingReceiver::~CtiTableDevicePagingReceiver()
 {}
-
-CtiTableDevicePagingReceiver& CtiTableDevicePagingReceiver::operator=(const CtiTableDevicePagingReceiver& aRef)
-{
-    if(this != &aRef)
-    {
-        _frequency = aRef.getFrequency();
-        _capcode1  = aRef.getCapcode( 1);
-        _capcode2  = aRef.getCapcode( 2);
-        _capcode3  = aRef.getCapcode( 3);
-        _capcode4  = aRef.getCapcode( 4);
-        _capcode5  = aRef.getCapcode( 5);
-        _capcode6  = aRef.getCapcode( 6);
-        _capcode7  = aRef.getCapcode( 7);
-        _capcode8  = aRef.getCapcode( 8);
-        _capcode9  = aRef.getCapcode( 9);
-        _capcode10 = aRef.getCapcode(10);
-        _capcode11 = aRef.getCapcode(11);
-        _capcode12 = aRef.getCapcode(12);
-        _capcode13 = aRef.getCapcode(13);
-        _capcode14 = aRef.getCapcode(14);
-        _capcode15 = aRef.getCapcode(15);
-        _capcode16 = aRef.getCapcode(16);
-    }
-
-    return *this;
-}
 
 float CtiTableDevicePagingReceiver::getFrequency() const
 {

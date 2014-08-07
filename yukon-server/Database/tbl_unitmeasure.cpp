@@ -24,24 +24,7 @@ CtiTableUnitMeasure::CtiTableUnitMeasure() :
 
 }
 
-CtiTableUnitMeasure::CtiTableUnitMeasure(const CtiTableUnitMeasure& aRef)
-{
-   *this = aRef;
-}
-
 CtiTableUnitMeasure::~CtiTableUnitMeasure() {}
-
-CtiTableUnitMeasure& CtiTableUnitMeasure::operator=(const CtiTableUnitMeasure &aRef)
-{
-    if(this != &aRef)
-    {
-        //_uomName   = aRef.getUOMName();
-        _calcType  = aRef.getCalcType();
-        //_longName  = aRef.getLongName();
-        //_formula   = aRef.getFormula();
-    }
-    return *this;
-}
 
 void CtiTableUnitMeasure::DecodeDatabaseReader(Cti::RowReader &rdr)
 {

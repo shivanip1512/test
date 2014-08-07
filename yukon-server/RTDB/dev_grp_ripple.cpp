@@ -44,13 +44,6 @@ CtiDeviceGroupRipple::~CtiDeviceGroupRipple()
     if(_rsvp) delete _rsvp;
 }
 
-CtiDeviceGroupRipple& CtiDeviceGroupRipple::setRippleTable(const CtiTableRippleLoadGroup& aRef)
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    _rippleTable = aRef;
-    return *this;
-}
-
 LONG CtiDeviceGroupRipple::getRouteID()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
@@ -241,7 +234,9 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, list< CtiMessage* >  &vgList )
 
         if(_isShed == CONTROLLED || _isShed == UNCONTROLLED)
         {
-            LONG shedtime = getRippleTable().getShedTime();
+            CtiLockGuard<CtiMutex> guard(_classMutex);
+
+            LONG shedtime = _rippleTable.getShedTime();
             int controlpercent = 100;
             if(_isShed == UNCONTROLLED)
             {
@@ -317,9 +312,17 @@ bool CtiDeviceGroupRipple::isShedProtocolParent(CtiDeviceBase *otherdev)
     CtiDeviceGroupRipple *otherGroup = (CtiDeviceGroupRipple *)otherdev;
 
     // The only ripple groups that can support any type of heirarchy are Minnkota Landis & Gyr LCRs.  The have a universal group which can control area codes.
+    string mybits, otherbits;
 
-    string mybits = getRippleTable().getControlBits();
-    string otherbits = otherGroup->getRippleTable().getControlBits();
+    {
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+        mybits = _rippleTable.getControlBits();
+    }
+
+    {
+        CtiLockGuard<CtiMutex> guard(otherGroup->_classMutex);
+        otherbits = otherGroup->_rippleTable.getControlBits();
+    }
 
     string thegroup = (char*)mybits[(size_t)0, (size_t)10];
     string agroup = (char*)otherbits[(size_t)0, (size_t)10];
@@ -339,7 +342,10 @@ bool CtiDeviceGroupRipple::isShedProtocolParent(CtiDeviceBase *otherdev)
             if(bstatus)
             {
                 list< CtiMessage* > vgList;
-                otherGroup->reportControlStart( true, otherGroup->getRippleTable().getShedTime(), 100, vgList, "control shed" );
+
+                CtiLockGuard<CtiMutex> guard(otherGroup->_classMutex);
+
+                otherGroup->reportControlStart( true, otherGroup->_rippleTable.getShedTime(), 100, vgList, "control shed" );
                 if(vgList.size())
                 {
                     CtiMessage *pMsg = vgList.back();
@@ -361,9 +367,17 @@ bool CtiDeviceGroupRipple::isRestoreProtocolParent(CtiDeviceBase *otherdev)
     CtiDeviceGroupRipple *otherGroup = (CtiDeviceGroupRipple *)otherdev;
 
     // The only ripple groups that can support any type of heirarchy are Minnkota Landis & Gyr LCRs.  The have a universal group which can control area codes.
+    string mybits, otherbits;
 
-    string mybits = getRippleTable().getRestoreBits();
-    string otherbits = otherGroup->getRippleTable().getRestoreBits();
+    {
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+        mybits = _rippleTable.getRestoreBits();
+    }
+
+    {
+        CtiLockGuard<CtiMutex> guard(otherGroup->_classMutex);
+        otherbits = otherGroup->_rippleTable.getRestoreBits();
+    }
 
     string thegroup = (char*)mybits[(size_t)0, (size_t)10];
     string agroup = (char*)otherbits[(size_t)0, (size_t)10];

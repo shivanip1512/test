@@ -231,15 +231,6 @@ string CtiDeviceGroupVersacom::getPutConfigAssignment(UINT modifier)
 CtiDeviceGroupVersacom::CtiDeviceGroupVersacom()
 {}
 
-CtiTableVersacomLoadGroup   CtiDeviceGroupVersacom::getVersacomGroup() const      { return VersacomGroup;}
-CtiTableVersacomLoadGroup&  CtiDeviceGroupVersacom::getVersacomGroup()            { return VersacomGroup;}
-
-CtiDeviceGroupVersacom&     CtiDeviceGroupVersacom::setVersacomGroup(const CtiTableVersacomLoadGroup& aRef)
-{
-    VersacomGroup = aRef;
-    return *this;
-}
-
 string CtiDeviceGroupVersacom::getSQLCoreStatement() const
 {
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "

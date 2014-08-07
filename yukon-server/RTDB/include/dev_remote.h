@@ -7,7 +7,7 @@
 
 #include "string_utility.h"
 
-class IM_EX_DEVDB CtiDeviceRemote : public CtiDeviceSingle
+class CtiDeviceRemote : public CtiDeviceSingle
 {
 private:
     // WORKAROUND:
@@ -47,46 +47,6 @@ public:
         }
     }
 
-    const CtiTableDeviceDirectComm &getDirect() const
-    {
-        return Direct;
-    }
-    CtiTableDeviceDirectComm& getDirect()
-    {
-        return Direct;
-    }
-    CtiDeviceRemote& setDirect( const CtiTableDeviceDirectComm & aDirect )
-    {
-        CtiLockGuard<CtiMutex> guard(_classMutex);
-        Direct = aDirect;
-        return *this;
-    }
-
-    CtiTableDeviceDialup*  getDialup()
-    {
-        CtiLockGuard<CtiMutex> guard(_classMutex);
-        return pDialup;
-    }
-
-    const CtiTableDeviceDialup  getDialup() const
-    {
-        CtiLockGuard<CtiMutex> guard(_classMutex);
-        return *pDialup;
-    }
-
-    CtiDeviceRemote& setDialup( CtiTableDeviceDialup *aDialup )
-    {
-        CtiLockGuard<CtiMutex> guard(_classMutex);
-        if(pDialup != NULL)
-        {
-            delete pDialup;
-            pDialup = NULL;
-        }
-
-        pDialup = aDialup;
-        return *this;
-    }
-
     virtual bool isDialup() const
     {
         return (pDialup != NULL);
@@ -94,6 +54,8 @@ public:
 
     virtual INT getBaudRate() const
     {
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+
         INT baud = 0;
 
         if(isDialup())
@@ -106,6 +68,8 @@ public:
 
     virtual INT getBits() const
     {
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+
         INT val = 8;
 
         if(isDialup())
@@ -118,6 +82,8 @@ public:
 
     virtual INT getStopBits() const
     {
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+
         INT val = ONESTOPBIT;
 
         if(isDialup())
@@ -129,6 +95,8 @@ public:
     }
     virtual INT getParity() const
     {
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+
         INT val = NOPARITY;
 
         if(isDialup())
@@ -178,11 +146,13 @@ public:
 
             if(tempstr.length() > 1)
             {
+                CtiLockGuard<CtiMutex> guard(_classMutex);
+
                 // There was a dialup
                 // allocate only if we haven't been here before
                 if(pDialup == NULL)
                 {
-                    pDialup = CTIDBG_new CtiTableDeviceDialup;
+                    pDialup = new CtiTableDeviceDialup;
                 }
                 pDialup->DecodeDatabaseReader(rdr);
             }
@@ -199,7 +169,9 @@ public:
 
     virtual LONG getPortID() const
     {
-        return getDirect().getPortID();
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+
+        return Direct.getPortID();
     }
 
     virtual ULONG getUniqueIdentifier() const
@@ -232,6 +204,8 @@ public:
 
     virtual std::string getPhoneNumber() const
     {
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+
         std::string   rStr;
         if(pDialup)
         {
@@ -242,6 +216,8 @@ public:
 
     virtual LONG getMinConnectTime() const
     {
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+
         LONG mct = 0;
         if(pDialup)
         {
@@ -256,6 +232,8 @@ public:
 
     virtual LONG getMaxConnectTime() const
     {
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+
         LONG mct = 0;
         if(pDialup)
         {

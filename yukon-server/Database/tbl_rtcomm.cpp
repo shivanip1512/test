@@ -29,24 +29,8 @@ DeviceID(dID),
 DefaultRoute(aDef)
 {}
 
-CtiTableCommRoute::CtiTableCommRoute(const CtiTableCommRoute& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableCommRoute::~CtiTableCommRoute()
 {}
-
-CtiTableCommRoute& CtiTableCommRoute::operator=(const CtiTableCommRoute& aRef)
-{
-    if(this != &aRef)
-    {
-        _routeID       = aRef.getRouteID();
-        DeviceID       = aRef.getDeviceID();
-        DefaultRoute   = aRef.getDefaultRoute();
-    }
-    return *this;
-}
 
 void CtiTableCommRoute::DumpData()
 {

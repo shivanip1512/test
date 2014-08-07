@@ -35,30 +35,8 @@ CtiTableVersacomRoute::CtiTableVersacomRoute() :
 {
 }
 
-CtiTableVersacomRoute::CtiTableVersacomRoute(const CtiTableVersacomRoute& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableVersacomRoute::~CtiTableVersacomRoute()
 {
-}
-
-CtiTableVersacomRoute& CtiTableVersacomRoute::operator=(const CtiTableVersacomRoute& aRef)
-{
-    if(this != &aRef)
-    {
-        RouteID        = aRef.getRouteID();
-        UtilityID      = aRef.getUtilityID();
-        Section        = aRef.getSection();
-        Class          = aRef.getClass();
-        Division       = aRef.getDivision();
-        Individual     = aRef.getIndividual();
-        Bus            = aRef.getBus();
-        Amp            = aRef.getAmp();
-
-    }
-    return *this;
 }
 
 void CtiTableVersacomRoute::DumpData()

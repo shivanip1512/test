@@ -27,27 +27,9 @@ CtiTablePortTCPIP::CtiTablePortTCPIP() :
 {
 }
 
-CtiTablePortTCPIP::CtiTablePortTCPIP(const CtiTablePortTCPIP& aRef)
-{
-    *this = aRef;
-}
-
 CtiTablePortTCPIP::~CtiTablePortTCPIP()
 {
 }
-
-CtiTablePortTCPIP& CtiTablePortTCPIP::operator=(const CtiTablePortTCPIP& aRef)
-{
-    if(this != &aRef)
-    {
-        _ipPort    = aRef.getIPPort();
-        _ipAddress = aRef.getIPAddress();
-        _encodingKey = aRef.getEncodingKey();
-        _encodingType = aRef.getEncodingType();
-    }
-    return *this;
-}
-
 
 void CtiTablePortTCPIP::setIPAddress(const string &str)
 {

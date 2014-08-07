@@ -12,8 +12,16 @@
 #define CTITABLEDYNAMICPOINTALARMING_MAX_ACTION         60
 #define CTITABLEDYNAMICPOINTALARMING_MAX_DESCRIPTION    120
 
-class IM_EX_CTIYUKONDB CtiTableDynamicPointAlarming : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDynamicPointAlarming : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableDynamicPointAlarming(const CtiTableDynamicPointAlarming&);
+    CtiTableDynamicPointAlarming& operator=(const CtiTableDynamicPointAlarming&);
+
 protected:
 
     LONG        _pointID;
@@ -32,10 +40,8 @@ protected:
 public:
 
     CtiTableDynamicPointAlarming();
-    CtiTableDynamicPointAlarming(const CtiTableDynamicPointAlarming& aRef);
     virtual ~CtiTableDynamicPointAlarming();
 
-    CtiTableDynamicPointAlarming& operator=(const CtiTableDynamicPointAlarming& aRef);
     virtual int operator==(const CtiTableDynamicPointAlarming&) const;
 
     static std::string getTableName();

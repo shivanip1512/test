@@ -29,31 +29,8 @@ _sharedSocketNumber(-1)
 {
 }
 
-CtiTablePortBase::CtiTablePortBase(const CtiTablePortBase& aRef) :
-_protocol(ProtocolWrapNone),
-_alarmInhibit(false),
-_sharedSocketNumber(-1)
-{
-   *this = aRef;
-}
-
 CtiTablePortBase::~CtiTablePortBase()
 {
-}
-
-CtiTablePortBase& CtiTablePortBase::operator=(const CtiTablePortBase& aRef)
-{
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-
-
-      _protocol                = aRef.getProtocol();
-      _alarmInhibit            = aRef.getAlarmInhibit();
-      _sharedPortType          = aRef.getSharedPortType();
-      _sharedSocketNumber      = aRef.getSharedSocketNumber();
-   }
-   return *this;
 }
 
 INT   CtiTablePortBase::getProtocol() const

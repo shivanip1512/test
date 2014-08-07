@@ -11,25 +11,8 @@ _deviceID(-1),
 PortID(-1)
 {}
 
-CtiTableDeviceDirectComm::CtiTableDeviceDirectComm(const CtiTableDeviceDirectComm &aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceDirectComm::~CtiTableDeviceDirectComm()
 {
-}
-
-CtiTableDeviceDirectComm& CtiTableDeviceDirectComm::operator=(const CtiTableDeviceDirectComm &aRef)
-{
-    RWMutexLock::LockGuard  guard(DirectCommMux);
-    if(this != &aRef)
-    {
-        _deviceID   = aRef.getDeviceID();
-        PortID      = aRef.getPortID();
-    }
-
-    return *this;
 }
 
 LONG CtiTableDeviceDirectComm::getPortID() const

@@ -12,8 +12,16 @@
 #include "yukon.h"
 #include "row_reader.h"
 
-class IM_EX_CTIYUKONDB CtiTableDeviceMCTIEDPort : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDeviceMCTIEDPort : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableDeviceMCTIEDPort(const CtiTableDeviceMCTIEDPort&);
+    CtiTableDeviceMCTIEDPort& operator=(const CtiTableDeviceMCTIEDPort&);
+
 protected:
 
     LONG        _deviceID;
@@ -24,14 +32,9 @@ protected:
                 _defaultDataOffset,
                 _realTimeScan;
 
-private:
-
 public:
 
     CtiTableDeviceMCTIEDPort();
-
-    CtiTableDeviceMCTIEDPort(const CtiTableDeviceMCTIEDPort& aRef);
-
     virtual ~CtiTableDeviceMCTIEDPort();
 
     enum IEDTypes
@@ -42,34 +45,32 @@ public:
         GeneralElectricKV
     };
 
-    CtiTableDeviceMCTIEDPort& operator=(const CtiTableDeviceMCTIEDPort& aRef);
+    long  getDeviceID() const;
+    void  setDeviceID(long id);
 
-    long                      getDeviceID() const;
-    CtiTableDeviceMCTIEDPort  setDeviceID(long id);
+    int   getIEDType() const;
+    int  &getIEDType();
+    void  setIEDType(IEDTypes type);
 
-    int                       getIEDType() const;
-    int                      &getIEDType();
-    CtiTableDeviceMCTIEDPort  setIEDType(IEDTypes type);
+    std::string  getPassword() const;
+    std::string& getPassword();
+    void         setPassword(std::string &password);
 
-    std::string                 getPassword() const;
-    std::string                &getPassword();
-    CtiTableDeviceMCTIEDPort  setPassword(std::string &password);
-
-    int                       getIEDScanRate() const;
-    int                      &getIEDScanRate();
-    CtiTableDeviceMCTIEDPort  setIEDScanRate(int scanrate);
+    int  getIEDScanRate() const;
+    int& getIEDScanRate();
+    void setIEDScanRate(int scanrate);
 
     int                       getDefaultDataClass() const;
-    int                      &getDefaultDataClass();
-    CtiTableDeviceMCTIEDPort  setDefaultDataClass(int dataclass);
+    int& getDefaultDataClass();
+    void setDefaultDataClass(int dataclass);
 
-    int                       getDefaultDataOffset() const;
-    int                      &getDefaultDataOffset();
-    CtiTableDeviceMCTIEDPort  setDefaultDataOffset(int dataoffset);
+    int  getDefaultDataOffset() const;
+    int& getDefaultDataOffset();
+    void setDefaultDataOffset(int dataoffset);
 
-    int                       getRealTimeScanFlag() const;
-    int                      &getRealTimeScanFlag();
-    CtiTableDeviceMCTIEDPort  setRealTimeScanFlag(int flag);
+    int  getRealTimeScanFlag() const;
+    int& getRealTimeScanFlag();
+    void setRealTimeScanFlag(int flag);
 
     void DecodeDatabaseReader(Cti::RowReader &rdr);
 

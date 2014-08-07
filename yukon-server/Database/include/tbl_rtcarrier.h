@@ -23,8 +23,16 @@
 #include "dbmemobject.h"
 
 
-class IM_EX_CTIYUKONDB CtiTableCarrierRoute : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableCarrierRoute : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableCarrierRoute(const CtiTableCarrierRoute&);
+    CtiTableCarrierRoute& operator=(const CtiTableCarrierRoute&);
+
 protected:
 
    LONG        _routeID;
@@ -34,19 +42,12 @@ protected:
    BOOL        _userLocked;
    BOOL        _resetRPTSettings;
 
-private:
-
 public:
 
    CtiTableCarrierRoute(INT b = 1, INT f = 31, INT v = 7, INT a = RouteAmpUndefined);
-
-   CtiTableCarrierRoute(const CtiTableCarrierRoute& aRef);
-
    virtual ~CtiTableCarrierRoute();
 
    static std::string getTableName();
-
-   CtiTableCarrierRoute& operator=(const CtiTableCarrierRoute& aRef);
 
    void DumpData();
 

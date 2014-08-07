@@ -48,38 +48,8 @@ _pointIdInvalid(false)
     setDirty(TRUE);
 }
 
-CtiTablePointDispatch::CtiTablePointDispatch(const CtiTablePointDispatch& ref) :
-_tags(0),
-_pointIdInvalid(false)
-{
-    *this = ref;
-}
-
 CtiTablePointDispatch::~CtiTablePointDispatch()
 {
-}
-
-CtiTablePointDispatch& CtiTablePointDispatch::operator=(const CtiTablePointDispatch& right)
-{
-    if(this != &right)
-    {
-        Inherited::operator=(right);
-        setDirty(TRUE);
-        setPointID( right.getPointID() );
-
-        setTimeStamp( right.getTimeStamp() );
-        setTimeStampMillis( right.getTimeStampMillis() );
-        setQuality( right.getQuality() );
-        setValue( right.getValue() );
-
-        resetTags();
-        setTags( right.getTags() );
-        setNextArchiveTime( right.getNextArchiveTime() );
-        //setStaleCount( right.getStaleCount() );
-        //setLastAlarmLogID( right.getLastAlarmLogID() );
-    }
-
-    return *this;
 }
 
 bool CtiTablePointDispatch::operator==(const CtiTablePointDispatch& right) const

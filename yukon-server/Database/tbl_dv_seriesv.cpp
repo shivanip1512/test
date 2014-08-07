@@ -36,33 +36,14 @@ CtiTableDeviceSeriesV::CtiTableDeviceSeriesV() :
 {
 }
 
-
-CtiTableDeviceSeriesV::CtiTableDeviceSeriesV( const CtiTableDeviceSeriesV& aRef )
-{
-    *this = aRef;
-}
-
-
 CtiTableDeviceSeriesV::~CtiTableDeviceSeriesV()
 {
 }
-
-
-CtiTableDeviceSeriesV &CtiTableDeviceSeriesV::operator=( const CtiTableDeviceSeriesV& aRef )
-{
-    if( this != &aRef )
-    {
-    }
-
-    return *this;
-}
-
 
 string CtiTableDeviceSeriesV::getTableName()
 {
     return string("deviceseries5rtu");
 }
-
 
 long CtiTableDeviceSeriesV::getDeviceID() const
 {

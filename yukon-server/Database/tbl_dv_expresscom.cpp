@@ -39,39 +39,8 @@ _priority(0)
 {
 }
 
-CtiTableExpresscomLoadGroup::CtiTableExpresscomLoadGroup(const CtiTableExpresscomLoadGroup& aRef)
-{
-    *this = aRef;
-    return;
-}
-
 CtiTableExpresscomLoadGroup::~CtiTableExpresscomLoadGroup()
 {
-}
-
-CtiTableExpresscomLoadGroup& CtiTableExpresscomLoadGroup::operator=(const CtiTableExpresscomLoadGroup& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        _lmGroupId = aRef.getId();
-        _routeId = aRef.getRouteId();
-        _serial = aRef.getSerial();
-        _serviceProvider = aRef.getServiceProvider();
-        _geo = aRef.getGeo();
-        _substation = aRef.getSubstation();
-        _feeder = aRef.getFeeder();
-        _zip = aRef.getZip();
-        _uda = aRef.getUda();
-        _program = aRef.getProgram();
-        _splinter = aRef.getSplinter();
-        _addressUsage = aRef.getAddressUsage();
-        _loads = aRef.getLoadMask();
-        _priority = aRef.getPriority();
-    }
-
-    return *this;
 }
 
 LONG CtiTableExpresscomLoadGroup::getId() const

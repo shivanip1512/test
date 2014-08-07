@@ -16,34 +16,8 @@ CtiTableDeviceTnpp::CtiTableDeviceTnpp() :
     _originAddress(0)
 {}
 
-CtiTableDeviceTnpp::CtiTableDeviceTnpp(const CtiTableDeviceTnpp& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceTnpp::~CtiTableDeviceTnpp()
 {}
-
-CtiTableDeviceTnpp& CtiTableDeviceTnpp::operator=(const CtiTableDeviceTnpp& aRef)
-{
-
-
-    if(this != &aRef)
-    {
-        _deviceID =           aRef.getDeviceID();
-        _inertia =            aRef.getInertia();
-        _destinationAddress = aRef.getDestinationAddress(); //The tnpp devices address
-        _originAddress     =  aRef.getOriginAddress();
-        /*_identifierFormat =   aRef.getIdentifierFormat();
-        _pagerProtocol =      aRef.getPagerProtocol();
-        _dataFormat =         aRef.getPagerDataFormat();
-        _channel =            aRef.getChannel();
-        _zone =               aRef.getZone();
-        _functionCode =       aRef.getFunctionCode();
-        _pagerID =            aRef.getPagerID();*/ //FIX_ME JESS
-    }
-    return *this;
-}
 
 void CtiTableDeviceTnpp::DecodeDatabaseReader(Cti::RowReader &rdr)
 {

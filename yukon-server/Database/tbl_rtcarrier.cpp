@@ -33,27 +33,8 @@ _userLocked(false),
 _resetRPTSettings(false)
 {}
 
-CtiTableCarrierRoute::CtiTableCarrierRoute(const CtiTableCarrierRoute& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableCarrierRoute::~CtiTableCarrierRoute()
 {
-}
-
-CtiTableCarrierRoute& CtiTableCarrierRoute::operator=(const CtiTableCarrierRoute& aRef)
-{
-    if(this != &aRef)
-    {
-        _routeID          = aRef.getRouteID();
-        Bus               = aRef.getBus();
-        CCUFixBits        = aRef.getCCUFixBits();
-        CCUVarBits        = aRef.getCCUVarBits();
-        _userLocked       = aRef.getUserLocked();
-        _resetRPTSettings = aRef.getResetRPTSettings();
-    }
-    return *this;
 }
 
 void CtiTableCarrierRoute::DumpData()

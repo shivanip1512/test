@@ -27,24 +27,7 @@ _cdWait(0),
 _lineSettings("8N1")
 {}
 
-CtiTablePortSettings::CtiTablePortSettings(const CtiTablePortSettings& aRef)
-{
-   *this = aRef;
-}
-
 CtiTablePortSettings::~CtiTablePortSettings() {}
-
-CtiTablePortSettings& CtiTablePortSettings::operator=(const CtiTablePortSettings& aRef)
-{
-   if(this != &aRef)
-   {
-      _baudRate      = aRef.getBaudRate();
-      _cdWait        = aRef.getCDWait();
-      _lineSettings  = aRef.getLineSettings();
-   }
-
-   return *this;
-}
 
 INT CtiTablePortSettings::getBaudRate() const           { return _baudRate;}
 INT& CtiTablePortSettings::getBaudRate()                 { return _baudRate;}

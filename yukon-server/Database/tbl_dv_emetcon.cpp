@@ -18,26 +18,7 @@ _relay(Invalid_Relay),
 _routeID(-1)
 {}
 
-CtiTableEmetconLoadGroup::CtiTableEmetconLoadGroup(const CtiTableEmetconLoadGroup& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableEmetconLoadGroup::~CtiTableEmetconLoadGroup() {}
-
-CtiTableEmetconLoadGroup& CtiTableEmetconLoadGroup::operator=(const CtiTableEmetconLoadGroup& aRef)
-{
-    if(this != &aRef)
-    {
-        _deviceID      = aRef.getDeviceID();
-        _silver        = aRef.getSilver();
-        _gold          = aRef.getGold();
-        _addressUsage  = aRef.getAddressUsage();
-        _relay         = aRef.getRelay();
-        _routeID       = aRef.getRouteID();
-    }
-    return *this;
-}
 
 INT CtiTableEmetconLoadGroup::getEmetconAddress() const
 {

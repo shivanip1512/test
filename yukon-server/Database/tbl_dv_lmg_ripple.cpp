@@ -18,25 +18,7 @@ _deviceID(0),
 _shedTime(0)
 {}
 
-CtiTableRippleLoadGroup::CtiTableRippleLoadGroup(const CtiTableRippleLoadGroup& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableRippleLoadGroup::~CtiTableRippleLoadGroup() {}
-
-CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::operator=(const CtiTableRippleLoadGroup& aRef)
-{
-    if(this != &aRef)
-    {
-        setDeviceID(aRef.getDeviceID());
-        setControlBits(aRef.getControlBits());
-        setRestoreBits(aRef.getRestoreBits());
-        setRouteID(aRef.getRouteID());
-        setShedTime(aRef.getShedTime());
-    }
-    return *this;
-}
 
 LONG  CtiTableRippleLoadGroup::getRouteID() const
 {

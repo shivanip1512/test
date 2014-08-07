@@ -25,9 +25,7 @@ public:
 
     CtiDeviceGroupSADigital();
 
-    CtiTableSASimpleGroup getLoadGroup() const;
-    CtiTableSASimpleGroup& getLoadGroup();
-    CtiDeviceGroupSADigital& setLoadGroup(const CtiTableSASimpleGroup& aRef);
+    const CtiTableSASimpleGroup& getLoadGroup() const;
 
     virtual std::string getSQLCoreStatement() const;
 

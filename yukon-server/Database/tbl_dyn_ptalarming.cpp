@@ -29,29 +29,8 @@ CtiTableDynamicPointAlarming::CtiTableDynamicPointAlarming() :
 {
 }
 
-CtiTableDynamicPointAlarming::CtiTableDynamicPointAlarming(const CtiTableDynamicPointAlarming& aRef) :
-_tags(0),
-_user("(none)"),
-_action("(none)"),
-_description("(none)")
-{
-    *this = aRef;
-}
-
 CtiTableDynamicPointAlarming::~CtiTableDynamicPointAlarming()
 {
-}
-
-CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::operator=(const CtiTableDynamicPointAlarming& aRef)
-{
-    if(this != &aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
 }
 
 int CtiTableDynamicPointAlarming::operator==(const CtiTableDynamicPointAlarming &right) const

@@ -37,9 +37,7 @@ public:
 
     CtiDeviceGroupSA305();
 
-    CtiTableSA305LoadGroup getLoadGroup() const;
-    CtiTableSA305LoadGroup& getLoadGroup();
-    CtiDeviceGroupSA305& setLoadGroup(const CtiTableSA305LoadGroup& aRef);
+    const CtiTableSA305LoadGroup& getLoadGroup() const;
 
     CtiSACommand_t getLastSACommandType() const { return _lastSACommandType; }
 

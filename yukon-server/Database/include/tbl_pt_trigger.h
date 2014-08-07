@@ -10,8 +10,16 @@
 #include "dbmemobject.h"
 #include "dbaccess.h"
 
-class IM_EX_CTIYUKONDB CtiTablePointTrigger : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTablePointTrigger : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTablePointTrigger(const CtiTablePointTrigger&);
+    CtiTablePointTrigger& operator=(const CtiTablePointTrigger&);
+
 protected:
 
     long      _pointID;
@@ -21,15 +29,10 @@ protected:
     DOUBLE    _verificationDeadband;
     int       _commandTimeOut;
 
-private:
+public:
 
-    public:
     CtiTablePointTrigger();
-
-    CtiTablePointTrigger(const CtiTablePointTrigger& aRef);
     virtual ~CtiTablePointTrigger();
-
-    CtiTablePointTrigger& operator=(const CtiTablePointTrigger& aRef);
 
     static std::string getSQLCoreStatement(long pointID = 0);
 

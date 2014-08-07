@@ -6,8 +6,15 @@
 #include "yukon.h"
 #include "row_reader.h"
 
-class IM_EX_CTIYUKONDB CtiTablePortBase : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTablePortBase : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTablePortBase(const CtiTablePortBase&);
+    CtiTablePortBase& operator=(const CtiTablePortBase&);
 
 protected:
 
@@ -29,15 +36,10 @@ private:
     typedef CtiMemDBObject Inherited;
 
     CtiTablePortBase();
-    CtiTablePortBase(const CtiTablePortBase& aRef);
-
     virtual ~CtiTablePortBase();
-
-    CtiTablePortBase& operator=(const CtiTablePortBase& aRef);
 
     INT   getProtocol() const;
     void  setProtocol(int t);
-
 
     CtiTablePortBase& setAlarmInhibit(bool b);
     bool  getAlarmInhibit() const;

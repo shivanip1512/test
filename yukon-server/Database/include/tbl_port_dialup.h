@@ -14,8 +14,15 @@
 #include "resolvers.h"
 #include "yukon.h"
 
-class IM_EX_CTIYUKONDB CtiTablePortDialup : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTablePortDialup : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTablePortDialup(const CtiTablePortDialup&);
+    CtiTablePortDialup& operator=(const CtiTablePortDialup&);
 
 protected:
 
@@ -31,12 +38,7 @@ private:
 public:
 
    CtiTablePortDialup();
-
-   CtiTablePortDialup(const CtiTablePortDialup& aRef);
-
    virtual ~CtiTablePortDialup();
-
-   CtiTablePortDialup& operator=(const CtiTablePortDialup& aRef);
 
    std::string                     getModemType() const;
    std::string&                    getModemType();

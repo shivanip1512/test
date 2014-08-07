@@ -25,22 +25,8 @@ CtiTableDeviceRoute::CtiTableDeviceRoute() :
    RouteID(-1)
 {}
 
-CtiTableDeviceRoute::CtiTableDeviceRoute(const CtiTableDeviceRoute& aRef)
-{
-   *this = aRef;
-}
-
 CtiTableDeviceRoute::~CtiTableDeviceRoute()
 {}
-
-CtiTableDeviceRoute& CtiTableDeviceRoute::operator=(const CtiTableDeviceRoute& aRef)
-{
-   if(this != &aRef)
-   {
-      RouteID = aRef.getRouteID();
-   }
-   return *this;
-}
 
 LONG  CtiTableDeviceRoute::getRouteID() const
 {

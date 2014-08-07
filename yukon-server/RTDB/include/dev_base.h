@@ -42,7 +42,7 @@ namespace Devices {
  *  into CtiDeviceSingle and CtiDeviceGroup.. This guy is destinied to have MANY
  *  virtual functions.
  */
-class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAOLite, private boost::noncopyable
+class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAOLite
 {
 private:
     // WORKAROUND:
@@ -229,9 +229,6 @@ public:
     virtual INT executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     bool adjustCommCounts( bool &isCommFail, bool retry );
     bool isCommFailed() const;
-
-    const CtiTableDeviceBase& getDeviceBase() const;
-    CtiDeviceBase& setDeviceBase(const CtiTableDeviceBase& tbldevbase);
 
     bool getControlInhibit() const;
     CtiDeviceBase& CtiDeviceBase::setControlInhibit(const bool b);

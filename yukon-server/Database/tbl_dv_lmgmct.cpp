@@ -33,27 +33,9 @@ _mctUniqueAddress(0)
 {
 }
 
-
-CtiTableLMGroupMCT::CtiTableLMGroupMCT( const CtiTableLMGroupMCT& aRef )
-{
-    *this = aRef;
-}
-
-
 CtiTableLMGroupMCT::~CtiTableLMGroupMCT()
 {
 }
-
-
-CtiTableLMGroupMCT &CtiTableLMGroupMCT::operator=( const CtiTableLMGroupMCT& aRef )
-{
-    if( this != &aRef )
-    {
-    }
-
-    return *this;
-}
-
 
 string CtiTableLMGroupMCT::getTableName()
 {

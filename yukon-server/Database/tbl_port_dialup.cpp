@@ -29,25 +29,7 @@ _prefixString(" "),
 _suffixString(" ")
 {}
 
-CtiTablePortDialup::CtiTablePortDialup(const CtiTablePortDialup& aRef)
-{
-   *this = aRef;
-}
-
 CtiTablePortDialup::~CtiTablePortDialup() {}
-
-CtiTablePortDialup& CtiTablePortDialup::operator=(const CtiTablePortDialup& aRef)
-{
-   if(this != &aRef)
-   {
-      _portID           = aRef.getPortID();
-      _modemType        = aRef.getModemType();
-      _modemInitString  = aRef.getModemInitString();
-      _prefixString     = aRef.getPrefixString();
-      _suffixString     = aRef.getSuffixString();
-   }
-   return *this;
-}
 
 string CtiTablePortDialup::getModemType() const
 {

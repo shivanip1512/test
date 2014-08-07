@@ -24,21 +24,7 @@ using std::endl;
 CtiTablePortLocalSerial::CtiTablePortLocalSerial()
 {}
 
-CtiTablePortLocalSerial::CtiTablePortLocalSerial(const CtiTablePortLocalSerial& aRef)
-{
-   *this = aRef;
-}
-
 CtiTablePortLocalSerial::~CtiTablePortLocalSerial() {}
-
-CtiTablePortLocalSerial& CtiTablePortLocalSerial::operator=(const CtiTablePortLocalSerial& aRef)
-{
-   if(this != &aRef)
-   {
-      _physicalPort = aRef.getPhysicalPort();
-   }
-   return *this;
-}
 
 string CtiTablePortLocalSerial::getPhysicalPort() const    { return _physicalPort; }
 string& CtiTablePortLocalSerial::getPhysicalPort()          { return _physicalPort; }

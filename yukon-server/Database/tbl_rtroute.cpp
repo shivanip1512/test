@@ -36,23 +36,7 @@ Name(aStr),
 Type(aType)
 {}
 
-CtiTableRoute::CtiTableRoute(const CtiTableRoute& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableRoute::~CtiTableRoute() {}
-
-CtiTableRoute& CtiTableRoute::operator=(const CtiTableRoute& aRef)
-{
-    if(this != &aRef)
-    {
-        RouteID  = aRef.getRouteID();
-        Type     = aRef.getType();
-        Name     = aRef.getName();
-    }
-    return *this;
-}
 
 void CtiTableRoute::DumpData()
 {

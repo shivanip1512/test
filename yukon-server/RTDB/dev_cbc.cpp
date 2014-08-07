@@ -410,19 +410,9 @@ string CtiDeviceCBC::getDescription(const CtiCommandParser & parse) const
     return tmp;
 }
 
-CtiTableDeviceCBC   CtiDeviceCBC::getCBC() const
+const CtiTableDeviceCBC& CtiDeviceCBC::getCBC() const
 {
     return _cbc;
-}
-CtiTableDeviceCBC&  CtiDeviceCBC::getCBC()
-{
-    return _cbc;
-}
-
-CtiDeviceCBC&     CtiDeviceCBC::setCBC(const CtiTableDeviceCBC& aRef)
-{
-    _cbc = aRef;
-    return *this;
 }
 
 string CtiDeviceCBC::getSQLCoreStatement() const

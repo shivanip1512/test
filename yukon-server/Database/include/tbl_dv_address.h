@@ -22,8 +22,16 @@
 #include "yukon.h"
 #include "row_reader.h"
 
-class IM_EX_CTIYUKONDB CtiTableDeviceAddress : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDeviceAddress : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableDeviceAddress(const CtiTableDeviceAddress&);
+    CtiTableDeviceAddress& operator=(const CtiTableDeviceAddress&);
+
 protected:
 
    LONG     _deviceID;
@@ -36,11 +44,7 @@ private:
 public:
 
    CtiTableDeviceAddress();
-   CtiTableDeviceAddress(const CtiTableDeviceAddress& aRef);
-
    virtual ~CtiTableDeviceAddress();
-
-   CtiTableDeviceAddress& operator=(const CtiTableDeviceAddress& aRef);
 
    LONG getMasterAddress() const;
    void setMasterAddress(LONG a);

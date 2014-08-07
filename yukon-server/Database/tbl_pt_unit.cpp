@@ -30,36 +30,8 @@ _decimalDigits(0)
 //_lowReasonablityLimit(-DBL_MAX)
 {}
 
-CtiTablePointUnit::CtiTablePointUnit(const CtiTablePointUnit& aRef) :
-_logFrequency(INT_MAX),
-_unitID(0),
-_decimalPlaces(2),
-_decimalDigits(0)
-//_highReasonablityLimit(DBL_MAX),
-//_lowReasonablityLimit(-DBL_MAX)
-{
-    *this = aRef;
-}
-
-CtiTablePointUnit& CtiTablePointUnit::operator=(const CtiTablePointUnit& aRef)
-{
-    if(this != &aRef)
-    {
-        _unitID                 = aRef.getUnitID();
-        _decimalPlaces          = aRef.getDecimalPlaces();
-        _decimalDigits          = aRef.getDecimalDigits();
-        //_highReasonablityLimit  = aRef.getHighReasonabilityLimit();
-        //_lowReasonablityLimit   = aRef.getLowReasonabilityLimit();
-        _logFrequency           = aRef.getLogFrequency();
-
-        _unitMeasure            = aRef.getUnitMeasure();
-    }
-    return *this;
-}
-
 CtiTablePointUnit::~CtiTablePointUnit()
 {}
-
 
 void CtiTablePointUnit::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
@@ -118,7 +90,7 @@ CtiTableUnitMeasure &CtiTablePointUnit::getUnitMeasure()
     return _unitMeasure;
 }
 
-CtiTableUnitMeasure CtiTablePointUnit::getUnitMeasure() const
+const CtiTableUnitMeasure& CtiTablePointUnit::getUnitMeasure() const
 {
     return _unitMeasure;
 }

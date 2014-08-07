@@ -154,19 +154,7 @@ void CtiPortDialable::DecodeDatabaseReader(Cti::RowReader &rdr)
     _tblPortDialup.DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
-CtiTablePortDialup CtiPortDialable::getTablePortDialup() const
+const CtiTablePortDialup& CtiPortDialable::getTablePortDialup() const
 {
     return _tblPortDialup;
 }
-
-CtiTablePortDialup& CtiPortDialable::getTablePortDialup()
-{
-    return _tblPortDialup;
-}
-
-CtiPortDialable& CtiPortDialable::setTablePortDialup(const CtiTablePortDialup& aRef)
-{
-    _tblPortDialup = aRef;
-    return *this;
-}
-

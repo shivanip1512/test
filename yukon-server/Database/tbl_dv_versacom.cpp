@@ -22,29 +22,7 @@ _relayMask(0),
 _routeID(-1)
 {}
 
-CtiTableVersacomLoadGroup::CtiTableVersacomLoadGroup(const CtiTableVersacomLoadGroup& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableVersacomLoadGroup::~CtiTableVersacomLoadGroup() {}
-
-CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::operator=(const CtiTableVersacomLoadGroup& aRef)
-{
-    if(this != &aRef)
-    {
-        _deviceID      = aRef.getDeviceID();
-        _serial        = aRef.getSerial();
-        _utilityID     = aRef.getUtilityID();
-        _section       = aRef.getSection();
-        _class         = aRef.getClass();
-        _division      = aRef.getDivision();
-        _addressUsage  = aRef.getAddressUsage();
-        _relayMask     = aRef.getRelayMask();
-        _routeID       = aRef.getRouteID();
-    }
-    return *this;
-}
 
 INT  CtiTableVersacomLoadGroup::getSerial() const
 {

@@ -18,8 +18,16 @@
 #include "resolvers.h"
 #include "row_reader.h"
 
-class IM_EX_CTIYUKONDB CtiTableExpresscomLoadGroup : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableExpresscomLoadGroup : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableExpresscomLoadGroup(const CtiTableExpresscomLoadGroup&);
+    CtiTableExpresscomLoadGroup& operator=(const CtiTableExpresscomLoadGroup&);
+
 protected:
 
     LONG _lmGroupId;
@@ -39,17 +47,12 @@ protected:
     USHORT _addressUsage;             // bit indicators.  LSB is SPID.  No bits set indicates serial.
     USHORT _loads;             // 0 indicates all loads.  Otherwise, one load per message!
 
-private:
-
 public:
 
     typedef CtiMemDBObject Inherited;
 
     CtiTableExpresscomLoadGroup();
-    CtiTableExpresscomLoadGroup(const CtiTableExpresscomLoadGroup& aRef);
     virtual ~CtiTableExpresscomLoadGroup();
-
-    CtiTableExpresscomLoadGroup& operator=(const CtiTableExpresscomLoadGroup& aRef);
 
     LONG getId() const;
     CtiTableExpresscomLoadGroup& setId(LONG id);

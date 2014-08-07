@@ -14,28 +14,8 @@ _deviceID(-1),
 _pagerNumber(pn)
 {}
 
-CtiTableDeviceTapPaging::CtiTableDeviceTapPaging(const CtiTableDeviceTapPaging& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceTapPaging::~CtiTableDeviceTapPaging()
 {}
-
-CtiTableDeviceTapPaging& CtiTableDeviceTapPaging::operator=(const CtiTableDeviceTapPaging& aRef)
-{
-
-
-    if(this != &aRef)
-    {
-        _deviceID    = aRef.getDeviceID();
-        _pagerNumber = aRef.getPagerNumber();
-        _senderID = aRef.getSenderID();
-        _securityCode = aRef.getSecurityCode();
-        _postPath = aRef.getPOSTPath();
-    }
-    return *this;
-}
 
 string CtiTableDeviceTapPaging::getPagerNumber() const
 {

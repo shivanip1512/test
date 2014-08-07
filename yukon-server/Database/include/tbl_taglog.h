@@ -16,8 +16,16 @@
 #define CTITABLETAGLOG_MAX_REFSTR         60
 #define CTITABLETAGLOG_MAX_FORSTR         60
 
-class IM_EX_CTIYUKONDB CtiTableTagLog : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableTagLog : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableTagLog(const CtiTableTagLog&);
+    CtiTableTagLog& operator=(const CtiTableTagLog&);
+
 protected:
 
     int             _logId;             // no two tags share the same one
@@ -40,13 +48,9 @@ public:
 
     typedef CtiMemDBObject Inherited;
 
-
     CtiTableTagLog();
-    CtiTableTagLog(const CtiTableTagLog& aRef);
-
     virtual ~CtiTableTagLog();
 
-    CtiTableTagLog& operator=(const CtiTableTagLog& aRef);
     virtual int operator==(const CtiTableTagLog&) const;
     bool operator<(const CtiTableTagLog& aRef) const;
 

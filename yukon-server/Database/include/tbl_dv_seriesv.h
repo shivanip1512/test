@@ -12,8 +12,16 @@
 #include "yukon.h"
 #include "row_reader.h"
 
-class IM_EX_CTIYUKONDB CtiTableDeviceSeriesV : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDeviceSeriesV : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableDeviceSeriesV(const CtiTableDeviceSeriesV&);
+    CtiTableDeviceSeriesV& operator=(const CtiTableDeviceSeriesV&);
+
 protected:
 
     LONG      _device_id;
@@ -28,17 +36,10 @@ protected:
               _power_value_offset,
               _retries;
 
-private:
-
 public:
 
     CtiTableDeviceSeriesV();
-
-    CtiTableDeviceSeriesV(const CtiTableDeviceSeriesV& aRef);
-
     virtual ~CtiTableDeviceSeriesV();
-
-    CtiTableDeviceSeriesV& operator=(const CtiTableDeviceSeriesV& aRef);
 
     long                   getDeviceID() const;
     CtiTableDeviceSeriesV  setDeviceID(long id);

@@ -16,25 +16,8 @@ _ccuAmpUseType(RouteAmp1),
 _currentAmp(0)
 {}
 
-CtiTableDeviceIDLC::CtiTableDeviceIDLC(const CtiTableDeviceIDLC& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceIDLC::~CtiTableDeviceIDLC()
 {
-}
-
-CtiTableDeviceIDLC& CtiTableDeviceIDLC::operator=(const CtiTableDeviceIDLC& aRef)
-{
-    if(this != &aRef)
-    {
-        _deviceID      = aRef.getDeviceID();
-        _address       = aRef.getAddress();
-        _postdelay     = aRef.getPostDelay();
-        _ccuAmpUseType = aRef.getCCUAmpUseType();
-    }
-    return *this;
 }
 
 LONG CtiTableDeviceIDLC::getDeviceID() const

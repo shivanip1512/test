@@ -15,23 +15,8 @@ _address(-1)
 {
 }
 
-CtiTableDeviceCarrier::CtiTableDeviceCarrier(const CtiTableDeviceCarrier& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceCarrier::~CtiTableDeviceCarrier()
 {
-}
-
-CtiTableDeviceCarrier& CtiTableDeviceCarrier::operator=(const CtiTableDeviceCarrier& aRef)
-{
-    if(this != &aRef)
-    {
-        _deviceID = aRef.getDeviceID();
-        _address = aRef.getAddress();
-    }
-    return *this;
 }
 
 INT CtiTableDeviceCarrier::getAddress() const

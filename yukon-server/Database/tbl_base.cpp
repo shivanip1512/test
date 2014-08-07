@@ -29,31 +29,8 @@ CtiTableDeviceBase::CtiTableDeviceBase() :
 {
 }
 
-CtiTableDeviceBase::CtiTableDeviceBase(const CtiTableDeviceBase &aRef) :
-    _alarmInhibit(false),
-    _controlInhibit(false),
-    _useRadioDelay(true)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceBase::~CtiTableDeviceBase()
 {
-
-}
-
-
-CtiTableDeviceBase& CtiTableDeviceBase::operator=(const CtiTableDeviceBase &aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        _alarmInhibit   = aRef.getAlarmInhibit();
-        _controlInhibit = aRef.getControlInhibit();
-        _useRadioDelay  = aRef.getRadioDelay();
-    }
-
-    return *this;
 }
 
 CtiTableDeviceBase& CtiTableDeviceBase::setAlarmInhibit(bool b)

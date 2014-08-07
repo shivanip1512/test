@@ -87,8 +87,8 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                 OutMessage->TargetID            = getID();
                 OutMessage->Retry               = 2;                      // Default to two tries per route!
 
-                OutMessage->Buffer.ASt.Group    = getEmetconGroup().getEmetconAddress();
-                OutMessage->Buffer.ASt.Function = getEmetconGroup().getRelay();
+                OutMessage->Buffer.ASt.Group    = EmetconGroup.getEmetconAddress();
+                OutMessage->Buffer.ASt.Function = EmetconGroup.getRelay();
 
                 if( parse.isKeyValid("relaynext") )
                 {
@@ -303,15 +303,6 @@ string CtiDeviceGroupEmetcon::getDescription(const CtiCommandParser & parse) con
 
 CtiDeviceGroupEmetcon::CtiDeviceGroupEmetcon()
 {
-}
-
-CtiTableEmetconLoadGroup   CtiDeviceGroupEmetcon::getEmetconGroup() const      { return EmetconGroup;}
-CtiTableEmetconLoadGroup&  CtiDeviceGroupEmetcon::getEmetconGroup()            { return EmetconGroup;}
-
-CtiDeviceGroupEmetcon&     CtiDeviceGroupEmetcon::setEmetconGroup(const CtiTableEmetconLoadGroup& aRef)
-{
-    EmetconGroup = aRef;
-    return *this;
 }
 
 string CtiDeviceGroupEmetcon::getSQLCoreStatement() const

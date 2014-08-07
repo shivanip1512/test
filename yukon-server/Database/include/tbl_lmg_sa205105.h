@@ -16,8 +16,16 @@
 #include "row_reader.h"
 
 
-class IM_EX_CTIYUKONDB CtiTableSA205105Group : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableSA205105Group : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableSA205105Group(const CtiTableSA205105Group&);
+    CtiTableSA205105Group& operator=(const CtiTableSA205105Group&);
+
 protected:
 
     LONG        _lmGroupId;
@@ -26,15 +34,10 @@ protected:
     std::string   _operationalAddress;
     std::string   _loadNumber;
 
-private:
-
 public:
+
     CtiTableSA205105Group();
-    CtiTableSA205105Group( const CtiTableSA205105Group& aRef );
-
     virtual ~CtiTableSA205105Group();
-
-    CtiTableSA205105Group& operator=( const CtiTableSA205105Group& aRef );
 
     LONG getLmGroupId( void ) const;
     LONG getRouteId( void ) const;

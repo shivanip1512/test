@@ -12,8 +12,16 @@
 #include "utility.h"
 #include "yukon.h"
 
-class IM_EX_CTIYUKONDB CtiTblDeviceReadRequestLog
+class IM_EX_CTIYUKONDB CtiTblDeviceReadRequestLog : private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTblDeviceReadRequestLog(const CtiTblDeviceReadRequestLog&);
+    CtiTblDeviceReadRequestLog& operator=(const CtiTblDeviceReadRequestLog&);
+
 protected:
 
     long _requestLogId;
@@ -22,8 +30,6 @@ protected:
     CtiTime _startTime;
     CtiTime _stopTime;
     long _readJobId;
-
-private:
 
 public:
 
@@ -34,11 +40,7 @@ public:
                                 CtiTime& end,
                                 long jobId);
 
-    CtiTblDeviceReadRequestLog(const CtiTblDeviceReadRequestLog& aRef);
-
     virtual ~CtiTblDeviceReadRequestLog();
-
-    CtiTblDeviceReadRequestLog& operator=(const CtiTblDeviceReadRequestLog& aRef);
 
     virtual bool Insert();
     virtual bool Update();

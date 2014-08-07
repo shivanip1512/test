@@ -20,19 +20,9 @@ _lastSACommandType(SA305_DI_Control)
 {
 }
 
-CtiTableSA305LoadGroup CtiDeviceGroupSA305::getLoadGroup() const
+const CtiTableSA305LoadGroup& CtiDeviceGroupSA305::getLoadGroup() const
 {
     return _loadGroup;
-}
-
-CtiTableSA305LoadGroup& CtiDeviceGroupSA305::getLoadGroup()
-{
-    return _loadGroup;
-}
-CtiDeviceGroupSA305& CtiDeviceGroupSA305::setLoadGroup(const CtiTableSA305LoadGroup& aRef)
-{
-    _loadGroup = aRef;
-    return *this;
 }
 
 LONG CtiDeviceGroupSA305::getRouteID()

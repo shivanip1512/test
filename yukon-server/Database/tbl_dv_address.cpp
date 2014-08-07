@@ -27,26 +27,8 @@ _slaveAddress(-1),
 _postdelay(-1)
 {}
 
-CtiTableDeviceAddress::CtiTableDeviceAddress(const CtiTableDeviceAddress& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceAddress::~CtiTableDeviceAddress()
 {
-}
-
-CtiTableDeviceAddress& CtiTableDeviceAddress::operator=(const CtiTableDeviceAddress& aRef)
-{
-    if(this != &aRef)
-    {
-        _deviceID      = aRef._deviceID;
-        _masterAddress = aRef._masterAddress;
-        _slaveAddress  = aRef._slaveAddress;
-        _postdelay     = aRef._postdelay;
-    }
-
-    return *this;
 }
 
 LONG CtiTableDeviceAddress::getDeviceID() const

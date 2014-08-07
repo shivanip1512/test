@@ -40,11 +40,6 @@ public:
 
    virtual ~CtiPortDirect();
 
-   CtiTablePortLocalSerial          getLocalSerial() const;
-   CtiTablePortLocalSerial&         getLocalSerial();
-
-   CtiPortDirect& setLocalSerial(const CtiTablePortLocalSerial& aRef);
-
    virtual bool      isViable();
    virtual std::string getPhysicalPort() const;
 

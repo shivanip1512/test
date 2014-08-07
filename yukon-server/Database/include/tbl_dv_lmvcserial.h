@@ -14,8 +14,16 @@
 
 #include "vcomdefs.h"
 
-class IM_EX_CTIYUKONDB CtiTableLMGroupVersacomSerial : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableLMGroupVersacomSerial : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableLMGroupVersacomSerial(const CtiTableLMGroupVersacomSerial&);
+    CtiTableLMGroupVersacomSerial& operator=(const CtiTableLMGroupVersacomSerial&);
+
 protected:
 
    LONG     _deviceID;
@@ -25,17 +33,10 @@ protected:
    INT      _relayMask;          // This IS a mask 31 - 0 bits means 32 - 1 relays!
    LONG     _routeID;            // the route (macro) which defines this device.
 
-private:
-
 public:
 
    CtiTableLMGroupVersacomSerial();
-
-   CtiTableLMGroupVersacomSerial(const CtiTableLMGroupVersacomSerial& aRef);
-
    virtual ~CtiTableLMGroupVersacomSerial();
-
-   CtiTableLMGroupVersacomSerial& operator=(const CtiTableLMGroupVersacomSerial& aRef);
 
    INT  getSerial() const;
 

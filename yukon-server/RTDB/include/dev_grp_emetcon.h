@@ -24,10 +24,6 @@ public:
 
    CtiDeviceGroupEmetcon();
 
-   CtiTableEmetconLoadGroup   getEmetconGroup() const;//      { return EmetconGroup; }
-   CtiTableEmetconLoadGroup&  getEmetconGroup();//            { return EmetconGroup; }
-
-   CtiDeviceGroupEmetcon&     setEmetconGroup(const CtiTableEmetconLoadGroup& aRef);
    virtual LONG getRouteID();
    virtual std::string getDescription(const CtiCommandParser & parse) const;
 

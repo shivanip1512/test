@@ -5,11 +5,18 @@
 #include "dlldefs.h"
 #include "row_reader.h"
 
-class IM_EX_CTIYUKONDB CtiTableLMGroupMCT
+class IM_EX_CTIYUKONDB CtiTableLMGroupMCT : private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableLMGroupMCT(const CtiTableLMGroupMCT&);
+    CtiTableLMGroupMCT& operator=(const CtiTableLMGroupMCT&);
+
     enum AddressLevels;
 
-private:
     unsigned long _address;
 
     AddressLevels _addressLevel;
@@ -18,16 +25,10 @@ private:
 
     long _routeID, _deviceID, _mctUniqueAddress;
 
-protected:
-
 public:
 
     CtiTableLMGroupMCT();
-    CtiTableLMGroupMCT( const CtiTableLMGroupMCT &aRef );
-
     virtual ~CtiTableLMGroupMCT();
-
-    CtiTableLMGroupMCT &operator=( const CtiTableLMGroupMCT &aRef );
 
     enum AddressLevels
     {

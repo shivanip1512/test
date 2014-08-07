@@ -13,8 +13,16 @@
 #include "yukon.h"
 #include "row_reader.h"
 
-class IM_EX_CTIYUKONDB CtiTableDeviceIED : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDeviceIED : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableDeviceIED(const CtiTableDeviceIED&);
+    CtiTableDeviceIED& operator=(const CtiTableDeviceIED&);
+
 protected:
 
    LONG           _deviceID;
@@ -24,20 +32,15 @@ protected:
 public:
 
    CtiTableDeviceIED();
-
-   CtiTableDeviceIED(const CtiTableDeviceIED& aRef);
-
    virtual ~CtiTableDeviceIED();
 
-   CtiTableDeviceIED& operator=(const CtiTableDeviceIED& aRef);
+   INT            getSlaveAddress() const;
+   INT&           getSlaveAddress();
+   void           setSlaveAddress(INT &aInt);
 
-   INT                  getSlaveAddress() const;
-   INT&                 getSlaveAddress();
-   CtiTableDeviceIED    setSlaveAddress(INT &aInt);
-
-   std::string            getPassword() const;
-   std::string&           getPassword();
-   CtiTableDeviceIED      setPassword(std::string &aStr);
+   std::string    getPassword() const;
+   std::string&   getPassword();
+   void           setPassword(std::string &aStr);
 
    void DecodeDatabaseReader(const INT DeviceType, Cti::RowReader &rdr);
 

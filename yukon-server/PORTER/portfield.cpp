@@ -892,10 +892,10 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
     {
         if( Port->isDialup() )
         {
-            if(((CtiDeviceRemote *)Device.get())->isDialup())     // Make sure the dialup pointer is NOT null!
+            if(static_cast<const CtiDeviceRemote&>(*Device).isDialup())     // Make sure the dialup pointer is NOT null!
             {
                 //  init the port to the device's baud rate
-                Port->setBaudRate(((CtiDeviceRemote *)Device.get())->getDialup()->getBaudRate());
+                Port->setBaudRate(static_cast<const CtiDeviceRemote&>(*Device).getBaudRate());
             }
             else
             {

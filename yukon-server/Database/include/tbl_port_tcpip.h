@@ -13,8 +13,15 @@
 #include "resolvers.h"
 #include "yukon.h"
 
-class IM_EX_CTIYUKONDB CtiTablePortTCPIP : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTablePortTCPIP : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTablePortTCPIP(const CtiTablePortTCPIP&);
+    CtiTablePortTCPIP& operator=(const CtiTablePortTCPIP&);
 
 protected:
 
@@ -25,17 +32,10 @@ protected:
    std::string _encodingKey;
    std::string _encodingType;
 
-private:
-
 public:
 
    CtiTablePortTCPIP();
-
-   CtiTablePortTCPIP(const CtiTablePortTCPIP& aRef);
-
    virtual ~CtiTablePortTCPIP();
-
-   CtiTablePortTCPIP& operator=(const CtiTablePortTCPIP& aRef);
 
    INT getIPPort() const;
    void setIPPort(const INT i);

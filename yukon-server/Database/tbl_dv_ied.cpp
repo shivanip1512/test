@@ -16,24 +16,7 @@ _slaveAddress(0)
 {
 }
 
-CtiTableDeviceIED::CtiTableDeviceIED(const CtiTableDeviceIED& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceIED::~CtiTableDeviceIED() {}
-
-CtiTableDeviceIED& CtiTableDeviceIED::operator=(const CtiTableDeviceIED& aRef)
-{
-
-    if(this != &aRef)
-    {
-        _deviceID      = aRef.getDeviceID();
-        _password      = aRef.getPassword();
-        _slaveAddress  = aRef.getSlaveAddress();
-    }
-    return *this;
-}
 
 INT CtiTableDeviceIED::getSlaveAddress() const
 {
@@ -47,11 +30,9 @@ INT& CtiTableDeviceIED::getSlaveAddress()
     return _slaveAddress;
 }
 
-CtiTableDeviceIED CtiTableDeviceIED::setSlaveAddress(INT &aInt)
+void CtiTableDeviceIED::setSlaveAddress(INT &aInt)
 {
-
     _slaveAddress = aInt;
-    return *this;
 }
 
 string CtiTableDeviceIED::getPassword() const
@@ -66,11 +47,9 @@ string& CtiTableDeviceIED::getPassword()
     return _password;
 }
 
-CtiTableDeviceIED CtiTableDeviceIED::setPassword(string &aStr)
+void CtiTableDeviceIED::setPassword(string &aStr)
 {
-
     _password = aStr;
-    return *this;
 }
 
 void CtiTableDeviceIED::DecodeDatabaseReader(const INT DeviceType, Cti::RowReader &rdr)

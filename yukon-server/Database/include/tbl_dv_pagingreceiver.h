@@ -12,8 +12,16 @@
 #include "yukon.h"
 #include "row_reader.h"
 
-class IM_EX_CTIYUKONDB CtiTableDevicePagingReceiver : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDevicePagingReceiver : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableDevicePagingReceiver(const CtiTableDevicePagingReceiver&);
+    CtiTableDevicePagingReceiver& operator=(const CtiTableDevicePagingReceiver&);
+
 protected:
 
     LONG         _deviceID;
@@ -38,12 +46,7 @@ protected:
 public:
 
     CtiTableDevicePagingReceiver();
-
-    CtiTableDevicePagingReceiver(const CtiTableDevicePagingReceiver& aRef);
-
     virtual ~CtiTableDevicePagingReceiver();
-
-    CtiTableDevicePagingReceiver& operator=(const CtiTableDevicePagingReceiver& aRef);
 
     float CtiTableDevicePagingReceiver::getFrequency() const;
     float CtiTableDevicePagingReceiver::getCapcode(int codeNumber) const;

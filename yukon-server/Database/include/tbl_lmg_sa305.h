@@ -15,8 +15,16 @@
 #include "resolvers.h"
 #include "row_reader.h"
 
-class IM_EX_CTIYUKONDB CtiTableSA305LoadGroup : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableSA305LoadGroup : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableSA305LoadGroup(const CtiTableSA305LoadGroup&);
+    CtiTableSA305LoadGroup& operator=(const CtiTableSA305LoadGroup&);
+
 protected:
 
     LONG _lmGroupId;
@@ -35,20 +43,12 @@ protected:
     int _function;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
     std::string _addressUsage;      // Identifies which addressing components to use.
 
-
-private:
-
 public:
 
     typedef CtiMemDBObject Inherited;
 
-
     CtiTableSA305LoadGroup();
-    CtiTableSA305LoadGroup(const CtiTableSA305LoadGroup& aRef);
-
     virtual ~CtiTableSA305LoadGroup();
-
-    CtiTableSA305LoadGroup& operator=(const CtiTableSA305LoadGroup& aRef);
 
     LONG getLmGroupId() const;
     LONG getRouteId() const;

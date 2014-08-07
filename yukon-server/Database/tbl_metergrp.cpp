@@ -13,22 +13,7 @@ CtiTableDeviceMeterGroup::CtiTableDeviceMeterGroup():
 _deviceID(-1)
 {}
 
-CtiTableDeviceMeterGroup::CtiTableDeviceMeterGroup(const CtiTableDeviceMeterGroup& aRef)
-{
-    *this = aRef;
-}
-
 CtiTableDeviceMeterGroup::~CtiTableDeviceMeterGroup() {}
-
-CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::operator=(const CtiTableDeviceMeterGroup& aRef)
-{
-    if(this != &aRef)
-    {
-        _deviceID            = aRef.getDeviceID();
-        _meterNumber         = aRef.getMeterNumber();
-    }
-    return *this;
-}
 
 LONG CtiTableDeviceMeterGroup::getDeviceID() const
 {

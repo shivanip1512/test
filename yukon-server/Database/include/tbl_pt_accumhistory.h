@@ -8,8 +8,16 @@
 #include "dlldefs.h"
 
 
-class IM_EX_CTIYUKONDB CtiTablePointAccumulatorHistory : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTablePointAccumulatorHistory : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTablePointAccumulatorHistory(const CtiTablePointAccumulatorHistory&);
+    CtiTablePointAccumulatorHistory& operator=(const CtiTablePointAccumulatorHistory&);
+
 protected:
 
    LONG           _pointID;
@@ -22,9 +30,7 @@ public:
                                    ULONG prevpulsecount = 0,
                                    ULONG pulsecount = 0);
 
-   CtiTablePointAccumulatorHistory(const CtiTablePointAccumulatorHistory& aRef);
    virtual ~CtiTablePointAccumulatorHistory();
-   CtiTablePointAccumulatorHistory& operator=(const CtiTablePointAccumulatorHistory& aRef);
 
    bool operator==(const CtiTablePointAccumulatorHistory&) const;
 

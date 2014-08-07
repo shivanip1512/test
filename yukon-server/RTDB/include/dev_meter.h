@@ -33,10 +33,6 @@ public:
 
    int readDSTFile( std::string &id );
 
-   CtiTableDeviceMeterGroup  getMeterGroup() const;
-   CtiTableDeviceMeterGroup& getMeterGroup();
-   CtiDeviceMeter& setMeterGroup( const CtiTableDeviceMeterGroup & aMeterGroup );
-
    virtual std::string getSQLCoreStatement() const;
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);

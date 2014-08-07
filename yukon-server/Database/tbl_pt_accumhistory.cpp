@@ -17,28 +17,12 @@ _previousPulseCount(prevpulsecount),
 _presentPulseCount(pulsecount)
 {}
 
-CtiTablePointAccumulatorHistory::CtiTablePointAccumulatorHistory(const CtiTablePointAccumulatorHistory& ref)
-{
-    *this = ref;
-}
-
 CtiTablePointAccumulatorHistory::~CtiTablePointAccumulatorHistory()
 {
     if(isDirty())
     {
         Update();
     }
-}
-
-CtiTablePointAccumulatorHistory& CtiTablePointAccumulatorHistory::operator=(const CtiTablePointAccumulatorHistory& aRef)
-{
-    if(this != &aRef)
-    {
-        _pointID    = aRef.getPointID();
-        _previousPulseCount = aRef.getPreviousPulseCount();
-        _presentPulseCount = aRef.getPresentPulseCount();
-    }
-    return *this;
 }
 
 bool CtiTablePointAccumulatorHistory::operator==(const CtiTablePointAccumulatorHistory& right) const

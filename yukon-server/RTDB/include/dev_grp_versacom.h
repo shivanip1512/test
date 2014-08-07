@@ -24,11 +24,6 @@ public:
 
    CtiDeviceGroupVersacom();
 
-   CtiTableVersacomLoadGroup   getVersacomGroup() const;
-   CtiTableVersacomLoadGroup&  getVersacomGroup();
-
-   CtiDeviceGroupVersacom&     setVersacomGroup(const CtiTableVersacomLoadGroup& aRef);
-
    virtual LONG getRouteID();
    virtual std::string getDescription(const CtiCommandParser & parse) const;
 

@@ -12,8 +12,15 @@
  *  he could also be known as CtiTableDevice
  *----------------------------------------------------------------------------------------*/
 
-class IM_EX_CTIYUKONDB CtiTableDeviceBase : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDeviceBase : public CtiMemDBObject, private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTableDeviceBase(const CtiTableDeviceBase&);
+    CtiTableDeviceBase& operator=(const CtiTableDeviceBase&);
 
 protected:
 
@@ -26,10 +33,8 @@ public:
     typedef CtiMemDBObject Inherited;
 
     CtiTableDeviceBase();
-    CtiTableDeviceBase(const CtiTableDeviceBase &aRef);
     virtual ~CtiTableDeviceBase();
 
-    CtiTableDeviceBase& operator=(const CtiTableDeviceBase &aRef);
     CtiTableDeviceBase& setAlarmInhibit(bool b);
     CtiTableDeviceBase& setControlInhibit(bool b);
     CtiTableDeviceBase& setRadioDelay(bool b);

@@ -32,27 +32,6 @@ _alternateRate(-1L),
 _updated(FALSE)
 {}
 
-CtiTableDeviceScanRate::CtiTableDeviceScanRate(const CtiTableDeviceScanRate &aRef)
-{
-    *this = aRef;
-}
-
-CtiTableDeviceScanRate& CtiTableDeviceScanRate::operator=(const CtiTableDeviceScanRate &aRef)
-{
-    if(this != &aRef)
-    {
-        _deviceID      = aRef.getDeviceID();
-        _scanRate      = aRef.getScanRate();
-        _scanGroup     = aRef.getScanGroup();
-        _scanType      = aRef.getScanType();
-        _alternateRate = aRef.getAlternateRate();
-
-        _updated = FALSE;
-    }
-
-    return *this;
-}
-
 LONG CtiTableDeviceScanRate::getScanType() const
 {
 
