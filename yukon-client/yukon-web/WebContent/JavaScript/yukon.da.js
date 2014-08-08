@@ -31,6 +31,28 @@ yukon.da = (function () {
             });
         },
 
+        // these two functions exist to work around the inability of IE to show/hide option elements
+        _hideOption = function (opt) {
+            if (navigator.appName === 'Microsoft Internet Explorer') {
+                $(opt).wrap('<span>').hide();
+            } else {
+                $(opt).hide();
+            }
+        },
+        
+        _showOption = function (opt) {
+            var span;
+            if (navigator.appName === 'Microsoft Internet Explorer') {
+                span = $(opt).parent();
+                if ($(opt).parent().is('span')) {
+                    $(opt).show();
+                    $(span).replaceWith(opt);
+                }
+            } else {
+                $(opt).show();
+            }
+        },
+
         _hideAlertMessage = function() {
             $('#alertMessageContainer').hide('fade', {}, 3000);
         },
@@ -200,9 +222,9 @@ yukon.da = (function () {
                     optionId = + option.val();
 
                 if (feederIds.indexOf(optionId) !== -1 || optionId === 0) {
-                    option.show();
+                    _showOption(option);
                 } else {
-                    option.hide();
+                    _hideOption(option);
                 }
             });
 
