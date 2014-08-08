@@ -22,7 +22,6 @@ using namespace std;
 #include "tbl_rtcarrier.h"
 #include "tbl_rtcomm.h"
 #include "tbl_rtmacro.h"
-#include "tbl_rtroute.h"
 #include "tbl_rtrepeater.h"
 #include "tbl_rtversacom.h"
 

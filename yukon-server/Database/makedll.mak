@@ -97,7 +97,6 @@ tbl_rtcarrier.obj \
 tbl_rtcomm.obj \
 tbl_rtmacro.obj \
 tbl_rtrepeater.obj \
-tbl_rtroute.obj \
 tbl_rtversacom.obj \
 tbl_ptdispatch.obj \
 tbl_scanrate.obj \
@@ -199,7 +198,7 @@ dllyukon.obj:	precompiled.h tbl_route.h dllbase.h dsm2.h cticonnect.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
 		logger.h thread.h CtiPCPtrQueue.h tbl_rtcomm.h ctibase.h \
 		ctinexus.h socket_helper.h critical_section.h tbl_rtmacro.h \
-		tbl_rtroute.h tbl_rtrepeater.h tbl_rtversacom.h \
+		tbl_rtrepeater.h tbl_rtversacom.h \
 		msg_pcrequest.h message.h collectable.h tbl_state_grp.h \
 		rwutil.h database_connection.h database_reader.h boost_time.h \
 		boostutil.h tbl_state.h
@@ -702,14 +701,6 @@ tbl_rtrepeater.obj:	precompiled.h tbl_rtrepeater.h row_reader.h \
 		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
 		optional.h macro_offset.h dbaccess.h logger.h thread.h \
 		CtiPCPtrQueue.h
-tbl_rtroute.obj:	precompiled.h tbl_rtroute.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h dbmemobject.h ctibase.h ctinexus.h \
-		cticonnect.h netports.h socket_helper.h numstr.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h dllbase.h dsm2.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h row_reader.h dbaccess.h \
-		logger.h thread.h CtiPCPtrQueue.h resolvers.h pointtypes.h \
-		db_entry_defines.h database_connection.h database_reader.h
 tbl_rtversacom.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
