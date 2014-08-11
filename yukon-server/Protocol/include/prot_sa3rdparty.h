@@ -17,6 +17,14 @@
 
 class IM_EX_PROT CtiProtocolSA3rdParty : public Cti::Protocol::Interface
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiProtocolSA3rdParty(const CtiProtocolSA3rdParty&);
+    CtiProtocolSA3rdParty& operator=(const CtiProtocolSA3rdParty&);
+
 protected:
 
     enum
@@ -68,7 +76,6 @@ public:
 
     virtual ~CtiProtocolSA3rdParty();
 
-    CtiProtocolSA3rdParty& operator=(const CtiProtocolSA3rdParty& aRef);
     int parseCommand(CtiCommandParser &parse);
 
     bool messageReady() const;

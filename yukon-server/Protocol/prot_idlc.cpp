@@ -48,23 +48,7 @@ IDLC::IDLC() :
     memset( &_in_frame,  0, sizeof(frame) );
 }
 
-IDLC::IDLC(const IDLC &aRef)
-{
-    *this = aRef;
-}
-
 IDLC::~IDLC()   {}
-
-IDLC &IDLC::operator=(const IDLC &aRef)
-{
-    if( this != &aRef )
-    {
-        _address  = aRef._address;
-    }
-
-    return *this;
-}
-
 
 void IDLC::setAddress( unsigned short address )
 {

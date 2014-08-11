@@ -48,30 +48,9 @@ CtiProtocolSeriesV::CtiProtocolSeriesV() :
     memset( &_outbound, 0, sizeof(seriesv_master_packet) );
 }
 
-CtiProtocolSeriesV::CtiProtocolSeriesV(const CtiProtocolSeriesV &aRef)
-{
-    *this = aRef;
-}
-
-
 CtiProtocolSeriesV::~CtiProtocolSeriesV()
 {
     delete [] _inbound;
-}
-
-
-CtiProtocolSeriesV &CtiProtocolSeriesV::operator=(const CtiProtocolSeriesV &aRef)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    if( this != &aRef )
-    {
-    }
-
-    return *this;
 }
 
 

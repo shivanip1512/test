@@ -32,34 +32,9 @@ CtiIONValueFixed::CtiIONValueFixed( FixedTypes fixedType ) :
     _fixedType = fixedType;
 }
 
-
-CtiIONValueFixed::CtiIONValueFixed( const CtiIONValueFixed &aRef ) :
-    CtiIONValue(ValueType_Fixed)
-{
-    *this = aRef;
-}
-
-
 CtiIONValueFixed::~CtiIONValueFixed()
 {
 }
-
-
-CtiIONValueFixed &CtiIONValueFixed::operator=( const CtiIONValueFixed &aRef )
-{
-    if(this != &aRef)
-    {
-        _fixedType = aRef._fixedType;
-    }
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return *this;
-}
-
 
 bool CtiIONValueFixed::isFixedType( CtiIONValue *toCheck, FixedTypes type )
 {

@@ -14,6 +14,14 @@
 
 class IM_EX_PROT CtiProtocolLMI : public Cti::Protocol::Interface
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiProtocolLMI(const CtiProtocolLMI&);
+    CtiProtocolLMI& operator=(const CtiProtocolLMI&);
+
 public:
     enum LMICommand;
 
@@ -176,15 +184,9 @@ private:
     bool _first_code_block,
          _final_code_block;
 
-protected:
-
 public:
     CtiProtocolLMI();
-    CtiProtocolLMI(const CtiProtocolLMI &aRef);
-
     virtual ~CtiProtocolLMI();
-
-    CtiProtocolLMI &operator=(const CtiProtocolLMI &aRef);
 
     //  these are tokens to kick the protocol layer into doing something fun
     enum LMISequences

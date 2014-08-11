@@ -19,22 +19,7 @@ ModbusProtocol::ModbusProtocol() :
     setAddresses(DefaultSlaveAddress);
 }
 
-ModbusProtocol::ModbusProtocol(const ModbusProtocol &aRef)
-{
-    *this = aRef;
-}
-
 ModbusProtocol::~ModbusProtocol()   {}
-
-ModbusProtocol &ModbusProtocol::operator=(const ModbusProtocol &aRef)
-{
-    if( this != &aRef )
-    {
-        _slaveAddress  = aRef._slaveAddress;
-    }
-
-    return *this;
-}
 
 void ModbusProtocol::setCommand(Command newCommand)
 {

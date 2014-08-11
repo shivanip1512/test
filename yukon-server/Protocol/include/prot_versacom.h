@@ -114,8 +114,16 @@ class CtiRequestMsg;
 #endif
 
 
-class IM_EX_PROT CtiProtocolVersacom
+class IM_EX_PROT CtiProtocolVersacom : private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiProtocolVersacom(const CtiProtocolVersacom&);
+    CtiProtocolVersacom& operator=(const CtiProtocolVersacom&);
+
 protected:
 
    INT      _transmitterType;
@@ -158,11 +166,6 @@ public:
       _addressMode(0)
    { }
 
-   CtiProtocolVersacom(const CtiProtocolVersacom& aRef)
-   {
-      *this = aRef;
-   }
-
    virtual ~CtiProtocolVersacom()
    {
        delete_container(_vst);
@@ -172,27 +175,6 @@ public:
    INT   entries() const
    {
       return _vst.size();
-   }
-
-   CtiProtocolVersacom& operator=(const CtiProtocolVersacom& aRef)
-   {
-      if(this != &aRef)
-      {
-         delete_container(_vst);
-         _vst.clear();
-
-         for( int i = 0; i < aRef.entries(); i++ )
-         {
-            VSTRUCT *Vst = CTIDBG_new VSTRUCT;
-            ::memcpy((void*)Vst, &aRef.getVStruct(i), sizeof(VSTRUCT));
-
-            _vst.push_back( Vst );
-         }
-
-         _transmitterType  = aRef.getTransmitterType();
-         _addressMode      = aRef.getAddressMode();
-      }
-      return *this;
    }
 
    bool                    isConfig63Valid(LONG sn) const;

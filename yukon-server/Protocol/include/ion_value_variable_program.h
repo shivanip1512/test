@@ -34,7 +34,7 @@ public:
 };
 
 
-class CtiIONStatement
+class CtiIONStatement : private boost::noncopyable
 {
 private:
 
@@ -69,7 +69,7 @@ public:
 };
 
 
-class CtiIONMethod
+class CtiIONMethod : private boost::noncopyable
 {
 private:
 

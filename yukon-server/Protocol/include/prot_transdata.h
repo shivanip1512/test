@@ -13,6 +13,14 @@
 
 class IM_EX_PROT CtiProtocolTransdata
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiProtocolTransdata(const CtiProtocolTransdata&);
+    CtiProtocolTransdata& operator=(const CtiProtocolTransdata&);
+
    public:
 
       struct mkv
@@ -27,7 +35,7 @@ class IM_EX_PROT CtiProtocolTransdata
       };
 
       CtiProtocolTransdata();
-      ~CtiProtocolTransdata();
+      virtual ~CtiProtocolTransdata();
 
       bool generate( CtiXfer &xfer );
       bool decode( CtiXfer &xfer, int status );
@@ -52,9 +60,7 @@ class IM_EX_PROT CtiProtocolTransdata
 
       std::vector<CtiTransdataData *> resultDecode( const INMESS *InMessage );
 
-   protected:
-
-   private:
+private:
 
       enum Sizes
       {

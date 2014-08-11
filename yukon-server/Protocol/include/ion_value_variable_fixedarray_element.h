@@ -4,7 +4,7 @@
 //    with their respective array instantiations
 template < class T > class CtiIONFixedArrayTemplate;
 
-class CtiIONFixedArrayElement
+class CtiIONFixedArrayElement : private boost::noncopyable
 {
 public:
 

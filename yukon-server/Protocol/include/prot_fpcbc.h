@@ -9,44 +9,26 @@
 #include "utility.h"
 
 
-class IM_EX_PROT CtiProtocolFisherPierceCBC
+class IM_EX_PROT CtiProtocolFisherPierceCBC : private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiProtocolFisherPierceCBC(const CtiProtocolFisherPierceCBC&);
+    CtiProtocolFisherPierceCBC& operator=(const CtiProtocolFisherPierceCBC&);
+
 protected:
 
    INT      _last;
 
    std::list< FPSTRUCT* >  _fst;
 
-
-private:
-
 public:
+
     CtiProtocolFisherPierceCBC() {}
-
-    CtiProtocolFisherPierceCBC(const CtiProtocolFisherPierceCBC& aRef)
-    {
-        *this = aRef;
-    }
-
     virtual ~CtiProtocolFisherPierceCBC() {}
-
-    CtiProtocolFisherPierceCBC& operator=(const CtiProtocolFisherPierceCBC& aRef)
-    {
-       if(this != &aRef)
-       {
-          delete_container(_fst);
-          _fst.clear();
-
-          for( int i = 0; i < aRef.entries(); i++ )
-          {
-             FPSTRUCT *Fst = CTIDBG_new FPSTRUCT;
-             ::memcpy((void*)Fst, &aRef.getFPStruct(i), sizeof(FPSTRUCT));
-
-             _fst.push_back( Fst );
-          }
-       }
-       return *this;
-    }
 
     INT   entries() const
     {

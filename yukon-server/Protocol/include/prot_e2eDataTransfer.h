@@ -16,8 +16,16 @@ namespace Protocols {
 //  Firmware spec: http://portal.cooperpowereas.net/sites/Ops/MarylandEngineeringGroup/Shared%20Documents/PSGT-Firmware/Features/E2EDT/Design/E2E%20Data%20Transfer%20-%20Software%20Design%20Document.docx
 //
 //  This class is designed to manage a single device's E2EDT state.
-class IM_EX_PROT E2eDataTransferProtocol
+class IM_EX_PROT E2eDataTransferProtocol : private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    E2eDataTransferProtocol(const E2eDataTransferProtocol&);
+    E2eDataTransferProtocol& operator=(const E2eDataTransferProtocol&);
+
 public:
 
     struct EndpointResponse

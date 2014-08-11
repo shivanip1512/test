@@ -60,7 +60,6 @@ protected:
 public:
 
     CtiIONStruct( StructTypes structType, unsigned long numElements );
-    CtiIONStruct( CtiIONStruct &aRef );
     virtual ~CtiIONStruct( );
 
     virtual CtiIONValue *at( int index );

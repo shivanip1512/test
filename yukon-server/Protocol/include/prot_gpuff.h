@@ -11,16 +11,20 @@
 namespace Cti       {
 namespace Protocols {
 
-class IM_EX_PROT GpuffProtocol
+class IM_EX_PROT GpuffProtocol : private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    GpuffProtocol(const GpuffProtocol&);
+    GpuffProtocol& operator=(const GpuffProtocol&);
+
     typedef std::vector< CtiPointDataMsg * > pointlist_t;
     typedef std::vector< std::string * >     stringlist_t;
 
-private:
-
     GpuffProtocol();
-    //virtual ~GpuffProtocol();
-    GpuffProtocol &operator=(const GpuffProtocol &aRef);
 
     enum
     {

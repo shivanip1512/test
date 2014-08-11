@@ -52,20 +52,6 @@ CtiProtocolSA3rdParty::~CtiProtocolSA3rdParty()
 {
 }
 
-CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::operator=(const CtiProtocolSA3rdParty& aRef)
-{
-    if(this != &aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ACH!!! Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
-}
-
-
-
 INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
 {
     INT status = NORMAL;

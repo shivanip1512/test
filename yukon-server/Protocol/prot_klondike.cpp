@@ -27,27 +27,10 @@ KlondikeProtocol::KlondikeProtocol() :
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
 
-KlondikeProtocol::KlondikeProtocol(const KlondikeProtocol &aRef)
-{
-    *this = aRef;
-}
-
 KlondikeProtocol::~KlondikeProtocol()
 {
     _wrap = 0;      // we don't delete this: zeroing out to make lint happy...
 }
-
-KlondikeProtocol &KlondikeProtocol::operator=(const KlondikeProtocol &aRef)
-{
-    if( this != &aRef )
-    {
-        _masterAddress = aRef._masterAddress;
-        _slaveAddress  = aRef._slaveAddress;
-    }
-
-    return *this;
-}
-
 
 KlondikeProtocol::command_state_map_t::command_state_map_t()
 {

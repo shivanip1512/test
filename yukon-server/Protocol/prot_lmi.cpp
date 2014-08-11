@@ -62,13 +62,6 @@ CtiProtocolLMI::CtiProtocolLMI() :
     memset( &_status, 0, sizeof(lmi_status_union) );
 }
 
-
-CtiProtocolLMI::CtiProtocolLMI(const CtiProtocolLMI &aRef)
-{
-    *this = aRef;
-}
-
-
 CtiProtocolLMI::~CtiProtocolLMI()
 {
     while( !_verification_objects.empty() )
@@ -88,29 +81,12 @@ CtiProtocolLMI::~CtiProtocolLMI()
     }
 }
 
-
-CtiProtocolLMI &CtiProtocolLMI::operator=(const CtiProtocolLMI &aRef)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    if( this != &aRef )
-    {
-    }
-
-    return *this;
-}
-
-
 void CtiProtocolLMI::setAddress( unsigned char address )
 {
     _address = address;
 
     _seriesv.setAddress(address);
 }
-
 
 void CtiProtocolLMI::setCommand( LMICommand cmd, unsigned control_offset, unsigned control_parameter )
 {

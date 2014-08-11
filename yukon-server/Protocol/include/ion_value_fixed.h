@@ -48,11 +48,7 @@ protected:
 public:
 
     CtiIONValueFixed( FixedTypes fixedType );
-    CtiIONValueFixed( const CtiIONValueFixed &aRef );
-
     virtual ~CtiIONValueFixed();
-
-    CtiIONValueFixed &operator=( const CtiIONValueFixed &aRef );
 
     void putSerialized( unsigned char *buf ) const;
     unsigned int getSerializedLength( void ) const;

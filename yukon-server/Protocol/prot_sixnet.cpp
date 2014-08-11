@@ -87,18 +87,6 @@ CtiProtocolSixnet::~CtiProtocolSixnet()
     _byBuf.clear();
 }
 
-CtiProtocolSixnet& CtiProtocolSixnet::operator=(const CtiProtocolSixnet& aRef)
-{
-    if(this != &aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
-}
-
 //////////////////////////////////////////////////////////////////////
 // display information about a received message
 //

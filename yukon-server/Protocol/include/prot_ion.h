@@ -13,10 +13,16 @@
 
 class IM_EX_PROT CtiProtocolION : public Cti::Protocol::Interface
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiProtocolION(const CtiProtocolION&);
+    CtiProtocolION& operator=(const CtiProtocolION&);
+
     enum IONCommand;
     enum IONStates;
-
-private:
 
     IONStates _ionState, _retryState;
 
@@ -338,11 +344,7 @@ protected:
 public:
 
     CtiProtocolION();
-    CtiProtocolION(const CtiProtocolION &aRef);
-
     virtual ~CtiProtocolION();
-
-    CtiProtocolION &operator=(const CtiProtocolION &aRef);
 
     void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 

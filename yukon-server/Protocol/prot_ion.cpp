@@ -46,37 +46,11 @@ CtiProtocolION::CtiProtocolION()
     _eventLogDepth               = 1;
 }
 
-
-CtiProtocolION::CtiProtocolION(const CtiProtocolION &aRef)
-{
-    *this = aRef;
-}
-
-
 CtiProtocolION::~CtiProtocolION()
 {
     _dsIn.clearAndDestroy();
     _dsOut.clearAndDestroy();
 }
-
-
-CtiProtocolION &CtiProtocolION::operator=(const CtiProtocolION &aRef)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    if( this != &aRef )
-    {
-        _appLayer      = aRef._appLayer;
-        _masterAddress = aRef._masterAddress;
-        _slaveAddress  = aRef._slaveAddress;
-    }
-
-    return *this;
-}
-
 
 void CtiProtocolION::initializeSets( void )
 {

@@ -6,7 +6,7 @@ using std::vector;
 #include "dlldefs.h"
 
 
-class CtiIONSerializable
+class CtiIONSerializable : private boost::noncopyable
 {
 protected:
 

@@ -301,9 +301,17 @@ typedef enum
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiProtocolANSI
+class IM_EX_PROT CtiProtocolANSI : private boost::noncopyable
 {
-   public:
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiProtocolANSI(const CtiProtocolANSI&);
+    CtiProtocolANSI& operator=(const CtiProtocolANSI&);
+
+public:
       CtiProtocolANSI();
       virtual ~CtiProtocolANSI();
 

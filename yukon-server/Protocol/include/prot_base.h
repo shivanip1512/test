@@ -11,11 +11,22 @@
 namespace Cti {
 namespace Protocol {
 
-class IM_EX_PROT Interface : boost::noncopyable
+class IM_EX_PROT Interface : private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    Interface(const Interface&);
+    Interface& operator=(const Interface&);
+
 protected:
 
     std::string _name;
+
+    Interface()
+    {}
 
 public:
 

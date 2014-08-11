@@ -3,12 +3,20 @@
 #include "xfer.h"
 #include "dllbase.h"
 
-class IM_EX_PROT CtiProtocolYmodem
+class IM_EX_PROT CtiProtocolYmodem : private boost::noncopyable
 {
+private:
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiProtocolYmodem(const CtiProtocolYmodem&);
+    CtiProtocolYmodem& operator=(const CtiProtocolYmodem&);
+
    public:
 
       CtiProtocolYmodem();
-      ~CtiProtocolYmodem();
+      virtual ~CtiProtocolYmodem();
 
       bool generate( CtiXfer &xfer, int packets );
       bool decode( CtiXfer &xfer, int status );
