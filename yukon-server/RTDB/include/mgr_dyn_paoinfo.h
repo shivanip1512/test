@@ -30,6 +30,7 @@ class IM_EX_DYNPAOINFO DynamicPaoInfoManager
 public:
     typedef CtiTableDynamicPaoInfo::PaoInfoKeys               PaoInfoKeys;
     typedef CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed PaoInfoKeysIndexed;
+    typedef std::set<long> PaoIds;
 
     static void setOwner(const Applications owner);
 
@@ -55,6 +56,8 @@ public:
     static bool getInfo(const long paoId, PaoInfoKeys k, CtiTime       &destination);
     //  note - this returns the value as a long for convenience - the name may need to be changed to prevent confusion if it arises
     static long getInfo(const long paoId, PaoInfoKeys k);
+
+    static PaoIds getPaoIdsHavingInfo(PaoInfoKeys k);
 
     static Database::id_set writeInfo();
 
@@ -117,7 +120,7 @@ private:
 
     typedef std::set<DynInfoIndexWPtr> DynInfoIndexRefSet;
     typedef std::set<std::pair<long, PaoInfoKeysIndexed>> PaoIdAndIndexedKeySet;
-    
+
     // contains weak_ptr to insert into the DB
     DynInfoIndexRefSet dirtyInfoIndexed;
 

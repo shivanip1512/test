@@ -423,7 +423,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
         string cmd = parse.getsValue(str_lp_command);
 
-        if( !cmd.compare("status") )
+        if( cmd == "status" )
         {
             CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
@@ -441,16 +441,6 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
             else
             {
                 lp_status_string += "No active load profile requests for this device\n";
-
-                if( _llpRequest.failed )
-                {
-                    lp_status_string += "Last request failed at interval: " + printTimestamp(_llpRequest.begin) + "\n";
-                }
-
-                if( is_valid_time(_llpRequest.end) )
-                {
-                    lp_status_string += "Last request end time: " + printTimestamp(_llpRequest.end) + "\n";
-                }
             }
 
             ReturnMsg->setResultString(lp_status_string.c_str());
@@ -462,7 +452,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
             found = false;
             nRet  = NoError;
         }
-        else if( !cmd.compare("cancel") )
+        else if( cmd == "cancel" )
         {
             bool cancelled = InterlockedExchange(&_llpRequest.request_id, 0);
 
@@ -491,6 +481,46 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
             OutMessage = 0;
             found = false;
             nRet  = NoError;
+        }
+        else if( cmd == "resume" )
+        {
+            bool hasRequiredInfo = true;
+
+            hasRequiredInfo |= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel);
+            hasRequiredInfo |= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin);
+            hasRequiredInfo |= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd);
+
+            if( ! hasRequiredInfo )
+            {
+                returnErrorMessage(MISPARAM, OutMessage, retList,
+                                   "Missing one of the following:"
+                                   "\nKey_MCT_LLPInterest_Channel"
+                                   "\nKey_MCT_LLPInterest_RequestBegin"
+                                   "\nKey_MCT_LLPInterest_RequestEnd");
+
+                return ExecutionComplete;
+            }
+
+            const int channel = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel);
+
+            const CtiTime time_begin(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin)),
+                          time_end  (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd));
+
+            std::auto_ptr<CtiRequestMsg> newReq(
+                    new CtiRequestMsg(
+                            getID(),
+                            "getvalue lp channel " + boost::lexical_cast<std::string>(channel)
+                                + " " + time_begin.asString()
+                                + " " + time_end.asString()));
+
+            newReq->setMessagePriority(ScanPriority_LoadProfile);
+
+            retList.push_back(newReq.release());
+
+            delete OutMessage;
+            OutMessage = 0;
+
+            return ExecutionComplete;
         }
         else
         {
@@ -3601,33 +3631,6 @@ INT Mct4xxDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
     }
 
     return Parent::ErrorDecode(InMessage, TimeNow, retList);
-}
-
-
-void Mct4xxDevice::deviceInitialization( list< CtiRequestMsg * > &request_list )
-{
-    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time) &&
-        hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel) )
-    {
-        _llpInterest.time    = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time);
-        _llpInterest.channel = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel) - 1;
-
-        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin) &&
-            hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd) )
-        {
-            CtiTime time_begin(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin)),
-                    time_end  (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd));
-
-            CtiString lp_request_str = "getvalue lp ";
-
-            lp_request_str += "channel " + CtiNumStr(_llpInterest.channel + 1) + " " + time_begin.asString() + " " + time_end.asString();
-
-            CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(), lp_request_str);
-            newReq->setMessagePriority(ScanPriority_LoadProfile);
-
-            request_list.push_back(newReq);
-        }
-    }
 }
 
 

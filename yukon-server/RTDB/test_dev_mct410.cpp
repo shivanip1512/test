@@ -2754,6 +2754,38 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_CLOSE( threshold, 5.64 * 12, 0.001 );
         }
     }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_resume)
+    {
+        test_Mct410IconDevice mct410;
+
+        Cti::Test::Override_CtiTime_Now overrideNow(CtiTime(CtiDate(21, 3, 2014), 12, 34, 56));
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin, CtiTime(CtiDate(14, 3, 2014), 3, 0, 0));
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd,   CtiTime(CtiDate(17, 3, 2014)));
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel,      2);
+
+        CtiCommandParser parse("getvalue lp resume");
+
+        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        CtiDeviceBase::CtiMessageList::const_iterator retList_itr = retList.begin();
+
+        {
+            const CtiMessage *msg = *retList_itr++;
+
+            const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(msg);
+
+            BOOST_REQUIRE(req);
+
+            BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( req->CommandString(), "getvalue lp channel 2 03/14/2014 03:00:00 03/17/2014 00:00:00" );
+            BOOST_CHECK_EQUAL( req->getMessagePriority(), 6 );
+        }
+    }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 

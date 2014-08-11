@@ -78,6 +78,7 @@
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/creation_tags.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/range/algorithm/set_algorithm.hpp>
 
 using namespace std;
 using Cti::Database::DatabaseConnection;
@@ -321,19 +322,35 @@ static void applyQueuedDevicePortMatchup(const long unusedid, CtiDeviceSPtr Remo
     }
 }
 
-static void applyDeviceInitialization(const long unusedid, CtiDeviceSPtr RemoteDevice, void *unused)
+void resumeMctLoadProfileRequests()
 {
     extern Cti::Pil::PilServer PIL;
+    using boost::range::set_intersection;
 
-    list< CtiRequestMsg * > request_list;
+    set<long> request_paos;
 
-    RemoteDevice->deviceInitialization(request_list);
+    set_intersection(
+            Cti::DynamicPaoInfoManager::getPaoIdsHavingInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin),
+            Cti::DynamicPaoInfoManager::getPaoIdsHavingInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd),
+            inserter(request_paos,
+                     request_paos.end()));
 
-    while( !request_list.empty() )
+    set<long> request_with_channel_paos;
+
+    set_intersection(
+            request_paos,
+            Cti::DynamicPaoInfoManager::getPaoIdsHavingInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel),
+            inserter(request_with_channel_paos,
+                     request_with_channel_paos.end()));
+
+    for each( long paoid in request_with_channel_paos )
     {
-        PIL.putQueue(request_list.front());
+        std::auto_ptr<CtiRequestMsg> newReq(
+                new CtiRequestMsg(paoid, "getvalue lp resume"));
 
-        request_list.pop_front();
+        newReq->setMessagePriority(6);  //  CtiDeviceSingle::ScanPriority_LoadProfile
+
+        PIL.putQueue(newReq.release());
     }
 }
 
@@ -947,8 +964,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         }
     }
 
-    //  Some devices need to fire off commands on startup - specifically, MCTs may need to resume LLP collection
-    DeviceManager.apply(applyDeviceInitialization, NULL);
+    resumeMctLoadProfileRequests();
 
     /* Startup is done so main process becomes input thread */
     for(;!PorterQuit;)

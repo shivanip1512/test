@@ -361,9 +361,6 @@ public:
     static point_info getData(const unsigned char *buf, const unsigned len, const ValueType4xx vt);
     static point_info getDataError(unsigned error_code, const error_map &error_codes);
 
-    //  will start up any outstanding LLP requests
-    void deviceInitialization(std::list< CtiRequestMsg * > &request_list);
-
     static unsigned loadTimeSync(unsigned char *buf);
 
 };

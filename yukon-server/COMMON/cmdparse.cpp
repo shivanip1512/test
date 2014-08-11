@@ -593,11 +593,15 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
             }
             else if( CmdStr.contains(" status") )
             {
-                _cmd["lp_command"]    = CtiParseValue("status");
+                _cmd["lp_command"] = CtiParseValue("status");
             }
             else if( CmdStr.contains(" cancel") )
             {
-                _cmd["lp_command"]    = CtiParseValue("cancel");
+                _cmd["lp_command"] = CtiParseValue("cancel");
+            }
+            else if( CmdStr.contains(" resume") )
+            {
+                _cmd["lp_command"] = CtiParseValue("resume");
             }
         }
         else if(!(token = CmdStr.match(re_demand)).empty())      // Sourcing from CmdStr, which is the entire command string.

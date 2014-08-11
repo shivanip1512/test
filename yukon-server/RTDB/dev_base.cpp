@@ -205,12 +205,6 @@ void CtiDeviceBase::propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq )
 }
 
 
-//  override if the device needs to do anything immediately on Porter startup
-void CtiDeviceBase::deviceInitialization(list< CtiRequestMsg * > &request_list)
-{
-}
-
-
 void CtiDeviceBase::getDevicePoints(vector<CtiPointSPtr> &points) const
 {
     if( _pointMgr )
@@ -737,14 +731,7 @@ INT CtiDeviceBase::checkForInhibitedDevice(CtiMessageList &retList, const OUTMES
 
 bool CtiDeviceBase::isGroup() const
 {
-    bool bstatus = false;
-
-    if(getClass() == PAOClassGroup)
-    {
-        bstatus = true;
-    }
-
-    return bstatus;
+    return getClass() == PAOClassGroup;
 }
 
 bool CtiDeviceBase::isTAP() const

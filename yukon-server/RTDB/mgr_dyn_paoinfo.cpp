@@ -21,6 +21,7 @@ namespace Cti {
 
 using Database::DatabaseConnection;
 using Database::DatabaseReader;
+using Database::DatabaseWriter;
 
 namespace {
 struct DynamicPaoInfoManager_Singleton : DynamicPaoInfoManager {};
@@ -56,13 +57,13 @@ bool deleteIndexedInfo(const std::string& ownerString, const long paoId, CtiTabl
             "WHERE paobjectid = ? AND owner = ? "
             "AND infokey LIKE '" + keyString + "%'";
 
-    Cti::Database::DatabaseConnection   connection;
-    Cti::Database::DatabaseWriter       deleter(connection, sqlDelete);
+    DatabaseConnection   connection;
+    DatabaseWriter       deleter(connection, sqlDelete);
 
     deleter << paoId
             << ownerString;
 
-    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+    return Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
 /**
@@ -175,8 +176,8 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
         dout << CtiTime() << " Looking for Dynamic PAO Info " << __FILE__ << "(" << __LINE__ << ")" << std::endl;
     }
 
-    Cti::Database::DatabaseConnection connection;
-    Cti::Database::DatabaseReader rdr(connection);
+    DatabaseConnection connection;
+    DatabaseReader rdr(connection);
 
     std::string sql = CtiTableDynamicPaoInfo::getSQLCoreStatement();
 
@@ -301,12 +302,12 @@ void DynamicPaoInfoManager::purgeInfo(const long paoId)
             "FROM dynamicpaoinfo "
             "WHERE paobjectid = ? AND owner = ?";
 
-    Cti::Database::DatabaseConnection   connection;
-    Cti::Database::DatabaseWriter       deleter(connection, sqlPurge);
+    DatabaseConnection   connection;
+    DatabaseWriter       deleter(connection, sqlPurge);
 
     deleter << paoId << *ownerString;
 
-    Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+    Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
 void DynamicPaoInfoManager::purgeInfo(long paoId, CtiTableDynamicPaoInfo::PaoInfoKeys key)
@@ -346,21 +347,21 @@ void DynamicPaoInfoManager::purgeInfo(long paoId, CtiTableDynamicPaoInfo::PaoInf
             "FROM dynamicpaoinfo "
             "WHERE paobjectid = ? AND infokey = ? AND owner = ?";
 
-    Cti::Database::DatabaseConnection   connection;
-    Cti::Database::DatabaseWriter       deleter(connection, sqlPurge);
+    DatabaseConnection   connection;
+    DatabaseWriter       deleter(connection, sqlPurge);
 
     deleter << paoId
             << keyString
             << *ownerString;
 
-    Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+    Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
 Database::id_set DynamicPaoInfoManager::writeInfo( void )
 {
     Database::id_set paoIdsWritten;
 
-    Cti::Database::DatabaseConnection conn;
+    DatabaseConnection conn;
 
     if ( ! conn.isValid() )
     {
@@ -573,6 +574,36 @@ long DynamicPaoInfoManager::getInfo(long paoId, PaoInfoKeys k)
 
     return l;
 }
+
+DynamicPaoInfoManager::PaoIds DynamicPaoInfoManager::getPaoIdsHavingInfo(PaoInfoKeys k)
+{
+    static const std::string sql =
+            "SELECT paobjectid"
+            " FROM DynamicPaoInfo"
+            " WHERE InfoKey=?";
+
+    DatabaseConnection connection;
+    DatabaseReader rdr(connection);
+
+    rdr.setCommandText(sql);
+
+    rdr << CtiTableDynamicPaoInfo::getKeyString(k);
+
+    Database::executeCommand(rdr,  __FILE__, __LINE__, Database::LogDebug(DebugLevel & 0x00020000));
+
+    PaoIds ids;
+
+    long paoid;
+
+    while( rdr() )
+    {
+        rdr >> paoid;
+        ids.insert(paoid);
+    }
+
+    return ids;
+}
+
 
 bool DynamicPaoInfoManager::hasInfo(long paoId, PaoInfoKeys k)
 {
