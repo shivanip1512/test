@@ -1638,7 +1638,10 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
 			pv.setTags(signal.getTags());
 			Vector<Object> dataRow = (Vector<Object>)getRows().elementAt( rNum );
 			if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) ) {
-				String quality = (String) pv.getPointQuality().getAbbreviation();
+			    String quality = "";
+			    if (pv.getPointQuality() != null ) {
+			        quality = (String) pv.getPointQuality().getAbbreviation();
+			    }
 				quality += TagUtils.isAlarmActive(signal.getTags()) ? "-(ALM)" : "";
 				int index = getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY);
 	 			dataRow.setElementAt(quality, index); 
@@ -1938,9 +1941,12 @@ private void setCorrectRowValue( PointValues point, int location )
 		if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
 		{
 			try {
+			    String quality = "";
+                if (point.getPointQuality() != null ) {
+                    quality = (String) point.getPointQuality().getAbbreviation();
+                }
 	 			dataRow.setElementAt(
-	 					point.getPointQuality().getAbbreviation()
-			 				+ (TagUtils.isAlarmActive((int)point.getTags()) ? "-(ALM)" : ""),
+	 					quality	+ (TagUtils.isAlarmActive((int)point.getTags()) ? "-(ALM)" : ""),
 						getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY) ); 
 			}
 			catch( IllegalArgumentException ex ) {
