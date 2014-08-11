@@ -47,17 +47,19 @@
                     <td><cti:formatDate type="FULL" value="${test.timeMessageSent}"/></td>
                     <td>
                         <dr:rfPerformanceStats test="${test.eventStats}"/>
-                        <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
-                            <c:if test="${test.numUnknowns > 0}">
-                                <cm:dropdownOption key=".showUnknown" classes="js-unknown" data-test="${test.messageId}"/>
-                            </c:if>
-                            <c:if test="${test.numFailures > 0}">
-                                <cm:dropdownOption key=".showFailed" classes="js-failed" data-test="${test.messageId}"/>
-                            </c:if>
-                            <c:if test="${test.numSuccesses > 0}">
-                                <cm:dropdownOption key=".showSuccess" classes="js-success" data-test="${test.messageId}"/>
-                            </c:if>
-                        </cm:dropdown>
+                        <c:if test="${nonZeroStatValues}">
+                            <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
+                                <c:if test="${test.numUnknowns > 0}">
+                                    <cm:dropdownOption key=".showUnknown" classes="js-unknown" data-test="${test.messageId}"/>
+                                </c:if>
+                                <c:if test="${test.numFailures > 0}">
+                                    <cm:dropdownOption key=".showFailed" classes="js-failed" data-test="${test.messageId}"/>
+                                </c:if>
+                                <c:if test="${test.numSuccesses > 0}">
+                                    <cm:dropdownOption key=".showSuccess" classes="js-success" data-test="${test.messageId}"/>
+                                </c:if>
+                            </cm:dropdown>
+                        </c:if>
                     </td>
                 </tr>
             </c:forEach>

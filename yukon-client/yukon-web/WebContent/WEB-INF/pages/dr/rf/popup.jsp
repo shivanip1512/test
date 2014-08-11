@@ -33,11 +33,13 @@
     <div data-url="${url}">
         <%@ include file="table.jsp" %>
     </div>
-    
+    <cti:url var="downLoad" value="/dr/rf/details/${type}/${test}/download"/>
+    <cti:url var="inventoryAction" value="/dr/rf/details/${type}/${test}/inventoryAction"/>
+    <cti:url var="collectionAction" value="/dr/rf/details/${type}/${test}/collectionAction"/>
     <div class="action-area">
         <cti:button nameKey="close" classes="js-close"/>
-        <cti:button nameKey="download" icon="icon-page-white-excel" href="/dr/rf/details/${type}/${test}/download" classes="right"/>
-        <cti:button nameKey="inventoryAction" icon="icon-cog-go" href="/dr/rf/details/${type}/${test}/inventoryAction" busy="true" classes="middle"/>
-        <cti:button nameKey="collectionAction" icon="icon-cog-go" href="/dr/rf/details/${type}/${test}/collectionAction" busy="true" classes="left"/>
+        <cti:button nameKey="download" icon="icon-page-white-excel" href="${downLoad}" classes="right"/>
+        <cti:button nameKey="inventoryAction" icon="icon-cog-go" href="${inventoryAction}" busy="true" classes="middle"/>
+        <cti:button nameKey="collectionAction" icon="icon-cog-go" href="${collectionAction}" busy="true" classes="left"/>
     </div>
 </cti:msgScope>
