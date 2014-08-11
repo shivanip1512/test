@@ -221,5 +221,7 @@ private:
     std::string getLastUser();
     virtual void setHasBeatThePeakGear(bool hasBeatThePeakGear);
 
+    void setPendingGroupsInactive();
+
     void restore(Cti::RowReader &rdr);
 };

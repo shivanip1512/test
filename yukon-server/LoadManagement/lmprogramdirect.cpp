@@ -779,6 +779,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         }
                     } while( groups_taken < numberOfGroupsToTake );
 
+                    setPendingGroupsInactive();
+
                     if( getProgramState() == CtiLMProgramBase::ActiveState )
                     {
                         setProgramState(CtiLMProgramBase::FullyActiveState);
@@ -1051,6 +1053,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             }
                         }
                     } while( groups_taken < numberOfGroupsToTake );
+
+                    setPendingGroupsInactive();
 
                     if( getProgramState() == CtiLMProgramBase::InactiveState )
                     {
@@ -1577,6 +1581,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
                     }
                 } while( groups_taken < numberOfGroupsToTake );
 
+                setPendingGroupsInactive();
 
                 setProgramState(CtiLMProgramBase::ManualActiveState);
             }
@@ -2939,6 +2944,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                     }
                 } while( groups_taken < numberOfGroupsToTake );
 
+                setPendingGroupsInactive();
+
                 if( getProgramState() == CtiLMProgramBase::ActiveState ||
                     getProgramState() == CtiLMProgramBase::NonControllingState )
                 {
@@ -3164,6 +3171,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                         }
                     }
                 } while( groups_taken < numberOfGroupsToTake );
+
+                setPendingGroupsInactive();
 
                 if( getProgramState() != CtiLMProgramBase::ManualActiveState )
                 {
@@ -4339,6 +4348,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
                         }
                     }
                 } while( groups_taken < numberOfGroupsToTake );
+
+                setPendingGroupsInactive();
             }
 
             if( getProgramState() != CtiLMProgramBase::ManualActiveState &&
@@ -6314,6 +6325,17 @@ bool CtiLMProgramDirect::getHasBeatThePeakGear() const
 void CtiLMProgramDirect::setHasBeatThePeakGear(bool hasBeatThePeakGear)
 {
     _hasBeatThePeakGear = hasBeatThePeakGear;
+}
+
+void CtiLMProgramDirect::setPendingGroupsInactive()
+{
+    for each ( CtiLMGroupPtr group in _lmprogramdirectgroups )
+    {
+        if ( group->getGroupControlState() == CtiLMGroupBase::ActivePendingState )
+        {
+            group->setGroupControlState( CtiLMGroupBase::InactiveState );
+        }
+    }
 }
 
 // Static Members
