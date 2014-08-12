@@ -1235,41 +1235,36 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
         }
     case (CtiCommandMsg::PointDataRequest):
         {
-            // Vector contains ONLY PointIDs that need to be sent to the client.
-            // LONG token = Cmd->getOpArgList().at(0);
-
             try
             {
-                CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
+                std::auto_ptr<CtiMultiMsg> pMulti(new CtiMultiMsg);
 
                 CtiServerExclusion pmguard(_server_exclusion);
                 int payload_status = CtiServerResponseMsg::OK;
                 string payload_string;
 
-                for(i = 0; i < Cmd->getOpArgList().size(); i++ )
+                // Vector contains ONLY PointIDs that need to be sent to the client.
+                for each( const long pid in Cmd->getOpArgList() )
                 {
-                    long pid = Cmd->getOpArgList()[i];
                     if( CtiPointSPtr pPt = PointMgr.getPoint(pid) )
                     {
                         if( const CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPt) )
                         {
-                            CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(pPt->getID(),
-                                                                               pDyn->getValue(),
-                                                                               pDyn->getQuality(),
-                                                                               pPt->getType(),
-                                                                               string(),
-                                                                               pDyn->getDispatch().getTags());
+                            std::auto_ptr<CtiPointDataMsg> pDat(
+                                    new CtiPointDataMsg(
+                                            pPt->getID(),
+                                            pDyn->getValue(),
+                                            pDyn->getQuality(),
+                                            pPt->getType(),
+                                            string(),
+                                            pDyn->getDispatch().getTags()));
 
-                            if(pDat != NULL)
-                            {
-                                pDat->setSource(DISPATCH_APPLICATION_NAME);
-                                pDat->setTime( pDyn->getTimeStamp() );  // Make the time match the point's last received time
-                                pMulti->getData().push_back(pDat);
-                            }
+                            pDat->setSource(DISPATCH_APPLICATION_NAME);
+                            pDat->setTime( pDyn->getTimeStamp() );  // Make the time match the point's last received time
+                            pMulti->getData().push_back(pDat.release());
                         }
 
-                        CtiMultiMsg *pSigMulti = _signalManager.getPointSignals(pPt->getID());
-                        if(pSigMulti)
+                        if( CtiMultiMsg *pSigMulti = _signalManager.getPointSignals(pPt->getID()) )
                         {
                             pMulti->getData().push_back(pSigMulti);
                         }
@@ -1281,20 +1276,33 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     }
                 }
 
-                CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle());
+                if( CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle()) )
+                {
+                    if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "\n<<<< OUTGOING to " << sptrCM->getClientName() << " (request ID:" << sptrCM->getRequestId() << ", handle:" << (long)Cmd->getConnectionHandle() << ")" << endl;
+                        }
+                        pMulti->dump();
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "<<<< OUTGOING COMPLETE\n" << endl;
+                        }
+                    }
 
-                if(sptrCM && pMulti)
-                    sptrCM->WriteConnQue(pMulti, 0, payload_status, payload_string);
-                else delete
-                    pMulti;
-
+                    sptrCM->WriteConnQue(pMulti.release(), 0, payload_status, payload_string);
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Could not find connection for connection handle " << (long)Cmd->getConnectionHandle() << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
