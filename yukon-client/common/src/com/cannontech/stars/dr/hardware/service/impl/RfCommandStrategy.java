@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.DeviceRequestType;
@@ -43,7 +42,6 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 public class RfCommandStrategy implements LmHardwareCommandStrategy {
     
     private static final Logger log = YukonLogManager.getLogger(RfCommandStrategy.class);
-    private static final LogHelper logHelper = LogHelper.getInstance(log);
     private static final AtomicInteger nextMessageId = new AtomicInteger((int)new Instant().getMillis());
 
     @Autowired private RawExpressComCommandBuilder rawExpressComCommandBuilder;
@@ -99,12 +97,12 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
                 
                 @Override 
                 public void receivedStatus(RfnExpressComUnicastReplyType replyType) {
-                    logHelper.debug("Recieved status %s for %s", replyType, parameters.getType());
+                    log.debug(String.format("Recieved status %s for %s", replyType, parameters.getType()));
                 }
                 
                 @Override 
                 public void receivedStatusError(RfnExpressComUnicastReplyType replyType) {
-                    logHelper.debug("Recieved status error %s for %s", replyType, parameters.getType());
+                    log.debug(String.format("Recieved status error %s for %s", replyType, parameters.getType()));
                 }
             });
         }
